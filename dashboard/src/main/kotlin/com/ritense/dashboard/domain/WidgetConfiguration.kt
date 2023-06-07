@@ -18,7 +18,6 @@ package com.ritense.dashboard.domain
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import org.hibernate.annotations.Type
-import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -28,12 +27,12 @@ import javax.persistence.ManyToOne
 import javax.persistence.Table
 
 @Entity
-@Table(name = "widget_configuration")
+@Table(name = "dashboard_widget_configuration")
 data class WidgetConfiguration(
 
     @Id
-    @Column(name = "id", updatable = false, nullable = false, unique = true)
-    val id: UUID = UUID.randomUUID(),
+    @Column(name = "key", updatable = false, nullable = false, unique = true)
+    val key: String,
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "dashboard_key")

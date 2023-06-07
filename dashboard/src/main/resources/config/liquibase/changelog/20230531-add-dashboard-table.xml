@@ -33,8 +33,8 @@
     </changeSet>
 
     <changeSet author="Ritense" id="2">
-        <createTable tableName="widget_configuration">
-            <column name="id" type="${uuidType}">
+        <createTable tableName="dashboard_widget_configuration">
+            <column name="key" type="VARCHAR(256)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="dashboard_key" type="VARCHAR(256)">
@@ -56,7 +56,7 @@
     </changeSet>
 
     <changeSet id="3" author="Ritense">
-        <addForeignKeyConstraint baseTableName="widget_configuration"
+        <addForeignKeyConstraint baseTableName="dashboard_widget_configuration"
                                  baseColumnNames="dashboard_key"
                                  constraintName="fk_dashboard_key_dashboard_key"
                                  referencedTableName="dashboard"
