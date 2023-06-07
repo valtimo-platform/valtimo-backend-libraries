@@ -27,6 +27,7 @@ class UserManagementServiceHolder(userManagementService: UserManagementService) 
     companion object {
         private var userManagementService: UserManagementService? = null
 
+        @JvmStatic
         val currentInstance: UserManagementService
             get() = userManagementService!!
     }

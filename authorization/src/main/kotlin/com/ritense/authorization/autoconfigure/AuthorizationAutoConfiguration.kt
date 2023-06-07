@@ -35,15 +35,18 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import javax.annotation.PostConstruct
 import javax.sql.DataSource
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.authorization"])
 @EntityScan("com.ritense.authorization")
 class AuthorizationAutoConfiguration(
-    val userManagementService: UserManagementService
+    userManagementService: UserManagementService
 ) {
+
+    init {
+        UserManagementServiceHolder(userManagementService)
+    }
 
     @Bean
     @ConditionalOnMissingBean(AuthorizationService::class)
@@ -71,10 +74,5 @@ class AuthorizationAutoConfiguration(
     @Bean
     fun permissionConditionTypeModule(): Module {
         return PermissionConditionTypeModule()
-    }
-
-    @PostConstruct
-    fun postConstruct() {
-        UserManagementServiceHolder(userManagementService)
     }
 }
