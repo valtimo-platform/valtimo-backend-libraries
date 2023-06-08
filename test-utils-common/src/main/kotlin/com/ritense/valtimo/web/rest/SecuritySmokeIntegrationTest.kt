@@ -33,7 +33,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.RequestPostProcessor
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.util.LinkedMultiValueMap
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
@@ -61,39 +63,46 @@ abstract class SecuritySmokeIntegrationTest(
 
     @TestFactory
     fun shouldTestAllSimpleEndpointsForAuthentication(): Collection<DynamicTest> {
-        val endPointData: Set<Map.Entry<RequestMappingInfo, HandlerMethod>> = handlerMapping!!.handlerMethods.entries
+        val endPointData: Set<Map.Entry<RequestMappingInfo, HandlerMethod>> = handlerMapping.handlerMethods.entries
 
         return endPointData.filter {
             basePackageName == null || it.value.beanType.packageName.startsWith(basePackageName)
-        }
-            .mapNotNull {
-            getDynamicEndpointTest(it)
+        }.mapNotNull {
+            createEndpointTest(it.key, it.value)
         }
     }
 
-    private fun getDynamicEndpointTest(
-        entry: Map.Entry<RequestMappingInfo, HandlerMethod>
+    private fun createEndpointTest(
+        mappingInfo: RequestMappingInfo, handlerMethod: HandlerMethod
     ): DynamicTest? {
-        val requestMapping = entry.key
 
-        val patterns = getPathPatternsCondition(requestMapping)
-        if (ignoredPathPatterns.containsAll(patterns)) {
-            return null
-        }
+        val testNames = mappingInfo.methodsCondition.methods
+            .ifEmpty { setOf( null ) }
+            .map { it?.toString() ?: "" }
+            .sorted()
+            .flatMap { method ->
+                getPathPatternsCondition(mappingInfo)
+                    .sorted()
+                    .map { path ->
+                        "$method $path"
+                    }
+            }
 
-        val methods = requestMapping.methodsCondition.methods
-            .joinToString("|") { it.toString() }
-
-        val testName = "$methods ${patterns.joinToString()}"
-        return DynamicTest.dynamicTest(testName) {
-            testEndpoint(requestMapping)
+        return if (testNames.isEmpty()) {
+            null
+        } else if(testNames.any { testName -> ignoredPathPatterns.contains(testName) }) {
+            DynamicTest.dynamicTest("Ignored: ${testNames.first()}") {}
+        } else {
+            DynamicTest.dynamicTest(testNames.first()) {
+                testEndpoint(mappingInfo, handlerMethod)
+            }
         }
     }
 
-    private fun testEndpoint(mappingInfo: RequestMappingInfo) {
+    private fun testEndpoint(mappingInfo: RequestMappingInfo, handlerMethod: HandlerMethod) {
         assertDoesNotThrow {
             val path = findSimplePath(mappingInfo)
-            val paramMap = getSimpleParamMap(mappingInfo)
+            val paramMap = getSimpleParamMap(mappingInfo, handlerMethod)
 
             val method = mappingInfo.methodsCondition.methods.firstOrNull()
                 ?.let { HttpMethod.valueOf(it.name) }
@@ -106,21 +115,42 @@ abstract class SecuritySmokeIntegrationTest(
             request.params(LinkedMultiValueMap(paramMap))
             request.accept("*/*")
             request.with(remoteAddr())
-            val mvcResult = mockMvc!!.perform(request)
+            val mvcResult = mockMvc.perform(request)
+                .andDo(print())
                 .andReturn()
             val statusCode = mvcResult.response.status
 
-            assert(statusCode == 401 || statusCode == 403) { "Expected status 401 or 403, was $statusCode" }
+            assert(statusCode == 401 || statusCode == 403) { "Expected status 401 or 403, was $statusCode." }
         }
     }
 
-    private fun getSimpleParamMap(mappingInfo: RequestMappingInfo): Map<String, List<String>> {
+    private fun getSimpleParamMap(mappingInfo: RequestMappingInfo, handlerMethod: HandlerMethod): Map<String, List<String>> {
         val expressions = mappingInfo.paramsCondition.expressions
-        return if (expressions.any { it.value != null && it.value!!.matches(".*\\{.*}.*".toRegex()) }) {
-            throw RuntimeException("Can't resolve complex param conditions.")
-        } else {
-            expressions.groupBy({ it.name }, { it.value?: "" })
+            .map {
+                val value = if (it.value != null && it.value!!.matches(".*\\{.*}.*".toRegex())) {
+                    null //We can't guess complex expression values
+                } else {
+                    it.value
+                }
+                Pair(it.name, value?:"")
+            }
+
+        val methodParams = handlerMethod.methodParameters.mapNotNull {
+            val requestParam = it.getParameterAnnotation(RequestParam::class.java)
+            return@mapNotNull requestParam?.let {
+                if (!requestParam.required) {
+                    null
+                } else {
+                    val name = if (requestParam.name != "") requestParam.name else requestParam.value
+                    Pair(name, "")
+                }
+            }
         }
+
+        return (expressions + methodParams)
+            .groupBy( { it.first }, { it.second } )
+            .map { entry -> Pair(entry.key, listOf(entry.value.maxOf { it })) }
+            .toMap()
     }
 
     private fun findSimplePath(key: RequestMappingInfo): String {
