@@ -68,7 +68,6 @@ class JsonSchemaDocumentSpecification(
             return Specification { root: Root<JsonSchemaDocument>,
                                    _: CriteriaQuery<*>?,
                                    criteriaBuilder: CriteriaBuilder ->
-                // documentRoot.get(DOCUMENT_DEFINITION_ID).get(NAME), documentDefinitionName)
                 criteriaBuilder.equal(root.get<UUID>("documentDefinitionId").get<String>("name"), name)
             }
         }
