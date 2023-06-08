@@ -17,7 +17,6 @@
 package com.ritense.documentenapi
 
 import com.ritense.authorization.AuthorizationService
-import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
@@ -51,9 +50,6 @@ class BaseIntegrationTest {
 
     @MockBean
     lateinit var userManagementService: UserManagementService
-
-    @MockBean
-    lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
 
     // TODO: remove authorization service mocking when call to run without permissions is added
     @MockBean
