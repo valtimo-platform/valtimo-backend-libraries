@@ -19,12 +19,15 @@ package com.ritense.dashboard.service
 import com.ritense.dashboard.domain.Dashboard
 import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class DashboardService(
     private val dashboardRepository: DashboardRepository
 ) {
 
-    fun getDashboards(): Collection<Dashboard> {
+    @Transactional(readOnly = true)
+    fun getDashboards(): List<Dashboard> {
         return dashboardRepository.findAllWithWidgetConfigurations()
     }
 
@@ -54,10 +57,18 @@ class DashboardService(
             )
         }
 
+        dashboardRepository.deleteAll()
         return dashboardRepository.saveAll(dashboards)
     }
 
     fun deleteDashboard(dashboardKey: String) {
         dashboardRepository.deleteById(dashboardKey)
+        updateOrder()
+    }
+
+    private fun updateOrder() {
+        val dashboards = dashboardRepository.findAllByOrderByOrder()
+            .mapIndexed { index, dashboard -> dashboard.copy(order = index) }
+        dashboardRepository.saveAll(dashboards)
     }
 }

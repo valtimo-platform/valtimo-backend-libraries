@@ -31,4 +31,6 @@ interface DashboardRepository : JpaRepository<Dashboard, String> {
              ORDER BY d.order """
     )
     fun findAllWithWidgetConfigurations(): List<Dashboard>
+
+    fun findAllByOrderByOrder(): List<Dashboard>
 }
