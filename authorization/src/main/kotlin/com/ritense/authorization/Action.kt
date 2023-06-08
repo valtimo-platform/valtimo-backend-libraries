@@ -16,18 +16,32 @@
 
 package com.ritense.authorization
 
-// TODO: Don't make this an enum, make these values that can be stored in the DB
-enum class Action {
-    LIST_VIEW, // case, process, task, note
-    VIEW, // case, process, task, note
-    START, // case-instance, process-instance
-    CREATE, // note, s3resource, document-instance
-    MODIFY, // document-instance, note, add file to document, assign resource
-    DELETE, // note, s3resource
-    COMPLETE, // task-instance
-    ASSIGN, // document-instance, task-instance
-    CLAIM, // Assign to self
-    ASSIGNABLE, // Can be assigned
-    IGNORE,
-    DENY // assign document relation
+import javax.persistence.Column
+import javax.persistence.Embeddable
+
+@Embeddable
+data class Action<T>(
+    @Column(name = "action")
+    val key: String
+) {
+    companion object {
+        @JvmStatic
+        fun <T> deny(): Action<T>{
+            return Action(DENY)
+        }
+
+        // common action keys are defined here
+        const val LIST_VIEW = "list_view"
+        const val VIEW = "view"
+        const val START = "start"
+        const val CREATE = "create"
+        const val MODIFY = "modify"
+        const val DELETE = "delete"
+        const val COMPLETE = "complete"
+        const val ASSIGN = "assign"
+        const val CLAIM = "claim"
+        const val ASSIGNABLE = "assignable"
+        const val IGNORE = "ignore"
+        const val DENY = "deny"
+    }
 }

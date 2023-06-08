@@ -16,13 +16,13 @@
 
 package com.ritense.note
 
-import com.ritense.authorization.Action
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.Role
 import com.ritense.authorization.RoleRepository
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
 import com.ritense.note.domain.Note
+import com.ritense.note.service.NoteActionProvider
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
@@ -60,7 +60,7 @@ abstract class BaseIntegrationTest {
             Permission(
                 UUID.randomUUID(),
                 Note::class.java,
-                Action.VIEW,
+                NoteActionProvider.VIEW,
                 ConditionContainer(listOf()),
                 FULL_ACCESS_ROLE
             )

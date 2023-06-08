@@ -22,6 +22,7 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.PermissionRepository
+import com.ritense.authorization.ResourceActionProvider
 import com.ritense.authorization.RoleRepository
 import com.ritense.authorization.UserManagementServiceHolder
 import com.ritense.authorization.ValtimoAuthorizationService
@@ -55,11 +56,12 @@ class AuthorizationAutoConfiguration(
     fun valtimoAuthorizationService(
         authorizationSpecificationFactories: List<AuthorizationSpecificationFactory<*>>,
         mappers: List<AuthorizationEntityMapper<*, *>>,
+        actionProviders: List<ResourceActionProvider<*>>,
         permissionRepository: PermissionRepository,
         roleRepository: RoleRepository
     ): AuthorizationService {
         val authorizationService =
-            ValtimoAuthorizationService(authorizationSpecificationFactories, mappers, permissionRepository)
+            ValtimoAuthorizationService(authorizationSpecificationFactories, mappers, actionProviders, permissionRepository)
         AuthorizationServiceHolder(authorizationService)
         return authorizationService
     }

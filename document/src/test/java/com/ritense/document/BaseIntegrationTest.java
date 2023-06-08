@@ -16,10 +16,6 @@
 
 package com.ritense.document;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-
-import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.PermissionRepository;
 import com.ritense.authorization.Role;
@@ -40,12 +36,17 @@ import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentSnapshotService;
+import com.ritense.document.service.SearchFieldActionProvider;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import javax.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,11 +56,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import javax.inject.Inject;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CLAIM;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.LIST_VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 
 @SpringBootTest
 @Tag("integration")
@@ -146,49 +148,49 @@ public abstract class BaseIntegrationTest extends BaseTest {
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
-                Action.LIST_VIEW,
+                LIST_VIEW,
                 new ConditionContainer(Collections.emptyList()),
                 FULL_ACCESS_ROLE
             ),
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
-                Action.VIEW,
+                VIEW,
                 new ConditionContainer(Collections.emptyList()),
                 FULL_ACCESS_ROLE
             ),
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
-                Action.MODIFY,
+                MODIFY,
                 new ConditionContainer(Collections.emptyList()),
                 FULL_ACCESS_ROLE
             ),
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
-                Action.CREATE,
+                CREATE,
                 new ConditionContainer(Collections.emptyList()),
                 FULL_ACCESS_ROLE
             ),
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
-                Action.CLAIM,
+                CLAIM,
                 new ConditionContainer(Collections.emptyList()),
                 FULL_ACCESS_ROLE
             ),
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
-                Action.ASSIGN,
+                ASSIGN,
                 new ConditionContainer(Collections.emptyList()),
                 FULL_ACCESS_ROLE
             ),
             new Permission(
                 UUID.randomUUID(),
                 SearchField.class,
-                Action.LIST_VIEW,
+                SearchFieldActionProvider.LIST_VIEW,
                 new ConditionContainer(Collections.emptyList()),
                 FULL_ACCESS_ROLE
             )

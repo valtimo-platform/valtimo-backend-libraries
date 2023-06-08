@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import static com.ritense.document.repository.SearchFieldRepository.byIdDocumentDefinitionName;
+import static com.ritense.document.service.SearchFieldActionProvider.LIST_VIEW;
 
 public class SearchFieldService {
 
@@ -74,7 +75,7 @@ public class SearchFieldService {
         Specification<SearchField> authorizationSpec = authorizationService.getAuthorizationSpecification(
             new AuthorizationRequest<>(
                 SearchField.class,
-                Action.LIST_VIEW
+                LIST_VIEW
             ),
             null
         );
@@ -173,7 +174,7 @@ public class SearchFieldService {
         authorizationService.requirePermission(
             new AuthorizationRequest<>(
                 SearchField.class,
-                Action.DENY
+                Action.deny()
             ),
             null,
             null

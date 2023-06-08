@@ -16,14 +16,12 @@
 
 package com.ritense.authorization
 
-import com.ritense.authorization.Action.ASSIGN
-import com.ritense.authorization.Action.LIST_VIEW
-import com.ritense.authorization.Action.VIEW
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.FieldPermissionCondition
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.permission.PermissionConditionType.FIELD
+import com.ritense.authorization.testimpl.TestDocument
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -57,7 +55,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
     fun `should save Permission`() {
         val permission = Permission(
             resourceType = Class.forName("com.ritense.authorization.testimpl.TestDocument"),
-            action = LIST_VIEW,
+            action = Action<TestDocument>(Action.LIST_VIEW),
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
@@ -74,7 +72,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
         assertThat(permissions).hasSize(1)
         assertThat(permissions[0].id).isNotNull
         assertThat(permissions[0].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
-        assertThat(permissions[0].action).isEqualTo(LIST_VIEW)
+        assertThat(permissions[0].action).isEqualTo(Action<TestDocument>(Action.LIST_VIEW))
         assertThat(permissions[0].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[0].conditionContainer.conditions[0].type).isEqualTo(FIELD)
         assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
@@ -89,7 +87,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         val permission = Permission(
             resourceType = Class.forName("com.ritense.authorization.testimpl.TestDocument"),
-            action = LIST_VIEW,
+            action = Action<TestDocument>(Action.LIST_VIEW),
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
@@ -102,7 +100,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         val permission2 = Permission(
             resourceType = Class.forName("com.ritense.authorization.testimpl.TestDocument"),
-            action = VIEW,
+            action = Action<TestDocument>(Action.VIEW),
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
@@ -115,7 +113,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         val permission3 = Permission(
             resourceType = Class.forName("com.ritense.authorization.testimpl.TestDocument"),
-            action = ASSIGN,
+            action = Action<TestDocument>(Action.ASSIGN),
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
@@ -134,7 +132,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         assertThat(permissions[0].id).isNotNull
         assertThat(permissions[0].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
-        assertThat(permissions[0].action).isEqualTo(LIST_VIEW)
+        assertThat(permissions[0].action).isEqualTo(Action<TestDocument>(Action.LIST_VIEW))
         assertThat(permissions[0].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[0].conditionContainer.conditions[0].type).isEqualTo(FIELD)
         assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
@@ -144,7 +142,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         assertThat(permissions[1].id).isNotNull
         assertThat(permissions[1].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
-        assertThat(permissions[1].action).isEqualTo(VIEW)
+        assertThat(permissions[1].action).isEqualTo(Action<TestDocument>(Action.VIEW))
         assertThat(permissions[1].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[1].conditionContainer.conditions[0].type).isEqualTo(FIELD)
         assertTrue(permissions[1].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
