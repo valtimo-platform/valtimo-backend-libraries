@@ -232,7 +232,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Transactional
     @Override
-    //TODO: ??? @Marijn
+    //TODO: DENY
     public Optional<CamundaProcessJsonSchemaDocumentInstance> createProcessDocumentInstance(
         String processInstanceId,
         UUID documentId,
@@ -269,7 +269,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
-    //TODO: ??? @Marijn
+    //TODO: DENY
     public FunctionResult<CamundaProcessJsonSchemaDocumentInstance, OperationError> getProcessDocumentInstanceResult(
         ProcessDocumentInstanceId processDocumentInstanceId
     ) {

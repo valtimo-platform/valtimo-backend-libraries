@@ -24,13 +24,11 @@ import java.io.InputStream
 class DocumentenApiService(
     val pluginService: PluginService
 ) {
-    //TODO: ??? @Marijn
     fun downloadInformatieObject(pluginConfigurationId: String, documentId: String): InputStream {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         return documentApiPlugin.downloadInformatieObject(documentId)
     }
 
-    //TODO: ??? @Marijn
     fun getInformatieObject(pluginConfigurationId: String, documentId: String): DocumentInformatieObject {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         return documentApiPlugin.getInformatieObject(documentId)
