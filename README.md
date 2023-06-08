@@ -33,6 +33,39 @@ For more information check the following links.
 - Website: https://www.valtimo.nl
 - Documentation: https://docs.valtimo.nl
 
-## Getting started
-* Clone `https://github.com/valtimo-platform/valtimo-docker-profiles` and run the compose file for your desired edition
-* Then run the gradle `bootRun` for your desired edition (for the gzac edition this is `app/gzac/application/bootRun`)
+## Running the Valtimo libraries from source
+
+⚠️ The following instructions are for running Valtimo from source code. Usually with the intention of improving the Valtimo libraries. If you want to get started with Valtimo for you own application, please consult the [getting started guide](https://docs.valtimo.nl/getting-started/first-dive/creating-your-own-valtimo-implementation).
+
+### Prerequisites:
+
+- Java 17
+- [Git](https://git-scm.com/downloads)
+- An IDE like [IntelliJ](https://www.jetbrains.com/idea/download/) or [Eclipse](https://www.eclipse.org/downloads/)
+- [Docker (Desktop)](https://www.docker.com/products/docker-desktop/)
+ 
+### Setup the Valtimo environment:
+The environment consists of 3 components:
+* [Docker containers for supporting services](https://github.com/valtimo-platform/valtimo-docker-profiles)
+* Valtimo backend (this repository)
+* [Valtimo frontend](https://github.com/valtimo-platform/valtimo-frontend-template)
+
+#### Docker containers for supporting services
+* Make sure docker is running. 
+* Clone the Git repository **valtimo-docker-profiles** repository: [Valtimo docker git repository](https://github.com/valtimo-platform/valtimo-docker-profiles).
+* Open a terminal, go to the `valtimo-platform` folder and run command
+    ```
+    docker compose up -d
+    ``` 
+
+#### Valtimo Backend
+* Make sure this repository (the one where this README is a part of) is cloned to your workstation.  
+* The application can be started with the gradle task ```:app:valtimo-core:bootRun```. 
+
+The Valtimo backend api is now available at http://localhost:8080 . In order to work with it, you will need a running frontend implementation. See the next step.
+
+#### Valtimo Frontend
+
+The Git repository for running a frontend implementation can be found here: [Valtimo frontend template](https://github.com/valtimo-platform/valtimo-frontend-template). The repository includes the instructions for running the frontend. 
+
+

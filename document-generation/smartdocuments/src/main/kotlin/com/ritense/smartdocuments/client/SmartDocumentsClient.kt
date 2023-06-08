@@ -23,12 +23,13 @@ import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.FileStreamResponse
 import com.ritense.smartdocuments.domain.FilesResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.io.SubInputStream
+import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.text.StringEscapeUtils
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.codec.ClientCodecConfigurer
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
@@ -39,10 +40,8 @@ import org.springframework.web.reactive.function.client.bodyToFlux
 import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
-import java.io.Writer
 import java.util.Base64
 import java.util.UUID
-import java.util.concurrent.Executors
 
 class SmartDocumentsClient(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
@@ -56,7 +55,7 @@ class SmartDocumentsClient(
     ): FilesResponse {
         return webClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
-            .contentType(APPLICATION_JSON)
+            .contentType(APPLICATION_JSON_UTF8)
             .bodyValue(fixRequest(smartDocumentsRequest))
             .retrieve()
             .bodyToMono(FilesResponse::class.java)
@@ -73,7 +72,7 @@ class SmartDocumentsClient(
 
         val bodyFlux = webClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
-            .contentType(APPLICATION_JSON)
+            .contentType(APPLICATION_JSON_UTF8)
             .bodyValue(fixRequest(smartDocumentsRequest))
             .retrieve()
             .bodyToFlux<DataBuffer>()
@@ -95,7 +94,7 @@ class SmartDocumentsClient(
         return FileStreamResponse(
             parsedResponse.fileName,
             FilenameUtils.getExtension(parsedResponse.fileName),
-            Base64.getDecoder().wrap(documentDataIn)
+            documentDataIn
         )
     }
 
@@ -175,8 +174,8 @@ class SmartDocumentsClient(
             } else if ("data" == fieldName) {
                 jsonParser.nextToken()
                 documentDataStart = jsonParser.currentLocation.byteOffset
-                jsonParser.nextToken()
-                documentDataEnd = jsonParser.currentLocation.byteOffset - 2
+                jsonParser.finishToken()
+                documentDataEnd = jsonParser.currentLocation.byteOffset - 1
             }
 
             if (correctOutputFormat && fileName != null && documentDataStart != -1L) {
@@ -196,27 +195,10 @@ class SmartDocumentsClient(
         return ParsedResponse(fileName, documentDataStart, documentDataEnd)
     }
 
-    private fun toDocumentDataInputStream(inputStream: InputStream, parsedResponse: ParsedResponse): InputStream {
-        val documentDataOut = PipedOutputStream()
-        val documentDataIn = PipedInputStream(documentDataOut)
-        val documentDataOutWriter = documentDataOut.writer()
-        Executors.newSingleThreadExecutor().execute {
-            write(documentDataOutWriter, inputStream, parsedResponse.documentDataStart, parsedResponse.documentDataEnd)
-            documentDataOutWriter.close()
-            inputStream.close()
-        }
-        return documentDataIn
-    }
-
-    private fun write(outputWriter: Writer, inputStream: InputStream, startByteOffset: Long, endByteOffset: Long) {
-        inputStream.skipNBytes(startByteOffset)
-        var bytePointer = startByteOffset
-        while (bytePointer < endByteOffset) {
-            val buffer = inputStream.readNBytes((endByteOffset - bytePointer).toInt().coerceAtMost(1024))
-            outputWriter.write(StringEscapeUtils.unescapeJson(String(buffer)))
-            bytePointer += buffer.size
-        }
-        outputWriter.flush()
+    private fun toDocumentDataInputStream(jsonIn: InputStream, parsedResponse: ParsedResponse): InputStream {
+        val documentDataIn = SubInputStream(jsonIn, parsedResponse.documentDataStart, parsedResponse.documentDataEnd)
+        val unescapedIn = UnicodeUnescapeInputStream(documentDataIn)
+        return Base64.getDecoder().wrap(unescapedIn)
     }
 
     private data class ParsedResponse(

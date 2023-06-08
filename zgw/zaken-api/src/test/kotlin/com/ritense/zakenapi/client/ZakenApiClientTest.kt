@@ -18,6 +18,7 @@ package com.ritense.zakenapi.client
 
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.ZakenApiAuthentication
+import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.IndicatieMachtiging
 import com.ritense.zakenapi.domain.rol.Rol
@@ -25,7 +26,9 @@ import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.domain.rol.ZaakRolOmschrijving
+import com.ritense.zgw.Rsin
 import java.net.URI
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -428,6 +431,42 @@ internal class ZakenApiClientTest {
         assertEquals("statutaireNaam", betrokkeneIdentificatie.statutaireNaam)
         assertEquals("besloten_vennootschap", betrokkeneIdentificatie.innRechtsvorm)
         assertEquals("bezoekadres", betrokkeneIdentificatie.bezoekadres)
+    }
+
+    @Test
+    fun `should send get zaak request and parse response`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder)
+
+        val responseBody = """
+            {
+                "url": "https://example.com",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "bronorganisatie": "002564440",
+                "zaaktype": "https://example.com",
+                "verantwoordelijkeOrganisatie": "002564440",
+                "startdatum": "2019-08-24"
+            }
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val result = client.getZaak(
+            TestAuthentication(),
+            URI(mockApi.url("/").toString())
+        )
+
+        val recordedRequest = mockApi.takeRequest()
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+
+        assertEquals("https://example.com", result.url.toString())
+        assertEquals("095be615-a8ad-4c33-8e9c-c7612fbf6c9f", result.uuid.toString())
+        assertEquals("002564440", result.bronorganisatie.toString())
+        assertEquals("https://example.com", result.zaaktype.toString())
+        assertEquals("002564440", result.verantwoordelijkeOrganisatie.toString())
+        assertEquals("2019-08-24", result.startdatum.toString())
+
     }
 
     private fun mockResponse(body: String): MockResponse {

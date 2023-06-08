@@ -18,6 +18,8 @@ package com.ritense.zakenapi.web.rest
 
 import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.domain.RelatedFileDto
+import com.ritense.zakenapi.domain.ZaakResponse
+import com.ritense.zgw.Rsin
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,7 +35,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.net.URI
+import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -90,4 +94,36 @@ class ZaakDocumentResourceTest : BaseIntegrationTest() {
         createdBy = "y",
         pluginConfigurationId = UUID.fromString("1f925112-f090-404a-bee7-b20fd8047a72"),
     )
+
+    @Test
+    fun `should get zaak by document id`() {
+        val documentId = UUID.randomUUID()
+
+        val zaakId = UUID.randomUUID()
+        val zaak = ZaakResponse(
+            url = URI("https://localhost/$zaakId"),
+            uuid = zaakId,
+            bronorganisatie = Rsin("002564440"),
+            zaaktype = URI("http://localhost/zaaktype"),
+            verantwoordelijkeOrganisatie = Rsin("002564440"),
+            startdatum = LocalDate.now()
+        )
+        doReturn(zaak).whenever(zaakDocumentService).getZaakByDocumentId(documentId)
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/api/v1/zaken-api/document/{documentId}/zaak", documentId)
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$.url").value(zaak.url.toString()))
+            .andExpect(jsonPath("$.uuid").value(zaakId.toString()))
+            .andExpect(jsonPath("$.bronorganisatie").value(zaak.bronorganisatie.toString()))
+            .andExpect(jsonPath("$.zaaktype").value(zaak.zaaktype.toString()))
+            .andExpect(jsonPath("$.verantwoordelijkeOrganisatie").value(zaak.verantwoordelijkeOrganisatie.toString()))
+            .andExpect(jsonPath("$.startdatum").value(zaak.startdatum.toString()))
+    }
 }

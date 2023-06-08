@@ -17,7 +17,6 @@
 package com.ritense.valtimo.formflow
 
 import com.ritense.authorization.AuthorizationService
-import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag
@@ -36,9 +35,6 @@ class BaseIntegrationTest : BaseTest() {
 
     @MockBean
     lateinit var userManagementService: UserManagementService
-
-    @MockBean
-    lateinit var resourceService: ResourceService
 
     // TODO: remove authorization service mocking when call to run without permissions is added
     @MockBean

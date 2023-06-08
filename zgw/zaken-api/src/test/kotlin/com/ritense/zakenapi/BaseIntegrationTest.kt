@@ -26,6 +26,7 @@ import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.zakenapi.service.ZaakDocumentService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.mock.mockito.SpyBean
@@ -47,16 +48,13 @@ class BaseIntegrationTest {
     @MockBean
     lateinit var userManagementService: UserManagementService
 
-    @MockBean
+    @Autowired
     lateinit var zaakUrlProvider: ZaakUrlProvider
-
-    @MockBean
-    lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
 
     @MockBean
     lateinit var resourceProvider: ResourceProvider
 
-    @MockBean
+    @Autowired
     lateinit var resourceService: ResourceService
 
     @SpyBean

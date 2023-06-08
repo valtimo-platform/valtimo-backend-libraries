@@ -1,0 +1,4 @@
+valtimo:
+  resource:
+    temp:
+      directory: /my/non-existing/directory/for/temporary/files

@@ -26,6 +26,7 @@ import com.ritense.zakenapi.ResourceProvider
 import okhttp3.mockwebserver.MockResponse
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -44,7 +45,7 @@ abstract class BaseIntegrationTest : BaseTest() {
     @MockBean
     lateinit var userManagementService: UserManagementService
 
-    @MockBean
+    @Autowired
     lateinit var klantService: KlantService
 
     @MockBean

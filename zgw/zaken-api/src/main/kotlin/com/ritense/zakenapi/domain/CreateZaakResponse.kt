@@ -16,7 +16,7 @@
 
 package com.ritense.zakenapi.domain
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.ritense.zgw.Rsin
 import com.ritense.zgw.domain.Archiefnominatie
 import com.ritense.zgw.domain.Vertrouwelijkheid
@@ -24,6 +24,8 @@ import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 
+@Deprecated("Marked for removal since 10.7.0. Will be replaced by ZaakResponse")
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class CreateZaakResponse(
     val url: URI,
     val uuid: UUID,
@@ -42,8 +44,7 @@ data class CreateZaakResponse(
     val communicatiekanaal: URI? = null,
     val productenOfDiensten: List<URI>? = null,
     val vertrouwelijkheidaanduiding: Vertrouwelijkheid? = null,
-    @JsonProperty("betalingsindicatie")
-    private val betalingsindicatieString: String? = null,
+    val betalingsindicatie: Betalingsindicatie? = null,
     val betalingsindicatieWeergave: String? = null,
     val laatsteBetaaldatum: LocalDate? = null,
     val zaakgeometrie: Geometry? = null,
@@ -61,8 +62,4 @@ data class CreateZaakResponse(
     val archiefactiedatum: LocalDate? = null,
     val resultaat: URI? = null,
     val opdrachtgevendeOrganisatie: String? = null,
-) {
-    val betalingsindicatie = betalingsindicatieString?.let {betalingsindicatie ->
-        Betalingsindicatie.values().find {it.key == betalingsindicatie}
-    }
-}
+)

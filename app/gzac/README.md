@@ -70,7 +70,7 @@ Create a token for the access under Home › API authorizations > Token authoriz
 
 Admin can be accessed on http://localhost:8002.
 
-By default an admin user is created with the following credentials
+By default, an admin user is created with the following credentials
 
 >Username: admin  
 >Password: admin

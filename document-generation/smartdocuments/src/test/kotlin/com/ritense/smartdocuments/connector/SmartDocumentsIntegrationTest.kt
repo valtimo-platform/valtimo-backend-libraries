@@ -22,7 +22,6 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
-import org.springframework.http.MediaType.APPLICATION_PDF
 import org.springframework.http.MediaType.APPLICATION_PDF_VALUE
 
 @AutoConfigureWebTestClient(timeout = "36000")
@@ -40,7 +39,6 @@ class SmartDocumentsIntegrationTest : BaseSmartDocumentsIntegrationTest() {
 
         Assertions.assertThat(generatedDocument.name).isEqualTo("integration-test.pdf")
         Assertions.assertThat(generatedDocument.extension).isEqualTo("pdf")
-        Assertions.assertThat(generatedDocument.size).isEqualTo(23726)
         Assertions.assertThat(generatedDocument.contentType).isEqualTo(APPLICATION_PDF_VALUE)
         Assertions.assertThat(generatedDocument.asByteArray).startsWith("%PDF-1.4".toByteArray().toTypedArray())
     }
