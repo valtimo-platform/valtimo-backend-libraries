@@ -31,6 +31,7 @@ import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.repository.SearchFieldRepository;
@@ -181,6 +182,13 @@ public abstract class BaseIntegrationTest extends BaseTest {
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
                 Action.ASSIGN,
+                new ConditionContainer(Collections.emptyList()),
+                FULL_ACCESS_ROLE
+            ),
+            new Permission(
+                UUID.randomUUID(),
+                SearchField.class,
+                Action.LIST_VIEW,
                 new ConditionContainer(Collections.emptyList()),
                 FULL_ACCESS_ROLE
             )

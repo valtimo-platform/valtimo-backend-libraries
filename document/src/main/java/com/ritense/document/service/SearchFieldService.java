@@ -28,6 +28,8 @@ import com.ritense.document.domain.impl.searchfield.SearchFieldMatchType;
 import com.ritense.document.exception.InvalidSearchFieldException;
 import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.web.rest.impl.SearchFieldMapper;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.zalando.problem.Status;
 
 import java.util.Collections;
@@ -35,12 +37,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import static com.ritense.document.repository.SearchFieldRepository.byIdDocumentDefinitionName;
 
 public class SearchFieldService {
 
     private final SearchFieldRepository searchFieldRepository;
     private final DocumentDefinitionService documentDefinitionService;
-
     private final AuthorizationService authorizationService;
 
     public SearchFieldService(
@@ -69,8 +71,18 @@ public class SearchFieldService {
     }
 
     public List<SearchField> getSearchFields(String documentDefinitionName) {
-        // TODO: (LIST_VIEW solve here)/(or ADMIN role, so solve in endpoint, consider making separate endpoint)
-        return searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(documentDefinitionName);
+        Specification<SearchField> authorizationSpec = authorizationService.getAuthorizationSpecification(
+            new AuthorizationRequest<>(
+                SearchField.class,
+                Action.LIST_VIEW
+            ),
+            null
+        );
+
+        return searchFieldRepository.findAll(
+            authorizationSpec.and(byIdDocumentDefinitionName(documentDefinitionName)),
+            Sort.by(Sort.Order.asc("order"))
+        );
     }
 
     public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {

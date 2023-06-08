@@ -38,7 +38,8 @@ public class DocumentSearchHttpSecurityConfigurer implements HttpSecurityConfigu
                 .antMatchers(POST, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(USER)
                 .antMatchers(PUT, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN);
+                .antMatchers(DELETE, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/admin/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }
