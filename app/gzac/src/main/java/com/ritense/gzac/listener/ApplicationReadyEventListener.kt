@@ -376,7 +376,7 @@ class ApplicationReadyEventListener(
                     action = JsonSchemaDocumentActionProvider.LIST_VIEW,
                     conditionContainer = ConditionContainer(
                         listOf(
-                            FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
+                            FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
                         )
                     ),
                     roleKey = USER
@@ -401,7 +401,7 @@ class ApplicationReadyEventListener(
                     action = JsonSchemaDocumentActionProvider.VIEW,
                     conditionContainer = ConditionContainer(
                         listOf(
-                            FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
+                            FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
                         )
                     ),
                     roleKey = USER
@@ -411,7 +411,7 @@ class ApplicationReadyEventListener(
                     action = JsonSchemaDocumentActionProvider.CLAIM,
                     conditionContainer = ConditionContainer(
                         listOf(
-                            FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
+                            FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
                         )
                     ),
                     roleKey = USER
