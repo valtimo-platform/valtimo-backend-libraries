@@ -376,7 +376,7 @@ class ApplicationReadyEventListener(
                     action = JsonSchemaDocumentActionProvider.LIST_VIEW,
                     conditionContainer = ConditionContainer(
                         listOf(
-                            FieldPermissionCondition("assigneeFullName", "James Vance")
+                            FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
                         )
                     ),
                     roleKey = USER
@@ -391,7 +391,7 @@ class ApplicationReadyEventListener(
                                 "$.height",
                                 PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java
                             ),
-                            FieldPermissionCondition("documentDefinitionId.name", "leningen")
+                            FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen")
                         )
                     ),
                     roleKey = USER
@@ -401,7 +401,7 @@ class ApplicationReadyEventListener(
                     action = JsonSchemaDocumentActionProvider.VIEW,
                     conditionContainer = ConditionContainer(
                         listOf(
-                            FieldPermissionCondition("assigneeFullName", "James Vance")
+                            FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
                         )
                     ),
                     roleKey = USER
@@ -411,7 +411,7 @@ class ApplicationReadyEventListener(
                     action = JsonSchemaDocumentActionProvider.CLAIM,
                     conditionContainer = ConditionContainer(
                         listOf(
-                            FieldPermissionCondition("assigneeFullName", "James Vance")
+                            FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
                         )
                     ),
                     roleKey = USER
@@ -421,7 +421,7 @@ class ApplicationReadyEventListener(
                     action = SearchFieldActionProvider.LIST_VIEW,
                     conditionContainer = ConditionContainer(
                         listOf(
-                            FieldPermissionCondition("id.documentDefinitionName", "leningen")
+                            FieldPermissionCondition("id.documentDefinitionName", EQUAL_TO, "leningen")
                         )
                     ),
                     roleKey = ADMIN
