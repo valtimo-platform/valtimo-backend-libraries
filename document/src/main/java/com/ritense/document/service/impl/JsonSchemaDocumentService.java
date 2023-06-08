@@ -22,6 +22,7 @@ import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.AuthorizationSpecification;
+import com.ritense.authorization.permission.Permission;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -63,6 +64,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CLAIM;
@@ -537,16 +540,24 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public List<NamedUser> getCandidateUsers(Document.Id documentId) {
-        // TODO: Determine permissions
-        // TODO: ASSIGN
-
-        return userManagementService.findNamedUserByRoles(getDocumentRoles(documentId));
-    }
-
-    private Set<String> getDocumentRoles(Document.Id documentId) {
-        // TODO determine permissions (and thus roles) based on document ID
         var document = AuthorizationContext.runWithoutAuthorization(() -> get(documentId.toString()));
-        return documentDefinitionService.getDocumentDefinitionRoles(document.definitionId().name());
+        // TODO: Write tests
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                Action.ASSIGN
+            ),
+            document,
+            null
+        );
+
+        Set<String> roles = authorizationService
+            .getPermissions(JsonSchemaDocument.class, Action.ASSIGNABLE)
+            .stream()
+            .map(Permission::getRoleKey)
+            .collect(Collectors.toSet());
+
+        return userManagementService.findNamedUserByRoles(roles);
     }
 
 }

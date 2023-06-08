@@ -17,9 +17,10 @@
 package com.ritense.document.autoconfiguration
 
 import com.ritense.authorization.AuthorizationSpecificationFactory
-import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.document.JsonSchemaDocumentSpecificationFactory
+import com.ritense.document.SearchFieldSpecificationFactory
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.searchfield.SearchField
 import com.ritense.document.listener.DocumentEventListener
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
@@ -42,5 +43,13 @@ class DocumentEventAutoConfiguration {
         queryDialectHelper: QueryDialectHelper
     ): AuthorizationSpecificationFactory<JsonSchemaDocument> {
         return JsonSchemaDocumentSpecificationFactory(queryDialectHelper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SearchFieldSpecificationFactory::class)
+    fun searchFieldSpecificationFactory(
+        queryDialectHelper: QueryDialectHelper
+    ): AuthorizationSpecificationFactory<SearchField> {
+        return SearchFieldSpecificationFactory(queryDialectHelper)
     }
 }

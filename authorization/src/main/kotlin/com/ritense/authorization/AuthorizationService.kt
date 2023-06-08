@@ -30,6 +30,8 @@ interface AuthorizationService {
         permissions: List<Permission>? = null
     ): AuthorizationSpecification<T>
 
+    fun getPermissions(resourceType: Class<*>, action: Action): List<Permission>
+
     fun <FROM, TO> getMapper(from: Class<FROM>, to: Class<TO>): AuthorizationEntityMapper<FROM, TO>
 
     fun <T : Any> getAvailableActionsForResource(clazz: Class<T>): List<Action<T>>

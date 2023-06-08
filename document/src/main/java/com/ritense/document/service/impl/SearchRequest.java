@@ -24,6 +24,7 @@ public class SearchRequest {
     private String createdBy;
     private String globalSearchFilter;
     private Long sequence;
+    private String assigneeId;
     private List<SearchCriteria> otherFilters;
 
     public SearchRequest() {
@@ -43,6 +44,14 @@ public class SearchRequest {
 
     public Long getSequence() {
         return this.sequence;
+    }
+
+    public String getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setAssigneeId(String assigneeId) {
+        this.assigneeId = assigneeId;
     }
 
     public List<SearchCriteria> getOtherFilters() {
@@ -74,12 +83,12 @@ public class SearchRequest {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SearchRequest that = (SearchRequest) o;
-        return Objects.equals(getDocumentDefinitionName(), that.getDocumentDefinitionName()) && Objects.equals(getCreatedBy(), that.getCreatedBy()) && Objects.equals(getGlobalSearchFilter(), that.getGlobalSearchFilter()) && Objects.equals(getSequence(), that.getSequence()) && Objects.equals(getOtherFilters(), that.getOtherFilters());
+        return Objects.equals(getDocumentDefinitionName(), that.getDocumentDefinitionName()) && Objects.equals(getCreatedBy(), that.getCreatedBy()) && Objects.equals(getGlobalSearchFilter(), that.getGlobalSearchFilter()) && Objects.equals(getSequence(), that.getSequence()) && Objects.equals(getAssigneeId(), that.getAssigneeId()) && Objects.equals(getOtherFilters(), that.getOtherFilters());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getDocumentDefinitionName(), getCreatedBy(), getGlobalSearchFilter(), getSequence(), getOtherFilters());
+        return Objects.hash(getDocumentDefinitionName(), getCreatedBy(), getGlobalSearchFilter(), getSequence(), getAssigneeId(), getOtherFilters());
     }
 
     @Override
@@ -89,6 +98,7 @@ public class SearchRequest {
             ", createdBy='" + createdBy + '\'' +
             ", globalSearchFilter='" + globalSearchFilter + '\'' +
             ", sequence=" + sequence +
+            ", assigneeId=" + assigneeId +
             ", otherFilters=" + otherFilters +
             '}';
     }

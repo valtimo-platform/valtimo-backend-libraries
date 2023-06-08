@@ -27,7 +27,9 @@ public interface DocumentSearchFields {
         String documentDefinitionName,
         SearchFieldDto searchField);
 
-    ResponseEntity<List<SearchFieldDto>> getSearchField(String documentDefinitionName);
+    ResponseEntity<List<SearchFieldDto>> getSearchFields(String documentDefinitionName);
+
+    ResponseEntity<List<SearchFieldDto>> getAdminSearchFields(String documentDefinitionName);
 
     ResponseEntity<Void> updateSearchField(
         String documentDefinitionName,

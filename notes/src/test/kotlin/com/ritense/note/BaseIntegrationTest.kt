@@ -16,9 +16,12 @@
 
 package com.ritense.note
 
-import com.ritense.authorization.AuthorizationRequest
-import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.Action
+import com.ritense.authorization.PermissionRepository
+import com.ritense.authorization.Role
+import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.permission.ConditionContainer
+import com.ritense.authorization.permission.Permission
 import com.ritense.note.domain.Note
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
@@ -26,16 +29,11 @@ import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import javax.persistence.EntityManager
-import javax.persistence.criteria.CriteriaBuilder
+import java.util.UUID
+import javax.inject.Inject
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
@@ -48,7 +46,29 @@ abstract class BaseIntegrationTest {
     @MockBean
     lateinit var mailSender: MailSender
 
+    @Inject
+    lateinit var roleRepository: RoleRepository
+
+    @Inject
+    lateinit var permissionRepository: PermissionRepository
+
     @BeforeEach
     fun beforeEachBase() {
+        roleRepository.save(Role(FULL_ACCESS_ROLE))
+
+        val permissions: List<Permission> = listOf(
+            Permission(
+                UUID.randomUUID(),
+                Note::class.java,
+                Action.VIEW,
+                ConditionContainer(listOf()),
+                FULL_ACCESS_ROLE
+            )
+        )
+        permissionRepository.saveAllAndFlush(permissions)
+    }
+
+    companion object {
+        const val FULL_ACCESS_ROLE = "FULL_ACCESS_ROLE"
     }
 }

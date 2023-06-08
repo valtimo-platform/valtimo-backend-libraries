@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -186,6 +187,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldRetrieveSearchFieldsByDocumentDefinitionName() throws Exception {
         var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
         mockMvc.perform(
@@ -207,6 +209,48 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$[0].fieldType", is(SINGLE.toString())))
                 .andExpect(jsonPath("$[0].matchType", is(EXACT.toString())))
                 .andExpect(jsonPath("$[0].title", is("aTitle")));
+    }
+
+    @Test
+    void shouldNotRetrieveSearchFieldsWithoutPermissions() throws Exception {
+        var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
+        mockMvc.perform(
+                post("/api/v1/document-search/{documentDefinitionName}/fields",
+                    DOCUMENT_DEFINITION_NAME)
+                    .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk());
+        mockMvc.perform(
+                get("/api/v1/document-search/{documentDefinitionName}/fields",
+                    DOCUMENT_DEFINITION_NAME))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    void shouldRetrieveSearchFieldsByDocumentDefinitionNameForAdmin() throws Exception {
+        var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
+        mockMvc.perform(
+                post("/api/v1/document-search/{documentDefinitionName}/fields",
+                    DOCUMENT_DEFINITION_NAME)
+                    .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk());
+        mockMvc.perform(
+                get("/api/v1/admin/document-search/{documentDefinitionName}/fields",
+                    DOCUMENT_DEFINITION_NAME))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].key", is("street")))
+            .andExpect(jsonPath("$[0].path", is("doc:street")))
+            .andExpect(jsonPath("$[0].dataType", is(TEXT.toString())))
+            .andExpect(jsonPath("$[0].fieldType", is(SINGLE.toString())))
+            .andExpect(jsonPath("$[0].matchType", is(EXACT.toString())))
+            .andExpect(jsonPath("$[0].title", is("aTitle")));
     }
 
     @Test
