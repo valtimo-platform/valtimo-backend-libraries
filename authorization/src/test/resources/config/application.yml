@@ -2,7 +2,7 @@ spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:3343/authorization-test
+        url: jdbc:postgresql://localhost:3344/authorization-test
         username: valtimo
         password: password
         hikari:
