@@ -125,7 +125,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
         authorizationService.requirePermission(
             new AuthorizationRequest<>(
                 JsonSchemaDocumentSnapshot.class,
-                Action.Companion.deny()
+                Action.deny()
             ),
             null,
             null

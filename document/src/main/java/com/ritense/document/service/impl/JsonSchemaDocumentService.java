@@ -68,6 +68,7 @@ import java.util.stream.Collectors;
 
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGNABLE;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CLAIM;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.DELETE;
@@ -296,7 +297,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             .requirePermission(
                 new AuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    Action.Companion.deny()
+                    Action.deny()
                 ),
                 null,
                 null
@@ -545,14 +546,14 @@ public class JsonSchemaDocumentService implements DocumentService {
         authorizationService.requirePermission(
             new AuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                Action.ASSIGN
+                ASSIGN
             ),
             document,
             null
         );
 
         Set<String> roles = authorizationService
-            .getPermissions(JsonSchemaDocument.class, Action.ASSIGNABLE)
+            .getPermissions(JsonSchemaDocument.class, ASSIGNABLE)
             .stream()
             .map(Permission::getRoleKey)
             .collect(Collectors.toSet());

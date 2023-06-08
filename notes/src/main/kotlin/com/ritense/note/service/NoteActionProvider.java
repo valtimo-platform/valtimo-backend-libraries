@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.note.service;
 
-import com.ritense.authorization.permission.Permission
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
+import com.ritense.authorization.Action;
+import com.ritense.authorization.ResourceActionProvider;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.note.domain.Note;
+import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
-interface PermissionRepository : JpaRepository<Permission, UUID> {
-    fun findAllByRoleKeyIn(roleKeys: Collection<String>): List<Permission>
+public class NoteActionProvider implements ResourceActionProvider<Note> {
 
-    fun findAllByResourceTypeAndAction(resourceType: Class<*>, action: Action<*>): List<Permission>
+    public static Action<Note> VIEW = new Action<>(Action.VIEW);
+
+    @NotNull
+    @Override
+    public List<Action<Note>> getAvailableActions() {
+        return List.of(VIEW);
+    }
 }

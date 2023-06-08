@@ -17,7 +17,6 @@
 package com.ritense.formlink.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
@@ -41,14 +40,12 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaTaskService;
-import java.util.List;
-import java.util.Map;
+import java.util.UUID;
+import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
-
-import javax.transaction.Transactional;
-import java.util.UUID;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
 public class CamundaFormAssociationSubmissionService implements FormAssociationSubmissionService {
@@ -116,7 +113,7 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                     .requirePermission(
                         new AuthorizationRequest<>(
                             JsonSchemaDocument.class,
-                            Action.CREATE
+                            CREATE
                         ),
                         document,
                         null

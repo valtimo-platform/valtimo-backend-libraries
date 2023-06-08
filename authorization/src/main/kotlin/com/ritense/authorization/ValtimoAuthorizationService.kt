@@ -48,7 +48,7 @@ class ValtimoAuthorizationService(
         return factory.create(context, usedPermissions)
     }
 
-    override fun getPermissions(resourceType: Class<*>, action: Action): List<Permission> {
+    override fun getPermissions(resourceType: Class<*>, action: Action<*>): List<Permission> {
         return permissionRepository.findAllByResourceTypeAndAction(resourceType, action)
     }
 

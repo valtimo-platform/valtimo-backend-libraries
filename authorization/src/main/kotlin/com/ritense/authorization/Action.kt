@@ -25,6 +25,7 @@ data class Action<T>(
     val key: String
 ) {
     companion object {
+        @JvmStatic
         fun <T> deny(): Action<T>{
             return Action(DENY)
         }

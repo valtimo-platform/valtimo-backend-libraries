@@ -55,7 +55,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
     @Test
     fun `should throw RuntimeException when action is DENY`() {
         assertThrows<AccessDeniedException> {
-            requirePermission(Action(Action.DENY))
+            requirePermission(Action.deny())
         }
     }
 
@@ -63,7 +63,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
     fun `should succeed when ran without authorization when action is DENY`() {
         assertDoesNotThrow {
             AuthorizationContext.runWithoutAuthorization {
-                requirePermission(Action(Action.DENY))
+                requirePermission(Action.deny())
             }
         }
     }
