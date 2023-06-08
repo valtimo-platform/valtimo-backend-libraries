@@ -19,22 +19,32 @@ package com.ritense.authorization.permission
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.authorization.UserManagementServiceHolder
+import com.ritense.authorization.permission.PermissionConditionOperator.EQUAL_TO
+import com.ritense.authorization.permission.PermissionConditionOperator.GREATER_THAN
+import com.ritense.authorization.permission.PermissionConditionOperator.LESS_THAN
+import com.ritense.authorization.permission.PermissionConditionOperator.NOT_EQUAL_TO
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
-import java.lang.NullPointerException
-import kotlin.test.assertEquals
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
+import java.time.LocalDate
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class FieldPermissionConditionTest {
     lateinit var mapper: ObjectMapper
     lateinit var entity: TestEntity
-    lateinit var conditionTemplate: FieldPermissionCondition
+    lateinit var conditionTemplate: FieldPermissionCondition<Int>
 
     @BeforeEach
     fun setup() {
@@ -43,40 +53,97 @@ class FieldPermissionConditionTest {
         }
         //TODO: The entity or child objects can't be a Map, don't we want to support this?
         entity = TestEntity(
-            TestChildEntity(true)
+            TestChildEntity(100)
         )
 
-        conditionTemplate = FieldPermissionCondition("child.property", true)
+        conditionTemplate = FieldPermissionCondition("child.property", EQUAL_TO, 100)
+
+        val userManagementService = mock<UserManagementService>(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
+        whenever(userManagementService.currentUser.id).thenReturn("91bb73e1-5f5b-46e3-8c60-ca424a5fcfcd")
+        whenever(userManagementService.currentUser.email).thenReturn("example@ritense.com")
+        UserManagementServiceHolder(userManagementService)
+    }
+
+    @Test
+    fun `should pass validation with NOT_EQUAL_TO comparator`() {
+        val condition = FieldPermissionCondition("child.property", NOT_EQUAL_TO, 99)
+        val result = condition.isValid(entity)
+        assertTrue(result)
     }
 
     @Test
     fun `should pass validation when the property value is equal`() {
         val condition = conditionTemplate
         val result = condition.isValid(entity)
-        assertEquals(true, result)
+        assertTrue(result)
+    }
+
+    @Test
+    fun `should pass validation with GREATER_THAN comparator`() {
+        val condition = FieldPermissionCondition("child.property", GREATER_THAN, 99)
+        val result = condition.isValid(entity)
+        assertTrue(result)
+    }
+
+    @Test
+    fun `should pass validation with LESS_THAN comparator`() {
+        val condition = FieldPermissionCondition("child.property", LESS_THAN, 101)
+        val result = condition.isValid(entity)
+        assertTrue(result)
     }
 
     @Test
     fun `should fail validation when the property value is not equal`() {
-        val condition = conditionTemplate.copy(value = false)
+        val condition = conditionTemplate.copy(value = 99)
         val result = condition.isValid(entity)
-        assertEquals(false, result)
+        assertFalse(result)
     }
 
     @Test
     fun `should fail validation when the property value type is different`() {
-        val condition = conditionTemplate.copy(value = "test")
+        val condition = FieldPermissionCondition("child.property", EQUAL_TO, "test")
         val result = condition.isValid(entity)
-        assertEquals(false, result)
+        assertFalse(result)
     }
+
+    @Test
+    fun `should pass validation with property LocalDateTime`() {
+        val entity = TestEntity(
+            TestChildEntity(LocalDate.parse("2000-01-01"))
+        )
+        val condition = FieldPermissionCondition("child.property", LESS_THAN, LocalDate.parse("2023-05-25"))
+        val result = condition.isValid(entity)
+        assertTrue(result)
+    }
+
     @Test
     fun `should fail validation when property value is null`() {
         val entity = TestEntity(
             TestChildEntity(null)
         )
-        val condition = conditionTemplate.copy(value = "test")
+        val condition = conditionTemplate.copy(value = 100)
         val result = condition.isValid(entity)
-        assertEquals(false, result)
+        assertFalse(result)
+    }
+
+    @Test
+    fun `should pass validation with resolved placeholder ${currentUserEmail}`() {
+        val entity = TestEntity(
+            TestChildEntity("example@ritense.com")
+        )
+        val condition = FieldPermissionCondition("child.property", NOT_EQUAL_TO, "\${currentUserEmail}")
+        val result = condition.isValid(entity)
+        assertTrue(result)
+    }
+
+    @Test
+    fun `should pass validation with resolved placeholder ${currentUserId}`() {
+        val entity = TestEntity(
+            TestChildEntity("91bb73e1-5f5b-46e3-8c60-ca424a5fcfcd")
+        )
+        val condition = FieldPermissionCondition("child.property", NOT_EQUAL_TO, "\${currentUserId}")
+        val result = condition.isValid(entity)
+        assertTrue(result)
     }
 
     @Test
@@ -86,9 +153,9 @@ class FieldPermissionConditionTest {
         val entity = TestEntity(
             TestChildEntity(null)
         )
-        val condition = conditionTemplate.copy(value = "null")
+        val condition = FieldPermissionCondition("child.property", EQUAL_TO, "null")
         val result = condition.isValid(entity)
-        assertEquals(false, result)
+        assertFalse(result)
     }
 
     @Test
@@ -100,7 +167,7 @@ class FieldPermissionConditionTest {
         )
         val condition = conditionTemplate.copy(value = null)
         val result = condition.isValid(entity)
-        assertEquals(true, result)
+        assertTrue(result)
     }
 
     @Test
@@ -130,7 +197,8 @@ class FieldPermissionConditionTest {
             {
               "type": "${PermissionConditionType.FIELD.value}",
               "field": "child.property",
-              "value": true
+              "operator": "==",
+              "value": 100
             }
         """.trimIndent(), json, JSONCompareMode.NON_EXTENSIBLE
         )
@@ -143,15 +211,17 @@ class FieldPermissionConditionTest {
             {
               "type": "field",
               "field": "test-field",
+              "operator": ">",
               "value": true
             }
         """.trimIndent()
         )
 
         MatcherAssert.assertThat(result, Matchers.instanceOf(FieldPermissionCondition::class.java))
-        result as FieldPermissionCondition
+        result as FieldPermissionCondition<*>
         MatcherAssert.assertThat(result.type, Matchers.equalTo(PermissionConditionType.FIELD))
         MatcherAssert.assertThat(result.field, Matchers.equalTo("test-field"))
+        MatcherAssert.assertThat(result.operator, Matchers.equalTo(GREATER_THAN))
         MatcherAssert.assertThat(result.value, Matchers.equalTo(true))
     }
 }

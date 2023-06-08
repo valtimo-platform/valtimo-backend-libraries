@@ -25,7 +25,7 @@ abstract class AnnotatedClassResolver {
         val pluginCategoryClasses = ClassGraph()
             .enableClassInfo()
             .enableAnnotationInfo()
-            .scan()
+            .scan(1)
             .getClassesWithAnnotation(T::class.java)
 
         return pluginCategoryClasses.filter {

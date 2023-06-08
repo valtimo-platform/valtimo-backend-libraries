@@ -14,23 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.web.rest;
+package com.ritense.objectsapi.web.rest
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-public class CoreSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTest {
-
-    @Override
-    protected Set<String> getIgnoredPathPatterns() {
-        return new HashSet<>(
-            Arrays.asList(
-                "/api/v1/public/process/definition/{processDefinitionKey}/start-form",
-                "/api/v1/ping",
-                "/api/v1/mandrill/webhook"
-            )
-        );
-    }
-
-}
+class ObjectsApiSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.objectsapi",
+    ignoredPathPatterns = setOf("POST /api/v1/notification")
+)

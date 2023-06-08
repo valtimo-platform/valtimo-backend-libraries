@@ -16,7 +16,6 @@
 
 package com.ritense.connector
 
-import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
 import com.ritense.connector.domain.Connector
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import org.junit.jupiter.api.Tag
@@ -29,9 +28,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
 @Tag("integration")
 abstract class BaseIntegrationTest {
-
-    @MockBean
-    lateinit var connectorApplicationReadyEventListener: ConnectorApplicationReadyEventListener
 
     @MockBean(name = "test-connector")
     lateinit var testConnector: Connector

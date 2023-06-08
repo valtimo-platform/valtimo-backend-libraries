@@ -16,9 +16,12 @@
 
 package com.ritense.documentenapi
 
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.resource.service.ResourceService
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.test.mock.mockito.MockBean
 
 @SpringBootApplication
 class TestApplication {
@@ -28,5 +31,12 @@ class TestApplication {
     }
 
     @TestConfiguration
-    class TestConfig
+    class TestConfig {
+
+        @MockBean
+        lateinit var resourceService: ResourceService
+
+        @MockBean
+        lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
+    }
 }

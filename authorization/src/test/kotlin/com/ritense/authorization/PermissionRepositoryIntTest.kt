@@ -16,12 +16,13 @@
 
 package com.ritense.authorization
 
-import com.ritense.authorization.permission.FieldPermissionCondition
-import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.Action.ASSIGN
 import com.ritense.authorization.Action.LIST_VIEW
 import com.ritense.authorization.Action.VIEW
 import com.ritense.authorization.permission.ConditionContainer
+import com.ritense.authorization.permission.FieldPermissionCondition
+import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.permission.PermissionConditionType.FIELD
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -60,6 +61,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
+                    operator = EQUAL_TO,
                     value = "loan"
                 ))
             ),
@@ -75,9 +77,10 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
         assertThat(permissions[0].action).isEqualTo(LIST_VIEW)
         assertThat(permissions[0].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[0].conditionContainer.conditions[0].type).isEqualTo(FIELD)
-        assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition)
-        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition).field).isEqualTo("document.name")
-        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition).value).isEqualTo("loan")
+        assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
+        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).field).isEqualTo("document.name")
+        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).operator).isEqualTo(EQUAL_TO)
+        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).value).isEqualTo("loan")
     }
 
     @Test
@@ -90,6 +93,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
+                    operator = EQUAL_TO,
                     value = "loan"
                 ))
             ),
@@ -102,6 +106,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
+                    operator = EQUAL_TO,
                     value = "loan"
                 ))
             ),
@@ -114,6 +119,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
+                    operator = EQUAL_TO,
                     value = "loan"
                 ))
             ),
@@ -131,17 +137,19 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
         assertThat(permissions[0].action).isEqualTo(LIST_VIEW)
         assertThat(permissions[0].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[0].conditionContainer.conditions[0].type).isEqualTo(FIELD)
-        assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition)
-        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition).field).isEqualTo("document.name")
-        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition).value).isEqualTo("loan")
+        assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
+        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).field).isEqualTo("document.name")
+        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).operator).isEqualTo(EQUAL_TO)
+        assertThat((permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>).value).isEqualTo("loan")
 
         assertThat(permissions[1].id).isNotNull
         assertThat(permissions[1].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
         assertThat(permissions[1].action).isEqualTo(VIEW)
         assertThat(permissions[1].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[1].conditionContainer.conditions[0].type).isEqualTo(FIELD)
-        assertTrue(permissions[1].conditionContainer.conditions[0] is FieldPermissionCondition)
-        assertThat((permissions[1].conditionContainer.conditions[0] as FieldPermissionCondition).field).isEqualTo("document.name")
-        assertThat((permissions[1].conditionContainer.conditions[0] as FieldPermissionCondition).value).isEqualTo("loan")
+        assertTrue(permissions[1].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
+        assertThat((permissions[1].conditionContainer.conditions[0] as FieldPermissionCondition<*>).field).isEqualTo("document.name")
+        assertThat((permissions[1].conditionContainer.conditions[0] as FieldPermissionCondition<*>).operator).isEqualTo(EQUAL_TO)
+        assertThat((permissions[1].conditionContainer.conditions[0] as FieldPermissionCondition<*>).value).isEqualTo("loan")
     }
 }

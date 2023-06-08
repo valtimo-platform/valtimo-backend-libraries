@@ -58,4 +58,8 @@
                                  referencedColumnNames="key"/>
     </changeSet>
 
+    <changeSet author="Ritense" id="5">
+        <delete tableName="permission"/>
+    </changeSet>
+
 </databaseChangeLog>

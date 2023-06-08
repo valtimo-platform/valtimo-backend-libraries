@@ -33,7 +33,7 @@ class CaseDefinitionResourceTest {
     @Test
     fun `should get case settings`() {
         val caseDefinitionName = "name"
-        val caseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, true)
+        val caseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, true, false)
 
         whenever(service.getCaseSettings(caseDefinitionName)).thenReturn(caseDefinitionSettings)
 
@@ -50,6 +50,7 @@ class CaseDefinitionResourceTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
 
         verify(service).getCaseSettings(caseDefinitionName)
     }
@@ -57,8 +58,8 @@ class CaseDefinitionResourceTest {
     @Test
     fun `should update case settings`() {
         val caseDefinitionName = "name"
-        val caseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, false)
-        val caseSettingsDto = CaseSettingsDto(false)
+        val caseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, true, false)
+        val caseSettingsDto = CaseSettingsDto(false,false)
 
         whenever(service.updateCaseSettings(caseDefinitionName, caseSettingsDto)).thenReturn(caseDefinitionSettings)
 
@@ -75,7 +76,8 @@ class CaseDefinitionResourceTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
 
         verify(service).updateCaseSettings(caseDefinitionName, caseSettingsDto)
     }

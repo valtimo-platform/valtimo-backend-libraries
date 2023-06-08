@@ -185,9 +185,7 @@ class PortaaltaakPlugin(
 
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId.id).zaakInstanceUrl
         val zakenPlugin = requireNotNull(
-            pluginService.createInstance(ZakenApiPlugin::class.java) { properties: JsonNode ->
-                zaakUrl.toString().startsWith(properties.get("url").textValue())
-            }
+            pluginService.createInstance(ZakenApiPlugin::class.java, ZakenApiPlugin.findConfigurationByUrl(zaakUrl))
         ) { "No plugin configuration was found for zaak with URL $zaakUrl" }
 
         val initiator = requireNotNull(

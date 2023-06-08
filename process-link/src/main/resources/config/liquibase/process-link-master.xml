@@ -24,5 +24,6 @@
     <property name="uuidType" value="uuid" dbms="postgresql"/>
 
     <include file="changelog/20230327-create-process-link-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230602-fix-actiity-type-call-activity-start.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

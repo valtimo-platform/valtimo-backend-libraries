@@ -16,16 +16,13 @@
 
 package com.ritense.form.web;
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest;
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest;
 import java.util.Set;
 
-public class FormSecuritySmokeIntegrationTest extends CoreSecuritySmokeIntegrationTest {
-
-    @Override
-    protected Set<String> getIgnoredPathPatterns() {
-        final Set<String> ignoredPathPatterns = super.getIgnoredPathPatterns();
-        ignoredPathPatterns.add("/api/v1/form-file");
-        return ignoredPathPatterns;
+public class FormSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTest {
+    public FormSecuritySmokeIntegrationTest() {
+        super("com.ritense.form", Set.of(
+            "GET /api/v1/form-file"
+        ));
     }
-
 }

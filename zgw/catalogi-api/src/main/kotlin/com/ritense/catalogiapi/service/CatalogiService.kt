@@ -74,9 +74,7 @@ class CatalogiService(
 
     private fun findCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin? {
         val catalogiApiPluginInstance = pluginService
-            .createInstance(CatalogiApiPlugin::class.java) { properties: JsonNode ->
-                zaakTypeUrl.toString().startsWith(properties.get("url").textValue())
-            }
+            .createInstance(CatalogiApiPlugin::class.java, CatalogiApiPlugin.findConfigurationByUrl(zaakTypeUrl))
 
         if (catalogiApiPluginInstance == null) {
             logger.debug {"No catalogi plugin configuration was found for zaaktype with URL $zaakTypeUrl" }
