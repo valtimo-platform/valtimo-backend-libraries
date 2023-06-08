@@ -16,20 +16,16 @@
 
 package com.ritense.note.service;
 
-import com.ritense.authorization.Action;
-import com.ritense.authorization.ResourceActionProvider;
-import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.note.domain.Note;
-import java.util.List;
-import org.jetbrains.annotations.NotNull;
+import com.ritense.authorization.Action
+import com.ritense.authorization.ResourceActionProvider
+import com.ritense.note.domain.Note
 
-public class NoteActionProvider implements ResourceActionProvider<Note> {
+class NoteActionProvider: ResourceActionProvider<Note> {
+    override fun getAvailableActions(): List<Action<Note>> {
+        return listOf(VIEW)
+    }
 
-    public static Action<Note> VIEW = new Action<>(Action.VIEW);
-
-    @NotNull
-    @Override
-    public List<Action<Note>> getAvailableActions() {
-        return List.of(VIEW);
+    companion object {
+        val VIEW = Action<Note>(Action.VIEW)
     }
 }
