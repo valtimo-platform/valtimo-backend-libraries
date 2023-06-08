@@ -16,7 +16,6 @@
 
 package com.ritense.document.service.impl;
 
-import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -31,23 +30,6 @@ import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.query.criteria.internal.OrderImpl;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -62,7 +44,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.criteria.internal.OrderImpl;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
@@ -191,7 +189,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .getAuthorizationSpecification(
                     new AuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        Action.VIEW
+                        VIEW
                     ),
                     null
                 ).toPredicate(documentRoot, query, cb));
@@ -217,7 +215,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .getAuthorizationSpecification(
                     new AuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        Action.VIEW
+                        VIEW
                     ),
                     null
                 ).toPredicate(documentRoot, query, cb));

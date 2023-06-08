@@ -16,7 +16,6 @@
 
 package com.ritense.gzac.listener
 
-import com.ritense.authorization.Action
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.Role
 import com.ritense.authorization.RoleRepository
@@ -32,9 +31,13 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.searchfield.SearchField
 import com.ritense.document.service.DocumentDefinitionService
+import com.ritense.document.service.JsonSchemaDocumentActionProvider
+import com.ritense.document.service.SearchFieldActionProvider
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
 import com.ritense.note.domain.Note
+import com.ritense.note.service.NoteActionProvider
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
@@ -364,7 +367,7 @@ class ApplicationReadyEventListener(
                 // ROLE_USER
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
-                    action = Action.LIST_VIEW,
+                    action = JsonSchemaDocumentActionProvider.LIST_VIEW,
                     conditionContainer = ConditionContainer(listOf(
                         ExpressionPermissionCondition(
                             "content.content",
@@ -377,7 +380,7 @@ class ApplicationReadyEventListener(
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
-                    action = Action.LIST_VIEW,
+                    action = JsonSchemaDocumentActionProvider.LIST_VIEW,
                     conditionContainer = ConditionContainer(listOf(
                         FieldPermissionCondition("assigneeFullName", "James Vance")
                     )),
@@ -385,7 +388,7 @@ class ApplicationReadyEventListener(
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
-                    action = Action.VIEW,
+                    action = JsonSchemaDocumentActionProvider.VIEW,
                     conditionContainer = ConditionContainer(listOf(
                         ExpressionPermissionCondition(
                             "content.content",
@@ -398,7 +401,7 @@ class ApplicationReadyEventListener(
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
-                    action = Action.VIEW,
+                    action = JsonSchemaDocumentActionProvider.VIEW,
                     conditionContainer = ConditionContainer(listOf(
                         FieldPermissionCondition("assigneeFullName", "James Vance")
                     )),
@@ -406,28 +409,36 @@ class ApplicationReadyEventListener(
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
-                    action = Action.CLAIM,
+                    action = JsonSchemaDocumentActionProvider.CLAIM,
                     conditionContainer = ConditionContainer(listOf(
                         FieldPermissionCondition("assigneeFullName", "James Vance")
                     )),
                     roleKey = userRoleKey
+                ),
+                Permission(
+                    resourceType = SearchField::class.java,
+                    action = SearchFieldActionProvider.LIST_VIEW,
+                    conditionContainer = ConditionContainer(listOf(
+                        FieldPermissionCondition("id.documentDefinitionName", "leningen")
+                    )),
+                    roleKey = adminRoleKey
                 ),
                 // ROLE_ADMIN
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
-                    action = Action.LIST_VIEW,
+                    action = JsonSchemaDocumentActionProvider.LIST_VIEW,
                     conditionContainer = ConditionContainer(emptyList()),
                     roleKey = adminRoleKey
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
-                    action = Action.VIEW,
+                    action = JsonSchemaDocumentActionProvider.VIEW,
                     conditionContainer = ConditionContainer(emptyList()),
                     roleKey = adminRoleKey
                 ),
                 Permission(
                     resourceType = JsonSchemaDocument::class.java,
-                    action = Action.CLAIM,
+                    action = JsonSchemaDocumentActionProvider.CLAIM,
                     conditionContainer = ConditionContainer(emptyList()),
                     roleKey = adminRoleKey
                 ),
@@ -441,7 +452,7 @@ class ApplicationReadyEventListener(
                 // ROLE_USER
                 Permission(
                     resourceType = Note::class.java,
-                    action = Action.VIEW,
+                    action = NoteActionProvider.VIEW,
                     conditionContainer = ConditionContainer(listOf(
                         ContainerPermissionCondition(
                             JsonSchemaDocument::class.java,
@@ -456,7 +467,7 @@ class ApplicationReadyEventListener(
                 // ROLE_ADMIN
                 Permission(
                     resourceType = Note::class.java,
-                    action = Action.VIEW,
+                    action = NoteActionProvider.VIEW,
                     conditionContainer = ConditionContainer(listOf()),
                     roleKey = adminRoleKey
                 )

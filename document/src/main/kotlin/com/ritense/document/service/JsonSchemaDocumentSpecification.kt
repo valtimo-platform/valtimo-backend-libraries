@@ -15,6 +15,7 @@
  */
 package com.ritense.document.service
 
+import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
@@ -32,6 +33,7 @@ class JsonSchemaDocumentSpecification(
     permissions: List<Permission>,
     private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<JsonSchemaDocument>(authContext, permissions) {
+
     override fun toPredicate(
         root: Root<JsonSchemaDocument>,
         query: CriteriaQuery<*>,

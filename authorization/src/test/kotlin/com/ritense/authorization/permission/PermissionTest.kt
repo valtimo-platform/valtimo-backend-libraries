@@ -40,7 +40,7 @@ class PermissionTest {
         permission = spy(
             Permission(
                 resourceType = String::class.java,
-                action = Action.VIEW,
+                action = Action<String>(Action.VIEW),
                 conditionContainer = ConditionContainer(listOf(
                     condition1,
                     condition2

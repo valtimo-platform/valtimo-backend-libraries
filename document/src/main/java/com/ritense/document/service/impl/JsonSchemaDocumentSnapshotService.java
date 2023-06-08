@@ -28,12 +28,13 @@ import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 
 public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotService {
 
@@ -58,7 +59,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
                 .requirePermission(
                     new AuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        Action.VIEW
+                        VIEW
                     ),
                     document,
                     null
@@ -81,7 +82,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
             .requirePermission(
                 new AuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    Action.VIEW
+                    VIEW
                 ),
                 document,
                 null
@@ -124,7 +125,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
         authorizationService.requirePermission(
             new AuthorizationRequest<>(
                 JsonSchemaDocumentSnapshot.class,
-                Action.DENY
+                Action.deny()
             ),
             null,
             null

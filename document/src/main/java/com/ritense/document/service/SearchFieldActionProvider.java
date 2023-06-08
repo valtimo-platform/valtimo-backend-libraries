@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.document.service;
 
-import com.ritense.authorization.permission.Permission
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
+import com.ritense.authorization.Action;
+import com.ritense.authorization.ResourceActionProvider;
+import com.ritense.document.domain.impl.searchfield.SearchField;
+import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
-interface PermissionRepository : JpaRepository<Permission, UUID> {
-    fun findAllByRoleKeyIn(roleKeys: Collection<String>): List<Permission>
+public class SearchFieldActionProvider implements ResourceActionProvider<SearchField> {
+    public static Action<SearchField> LIST_VIEW = new Action<>(Action.LIST_VIEW);
 
-    fun findAllByResourceTypeAndAction(resourceType: Class<*>, action: Action<*>): List<Permission>
+    @NotNull
+    @Override
+    public List<Action<SearchField>> getAvailableActions() {
+        return List.of(LIST_VIEW);
+    }
 }

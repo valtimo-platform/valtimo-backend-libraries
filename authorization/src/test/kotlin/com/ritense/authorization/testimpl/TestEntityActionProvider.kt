@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.authorization.testimpl
 
-import com.ritense.authorization.permission.Permission
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
+import com.ritense.authorization.Action
+import com.ritense.authorization.ResourceActionProvider
 
-interface PermissionRepository : JpaRepository<Permission, UUID> {
-    fun findAllByRoleKeyIn(roleKeys: Collection<String>): List<Permission>
+class TestEntityActionProvider: ResourceActionProvider<TestEntity> {
+    override fun getAvailableActions(): List<Action<TestEntity>> {
+        return listOf(view, complete)
+    }
 
-    fun findAllByResourceTypeAndAction(resourceType: Class<*>, action: Action<*>): List<Permission>
+    companion object {
+        val view = Action<TestEntity>(Action.VIEW)
+        val complete = Action<TestEntity>(Action.COMPLETE)
+    }
 }

@@ -19,10 +19,12 @@ package com.ritense.authorization
 import com.ritense.authorization.permission.Permission
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import org.springframework.security.access.AccessDeniedException
+import java.lang.reflect.ParameterizedType
 
 class ValtimoAuthorizationService(
     private val authorizationSpecificationFactories: List<AuthorizationSpecificationFactory<*>>,
     private val mappers: List<AuthorizationEntityMapper<*, *>>,
+    private val actionProviders: List<ResourceActionProvider<*>>,
     private val permissionRepository: PermissionRepository
 ): AuthorizationService {
     override fun <T : Any> requirePermission(
@@ -46,7 +48,7 @@ class ValtimoAuthorizationService(
         return factory.create(context, usedPermissions)
     }
 
-    override fun getPermissions(resourceType: Class<*>, action: Action): List<Permission> {
+    override fun getPermissions(resourceType: Class<*>, action: Action<*>): List<Permission> {
         return permissionRepository.findAllByResourceTypeAndAction(resourceType, action)
     }
 
@@ -57,6 +59,14 @@ class ValtimoAuthorizationService(
         return (mappers.firstOrNull() {
             it.supports(from, to)
         } as AuthorizationEntityMapper<FROM, TO>?)?: throw AccessDeniedException("No entity mapper found for given arguments.")
+    }
+
+    override fun <T : Any> getAvailableActionsForResource(clazz: Class<T>): List<Action<T>> {
+        return actionProviders
+            .filter { (it.javaClass.genericInterfaces[0] as ParameterizedType).actualTypeArguments[0].equals(clazz) }
+            .map { it as ResourceActionProvider<T> }
+            .map { it.getAvailableActions() }
+            .flatten()
     }
 
     private fun getPermissions(): List<Permission> {

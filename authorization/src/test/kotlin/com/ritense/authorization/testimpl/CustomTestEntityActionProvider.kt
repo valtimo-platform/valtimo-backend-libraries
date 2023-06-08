@@ -16,17 +16,20 @@
 
 package com.ritense.authorization.testimpl
 
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import com.ritense.authorization.Action
+import com.ritense.authorization.ResourceActionProvider
 
-@Configuration
-class TestAuthorizationAutoConfiguration {
-    @Bean
-    fun testAuthorizationSpecificationFactory() = TestAuthorizationSpecificationFactory()
+/**
+ Used to test extensibility of framework. More than 1 ResourceActionProvider should be usable for the same entity type
+ so that implementations can introduce new actions for existing enities.
+ */
+class CustomTestEntityActionProvider: ResourceActionProvider<TestEntity> {
+    override fun getAvailableActions(): List<Action<TestEntity>> {
+        return listOf(modify, custom)
+    }
 
-    @Bean
-    fun testEntityActionProvider() = TestEntityActionProvider()
-
-    @Bean
-    fun customTestEntityActionProvider() = CustomTestEntityActionProvider()
+    companion object {
+        val modify = Action<TestEntity>(Action.MODIFY)
+        val custom = Action<TestEntity>("custom")
+    }
 }

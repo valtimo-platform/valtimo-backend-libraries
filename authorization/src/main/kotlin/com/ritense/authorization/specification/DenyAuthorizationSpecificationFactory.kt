@@ -32,6 +32,6 @@ class DenyAuthorizationSpecificationFactory<T: Any> : AuthorizationSpecification
     }
 
     override fun canCreate(context: AuthorizationRequest<*>): Boolean {
-        return context.action == Action.DENY
+        return context.action == Action<T>(Action.DENY)
     }
 }
