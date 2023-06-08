@@ -62,7 +62,7 @@ data class FieldPermissionCondition<V : Comparable<V>>(
     ): Predicate {
         val path: Path<Any>? = createDatabaseObjectPath(field, root)
 
-        return criteriaBuilder.equal(path, this.value)
+        return criteriaBuilder.equal(path, PermissionConditionValueResolver.resolveValue(this.value))
     }
 
     private fun <R : Comparable<R>> compare(left: Any?, right: R?, notEqualResult: Int = 1): Int {

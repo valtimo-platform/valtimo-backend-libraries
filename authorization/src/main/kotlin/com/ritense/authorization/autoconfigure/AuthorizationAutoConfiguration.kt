@@ -22,8 +22,10 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.PermissionRepository
-import com.ritense.authorization.ValtimoAuthorizationService
 import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.UserManagementServiceHolder
+import com.ritense.authorization.ValtimoAuthorizationService
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -38,7 +40,13 @@ import javax.sql.DataSource
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.authorization"])
 @EntityScan("com.ritense.authorization")
-class AuthorizationAutoConfiguration {
+class AuthorizationAutoConfiguration(
+    userManagementService: UserManagementService
+) {
+
+    init {
+        UserManagementServiceHolder(userManagementService)
+    }
 
     @Bean
     @ConditionalOnMissingBean(AuthorizationService::class)

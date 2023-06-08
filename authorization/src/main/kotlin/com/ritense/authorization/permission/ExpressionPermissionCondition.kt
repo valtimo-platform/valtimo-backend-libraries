@@ -69,12 +69,15 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
         return operator.toPredicate(
             criteriaBuilder,
             queryDialectHelper.getJsonValueExpression(criteriaBuilder, path, this.path, clazz),
-            value
+            PermissionConditionValueResolver.resolveValue(value)
         )
     }
 
     private fun evaluateExpression(pathValue: V?): Boolean {
-        return operator.evaluate(pathValue, value)
+        return operator.evaluate(
+            pathValue,
+            PermissionConditionValueResolver.resolveValue(value)
+        )
     }
 
     companion object {
