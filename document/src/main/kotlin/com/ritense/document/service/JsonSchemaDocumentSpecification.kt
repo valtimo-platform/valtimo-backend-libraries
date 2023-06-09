@@ -15,11 +15,14 @@
  */
 package com.ritense.document.service
 
+import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import org.springframework.data.jpa.domain.Specification
+import java.util.UUID
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
@@ -30,6 +33,7 @@ class JsonSchemaDocumentSpecification(
     permissions: List<Permission>,
     private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<JsonSchemaDocument>(authContext, permissions) {
+
     override fun toPredicate(
         root: Root<JsonSchemaDocument>,
         query: CriteriaQuery<*>,
@@ -56,5 +60,16 @@ class JsonSchemaDocumentSpecification(
                 )
             }
         return combinePredicates(criteriaBuilder, predicates)
+    }
+
+    companion object {
+        @JvmStatic
+        fun byDocumentDefinitionIdName(name: String): Specification<JsonSchemaDocument> {
+            return Specification { root: Root<JsonSchemaDocument>,
+                                   _: CriteriaQuery<*>?,
+                                   criteriaBuilder: CriteriaBuilder ->
+                criteriaBuilder.equal(root.get<UUID>("documentDefinitionId").get<String>("name"), name)
+            }
+        }
     }
 }

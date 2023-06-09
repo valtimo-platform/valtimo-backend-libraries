@@ -38,6 +38,7 @@ class CaseInstanceService(
     private val documentSearchService: DocumentSearchService,
     private val valueResolverService: ValueResolverService,
 ) {
+    //TODO: case LIST_VIEW @Marijn
     fun search(
         caseDefinitionName: String,
         searchRequest: SearchWithConfigRequest,

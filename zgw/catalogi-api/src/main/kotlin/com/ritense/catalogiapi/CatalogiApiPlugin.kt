@@ -17,6 +17,7 @@
 package com.ritense.catalogiapi
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.catalogiapi.client.BesluittypeRequest
 import com.ritense.catalogiapi.client.CatalogiApiClient
 import com.ritense.catalogiapi.client.ResultaattypeRequest
@@ -74,7 +75,7 @@ class CatalogiApiPlugin(
         val statustypeUrl = if (statustype.matches("https?://.+".toRegex())) {
             statustype
         } else {
-            val document = documentService.get(execution.businessKey)
+            val document = AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
             val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
             getStatustypeByOmschrijving(zaaktypeUrl, statustype).url!!.toASCIIString()
         }
@@ -96,7 +97,7 @@ class CatalogiApiPlugin(
         val resultaattypeUrl = if (resultaattype.matches("https?://.+".toRegex())) {
             resultaattype
         } else {
-            val document = documentService.get(execution.businessKey)
+            val document = AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
             val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
             getResultaattypeByOmschrijving(zaaktypeUrl, resultaattype).url!!.toASCIIString()
         }
@@ -118,7 +119,7 @@ class CatalogiApiPlugin(
         val besluittypeUrl = if (besluittype.matches("https?://.+".toRegex())) {
             besluittype
         } else {
-            val document = documentService.get(execution.businessKey)
+            val document = AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
             val zaaktypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
             getBesluittypeByOmschrijving(zaaktypeUrl, besluittype).url!!.toASCIIString()
         }

@@ -19,13 +19,20 @@ package com.ritense.document.repository;
 import com.ritense.document.domain.Document;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.lang.Nullable;
 
 @NoRepositoryBean
-public interface DocumentRepository<T extends Document> extends JpaRepository<T, Document.Id> {
+public interface DocumentRepository<T extends Document>
+    extends JpaRepository<T, Document.Id>,
+    JpaSpecificationExecutor<T>
+{
 
     Page<T> findAllByDocumentDefinitionIdName(
+        @Nullable Specification<T> spec,
         Pageable pageable,
         String documentDefinitionName
     );

@@ -16,26 +16,24 @@
 
 package com.ritense.note
 
-import com.ritense.authorization.AuthorizationRequest
-import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.PermissionRepository
+import com.ritense.authorization.Role
+import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.permission.ConditionContainer
+import com.ritense.authorization.permission.Permission
 import com.ritense.note.domain.Note
+import com.ritense.note.service.NoteActionProvider
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import javax.persistence.EntityManager
-import javax.persistence.criteria.CriteriaBuilder
+import java.util.UUID
+import javax.inject.Inject
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
@@ -48,28 +46,29 @@ abstract class BaseIntegrationTest {
     @MockBean
     lateinit var mailSender: MailSender
 
-    // TODO: remove authorization service mocking when case support is added
-    @MockBean
-    lateinit var authorizationService: AuthorizationService
+    @Inject
+    lateinit var roleRepository: RoleRepository
 
-    // TODO: remove entity manager when case support is added
-    @Autowired
-    lateinit var entityManager: EntityManager
+    @Inject
+    lateinit var permissionRepository: PermissionRepository
 
     @BeforeEach
     fun beforeEachBase() {
-        // TODO: remove mocking when case support is added
-        val criteriaBuilder: CriteriaBuilder = entityManager.criteriaBuilder
-        val authorizationSpecification: AuthorizationSpecification<Note> = mock()
+        roleRepository.save(Role(FULL_ACCESS_ROLE))
 
-        whenever(authorizationService
-            .getAuthorizationSpecification(
-                any<AuthorizationRequest<Note>>(),
-                anyOrNull()
+        val permissions: List<Permission> = listOf(
+            Permission(
+                UUID.randomUUID(),
+                Note::class.java,
+                NoteActionProvider.VIEW,
+                ConditionContainer(listOf()),
+                FULL_ACCESS_ROLE
             )
-        ).thenReturn(authorizationSpecification)
-        whenever(authorizationSpecification
-            .toPredicate(any(), any(), any())
-        ).thenReturn(criteriaBuilder.equal(criteriaBuilder.literal(1), 1))
+        )
+        permissionRepository.saveAllAndFlush(permissions)
+    }
+
+    companion object {
+        const val FULL_ACCESS_ROLE = "FULL_ACCESS_ROLE"
     }
 }

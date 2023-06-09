@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.resolver
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.document.service.DocumentService
@@ -57,7 +58,7 @@ class DocumentTableValueResolver(
     }
 
     override fun createResolver(documentId: String): Function<String, Any?> {
-        return createResolver(documentService.get(documentId))
+        return AuthorizationContext.runWithoutAuthorization { createResolver(documentService.get(documentId)) }
     }
 
     override fun handleValues(processInstanceId: String, variableScope: VariableScope?, values: Map<String, Any>) {

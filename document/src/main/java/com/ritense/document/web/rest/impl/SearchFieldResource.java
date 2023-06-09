@@ -16,6 +16,7 @@
 
 package com.ritense.document.web.rest.impl;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.DocumentSearchFields;
@@ -53,16 +54,30 @@ public class SearchFieldResource implements DocumentSearchFields {
                 || searchField.getKey().trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        searchFieldService.addSearchField(documentDefinitionName, SearchFieldMapper.toEntity(searchField, -1));
+
+        AuthorizationContext.runWithoutAuthorization(() -> {
+                searchFieldService.addSearchField(documentDefinitionName, SearchFieldMapper.toEntity(searchField, -1));
+                return null;
+            }
+        );
+
         return ResponseEntity.ok().build();
     }
 
     @Override
     @GetMapping("/v1/document-search/{documentDefinitionName}/fields")
-    public ResponseEntity<List<SearchFieldDto>> getSearchField(
+    public ResponseEntity<List<SearchFieldDto>> getSearchFields(
             @PathVariable String documentDefinitionName) {
         return ResponseEntity.ok(SearchFieldMapper
                 .toDtoList(searchFieldService.getSearchFields(documentDefinitionName)));
+    }
+
+    @Override
+    @GetMapping("/v1/admin/document-search/{documentDefinitionName}/fields")
+    public ResponseEntity<List<SearchFieldDto>> getAdminSearchFields(
+        @PathVariable String documentDefinitionName) {
+        return AuthorizationContext.runWithoutAuthorization(() -> ResponseEntity.ok(SearchFieldMapper
+                .toDtoList(searchFieldService.getSearchFields(documentDefinitionName))));
     }
 
     @Override
@@ -73,7 +88,13 @@ public class SearchFieldResource implements DocumentSearchFields {
         if (searchFieldDtos.stream().anyMatch(searchFieldDto -> searchFieldDto.getKey() == null || searchFieldDto.getKey().trim().isEmpty())) {
             return ResponseEntity.badRequest().build();
         }
-        searchFieldService.updateSearchFields(documentDefinitionName, searchFieldDtos);
+
+        AuthorizationContext.runWithoutAuthorization(() -> {
+                searchFieldService.updateSearchFields(documentDefinitionName, searchFieldDtos);
+                return null;
+            }
+        );
+
         return ResponseEntity.ok().build();
     }
 
@@ -85,7 +106,12 @@ public class SearchFieldResource implements DocumentSearchFields {
         if (documentDefinitionName == null || documentDefinitionName.trim().isEmpty() || key == null || key.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        searchFieldService.deleteSearchField(documentDefinitionName, key);
+
+        AuthorizationContext.runWithoutAuthorization(() -> {
+                searchFieldService.deleteSearchField(documentDefinitionName, key);
+                return null;
+            }
+        );
         return ResponseEntity.noContent().build();
     }
 }

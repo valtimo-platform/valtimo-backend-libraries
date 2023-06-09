@@ -231,7 +231,8 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
 
         mockMvc.perform(get("/api/v1/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
             .andDo(print())
-            .andExpect(status().isBadRequest());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(0)));
     }
 
 }

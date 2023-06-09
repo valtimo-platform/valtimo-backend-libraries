@@ -16,6 +16,10 @@
 
 package com.ritense.authorization
 
+import com.ritense.authorization.specification.DenyAuthorizationSpecification
+import com.ritense.authorization.specification.DenyAuthorizationSpecificationFactory
+import com.ritense.authorization.specification.NoopAuthorizationSpecification
+import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,6 +29,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.security.access.AccessDeniedException
 
 class AuthorizationServiceTest {
 
@@ -49,6 +54,8 @@ class AuthorizationServiceTest {
 
         authorizationService = ValtimoAuthorizationService(
             listOf(
+                NoopAuthorizationSpecificationFactory(),
+                DenyAuthorizationSpecificationFactory(),
                 factory1,
                 factory2,
                 factory3
@@ -58,6 +65,11 @@ class AuthorizationServiceTest {
                 mapper2,
                 mapper3
             ),
+            listOf(
+                StringTestActionProvider(),
+                OtherStringTestActionProvider(),
+                IntTestActionProvider()
+            ),
             permissionRepository
         )
 
@@ -66,13 +78,13 @@ class AuthorizationServiceTest {
     @Test
     fun `should pass permission check`() {
         whenever(factory2.canCreate(any())).thenReturn(true)
-        val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
+        val context = AuthorizationRequest(String::class.java, action = Action(Action.VIEW))
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(context, listOf())).thenReturn(authorizationSpecification)
         val entity = ""
         whenever(authorizationSpecification.isAuthorized(entity)).thenReturn(true)
 
-        authorizationService.requirePermission(context, entity, null)
+        authorizationService.requirePermission(context, entity)
 
         verify(authorizationSpecification).isAuthorized(entity)
     }
@@ -80,13 +92,13 @@ class AuthorizationServiceTest {
     @Test
     fun `should bypass permission check`() {
         whenever(factory2.canCreate(any())).thenReturn(true)
-        val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
+        val context = AuthorizationRequest(String::class.java, action = Action(Action.VIEW))
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(context, listOf())).thenReturn(authorizationSpecification)
         val entity = ""
 
         AuthorizationContext.runWithoutAuthorization {
-            authorizationService.requirePermission(context, entity, null)
+            authorizationService.requirePermission(context, entity)
         }
 
         verify(authorizationSpecification, never()).isAuthorized(entity)
@@ -95,14 +107,14 @@ class AuthorizationServiceTest {
     @Test
     fun `should fail permission check`() {
         whenever(factory2.canCreate(any())).thenReturn(true)
-        val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
+        val context = AuthorizationRequest(String::class.java, action = Action(Action.VIEW))
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(context, listOf())).thenReturn(authorizationSpecification)
         val entity = ""
         whenever(authorizationSpecification.isAuthorized(entity)).thenReturn(false)
 
         assertThrows<RuntimeException> {
-            authorizationService.requirePermission(context, entity, null)
+            authorizationService.requirePermission(context, entity)
         }
 
         verify(authorizationSpecification).isAuthorized(entity)
@@ -114,10 +126,10 @@ class AuthorizationServiceTest {
         whenever(factory3.canCreate(any())).thenReturn(true)
 
 
-        val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
+        val context = AuthorizationRequest(String::class.java, action = Action(Action.VIEW))
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(context, listOf())).thenReturn(authorizationSpecification)
-        val result = authorizationService.getAuthorizationSpecification(context, null)
+        val result = authorizationService.getAuthorizationSpecification(context)
         assertEquals(authorizationSpecification, result)
 
         verify(factory1).canCreate(any())
@@ -128,12 +140,12 @@ class AuthorizationServiceTest {
 
     @Test
     fun `should get NoopAuthorizationSpecification`() {
+        whenever(factory1.canCreate(any())).thenReturn(true)
         whenever(factory2.canCreate(any())).thenReturn(true)
-        whenever(factory3.canCreate(any())).thenReturn(true)
 
-        val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
+        val context = AuthorizationRequest(String::class.java, action = Action(Action.VIEW))
         val result = AuthorizationContext.runWithoutAuthorization {
-            authorizationService.getAuthorizationSpecification(context, null)
+            authorizationService.getAuthorizationSpecification(context)
         }
         assertEquals(true, result is NoopAuthorizationSpecification)
 
@@ -142,10 +154,23 @@ class AuthorizationServiceTest {
     }
 
     @Test
+    fun `should get DenyAuthorizationSpecification`() {
+        whenever(factory1.canCreate(any())).thenReturn(true)
+        whenever(factory2.canCreate(any())).thenReturn(true)
+
+        val context = AuthorizationRequest(String::class.java, action = Action(Action.DENY))
+        val result = authorizationService.getAuthorizationSpecification(context)
+        assertEquals(true, result is DenyAuthorizationSpecification)
+
+        verify(factory1, never()).canCreate(any())
+        verify(factory2, never()).canCreate(any())
+    }
+
+    @Test
     fun `should throw an error when no correct AuthorizationSpecification can be found`() {
-        assertThrows<NoSuchElementException> {
-            val context = AuthorizationRequest(String::class.java, action = Action.VIEW)
-            authorizationService.getAuthorizationSpecification(context, null)
+        assertThrows<AccessDeniedException> {
+            val context = AuthorizationRequest(String::class.java, action = Action(Action.VIEW))
+            authorizationService.getAuthorizationSpecification(context)
         }
         verify(factory1).canCreate(any())
         verify(factory2).canCreate(any())
@@ -167,13 +192,39 @@ class AuthorizationServiceTest {
     }
 
     @Test
-    fun `should throw an error when no correct AuthorizationEntityMapper van be found`() {
-        assertThrows<NoSuchElementException> {
+    fun `should throw an error when no correct AuthorizationEntityMapper can be found`() {
+        assertThrows<AccessDeniedException> {
             authorizationService.getMapper(String::class.java, String::class.java)
         }
 
         verify(mapper1).supports(any(), any())
         verify(mapper2).supports(any(), any())
         verify(mapper3).supports(any(), any())
+    }
+
+    @Test
+    fun `should get available actions only for type that is requested`() {
+        val availableActionsForResource = authorizationService.getAvailableActionsForResource(String::class.java)
+        assertEquals(2, availableActionsForResource.size)
+        assertEquals(Action.VIEW, availableActionsForResource[0].key)
+        assertEquals(Action.CLAIM, availableActionsForResource[1].key)
+    }
+}
+
+class StringTestActionProvider(): ResourceActionProvider<String> {
+    override fun getAvailableActions(): List<Action<String>> {
+        return listOf(Action(Action.VIEW))
+    }
+}
+
+class OtherStringTestActionProvider(): ResourceActionProvider<String> {
+    override fun getAvailableActions(): List<Action<String>> {
+        return listOf(Action(Action.CLAIM))
+    }
+}
+
+class IntTestActionProvider(): ResourceActionProvider<Int> {
+    override fun getAvailableActions(): List<Action<Int>> {
+        return listOf(Action(Action.MODIFY))
     }
 }

@@ -19,6 +19,7 @@ package com.ritense.objectsapi.service
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
@@ -61,7 +62,10 @@ class ObjectsApiConnector(
     }
 
     fun put(documentId: String, key: String, pathToValue: String): ObjectsApiConnector {
-        val document = documentService.findBy(JsonSchemaDocumentId.existingId(UUID.fromString(documentId))).orElseThrow()
+        val document = AuthorizationContext
+            .runWithoutAuthorization {
+                documentService.findBy(JsonSchemaDocumentId.existingId(UUID.fromString(documentId)))
+            }.orElseThrow()
         this.payload[key] = document.content().getValueBy(JsonPointer.valueOf(pathToValue)).orElseThrow()
         return this
     }

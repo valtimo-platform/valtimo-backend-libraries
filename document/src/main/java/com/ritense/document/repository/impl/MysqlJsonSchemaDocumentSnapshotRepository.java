@@ -31,6 +31,7 @@ import org.springframework.data.repository.query.Param;
 @NoRepositoryBean
 public interface MysqlJsonSchemaDocumentSnapshotRepository extends DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> {
 
+    // TODO: Change this so it can accept predicates
     @Query("" +
         "SELECT  distinct ds " +
         "FROM    JsonSchemaDocumentSnapshot ds " +

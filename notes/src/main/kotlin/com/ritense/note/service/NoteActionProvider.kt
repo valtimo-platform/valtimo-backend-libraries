@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.document.service;
+package com.ritense.note.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.ritense.document.domain.Document;
+import com.ritense.authorization.Action
+import com.ritense.authorization.ResourceActionProvider
+import com.ritense.note.domain.Note
 
-public interface DocumentVariableService {
-    String getTextOrReturnEmptyString(Document document, String path);
-    String getTextOrThrow(Document document, String path);
-    JsonNode getNodeOrThrow(Document document, String path);
-    Integer getIntegerOrReturnZero(Document document, String path);
-    Boolean getBooleanOrReturnFalse(Document document, String path);
+class NoteActionProvider: ResourceActionProvider<Note> {
+    override fun getAvailableActions(): List<Action<Note>> {
+        return listOf(VIEW)
+    }
+
+    companion object {
+        val VIEW = Action<Note>(Action.VIEW)
+    }
 }

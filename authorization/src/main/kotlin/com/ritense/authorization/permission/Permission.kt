@@ -21,9 +21,8 @@ import com.ritense.valtimo.contract.database.QueryDialectHelper
 import org.hibernate.annotations.Type
 import java.util.UUID
 import javax.persistence.Column
+import javax.persistence.Embedded
 import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.Table
 import javax.persistence.criteria.CriteriaBuilder
@@ -42,8 +41,8 @@ data class Permission(
     val resourceType: Class<*>,
 
     @Column(name = "action")
-    @Enumerated(EnumType.STRING)
-    val action: Action,
+    @Embedded
+    val action: Action<*>,
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "conditions", columnDefinition = "json")
@@ -80,7 +79,8 @@ data class Permission(
                         query,
                         criteriaBuilder,
                         resourceType,
-                        queryDialectHelper)
+                        queryDialectHelper
+                    )
                 }.toTypedArray()
             )
     }

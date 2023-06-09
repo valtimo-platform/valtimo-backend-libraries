@@ -18,6 +18,7 @@ package com.ritense.externalevent.service
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
@@ -98,13 +99,13 @@ class ExternalCaseService(
 
     private fun getExternalId(execution: DelegateExecution): String {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(execution.processBusinessKey))
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = AuthorizationContext.runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
         return document.id().toString()
     }
 
     fun getCaseValue(execution: DelegateExecution, jsonPointer: JsonPointer): JsonNode {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(execution.processBusinessKey))
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = AuthorizationContext.runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
         return document.content().getValueBy(jsonPointer).orElseThrow()
     }
 

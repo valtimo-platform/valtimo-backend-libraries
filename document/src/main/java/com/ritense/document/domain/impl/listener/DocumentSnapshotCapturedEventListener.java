@@ -16,6 +16,7 @@
 
 package com.ritense.document.domain.impl.listener;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentSnapshotCapturedEvent;
 import com.ritense.document.service.DocumentSnapshotService;
 import org.slf4j.Logger;
@@ -34,7 +35,17 @@ public class DocumentSnapshotCapturedEventListener {
     @EventListener(JsonSchemaDocumentSnapshotCapturedEvent.class)
     public void handleDocumentCreatedEvent(JsonSchemaDocumentSnapshotCapturedEvent event) {
         logger.debug("{} - handle - JsonSchemaDocumentSnapshotEvent - {}", Thread.currentThread().getName(), event.documentId());
-        documentSnapshotService.makeSnapshot(event.documentId(), event.createdOn(), event.createdBy());
+        AuthorizationContext.runWithoutAuthorization(
+            () -> {
+                documentSnapshotService
+                    .makeSnapshot(
+                        event.documentId(),
+                        event.createdOn(),
+                        event.createdBy()
+                    );
+                return null;
+            }
+        );
     }
 
 }

@@ -16,6 +16,9 @@
 
 package com.ritense.document.service;
 
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
@@ -25,6 +28,8 @@ import com.ritense.document.domain.impl.searchfield.SearchFieldMatchType;
 import com.ritense.document.exception.InvalidSearchFieldException;
 import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.web.rest.impl.SearchFieldMapper;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.zalando.problem.Status;
 
 import java.util.Collections;
@@ -32,21 +37,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import static com.ritense.document.repository.SearchFieldRepository.byIdDocumentDefinitionName;
+import static com.ritense.document.service.SearchFieldActionProvider.LIST_VIEW;
 
 public class SearchFieldService {
 
     private final SearchFieldRepository searchFieldRepository;
     private final DocumentDefinitionService documentDefinitionService;
+    private final AuthorizationService authorizationService;
 
     public SearchFieldService(
             final SearchFieldRepository searchFieldRepository,
-            final DocumentDefinitionService documentDefinitionService
+            final DocumentDefinitionService documentDefinitionService,
+            final AuthorizationService authorizationService
     ) {
         this.searchFieldRepository = searchFieldRepository;
         this.documentDefinitionService = documentDefinitionService;
+        this.authorizationService = authorizationService;
     }
 
     public void addSearchField(String documentDefinitionName, SearchField searchField) {
+        denyAuthorization();
+
         Optional<SearchField> optSearchField = searchFieldRepository
                 .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchField.getKey());
         if (optSearchField.isPresent()) {
@@ -60,10 +72,23 @@ public class SearchFieldService {
     }
 
     public List<SearchField> getSearchFields(String documentDefinitionName) {
-        return searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(documentDefinitionName);
+        Specification<SearchField> authorizationSpec = authorizationService.getAuthorizationSpecification(
+            new AuthorizationRequest<>(
+                SearchField.class,
+                LIST_VIEW
+            ),
+            null
+        );
+
+        return searchFieldRepository.findAll(
+            authorizationSpec.and(byIdDocumentDefinitionName(documentDefinitionName)),
+            Sort.by(Sort.Order.asc("order"))
+        );
     }
 
     public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
+        denyAuthorization();
+
         searchFieldDtos.forEach(this::validateSearchField);
         searchFieldDtos.forEach(searchFieldDto ->
                 documentDefinitionService.validateJsonPath(documentDefinitionName, searchFieldDto.getPath())
@@ -75,6 +100,8 @@ public class SearchFieldService {
     }
 
     public void createSearchConfiguration(List<SearchField> searchFields) {
+        denyAuthorization();
+
         searchFields.forEach(searchField -> {
             assert searchField.getId() != null;
             documentDefinitionService.validateJsonPath(searchField.getId().getDocumentDefinitionName(), searchField.getPath());
@@ -91,6 +118,8 @@ public class SearchFieldService {
     }
 
     public void deleteSearchField(String documentDefinitionName, String key) {
+        denyAuthorization();
+
         searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName, key).ifPresent(
                 searchFieldRepository::delete);
     }
@@ -139,5 +168,16 @@ public class SearchFieldService {
                 Status.BAD_REQUEST
             );
         }
+    }
+
+    private void denyAuthorization() {
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                SearchField.class,
+                Action.deny()
+            ),
+            null,
+            null
+        );
     }
 }

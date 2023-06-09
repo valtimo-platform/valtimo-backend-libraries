@@ -46,21 +46,25 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
+    //TODO: case VIEW @Marijn
     public Page<AuditRecord> findByEventAndDocumentId(List<Class<? extends AuditEvent>> eventTypes, UUID documentId, Pageable pageable) {
         return auditRecordRepository.findByEventAndDocumentId(eventTypes, documentId, pageable);
     }
 
     @Override
+    //TODO: unused? @Marijn
     public List<AuditRecord> findByEventAndOccurredBetween(Class<? extends AuditEvent> eventType, LocalDateTime from, LocalDateTime until, Pageable pageable) {
         return auditRecordRepository.findByEventAndOccurredBetween(eventType.getName(), from, until, pageable);
     }
 
     @Override
+    //TODO: unused? @Marijn
     public Page<AuditRecord> findByProperty(String key, Object value, Pageable pageable) {
         return auditRecordRepository.findAuditRecordsByProperty(key, value, pageable);
     }
 
     @Override
+    //TODO: unused? @Marijn
     public List<AuditRecord> findByEventTypeAndProperty(Class<? extends AuditEvent> eventType, String key, Object value) {
         return auditRecordRepository.findAuditRecordsByEventAndProperty(eventType.getName(), key, value);
     }

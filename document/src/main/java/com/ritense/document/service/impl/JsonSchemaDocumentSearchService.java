@@ -16,8 +16,9 @@
 
 package com.ritense.document.service.impl;
 
+import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
 import com.ritense.document.domain.search.AssigneeFilter;
@@ -25,33 +26,10 @@ import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.domain.search.SearchRequestMapper;
 import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
-import com.ritense.authorization.Action;
-import com.ritense.authorization.AuthorizationRequest;
-import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
-import com.ritense.valtimo.contract.utils.SecurityUtils;
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.query.criteria.internal.OrderImpl;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import javax.transaction.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -66,18 +44,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.criteria.internal.OrderImpl;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 @Transactional
 public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private static final String DOCUMENT_DEFINITION_ID = "documentDefinitionId";
-    private static final String DOCUMENT_DEFINITION_NAME = "documentDefinitionName";
-    private static final String ID = "id";
-    private static final String ROLE = "role";
     private static final String NAME = "name";
     private static final String CREATED_BY = "createdBy";
     private static final String SEQUENCE = "sequence";
@@ -112,7 +102,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         final Pageable pageable
     ) {
         return search(
-            (cb, query, documentRoot) -> buildQueryWhere(searchRequest, cb, query, documentRoot, true),
+            (cb, query, documentRoot) -> buildQueryWhere(searchRequest, cb, query, documentRoot),
             pageable
         );
     }
@@ -141,10 +131,9 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     @Override
-    public Page<JsonSchemaDocument> searchWithoutAuthorization(SearchRequest searchRequest, Pageable pageable) {
-        return search(
-            (cb, query, documentRoot) -> buildQueryWhere(searchRequest, cb, query, documentRoot, false),
-            pageable
+    public Long count(String documentDefinitionName, AdvancedSearchRequest advancedSearchRequest) {
+        return count(
+            (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, advancedSearchRequest, cb, query, documentRoot)
         );
     }
 
@@ -165,40 +154,45 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .setMaxResults(pageable.getPageSize());
         }
 
+        return new PageImpl<>(typedQuery.getResultList(), pageable, count(queryWhereBuilder));
+    }
+
+    private Long count(
+        QueryWhereBuilder queryWhereBuilder
+    ) {
+        final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<JsonSchemaDocument> countRoot = countQuery.from(JsonSchemaDocument.class);
         countQuery.select(cb.count(countRoot));
-        queryWhereBuilder.apply(cb, countQuery, selectRoot);
+        queryWhereBuilder.apply(cb, countQuery, countRoot);
 
+        // TODO: Should be turned into a subquery, and then do a count over the results from the subquery.
         List<Long> countResultList = entityManager.createQuery(countQuery).getResultList();
 
         Long count = 0L;
 
         if (!countResultList.isEmpty()) {
-            count = countResultList.get(0);
+            count = (long) countResultList.size();
         }
 
-        return new PageImpl<>(typedQuery.getResultList(), pageable, count);
+        return count;
     }
 
-    private void buildQueryWhere(SearchRequest searchRequest, CriteriaBuilder cb, CriteriaQuery<?> query, Root<JsonSchemaDocument> documentRoot, boolean withAuthorization) {
+    private void buildQueryWhere(SearchRequest searchRequest, CriteriaBuilder cb, CriteriaQuery<?> query, Root<JsonSchemaDocument> documentRoot) {
         final List<Predicate> predicates = new ArrayList<>();
 
         addNonJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
         addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
-        if (withAuthorization) {
-            addUserRolePredicate(query, documentRoot, predicates);
-            predicates.add(
-                authorizationService
-                    .getAuthorizationSpecification(
-                        new AuthorizationRequest<>(
-                            JsonSchemaDocument.class,
-                            null,
-                            Action.VIEW
-                        ),
-                        null
-                    ).toPredicate(documentRoot, query, cb));
-        }
+
+        predicates.add(
+            authorizationService
+                .getAuthorizationSpecification(
+                    new AuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        VIEW
+                    ),
+                    null
+                ).toPredicate(documentRoot, query, cb));
 
         query.where(predicates.toArray(new Predicate[0]));
     }
@@ -216,19 +210,15 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             predicates.add(cb.equal(documentRoot.get(DOCUMENT_DEFINITION_ID).get(NAME), documentDefinitionName));
         }
 
-        if (SecurityContextHolder.getContext().getAuthentication() != null) {
-            addUserRolePredicate(query, documentRoot, predicates);
-            predicates.add(
-                authorizationService
-                    .getAuthorizationSpecification(
-                        new AuthorizationRequest<>(
-                            JsonSchemaDocument.class,
-                            null,
-                            Action.VIEW
-                        ),
-                        null
-                    ).toPredicate(documentRoot, query, cb));
-        }
+        predicates.add(
+            authorizationService
+                .getAuthorizationSpecification(
+                    new AuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        VIEW
+                    ),
+                    null
+                ).toPredicate(documentRoot, query, cb));
 
         if (searchRequest.getAssigneeFilter() != null && searchRequest.getAssigneeFilter() != AssigneeFilter.ALL) {
             predicates.add(getAssigneeFilterPredicate(cb, documentRoot, searchRequest.getAssigneeFilter()));
@@ -295,16 +285,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         var caseAssigneeIdColumn = documentRoot.get(ASSIGNEE_ID);
         var userId = userManagementService.getCurrentUser().getId();
 
-        switch (assigneeFilter) {
-            case MINE:
-                return cb.equal(caseAssigneeIdColumn, userId);
-
-            case OPEN:
-                return cb.isNull(caseAssigneeIdColumn);
-
-            default:
-                return null;
-        }
+        return switch (assigneeFilter) {
+            case MINE -> cb.equal(caseAssigneeIdColumn, userId);
+            case OPEN -> cb.isNull(caseAssigneeIdColumn);
+            default -> null;
+        };
     }
 
     private Predicate getOtherFilersPredicate(
@@ -322,21 +307,6 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         } else {
             return cb.or(jsonPredicates);
         }
-    }
-
-    private void addUserRolePredicate(CriteriaQuery<?> query,
-                                      Root<JsonSchemaDocument> documentRoot,
-                                      List<Predicate> predicates) {
-        List<String> roles = SecurityUtils.getCurrentUserRoles();
-
-        Subquery<String> sub = query.subquery(String.class);
-        Root<JsonSchemaDocumentDefinitionRole> subRoot = sub.from(JsonSchemaDocumentDefinitionRole.class);
-        sub.select(subRoot.get(ID).get(DOCUMENT_DEFINITION_NAME));
-        sub.where(subRoot.get(ID).get(ROLE).in(roles));
-
-        predicates.add(
-            documentRoot.get(DOCUMENT_DEFINITION_ID).get(NAME).in(sub)
-        );
     }
 
     private Predicate findJsonPathValue(CriteriaBuilder cb, Root<JsonSchemaDocument> root, String path, String value) {
@@ -364,22 +334,16 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         var rangeFrom = searchCriteria.<T>getRangeFrom();
         var rangeTo = searchCriteria.<T>getRangeTo();
 
-        switch (searchCriteria.getSearchType()) {
-            case LIKE:
-                return cb.or(searchLike(cb, value, searchCriteria.getValues()));
-            case EQUAL:
-                return cb.or(searchEqual(cb, value, searchCriteria.getValues()));
-            case GREATER_THAN_OR_EQUAL_TO:
-                return searchGreaterThanOrEqualTo(cb, value, rangeFrom);
-            case LESS_THAN_OR_EQUAL_TO:
-                return searchLessThanOrEqualTo(cb, value, rangeTo);
-            case BETWEEN:
-                return searchBetween(cb, value, rangeFrom, rangeTo);
-            case IN:
-                return searchIn(cb, value, searchCriteria.getValues());
-            default:
+        return switch (searchCriteria.getSearchType()) {
+            case LIKE -> cb.or(searchLike(cb, value, searchCriteria.getValues()));
+            case EQUAL -> cb.or(searchEqual(cb, value, searchCriteria.getValues()));
+            case GREATER_THAN_OR_EQUAL_TO -> searchGreaterThanOrEqualTo(cb, value, rangeFrom);
+            case LESS_THAN_OR_EQUAL_TO -> searchLessThanOrEqualTo(cb, value, rangeTo);
+            case BETWEEN -> searchBetween(cb, value, rangeFrom, rangeTo);
+            case IN -> searchIn(cb, value, searchCriteria.getValues());
+            default ->
                 throw new NotImplementedException("Searching for search type '" + searchCriteria.getSearchType() + "' hasn't been implemented.");
-        }
+        };
     }
 
     private <T extends Comparable<? super T>> Expression<T> getValueExpressionForDocPrefix(

@@ -16,6 +16,7 @@
 
 package com.ritense.openzaak.listener
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
@@ -41,7 +42,7 @@ open class BaseServiceTaskListener(
         val processBusinessKey = execution.processBusinessKey
         val processDefinitionKey = repositoryService.getProcessDefinition(execution.processDefinitionId).key
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(processBusinessKey))
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = AuthorizationContext.runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
         val zaakTypeLink = zaakTypeLinkService.get(document.definitionId().name())
         if (zaakTypeLink != null) {
             notify(execution, processDefinitionKey, document, zaakTypeLink)

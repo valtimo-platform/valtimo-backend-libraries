@@ -16,6 +16,7 @@
 
 package com.ritense.objectsapi.productaanvraag
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
@@ -60,7 +61,8 @@ class ProductAanvraagService(
         val newDocumentRequest = NewDocumentRequest(typeMapping.caseDefinitionKey, productAanvraag.data)
             .withResources(openZaakResources)
 
-        val documentResult = documentService.createDocument(newDocumentRequest)
+        val documentResult = AuthorizationContext
+            .runWithoutAuthorization { documentService.createDocument(newDocumentRequest) }
 
         if (documentResult.resultingDocument().isEmpty) {
             var logMessage = "Errors occurred during creation of dossier for productaanvraag:"

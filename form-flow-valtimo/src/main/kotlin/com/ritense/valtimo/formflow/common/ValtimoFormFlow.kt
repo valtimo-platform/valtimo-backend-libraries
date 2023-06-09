@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
@@ -107,12 +108,14 @@ open class ValtimoFormFlow(
         val submissionValues = submissionSavePath.entries.associate { it.key to getValue(submission, it.value) }
         val submittedByType = valueResolverService.preProcessValuesForNewCase(submissionValues)
 
-        val document = documentService.createDocument(
-            NewDocumentRequest(
-                documentDefinitionName,
-                submittedByType["doc"] as JsonNode
-            )
-        ).also { result ->
+        val document = AuthorizationContext.runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    documentDefinitionName,
+                    submittedByType["doc"] as JsonNode
+                )
+            ) 
+        }.also { result ->
             if (result.errors().size > 0) {
                 throw RuntimeException(
                     "Could not create document for document definition $documentDefinitionName\n" +

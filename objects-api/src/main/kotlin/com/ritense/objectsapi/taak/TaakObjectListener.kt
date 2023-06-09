@@ -18,6 +18,7 @@ package com.ritense.objectsapi.taak
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile
 import com.ritense.document.service.DocumentService
@@ -141,7 +142,7 @@ class TaakObjectListener(
         val informatieObject = zaakService.getInformatieObject(file)
         val resource = openZaakService.store(informatieObject)
         val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(informatieObject.auteur)
-        documentService.assignRelatedFile(documentId, relatedFile)
+        AuthorizationContext.runWithoutAuthorization { documentService.assignRelatedFile(documentId, relatedFile) }
     }
 
     private fun handleTaakObjectData(

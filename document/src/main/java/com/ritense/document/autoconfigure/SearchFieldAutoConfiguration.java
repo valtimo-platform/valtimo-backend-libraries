@@ -17,9 +17,11 @@
 package com.ritense.document.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.SearchConfigurationDeploymentService;
 import com.ritense.document.service.SearchFieldService;
@@ -44,9 +46,10 @@ public class SearchFieldAutoConfiguration {
     @ConditionalOnMissingBean(SearchFieldService.class)
     public SearchFieldService searchFieldService(
         SearchFieldRepository searchFieldRepository,
-        DocumentDefinitionService documentDefinitionService
+        DocumentDefinitionService documentDefinitionService,
+        AuthorizationService authorizationService
     ) {
-        return new SearchFieldService(searchFieldRepository, documentDefinitionService);
+        return new SearchFieldService(searchFieldRepository, documentDefinitionService, authorizationService);
     }
 
     @Bean
@@ -63,8 +66,8 @@ public class SearchFieldAutoConfiguration {
     @ConditionalOnMissingBean(DocumentStatisticService.class)
     public DocumentStatisticService documentStatisticService(
         DocumentDefinitionService documentDefinitionService,
-        DocumentRepository documentRepository
+        DocumentSearchService documentSearchService
     ) {
-        return new DocumentStatisticService(documentDefinitionService, documentRepository);
+        return new DocumentStatisticService(documentDefinitionService, documentSearchService);
     }
 }

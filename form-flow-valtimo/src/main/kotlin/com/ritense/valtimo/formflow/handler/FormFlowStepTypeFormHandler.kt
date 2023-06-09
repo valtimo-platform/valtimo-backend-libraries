@@ -18,6 +18,7 @@ package com.ritense.valtimo.formflow.handler
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.service.DocumentService
 import com.ritense.form.domain.FormDefinition
 import com.ritense.form.domain.FormIoFormDefinition
@@ -67,7 +68,7 @@ class FormFlowStepTypeFormHandler(
             return
         }
 
-        val document = documentService.get(documentId)
+        val document = AuthorizationContext.runWithoutAuthorization { documentService.get(documentId) }
         val documentContent = document.content().asJson() as ObjectNode
 
         if (taskInstanceId == null) {

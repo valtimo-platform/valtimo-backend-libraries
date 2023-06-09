@@ -16,6 +16,7 @@
 
 package com.ritense.smartdocuments.service
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile
@@ -49,7 +50,7 @@ class SmartDocumentGenerator(
     ) {
         val generatedDocument = generateDocument(documentId, templateGroup, templateId, templateData, format)
 
-        val document = documentService.findBy(documentId)
+        val document = AuthorizationContext.runWithoutAuthorization { documentService.findBy(documentId) }
             .orElseThrow { NullPointerException("Document $documentId needed for generation of document not found") }
 
         val resource = resourceService.store(
@@ -63,7 +64,7 @@ class SmartDocumentGenerator(
         )
 
         val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin())
-        documentService.assignRelatedFile(documentId, relatedFile)
+        AuthorizationContext.runWithoutAuthorization { documentService.assignRelatedFile(documentId, relatedFile) }
     }
 
     private fun generateDocument(

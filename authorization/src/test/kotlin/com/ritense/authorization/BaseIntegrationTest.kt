@@ -16,6 +16,7 @@
 
 package com.ritense.authorization
 
+import com.ritense.authorization.testimpl.TestAuthorizationAutoConfiguration
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
@@ -28,7 +29,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
-@Import(LiquibaseRunnerAutoConfiguration::class)
+@Import(LiquibaseRunnerAutoConfiguration::class, TestAuthorizationAutoConfiguration::class)
 @ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
 @Tag("integration")
 abstract class BaseIntegrationTest {

@@ -30,10 +30,13 @@ public interface AuditService {
 
     Page<AuditRecord> findByEventAndDocumentId(List<Class<? extends AuditEvent>> eventTypes, UUID documentId, Pageable pageable);
 
+    //TODO: unused? @Marijn
     List<AuditRecord> findByEventAndOccurredBetween(Class<? extends AuditEvent> event, LocalDateTime from, LocalDateTime until, Pageable pageable);
 
+    //TODO: unused? @Marijn
     Page<AuditRecord> findByProperty(String key, Object value, Pageable pageable);
 
+    //TODO: unused? @Marijn
     List<AuditRecord> findByEventTypeAndProperty(Class<? extends AuditEvent> event, String key, Object value);
 
     void deleteAllBefore(LocalDateTime date);

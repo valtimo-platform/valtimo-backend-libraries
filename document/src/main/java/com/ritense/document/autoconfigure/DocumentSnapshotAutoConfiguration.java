@@ -16,6 +16,7 @@
 
 package com.ritense.document.autoconfigure;
 
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.listener.DocumentSnapshotCapturedEventListener;
 import com.ritense.document.domain.impl.listener.DocumentSnapshotCapturedEventPublisher;
 import com.ritense.document.domain.impl.listener.UndeployDocumentDefinitionEventListener;
@@ -49,9 +50,10 @@ public class DocumentSnapshotAutoConfiguration {
     public DocumentSnapshotService documentSnapshotService(
         final DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository,
         final JsonSchemaDocumentService documentService,
-        final JsonSchemaDocumentDefinitionService documentDefinitionService
+        final JsonSchemaDocumentDefinitionService documentDefinitionService,
+        final AuthorizationService authorizationService
     ) {
-        return new JsonSchemaDocumentSnapshotService(documentSnapshotRepository, documentService, documentDefinitionService);
+        return new JsonSchemaDocumentSnapshotService(documentSnapshotRepository, documentService, documentDefinitionService, authorizationService);
     }
 
     @Bean

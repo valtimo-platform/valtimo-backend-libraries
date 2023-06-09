@@ -22,6 +22,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+//TODO: unused? @Marijn
 public interface AuditSearchService {
 
     Page<AuditRecord> search(List<SearchCriteria> criteriaList, Pageable pageable);

@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
 import org.camunda.bpm.engine.RuntimeService
@@ -38,7 +39,7 @@ abstract class AbstractFormFlowLinkTaskProvider(
         )
 
         try {
-            val document = documentService[processInstance.businessKey]
+            val document = AuthorizationContext.runWithoutAuthorization { documentService[processInstance.businessKey] }
             if (document != null) {
                 additionalProperties["documentId"] = processInstance.businessKey
             }

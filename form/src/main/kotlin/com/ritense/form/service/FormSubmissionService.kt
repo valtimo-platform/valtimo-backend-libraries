@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -77,26 +78,29 @@ open class FormSubmissionService(
         taskInstanceId: String?,
     ): FormSubmissionResult {
         return try {
-            val processLink = processLinkService.getProcessLink(processLinkId, FormProcessLink::class.java)
-            val document = documentId?.let { documentService.get(documentId) }
-            val processDocumentDefinition = getProcessDocumentDefinition(processLink, document)
-            val processVariables = getProcessVariables(taskInstanceId)
-            val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
-            val formFields = getFormFields(formDefinition, formData)
-            val submittedDocumentContent = getSubmittedDocumentContent(formFields, document)
-            val formDefinedProcessVariables = formDefinition.extractProcessVars(formData)
-            val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
-            val externalFormData = getExternalFormData(formDefinition, formData)
-            val request = getRequest(
-                processLink,
-                document,
-                taskInstanceId,
-                processDocumentDefinition,
-                submittedDocumentContent,
-                formDefinedProcessVariables,
-                preJsonPatch
-            )
-            return dispatchRequest(request, processDocumentDefinition, formFields, externalFormData)
+            return AuthorizationContext.runWithoutAuthorization {
+                val processLink = processLinkService.getProcessLink(processLinkId, FormProcessLink::class.java)
+                val document = documentId
+                    ?.let { AuthorizationContext.runWithoutAuthorization { documentService.get(documentId) } }
+                val processDocumentDefinition = getProcessDocumentDefinition(processLink, document)
+                val processVariables = getProcessVariables(taskInstanceId)
+                val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
+                val formFields = getFormFields(formDefinition, formData)
+                val submittedDocumentContent = getSubmittedDocumentContent(formFields, document)
+                val formDefinedProcessVariables = formDefinition.extractProcessVars(formData)
+                val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
+                val externalFormData = getExternalFormData(formDefinition, formData)
+                val request = getRequest(
+                    processLink,
+                    document,
+                    taskInstanceId,
+                    processDocumentDefinition,
+                    submittedDocumentContent,
+                    formDefinedProcessVariables,
+                    preJsonPatch
+                )
+                dispatchRequest(request, processDocumentDefinition, formFields, externalFormData)
+            }
         } catch (notFoundException: DocumentNotFoundException) {
             logger.error("Document could not be found", notFoundException)
             FormSubmissionResultFailed(FromException(notFoundException))

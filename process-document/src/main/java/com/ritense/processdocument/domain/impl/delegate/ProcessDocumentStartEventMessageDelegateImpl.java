@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.relation.DocumentRelationType;
 import com.ritense.document.service.DocumentService;
@@ -61,7 +62,10 @@ public class ProcessDocumentStartEventMessageDelegateImpl implements ProcessDocu
 
         final var processInstanceId = ProcessInstanceId.fromExecution(execution, CamundaProcessInstanceId.class);
         processDocumentAssociationService.findProcessDocumentInstance(processInstanceId)
-            .flatMap(processDocumentInstance -> documentService.findBy(processDocumentInstance.processDocumentInstanceId().documentId()))
+            .flatMap(processDocumentInstance ->
+                AuthorizationContext.runWithoutAuthorization(
+                    () -> documentService.findBy(processDocumentInstance.processDocumentInstanceId().documentId()))
+            )
             .ifPresent(document -> {
                 final JsonNode payload = getPayload(execution, document);
                 runtimeService.createMessageCorrelation(message)

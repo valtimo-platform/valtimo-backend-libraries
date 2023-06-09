@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.authorization.testimpl
 
-import com.ritense.authorization.permission.Permission
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import com.ritense.authorization.Action
+import com.ritense.authorization.ResourceActionProvider
 
-class NoopAuthorizationSpecification<T: Any>(authContext: AuthorizationRequest<T>, permissions: List<Permission>) : AuthorizationSpecification<T>(
-    authContext, permissions
-) {
-    override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
-        return criteriaBuilder.isTrue(root.isNotNull)
+class TestEntityActionProvider: ResourceActionProvider<TestEntity> {
+    override fun getAvailableActions(): List<Action<TestEntity>> {
+        return listOf(view, complete)
+    }
+
+    companion object {
+        val view = Action<TestEntity>(Action.VIEW)
+        val complete = Action<TestEntity>(Action.COMPLETE)
     }
 }

@@ -50,8 +50,8 @@ class NoteService(
         val spec = authorizationService.getAuthorizationSpecification(
             AuthorizationRequest(
                 Note::class.java,
-                null,
-                Action.VIEW
+                NoteActionProvider.VIEW
+                // TODO: The action type is not actually checked when requesting the spec directly
             ),
             null
         )

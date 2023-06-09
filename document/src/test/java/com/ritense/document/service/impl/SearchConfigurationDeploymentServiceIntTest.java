@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
@@ -23,10 +24,8 @@ import com.ritense.document.service.SearchFieldService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
 import java.util.List;
-
+import java.util.function.Function;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.NUMBER;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
@@ -45,7 +44,7 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
     void shouldDeploySearchConfigurationFromResourceFolder() {
         var documentDefinitionName = "person";
 
-        var searchFields = searchFieldService.getSearchFields(documentDefinitionName);
+        var searchFields = AuthorizationContext.runWithoutAuthorization(() -> searchFieldService.getSearchFields(documentDefinitionName));
 
         assertThat(searchFields).hasSize(2);
         assertThat(searchFields.get(0).getId().getDocumentDefinitionName()).isEqualTo(documentDefinitionName);
@@ -66,46 +65,50 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
 
     @Test
     void shouldFailToDeployDueToDuplicateKeys() {
-        List<SearchField> searchFields = new ArrayList<>();
-        searchFields.add(new SearchField(
+        Function<Integer, SearchField> searchFieldFactory = i -> {
+            SearchField searchField = new SearchField(
                 "street",
                 "doc:street",
                 TEXT,
                 SINGLE,
                 EXACT,
                 null,
-                0,
+                i,
                 null
-        ));
-        searchFields.add(new SearchField(
-                "street",
-                "doc:street",
-                TEXT,
-                SINGLE,
-                LIKE,
-            null,
-                1,
-                null
-        ));
-        searchFields.forEach(searchField -> searchField.setId(SearchFieldId.newId("house")));
-        searchFieldService.createSearchConfiguration(searchFields);
-        searchFields = searchFieldService.getSearchFields("house");
-        assertThat(searchFields).isEmpty();
+            );
+            searchField.setId(SearchFieldId.newId("house"));
+            return searchField;
+        };
+
+        List<SearchField> searchFields = List.of(
+            searchFieldFactory.apply(0),
+            searchFieldFactory.apply(1)
+        );
+
+        List<SearchField> result = AuthorizationContext.runWithoutAuthorization(() -> {
+            searchFieldService.createSearchConfiguration(searchFields);
+            return searchFieldService.getSearchFields("house");
+        });
+
+        assertThat(result).isEmpty();
     }
 
     @Test
     void shouldThrowExceptionDueToDuplicateKey() {
-        SearchField searchField = new SearchField("birthday",
-                "doc:birthday",
-                TEXT,
-                SINGLE,
-                LIKE,
-            null,
-                0,
-                null);
-        searchFieldService.addSearchField("person", searchField);
-        assertThrows(IllegalArgumentException.class,
-                () -> searchFieldService.addSearchField("person", searchField));
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            SearchField searchField = new SearchField("birthday",
+                    "doc:birthday",
+                    TEXT,
+                    SINGLE,
+                    LIKE,
+                null,
+                    0,
+                    null);
+            searchFieldService.addSearchField("person", searchField);
+            assertThrows(IllegalArgumentException.class,
+                    () -> searchFieldService.addSearchField("person", searchField));
+            return null;
+        });
     }
 
 }

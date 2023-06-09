@@ -23,20 +23,16 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
 
-abstract class AuthorizationSpecification<T: Any>(
+abstract class AuthorizationSpecification<T : Any>(
     protected val authContext: AuthorizationRequest<T>,
     protected val permissions: List<Permission>
-): Specification<T> {
+) : Specification<T> {
 
-    fun isAuthorized(entity: T): Boolean {
-        return if (AuthorizationContext.ignoreAuthorization) {
-            true
-        } else {
-            permissions.filter { permission ->
-                entity::class.java == permission.resourceType && authContext.action == permission.action
-            }.any { permission ->
-                permission.appliesTo(authContext.resourceType, entity)
-            }
+    internal open fun isAuthorized(entity: T?): Boolean {
+        return entity != null && permissions.filter { permission ->
+            entity::class.java == permission.resourceType && authContext.action == permission.action
+        }.any { permission ->
+            permission.appliesTo(authContext.resourceType, entity)
         }
     }
 
@@ -44,5 +40,9 @@ abstract class AuthorizationSpecification<T: Any>(
         return criteriaBuilder.or(*predicates.toTypedArray())
     }
 
-    abstract override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate
+    abstract override fun toPredicate(
+        root: Root<T>,
+        query: CriteriaQuery<*>,
+        criteriaBuilder: CriteriaBuilder
+    ): Predicate
 }

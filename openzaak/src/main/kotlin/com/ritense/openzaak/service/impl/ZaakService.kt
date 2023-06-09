@@ -16,6 +16,7 @@
 
 package com.ritense.openzaak.service.impl
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
@@ -55,7 +56,7 @@ class ZaakService(
     }
 
     override fun createZaakWithLink(documentId: Document.Id): Zaak {
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = AuthorizationContext.runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
         val openZaakConfig = openZaakConfigService.getOpenZaakConfig()!!
         val zaakTypeLink = zaakTypeLinkService.findBy(document.definitionId().name())
         val zaakInstance = createZaak(

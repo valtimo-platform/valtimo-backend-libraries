@@ -78,7 +78,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USER_EMAIL, authorities = {USER})
+    @WithMockUser(username = USER_EMAIL, authorities = {FULL_ACCESS_ROLE})
     void shouldAssignUserToCase() throws Exception {
         var user = mockUser("John", "Doe");
         when(userManagementService.findById(user.getId())).thenReturn(user);
@@ -106,7 +106,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USER_EMAIL, authorities = {USER})
+    @WithMockUser(username = USER_EMAIL, authorities = {FULL_ACCESS_ROLE})
     void shouldNotAssignInvalidUserId() throws Exception {
         var user = mockUser("John", "Doe");
         when(userManagementService.findById(user.getId())).thenReturn(null);
@@ -122,7 +122,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USER_EMAIL, authorities = {USER})
+    @WithMockUser(username = USER_EMAIL, authorities = {FULL_ACCESS_ROLE})
     void shouldUnassignUserFromCase() throws Exception {
         var user = mockUser("John", "Doe");
         when(userManagementService.findById(user.getId())).thenReturn(user);

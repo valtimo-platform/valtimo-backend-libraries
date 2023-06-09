@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.uploadprocess
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
@@ -30,7 +31,8 @@ class UploadProcessService(
 ) {
 
     fun startUploadResourceProcess(caseId: String, resourceId: String) {
-        val caseDefinitionName = documentService.get(caseId).definitionId().name()
+        val caseDefinitionName = AuthorizationContext
+            .runWithoutAuthorization { documentService.get(caseId) }.definitionId().name()
         val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, DOCUMENT_UPLOAD)
         if (!link.isPresent) {
             throw IllegalStateException("No upload-process linked to case: $caseDefinitionName")

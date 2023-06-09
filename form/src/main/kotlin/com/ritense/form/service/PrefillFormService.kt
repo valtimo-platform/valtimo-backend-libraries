@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.patch.JsonPatchFilterFlag
 import com.ritense.document.domain.patch.JsonPatchService
@@ -55,7 +56,7 @@ class PrefillFormService(
         val documentId = camundaProcessService.findProcessInstanceById(processInstanceId)
             .orElseThrow { RuntimeException("Process instance not found by id $processInstanceId") }
             .businessKey
-        val document = documentService.get(documentId.toString())
+        val document = AuthorizationContext.runWithoutAuthorization { documentService.get(documentId.toString()) }
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
         prefillFormDefinition(formDefinition, document, taskInstanceId)
@@ -69,7 +70,7 @@ class PrefillFormService(
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
         if (documentId != null) {
-            val document = documentService.get(documentId.toString())
+            val document = AuthorizationContext.runWithoutAuthorization { documentService.get(documentId.toString()) }
             prefillFormDefinition(formDefinition, document)
         }
         return formDefinition

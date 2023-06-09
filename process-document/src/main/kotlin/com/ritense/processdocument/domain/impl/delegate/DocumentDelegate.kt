@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.domain.impl.delegate
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -30,14 +31,17 @@ class DocumentDelegate(
 ) {
 
     fun setAssignee(execution: DelegateExecution, userEmail: String?) {
-        if (userEmail == null) {
-            return unassign(execution)
+        AuthorizationContext.runWithoutAuthorization {
+            if (userEmail == null) {
+                unassign(execution)
+            }
+            logger.debug("Assigning user {} to document {}", userEmail, execution.processBusinessKey)
+            val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
+            val user = userManagementService.findByEmail(userEmail)
+                .orElseThrow { IllegalArgumentException("No user found with email: $userEmail") }
+            AuthorizationContext
+                .runWithoutAuthorization { documentService.assignUserToDocument(documentId.id, user.id) }
         }
-        logger.debug("Assigning user {} to document {}", userEmail, execution.processBusinessKey)
-        val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
-        val user = userManagementService.findByEmail(userEmail)
-            .orElseThrow { IllegalArgumentException("No user found with email: $userEmail") }
-        documentService.assignUserToDocument(documentId.id, user.id)
     }
 
     fun unassign(execution: DelegateExecution) {

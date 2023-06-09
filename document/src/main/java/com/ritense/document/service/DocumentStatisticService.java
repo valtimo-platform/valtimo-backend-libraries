@@ -17,6 +17,8 @@
 package com.ritense.document.service;
 
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
+import com.ritense.document.domain.search.AdvancedSearchRequest;
+import com.ritense.document.domain.search.AssigneeFilter;
 import com.ritense.document.repository.DocumentRepository;
 import org.springframework.data.domain.Pageable;
 
@@ -25,14 +27,13 @@ import java.util.List;
 public class DocumentStatisticService {
 
     private final DocumentDefinitionService documentDefinitionService;
-    private final DocumentRepository documentRepository;
+    private final DocumentSearchService documentSearchService;
 
     public DocumentStatisticService(
         DocumentDefinitionService documentDefinitionService,
-        DocumentRepository documentRepository
-    ) {
+        DocumentSearchService documentSearchService) {
         this.documentDefinitionService = documentDefinitionService;
-        this.documentRepository = documentRepository;
+        this.documentSearchService = documentSearchService;
     }
 
     public List<UnassignedDocumentCountDto> getUnassignedDocumentCountDtos() {
@@ -42,7 +43,8 @@ public class DocumentStatisticService {
     }
 
     private UnassignedDocumentCountDto getUnassignedDocumentCountDto(String documentDefinitionName) {
-        long count = documentRepository.countByDocumentDefinitionIdNameAndAssigneeId(documentDefinitionName, null);
+        long count = documentSearchService
+            .count(documentDefinitionName, new AdvancedSearchRequest().assigneeFilter(AssigneeFilter.OPEN));
         return new UnassignedDocumentCountDto(documentDefinitionName, count);
     }
 

@@ -83,43 +83,51 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public Optional<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey) {
+        // TODO: DENY
         return processDocumentDefinitionRepository.findByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
 
     @Override
     public CamundaProcessJsonSchemaDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey) {
+        // TODO: DENY
         return findProcessDocumentDefinition(processDefinitionKey)
             .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException("for processDefinitionKey '" + processDefinitionKey + "'"));
     }
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findAllProcessDocumentDefinitions(ProcessDefinitionKey processDefinitionKey) {
+        // TODO: DENY
         return processDocumentDefinitionRepository.findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
 
     @Override
     public Optional<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion) {
+        // TODO: DENY
         return processDocumentDefinitionRepository.findByProcessDefinitionKeyAndDocumentDefinitionVersion(processDefinitionKey, documentDefinitionVersion);
     }
 
     @Override
     public CamundaProcessJsonSchemaDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion) {
+        // TODO: DENY
         return findProcessDocumentDefinition(processDefinitionKey, documentDefinitionVersion)
             .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException("for processDefinitionKey '" + processDefinitionKey + "' and version '" + documentDefinitionVersion + "'"));
     }
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName) {
+        // TODO: (CREATE jsonschemadocument)/(ADMIN role, so separate endpoint)
         return processDocumentDefinitionRepository.findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(documentDefinitionName);
     }
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitionsByProcessDefinitionKey(String processDefinitionKey) {
+        // TODO: ADMIN
         return processDocumentDefinitionRepository.findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
 
     @Override
     public Optional<? extends ProcessDocumentDefinition> findByDocumentDefinitionName(String documentDefinitionName) {
+        // TODO: DENY
         return processDocumentDefinitionRepository.findByDocumentDefinitionName(documentDefinitionName);
     }
 
@@ -134,6 +142,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
+    //TODO: case VIEW @Marijn
     public List<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstances(Document.Id documentId) {
         var processes = processDocumentInstanceRepository.findAllByDocumentId(documentId);
         for (var process : processes) {
@@ -147,6 +156,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     @Transactional
+    //TODO: DENY @Marijn
     public void deleteProcessDocumentInstances(String processName) {
         logger.debug("Remove all running process document instances for process: {}", processName);
         processDocumentInstanceRepository.deleteAllByProcessName(processName);
@@ -222,6 +232,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Transactional
     @Override
+    //TODO: DENY
     public Optional<CamundaProcessJsonSchemaDocumentInstance> createProcessDocumentInstance(
         String processInstanceId,
         UUID documentId,
@@ -244,6 +255,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
+    //TODO: unused - remove? @Marijn
     public FunctionResult<CamundaProcessJsonSchemaDocumentDefinition, OperationError> getProcessDocumentDefinitionResult(
         ProcessDocumentDefinitionId processDocumentDefinitionId
     ) {
@@ -257,6 +269,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
+    //TODO: DENY
     public FunctionResult<CamundaProcessJsonSchemaDocumentInstance, OperationError> getProcessDocumentInstanceResult(
         ProcessDocumentInstanceId processDocumentInstanceId
     ) {

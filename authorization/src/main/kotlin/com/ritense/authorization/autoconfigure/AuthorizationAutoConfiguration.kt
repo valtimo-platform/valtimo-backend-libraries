@@ -22,9 +22,12 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.PermissionRepository
+import com.ritense.authorization.ResourceActionProvider
 import com.ritense.authorization.RoleRepository
 import com.ritense.authorization.UserManagementServiceHolder
 import com.ritense.authorization.ValtimoAuthorizationService
+import com.ritense.authorization.specification.DenyAuthorizationSpecificationFactory
+import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -53,11 +56,12 @@ class AuthorizationAutoConfiguration(
     fun valtimoAuthorizationService(
         authorizationSpecificationFactories: List<AuthorizationSpecificationFactory<*>>,
         mappers: List<AuthorizationEntityMapper<*, *>>,
+        actionProviders: List<ResourceActionProvider<*>>,
         permissionRepository: PermissionRepository,
         roleRepository: RoleRepository
     ): AuthorizationService {
         val authorizationService =
-            ValtimoAuthorizationService(authorizationSpecificationFactories, mappers, permissionRepository)
+            ValtimoAuthorizationService(authorizationSpecificationFactories, mappers, actionProviders, permissionRepository)
         AuthorizationServiceHolder(authorizationService)
         return authorizationService
     }
@@ -74,5 +78,17 @@ class AuthorizationAutoConfiguration(
     @Bean
     fun permissionConditionTypeModule(): Module {
         return PermissionConditionTypeModule()
+    }
+
+    @Bean
+    @Order(HIGHEST_PRECEDENCE)
+    fun <T: Any> noopAuthorizationSpecificationFactory(): AuthorizationSpecificationFactory<T> {
+        return NoopAuthorizationSpecificationFactory()
+    }
+
+    @Bean
+    @Order(HIGHEST_PRECEDENCE + 1)
+    fun <T: Any> denyAuthorizationSpecificationFactory(): AuthorizationSpecificationFactory<T> {
+        return DenyAuthorizationSpecificationFactory()
     }
 }

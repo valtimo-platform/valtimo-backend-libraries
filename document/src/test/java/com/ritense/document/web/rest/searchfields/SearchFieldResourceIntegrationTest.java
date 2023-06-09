@@ -16,6 +16,8 @@
 
 package com.ritense.document.web.rest.searchfields;
 
+import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.searchfield.SearchField;
@@ -35,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +68,9 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private DocumentModuleExceptionTranslator documentModuleExceptionTranslator;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     private MockMvc mockMvc;
     private SearchFieldResource searchFieldResource;
     private static final String DOCUMENT_DEFINITION_NAME = "house";
@@ -81,7 +87,9 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @BeforeEach()
     void setUp() {
-        searchFieldService = new SearchFieldService(searchFieldRepository, documentDefinitionService);
+        searchFieldService = new SearchFieldService(searchFieldRepository, documentDefinitionService,
+                authorizationService
+        );
         searchFieldResource = new SearchFieldResource(searchFieldService);
 
         mockMvc = MockMvcBuilders
@@ -179,6 +187,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldRetrieveSearchFieldsByDocumentDefinitionName() throws Exception {
         var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
         mockMvc.perform(
@@ -203,8 +212,54 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    void shouldNotRetrieveSearchFieldsWithoutPermissions() throws Exception {
+        var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
+        mockMvc.perform(
+                post("/api/v1/document-search/{documentDefinitionName}/fields",
+                    DOCUMENT_DEFINITION_NAME)
+                    .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk());
+        mockMvc.perform(
+                get("/api/v1/document-search/{documentDefinitionName}/fields",
+                    DOCUMENT_DEFINITION_NAME))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    void shouldRetrieveSearchFieldsByDocumentDefinitionNameForAdmin() throws Exception {
+        var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
+        mockMvc.perform(
+                post("/api/v1/document-search/{documentDefinitionName}/fields",
+                    DOCUMENT_DEFINITION_NAME)
+                    .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk());
+        mockMvc.perform(
+                get("/api/v1/admin/document-search/{documentDefinitionName}/fields",
+                    DOCUMENT_DEFINITION_NAME))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].key", is("street")))
+            .andExpect(jsonPath("$[0].path", is("doc:street")))
+            .andExpect(jsonPath("$[0].dataType", is(TEXT.toString())))
+            .andExpect(jsonPath("$[0].fieldType", is(SINGLE.toString())))
+            .andExpect(jsonPath("$[0].matchType", is(EXACT.toString())))
+            .andExpect(jsonPath("$[0].title", is("aTitle")));
+    }
+
+    @Test
     void shouldUpdateSearchField() throws Exception {
-        searchFieldService.addSearchField(DOCUMENT_DEFINITION_NAME, SEARCH_FIELD);
+        AuthorizationContext.runWithoutAuthorization(() -> {
+                searchFieldService.addSearchField(DOCUMENT_DEFINITION_NAME, SEARCH_FIELD);
+                return null;
+            }
+        );
         SearchFieldId searchFieldId = searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(DOCUMENT_DEFINITION_NAME).get(0).getId();
         SearchFieldDto searchFieldToUpdate = new SearchFieldDto(
                 SEARCH_FIELD.getKey(),

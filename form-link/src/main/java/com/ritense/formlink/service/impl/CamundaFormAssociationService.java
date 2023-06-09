@@ -19,6 +19,7 @@ package com.ritense.formlink.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
@@ -339,7 +340,9 @@ public class CamundaFormAssociationService implements FormAssociationService {
         Optional<String> taskInstanceId
     ) {
         //Metadata
-        final JsonSchemaDocument document = (JsonSchemaDocument) documentService.findBy(documentId).orElseThrow();
+        final JsonSchemaDocument document = (JsonSchemaDocument) AuthorizationContext.runWithoutAuthorization(
+            () -> documentService.findBy(documentId)
+        ).orElseThrow();
         final ObjectNode extendedDocumentContent = (ObjectNode) document.content().asJson();
         extendedDocumentContent.set("metadata", buildMetaDataObject(document));
 
