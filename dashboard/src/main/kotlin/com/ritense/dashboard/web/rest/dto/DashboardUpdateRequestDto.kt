@@ -20,13 +20,15 @@ import com.ritense.dashboard.domain.Dashboard
 
 data class DashboardUpdateRequestDto(
     val key: String,
-    val title: String
+    val title: String,
+    val description: String,
 ) {
     companion object {
         fun of(dashboard: Dashboard): DashboardUpdateRequestDto {
             return DashboardUpdateRequestDto(
                 key = dashboard.key,
-                title = dashboard.title
+                title = dashboard.title,
+                description = dashboard.description,
             )
         }
     }

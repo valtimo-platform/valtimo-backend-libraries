@@ -20,7 +20,9 @@ import com.ritense.dashboard.service.DashboardService
 import com.ritense.dashboard.web.rest.dto.DashboardCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.DashboardResponseDto
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
-import com.ritense.dashboard.web.rest.dto.DashboardWithWidgetConfigurationsResponseDto
+import com.ritense.dashboard.web.rest.dto.WidgetConfigurationCreateRequestDto
+import com.ritense.dashboard.web.rest.dto.WidgetConfigurationResponseDto
+import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -37,10 +39,18 @@ class DashboardResource(
 ) {
 
     @GetMapping("/v1/dashboard")
-    fun getDashboards(): ResponseEntity<List<DashboardWithWidgetConfigurationsResponseDto>> {
+    fun getDashboards(): ResponseEntity<List<DashboardResponseDto>> {
         val dashboardResponseDtos = dashboardService.getDashboards()
-            .map { DashboardWithWidgetConfigurationsResponseDto.of(it) }
+            .map { DashboardResponseDto.of(it) }
         return ResponseEntity.ok(dashboardResponseDtos)
+    }
+
+    @GetMapping("/v1/dashboard/{dashboardKey}")
+    fun getDashboard(
+        @PathVariable(name = "dashboardKey") dashboardKey: String
+    ): ResponseEntity<DashboardResponseDto> {
+        val dashboard = dashboardService.getDashboard(dashboardKey)
+        return ResponseEntity.ok(DashboardResponseDto.of(dashboard))
     }
 
     @PostMapping("/v1/dashboard")
@@ -50,6 +60,7 @@ class DashboardResource(
         val dashboard = dashboardService.createDashboard(
             dashboardDto.key,
             dashboardDto.title,
+            dashboardDto.description,
         )
         return ResponseEntity.ok(DashboardResponseDto.of(dashboard))
     }
@@ -68,6 +79,58 @@ class DashboardResource(
         @PathVariable(name = "dashboardKey") dashboardKey: String
     ): ResponseEntity<Unit> {
         dashboardService.deleteDashboard(dashboardKey)
+        return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/v1/dashboard/{dashboardKey}/widget")
+    fun getWidgetConfigurations(
+        @PathVariable(name = "dashboardKey") dashboardKey: String
+    ): ResponseEntity<List<WidgetConfigurationResponseDto>> {
+        val widgetDtos = dashboardService.getWidgetConfigurations(dashboardKey)
+            .map { WidgetConfigurationResponseDto.of(it) }
+        return ResponseEntity.ok(widgetDtos)
+    }
+
+    @PostMapping("/v1/dashboard/{dashboardKey}/widget")
+    fun createWidgetConfigurations(
+        @PathVariable(name = "dashboardKey") dashboardKey: String,
+        @RequestBody widgetDto: WidgetConfigurationCreateRequestDto,
+    ): ResponseEntity<WidgetConfigurationResponseDto> {
+        val widget = dashboardService.createWidgetConfiguration(
+            dashboardKey,
+            widgetDto.key,
+            widgetDto.dataSourceKey,
+            widgetDto.displayType,
+            widgetDto.dataSourceProperties,
+        )
+        return ResponseEntity.ok(WidgetConfigurationResponseDto.of(widget))
+    }
+
+    @PutMapping("/v1/dashboard/{dashboardKey}/widget")
+    fun editWidgetConfigurations(
+        @PathVariable(name = "dashboardKey") dashboardKey: String,
+        @RequestBody widgetUpdateRequestDtos: List<WidgetConfigurationUpdateRequestDto>
+    ): ResponseEntity<List<WidgetConfigurationResponseDto>> {
+        val widgetResponseDtos = dashboardService.updateWidgetConfigurations(dashboardKey, widgetUpdateRequestDtos)
+            .map { WidgetConfigurationResponseDto.of(it) }
+        return ResponseEntity.ok(widgetResponseDtos)
+    }
+
+    @GetMapping("/v1/dashboard/{dashboardKey}/widget/{widgetKey}")
+    fun getWidgetConfigurations(
+        @PathVariable(name = "dashboardKey") dashboardKey: String,
+        @PathVariable(name = "widgetKey") widgetKey: String,
+    ): ResponseEntity<WidgetConfigurationResponseDto> {
+        val widget = dashboardService.getWidgetConfiguration(dashboardKey, widgetKey)
+        return ResponseEntity.ok(WidgetConfigurationResponseDto.of(widget))
+    }
+
+    @DeleteMapping("/v1/dashboard/{dashboardKey}/widget/{widgetKey}")
+    fun deleteWidgetConfigurations(
+        @PathVariable(name = "dashboardKey") dashboardKey: String,
+        @PathVariable(name = "widgetKey") widgetKey: String,
+    ): ResponseEntity<Unit> {
+        dashboardService.deleteWidgetConfiguration(dashboardKey, widgetKey)
         return ResponseEntity.noContent().build()
     }
 }

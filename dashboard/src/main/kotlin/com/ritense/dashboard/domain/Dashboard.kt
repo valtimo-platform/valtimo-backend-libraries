@@ -33,8 +33,11 @@ data class Dashboard(
     @Column(name = "key", updatable = false, nullable = false, unique = true)
     val key: String,
 
-    @Column(name = "title", updatable = false, nullable = false)
+    @Column(name = "title", nullable = false)
     val title: String,
+
+    @Column(name = "description")
+    val description: String,
 
     @OneToMany(mappedBy = "dashboard", fetch = LAZY, cascade = [ALL], orphanRemoval = true)
     @OrderBy("order ASC")

@@ -17,6 +17,7 @@
 package com.ritense.dashboard.autoconfigure
 
 import com.ritense.dashboard.repository.DashboardRepository
+import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.security.config.DashboardHttpSecurityConfigurer
 import com.ritense.dashboard.service.DashboardService
 import com.ritense.dashboard.web.rest.DashboardResource
@@ -54,9 +55,10 @@ class DashboardAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DashboardService::class)
     fun dashboardService(
-        dashboardRepository: DashboardRepository
+        dashboardRepository: DashboardRepository,
+        widgetConfigurationRepository: WidgetConfigurationRepository,
     ): DashboardService {
-        return DashboardService(dashboardRepository)
+        return DashboardService(dashboardRepository, widgetConfigurationRepository)
     }
 
     @Bean

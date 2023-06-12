@@ -19,4 +19,5 @@ package com.ritense.dashboard.web.rest.dto
 data class DashboardCreateRequestDto(
     val key: String,
     val title: String,
+    val description: String,
 )

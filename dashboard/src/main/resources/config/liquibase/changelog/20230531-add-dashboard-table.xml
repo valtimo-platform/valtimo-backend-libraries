@@ -63,4 +63,20 @@
                                  referencedColumnNames="key"/>
     </changeSet>
 
+    <changeSet id="4" author="Ritense">
+        <addColumn tableName="dashboard">
+            <column name="description" type="VARCHAR(512)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <dropPrimaryKey tableName="dashboard_widget_configuration"/>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <addColumn tableName="dashboard_widget_configuration">
+            <column name="id" type="${uuidType}"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
