@@ -16,20 +16,18 @@
 
 package com.ritense.case.service
 
+import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListRowDto
+import com.ritense.document.domain.Document
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.service.DocumentSearchService
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.transaction.annotation.Transactional
-import com.ritense.case.domain.CaseListColumn
-import com.ritense.case.exception.InvalidListColumnException
-import com.ritense.document.domain.Document
 import com.ritense.valueresolver.ValueResolverService
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.zalando.problem.Status
+import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class CaseInstanceService(
@@ -38,13 +36,12 @@ class CaseInstanceService(
     private val documentSearchService: DocumentSearchService,
     private val valueResolverService: ValueResolverService,
 ) {
-    //TODO: case LIST_VIEW @Marijn
     fun search(
         caseDefinitionName: String,
         searchRequest: SearchWithConfigRequest,
         pageable: Pageable
     ): Page<CaseListRowDto> {
-
+        // No authorization on this level, as we have to fully rely on the documentSearchService for filtering results
         val caseListColumns = caseDefinitionListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
             caseDefinitionName
         )
