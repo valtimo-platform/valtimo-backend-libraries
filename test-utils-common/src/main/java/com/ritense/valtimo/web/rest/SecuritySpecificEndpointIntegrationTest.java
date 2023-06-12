@@ -17,6 +17,7 @@
 package com.ritense.valtimo.web.rest;
 
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.mail.MailSender;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -41,6 +43,9 @@ public abstract class SecuritySpecificEndpointIntegrationTest {
 
     @MockBean
     private UserManagementService userManagementService;
+
+    @MockBean
+    public MailSender mailSender;
 
     @Autowired
     private MockMvc mockMvc;

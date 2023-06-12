@@ -42,6 +42,10 @@ aws:
         bucketName: bucketName
         bucketRegion: US-EAST
 
+spring-actuator:
+    username: test
+    password: test
+
 valtimo:
     database: postgres
     versioning.enabled: true

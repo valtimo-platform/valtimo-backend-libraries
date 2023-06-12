@@ -65,7 +65,6 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation "org.springframework.security:spring-security-test"
-    testImplementation project(path: ":core", configuration: 'testOutput')
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation project(':test-utils-common')
     testImplementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
