@@ -16,10 +16,12 @@
 
 package com.ritense.processdocument.autoconfigure;
 
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
+import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
 import com.ritense.processdocument.domain.delegate.ProcessDocumentStartEventMessageDelegate;
 import com.ritense.processdocument.domain.impl.delegate.DocumentVariableDelegateImpl;
@@ -67,16 +69,18 @@ public class ProcessDocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ProcessDocumentService.class)
     public CamundaProcessJsonSchemaDocumentService processDocumentService(
-        DocumentService documentService,
+        JsonSchemaDocumentService documentService,
         CamundaTaskService camundaTaskService,
         CamundaProcessService camundaProcessService,
-        ProcessDocumentAssociationService processDocumentAssociationService
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        AuthorizationService authorizationService
     ) {
         return new CamundaProcessJsonSchemaDocumentService(
             documentService,
             camundaTaskService,
             camundaProcessService,
-            processDocumentAssociationService
+            processDocumentAssociationService,
+            authorizationService
         );
     }
 

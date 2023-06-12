@@ -17,9 +17,13 @@
 package com.ritense.processdocument.service.impl;
 
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
@@ -67,20 +71,28 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 
 public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentService {
 
     private static final Logger logger = LoggerFactory.getLogger(CamundaProcessJsonSchemaDocumentService.class);
-    private final DocumentService documentService;
+    private final JsonSchemaDocumentService documentService;
     private final CamundaTaskService camundaTaskService;
     private final CamundaProcessService camundaProcessService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
+    private final AuthorizationService authorizationService;
 
-    public CamundaProcessJsonSchemaDocumentService(DocumentService documentService, CamundaTaskService camundaTaskService, CamundaProcessService camundaProcessService, ProcessDocumentAssociationService processDocumentAssociationService) {
+    public CamundaProcessJsonSchemaDocumentService(
+        JsonSchemaDocumentService documentService, CamundaTaskService camundaTaskService, CamundaProcessService camundaProcessService, ProcessDocumentAssociationService processDocumentAssociationService,
+        AuthorizationService authorizationService
+    ) {
         this.documentService = documentService;
         this.camundaTaskService = camundaTaskService;
         this.camundaProcessService = camundaProcessService;
         this.processDocumentAssociationService = processDocumentAssociationService;
+        this.authorizationService = authorizationService;
     }
 
     @Override
@@ -115,6 +127,16 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             }
 
             final var document = newDocumentResult.resultingDocument().orElseThrow();
+
+            authorizationService.requirePermission(
+                new AuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    CREATE
+                ),
+                document,
+                null
+            );
+
             final var processInstanceWithDefinition = startProcess(
                 document,
                 processDefinitionKey.toString(),
@@ -166,9 +188,21 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             if (modifyDocumentResult.resultingDocument().isEmpty()) {
                 return new ModifyDocumentAndCompleteTaskResultFailed(modifyDocumentResult.errors());
             }
+
+            final var document = modifyDocumentResult.resultingDocument().orElseThrow();
+
+            authorizationService.requirePermission(
+                new AuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    MODIFY
+                ),
+                document,
+                null
+            );
+
             camundaTaskService.completeTask(request.taskId(), request.getProcessVars());
 
-            return new ModifyDocumentAndCompleteTaskResultSucceeded(modifyDocumentResult.resultingDocument().orElseThrow());
+            return new ModifyDocumentAndCompleteTaskResultSucceeded(document);
         } catch (Exception ex) {
             return new ModifyDocumentAndCompleteTaskResultFailed(parseAndLogException(ex));
         }
@@ -191,6 +225,15 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             }
 
             final var document = newDocumentResult.resultingDocument().orElseThrow();
+
+            authorizationService.requirePermission(
+                new AuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    CREATE
+                ),
+                document,
+                null
+            );
 
             final String processName = camundaProcessService.getProcessDefinition(request.processDefinitionKey()).getName();
             processDocumentAssociationService.createProcessDocumentInstance(
@@ -223,6 +266,15 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             }
             final var document = modifyDocumentResult.resultingDocument().orElseThrow();
 
+            authorizationService.requirePermission(
+                new AuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    MODIFY
+                ),
+                document,
+                null
+            );
+
             //Part 2 process start
             final var processDefinitionKey = new CamundaProcessDefinitionKey(request.processDefinitionKey());
             final var processInstanceWithDefinition = startProcess(document, processDefinitionKey.toString(), request.getProcessVars());
@@ -244,14 +296,23 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     public StartProcessForDocumentResult startProcessForDocument(StartProcessForDocumentRequest request) {
         try {
             //Part 1 find document
-            Optional<? extends Document> optionalDocument = AuthorizationContext
+            final var optionalDocument = AuthorizationContext
                 .runWithoutAuthorization(() -> documentService.findBy(request.getDocumentId()));
 
             if (optionalDocument.isEmpty()) {
                 return new StartProcessForDocumentResultFailed(new OperationError.FromString("Document could not be found"));
             }
 
-            Document document = optionalDocument.get();
+            final var document = optionalDocument.get();
+
+            authorizationService.requirePermission(
+                new AuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    VIEW
+                ),
+                document,
+                null
+            );
 
             //Part 2 process start
             final var processDefinitionKey = new CamundaProcessDefinitionKey(request.getProcessDefinitionKey());
@@ -289,10 +350,21 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     }
 
     public Document getDocument(ProcessInstanceId processInstanceId, VariableScope variableScope) {
-        return AuthorizationContext
+        final var document = AuthorizationContext
             .runWithoutAuthorization(
                 () -> documentService.get(getDocumentId(processInstanceId, variableScope).toString())
             );
+
+        authorizationService.requirePermission(
+            new AuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                VIEW
+            ),
+            document,
+            null
+        );
+
+        return document;
     }
 
     @Override
