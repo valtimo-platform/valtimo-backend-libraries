@@ -62,7 +62,7 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
     @Test
     fun `should delete old columns in database when loading new configuration`() {
         //load initial configuration
-        val spyResolver = spy(resourcePatternResolver)
+        val spyResolver = spy(resourcePatternResolver2)
         val resource = mock<Resource>()
         val fileContent = """
             [

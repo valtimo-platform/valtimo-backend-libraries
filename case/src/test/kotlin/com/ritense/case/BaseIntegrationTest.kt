@@ -39,7 +39,7 @@ class BaseIntegrationTest {
     lateinit var mailSender: MailSender
 
     @SpyBean
-    lateinit var resourcePatternResolver: ResourcePatternResolver
+    lateinit var resourcePatternResolver2: ResourcePatternResolver
 
 }
 

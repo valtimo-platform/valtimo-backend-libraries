@@ -116,19 +116,19 @@ class CaseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ResourcePatternResolver::class)
-    fun resourcePatternResolver(resourceLoader: ResourceLoader): ResourcePatternResolver {
+    fun resourcePatternResolver2(resourceLoader: ResourceLoader): ResourcePatternResolver {
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
     }
 
     @Bean
     @Order(Ordered.LOWEST_PRECEDENCE)
     fun caseListDeploymentService(
-        resourcePatternResolver: ResourcePatternResolver,
+        resourcePatternResolver2: ResourcePatternResolver,
         objectMapper: ObjectMapper,
         caseDefinitionService: CaseDefinitionService
     ): CaseListDeploymentService {
         return CaseListDeploymentService(
-            resourcePatternResolver,
+            resourcePatternResolver2,
             objectMapper,
             caseDefinitionService
         )
