@@ -122,17 +122,4 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-engine"
 }
 
-configurations {
-    testOutput.extendsFrom (testCompile)
-}
-
-task jarTest (type: Jar, dependsOn: testClasses) {
-    from sourceSets.test.output
-    archiveClassifier = 'test'
-}
-
-artifacts {
-    testOutput jarTest
-}
-
 apply from: "gradle/publishing.gradle"
