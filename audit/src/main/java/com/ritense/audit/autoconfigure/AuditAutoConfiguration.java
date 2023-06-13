@@ -31,9 +31,8 @@ import com.ritense.audit.service.impl.AuditEventProcessorImpl;
 import com.ritense.audit.service.impl.AuditRetentionServiceImpl;
 import com.ritense.audit.service.impl.AuditSearchServiceImpl;
 import com.ritense.audit.service.impl.AuditServiceImpl;
-import com.ritense.authorization.AuthorizationService;
-import com.ritense.document.service.DocumentService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
+import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -42,8 +41,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
-
-import javax.persistence.EntityManager;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.audit.repository.impl")
@@ -58,12 +55,8 @@ public class AuditAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(AuditService.class)
-    public AuditService auditService(
-        AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository,
-        AuthorizationService authorizationService,
-        DocumentService documentService
-    ) {
-        return new AuditServiceImpl(auditRecordRepository, authorizationService, documentService);
+    public AuditService auditService(AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository) {
+        return new AuditServiceImpl(auditRecordRepository);
     }
 
     @Bean
@@ -80,10 +73,9 @@ public class AuditAutoConfiguration {
     @ConditionalOnMissingBean(AuditSearchService.class)
     public AuditSearchService auditSearchService(
         EntityManager entityManager,
-        QueryDialectHelper queryDialectHelper,
-        AuthorizationService authorizationService
+        QueryDialectHelper queryDialectHelper
     ) {
-        return new AuditSearchServiceImpl(entityManager, queryDialectHelper, authorizationService);
+        return new AuditSearchServiceImpl(entityManager, queryDialectHelper);
     }
 
     @Bean

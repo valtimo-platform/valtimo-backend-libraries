@@ -129,9 +129,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
             .andReturn().response
 
         val noteId = JsonPath.read<String>(responseBody.contentAsString, "$.id")
-        val auditList = AuthorizationContext.runWithoutAuthorization {
-            auditService.findByProperty("noteId", noteId, Pageable.unpaged()).toList()
-        }
+        val auditList = auditService.findByProperty("noteId", noteId, Pageable.unpaged()).toList()
         auditList.size shouldBeExactly 1
         auditList[0].documentId shouldBe documentId
     }

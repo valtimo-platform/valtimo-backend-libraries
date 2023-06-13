@@ -18,10 +18,6 @@ package com.ritense.audit.service.impl;
 
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.service.AuditSearchService;
-import com.ritense.authorization.Action;
-import com.ritense.authorization.AuthorizationRequest;
-import com.ritense.authorization.AuthorizationService;
-import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,27 +33,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
+//TODO: unused? @Marijn
 public class AuditSearchServiceImpl implements AuditSearchService {
 
     private final EntityManager entityManager;
 
     private final QueryDialectHelper queryDialectHelper;
 
-    private final AuthorizationService authorizationService;
-
-    public AuditSearchServiceImpl(
-        EntityManager entityManager,
-        QueryDialectHelper queryDialectHelper,
-        AuthorizationService authorizationService
-    ) {
+    public AuditSearchServiceImpl(EntityManager entityManager, QueryDialectHelper queryDialectHelper) {
         this.entityManager = entityManager;
         this.queryDialectHelper = queryDialectHelper;
-        this.authorizationService = authorizationService;
     }
 
     @Override
     public Page<AuditRecord> search(List<SearchCriteria> criteriaList, Pageable pageable) {
-        denyAuthorization();
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<AuditRecord> query = cb.createQuery(AuditRecord.class);
         Root<AuditRecord> root = query.from(AuditRecord.class);
@@ -85,17 +74,6 @@ public class AuditSearchServiceImpl implements AuditSearchService {
 
     private Predicate isNotNull(CriteriaBuilder cb, Root<AuditRecord> root, String path, String value) {
         return queryDialectHelper.getJsonValueExistsInPathExpression(cb, root.get("auditEvent"), path, value);
-    }
-
-    private void denyAuthorization() {
-        authorizationService.requirePermission(
-            new AuthorizationRequest<>(
-                AuditRecord.class,
-                Action.deny()
-            ),
-            null,
-            null
-        );
     }
 
 }

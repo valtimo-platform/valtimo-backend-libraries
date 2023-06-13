@@ -37,9 +37,6 @@ spring:
                 implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
             use-new-id-generator-mappings: false
 
-spring-actuator:
-    username: admin
-    password: test123
 audit:
     record:
         retention: 15
