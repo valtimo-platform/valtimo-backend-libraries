@@ -24,7 +24,9 @@ dockerCompose {
 }
 
 dependencies {
+    implementation project(':authorization')
     implementation project(':contract')
+    implementation project(':document')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -68,6 +70,9 @@ dependencies {
     // Shedlock
     implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}"
     implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:${shedlockVersion}"
+
+    testImplementation project(':resource')
+    testImplementation project(':core')
 
     jar {
         enabled = true
