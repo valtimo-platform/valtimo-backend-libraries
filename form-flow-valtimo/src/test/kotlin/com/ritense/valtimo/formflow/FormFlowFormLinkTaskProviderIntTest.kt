@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.formflow.repository.FormFlowInstanceRepository
@@ -100,11 +101,13 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
 
     @Test
     fun `should create form flow instance when task is opened`() {
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"testing.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
+        documentDefinitionService.deploy(
+            "" +
+                "{\n" +
+                "    \"\$id\": \"testing.schema\",\n" +
+                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                "}\n"
+        )
 
         processDocumentAssociationService.createProcessDocumentDefinition(
             ProcessDocumentDefinitionRequest(
@@ -115,7 +118,8 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
         )
 
         formAssociationService.createFormAssociation(
-            CreateFormAssociationRequest("formflow-one-task-process",
+            CreateFormAssociationRequest(
+                "formflow-one-task-process",
                 FormLinkRequest(
                     "do-something",
                     FormAssociationType.USER_TASK,
@@ -127,12 +131,17 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
             )
         )
 
-        val result = processDocumentService.newDocumentAndStartProcess(
-            NewDocumentAndStartProcessRequest("formflow-one-task-process",
-                NewDocumentRequest("testing",
-                    Mapper.INSTANCE.get().readTree("{}"))
+        val result = AuthorizationContext.runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(
+                NewDocumentAndStartProcessRequest(
+                    "formflow-one-task-process",
+                    NewDocumentRequest(
+                        "testing",
+                        Mapper.INSTANCE.get().readTree("{}")
+                    )
+                )
             )
-        )
+        }
 
         val task = taskService.createTaskQuery()
             .processInstanceId(result.resultingProcessInstanceId().get().toString())

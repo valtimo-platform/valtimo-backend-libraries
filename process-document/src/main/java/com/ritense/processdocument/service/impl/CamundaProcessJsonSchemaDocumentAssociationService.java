@@ -16,6 +16,9 @@
 
 package com.ritense.processdocument.service.impl;
 
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
@@ -66,49 +69,54 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private final DocumentDefinitionService documentDefinitionService;
     private final CamundaProcessService camundaProcessService;
     private final RuntimeService runtimeService;
+    private final AuthorizationService authorizationService;
 
-    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaProcessService camundaProcessService, RuntimeService runtimeService) {
+    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaProcessService camundaProcessService, RuntimeService runtimeService,
+                                                              AuthorizationService authorizationService
+    ) {
         this.processDocumentDefinitionRepository = processDocumentDefinitionRepository;
         this.processDocumentInstanceRepository = processDocumentInstanceRepository;
         this.documentDefinitionRepository = documentDefinitionRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.camundaProcessService = camundaProcessService;
         this.runtimeService = runtimeService;
+        this.authorizationService = authorizationService;
     }
 
     @Override
     public Page<CamundaProcessJsonSchemaDocumentDefinition> getAllProcessDocumentDefinitions(Pageable pageable) {
+        //TODO: Authorization
         return processDocumentDefinitionRepository.findAllByLatestDocumentDefinitionVersion(pageable);
     }
 
     @Override
     public Optional<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey) {
-        // TODO: DENY
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
         return processDocumentDefinitionRepository.findByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
 
     @Override
     public CamundaProcessJsonSchemaDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey) {
-        // TODO: DENY
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
         return findProcessDocumentDefinition(processDefinitionKey)
             .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException("for processDefinitionKey '" + processDefinitionKey + "'"));
     }
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findAllProcessDocumentDefinitions(ProcessDefinitionKey processDefinitionKey) {
-        // TODO: DENY
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
         return processDocumentDefinitionRepository.findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
 
     @Override
     public Optional<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion) {
-        // TODO: DENY
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
         return processDocumentDefinitionRepository.findByProcessDefinitionKeyAndDocumentDefinitionVersion(processDefinitionKey, documentDefinitionVersion);
     }
 
     @Override
     public CamundaProcessJsonSchemaDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion) {
-        // TODO: DENY
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
         return findProcessDocumentDefinition(processDefinitionKey, documentDefinitionVersion)
             .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException("for processDefinitionKey '" + processDefinitionKey + "' and version '" + documentDefinitionVersion + "'"));
     }
@@ -127,7 +135,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public Optional<? extends ProcessDocumentDefinition> findByDocumentDefinitionName(String documentDefinitionName) {
-        // TODO: DENY
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
         return processDocumentDefinitionRepository.findByDocumentDefinitionName(documentDefinitionName);
     }
 
@@ -156,8 +164,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     @Transactional
-    //TODO: DENY @Marijn
     public void deleteProcessDocumentInstances(String processName) {
+        denyAuthorization(CamundaProcessJsonSchemaDocumentInstance.class);
         logger.debug("Remove all running process document instances for process: {}", processName);
         processDocumentInstanceRepository.deleteAllByProcessName(processName);
     }
@@ -282,4 +290,15 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         }
     }
 
+    private <T> void denyAuthorization(Class<T> clazz) {
+        authorizationService
+            .requirePermission(
+                new AuthorizationRequest<T>(
+                    clazz,
+                    Action.deny()
+                ),
+                null,
+                null
+            );
+    }
 }

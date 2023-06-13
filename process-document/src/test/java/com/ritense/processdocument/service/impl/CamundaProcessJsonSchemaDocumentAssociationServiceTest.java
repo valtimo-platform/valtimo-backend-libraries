@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.service.impl;
 
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
@@ -54,6 +55,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
     private DocumentDefinitionService documentDefinitionService;
     private CamundaProcessService camundaProcessService;
     private RuntimeService runtimeService;
+    private AuthorizationService authorizationService;
 
     @BeforeEach
     public void setUp() {
@@ -63,6 +65,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         documentDefinitionService = mock(DocumentDefinitionService.class);
         camundaProcessService = mock(CamundaProcessService.class);
         runtimeService = mock(RuntimeService.class);
+        authorizationService = mock(AuthorizationService.class);
 
         service = new CamundaProcessJsonSchemaDocumentAssociationService(
             processDocumentDefinitionRepository,
@@ -70,7 +73,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
             documentDefinitionRepository,
             documentDefinitionService,
             camundaProcessService,
-            runtimeService
+            runtimeService,
+            authorizationService
         );
     }
 
@@ -169,7 +173,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
 
         when(processDocumentDefinitionRepository.findById(id)).thenReturn(Optional.empty());
 
-        final FunctionResult<CamundaProcessJsonSchemaDocumentDefinition, OperationError> result = service.getProcessDocumentDefinitionResult(id);
+        final FunctionResult<CamundaProcessJsonSchemaDocumentDefinition, OperationError> result = service.getProcessDocumentDefinitionResult(
+            id);
 
         assertThat(result).isInstanceOf(FunctionResult.Erroneous.class);
         assertThat(result.hasResult()).isEqualTo(false);
@@ -184,7 +189,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         final var definition = mock(CamundaProcessJsonSchemaDocumentDefinition.class);
         when(processDocumentDefinitionRepository.findById(id)).thenReturn(Optional.of(definition));
 
-        final FunctionResult<CamundaProcessJsonSchemaDocumentDefinition, OperationError> result = service.getProcessDocumentDefinitionResult(id);
+        final FunctionResult<CamundaProcessJsonSchemaDocumentDefinition, OperationError> result = service.getProcessDocumentDefinitionResult(
+            id);
 
         assertThat(result).isInstanceOf(FunctionResult.Successful.class);
         assertThat(result.hasResult()).isEqualTo(true);
