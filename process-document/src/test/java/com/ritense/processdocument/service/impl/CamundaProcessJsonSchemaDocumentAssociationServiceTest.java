@@ -168,37 +168,6 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
     }
 
     @Test
-    public void shouldFindProcessDocumentDefinitionWithFailedResult() {
-        final var id = processDocumentDefinitionId();
-
-        when(processDocumentDefinitionRepository.findById(id)).thenReturn(Optional.empty());
-
-        final FunctionResult<CamundaProcessJsonSchemaDocumentDefinition, OperationError> result = service.getProcessDocumentDefinitionResult(
-            id);
-
-        assertThat(result).isInstanceOf(FunctionResult.Erroneous.class);
-        assertThat(result.hasResult()).isEqualTo(false);
-        assertThat(result.isError()).isEqualTo(true);
-        assertThat(result.resultingValue().isEmpty()).isEqualTo(true);
-    }
-
-    @Test
-    public void shouldFindProcessDocumentDefinitionWithSuccessResult() {
-        final var id = processDocumentDefinitionId();
-
-        final var definition = mock(CamundaProcessJsonSchemaDocumentDefinition.class);
-        when(processDocumentDefinitionRepository.findById(id)).thenReturn(Optional.of(definition));
-
-        final FunctionResult<CamundaProcessJsonSchemaDocumentDefinition, OperationError> result = service.getProcessDocumentDefinitionResult(
-            id);
-
-        assertThat(result).isInstanceOf(FunctionResult.Successful.class);
-        assertThat(result.hasResult()).isEqualTo(true);
-        assertThat(result.isError()).isEqualTo(false);
-        assertThat(result.resultingValue().orElseThrow()).isEqualTo(definition);
-    }
-
-    @Test
     public void shouldFindProcessInstanceWithFailedResult() {
         final var id = processDocumentInstanceId();
 

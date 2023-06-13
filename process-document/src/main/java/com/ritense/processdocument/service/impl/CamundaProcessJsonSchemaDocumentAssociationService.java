@@ -265,21 +265,6 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
-    //TODO: unused - remove? @Marijn
-    public FunctionResult<CamundaProcessJsonSchemaDocumentDefinition, OperationError> getProcessDocumentDefinitionResult(
-        ProcessDocumentDefinitionId processDocumentDefinitionId
-    ) {
-        final var result = processDocumentDefinitionRepository.findById(processDocumentDefinitionId);
-        if (result.isPresent()) {
-            return new FunctionResult.Successful<>(result.get());
-        } else {
-            final String msg = "Corresponding process-document-definition is not associated with document-definition-name";
-            return new FunctionResult.Erroneous<>(new OperationError.FromString(msg));
-        }
-    }
-
-    @Override
-    //TODO: DENY
     public FunctionResult<CamundaProcessJsonSchemaDocumentInstance, OperationError> getProcessDocumentInstanceResult(
         ProcessDocumentInstanceId processDocumentInstanceId
     ) {

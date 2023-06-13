@@ -101,7 +101,6 @@ class CamundaProcessJsonSchemaDocumentServiceTest {
     @Test
     void startProcessForDocument_shouldReturnSuccessWhenProcessWasStarted() {
         JsonSchemaDocumentDefinitionId documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("testdef", 1L);
-        FunctionResult processDocumentDefinitionResult = mock(FunctionResult.class);
 
         JsonSchemaDocument document = mock(JsonSchemaDocument.class);
         UUID documentUuid = UUID.randomUUID();
@@ -116,8 +115,6 @@ class CamundaProcessJsonSchemaDocumentServiceTest {
         when(processDefinition.getName()).thenReturn("test-name");
 
         doReturn(Optional.of(document)).when(documentService).findBy(id);
-        doReturn(processDocumentDefinitionResult).when(processDocumentAssociationService).getProcessDocumentDefinitionResult(any());
-        when(processDocumentDefinitionResult.hasResult()).thenReturn(true);
         when(document.definitionId()).thenReturn(documentDefinitionId);
 
         Map<String, Object> processVars = new HashMap<>();
