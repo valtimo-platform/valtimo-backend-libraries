@@ -19,13 +19,18 @@ package com.ritense.audit;
 import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.audit.service.AuditEventProcessor;
 import com.ritense.audit.service.AuditSearchService;
+import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.mail.MailSender;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import javax.inject.Inject;
 
 @SpringBootTest
@@ -41,6 +46,16 @@ public abstract class BaseIntegrationTest extends AbstractTestHelper {
 
     @Inject
     protected AuditSearchService auditSearchService;
+
+    @MockBean
+    protected UserManagementService userManagementService;
+
+    @MockBean
+    protected ResourceService resourceService;
+
+    @MockBean
+    protected MailSender mailSender;
+
 
     @BeforeAll
     static void beforeAll() {
