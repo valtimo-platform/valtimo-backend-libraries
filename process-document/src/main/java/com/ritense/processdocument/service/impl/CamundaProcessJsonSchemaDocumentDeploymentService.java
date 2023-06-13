@@ -99,22 +99,23 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
                 item.getStartableByUser()
         );
 
-        final var existingAssociationOpt = AuthorizationContext.runWithoutAuthorization(() ->
-            processDocumentAssociationService.findProcessDocumentDefinition(
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            final var existingAssociationOpt = processDocumentAssociationService.findProcessDocumentDefinition(
                 new CamundaProcessDefinitionKey(item.getProcessDefinitionKey())
-            )
-        );
+            );
 
-        if (existingAssociationOpt.isPresent()) {
-            if (!item.equalsProcessDocumentDefinition(existingAssociationOpt.get())) {
-                logger.info("Updating process-document-links from {}.json", documentDefinitionName);
-                processDocumentAssociationService.deleteProcessDocumentDefinition(request);
+            if (existingAssociationOpt.isPresent()) {
+                if (!item.equalsProcessDocumentDefinition(existingAssociationOpt.get())) {
+                    logger.info("Updating process-document-links from {}.json", documentDefinitionName);
+                    processDocumentAssociationService.deleteProcessDocumentDefinition(request);
+                    processDocumentAssociationService.createProcessDocumentDefinition(request);
+                }
+            } else {
+                logger.info("Deploying process-document-links from {}.json", documentDefinitionName);
                 processDocumentAssociationService.createProcessDocumentDefinition(request);
             }
-        } else {
-            logger.info("Deploying process-document-links from {}.json", documentDefinitionName);
-            processDocumentAssociationService.createProcessDocumentDefinition(request);
-        }
+            return null;
+        });
 
         if (item.getProcessIsVisibleInMenu() != null) {
             contextService.findAll(Pageable.unpaged()).forEach(context -> {

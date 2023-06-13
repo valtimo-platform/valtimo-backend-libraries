@@ -48,8 +48,8 @@ abstract class BaseIntegrationTest : BaseTest() {
 
     @MockBean
     lateinit var mailSender: MailSender
-
-    // TODO: remove authorization service mocking when call to run without permissions is added
-    @MockBean
-    var authorizationService: AuthorizationService? = null
+//
+//    // TODO: remove authorization service mocking when call to run without permissions is added
+//    @MockBean
+//    var authorizationService: AuthorizationService? = null
 }
