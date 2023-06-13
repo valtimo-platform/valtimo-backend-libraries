@@ -17,6 +17,7 @@
 package com.ritense.valtimo.formflow
 
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.formflow.repository.FormFlowInstanceRepository
@@ -68,13 +69,15 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
             "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
             "}\n")
 
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(
-                "formflow-one-task-process",
-                "testing",
-                true
+        runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                ProcessDocumentDefinitionRequest(
+                    "formflow-one-task-process",
+                    "testing",
+                    true
+                )
             )
-        )
+        }
 
         formAssociationService.createFormAssociation(
             CreateFormAssociationRequest("formflow-one-task-process",
@@ -109,13 +112,15 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
                 "}\n"
         )
 
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(
-                "formflow-one-task-process",
-                "testing",
-                true
+        runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                ProcessDocumentDefinitionRequest(
+                    "formflow-one-task-process",
+                    "testing",
+                    true
+                )
             )
-        )
+        }
 
         formAssociationService.createFormAssociation(
             CreateFormAssociationRequest(
@@ -131,7 +136,7 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
             )
         )
 
-        val result = AuthorizationContext.runWithoutAuthorization {
+        val result = runWithoutAuthorization {
             processDocumentService.newDocumentAndStartProcess(
                 NewDocumentAndStartProcessRequest(
                     "formflow-one-task-process",
