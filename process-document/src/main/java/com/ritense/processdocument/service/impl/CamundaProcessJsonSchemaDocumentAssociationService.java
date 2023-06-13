@@ -129,7 +129,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitionsByProcessDefinitionKey(String processDefinitionKey) {
-        // TODO: ADMIN
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
+
         return processDocumentDefinitionRepository.findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
 
@@ -246,6 +247,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         UUID documentId,
         String processName
     ) {
+        denyAuthorization(CamundaProcessJsonSchemaDocumentInstance.class);
         final var id = CamundaProcessJsonSchemaDocumentInstanceId.newId(
             new CamundaProcessInstanceId(processInstanceId),
             JsonSchemaDocumentId.existingId(documentId)
@@ -281,6 +283,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     public FunctionResult<CamundaProcessJsonSchemaDocumentInstance, OperationError> getProcessDocumentInstanceResult(
         ProcessDocumentInstanceId processDocumentInstanceId
     ) {
+        denyAuthorization(CamundaProcessJsonSchemaDocumentInstance.class);
         final var result = processDocumentInstanceRepository.findById(processDocumentInstanceId);
         if (result.isPresent()) {
             return new FunctionResult.Successful<>(result.get());

@@ -16,7 +16,7 @@
 
 package com.ritense.processdocument.domain.impl.listener;
 
-import com.ritense.processdocument.domain.ProcessDocumentDefinition;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent;
 import com.ritense.valtimo.service.CamundaProcessService;
@@ -26,8 +26,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-
-import java.util.Optional;
 
 public class UndeployDocumentDefinitionEventListener {
 
@@ -49,15 +47,17 @@ public class UndeployDocumentDefinitionEventListener {
     public void handleEvent(UndeployDocumentDefinitionEvent event) {
         logger.debug("process document definition to be removed due to undeployment document definition with name: {}", event.getDocumentDefinitionName());
         String documentDefinitionName = event.getDocumentDefinitionName();
-        Optional<? extends ProcessDocumentDefinition> processDocumentDefinitionOptional = processDocumentAssociationService.findByDocumentDefinitionName(documentDefinitionName);
-        if (processDocumentDefinitionOptional.isPresent()) {
-            var processDocumentDefinition = processDocumentDefinitionOptional.get();
-            camundaProcessService.deleteAllProcesses(
-                processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(), REASON
-            );
-            processDocumentAssociationService.deleteProcessDocumentInstances(processDocumentDefinition.processName());
-            processDocumentAssociationService.deleteProcessDocumentDefinition(documentDefinitionName);
-        }
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            processDocumentAssociationService.findByDocumentDefinitionName(documentDefinitionName).ifPresent(processDocumentDefinition -> {
+                camundaProcessService.deleteAllProcesses(
+                    processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(), REASON
+                );
+                processDocumentAssociationService.deleteProcessDocumentInstances(
+                    processDocumentDefinition.processName());
+                processDocumentAssociationService.deleteProcessDocumentDefinition(documentDefinitionName);
+            });
+            return null;
+        });
     }
 
 }

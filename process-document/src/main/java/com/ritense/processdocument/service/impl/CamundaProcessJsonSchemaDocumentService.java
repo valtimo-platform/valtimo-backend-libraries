@@ -22,7 +22,6 @@ import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.domain.ProcessInstanceId;
@@ -67,7 +66,6 @@ import org.camunda.bpm.engine.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -372,8 +370,9 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         return camundaProcessService.findProcessInstanceById(processInstanceId.toString())
             .map(instance -> camundaProcessService.findProcessDefinitionById(instance.getProcessDefinitionId()))
             .map(definition -> new CamundaProcessDefinitionKey(definition.getKey()))
-            .map(processDocumentAssociationService::findProcessDocumentDefinition)
-            .map(optional -> (CamundaProcessJsonSchemaDocumentDefinition) optional.orElse(null));
+            .map(definitionKey -> AuthorizationContext.runWithoutAuthorization(() ->
+                processDocumentAssociationService.findProcessDocumentDefinition(definitionKey))
+            ).map(optional -> (CamundaProcessJsonSchemaDocumentDefinition) optional.orElse(null));
     }
 
     private String getBusinessKey(ProcessInstanceId processInstanceId, VariableScope variableScope) {

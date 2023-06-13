@@ -18,6 +18,7 @@ package com.ritense.processdocument.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent;
 import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.service.DocumentDefinitionService;
@@ -98,8 +99,10 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
                 item.getStartableByUser()
         );
 
-        final var existingAssociationOpt = processDocumentAssociationService.findProcessDocumentDefinition(
+        final var existingAssociationOpt = AuthorizationContext.runWithoutAuthorization(() ->
+            processDocumentAssociationService.findProcessDocumentDefinition(
                 new CamundaProcessDefinitionKey(item.getProcessDefinitionKey())
+            )
         );
 
         if (existingAssociationOpt.isPresent()) {

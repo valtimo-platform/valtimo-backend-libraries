@@ -16,6 +16,7 @@
 
 package com.ritense.openzaak.service.impl
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandlers
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
@@ -50,9 +51,11 @@ class ZaakTypeLinkService(
     }
 
     fun getByProcess(processDefinitionKey: String): List<ZaakTypeLink?> {
-        val processDocumentDefinitions = processDocumentAssociationService.findAllProcessDocumentDefinitions(
-            CamundaProcessDefinitionKey(processDefinitionKey)
-        )
+        val processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization {
+            processDocumentAssociationService.findAllProcessDocumentDefinitions(
+                CamundaProcessDefinitionKey(processDefinitionKey)
+            )
+        }
         if (processDocumentDefinitions.isNotEmpty()) {
             val documentDefinitionsNames = processDocumentDefinitions
                 .map { it.processDocumentDefinitionId().documentDefinitionId().name() }.toList()

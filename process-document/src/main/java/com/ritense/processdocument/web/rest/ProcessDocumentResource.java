@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.web.rest;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
@@ -111,7 +112,11 @@ public class ProcessDocumentResource {
     public ResponseEntity<List<? extends ProcessDocumentDefinition>> findProcessDocumentDefinitionsByProcessDefinitionKey(
         @PathVariable(name = "process-definition-key") String processDefinitionKey
     ) {
-        return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitionsByProcessDefinitionKey(processDefinitionKey));
+        //Protected by HTTP security on role ADMIN
+        List<? extends ProcessDocumentDefinition> processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+            processDocumentAssociationService.findProcessDocumentDefinitionsByProcessDefinitionKey(processDefinitionKey)
+        );
+        return ResponseEntity.ok(processDocumentDefinitions);
     }
 
     @GetMapping("/v1/process-document/definition/processinstance/{processInstanceId}")

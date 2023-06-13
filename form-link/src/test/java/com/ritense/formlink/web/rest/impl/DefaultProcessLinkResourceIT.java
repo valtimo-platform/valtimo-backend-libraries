@@ -16,6 +16,7 @@
 
 package com.ritense.formlink.web.rest.impl;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.form.domain.FormDefinition;
@@ -28,7 +29,6 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
-import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,11 +38,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -96,13 +94,13 @@ class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
     void getTaskShouldGetFormResult() throws Exception {
         var content = new JsonDocumentContent("{\"street\": \"Kalverstraat\"}");
 
-        NewDocumentAndStartProcessResult result = processDocumentService.newDocumentAndStartProcess(new NewDocumentAndStartProcessRequest(
+        AuthorizationContext.runWithoutAuthorization(() -> processDocumentService.newDocumentAndStartProcess(new NewDocumentAndStartProcessRequest(
             PROCESS_DEFINITION_KEY,
             new NewDocumentRequest(
                 "house",
                 content.asJson()
             )
-        ));
+        )));
 
         List<Task> list = taskService.createTaskQuery().list();
 
