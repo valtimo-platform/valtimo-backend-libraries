@@ -24,4 +24,10 @@ interface PermissionRepository : JpaRepository<Permission, UUID> {
     fun findAllByRoleKeyIn(roleKeys: Collection<String>): List<Permission>
 
     fun findAllByResourceTypeAndAction(resourceType: Class<*>, action: Action<*>): List<Permission>
+
+    fun deleteAllByResourceTypeAndActionAndRoleKey(
+        resourceType: Class<*>,
+        action: Action<*>,
+        roleKey: String
+    ): List<Permission>
 }

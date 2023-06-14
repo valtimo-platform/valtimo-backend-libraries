@@ -17,6 +17,7 @@
 package com.ritense.authorization.autoconfigure
 
 import com.fasterxml.jackson.databind.Module
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.AuthorizationServiceHolder
@@ -26,6 +27,8 @@ import com.ritense.authorization.ResourceActionProvider
 import com.ritense.authorization.RoleRepository
 import com.ritense.authorization.UserManagementServiceHolder
 import com.ritense.authorization.ValtimoAuthorizationService
+import com.ritense.authorization.deployment.PermissionDeployer
+import com.ritense.authorization.deployment.RoleDeployer
 import com.ritense.authorization.specification.DenyAuthorizationSpecificationFactory
 import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
 import com.ritense.valtimo.contract.authentication.UserManagementService
@@ -90,5 +93,23 @@ class AuthorizationAutoConfiguration(
     @Order(HIGHEST_PRECEDENCE + 1)
     fun <T: Any> denyAuthorizationSpecificationFactory(): AuthorizationSpecificationFactory<T> {
         return DenyAuthorizationSpecificationFactory()
+    }
+
+    @Bean
+    @ConditionalOnClass(PermissionDeployer::class)
+    fun permissionDeployer(
+        objectMapper: ObjectMapper,
+        permissionRepository: PermissionRepository,
+    ): PermissionDeployer {
+        return PermissionDeployer(objectMapper, permissionRepository)
+    }
+
+    @Bean
+    @ConditionalOnClass(RoleDeployer::class)
+    fun roleDeployer(
+        objectMapper: ObjectMapper,
+        roleRepository: RoleRepository,
+    ): RoleDeployer {
+        return RoleDeployer(objectMapper, roleRepository)
     }
 }

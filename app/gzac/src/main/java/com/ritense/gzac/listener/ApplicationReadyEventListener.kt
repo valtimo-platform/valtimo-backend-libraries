@@ -16,29 +16,13 @@
 
 package com.ritense.gzac.listener
 
-import com.ritense.authorization.PermissionRepository
-import com.ritense.authorization.Role
-import com.ritense.authorization.RoleRepository
-import com.ritense.authorization.permission.ConditionContainer
-import com.ritense.authorization.permission.ContainerPermissionCondition
-import com.ritense.authorization.permission.ExpressionPermissionCondition
-import com.ritense.authorization.permission.FieldPermissionCondition
-import com.ritense.authorization.permission.Permission
-import com.ritense.authorization.permission.PermissionConditionOperator.EQUAL_TO
-import com.ritense.authorization.permission.PermissionExpressionOperator
 import com.ritense.besluit.connector.BesluitProperties
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
-import com.ritense.document.domain.impl.JsonSchemaDocument
-import com.ritense.document.domain.impl.searchfield.SearchField
 import com.ritense.document.service.DocumentDefinitionService
-import com.ritense.document.service.JsonSchemaDocumentActionProvider
-import com.ritense.document.service.SearchFieldActionProvider
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
-import com.ritense.note.domain.Note
-import com.ritense.note.service.NoteActionProvider
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagTypeMapping
@@ -58,8 +42,6 @@ import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkReque
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
@@ -75,14 +57,11 @@ class ApplicationReadyEventListener(
     private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
     private val documentDefinitionService: DocumentDefinitionService,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
-    private val permissionRepository: PermissionRepository,
-    private val roleRepository: RoleRepository
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
     fun handleApplicationReady() {
         // TODO: support auto-deployment
-        createDefaultPermissionsIfNotExists(permissionRepository, roleRepository)
         createConnectors()
     }
 
@@ -336,153 +315,6 @@ class ApplicationReadyEventListener(
             event.documentDefinition().id().name(),
             setOf(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER)
         )
-    }
-
-    private fun createDefaultPermissionsIfNotExists(
-        permissionRepository: PermissionRepository,
-        roleRepository: RoleRepository
-    ) {
-
-        if (!roleRepository.existsById(USER)) {
-            roleRepository.save(Role(USER))
-        }
-
-        if (!roleRepository.existsById(ADMIN)) {
-            roleRepository.save(Role(ADMIN))
-        }
-
-        permissionRepository.deleteAll(permissionRepository.findAllByRoleKeyIn(listOf(USER, ADMIN)))
-
-        val documentPermissions: List<Permission> = try {
-            listOf(
-                // ROLE_USER
-                Permission(
-                    resourceType = JsonSchemaDocument::class.java,
-                    action = JsonSchemaDocumentActionProvider.LIST_VIEW,
-                    conditionContainer = ConditionContainer(
-                        listOf(
-                            ExpressionPermissionCondition(
-                                "content.content",
-                                "$.height",
-                                PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java
-                            ),
-                            FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen")
-                        )
-                    ),
-                    roleKey = USER
-                ),
-                Permission(
-                    resourceType = JsonSchemaDocument::class.java,
-                    action = JsonSchemaDocumentActionProvider.LIST_VIEW,
-                    conditionContainer = ConditionContainer(
-                        listOf(
-                            FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
-                        )
-                    ),
-                    roleKey = USER
-                ),
-                Permission(
-                    resourceType = JsonSchemaDocument::class.java,
-                    action = JsonSchemaDocumentActionProvider.VIEW,
-                    conditionContainer = ConditionContainer(
-                        listOf(
-                            ExpressionPermissionCondition(
-                                "content.content",
-                                "$.height",
-                                PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java
-                            ),
-                            FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen")
-                        )
-                    ),
-                    roleKey = USER
-                ),
-                Permission(
-                    resourceType = JsonSchemaDocument::class.java,
-                    action = JsonSchemaDocumentActionProvider.VIEW,
-                    conditionContainer = ConditionContainer(
-                        listOf(
-                            FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
-                        )
-                    ),
-                    roleKey = USER
-                ),
-                Permission(
-                    resourceType = JsonSchemaDocument::class.java,
-                    action = JsonSchemaDocumentActionProvider.CLAIM,
-                    conditionContainer = ConditionContainer(
-                        listOf(
-                            FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
-                        )
-                    ),
-                    roleKey = USER
-                ),
-                Permission(
-                    resourceType = SearchField::class.java,
-                    action = SearchFieldActionProvider.LIST_VIEW,
-                    conditionContainer = ConditionContainer(
-                        listOf(
-                            FieldPermissionCondition("id.documentDefinitionName", EQUAL_TO, "leningen")
-                        )
-                    ),
-                    roleKey = ADMIN
-                ),
-                // ROLE_ADMIN
-                Permission(
-                    resourceType = JsonSchemaDocument::class.java,
-                    action = JsonSchemaDocumentActionProvider.LIST_VIEW,
-                    conditionContainer = ConditionContainer(emptyList()),
-                    roleKey = ADMIN
-                ),
-                Permission(
-                    resourceType = JsonSchemaDocument::class.java,
-                    action = JsonSchemaDocumentActionProvider.VIEW,
-                    conditionContainer = ConditionContainer(emptyList()),
-                    roleKey = ADMIN
-                ),
-                Permission(
-                    resourceType = JsonSchemaDocument::class.java,
-                    action = JsonSchemaDocumentActionProvider.CLAIM,
-                    conditionContainer = ConditionContainer(emptyList()),
-                    roleKey = ADMIN
-                ),
-            )
-        } catch (e: ClassNotFoundException) {
-            listOf()
-        }
-
-        val notePermissions: List<Permission> = try {
-            listOf(
-                // ROLE_USER
-                Permission(
-                    resourceType = Note::class.java,
-                    action = NoteActionProvider.VIEW,
-                    conditionContainer = ConditionContainer(
-                        listOf(
-                            ContainerPermissionCondition(
-                                JsonSchemaDocument::class.java,
-                                listOf(
-                                    FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen"),
-                                    FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
-                                )
-                            )
-                        )
-                    ),
-                    roleKey = USER
-                ),
-                // ROLE_ADMIN
-                Permission(
-                    resourceType = Note::class.java,
-                    action = NoteActionProvider.VIEW,
-                    conditionContainer = ConditionContainer(listOf()),
-                    roleKey = ADMIN
-                )
-            )
-
-        } catch (e: ClassNotFoundException) {
-            listOf()
-        }
-
-        permissionRepository.saveAll(documentPermissions + notePermissions)
     }
 
     companion object {
