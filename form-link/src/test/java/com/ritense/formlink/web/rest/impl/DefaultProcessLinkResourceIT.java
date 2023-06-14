@@ -81,11 +81,13 @@ class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
     public void setUp() throws IOException {
         formDefinition = formDefinitionService.createFormDefinition(createFormDefinitionRequest());
         userTaskFormAssociation = formAssociationService.createFormAssociation(createUserTaskFormAssociationRequest(formDefinition.getId()));
-        pdaService.createProcessDocumentDefinition(new ProcessDocumentDefinitionRequest(
-            PROCESS_DEFINITION_KEY,
-            DOCUMENT_DEFINITION_NAME,
-            true
-        ));
+        AuthorizationContext.runWithoutAuthorization(() ->
+            pdaService.createProcessDocumentDefinition(new ProcessDocumentDefinitionRequest(
+                PROCESS_DEFINITION_KEY,
+                DOCUMENT_DEFINITION_NAME,
+                true
+            ))
+        );
         mockMvc = MockMvcBuilders.standaloneSetup(processLinkResource).build();
     }
 
