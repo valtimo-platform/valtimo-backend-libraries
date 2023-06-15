@@ -45,10 +45,9 @@ class ImportChangelogDeploymentService(
     @EventListener(ApplicationReadyEvent::class)
     fun deployAll() {
         logger.info { "Running import deployer" }
-        loadResources().forEach { resource ->
-            val filename = getFilename(resource)
-            val changesetDeployer = getChangesetDeployer(resource)
-            if (changesetDeployer != null) {
+        changesetDeployers.forEach { changesetDeployer ->
+            loadResources(changesetDeployer.getPath()).forEach { resource ->
+                val filename = getFilename(resource)
                 logger.info { "Running import deployer changelog: $filename" }
                 val resourceContent = resource.inputStream.bufferedReader().use { it.readText() }
                 deploy(changesetDeployer, resourceContent, filename)
@@ -75,11 +74,6 @@ class ImportChangelogDeploymentService(
     }
 
     private fun getFilename(resource: Resource) = resource.uri.toASCIIString().substringAfterLast("resources/")
-
-    private fun getChangesetDeployer(resource: Resource): ChangesetDeployer? {
-        val type = getTypeFromFileName(resource.filename)
-        return changesetDeployers.find { it.getType() == type }
-    }
 
     private fun saveChangeset(changesetId: String, filename: String, md5sum: String) {
         importChangesetRepository.save(
@@ -111,10 +105,10 @@ class ImportChangelogDeploymentService(
     }
 
     @Throws(IOException::class)
-    private fun loadResources() = ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH)
+    private fun loadResources(path: String) = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+        .getResources(path)
 
     companion object {
-        const val PATH = "classpath*:**/*.*.json"
         private val logger = KotlinLogging.logger {}
     }
 

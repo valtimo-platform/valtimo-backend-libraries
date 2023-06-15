@@ -28,7 +28,7 @@ class RoleDeployer(
     private val roleRepository: RoleRepository
 ) : ChangesetDeployer {
 
-    override fun getType() = "role"
+    override fun getPath() = "classpath*:**/*.role.json"
 
     override fun getChangesetDetails(filename: String, content: String): ChangesetDetails {
         val changeset = objectMapper.readValue<RoleChangeset>(content)

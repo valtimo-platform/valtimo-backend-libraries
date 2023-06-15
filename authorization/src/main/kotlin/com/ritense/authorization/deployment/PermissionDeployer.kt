@@ -27,7 +27,7 @@ class PermissionDeployer(
     private val permissionRepository: PermissionRepository,
 ) : ChangesetDeployer {
 
-    override fun getType() = "permission"
+    override fun getPath() = "classpath*:**/*.permission.json"
 
     override fun getChangesetDetails(filename: String, content: String): ChangesetDetails {
         val permissionChangeset = objectMapper.readValue<PermissionChangeset>(content)

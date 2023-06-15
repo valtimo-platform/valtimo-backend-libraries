@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class TestTypeChangesetDeployer : ChangesetDeployer {
-    override fun getType() = "testtype"
+    override fun getPath() = "classpath*:**/*.testtype.json"
 
     override fun getChangesetDetails(filename: String, content: String): ChangesetDetails {
         val jsonNode = jacksonObjectMapper().readTree(content)

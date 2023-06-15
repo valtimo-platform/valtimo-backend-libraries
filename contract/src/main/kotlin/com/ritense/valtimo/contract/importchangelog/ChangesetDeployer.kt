@@ -18,7 +18,7 @@ package com.ritense.valtimo.contract.importchangelog
 
 interface ChangesetDeployer {
 
-    fun getType(): String
+    fun getPath(): String
 
     fun getChangesetDetails(filename: String, content: String): ChangesetDetails
 
