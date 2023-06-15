@@ -16,6 +16,8 @@
 
 package com.ritense.smartdocuments.service
 
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
@@ -67,16 +69,20 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
             override fun createdOn() = LocalDateTime.now()
         }
         whenever(resourceService.store(any(), any(), any<MultipartFile>())).thenReturn(emptyResource)
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(PROCESS_DEFINITION_KEY, DOCUMENT_DEFINITION_KEY, true, true)
-        )
+        runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                ProcessDocumentDefinitionRequest(PROCESS_DEFINITION_KEY, DOCUMENT_DEFINITION_KEY, true, true)
+            )
+        }
         val jsonContent = Mapper.INSTANCE.get().readTree("{\"lastname\": \"Klaveren\"}")
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, jsonContent)
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("age" to 38))
 
         // when
-        processDocumentService.newDocumentAndStartProcess(request)
+        runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(request)
+        }
 
         // then
         verify(smartDocumentGenerator).generateAndStoreDocument(
@@ -101,9 +107,11 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
             override fun createdOn() = LocalDateTime.now()
         }
         whenever(resourceService.store(any(), any(), any<MultipartFile>())).thenReturn(emptyResource)
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(DOCUMENT_GENERATION_ARRAY, DOCUMENT_DEFINITION_KEY, true, true)
-        )
+        runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                ProcessDocumentDefinitionRequest(DOCUMENT_GENERATION_ARRAY, DOCUMENT_DEFINITION_KEY, true, true)
+            )
+        }
         val jsonContent = Mapper.INSTANCE.get().readTree("""
             {
                 "lastname": "Klaveren",
@@ -121,7 +129,9 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
         val request = NewDocumentAndStartProcessRequest(DOCUMENT_GENERATION_ARRAY, newDocumentRequest)
 
         // when
-        processDocumentService.newDocumentAndStartProcess(request)
+        runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(request)
+        }
 
         val expectedNamesResult = listOf(
             mapOf("name" to "Peter"),

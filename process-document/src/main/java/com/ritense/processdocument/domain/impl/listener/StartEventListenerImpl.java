@@ -17,6 +17,7 @@
 package com.ritense.processdocument.domain.impl.listener;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.request.DocumentRelationRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
@@ -68,19 +69,27 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
             final var processDefinitionKey = ProcessDefinitionKey.fromExecution(execution, CamundaProcessDefinitionKey.class);
             final var processInstanceId = ProcessInstanceId.fromExecution(execution, CamundaProcessInstanceId.class);
 
-            processDocumentAssociationService.findProcessDocumentDefinition(processDefinitionKey).ifPresent(processDocumentDefinition -> {
+            AuthorizationContext.runWithoutAuthorization(() -> {
+                final var documentDefinitionId = processDocumentAssociationService.findProcessDocumentDefinition(
+                        processDefinitionKey)
+                    .map(definition -> definition.processDocumentDefinitionId().documentDefinitionId())
+                    .orElse(null);
 
-                final var documentDefinitionId = processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId();
-                final var jsonData = extractJsonDocumentData(execution);
+                if (documentDefinitionId != null) {
+                    final var jsonData = extractJsonDocumentData(execution);
 
-                processDocumentAssociationService.findProcessDocumentInstance(sourceProcessInstanceId)
-                    .ifPresent(sourceProcessDocumentInstance -> {
-                        final var sourceDocumentId = sourceProcessDocumentInstance.processDocumentInstanceId().documentId();
+                    final var sourceDocumentId = processDocumentAssociationService.findProcessDocumentInstance(
+                            sourceProcessInstanceId)
+                        .map(instance -> instance.processDocumentInstanceId().documentId())
+                        .orElse(null);
 
+                    if (sourceDocumentId != null) {
                         var newDocumentRequest = new NewDocumentRequest(
                             documentDefinitionId.name(),
                             jsonData
-                        ).withDocumentRelation(new DocumentRelationRequest(UUID.fromString(sourceDocumentId.toString()), documentRelationType));
+                        ).withDocumentRelation(new DocumentRelationRequest(UUID.fromString(sourceDocumentId.toString()),
+                            documentRelationType
+                        ));
 
                         final var request = new NewDocumentForRunningProcessRequest(
                             processDefinitionKey.toString(),
@@ -90,10 +99,10 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
                         final var result = processDocumentService.newDocumentForRunningProcess(request);
 
                         result.resultingDocument().ifPresentOrElse(document -> applicationEventPublisher.publishEvent(
-                            new NextJsonSchemaDocumentRelationAvailableEvent(
-                                sourceDocumentId.toString(),
-                                document.id().toString()
-                            )
+                                new NextJsonSchemaDocumentRelationAvailableEvent(
+                                    sourceDocumentId.toString(),
+                                    document.id().toString()
+                                )
                             ), () -> {
                                 throw new RuntimeException(String.format(
                                     "Unable to create new document %s for process %s",
@@ -102,7 +111,9 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
                                 ));
                             }
                         );
-                    });
+                    }
+                }
+                return null;
             });
         }
     }

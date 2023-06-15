@@ -60,10 +60,6 @@ public interface ProcessDocumentAssociationService {
 
     void deleteProcessDocumentInstances(String processName);
 
-    FunctionResult<? extends ProcessDocumentDefinition, OperationError> getProcessDocumentDefinitionResult(
-        ProcessDocumentDefinitionId processDocumentDefinitionId
-    );
-
     FunctionResult<? extends ProcessDocumentInstance, OperationError> getProcessDocumentInstanceResult(
         ProcessDocumentInstanceId processDocumentInstanceId
     );

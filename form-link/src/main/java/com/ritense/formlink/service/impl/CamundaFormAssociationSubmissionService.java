@@ -100,7 +100,7 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                 .getFormDefinitionById(formAssociation.getFormLink().getFormId())
                 .orElseThrow();
 
-            JsonSchemaDocument document = null;
+            final JsonSchemaDocument document;
             if (documentId != null) {
                 document = (JsonSchemaDocument) AuthorizationContext
                     .runWithoutAuthorization(
@@ -118,28 +118,35 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                         document,
                         null
                     );
-            }
-
-            ProcessDocumentDefinition processDocumentDefinition;
-            if (document == null) {
-                processDocumentDefinition = processDocumentAssociationService
-                    .findProcessDocumentDefinition(new CamundaProcessDefinitionKey(processDefinitionKey))
-                    .orElseThrow(() -> new ProcessDefinitionNotFoundException(
-                        String.format("Unable to find a ProcessDocumentDefinition for processDefinitionKey '%s'", processDefinitionKey)
-                    ));
             } else {
-                var documentVersion = document.definitionId().version();
-
-                processDocumentDefinition = processDocumentAssociationService
-                    .findProcessDocumentDefinition(new CamundaProcessDefinitionKey(processDefinitionKey), documentVersion)
-                    .orElseThrow(() -> new ProcessDefinitionNotFoundException(
-                        String.format(
-                            "Unable to find a ProcessDocumentDefinition for processDefinitionKey '%s' and version '%s'",
-                            processDefinitionKey,
-                            documentVersion
-                        )
-                    ));
+                document = null;
             }
+
+            final ProcessDocumentDefinition processDocumentDefinition = AuthorizationContext.runWithoutAuthorization( () -> {
+                    if (document == null) {
+                        return processDocumentAssociationService
+                            .findProcessDocumentDefinition(new CamundaProcessDefinitionKey(processDefinitionKey))
+                            .orElseThrow(() -> new ProcessDefinitionNotFoundException(
+                                String.format(
+                                    "Unable to find a ProcessDocumentDefinition for processDefinitionKey '%s'",
+                                    processDefinitionKey
+                                )
+                            ));
+                    } else {
+                        var documentVersion = document.definitionId().version();
+
+                        return  processDocumentAssociationService
+                            .findProcessDocumentDefinition(
+                                new CamundaProcessDefinitionKey(processDefinitionKey), documentVersion)
+                            .orElseThrow(() -> new ProcessDefinitionNotFoundException(
+                                String.format(
+                                    "Unable to find a ProcessDocumentDefinition for processDefinitionKey '%s' and version '%s'",
+                                    processDefinitionKey,
+                                    documentVersion
+                                )
+                            ));
+                    }
+                });
 
             var submission = new FormIoSubmission(
                 formAssociation,

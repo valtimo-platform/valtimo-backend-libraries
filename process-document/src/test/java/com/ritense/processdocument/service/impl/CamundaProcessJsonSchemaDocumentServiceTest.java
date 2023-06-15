@@ -16,10 +16,11 @@
 
 package com.ritense.processdocument.service.impl;
 
-import com.ritense.document.domain.Document;
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
@@ -33,12 +34,10 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.junit.jupiter.api.Test;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,16 +48,18 @@ import static org.mockito.Mockito.when;
 
 class CamundaProcessJsonSchemaDocumentServiceTest {
 
-    private final DocumentService documentService = mock(DocumentService.class);
+    private final JsonSchemaDocumentService documentService = mock(JsonSchemaDocumentService.class);
     private final CamundaTaskService camundaTaskService = mock(CamundaTaskService.class);
     private final CamundaProcessService camundaProcessService = mock(CamundaProcessService.class);
     private final ProcessDocumentAssociationService processDocumentAssociationService = mock(ProcessDocumentAssociationService.class);
+    private final AuthorizationService authorizationService = mock(AuthorizationService.class);
 
     private final ProcessDocumentService processDocumentService = new CamundaProcessJsonSchemaDocumentService(
         documentService,
         camundaTaskService,
         camundaProcessService,
-        processDocumentAssociationService
+        processDocumentAssociationService,
+        authorizationService
     );
 
     @Test
@@ -100,9 +101,8 @@ class CamundaProcessJsonSchemaDocumentServiceTest {
     @Test
     void startProcessForDocument_shouldReturnSuccessWhenProcessWasStarted() {
         JsonSchemaDocumentDefinitionId documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("testdef", 1L);
-        FunctionResult processDocumentDefinitionResult = mock(FunctionResult.class);
 
-        Document document = mock(Document.class);
+        JsonSchemaDocument document = mock(JsonSchemaDocument.class);
         UUID documentUuid = UUID.randomUUID();
         JsonSchemaDocumentId id = JsonSchemaDocumentId.existingId(documentUuid);
         when(document.id()).thenReturn(id);
@@ -115,8 +115,6 @@ class CamundaProcessJsonSchemaDocumentServiceTest {
         when(processDefinition.getName()).thenReturn("test-name");
 
         doReturn(Optional.of(document)).when(documentService).findBy(id);
-        doReturn(processDocumentDefinitionResult).when(processDocumentAssociationService).getProcessDocumentDefinitionResult(any());
-        when(processDocumentDefinitionResult.hasResult()).thenReturn(true);
         when(document.definitionId()).thenReturn(documentDefinitionId);
 
         Map<String, Object> processVars = new HashMap<>();

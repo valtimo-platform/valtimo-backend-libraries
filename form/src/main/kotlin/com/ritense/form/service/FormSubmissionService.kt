@@ -122,13 +122,15 @@ open class FormSubmissionService(
     ): ProcessDocumentDefinition {
         val processDefinition = processService.getProcessDefinitionById(processLink.processDefinitionId)
         val processDefinitionKey = CamundaProcessDefinitionKey(processDefinition.key)
-        return if (document == null) {
-            processDocumentAssociationService.getProcessDocumentDefinition(processDefinitionKey)
-        } else {
-            processDocumentAssociationService.getProcessDocumentDefinition(
-                processDefinitionKey,
-                document.definitionId().version()
-            )
+        return AuthorizationContext.runWithoutAuthorization {
+            if (document == null) {
+                processDocumentAssociationService.getProcessDocumentDefinition(processDefinitionKey)
+            } else {
+                processDocumentAssociationService.getProcessDocumentDefinition(
+                    processDefinitionKey,
+                    document.definitionId().version()
+                )
+            }
         }
     }
 

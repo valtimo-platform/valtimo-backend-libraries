@@ -114,7 +114,7 @@ open class ValtimoFormFlow(
                     documentDefinitionName,
                     submittedByType["doc"] as JsonNode
                 )
-            ) 
+            )
         }.also { result ->
             if (result.errors().size > 0) {
                 throw RuntimeException(
@@ -131,7 +131,10 @@ open class ValtimoFormFlow(
             processDefinitionKey,
             submittedByType["pv"] as Map<String, Any>?
         )
-        val startProcessForDocumentResult = processDocumentService.startProcessForDocument(startProcessForDocumentRequest)
+        //TODO: PBAC START/CREATE check
+        val startProcessForDocumentResult = AuthorizationContext.runWithoutAuthorization {
+            processDocumentService.startProcessForDocument(startProcessForDocumentRequest)
+        }
         if (startProcessForDocumentResult.errors().isNotEmpty()) {
             throw RuntimeException(
                 "Could not start process with definition $processDefinitionKey for document ${document.id()}\n" +
@@ -166,7 +169,10 @@ open class ValtimoFormFlow(
             processDefinitionKey,
             submittedByType["pv"] as Map<String, Objects>?
         )
-        val startProcessForDocumentResult = processDocumentService.startProcessForDocument(startProcessForDocumentRequest)
+        //TODO: PBAC START/CREATE check
+        val startProcessForDocumentResult = AuthorizationContext.runWithoutAuthorization {
+            processDocumentService.startProcessForDocument(startProcessForDocumentRequest)
+        }
         if (startProcessForDocumentResult.errors().isNotEmpty()) {
             throw RuntimeException(
                 "Could not start process with definition $processDefinitionKey for document ${documentId}\n" +

@@ -18,6 +18,7 @@ package com.ritense.processdocument.service
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -87,11 +88,13 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
             "parent-process",
             document.id().toString()
         )
-        processDocumentAssociationService.createProcessDocumentInstance(
-            processInstance.id,
-            document.id().id,
-            "parent process"
-        )
+        AuthorizationContext.runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentInstance(
+                processInstance.id,
+                document.id().id,
+                "parent process"
+            )
+        }
         val task = taskService.createTaskQuery().taskName("child process user task").singleResult()
         assertNotNull(task)
         val startedProcessId = task.processInstanceId

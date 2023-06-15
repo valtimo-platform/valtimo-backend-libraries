@@ -294,15 +294,17 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     }
 
     private fun newDocumentAndStartProcess(): NewDocumentAndStartProcessResult {
-        return processDocumentService.newDocumentAndStartProcess(
-            NewDocumentAndStartProcessRequest(
-                "formflow-one-task-process",
-                NewDocumentRequest(
-                    "profile",
-                    Mapper.INSTANCE.get().readTree("{}")
+        return AuthorizationContext.runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(
+                NewDocumentAndStartProcessRequest(
+                    "formflow-one-task-process",
+                    NewDocumentRequest(
+                        "profile",
+                        Mapper.INSTANCE.get().readTree("{}")
+                    )
                 )
             )
-        )
+        }
     }
 
     private fun openTasks(processInstanceId: ProcessInstanceId): List<FormFlowInstance> {

@@ -219,7 +219,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                     null
                 );
 
-                documentRepository.saveAndFlush(jsonSchemaDocument);
+                documentRepository.save(jsonSchemaDocument);
             }
         );
         return result;
@@ -283,7 +283,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             version
         );
 
-        result.resultingDocument().ifPresent(documentRepository::saveAndFlush);
+        result.resultingDocument().ifPresent(documentRepository::save);
         return result;
     }
 
