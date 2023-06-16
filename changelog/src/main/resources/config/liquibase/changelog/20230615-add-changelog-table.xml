@@ -20,10 +20,11 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="Ritense" id="1">
-        <createTable tableName="import_changelog">
+        <createTable tableName="valtimo_changelog">
             <column name="id" type="VARCHAR(255)">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="key" type="VARCHAR(255)"/>
             <column name="filename" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>

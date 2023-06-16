@@ -14,14 +14,11 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.contract.importchangelog
+package com.ritense.valtimo.changelog.domain
 
-interface ChangesetDeployer {
-
-    fun getPath(): String
-
-    fun getChangesetDetails(filename: String, content: String): ChangesetDetails
-
-    fun deploy(content: String)
-
-}
+data class ChangesetDetails(
+    val changesetId: String,
+    val valueToChecksum: Any,
+    val key: String? = null,
+    val deploy: () -> Unit,
+)

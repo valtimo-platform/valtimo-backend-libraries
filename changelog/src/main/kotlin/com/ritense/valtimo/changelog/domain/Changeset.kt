@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.importchangelog.domain
+package com.ritense.valtimo.changelog.domain
 
 import java.time.Instant
 import javax.persistence.Column
@@ -23,12 +23,15 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "import_changelog")
-data class ImportChangeset(
+@Table(name = "valtimo_changelog")
+data class Changeset(
 
     @Id
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     val id: String,
+
+    @Column(name = "key")
+    val key: String?,
 
     @Column(name = "filename", nullable = false, updatable = false)
     val filename: String,

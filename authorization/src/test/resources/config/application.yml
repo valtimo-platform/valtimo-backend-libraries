@@ -9,6 +9,7 @@ spring:
             auto-commit: false
     liquibase:
         enabled: false
+        change-log: classpath:/config/liquibase/authorization-master.xml
     jpa:
         database-platform: org.hibernate.dialect.PostgreSQLDialect
         database: postgresql
@@ -38,3 +39,7 @@ spring:
 spring-actuator:
     username: test
     password: test
+
+valtimo:
+    pbac:
+        clear-tables: true

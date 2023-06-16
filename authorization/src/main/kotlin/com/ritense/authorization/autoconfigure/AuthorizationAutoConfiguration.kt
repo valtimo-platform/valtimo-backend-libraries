@@ -31,8 +31,10 @@ import com.ritense.authorization.deployment.PermissionDeployer
 import com.ritense.authorization.deployment.RoleDeployer
 import com.ritense.authorization.specification.DenyAuthorizationSpecificationFactory
 import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
+import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -94,22 +96,28 @@ class AuthorizationAutoConfiguration(
     fun <T: Any> denyAuthorizationSpecificationFactory(): AuthorizationSpecificationFactory<T> {
         return DenyAuthorizationSpecificationFactory()
     }
-
     @Bean
-    @ConditionalOnClass(PermissionDeployer::class)
+    @ConditionalOnMissingBean(PermissionDeployer::class)
+    @Order(1)
     fun permissionDeployer(
         objectMapper: ObjectMapper,
         permissionRepository: PermissionRepository,
+        changelogService: ChangelogService,
+        @Value("\${valtimo.pbac.clear-tables:false}") clearTables: Boolean
     ): PermissionDeployer {
-        return PermissionDeployer(objectMapper, permissionRepository)
+        return PermissionDeployer(objectMapper, permissionRepository, changelogService, clearTables)
     }
 
     @Bean
-    @ConditionalOnClass(RoleDeployer::class)
+    @ConditionalOnMissingBean(RoleDeployer::class)
+    @Order(2)
     fun roleDeployer(
         objectMapper: ObjectMapper,
         roleRepository: RoleRepository,
+        changelogService: ChangelogService,
+        @Value("\${valtimo.pbac.clear-tables:false}") clearTables: Boolean
     ): RoleDeployer {
-        return RoleDeployer(objectMapper, roleRepository)
+        return RoleDeployer(objectMapper, roleRepository, changelogService, clearTables)
     }
+
 }

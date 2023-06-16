@@ -16,5 +16,4 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration,\
   com.ritense.valtimo.autoconfigure.CamundaContextConfiguration,\
   com.ritense.valtimo.sse.autoconfigure.SseAutoConfiguration, \
-  com.ritense.valtimo.autoconfiguration.JobAutoConfiguration, \
-  com.ritense.valtimo.importchangelog.ImportChangesetAutoConfiguration
+  com.ritense.valtimo.autoconfiguration.JobAutoConfiguration

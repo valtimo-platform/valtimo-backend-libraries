@@ -14,25 +14,25 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.importchangelog
+package com.ritense.valtimo.changelog
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ritense.valtimo.contract.importchangelog.ChangesetDeployer
-import com.ritense.valtimo.contract.importchangelog.ChangesetDetails
+import com.ritense.valtimo.changelog.domain.ChangesetDeployer
+import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import org.springframework.stereotype.Component
 
 @Component
 class TestTypeChangesetDeployer : ChangesetDeployer {
     override fun getPath() = "classpath*:**/*.testtype.json"
 
-    override fun getChangesetDetails(filename: String, content: String): ChangesetDetails {
+    override fun getChangelogDetails(filename: String, content: String): List<ChangesetDetails> {
         val jsonNode = jacksonObjectMapper().readTree(content)
-        return ChangesetDetails(
-            jsonNode.get("changesetId").textValue(),
-            jsonNode.get("testContent")
+        return listOf(
+            ChangesetDetails(
+                changesetId = jsonNode.get("changesetId").textValue(),
+                valueToChecksum = jsonNode.get("testContent"),
+                deploy = {}
+            )
         )
-    }
-
-    override fun deploy(content: String) {
     }
 }

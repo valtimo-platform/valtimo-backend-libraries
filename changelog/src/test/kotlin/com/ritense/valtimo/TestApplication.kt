@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.valtimo
 
-import com.ritense.authorization.permission.Permission
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
-interface PermissionRepository : JpaRepository<Permission, UUID> {
-    fun findAllByRoleKeyIn(roleKeys: Collection<String>): List<Permission>
+@SpringBootApplication
+class TestApplication {
 
-    fun findAllByResourceTypeAndAction(resourceType: Class<*>, action: Action<*>): List<Permission>
+    fun main(args: Array<String>) {
+        runApplication<TestApplication>(*args)
+    }
 }

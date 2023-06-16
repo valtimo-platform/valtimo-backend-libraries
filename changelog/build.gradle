@@ -15,31 +15,39 @@
  */
 
 dockerCompose {
-    projectName = "authorization"
+    projectName = "changelog"
     isRequiredBy(integrationTesting)
     isRequiredBy(securityTesting)
     useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
 }
 
 dependencies {
-    implementation project(":changelog")
+
     implementation project(":contract")
-    implementation("org.springframework.security:spring-security-core")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}")
+
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+
+    implementation "org.liquibase:liquibase-core"
+
+    testImplementation project(":core")
+    testImplementation project(":resource:local-resource")
+    testImplementation project(":test-utils-common")
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "org.springframework.security:spring-security-test"
 
-    testImplementation "org.liquibase:liquibase-core"
-    testImplementation project(':test-utils-common')
+    testImplementation "io.kotest:kotest-assertions-core:${kotestVersion}"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {
         enabled = true
         manifest {
-            attributes("Implementation-Title": "Ritense Authorization module")
+            attributes("Implementation-Title": "Changelog spring boot starter")
             attributes("Implementation-Version": projectVersion)
         }
     }
 }
+
+apply from: "gradle/publishing.gradle"

@@ -1,0 +1,26 @@
+{
+    "changesetId": "testdocument-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.note.domain.Note",
+            "action": "view",
+            "roleKey": "ROLE_USER",
+            "conditionContainer": {
+                "conditions": [
+                    {
+                        "type": "container",
+                        "resourceType": "com.ritense.authorization.testimpl.TestDocument",
+                        "conditions": [
+                            {
+                                "type": "field",
+                                "field": "document.name",
+                                "operator": "==",
+                                "value": "loan"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

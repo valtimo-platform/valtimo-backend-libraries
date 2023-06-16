@@ -19,35 +19,43 @@ package com.ritense.authorization.deployment
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.PermissionRepository
-import com.ritense.valtimo.contract.importchangelog.ChangesetDeployer
-import com.ritense.valtimo.contract.importchangelog.ChangesetDetails
+import com.ritense.valtimo.changelog.domain.ChangesetDeployer
+import com.ritense.valtimo.changelog.domain.ChangesetDetails
+import com.ritense.valtimo.changelog.service.ChangelogService
 
 class PermissionDeployer(
     private val objectMapper: ObjectMapper,
     private val permissionRepository: PermissionRepository,
+    private val changelogService: ChangelogService,
+    private val clearTables: Boolean
 ) : ChangesetDeployer {
 
     override fun getPath() = "classpath*:**/*.permission.json"
 
-    override fun getChangesetDetails(filename: String, content: String): ChangesetDetails {
-        val permissionChangeset = objectMapper.readValue<PermissionChangeset>(content)
-        return ChangesetDetails(
-            permissionChangeset.changesetId,
-            permissionChangeset.permissions
+    override fun before() {
+        if (clearTables) {
+            permissionRepository.deleteAll()
+            changelogService.deleteChangesetsByKey(KEY)
+        }
+    }
+
+    override fun getChangelogDetails(filename: String, content: String): List<ChangesetDetails> {
+        val changeset = objectMapper.readValue<PermissionChangeset>(content)
+        return listOf(
+            ChangesetDetails(
+                changesetId = changeset.changesetId,
+                valueToChecksum = changeset.permissions,
+                key = KEY,
+                deploy = { deploy(changeset.permissions) }
+            )
         )
     }
 
-    override fun deploy(content: String) {
-        val permissionChangeset = objectMapper.readValue<PermissionChangeset>(content)
-        permissionChangeset.permissions
-            .map { it.toPermission() }
-            .forEach { permission ->
-                permissionRepository.deleteAllByResourceTypeAndActionAndRoleKey(
-                    permission.resourceType,
-                    permission.action,
-                    permission.roleKey
-                )
-                permissionRepository.save(permission)
-            }
+    fun deploy(permissions: List<PermissionDto>) {
+        permissionRepository.saveAll(permissions.map { it.toPermission() })
+    }
+
+    companion object {
+        const val KEY = "permission"
     }
 }

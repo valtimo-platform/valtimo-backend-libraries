@@ -20,26 +20,43 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.Role
 import com.ritense.authorization.RoleRepository
-import com.ritense.valtimo.contract.importchangelog.ChangesetDeployer
-import com.ritense.valtimo.contract.importchangelog.ChangesetDetails
+import com.ritense.valtimo.changelog.domain.ChangesetDeployer
+import com.ritense.valtimo.changelog.domain.ChangesetDetails
+import com.ritense.valtimo.changelog.service.ChangelogService
 
 class RoleDeployer(
     private val objectMapper: ObjectMapper,
-    private val roleRepository: RoleRepository
+    private val roleRepository: RoleRepository,
+    private val changelogService: ChangelogService,
+    private val clearTables: Boolean
 ) : ChangesetDeployer {
 
     override fun getPath() = "classpath*:**/*.role.json"
 
-    override fun getChangesetDetails(filename: String, content: String): ChangesetDetails {
+    override fun before() {
+        if (clearTables) {
+            roleRepository.deleteAll()
+            changelogService.deleteChangesetsByKey(KEY)
+        }
+    }
+
+    override fun getChangelogDetails(filename: String, content: String): List<ChangesetDetails> {
         val changeset = objectMapper.readValue<RoleChangeset>(content)
-        return ChangesetDetails(
-            changeset.changesetId,
-            changeset.roles
+        return listOf(
+            ChangesetDetails(
+                changesetId = changeset.changesetId,
+                valueToChecksum = changeset.roles,
+                key = KEY,
+                deploy = { deploy(changeset.roles) }
+            )
         )
     }
 
-    override fun deploy(content: String) {
-        val changeset = objectMapper.readValue<RoleChangeset>(content)
-        roleRepository.saveAll(changeset.roles.map { Role(it) })
+    fun deploy(roles: List<String>) {
+        roleRepository.saveAll(roles.map { Role(it) })
+    }
+
+    companion object {
+        const val KEY = "role"
     }
 }

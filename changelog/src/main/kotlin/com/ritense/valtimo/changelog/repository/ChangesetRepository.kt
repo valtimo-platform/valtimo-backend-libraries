@@ -14,21 +14,18 @@
  *  limitations under the License.
  */
 
-package com.ritense.valtimo.importchangelog.repository
+package com.ritense.valtimo.changelog.repository
 
-import com.ritense.valtimo.importchangelog.domain.ImportChangeset
+import com.ritense.valtimo.changelog.domain.Changeset
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ImportChangesetRepository : JpaRepository<ImportChangeset, String> {
+interface ChangesetRepository : JpaRepository<Changeset, String> {
 
-    @Query(
-        """
-        SELECT MAX(c.orderExecuted) + 1
-        FROM ImportChangeset c
-    """
-    )
+    @Query("SELECT MAX(c.orderExecuted) + 1 FROM Changeset c")
     fun getNextOrderExecuted(): Int?
+
+    fun deleteAllByKey(key: String?)
 }
