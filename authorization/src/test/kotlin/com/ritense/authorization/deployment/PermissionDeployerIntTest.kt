@@ -17,6 +17,7 @@
 package com.ritense.authorization.deployment
 
 import com.ritense.authorization.Action
+import com.ritense.authorization.BaseIntegrationTest
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.permission.FieldPermissionCondition
 import com.ritense.authorization.permission.PermissionConditionOperator
@@ -28,7 +29,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.Instant
 
-internal class PermissionDeployerIntTest {
+internal class PermissionDeployerIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var changesetRepository: ChangesetRepository
