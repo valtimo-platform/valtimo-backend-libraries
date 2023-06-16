@@ -16,11 +16,12 @@
 
 package com.ritense.authorization
 
-import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication(scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class])
+@SpringBootApplication(
+    //scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class, HibernateJsonMapperConfiguration::class]
+)
 class TestApplication {
 
     fun main(args: Array<String>) {

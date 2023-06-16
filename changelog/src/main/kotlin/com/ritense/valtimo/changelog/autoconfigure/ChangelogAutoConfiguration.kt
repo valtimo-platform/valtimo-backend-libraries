@@ -41,7 +41,7 @@ class ChangelogAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ChangelogService::class)
-    fun changelogDeploymentService(
+    fun changelogService(
         resourceLoader: ResourceLoader,
         changesetRepository: ChangesetRepository,
         objectMapper: ObjectMapper,
