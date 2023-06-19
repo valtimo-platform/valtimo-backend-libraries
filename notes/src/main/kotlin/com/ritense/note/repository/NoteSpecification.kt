@@ -46,10 +46,6 @@ class NoteSpecification(
         val predicates = permissions.stream()
             .filter { permission: Permission ->
                 Note::class.java == permission.resourceType &&
-                    /**
-                     * TODO: We're filtering permissions on action, but what if there is no permission for that action?
-                     * I don't think that it currently results in an error when used directly through AuthorizationService.getAuthorizationSpecification
-                     */
                     authContext.action == permission.action
             }
             .map { permission: Permission ->

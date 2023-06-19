@@ -32,7 +32,7 @@ class TestAuthorizationSpecificationFactory : AuthorizationSpecificationFactory<
         )
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>): Boolean {
+    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
         return TestEntity::class.java == context.resourceType
     }
 

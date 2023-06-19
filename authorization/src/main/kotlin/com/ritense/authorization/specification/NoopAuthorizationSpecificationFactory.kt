@@ -30,7 +30,7 @@ class NoopAuthorizationSpecificationFactory<T: Any> : AuthorizationSpecification
         return NoopAuthorizationSpecification(context, permissions)
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>): Boolean {
+    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
         return AuthorizationContext.ignoreAuthorization
     }
 
