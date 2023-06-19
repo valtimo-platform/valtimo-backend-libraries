@@ -40,12 +40,22 @@ import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 
+/**
+ * This abstract test class generates security test for each endpoint in the Spring request handler mapping.
+ * Each generated test will check if 'some' security has been applied to the endpoint by attempting to perform a request to it.
+ * IMPORTANT: The result of this test should be considered indicative. It does not check if the proper authentication or authorization rules have been applied.
+ *
+ * When performing the requests, required parameters will be filled with a dummy value where possible.
+ *
+ * @param basePackageName Tests will only be generated for endpoints of which the handlers are defined within the given package. When null, no filter is applied.
+ * @param ignoredPathPatterns These request patterns will be ignored. This could be used when an endpoint is insecure on purpose or when the specific requests is too complex to test properly. Patterns typically look like this: 'GET /xyz'
+ */
 @ExtendWith(SpringExtension::class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @Tag("security")
 abstract class SecuritySmokeIntegrationTest(
-    private val basePackageName:String? = null,
+    private val basePackageName: String? = null,
     private val ignoredPathPatterns: Set<String> = setOf()
 ) {
     @MockBean
@@ -77,7 +87,7 @@ abstract class SecuritySmokeIntegrationTest(
     ): DynamicTest? {
 
         val testNames = mappingInfo.methodsCondition.methods
-            .ifEmpty { setOf( null ) }
+            .ifEmpty { setOf(null) }
             .map { it?.toString() ?: "" }
             .sorted()
             .flatMap { method ->
@@ -90,7 +100,7 @@ abstract class SecuritySmokeIntegrationTest(
 
         return if (testNames.isEmpty()) {
             null
-        } else if(testNames.any { testName -> ignoredPathPatterns.contains(testName) }) {
+        } else if (testNames.any { testName -> ignoredPathPatterns.contains(testName) }) {
             DynamicTest.dynamicTest("Ignored: ${testNames.first()}") {}
         } else {
             DynamicTest.dynamicTest(testNames.first()) {
@@ -106,7 +116,7 @@ abstract class SecuritySmokeIntegrationTest(
 
             val method = mappingInfo.methodsCondition.methods.firstOrNull()
                 ?.let { HttpMethod.valueOf(it.name) }
-                ?:HttpMethod.GET
+                ?: HttpMethod.GET
 
             val request = MockMvcRequestBuilders.request(method, path)
             mappingInfo.consumesCondition.consumableMediaTypes.firstOrNull()
@@ -124,7 +134,10 @@ abstract class SecuritySmokeIntegrationTest(
         }
     }
 
-    private fun getSimpleParamMap(mappingInfo: RequestMappingInfo, handlerMethod: HandlerMethod): Map<String, List<String>> {
+    private fun getSimpleParamMap(
+        mappingInfo: RequestMappingInfo,
+        handlerMethod: HandlerMethod
+    ): Map<String, List<String>> {
         val expressions = mappingInfo.paramsCondition.expressions
             .map {
                 val value = if (it.value != null && it.value!!.matches(".*\\{.*}.*".toRegex())) {
@@ -132,7 +145,7 @@ abstract class SecuritySmokeIntegrationTest(
                 } else {
                     it.value
                 }
-                Pair(it.name, value?:"")
+                Pair(it.name, value ?: "")
             }
 
         val methodParams = handlerMethod.methodParameters.mapNotNull {
@@ -148,7 +161,7 @@ abstract class SecuritySmokeIntegrationTest(
         }
 
         return (expressions + methodParams)
-            .groupBy( { it.first }, { it.second } )
+            .groupBy({ it.first }, { it.second })
             .map { entry -> Pair(entry.key, listOf(entry.value.maxOf { it })) }
             .toMap()
     }
