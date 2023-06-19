@@ -99,7 +99,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
         assertNotNull(task)
         val startedProcessId = task.processInstanceId
         val associatedProcessDocuments =
-            processDocumentInstanceRepository.findAllByDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
+            processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
         val resultProcessInstance = camundaProcessService.findProcessInstanceById(startedProcessId).get()
         assertEquals(document.id().toString(), resultProcessInstance.businessKey)
         assertEquals(associatedProcessDocuments.size, 2)

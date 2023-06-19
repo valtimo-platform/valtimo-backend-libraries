@@ -145,22 +145,6 @@ class ProcessDocumentResourceTest extends BaseTest {
     }
 
     @Test
-    void shouldReturnOkWhenGettingProcessDocumentDefinitionsPaged() throws Exception {
-        when(processDocumentAssociationService.getAllProcessDocumentDefinitions(any())).thenReturn(processDocumentInstancesPage);
-
-        mockMvc.perform(
-                get("/api/v1/process-document/definition")
-                    .accept(APPLICATION_JSON_VALUE)
-                    .contentType(APPLICATION_JSON_VALUE))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.content[0].id.processDefinitionKey").exists())
-            .andExpect(jsonPath("$.content[0].id.documentDefinitionId.name").exists())
-            .andExpect(jsonPath("$.content[0].id.documentDefinitionId.version").exists());
-    }
-
-    @Test
     void shouldReturnOkWhenGettingProcessDocumentDefinition() throws Exception {
         when(processDocumentAssociationService.findProcessDocumentDefinitions(eq(documentDefinitionId.name())))
             .thenReturn(List.of(processDocumentDefinition));

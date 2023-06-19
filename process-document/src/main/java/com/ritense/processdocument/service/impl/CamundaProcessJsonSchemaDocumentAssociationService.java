@@ -20,12 +20,15 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.JsonSchemaDocumentActionProvider;
 import com.ritense.processdocument.domain.ProcessDefinitionKey;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.domain.ProcessDocumentInstanceId;
@@ -49,12 +52,12 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 public class CamundaProcessJsonSchemaDocumentAssociationService implements ProcessDocumentAssociationService {
@@ -67,10 +70,11 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private final CamundaProcessService camundaProcessService;
     private final RuntimeService runtimeService;
     private final AuthorizationService authorizationService;
+    private final DocumentService documentService;
 
     public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaProcessService camundaProcessService, RuntimeService runtimeService,
-                                                              AuthorizationService authorizationService
-    ) {
+                                                              AuthorizationService authorizationService,
+                                                              DocumentService documentService) {
         this.processDocumentDefinitionRepository = processDocumentDefinitionRepository;
         this.processDocumentInstanceRepository = processDocumentInstanceRepository;
         this.documentDefinitionRepository = documentDefinitionRepository;
@@ -78,12 +82,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         this.camundaProcessService = camundaProcessService;
         this.runtimeService = runtimeService;
         this.authorizationService = authorizationService;
-    }
-
-    @Override
-    public Page<CamundaProcessJsonSchemaDocumentDefinition> getAllProcessDocumentDefinitions(Pageable pageable) {
-        //TODO: PBAC Filtering
-        return processDocumentDefinitionRepository.findAllByLatestDocumentDefinitionVersion(pageable);
+        this.documentService = documentService;
     }
 
     @Override
@@ -125,8 +124,10 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName) {
-        // TODO: (CREATE jsonschemadocument)/(ADMIN role, so separate endpoint)
-        return processDocumentDefinitionRepository.findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(documentDefinitionName);
+        // TODO: (VIEW JsonSchemaDocument) / (ADMIN role, so separate endpoint)
+
+        return processDocumentDefinitionRepository
+            .findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(documentDefinitionName);
     }
 
     @Override
@@ -144,21 +145,25 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
-    public Optional<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstance(ProcessDocumentInstanceId processDocumentInstanceId) {
-        //TODO: PBAC Filtering
-        return processDocumentInstanceRepository.findById(processDocumentInstanceId);
-    }
-
-    @Override
     public Optional<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstance(ProcessInstanceId processInstanceId) {
-        //TODO: PBAC Filtering
+        denyAuthorization(CamundaProcessJsonSchemaDocumentInstance.class);
         return processDocumentInstanceRepository.findByProcessInstanceId(processInstanceId);
     }
 
     @Override
-    //TODO: case VIEW @Marijn
     public List<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstances(Document.Id documentId) {
-        var processes = processDocumentInstanceRepository.findAllByDocumentId(documentId);
+        var document = documentService.findBy(documentId).get();
+
+        authorizationService.requirePermission(
+            new AuthorizationRequest(
+                JsonSchemaDocument.class,
+                JsonSchemaDocumentActionProvider.VIEW
+            ),
+            document,
+            null
+        );
+
+        var processes = processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(documentId);
         for (var process : processes) {
             var camundaProcess = runtimeService.createProcessInstanceQuery()
                 .processInstanceId(process.getId().processInstanceId().toString())

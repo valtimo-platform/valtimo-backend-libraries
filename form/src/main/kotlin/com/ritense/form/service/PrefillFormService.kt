@@ -97,10 +97,12 @@ class PrefillFormService(
 
     fun prefillProcessVariables(formDefinition: FormIoFormDefinition, document: Document) {
         val processVarsNames = formDefinition.extractProcessVarNames()
-        val processInstanceVariables = processDocumentAssociationService.findProcessDocumentInstances(document.id())
-            .map { it.processDocumentInstanceId().processInstanceId().toString() }
-            .flatMap { camundaProcessService.getProcessInstanceVariables(it, processVarsNames).entries }
-            .associate { it.key to it.value }
+        val processInstanceVariables = AuthorizationContext.runWithoutAuthorization {
+            processDocumentAssociationService.findProcessDocumentInstances(document.id())
+                .map { it.processDocumentInstanceId().processInstanceId().toString() }
+                .flatMap { camundaProcessService.getProcessInstanceVariables(it, processVarsNames).entries }
+                .associate { it.key to it.value }
+        }
         if (processInstanceVariables.isNotEmpty()) {
             formDefinition.preFillWith(FormIoFormDefinition.PROCESS_VAR_PREFIX, processInstanceVariables)
         }

@@ -93,7 +93,8 @@ public class ProcessDocumentAutoConfiguration {
         DocumentDefinitionService documentDefinitionService,
         CamundaProcessService camundaProcessService,
         RuntimeService runtimeService,
-        AuthorizationService authorizationService
+        AuthorizationService authorizationService,
+        DocumentService documentService
     ) {
         return new CamundaProcessJsonSchemaDocumentAssociationService(
             processDocumentDefinitionRepository,
@@ -102,7 +103,8 @@ public class ProcessDocumentAutoConfiguration {
             documentDefinitionService,
             camundaProcessService,
             runtimeService,
-            authorizationService
+            authorizationService,
+            documentService
         );
     }
 

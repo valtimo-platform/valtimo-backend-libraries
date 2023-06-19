@@ -181,7 +181,9 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         )
 
         val processDocumentInstances =
-            processDocumentAssociationService.findProcessDocumentInstances(latestDocument.id())
+            AuthorizationContext.runWithoutAuthorization {
+                processDocumentAssociationService.findProcessDocumentInstances(latestDocument.id())
+            }
 
         assertEquals(1, processDocumentInstances.size)
 
@@ -228,7 +230,9 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         )
 
         val processDocumentInstances =
-            processDocumentAssociationService.findProcessDocumentInstances(updatedDocument.id())
+            AuthorizationContext.runWithoutAuthorization {
+                processDocumentAssociationService.findProcessDocumentInstances(updatedDocument.id())
+            }
 
         assertEquals(1, processDocumentInstances.size)
 

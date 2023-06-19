@@ -360,7 +360,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
     public void prefillProcessVariables(FormIoFormDefinition formDefinition, Document document) {
         final List<String> processVarsNames = formDefinition.extractProcessVarNames();
         final Map<String, Object> processInstanceVariables = new HashMap<>();
-        processDocumentAssociationService.findProcessDocumentInstances(document.id())
+        AuthorizationContext.runWithoutAuthorization( () -> processDocumentAssociationService.findProcessDocumentInstances(document.id()))
             .forEach(processDocumentInstance -> processInstanceVariables.putAll(
                 camundaProcessService.getProcessInstanceVariables(
                     processDocumentInstance.processDocumentInstanceId().processInstanceId().toString(),
