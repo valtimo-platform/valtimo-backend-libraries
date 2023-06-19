@@ -16,6 +16,9 @@
 
 package com.ritense.processdocument.service.impl;
 
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
@@ -25,7 +28,6 @@ import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.domain.ProcessDefinitionKey;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
-import com.ritense.processdocument.domain.ProcessDocumentDefinitionId;
 import com.ritense.processdocument.domain.ProcessDocumentInstanceId;
 import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
@@ -50,11 +52,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 public class CamundaProcessJsonSchemaDocumentAssociationService implements ProcessDocumentAssociationService {
@@ -66,49 +66,59 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private final DocumentDefinitionService documentDefinitionService;
     private final CamundaProcessService camundaProcessService;
     private final RuntimeService runtimeService;
+    private final AuthorizationService authorizationService;
 
-    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaProcessService camundaProcessService, RuntimeService runtimeService) {
+    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaProcessService camundaProcessService, RuntimeService runtimeService,
+                                                              AuthorizationService authorizationService
+    ) {
         this.processDocumentDefinitionRepository = processDocumentDefinitionRepository;
         this.processDocumentInstanceRepository = processDocumentInstanceRepository;
         this.documentDefinitionRepository = documentDefinitionRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.camundaProcessService = camundaProcessService;
         this.runtimeService = runtimeService;
+        this.authorizationService = authorizationService;
     }
 
     @Override
     public Page<CamundaProcessJsonSchemaDocumentDefinition> getAllProcessDocumentDefinitions(Pageable pageable) {
+        //TODO: PBAC Filtering
         return processDocumentDefinitionRepository.findAllByLatestDocumentDefinitionVersion(pageable);
     }
 
     @Override
     public Optional<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey) {
-        // TODO: DENY
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
+
         return processDocumentDefinitionRepository.findByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
 
     @Override
     public CamundaProcessJsonSchemaDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey) {
-        // TODO: DENY
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
+
         return findProcessDocumentDefinition(processDefinitionKey)
             .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException("for processDefinitionKey '" + processDefinitionKey + "'"));
     }
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findAllProcessDocumentDefinitions(ProcessDefinitionKey processDefinitionKey) {
-        // TODO: DENY
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
+
         return processDocumentDefinitionRepository.findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
 
     @Override
     public Optional<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion) {
-        // TODO: DENY
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
+
         return processDocumentDefinitionRepository.findByProcessDefinitionKeyAndDocumentDefinitionVersion(processDefinitionKey, documentDefinitionVersion);
     }
 
     @Override
     public CamundaProcessJsonSchemaDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion) {
-        // TODO: DENY
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
+
         return findProcessDocumentDefinition(processDefinitionKey, documentDefinitionVersion)
             .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException("for processDefinitionKey '" + processDefinitionKey + "' and version '" + documentDefinitionVersion + "'"));
     }
@@ -121,23 +131,27 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitionsByProcessDefinitionKey(String processDefinitionKey) {
-        // TODO: ADMIN
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
+
         return processDocumentDefinitionRepository.findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
 
     @Override
     public Optional<? extends ProcessDocumentDefinition> findByDocumentDefinitionName(String documentDefinitionName) {
-        // TODO: DENY
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
+
         return processDocumentDefinitionRepository.findByDocumentDefinitionName(documentDefinitionName);
     }
 
     @Override
     public Optional<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstance(ProcessDocumentInstanceId processDocumentInstanceId) {
+        //TODO: PBAC Filtering
         return processDocumentInstanceRepository.findById(processDocumentInstanceId);
     }
 
     @Override
     public Optional<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstance(ProcessInstanceId processInstanceId) {
+        //TODO: PBAC Filtering
         return processDocumentInstanceRepository.findByProcessInstanceId(processInstanceId);
     }
 
@@ -156,8 +170,9 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     @Transactional
-    //TODO: DENY @Marijn
     public void deleteProcessDocumentInstances(String processName) {
+        denyAuthorization(CamundaProcessJsonSchemaDocumentInstance.class);
+
         logger.debug("Remove all running process document instances for process: {}", processName);
         processDocumentInstanceRepository.deleteAllByProcessName(processName);
     }
@@ -165,6 +180,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     @Override
     @Transactional
     public Optional<CamundaProcessJsonSchemaDocumentDefinition> createProcessDocumentDefinition(ProcessDocumentDefinitionRequest request) {
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
+
         final var documentDefinitionId = documentDefinitionService.findIdByName(request.documentDefinitionName());
         return createProcessDocumentDefinition(
             new CamundaProcessDefinitionKey(request.processDefinitionKey()),
@@ -214,6 +231,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     @Transactional
     @Override
     public void deleteProcessDocumentDefinition(ProcessDocumentDefinitionRequest request) {
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
+
         logger.debug("Remove process document definition for document definition: {}", request.documentDefinitionName());
 
         final var documentDefinitionId = documentDefinitionService.findIdByName(request.documentDefinitionName());
@@ -227,17 +246,20 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     @Transactional
     @Override
     public void deleteProcessDocumentDefinition(String documentDefinitionName) {
+        denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
+
         processDocumentDefinitionRepository.deleteByDocumentDefinition(documentDefinitionName);
     }
 
     @Transactional
     @Override
-    //TODO: DENY
     public Optional<CamundaProcessJsonSchemaDocumentInstance> createProcessDocumentInstance(
         String processInstanceId,
         UUID documentId,
         String processName
     ) {
+        denyAuthorization(CamundaProcessJsonSchemaDocumentInstance.class);
+
         final var id = CamundaProcessJsonSchemaDocumentInstanceId.newId(
             new CamundaProcessInstanceId(processInstanceId),
             JsonSchemaDocumentId.existingId(documentId)
@@ -255,24 +277,11 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
-    //TODO: unused - remove? @Marijn
-    public FunctionResult<CamundaProcessJsonSchemaDocumentDefinition, OperationError> getProcessDocumentDefinitionResult(
-        ProcessDocumentDefinitionId processDocumentDefinitionId
-    ) {
-        final var result = processDocumentDefinitionRepository.findById(processDocumentDefinitionId);
-        if (result.isPresent()) {
-            return new FunctionResult.Successful<>(result.get());
-        } else {
-            final String msg = "Corresponding process-document-definition is not associated with document-definition-name";
-            return new FunctionResult.Erroneous<>(new OperationError.FromString(msg));
-        }
-    }
-
-    @Override
-    //TODO: DENY
     public FunctionResult<CamundaProcessJsonSchemaDocumentInstance, OperationError> getProcessDocumentInstanceResult(
         ProcessDocumentInstanceId processDocumentInstanceId
     ) {
+        denyAuthorization(CamundaProcessJsonSchemaDocumentInstance.class);
+
         final var result = processDocumentInstanceRepository.findById(processDocumentInstanceId);
         if (result.isPresent()) {
             return new FunctionResult.Successful<>(result.get());
@@ -282,4 +291,15 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         }
     }
 
+    private <T> void denyAuthorization(Class<T> clazz) {
+        authorizationService
+            .requirePermission(
+                new AuthorizationRequest<T>(
+                    clazz,
+                    Action.deny()
+                ),
+                null,
+                null
+            );
+    }
 }

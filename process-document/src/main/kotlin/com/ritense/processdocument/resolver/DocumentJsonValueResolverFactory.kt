@@ -37,9 +37,9 @@ import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.valueresolver.exception.ValueResolverValidationException
-import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.UUID
 import java.util.function.Function
+import org.camunda.bpm.engine.delegate.VariableScope
 
 /**
  * This resolver can resolve requestedValues against the Document JSON content
@@ -88,12 +88,17 @@ class DocumentJsonValueResolverFactory(
         variableScope: VariableScope?,
         values: Map<String, Any>
     ) {
-        val document = processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)
+        val document = AuthorizationContext.runWithoutAuthorization {
+            processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)
+        }
         val documentContent = document.content().asJson()
         buildJsonPatch(documentContent, values)
 
         try {
-            AuthorizationContext.runWithoutAuthorization { documentService.modifyDocument(document, documentContent) }
+            //TODO: PBAC MODIFY check
+            AuthorizationContext.runWithoutAuthorization {
+                documentService.modifyDocument(document, documentContent)
+            }
         } catch (exception: ModifyDocumentException) {
             throw RuntimeException(
                 "Failed to handle values for processInstance '$processInstanceId'. Values: ${values}.",

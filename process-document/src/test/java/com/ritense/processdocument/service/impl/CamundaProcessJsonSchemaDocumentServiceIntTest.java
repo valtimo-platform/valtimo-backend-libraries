@@ -17,6 +17,7 @@
 package com.ritense.processdocument.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.processdocument.BaseIntegrationTest;
@@ -50,7 +51,9 @@ class CamundaProcessJsonSchemaDocumentServiceIntTest extends BaseIntegrationTest
 
         var result = camundaProcessJsonSchemaDocumentService.newDocumentAndStartProcess(startRequest);
 
-        var optAssociation = camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinition(new CamundaProcessDefinitionKey(PROCESS_DEFINITION_KEY));
+        var optAssociation = AuthorizationContext.runWithoutAuthorization(() ->
+            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinition(new CamundaProcessDefinitionKey(PROCESS_DEFINITION_KEY))
+        );
         assertThat(optAssociation).isEmpty();
         assertThat(result.errors()).isEmpty();
         assertThat(result.resultingDocument()).isPresent();

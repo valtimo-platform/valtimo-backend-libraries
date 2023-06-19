@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.formflow.repository.FormFlowInstanceRepository
@@ -29,12 +30,12 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.Mapper
+import java.util.UUID
 import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 
 @Transactional
 internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
@@ -67,13 +68,15 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
             "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
             "}\n")
 
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(
-                "formflow-one-task-process",
-                "testing",
-                true
+        runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                ProcessDocumentDefinitionRequest(
+                    "formflow-one-task-process",
+                    "testing",
+                    true
+                )
             )
-        )
+        }
 
         formAssociationService.createFormAssociation(
             CreateFormAssociationRequest("formflow-one-task-process",
@@ -100,22 +103,27 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
 
     @Test
     fun `should create form flow instance when task is opened`() {
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"testing.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
-
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(
-                "formflow-one-task-process",
-                "testing",
-                true
-            )
+        documentDefinitionService.deploy(
+            "" +
+                "{\n" +
+                "    \"\$id\": \"testing.schema\",\n" +
+                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                "}\n"
         )
 
+        runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                ProcessDocumentDefinitionRequest(
+                    "formflow-one-task-process",
+                    "testing",
+                    true
+                )
+            )
+        }
+
         formAssociationService.createFormAssociation(
-            CreateFormAssociationRequest("formflow-one-task-process",
+            CreateFormAssociationRequest(
+                "formflow-one-task-process",
                 FormLinkRequest(
                     "do-something",
                     FormAssociationType.USER_TASK,
@@ -127,12 +135,17 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
             )
         )
 
-        val result = processDocumentService.newDocumentAndStartProcess(
-            NewDocumentAndStartProcessRequest("formflow-one-task-process",
-                NewDocumentRequest("testing",
-                    Mapper.INSTANCE.get().readTree("{}"))
+        val result = runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(
+                NewDocumentAndStartProcessRequest(
+                    "formflow-one-task-process",
+                    NewDocumentRequest(
+                        "testing",
+                        Mapper.INSTANCE.get().readTree("{}")
+                    )
+                )
             )
-        )
+        }
 
         val task = taskService.createTaskQuery()
             .processInstanceId(result.resultingProcessInstanceId().get().toString())

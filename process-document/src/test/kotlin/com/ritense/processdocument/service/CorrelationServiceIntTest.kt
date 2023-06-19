@@ -18,6 +18,7 @@ package com.ritense.processdocument.service
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -91,11 +92,13 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
             document.id().toString(),
             variables
         )
-        processDocumentAssociationService.createProcessDocumentInstance(
-            processInstance.id,
-            document.id().id,
-            "start-correlation-test-process"
-        )
+        AuthorizationContext.runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentInstance(
+                processInstance.id,
+                document.id().id,
+                "start-correlation-test-process"
+            )
+        }
         val task = taskService.createTaskQuery().taskName("message-start-event-user-task").singleResult()
         assertNotNull(task)
         val startedProcessId = task.processInstanceId
@@ -153,11 +156,14 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
             document.id().toString(),
             variables
         )
-        processDocumentAssociationService.createProcessDocumentInstance(
-            processInstance.id,
-            document.id().id,
-            "start-correlation-test-process"
-        )
+
+        AuthorizationContext.runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentInstance(
+                processInstance.id,
+                document.id().id,
+                "start-correlation-test-process"
+            )
+        }
         taskOne = taskService.createTaskQuery().taskName("intermediate-catch-event-1-user-task").singleResult()
         assertNotNull(taskOne)
         taskTwo = taskService.createTaskQuery().taskName("intermediate-catch-event-2-user-task").singleResult()
@@ -200,11 +206,13 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
             document.id().toString(),
             variables
         )
-        processDocumentAssociationService.createProcessDocumentInstance(
-            processInstance.id,
-            document.id().id,
-            "start-correlation-test-process"
-        )
+        AuthorizationContext.runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentInstance(
+                processInstance.id,
+                document.id().id,
+                "start-correlation-test-process"
+            )
+        }
         val task = taskService.createTaskQuery().taskName("target-process-definition-user-task").singleResult()
         assertNotNull(task)
         val startedProcessId = task.processInstanceId
@@ -249,11 +257,13 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
             document.id().toString(),
             variables
         )
-        processDocumentAssociationService.createProcessDocumentInstance(
-            processInstance.id,
-            document.id().id,
-            "start-correlation-test-process"
-        )
+        AuthorizationContext.runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentInstance(
+                processInstance.id,
+                document.id().id,
+                "start-correlation-test-process"
+            )
+        }
         taskOne = taskService.createTaskQuery().taskName("intermediate-catch-event-1-user-task").singleResult()
         assertNotNull(taskOne)
         val startedProcessOneId = taskOne.processInstanceId

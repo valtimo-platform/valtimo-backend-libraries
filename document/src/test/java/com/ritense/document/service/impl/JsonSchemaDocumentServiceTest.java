@@ -117,7 +117,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         assertEquals(123L, document.sequence());
         assertEquals("system", document.createdBy());
         assertNotNull(document.createdOn());
-        verify(documentRepository, times(1)).saveAndFlush(document);
+        verify(documentRepository, times(1)).save(document);
     }
 
     @Test
@@ -163,7 +163,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             assertEquals(123L, relatedFile.getSizeInBytes());
         });
 
-        verify(documentRepository, times(1)).saveAndFlush(document);
+        verify(documentRepository, times(1)).save(document);
     }
 
     @Test

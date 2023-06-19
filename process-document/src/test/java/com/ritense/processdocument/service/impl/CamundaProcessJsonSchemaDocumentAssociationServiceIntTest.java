@@ -18,6 +18,7 @@ package com.ritense.processdocument.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
@@ -31,11 +32,9 @@ import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskR
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import org.camunda.bpm.engine.RuntimeService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
-
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.List;
@@ -65,8 +64,9 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
 
     @Test
     public void findProcessDocumentDefinitionByProcessDefinitionKey() {
-        final var processDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
-            .findProcessDocumentDefinitionsByProcessDefinitionKey(PROCESS_DEFINITION_KEY);
+        final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitionsByProcessDefinitionKey(PROCESS_DEFINITION_KEY)
+        );
 
         assertThat(processDocumentDefinitions.size()).isEqualTo(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);

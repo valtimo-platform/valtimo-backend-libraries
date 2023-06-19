@@ -18,6 +18,7 @@ package com.ritense.processdocument.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent;
 import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.service.DocumentDefinitionService;
@@ -98,20 +99,23 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
                 item.getStartableByUser()
         );
 
-        final var existingAssociationOpt = processDocumentAssociationService.findProcessDocumentDefinition(
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            final var existingAssociationOpt = processDocumentAssociationService.findProcessDocumentDefinition(
                 new CamundaProcessDefinitionKey(item.getProcessDefinitionKey())
-        );
+            );
 
-        if (existingAssociationOpt.isPresent()) {
-            if (!item.equalsProcessDocumentDefinition(existingAssociationOpt.get())) {
-                logger.info("Updating process-document-links from {}.json", documentDefinitionName);
-                processDocumentAssociationService.deleteProcessDocumentDefinition(request);
+            if (existingAssociationOpt.isPresent()) {
+                if (!item.equalsProcessDocumentDefinition(existingAssociationOpt.get())) {
+                    logger.info("Updating process-document-links from {}.json", documentDefinitionName);
+                    processDocumentAssociationService.deleteProcessDocumentDefinition(request);
+                    processDocumentAssociationService.createProcessDocumentDefinition(request);
+                }
+            } else {
+                logger.info("Deploying process-document-links from {}.json", documentDefinitionName);
                 processDocumentAssociationService.createProcessDocumentDefinition(request);
             }
-        } else {
-            logger.info("Deploying process-document-links from {}.json", documentDefinitionName);
-            processDocumentAssociationService.createProcessDocumentDefinition(request);
-        }
+            return null;
+        });
 
         if (item.getProcessIsVisibleInMenu() != null) {
             contextService.findAll(Pageable.unpaged()).forEach(context -> {

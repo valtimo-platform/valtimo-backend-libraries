@@ -17,6 +17,7 @@
 package com.ritense.processdocument.listener
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.document.domain.Document
@@ -117,11 +118,13 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
             "parent-process",
             testDocument.id().toString()
         )
-        processDocumentAssociationService.createProcessDocumentInstance(
-            processInstance.id,
-            testDocument.id().id,
-            "parent process"
-        )
+        AuthorizationContext.runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentInstance(
+                processInstance.id,
+                testDocument.id().id,
+                "parent process"
+            )
+        }
 
         val task = taskService.createTaskQuery().taskName("child process user task").singleResult()
 
@@ -146,11 +149,13 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
             "parent-process",
             testDocument.id().toString()
         )
-        processDocumentAssociationService.createProcessDocumentInstance(
-            processInstance.id,
-            testDocument.id().id,
-            "parent process"
-        )
+        AuthorizationContext.runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentInstance(
+                processInstance.id,
+                testDocument.id().id,
+                "parent process"
+            )
+        }
 
         val task = taskService.createTaskQuery().taskName("child process user task").singleResult()
 
@@ -167,11 +172,13 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
             "parent-process",
             testDocument.id().toString()
         )
-        processDocumentAssociationService.createProcessDocumentInstance(
-            processInstance.id,
-            testDocument.id().id,
-            "parent process"
-        )
+        AuthorizationContext.runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentInstance(
+                processInstance.id,
+                testDocument.id().id,
+                "parent process"
+            )
+        }
 
         documentService.assignUserToDocument(testDocument.id().id, testUser2.id)
 
@@ -191,11 +198,13 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
             "parent-process",
             testDocument.id().toString()
         )
-        processDocumentAssociationService.createProcessDocumentInstance(
-            processInstance.id,
-            testDocument.id().id,
-            "parent process"
-        )
+        AuthorizationContext.runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentInstance(
+                processInstance.id,
+                testDocument.id().id,
+                "parent process"
+            )
+        }
 
         documentService.unassignUserFromDocument(testDocument.id().id)
 

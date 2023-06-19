@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.domain.impl.listener;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.listener.StartEventFromCallActivityListener;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
@@ -44,13 +45,16 @@ public class StartEventFromCallActivityListenerImpl extends ReactorExecutionList
         if (isExecutedFromCallActivity(execution)) {
             logger.info("Handling process started from CallActivity for process-definition-id - {}", execution.getProcessDefinitionId());
             final var parentProcessInstanceId = new CamundaProcessInstanceId(execution.getSuperExecution().getProcessInstanceId());
-            processDocumentAssociationService
-                .findProcessDocumentInstance(parentProcessInstanceId)
-                .ifPresent(instance -> processDocumentAssociationService.createProcessDocumentInstance(
-                    execution.getProcessInstanceId(), //processInstance from new process
-                    UUID.fromString(instance.processDocumentInstanceId().documentId().toString()),
-                    getProcessNameFrom(execution)
-                ));
+            AuthorizationContext.runWithoutAuthorization(() -> {
+                processDocumentAssociationService
+                    .findProcessDocumentInstance(parentProcessInstanceId)
+                    .ifPresent(instance -> processDocumentAssociationService.createProcessDocumentInstance(
+                        execution.getProcessInstanceId(), //processInstance from new process
+                        UUID.fromString(instance.processDocumentInstanceId().documentId().toString()),
+                        getProcessNameFrom(execution)
+                    ));
+                return null;
+            });
         }
     }
 

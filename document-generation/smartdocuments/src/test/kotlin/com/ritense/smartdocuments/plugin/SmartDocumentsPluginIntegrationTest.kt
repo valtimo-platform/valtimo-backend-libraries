@@ -17,6 +17,8 @@
 package com.ritense.smartdocuments.plugin
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
@@ -133,7 +135,9 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
             .withProcessVars(mapOf("age" to 138))
 
         // when
-        processDocumentService.newDocumentAndStartProcess(request)
+        runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(request)
+        }
 
         // then
         val requestBody =
@@ -156,7 +160,9 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when
-        processDocumentService.newDocumentAndStartProcess(request)
+        runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(request)
+        }
 
         // then
         val resourceId = runtimeService.createVariableInstanceQuery()
@@ -199,7 +205,9 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
             .withProcessVars(mapOf("my-template-name-variable" to "my-custom-template-name"))
 
         // when
-        processDocumentService.newDocumentAndStartProcess(request)
+        runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(request)
+        }
 
         // then
         val requestBody =
@@ -225,7 +233,9 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when
-        processDocumentService.newDocumentAndStartProcess(request)
+        runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(request)
+        }
 
         // then
         val requestBody =
