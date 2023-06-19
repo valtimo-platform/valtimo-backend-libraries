@@ -73,9 +73,11 @@
         <dropPrimaryKey tableName="dashboard_widget_configuration"/>
     </changeSet>
 
-    <changeSet id="6" author="Ritense">
+    <changeSet id="7" author="Ritense">
         <addColumn tableName="dashboard_widget_configuration">
-            <column name="id" type="${uuidType}"/>
+            <column name="title" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
     </changeSet>
 

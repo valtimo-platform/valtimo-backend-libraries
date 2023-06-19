@@ -47,6 +47,7 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
         widgetConfigurationRepository.save(
             WidgetConfiguration(
                 key = "doorlooptijd",
+                title = "Doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().createObjectNode(),
@@ -63,6 +64,8 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
         assertThat(widgets[0].dashboard.title).isEqualTo("My dashboard")
         assertThat(widgets[0].dashboard.description).isEqualTo("Test description")
         assertThat(widgets[0].dashboard.order).isEqualTo(1)
+        assertThat(widgets[0].key).isEqualTo("doorlooptijd")
+        assertThat(widgets[0].title).isEqualTo("Doorlooptijd")
         assertThat(widgets[0].dataSourceKey).isEqualTo("doorlooptijd")
         assertThat(widgets[0].dataSourceProperties).isNotNull
         assertThat(widgets[0].displayType).isEqualTo("gauge")

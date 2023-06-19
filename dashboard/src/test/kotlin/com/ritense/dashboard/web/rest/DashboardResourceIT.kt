@@ -26,6 +26,7 @@ import com.ritense.dashboard.service.DashboardService
 import com.ritense.dashboard.web.rest.dto.DashboardCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationCreateRequestDto
+import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -74,10 +75,11 @@ class DashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get dashboards`() {
-        val dashboard = dashboardService.createDashboard("test", "Test dashboard", "Test description")
+        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
         widgetConfigurationRepository.save(
             WidgetConfiguration(
                 key = "doorlooptijd",
+                title = "Doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
@@ -91,7 +93,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$[0].key").value("test"))
+            .andExpect(jsonPath("$[0].key").value("test_dashboard"))
             .andExpect(jsonPath("$[0].title").value("Test dashboard"))
             .andExpect(jsonPath("$[0].description").value("Test description"))
             .andExpect(jsonPath("$[0].widgetConfigurations").doesNotExist())
@@ -99,10 +101,11 @@ class DashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get dashboard by key`() {
-        val dashboard = dashboardService.createDashboard("test", "Test dashboard", "Test description")
+        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
         widgetConfigurationRepository.save(
             WidgetConfiguration(
                 key = "doorlooptijd",
+                title = "Doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
@@ -112,11 +115,11 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            get("/api/v1/dashboard/{dashboardKey}", "test")
+            get("/api/v1/dashboard/{dashboardKey}", "test_dashboard")
         )
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.key").value("test"))
+            .andExpect(jsonPath("$.key").value("test_dashboard"))
             .andExpect(jsonPath("$.title").value("Test dashboard"))
             .andExpect(jsonPath("$.description").value("Test description"))
             .andExpect(jsonPath("$.widgetConfigurations").doesNotExist())
@@ -125,7 +128,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
     @Test
     fun `should create dashboard`() {
         val dashboard =
-            DashboardCreateRequestDto(key = "test", title = "Test dashboard", description = "Test description")
+            DashboardCreateRequestDto("Test dashboard", "Test description")
 
         mockMvc.perform(
             post("/api/v1/dashboard")
@@ -134,15 +137,15 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.key").value("test"))
+            .andExpect(jsonPath("$.key").value("test_dashboard"))
             .andExpect(jsonPath("$.title").value("Test dashboard"))
             .andExpect(jsonPath("$.description").value("Test description"))
     }
 
     @Test
     fun `should update dashboard`() {
-        val dashboard1 = dashboardService.createDashboard("1", "First dashboard", "Test description")
-        val dashboard2 = dashboardService.createDashboard("2", "Second dashboard", "Test description")
+        val dashboard1 = dashboardService.createDashboard("First dashboard", "Test description")
+        val dashboard2 = dashboardService.createDashboard("Second dashboard", "Test description")
         val updateRequest = listOf(dashboard2, dashboard1.copy(title = "Third dashboard"))
             .map { DashboardUpdateRequestDto.of(it) }
 
@@ -153,19 +156,20 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$[0].key").value("2"))
+            .andExpect(jsonPath("$[0].key").value("second_dashboard"))
             .andExpect(jsonPath("$[0].title").value("Second dashboard"))
-            .andExpect(jsonPath("$[1].key").value("1"))
+            .andExpect(jsonPath("$[1].key").value("first_dashboard"))
             .andExpect(jsonPath("$[1].title").value("Third dashboard"))
     }
 
     @Test
     fun `should delete dashboard`() {
         val dashboard =
-            dashboardService.createDashboard(key = "test", title = "Test dashboard", description = "Test description")
+            dashboardService.createDashboard("Test dashboard", "Test description")
         widgetConfigurationRepository.save(
             WidgetConfiguration(
                 key = "doorlooptijd",
+                title = "Doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().createObjectNode(),
@@ -185,10 +189,11 @@ class DashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get widget configurations`() {
-        val dashboard = dashboardService.createDashboard("test-dashboard", "Test dashboard", "Test description")
+        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
         widgetConfigurationRepository.save(
             WidgetConfiguration(
                 key = "doorlooptijd",
+                title = "Doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
@@ -198,7 +203,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            get("/api/v1/dashboard/{dashboardKey}/widget", "test-dashboard")
+            get("/api/v1/dashboard/{dashboardKey}/widget", "test_dashboard")
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -211,16 +216,16 @@ class DashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should create widget configuration`() {
-        dashboardService.createDashboard("test-dashboard", "Test dashboard", "Test description")
+        dashboardService.createDashboard("Test dashboard", "Test description")
         val widgetConfiguration = WidgetConfigurationCreateRequestDto(
-            key = "doorlooptijd",
+            title = "Doorlooptijd",
             dataSourceKey = "doorlooptijd",
             dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
             displayType = "gauge"
         )
 
         mockMvc.perform(
-            post("/api/v1/dashboard/{dashboardKey}/widget", "test-dashboard")
+            post("/api/v1/dashboard/{dashboardKey}/widget", "test_dashboard")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(widgetConfiguration))
         )
@@ -234,10 +239,11 @@ class DashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should update widget configurations`() {
-        val dashboard = dashboardService.createDashboard("test-dashboard", "Test dashboard", "Test description")
+        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
         widgetConfigurationRepository.save(
             WidgetConfiguration(
                 key = "doorlooptijd",
+                title = "Doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
@@ -246,8 +252,9 @@ class DashboardResourceIT : BaseIntegrationTest() {
             )
         )
         val widgetConfigurations = listOf(
-            WidgetConfigurationCreateRequestDto(
+            WidgetConfigurationUpdateRequestDto(
                 key = "doorlooptijd",
+                title = "Doorlooptijd",
                 dataSourceKey = "doorlooptijd2",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 500 }""") as ObjectNode,
                 displayType = "donut"
@@ -255,13 +262,14 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            put("/api/v1/dashboard/{dashboardKey}/widget", "test-dashboard")
+            put("/api/v1/dashboard/{dashboardKey}/widget", "test_dashboard")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(widgetConfigurations))
         )
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].key").value("doorlooptijd"))
+            .andExpect(jsonPath("$[0].title").value("Doorlooptijd"))
             .andExpect(jsonPath("$[0].dataSourceKey").value("doorlooptijd2"))
             .andExpect(jsonPath("$[0].dataSourceProperties.threshold").value(500))
             .andExpect(jsonPath("$[0].displayType").value("donut"))
@@ -269,10 +277,11 @@ class DashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get widget configuration by id`() {
-        val dashboard = dashboardService.createDashboard("test-dashboard", "Test dashboard", "Test description")
+        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
         widgetConfigurationRepository.save(
             WidgetConfiguration(
                 key = "doorlooptijd",
+                title = "Doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
@@ -282,7 +291,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            get("/api/v1/dashboard/{dashboardKey}/widget/{widgetKey}", "test-dashboard", "doorlooptijd")
+            get("/api/v1/dashboard/{dashboardKey}/widget/{widgetKey}", "test_dashboard", "doorlooptijd")
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -294,10 +303,11 @@ class DashboardResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should delete widget configuration`() {
-        val dashboard = dashboardService.createDashboard("test-dashboard", "Test dashboard", "Test description")
+        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
         widgetConfigurationRepository.save(
             WidgetConfiguration(
                 key = "doorlooptijd",
+                title = "Doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
@@ -307,7 +317,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            delete("/api/v1/dashboard/{dashboardKey}/widget/{widgetKey}", "test-dashboard", "doorlooptijd")
+            delete("/api/v1/dashboard/{dashboardKey}/widget/{widgetKey}", "test_dashboard", "doorlooptijd")
         )
             .andDo(print())
             .andExpect(status().isNoContent)

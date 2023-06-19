@@ -24,4 +24,8 @@ import org.springframework.stereotype.Repository
 interface DashboardRepository : JpaRepository<Dashboard, String> {
 
     fun findAllByOrderByOrder(): List<Dashboard>
+
+    fun findByTitleAndDescription(title: String, description: String): Dashboard
+
+    fun findByTitle(title: String): List<Dashboard>
 }

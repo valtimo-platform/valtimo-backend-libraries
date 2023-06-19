@@ -24,6 +24,7 @@ import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import org.springframework.transaction.annotation.Transactional
+import java.util.Locale
 
 @Transactional
 class DashboardService(
@@ -42,10 +43,8 @@ class DashboardService(
             .orElseThrow { RuntimeException("No dashboard found with key '$dashboardKey'") }
     }
 
-    fun createDashboard(key: String, title: String, description: String): Dashboard {
-        if (dashboardRepository.existsById(key)) {
-            throw RuntimeException("Failed to create dashboard. Dashboard with key '$key' already exist.")
-        }
+    fun createDashboard(title: String, description: String): Dashboard {
+        val key = generateDashboardKey(title)
         val order = dashboardRepository.count().toInt()
         return dashboardRepository.save(
             Dashboard(
@@ -89,17 +88,16 @@ class DashboardService(
 
     fun createWidgetConfiguration(
         dashboardKey: String,
-        key: String,
+        title: String,
         dataSourceKey: String,
         displayType: String,
         dataSourceProperties: ObjectNode
     ): WidgetConfiguration {
-        if (widgetConfigurationRepository.existsByDashboardKeyAndKey(dashboardKey, key)) {
-            throw RuntimeException("Failed to create widget configuration. Widget configuration with key '$key' already exist.")
-        }
+        val key = generateWidgetKey(title)
         val order = widgetConfigurationRepository.countAllByDashboardKey(dashboardKey).toInt()
         return widgetConfigurationRepository.save(
             WidgetConfiguration(
+                title = title,
                 key = key,
                 dashboard = getDashboard(dashboardKey),
                 dataSourceKey = dataSourceKey,
@@ -124,6 +122,7 @@ class DashboardService(
         val widgetConfigurations = widgetConfigurationUpdateDtos.mapIndexed { index, widgetConfigurationUpdateDto ->
             WidgetConfiguration(
                 key = widgetConfigurationUpdateDto.key,
+                title = widgetConfigurationUpdateDto.title,
                 dashboard = dashboard,
                 dataSourceKey = widgetConfigurationUpdateDto.dataSourceKey,
                 dataSourceProperties = widgetConfigurationUpdateDto.dataSourceProperties,
@@ -157,5 +156,32 @@ class DashboardService(
         val widgetConfigurations = widgetConfigurationRepository.findAllByDashboardKeyOrderByOrder(dashboardKey)
             .mapIndexed { index, widgetConfiguration -> widgetConfiguration.copy(order = index) }
         widgetConfigurationRepository.saveAll(widgetConfigurations)
+    }
+
+    private fun generateDashboardKey(title: String): String {
+        val baseKey = generateKey(title)
+        var key = baseKey
+        var i = 2
+        while(dashboardRepository.existsById(key)) {
+            key = "${baseKey}_${i++}"
+        }
+        return key
+    }
+
+    private fun generateWidgetKey(title: String): String {
+        val baseKey = generateKey(title)
+        var key = baseKey
+        var i = 2
+        while(widgetConfigurationRepository.existsById(key)) {
+            key = "${baseKey}_${i++}"
+        }
+        return key
+    }
+
+    private fun generateKey(title: String): String {
+        return title
+            .lowercase(Locale.getDefault())
+            .replace("(^[^a-z]+)|([^0-9a-z]+\$)".toRegex(), "")
+            .replace("[^0-9a-z]+".toRegex(), "_")
     }
 }

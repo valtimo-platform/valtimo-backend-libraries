@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 
 data class WidgetConfigurationUpdateRequestDto(
     val key: String,
+    val title: String,
     val dataSourceKey: String,
     val displayType: String,
     val dataSourceProperties: ObjectNode

@@ -58,7 +58,6 @@ class DashboardResource(
         @RequestBody dashboardDto: DashboardCreateRequestDto
     ): ResponseEntity<DashboardResponseDto> {
         val dashboard = dashboardService.createDashboard(
-            dashboardDto.key,
             dashboardDto.title,
             dashboardDto.description,
         )
@@ -98,7 +97,7 @@ class DashboardResource(
     ): ResponseEntity<WidgetConfigurationResponseDto> {
         val widget = dashboardService.createWidgetConfiguration(
             dashboardKey,
-            widgetDto.key,
+            widgetDto.title,
             widgetDto.dataSourceKey,
             widgetDto.displayType,
             widgetDto.dataSourceProperties,

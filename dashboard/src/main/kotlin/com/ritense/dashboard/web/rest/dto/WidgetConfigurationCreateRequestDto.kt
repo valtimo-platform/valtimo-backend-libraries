@@ -19,7 +19,7 @@ package com.ritense.dashboard.web.rest.dto
 import com.fasterxml.jackson.databind.node.ObjectNode
 
 data class WidgetConfigurationCreateRequestDto(
-    val key: String,
+    val title: String,
     val dataSourceKey: String,
     val displayType: String,
     val dataSourceProperties: ObjectNode
