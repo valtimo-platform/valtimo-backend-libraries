@@ -32,8 +32,10 @@ dependencies {
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
 
-    testImplementation "org.liquibase:liquibase-core"
-    testImplementation project(':test-utils-common')
+    testImplementation (project(":core")) {
+        exclude(group: "com.ritense.valtimo", module: "authorization")
+    }
+    testImplementation project(":test-utils-common")
 
     jar {
         enabled = true

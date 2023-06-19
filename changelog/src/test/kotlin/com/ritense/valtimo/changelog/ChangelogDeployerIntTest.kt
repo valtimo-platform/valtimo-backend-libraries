@@ -42,7 +42,7 @@ internal class ChangelogDeployerIntTest : BaseIntegrationTest() {
         val changeset = changesetRepository.findById("initial-testtype")
 
         assertThat(changeset.isPresent).isTrue()
-        assertThat(changeset.get().filename).endsWith("/1-initial.testtype.json")
+        assertThat(changeset.get().filename).endsWith("/initial.testtype.json")
         assertThat(changeset.get().dateExecuted).isBetween(Instant.parse("2023-06-13T00:00:00Z"), Instant.now())
         assertThat(changeset.get().orderExecuted).isBetween(0, 1000)
         assertThat(changeset.get().md5sum).isEqualTo("c29a5747d698b2f95cdfd5ed6502f19d")
@@ -50,7 +50,7 @@ internal class ChangelogDeployerIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should ignore whitespace changes in changeset`() {
-        val filename = "/1-initial.testtype.json"
+        val filename = "/initial.testtype.json"
         val content = """
             {"testContent":    ["a",     "b" ,
                  "c"
@@ -64,7 +64,7 @@ internal class ChangelogDeployerIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should throw error when changeset changed`() {
-        val filename = "/1-initial.testtype.json"
+        val filename = "/initial.testtype.json"
         val content = """
             {
                 "changesetId": "initial-testtype",
@@ -74,6 +74,6 @@ internal class ChangelogDeployerIntTest : BaseIntegrationTest() {
         val exception = assertThrows<RuntimeException> {
             changelogDeployer.deploy(testTypeChangesetDeployer, filename, content)
         }
-        assertThat(exception.message).isEqualTo("Computed checksum '990719bf4ba2ec171091f913ccc6164c' doesn't match existing 'c29a5747d698b2f95cdfd5ed6502f19d' for  /1-initial.testtype.json")
+        assertThat(exception.message).isEqualTo("Computed checksum '990719bf4ba2ec171091f913ccc6164c' doesn't match existing 'c29a5747d698b2f95cdfd5ed6502f19d' for test/config/import/initial.testtype.json")
     }
 }

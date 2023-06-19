@@ -32,19 +32,16 @@ class ChangelogDeployer(
     fun deployAll() {
         logger.info { "Running deployer" }
 
-        changesetDeployers.forEach { it.before() }
+        changesetDeployers.asReversed().forEach { it.before() }
 
-        changesetDeployers
-            .flatMap { changesetDeployer ->
-                changelogService.loadResources(changesetDeployer.getPath()).map { Pair(changesetDeployer, it) }
-            }
-            .sortedBy { it.second.uri }
-            .forEach { (changesetDeployer, resource) ->
+        changesetDeployers.forEach { changesetDeployer ->
+            changelogService.loadResources(changesetDeployer.getPath()).forEach { resource ->
                 val filename = changelogService.getFilename(resource)
                 logger.info { "Running deployer changeset: $filename" }
                 val resourceContent = resource.inputStream.bufferedReader().use { it.readText() }
                 deploy(changesetDeployer, filename, resourceContent)
             }
+        }
         logger.info { "Finished running deployer" }
     }
 

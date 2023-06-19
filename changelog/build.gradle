@@ -29,9 +29,11 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
-    implementation "org.liquibase:liquibase-core"
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
-    testImplementation project(":core")
+    testImplementation (project(":core")) {
+        exclude(group: "com.ritense.valtimo", module: "authorization")
+    }
     testImplementation project(":resource:local-resource")
     testImplementation project(":test-utils-common")
 

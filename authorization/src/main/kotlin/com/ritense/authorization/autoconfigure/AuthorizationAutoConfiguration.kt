@@ -96,21 +96,10 @@ class AuthorizationAutoConfiguration(
     fun <T: Any> denyAuthorizationSpecificationFactory(): AuthorizationSpecificationFactory<T> {
         return DenyAuthorizationSpecificationFactory()
     }
-    @Bean
-    @ConditionalOnMissingBean(PermissionDeployer::class)
-    @Order(1)
-    fun permissionDeployer(
-        objectMapper: ObjectMapper,
-        permissionRepository: PermissionRepository,
-        changelogService: ChangelogService,
-        @Value("\${valtimo.pbac.clear-tables:false}") clearTables: Boolean
-    ): PermissionDeployer {
-        return PermissionDeployer(objectMapper, permissionRepository, changelogService, clearTables)
-    }
 
     @Bean
     @ConditionalOnMissingBean(RoleDeployer::class)
-    @Order(2)
+    @Order(1)
     fun roleDeployer(
         objectMapper: ObjectMapper,
         roleRepository: RoleRepository,
@@ -118,6 +107,18 @@ class AuthorizationAutoConfiguration(
         @Value("\${valtimo.pbac.clear-tables:false}") clearTables: Boolean
     ): RoleDeployer {
         return RoleDeployer(objectMapper, roleRepository, changelogService, clearTables)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PermissionDeployer::class)
+    @Order(2)
+    fun permissionDeployer(
+        objectMapper: ObjectMapper,
+        permissionRepository: PermissionRepository,
+        changelogService: ChangelogService,
+        @Value("\${valtimo.pbac.clear-tables:false}") clearTables: Boolean
+    ): PermissionDeployer {
+        return PermissionDeployer(objectMapper, permissionRepository, changelogService, clearTables)
     }
 
 }

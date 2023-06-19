@@ -9,7 +9,6 @@ spring:
       auto-commit: false
   liquibase:
     enabled: false
-    change-log: classpath:/config/liquibase/changelog-master.xml
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql

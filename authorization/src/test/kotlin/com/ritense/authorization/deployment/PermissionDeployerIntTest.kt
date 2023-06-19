@@ -17,6 +17,7 @@
 package com.ritense.authorization.deployment
 
 import com.ritense.authorization.Action
+import com.ritense.authorization.Action.Companion.VIEW
 import com.ritense.authorization.BaseIntegrationTest
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.permission.FieldPermissionCondition
@@ -40,13 +41,13 @@ internal class PermissionDeployerIntTest : BaseIntegrationTest() {
     @Test
     fun `should deploy permission changeset from resource folder`() {
 
-        val changeset = changesetRepository.findById("permission-v1")
+        val changeset = changesetRepository.findById("testdocument-v1")
 
         assertThat(changeset.isPresent).isTrue()
-        assertThat(changeset.get().filename).endsWith("/2-test-document.permission.json")
+        assertThat(changeset.get().filename).endsWith("/testdocument.permission.json")
         assertThat(changeset.get().dateExecuted).isBetween(Instant.parse("2023-06-13T00:00:00Z"), Instant.now())
         assertThat(changeset.get().orderExecuted).isBetween(0, 1000)
-        assertThat(changeset.get().md5sum).isEqualTo("c29a5747d698b2f95cdfd5ed6502f19d")
+        assertThat(changeset.get().md5sum).isEqualTo("e3351de1c4f17eab1f1ff0a4ca97fe9c")
     }
 
     @Test
@@ -57,7 +58,7 @@ internal class PermissionDeployerIntTest : BaseIntegrationTest() {
         assertThat(permissions).hasSize(1)
         assertThat(permissions[0].id).isNotNull()
         assertThat(permissions[0].resourceType).isEqualTo(TestDocument::class.java)
-        assertThat(permissions[0].action).isEqualTo(Action<Any>(Action.LIST_VIEW))
+        assertThat(permissions[0].action).isEqualTo(Action<Any>(VIEW))
         assertThat(permissions[0].roleKey).isEqualTo("ROLE_USER")
         assertThat(permissions[0].conditionContainer.conditions).hasSize(1)
         assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)

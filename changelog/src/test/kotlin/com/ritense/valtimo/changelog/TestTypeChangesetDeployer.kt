@@ -19,9 +19,7 @@ package com.ritense.valtimo.changelog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
-import org.springframework.stereotype.Component
 
-@Component
 class TestTypeChangesetDeployer : ChangesetDeployer {
     override fun getPath() = "classpath*:**/*.testtype.json"
 

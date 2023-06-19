@@ -39,10 +39,10 @@ internal class RoleDeployerIntTest : BaseIntegrationTest() {
         val changeset = changesetRepository.findById("roles-v1")
 
         assertThat(changeset.isPresent).isTrue()
-        assertThat(changeset.get().filename).endsWith("/1-all.role.json")
+        assertThat(changeset.get().filename).endsWith("/all.role.json")
         assertThat(changeset.get().dateExecuted).isBetween(Instant.parse("2023-06-13T00:00:00Z"), Instant.now())
         assertThat(changeset.get().orderExecuted).isBetween(0, 1000)
-        assertThat(changeset.get().md5sum).isEqualTo("c29a5747d698b2f95cdfd5ed6502f19d")
+        assertThat(changeset.get().md5sum).isEqualTo("804db2fd1c82bc9bb07b762356229e69")
     }
 
     @Test
