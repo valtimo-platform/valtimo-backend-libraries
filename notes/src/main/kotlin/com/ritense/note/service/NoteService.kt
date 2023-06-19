@@ -26,6 +26,7 @@ import com.ritense.note.event.NoteDeletedEvent
 import com.ritense.note.event.NoteUpdatedEvent
 import com.ritense.note.exception.NoteNotFoundException
 import com.ritense.note.repository.NoteRepository
+import com.ritense.note.repository.SpecificationHelper
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import java.util.UUID
 import mu.KotlinLogging
@@ -54,7 +55,7 @@ class NoteService(
             ),
             null
         )
-        return noteRepository.findAll(spec, pageable)
+        return noteRepository.findAll(spec.and(SpecificationHelper.byDocumentId(documentId)), pageable)
     }
 
     fun createNote(
