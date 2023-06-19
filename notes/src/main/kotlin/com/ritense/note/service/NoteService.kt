@@ -24,18 +24,17 @@ import com.ritense.note.domain.Note
 import com.ritense.note.event.NoteCreatedEvent
 import com.ritense.note.event.NoteDeletedEvent
 import com.ritense.note.event.NoteUpdatedEvent
-import com.ritense.note.exception.NoteAccessDeniedException
 import com.ritense.note.exception.NoteNotFoundException
 import com.ritense.note.repository.NoteRepository
-import com.ritense.note.repository.SpecificationHelper
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.utils.SecurityUtils
+import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import java.util.UUID
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class NoteService(
     private val noteRepository: NoteRepository,
     private val userManagementService: UserManagementService,
@@ -43,6 +42,7 @@ class NoteService(
     private val authorizationService: AuthorizationService,
 ) {
 
+    @Transactional(readOnly = true)
     fun getNotes(
         documentId: UUID,
         pageable: Pageable = Pageable.unpaged(),
@@ -50,12 +50,12 @@ class NoteService(
         val spec = authorizationService.getAuthorizationSpecification(
             AuthorizationRequest(
                 Note::class.java,
-                NoteActionProvider.VIEW
+                NoteActionProvider.LIST_VIEW
                 // TODO: The action type is not actually checked when requesting the spec directly
             ),
             null
         )
-        return noteRepository.findAll(spec.and(SpecificationHelper.byDocumentId(documentId)), pageable)
+        return noteRepository.findAll(spec, pageable)
     }
 
     fun createNote(
@@ -63,18 +63,17 @@ class NoteService(
         noteContent: String,
     ): Note {
         logger.debug { "Create note for document $documentId" }
-        SecurityUtils.getCurrentUserLogin()
         val user = userManagementService.currentUser
         val note = noteRepository.save(Note(documentId, user, noteContent))
+        requirePermission(note, NoteActionProvider.CREATE)
         applicationEventPublisher.publishEvent(NoteCreatedEvent(documentId.id, note.id))
         return note
     }
 
     fun editNote(noteId: UUID, noteContent: String): Note {
         logger.debug { "Update note with id '$noteId'" }
-        SecurityUtils.getCurrentUserLogin()
         val note = getNoteById(noteId)
-        verifyCurrentUserHasAccessToNote(note)
+        requirePermission(note, NoteActionProvider.MODIFY)
         val copiedNote = note.copy(content = noteContent)
         val updatedNote = noteRepository.save(copiedNote)
         applicationEventPublisher.publishEvent(NoteUpdatedEvent(noteId))
@@ -83,7 +82,8 @@ class NoteService(
 
     fun deleteNote(noteId: UUID) {
         logger.debug { "Delete note with id '$noteId'" }
-        verifyCurrentUserHasAccessToNote(getNoteById(noteId))
+        val note = getNoteById(noteId)
+        requirePermission(note, NoteActionProvider.DELETE)
         noteRepository.deleteById(noteId)
         applicationEventPublisher.publishEvent(NoteDeletedEvent(noteId))
     }
@@ -92,11 +92,14 @@ class NoteService(
         return noteRepository.findById(noteId).orElseThrow { NoteNotFoundException(noteId) }
     }
 
-    private fun verifyCurrentUserHasAccessToNote(note: Note) {
-        val user = userManagementService.currentUser
-        if (user.id != note.createdByUserId) {
-            throw NoteAccessDeniedException(user.email, note.id)
-        }
+    private fun requirePermission(note: Note, action: Action<Note>) {
+        authorizationService.requirePermission(
+            AuthorizationRequest(
+                Note::class.java,
+                action
+            ),
+            note
+        )
     }
 
     companion object {
