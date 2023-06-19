@@ -23,5 +23,5 @@ interface AuthorizationSpecificationFactory<T : Any> {
     fun create(context: AuthorizationRequest<T>, permissions: List<Permission>): AuthorizationSpecification<T>
 
     // Change this to something more dynamic in the future
-    fun canCreate(context: AuthorizationRequest<*>): Boolean
+    fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean
 }

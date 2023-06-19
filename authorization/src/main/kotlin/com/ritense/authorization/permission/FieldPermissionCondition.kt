@@ -42,14 +42,15 @@ data class FieldPermissionCondition<V : Comparable<V>>(
     val value: V?
 ) : ReflectingPermissionCondition(PermissionConditionType.FIELD) {
     override fun <T : Any> isValid(entity: T): Boolean {
-        val foundValue = findEntityFieldValue(entity, field)
+        val fieldValue = findEntityFieldValue(entity, field)
+        val resolvedValue = PermissionConditionValueResolver.resolveValue(this.value)
         return when (operator) {
-            NOT_EQUAL_TO -> foundValue != value
-            EQUAL_TO -> foundValue == value
-            GREATER_THAN -> compare(foundValue, value, -1) > 0
-            GREATER_THAN_OR_EQUAL_TO -> compare(foundValue, value, -1) >= 0
-            LESS_THAN -> compare(foundValue, value) < 0
-            LESS_THAN_OR_EQUAL_TO -> compare(foundValue, value) <= 0
+            NOT_EQUAL_TO -> fieldValue != resolvedValue
+            EQUAL_TO -> fieldValue == resolvedValue
+            GREATER_THAN -> compare(fieldValue, resolvedValue, -1) > 0
+            GREATER_THAN_OR_EQUAL_TO -> compare(fieldValue, resolvedValue, -1) >= 0
+            LESS_THAN -> compare(fieldValue, resolvedValue) < 0
+            LESS_THAN_OR_EQUAL_TO -> compare(fieldValue, resolvedValue) <= 0
         }
     }
 

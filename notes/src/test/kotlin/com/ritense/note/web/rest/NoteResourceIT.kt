@@ -30,11 +30,10 @@ import com.ritense.note.repository.NoteRepository
 import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.dto.NoteCreateRequestDto
 import com.ritense.note.web.rest.dto.NoteUpdateRequestDto
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -53,7 +52,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.util.UUID
 
 internal class NoteResourceIT : BaseIntegrationTest() {
 
@@ -95,7 +93,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser(TEST_USER)
+    @WithMockUser(username = TEST_USER, authorities = [USER])
     fun `should create note`() {
         val note = NoteCreateRequestDto(content = "Test note")
 
@@ -115,7 +113,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser(TEST_USER)
+    @WithMockUser(username = TEST_USER, authorities = [USER])
     fun `should audit note creation`() {
         val note = NoteCreateRequestDto(content = "Test note")
 
@@ -136,24 +134,24 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         auditList[0].documentId shouldBe documentId
     }
 
-    // TODO: implement authorization for note
-//    @Test
-//    @WithMockUser(TEST_USER)
-//    fun `should not create note when user has no permission to the document`() {
-//        documentDefinitionService.putDocumentDefinitionRoles(PROFILE_DOCUMENT_DEFINITION_NAME, setOf(ADMIN))
-//        val note = NoteCreateRequestDto(content = "Test note")
-//
-//        mockMvc.perform(
-//            post("/api/v1/document/{documentId}/note", documentId.toString())
-//                .contentType(APPLICATION_JSON_VALUE)
-//                .content(jacksonObjectMapper().writeValueAsString(note))
-//        )
-//            .andDo(print())
-//            .andExpect(status().isForbidden)
-//    }
+    @Test
+    @WithMockUser(TEST_USER, authorities = ["DENY"])
+    fun `should not create note when user has no permission to the document`() {
+        val note = NoteCreateRequestDto(content = "Test note")
+
+        mockMvc.perform(
+            post("/api/v1/document/{documentId}/note", documentId.toString())
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(jacksonObjectMapper().writeValueAsString(note))
+        )
+            .andDo(print())
+            // For some reason, the @ExceptionHandler is not picked up when using mockMvc
+            .andExpect(status().is5xxServerError)
+            .andExpect(jsonPath("$.detail").value("Unauthorized"))
+    }
 
     @Test
-    @WithMockUser(username = TEST_USER, authorities = [FULL_ACCESS_ROLE])
+    @WithMockUser(username = TEST_USER, authorities = [ADMIN])
     fun `should get notes`() {
         val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(documentId)
 
@@ -174,7 +172,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser(TEST_USER)
+    @WithMockUser(username = TEST_USER, authorities = [USER])
     fun `should update note`() {
         val note = noteService.createNote(JsonSchemaDocumentId.existingId(documentId), "Test note")
         val noteUpdateRequestDto = NoteUpdateRequestDto(content = "Test note updated")
@@ -190,7 +188,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser(TEST_USER)
+    @WithMockUser(username = TEST_USER, authorities = [USER])
     fun `should delete note`() {
         val note = noteService.createNote(JsonSchemaDocumentId.existingId(documentId), "Test note")
 

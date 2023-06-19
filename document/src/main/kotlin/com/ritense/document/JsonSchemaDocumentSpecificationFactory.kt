@@ -39,7 +39,7 @@ class JsonSchemaDocumentSpecificationFactory(
         )
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>): Boolean {
+    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
         return JsonSchemaDocument::class.java == context.resourceType
     }
 }

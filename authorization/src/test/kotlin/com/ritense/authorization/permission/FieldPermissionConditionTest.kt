@@ -131,7 +131,7 @@ class FieldPermissionConditionTest {
         val entity = TestEntity(
             TestChildEntity("example@ritense.com")
         )
-        val condition = FieldPermissionCondition("child.property", NOT_EQUAL_TO, "\${currentUserEmail}")
+        val condition = FieldPermissionCondition("child.property", EQUAL_TO, "\${currentUserEmail}")
         val result = condition.isValid(entity)
         assertTrue(result)
     }
@@ -141,7 +141,7 @@ class FieldPermissionConditionTest {
         val entity = TestEntity(
             TestChildEntity("91bb73e1-5f5b-46e3-8c60-ca424a5fcfcd")
         )
-        val condition = FieldPermissionCondition("child.property", NOT_EQUAL_TO, "\${currentUserId}")
+        val condition = FieldPermissionCondition("child.property", EQUAL_TO, "\${currentUserId}")
         val result = condition.isValid(entity)
         assertTrue(result)
     }

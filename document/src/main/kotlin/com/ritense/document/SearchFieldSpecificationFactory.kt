@@ -39,7 +39,7 @@ class SearchFieldSpecificationFactory(
         )
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>): Boolean {
+    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
         return SearchField::class.java == context.resourceType
     }
 }
