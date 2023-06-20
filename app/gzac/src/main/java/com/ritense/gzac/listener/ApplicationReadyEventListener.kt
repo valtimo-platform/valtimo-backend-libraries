@@ -317,6 +317,211 @@ class ApplicationReadyEventListener(
         )
     }
 
+    private fun createDefaultPermissionsIfNotExists(
+        permissionRepository: PermissionRepository,
+        roleRepository: RoleRepository
+    ) {
+
+        if (!roleRepository.existsById(USER)) {
+            roleRepository.save(Role(USER))
+        }
+
+        if (!roleRepository.existsById(ADMIN)) {
+            roleRepository.save(Role(ADMIN))
+        }
+
+        permissionRepository.deleteAll(permissionRepository.findAllByRoleKeyIn(listOf(USER, ADMIN)))
+
+        val documentPermissions: List<Permission> = try {
+            listOf(
+                // ROLE_USER
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = JsonSchemaDocumentActionProvider.LIST_VIEW,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            ExpressionPermissionCondition(
+                                "content.content",
+                                "$.height",
+                                PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java
+                            ),
+                            FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen")
+                        )
+                    ),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = JsonSchemaDocumentActionProvider.LIST_VIEW,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
+                        )
+                    ),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = JsonSchemaDocumentActionProvider.VIEW,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            ExpressionPermissionCondition(
+                                "content.content",
+                                "$.height",
+                                PermissionExpressionOperator.LESS_THAN, 20000, Int::class.java
+                            ),
+                            FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen")
+                        )
+                    ),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = JsonSchemaDocumentActionProvider.VIEW,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
+                        )
+                    ),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = JsonSchemaDocumentActionProvider.CLAIM,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
+                        )
+                    ),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = JsonSchemaDocumentActionProvider.ASSIGNABLE,
+                    conditionContainer = ConditionContainer(emptyList()),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = SearchField::class.java,
+                    action = SearchFieldActionProvider.LIST_VIEW,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("id.documentDefinitionName", EQUAL_TO, "leningen")
+                        )
+                    ),
+                    roleKey = ADMIN
+                ),
+                // ROLE_ADMIN
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = JsonSchemaDocumentActionProvider.LIST_VIEW,
+                    conditionContainer = ConditionContainer(emptyList()),
+                    roleKey = ADMIN
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = JsonSchemaDocumentActionProvider.VIEW,
+                    conditionContainer = ConditionContainer(emptyList()),
+                    roleKey = ADMIN
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = JsonSchemaDocumentActionProvider.CLAIM,
+                    conditionContainer = ConditionContainer(emptyList()),
+                    roleKey = ADMIN
+                ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = JsonSchemaDocumentActionProvider.ASSIGN,
+                    conditionContainer = ConditionContainer(emptyList()),
+                    roleKey = ADMIN
+                ),
+            )
+        } catch (e: ClassNotFoundException) {
+            listOf()
+        }
+
+        val notePermissions: List<Permission> = try {
+            listOf(
+                // ROLE_ADMIN
+                Permission(
+                    resourceType = Note::class.java,
+                    action = NoteActionProvider.LIST_VIEW,
+                    conditionContainer = ConditionContainer(listOf()),
+                    roleKey = ADMIN
+                ),
+                // ROLE_USER
+                Permission(
+                    resourceType = Note::class.java,
+                    action = NoteActionProvider.LIST_VIEW,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("createdByUserId", EQUAL_TO, "\${currentUserId}")
+                        )
+                    ),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = Note::class.java,
+                    action = NoteActionProvider.VIEW,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("createdByUserId", EQUAL_TO, "\${currentUserId}")
+                        )
+                    ),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = Note::class.java,
+                    action = NoteActionProvider.VIEW,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            ContainerPermissionCondition(
+                                JsonSchemaDocument::class.java,
+                                listOf(
+                                    FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen"),
+                                    FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
+                                )
+                            )
+                        )
+                    ),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = Note::class.java,
+                    action = NoteActionProvider.CREATE,
+                    conditionContainer = ConditionContainer(listOf()),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = Note::class.java,
+                    action = NoteActionProvider.MODIFY,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("createdByUserId", EQUAL_TO, "\${currentUserId}")
+                        )
+                    ),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = Note::class.java,
+                    action = NoteActionProvider.DELETE,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("createdByUserId", EQUAL_TO, "\${currentUserId}")
+                        )
+                    ),
+                    roleKey = USER
+                ),
+            )
+
+        } catch (e: ClassNotFoundException) {
+            listOf()
+        }
+
+        permissionRepository.saveAll(documentPermissions + notePermissions)
+    }
+
     companion object {
         val logger = KotlinLogging.logger {}
         const val OPENNOTIFICATIES_CONNECTOR_NAME = "OpenNotificaties"
