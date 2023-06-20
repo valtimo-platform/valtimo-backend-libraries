@@ -38,7 +38,3 @@ spring:
 spring-actuator:
     username: test
     password: test
-
-valtimo:
-    pbac:
-        clear-tables: true

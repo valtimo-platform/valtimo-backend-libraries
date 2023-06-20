@@ -23,12 +23,13 @@ import com.ritense.authorization.permission.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.permission.PermissionConditionType.FIELD
 import com.ritense.authorization.testimpl.TestDocument
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
     @Autowired
@@ -43,12 +44,6 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
     fun setup() {
         role = Role("test-role")
         roleRepository.saveAndFlush(role)
-    }
-
-    @AfterEach
-    fun cleanUp() {
-        permissionRepository.deleteAll()
-        roleRepository.deleteAll()
     }
 
     @Test
@@ -68,7 +63,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         permissionRepository.saveAndFlush(permission)
 
-        val permissions = permissionRepository.findAll()
+        val permissions = permissionRepository.findAllByResourceTypeAndAction(permission.resourceType, permission.action)
         assertThat(permissions).hasSize(1)
         assertThat(permissions[0].id).isNotNull
         assertThat(permissions[0].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
@@ -82,7 +77,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should retrireve all Permissions for role key`() {
+    fun `should retrieve all Permissions for role key`() {
         val role2 = roleRepository.saveAndFlush(Role("test-role2"))
 
         val permission = Permission(
