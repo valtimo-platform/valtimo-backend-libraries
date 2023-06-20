@@ -24,6 +24,7 @@ import com.ritense.authorization.permission.ContainerPermissionCondition
 import com.ritense.authorization.permission.ExpressionPermissionCondition
 import com.ritense.authorization.permission.FieldPermissionCondition
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.PermissionConditionOperator
 import com.ritense.authorization.permission.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.permission.PermissionExpressionOperator
 import com.ritense.besluit.connector.BesluitProperties
@@ -464,6 +465,23 @@ class ApplicationReadyEventListener(
 
         val notePermissions: List<Permission> = try {
             listOf(
+                // ROLE_ADMIN
+                Permission(
+                    resourceType = Note::class.java,
+                    action = NoteActionProvider.LIST_VIEW,
+                    conditionContainer = ConditionContainer(listOf()),
+                    roleKey = ADMIN
+                ),
+                Permission(
+                    resourceType = Note::class.java,
+                    action = NoteActionProvider.VIEW,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("createdByUserId", EQUAL_TO, "\${currentUserId}")
+                        )
+                    ),
+                    roleKey = USER
+                ),
                 // ROLE_USER
                 Permission(
                     resourceType = Note::class.java,
@@ -481,13 +499,32 @@ class ApplicationReadyEventListener(
                     ),
                     roleKey = USER
                 ),
-                // ROLE_ADMIN
                 Permission(
                     resourceType = Note::class.java,
-                    action = NoteActionProvider.VIEW,
+                    action = NoteActionProvider.CREATE,
                     conditionContainer = ConditionContainer(listOf()),
-                    roleKey = ADMIN
-                )
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = Note::class.java,
+                    action = NoteActionProvider.MODIFY,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("createdByUserId", EQUAL_TO, "\${currentUserId}")
+                        )
+                    ),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = Note::class.java,
+                    action = NoteActionProvider.DELETE,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("createdByUserId", EQUAL_TO, "\${currentUserId}")
+                        )
+                    ),
+                    roleKey = USER
+                ),
             )
 
         } catch (e: ClassNotFoundException) {
