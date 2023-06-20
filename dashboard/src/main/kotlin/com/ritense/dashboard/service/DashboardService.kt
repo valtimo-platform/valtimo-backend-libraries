@@ -24,7 +24,6 @@ import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import org.springframework.transaction.annotation.Transactional
-import java.util.Locale
 
 @Transactional
 class DashboardService(
@@ -180,8 +179,8 @@ class DashboardService(
 
     private fun generateKey(title: String): String {
         return title
-            .lowercase(Locale.getDefault())
-            .replace("(^[^a-z]+)|([^0-9a-z]+\$)".toRegex(), "")
-            .replace("[^0-9a-z]+".toRegex(), "_")
+            .lowercase()
+            .replace("(^[^a-z]+)|([^0-9a-z]+\$)".toRegex(), "") // trim start and end
+            .replace("[^0-9a-z]+".toRegex(), "_") // replace all non-alphanumeric characters with '_'
     }
 }
