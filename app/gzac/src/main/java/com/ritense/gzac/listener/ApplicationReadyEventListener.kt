@@ -472,6 +472,7 @@ class ApplicationReadyEventListener(
                     conditionContainer = ConditionContainer(listOf()),
                     roleKey = ADMIN
                 ),
+                // ROLE_USER
                 Permission(
                     resourceType = Note::class.java,
                     action = NoteActionProvider.VIEW,
@@ -482,7 +483,6 @@ class ApplicationReadyEventListener(
                     ),
                     roleKey = USER
                 ),
-                // ROLE_USER
                 Permission(
                     resourceType = Note::class.java,
                     action = NoteActionProvider.VIEW,
