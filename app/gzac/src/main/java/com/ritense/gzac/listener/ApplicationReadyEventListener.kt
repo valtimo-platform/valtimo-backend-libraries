@@ -475,6 +475,16 @@ class ApplicationReadyEventListener(
                 // ROLE_USER
                 Permission(
                     resourceType = Note::class.java,
+                    action = NoteActionProvider.LIST_VIEW,
+                    conditionContainer = ConditionContainer(
+                        listOf(
+                            FieldPermissionCondition("createdByUserId", EQUAL_TO, "\${currentUserId}")
+                        )
+                    ),
+                    roleKey = USER
+                ),
+                Permission(
+                    resourceType = Note::class.java,
                     action = NoteActionProvider.VIEW,
                     conditionContainer = ConditionContainer(
                         listOf(
