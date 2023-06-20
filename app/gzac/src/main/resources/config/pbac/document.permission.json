@@ -121,6 +121,21 @@
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
             "action": "assignable",
             "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.searchfield.SearchField",
+            "action": "view",
+            "roleKey": "ROLE_ADMIN",
+            "conditionContainer": {
+                "conditions": [
+                    {
+                        "type": "field",
+                        "field": "id.documentDefinitionName",
+                        "operator": "==",
+                        "value": "leningen"
+                    }
+                ]
+            }
         }
     ]
 }

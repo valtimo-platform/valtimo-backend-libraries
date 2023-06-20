@@ -8,6 +8,21 @@
         },
         {
             "resourceType": "com.ritense.note.domain.Note",
+            "action": "list_view",
+            "roleKey": "ROLE_USER",
+            "conditionContainer": {
+                "conditions": [
+                    {
+                        "type": "field",
+                        "field": "createdByUserId",
+                        "operator": "==",
+                        "value": "${currentUserId}"
+                    }
+                ]
+            }
+        },
+        {
+            "resourceType": "com.ritense.note.domain.Note",
             "action": "view",
             "roleKey": "ROLE_USER",
             "conditionContainer": {
@@ -56,7 +71,17 @@
         {
             "resourceType": "com.ritense.note.domain.Note",
             "action": "modify",
-            "roleKey": "ROLE_USER"
+            "roleKey": "ROLE_USER",
+            "conditionContainer": {
+                "conditions": [
+                    {
+                        "type": "field",
+                        "field": "createdByUserId",
+                        "operator": "==",
+                        "value": "${currentUserId}"
+                    }
+                ]
+            }
         },
         {
             "resourceType": "com.ritense.note.domain.Note",
