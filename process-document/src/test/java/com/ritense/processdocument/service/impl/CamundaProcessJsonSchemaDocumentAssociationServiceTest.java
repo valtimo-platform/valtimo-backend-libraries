@@ -22,6 +22,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.BaseTest;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstance;
@@ -56,6 +57,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
     private CamundaProcessService camundaProcessService;
     private RuntimeService runtimeService;
     private AuthorizationService authorizationService;
+    private DocumentService documentService;
 
     @BeforeEach
     public void setUp() {
@@ -66,6 +68,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         camundaProcessService = mock(CamundaProcessService.class);
         runtimeService = mock(RuntimeService.class);
         authorizationService = mock(AuthorizationService.class);
+        documentService = mock(DocumentService.class);
 
         service = new CamundaProcessJsonSchemaDocumentAssociationService(
             processDocumentDefinitionRepository,
@@ -74,7 +77,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
             documentDefinitionService,
             camundaProcessService,
             runtimeService,
-            authorizationService
+            authorizationService,
+            documentService
         );
     }
 

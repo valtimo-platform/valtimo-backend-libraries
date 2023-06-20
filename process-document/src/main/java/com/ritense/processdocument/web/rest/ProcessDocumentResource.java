@@ -77,13 +77,6 @@ public class ProcessDocumentResource {
         this.documentDefinitionProcessLinkService = documentDefinitionProcessLinkService;
     }
 
-    @GetMapping("/v1/process-document/definition")
-    public ResponseEntity<Page<? extends ProcessDocumentDefinition>> getProcessDocumentDefinitions(
-        @PageableDefault(sort = {"processDocumentDefinitionId.documentDefinitionName.name"}, direction = DESC) Pageable pageable
-    ) {
-        return ResponseEntity.ok(processDocumentAssociationService.getAllProcessDocumentDefinitions(pageable));
-    }
-
     @PostMapping(value = "/v1/process-document/definition", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<? extends ProcessDocumentDefinition> createProcessDocumentDefinition(
         @Valid @RequestBody ProcessDocumentDefinitionRequest request

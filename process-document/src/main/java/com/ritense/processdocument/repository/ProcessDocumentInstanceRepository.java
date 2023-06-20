@@ -31,10 +31,7 @@ import java.util.Optional;
 @Repository
 public interface ProcessDocumentInstanceRepository extends JpaRepository<CamundaProcessJsonSchemaDocumentInstance, ProcessDocumentInstanceId> {
 
-    @Query(" SELECT  pdi " +
-        "    FROM    CamundaProcessJsonSchemaDocumentInstance pdi " +
-        "    WHERE   pdi.processDocumentInstanceId.documentId = :documentId ")
-    List<CamundaProcessJsonSchemaDocumentInstance> findAllByDocumentId(@Param("documentId") Document.Id documentId);
+    List<CamundaProcessJsonSchemaDocumentInstance> findAllByProcessDocumentInstanceIdDocumentId(Document.Id documentId);
 
     @Modifying
     @Query(" DELETE " +

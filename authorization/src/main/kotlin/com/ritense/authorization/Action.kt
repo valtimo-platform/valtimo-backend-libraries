@@ -40,7 +40,7 @@ data class Action<T>(
         const val COMPLETE = "complete"
         const val ASSIGN = "assign"
         const val CLAIM = "claim"
-        const val ASSIGNABLE = "assignable"
+        const val ASSIGNABLE = "assignable" //TODO: re-evaluate if this is the way to go
         const val IGNORE = "ignore"
         const val DENY = "deny"
     }

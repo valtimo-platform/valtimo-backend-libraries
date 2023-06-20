@@ -19,23 +19,18 @@ package com.ritense.processdocument.service;
 import com.ritense.document.domain.Document;
 import com.ritense.processdocument.domain.ProcessDefinitionKey;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
-import com.ritense.processdocument.domain.ProcessDocumentDefinitionId;
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
 import com.ritense.processdocument.domain.ProcessDocumentInstanceId;
 import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface ProcessDocumentAssociationService {
-
-    Page<? extends ProcessDocumentDefinition> getAllProcessDocumentDefinitions(Pageable pageable);
 
     Optional<? extends ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey);
 
@@ -44,15 +39,14 @@ public interface ProcessDocumentAssociationService {
     List<? extends ProcessDocumentDefinition> findAllProcessDocumentDefinitions(ProcessDefinitionKey processDefinitionKey);
 
     Optional<? extends ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion);
+
     ProcessDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion);
 
     List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName);
 
     List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitionsByProcessDefinitionKey(String processDefinitionKey);
 
-    Optional<? extends  ProcessDocumentDefinition> findByDocumentDefinitionName(String documentDefinitionName);
-
-    Optional<? extends ProcessDocumentInstance> findProcessDocumentInstance(ProcessDocumentInstanceId processDocumentInstanceId);
+    Optional<? extends ProcessDocumentDefinition> findByDocumentDefinitionName(String documentDefinitionName);
 
     Optional<? extends ProcessDocumentInstance> findProcessDocumentInstance(ProcessInstanceId processInstanceId);
 

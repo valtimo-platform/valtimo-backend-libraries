@@ -417,6 +417,12 @@ class ApplicationReadyEventListener(
                     roleKey = USER
                 ),
                 Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = JsonSchemaDocumentActionProvider.ASSIGNABLE,
+                    conditionContainer = ConditionContainer(emptyList()),
+                    roleKey = USER
+                ),
+                Permission(
                     resourceType = SearchField::class.java,
                     action = SearchFieldActionProvider.LIST_VIEW,
                     conditionContainer = ConditionContainer(
@@ -445,6 +451,12 @@ class ApplicationReadyEventListener(
                     conditionContainer = ConditionContainer(emptyList()),
                     roleKey = ADMIN
                 ),
+                Permission(
+                    resourceType = JsonSchemaDocument::class.java,
+                    action = JsonSchemaDocumentActionProvider.ASSIGN,
+                    conditionContainer = ConditionContainer(emptyList()),
+                    roleKey = ADMIN
+                ),
             )
         } catch (e: ClassNotFoundException) {
             listOf()
@@ -462,7 +474,7 @@ class ApplicationReadyEventListener(
                                 JsonSchemaDocument::class.java,
                                 listOf(
                                     FieldPermissionCondition("documentDefinitionId.name", EQUAL_TO, "leningen"),
-                                    FieldPermissionCondition("assigneeFullName", EQUAL_TO, "James Vance")
+                                    FieldPermissionCondition("assigneeId", EQUAL_TO, "\${currentUserId}")
                                 )
                             )
                         )
