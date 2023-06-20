@@ -16,6 +16,8 @@
 
 package com.ritense.dashboard.domain
 
+import com.ritense.valtimo.contract.utils.SecurityUtils
+import java.time.ZonedDateTime
 import javax.persistence.CascadeType.ALL
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -44,6 +46,12 @@ data class Dashboard(
     val widgetConfigurations: List<WidgetConfiguration> = listOf(),
 
     @Column(name = "sort_order", nullable = false)
-    val order: Int
+    val order: Int,
+
+    @Column(name = "created_by")
+    val createdBy: String = SecurityUtils.getCurrentUserLogin(),
+
+    @Column(name = "created_on")
+    val createdOn: ZonedDateTime = ZonedDateTime.now()
 
 )

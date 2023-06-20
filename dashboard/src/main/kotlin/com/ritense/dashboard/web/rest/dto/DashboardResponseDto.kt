@@ -17,17 +17,22 @@
 package com.ritense.dashboard.web.rest.dto
 
 import com.ritense.dashboard.domain.Dashboard
+import java.time.ZonedDateTime
 
 data class DashboardResponseDto(
     val key: String,
     val title: String,
     val description: String,
+    val createdBy: String,
+    val createdOn: ZonedDateTime
 ) {
     companion object {
         fun of(dashboard: Dashboard) = DashboardResponseDto(
             key = dashboard.key,
             title = dashboard.title,
             description = dashboard.description,
+            createdBy = dashboard.createdBy,
+            createdOn = dashboard.createdOn,
         )
     }
 }

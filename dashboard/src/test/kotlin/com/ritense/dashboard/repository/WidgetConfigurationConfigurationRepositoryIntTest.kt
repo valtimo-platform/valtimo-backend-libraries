@@ -23,6 +23,7 @@ import com.ritense.dashboard.domain.WidgetConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -34,6 +35,7 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
     @Autowired
     lateinit var widgetConfigurationRepository: WidgetConfigurationRepository
 
+    @WithMockUser(username = USER_EMAIL)
     @Test
     fun `should save and get widget configuration with dashboard`() {
         val dashboard = dashboardRepository.save(
@@ -70,5 +72,9 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
         assertThat(widgets[0].dataSourceProperties).isNotNull
         assertThat(widgets[0].displayType).isEqualTo("gauge")
         assertThat(widgets[0].order).isEqualTo(2)
+    }
+
+    companion object {
+        private const val USER_EMAIL = "user@valtimo.nl"
     }
 }

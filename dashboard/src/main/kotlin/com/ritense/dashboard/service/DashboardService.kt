@@ -23,12 +23,15 @@ import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrElse
 
 @Transactional
 class DashboardService(
     private val dashboardRepository: DashboardRepository,
     private val widgetConfigurationRepository: WidgetConfigurationRepository,
+    private val userManagementService: UserManagementService
 ) {
 
     @Transactional(readOnly = true)
@@ -45,30 +48,27 @@ class DashboardService(
     fun createDashboard(title: String, description: String): Dashboard {
         val key = generateDashboardKey(title)
         val order = dashboardRepository.count().toInt()
+        val createdBy = userManagementService.currentUser.fullName
         return dashboardRepository.save(
             Dashboard(
                 key = key,
                 title = title,
                 description = description,
                 order = order,
+                createdBy = createdBy
             )
         )
     }
 
     fun updateDashboards(dashboardUpdateDtos: List<DashboardUpdateRequestDto>): List<Dashboard> {
-        dashboardUpdateDtos.forEach {
-            if (!dashboardRepository.existsById(it.key)) {
-                throw RuntimeException("Failed to update dashboard. Dashboard with key '${it.key}' doesn't exist.")
-            }
-        }
-
         val dashboards = dashboardUpdateDtos.mapIndexed { index, dashboardUpdateDto ->
-            Dashboard(
-                key = dashboardUpdateDto.key,
-                title = dashboardUpdateDto.title,
-                description = dashboardUpdateDto.description,
-                order = index,
-            )
+            dashboardRepository.findById(dashboardUpdateDto.key)
+                .getOrElse { throw RuntimeException("Failed to update dashboard. Dashboard with key '${dashboardUpdateDto.key}' doesn't exist.") }
+                .copy(
+                    title = dashboardUpdateDto.title,
+                    description = dashboardUpdateDto.description,
+                    order = index
+                )
         }
 
         dashboardRepository.deleteAll()
@@ -161,7 +161,7 @@ class DashboardService(
         val baseKey = generateKey(title)
         var key = baseKey
         var i = 2
-        while(dashboardRepository.existsById(key)) {
+        while (dashboardRepository.existsById(key)) {
             key = "${baseKey}_${i++}"
         }
         return key
@@ -171,7 +171,7 @@ class DashboardService(
         val baseKey = generateKey(title)
         var key = baseKey
         var i = 2
-        while(widgetConfigurationRepository.existsById(key)) {
+        while (widgetConfigurationRepository.existsById(key)) {
             key = "${baseKey}_${i++}"
         }
         return key

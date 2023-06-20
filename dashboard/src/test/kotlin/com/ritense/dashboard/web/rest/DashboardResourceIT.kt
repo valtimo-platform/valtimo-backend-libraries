@@ -27,10 +27,12 @@ import com.ritense.dashboard.web.rest.dto.DashboardCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
+import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import org.springframework.test.web.servlet.MockMvc
@@ -65,6 +67,10 @@ class DashboardResourceIT : BaseIntegrationTest() {
         mockMvc = MockMvcBuilders
             .webAppContextSetup(webApplicationContext)
             .build()
+        val testUser = ValtimoUser()
+        testUser.firstName = "John"
+        testUser.lastName = "Joe"
+        whenever(userManagementService.currentUser).thenReturn(testUser)
     }
 
     @AfterEach
