@@ -61,7 +61,7 @@
         {
             "resourceType": "com.ritense.note.domain.Note",
             "action": "delete",
-            "roleKey": "ROLE_USER"
+            "roleKey": "ROLE_USER",
             "conditionContainer": {
                 "conditions": [
                     {
