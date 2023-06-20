@@ -103,7 +103,7 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
         assertNotNull(task)
         val startedProcessId = task.processInstanceId
         val associatedProcessDocuments =
-            processDocumentInstanceRepository.findAllByDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
+            processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
         val resultProcessInstance = camundaProcessService.findProcessInstanceById(startedProcessId).get()
         assertEquals(document.id().toString(),resultProcessInstance.businessKey)
         assertEquals(associatedProcessDocuments.size,2)
@@ -172,9 +172,9 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
         val resultProcessOneInstance = camundaProcessService.findProcessInstanceById(startedProcessOneId).get()
 
         val associatedProcessDocumentsForDocumentOne =
-            processDocumentInstanceRepository.findAllByDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
+            processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
         val associatedProcessDocumentsForDocumentTwo =
-            processDocumentInstanceRepository.findAllByDocumentId(JsonSchemaDocumentId.existingId(documentTwo.id().id))
+            processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(JsonSchemaDocumentId.existingId(documentTwo.id().id))
         assertEquals(document.id().toString(),resultProcessOneInstance.businessKey)
         assertEquals(associatedProcessDocumentsForDocumentOne.size,2)
         assertNotNull(associatedProcessDocumentsForDocumentOne.firstOrNull { it.processName().equals("start-correlation-test-process")})
@@ -217,7 +217,7 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
         assertNotNull(task)
         val startedProcessId = task.processInstanceId
         val associatedProcessDocuments =
-            processDocumentInstanceRepository.findAllByDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
+            processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
         val resultProcessInstance = camundaProcessService.findProcessInstanceById(startedProcessId).get()
         assertEquals(document.id().toString(),resultProcessInstance.businessKey)
         assertEquals(associatedProcessDocuments.size,2)
@@ -269,7 +269,7 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
         val startedProcessOneId = taskOne.processInstanceId
         val resultProcessOneInstance = camundaProcessService.findProcessInstanceById(startedProcessOneId).get()
         val associatedProcessDocumentsForDocumentOne =
-            processDocumentInstanceRepository.findAllByDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
+            processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
         assertEquals(resultProcessOneInstance.businessKey,document.id().toString())
         assertEquals(2,associatedProcessDocumentsForDocumentOne.size)
         assertNotNull(associatedProcessDocumentsForDocumentOne.firstOrNull { it.processName().equals("start-correlation-test-process")})

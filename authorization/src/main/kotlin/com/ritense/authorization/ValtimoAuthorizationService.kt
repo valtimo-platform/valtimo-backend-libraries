@@ -18,8 +18,8 @@ package com.ritense.authorization
 
 import com.ritense.authorization.permission.Permission
 import com.ritense.valtimo.contract.utils.SecurityUtils
-import org.springframework.security.access.AccessDeniedException
 import java.lang.reflect.ParameterizedType
+import org.springframework.security.access.AccessDeniedException
 
 class ValtimoAuthorizationService(
     private val authorizationSpecificationFactories: List<AuthorizationSpecificationFactory<*>>,
@@ -40,10 +40,10 @@ class ValtimoAuthorizationService(
         context: AuthorizationRequest<T>,
         permissions: List<Permission>?
     ): AuthorizationSpecification<T> {
-        val usedPermissions = permissions ?: getPermissions()
+        val usedPermissions = permissions ?: getPermissions(context)
 
         val factory = (authorizationSpecificationFactories.firstOrNull() {
-            it.canCreate(context)
+            it.canCreate(context, usedPermissions)
         } as AuthorizationSpecificationFactory<T>?)?: throw AccessDeniedException("No specification found for given context.")
         return factory.create(context, usedPermissions)
     }
@@ -69,7 +69,11 @@ class ValtimoAuthorizationService(
             .flatten()
     }
 
-    private fun getPermissions(): List<Permission> {
-        return permissionRepository.findAllByRoleKeyIn(SecurityUtils.getCurrentUserRoles())
+    private fun getPermissions(context: AuthorizationRequest<*>): List<Permission> {
+        val userRoles = SecurityUtils.getCurrentUserRoles()
+        return permissionRepository.findAllByRoleKeyIn(userRoles)
+            .filter { permission ->
+                context.resourceType == permission.resourceType && context.action == permission.action
+            }
     }
 }

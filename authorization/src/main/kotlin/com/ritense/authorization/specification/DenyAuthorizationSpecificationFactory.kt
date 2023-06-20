@@ -17,7 +17,6 @@
 package com.ritense.authorization.specification
 
 import com.ritense.authorization.Action
-import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationSpecificationFactory
@@ -31,7 +30,8 @@ class DenyAuthorizationSpecificationFactory<T: Any> : AuthorizationSpecification
         return DenyAuthorizationSpecification(context, permissions)
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>): Boolean {
-        return context.action == Action<T>(Action.DENY)
+    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+        return context.action == Action<T>(Action.DENY) ||
+            permissions.isEmpty()
     }
 }

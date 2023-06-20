@@ -47,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseIntegrationTest {
 
     private static final String DOCUMENT_DEFINITION_NAME = "house";
+    private static final String DOCUMENT_DEFINITION_NAME2 = "notahouse";
     private static final String PROCESS_DEFINITION_KEY = "loan-process-demo";
 
     @Inject
@@ -118,19 +119,26 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             DOCUMENT_DEFINITION_NAME,
             jsonContent
         );
+        var newDocumentRequest2 = new NewDocumentRequest(
+            DOCUMENT_DEFINITION_NAME2,
+            jsonContent
+        );
         var request = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest);
+        var request2 = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest2);
 
         final NewDocumentAndStartProcessResult newDocumentAndStartProcessResult = camundaProcessJsonSchemaDocumentService
             .newDocumentAndStartProcess(request);
 
+        camundaProcessJsonSchemaDocumentService.newDocumentAndStartProcess(request2);
 
         final List<TaskInstanceWithIdentityLink> processInstanceTasks = camundaTaskService.getProcessInstanceTasks(
             newDocumentAndStartProcessResult.resultingProcessInstanceId().orElseThrow().toString(),
             newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id().toString()
         );
 
-        final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstancesBeforeComplete = camundaProcessJsonSchemaDocumentAssociationService
-            .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id());
+        final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstancesBeforeComplete =
+            AuthorizationContext.runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
+                .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id()));
 
         assertThat(processDocumentInstancesBeforeComplete).hasSize(1);
         assertThat(processDocumentInstancesBeforeComplete.get(0).isActive()).isEqualTo(true);
@@ -151,8 +159,9 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             .modifyDocumentAndCompleteTask(modifyRequest);
 
         assertThat(modifyDocumentAndCompleteTaskResult.errors()).isEmpty();
-        final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstances = camundaProcessJsonSchemaDocumentAssociationService
-            .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id());
+        final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstances =
+            AuthorizationContext.runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
+                .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id()));
         assertThat(processDocumentInstances).hasSize(2);
         assertThat(processDocumentInstances.get(0).isActive()).isEqualTo(false);
         assertThat(processDocumentInstances.get(1).isActive()).isEqualTo(false);
@@ -203,8 +212,9 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             .modifyDocumentAndCompleteTask(modifyRequest);
 
         assertThat(modifyDocumentAndCompleteTaskResult.errors()).isEmpty();
-        final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstances = camundaProcessJsonSchemaDocumentAssociationService
-            .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id());
+        final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstances =
+            AuthorizationContext.runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
+            .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id()));
         assertThat(processDocumentInstances).hasSize(1);
     }
 
