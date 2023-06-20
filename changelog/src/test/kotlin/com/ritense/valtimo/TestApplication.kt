@@ -14,17 +14,28 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.valtimo
 
+import com.ritense.valtimo.changelog.TestTypeChangesetDeployer
+import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 
-@SpringBootApplication(
-    //scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class, HibernateJsonMapperConfiguration::class]
-)
+@SpringBootApplication(scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class])
 class TestApplication {
 
     fun main(args: Array<String>) {
         runApplication<TestApplication>(*args)
+    }
+
+    @TestConfiguration
+    class TestConfig {
+
+        @Bean
+        fun testTypeChangesetDeployer(): TestTypeChangesetDeployer {
+            return TestTypeChangesetDeployer()
+        }
     }
 }
