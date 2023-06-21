@@ -113,15 +113,22 @@ class PluginService(
     fun deployPluginConfigurations(deploymentDto: PluginAutoDeploymentDto) {
         val plugin: PluginConfiguration
         val pluginDefinition = pluginDefinitionRepository.getById(deploymentDto.pluginDefinitionKey)
+        if (deploymentDto.id != null && pluginConfigurationRepository.existsById(
+                PluginConfigurationId.existingId(deploymentDto.id)
+            )
+        ) {
+            deletePluginConfiguration(PluginConfigurationId.existingId(deploymentDto.id))
+        }
         validateProperties(deploymentDto.properties!!, pluginDefinition)
-        plugin = pluginConfigurationRepository.save(
+        val pluginId = pluginConfigurationRepository.saveAndFlush(
             PluginConfiguration(
                 deploymentDto.id?.let { PluginConfigurationId.existingId(it) } ?: PluginConfigurationId.newId(),
                 deploymentDto.title,
                 resolveProperties(deploymentDto.properties),
                 pluginDefinition
             )
-        )
+        ).id
+        plugin = pluginConfigurationRepository.findById(pluginId).orElseThrow()
         try {
             plugin.runAllPluginEvents(EventType.CREATE)
         } catch (e: Exception) {
