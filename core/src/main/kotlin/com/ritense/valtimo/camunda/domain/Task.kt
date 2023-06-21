@@ -33,125 +33,125 @@ class Task(
 
     @Id
     @Column(name = "ID_")
-    val id: String,
+    private val _id: String,
 
     @Column(name = "REV_")
-    val rev: Int?,
+    private val _rev: Int?,
 
     @Column(name = "EXECUTION_ID_")
-    val executionId: String?,
+    private val _executionId: String?,
 
     @Column(name = "PROC_INST_ID_")
-    val processInstanceId: String?,
+    private val _processInstanceId: String?,
 
     @Column(name = "PROC_DEF_ID_")
-    val processDefinitionId: String?,
+    private val _processDefinitionId: String?,
 
     @Column(name = "CASE_EXECUTION_ID_")
-    val caseExecutionId: String?,
+    private val _caseExecutionId: String?,
 
     @Column(name = "CASE_INST_ID_")
-    val caseInstanceId: String?,
+    private val _caseInstanceId: String?,
 
     @Column(name = "CASE_DEF_ID_")
-    val caseDefinitionId: String?,
+    private val _caseDefinitionId: String?,
 
     @Column(name = "NAME_")
-    val name: String?,
+    private val _name: String?,
 
     @Column(name = "PARENT_TASK_ID_")
-    val parentTaskId: String?,
+    private val _parentTaskId: String?,
 
     @Column(name = "DESCRIPTION_")
-    val description: String?,
+    private val _description: String?,
 
     @Column(name = "TASK_DEF_KEY_")
-    val taskDefinitionKey: String?,
+    private val _taskDefinitionKey: String?,
 
     @Column(name = "OWNER_")
-    val owner: String?,
+    private val _owner: String?,
 
     @Column(name = "ASSIGNEE_")
-    val assignee: String?,
+    private val _assignee: String?,
 
     @Column(name = "DELEGATION_")
     @Enumerated(EnumType.STRING)
-    val delegationState: DelegationState?,
+    private val _delegationState: DelegationState?,
 
     @Column(name = "PRIORITY_")
-    val priority: Int?,
+    private val _priority: Int?,
 
     @Column(name = "CREATE_TIME_")
-    val createTime: Date,
+    private val _createTime: Date,
 
     @Column(name = "LAST_UPDATED_")
-    val lastUpdated: Date,
+    private val _lastUpdated: Date,
 
     @Column(name = "DUE_DATE_")
-    val dueDate: Date,
+    private val _dueDate: Date,
 
     @Column(name = "FOLLOW_UP_DATE_")
-    val followUpDate: Date,
+    private val _followUpDate: Date,
 
     @Column(name = "SUSPENSION_STATE_")
-    val suspensionState: Int,
+    private val _suspensionState: Int,
 
     @Column(name = "TENANT_ID_")
-    val tenantId: String
+    private val _tenantId: String
 
 ) : CamundaTask {
 
-    override fun getId() = id
+    override fun getId() =  _id
 
-    override fun getName() = name
+    override fun getName() = _name
 
     override fun setName(name: String?) = throw UnsupportedOperationException()
 
-    override fun getDescription() = description
+    override fun getDescription() = _description
 
     override fun setDescription(description: String?) = throw UnsupportedOperationException()
 
-    override fun getPriority() = priority ?: 0
+    override fun getPriority() = _priority ?: 0
 
     override fun setPriority(priority: Int) = throw UnsupportedOperationException()
 
-    override fun getOwner() = owner
+    override fun getOwner() = _owner
 
     override fun setOwner(owner: String?) = throw UnsupportedOperationException()
 
-    override fun getAssignee() = assignee
+    override fun getAssignee() = _assignee
 
     override fun setAssignee(assignee: String?) = throw UnsupportedOperationException()
 
-    override fun getDelegationState() = delegationState
+    override fun getDelegationState() = _delegationState
 
     override fun setDelegationState(delegationState: DelegationState?) = throw UnsupportedOperationException()
 
-    override fun getProcessInstanceId() = processInstanceId
+    override fun getProcessInstanceId() = _processInstanceId
 
-    override fun getExecutionId() = executionId
+    override fun getExecutionId() = _executionId
 
-    override fun getProcessDefinitionId() = processDefinitionId
+    override fun getProcessDefinitionId() = _processDefinitionId
 
-    override fun getCaseInstanceId() = caseInstanceId
+    override fun getCaseInstanceId() = _caseInstanceId
 
     override fun setCaseInstanceId(caseInstanceId: String?) = throw UnsupportedOperationException()
 
-    override fun getCaseExecutionId() = caseExecutionId
+    override fun getCaseExecutionId() = _caseExecutionId
 
-    override fun getCaseDefinitionId() = caseDefinitionId
+    override fun getCaseDefinitionId() = _caseDefinitionId
 
-    override fun getCreateTime() = createTime
+    override fun getCreateTime() = _createTime
 
-    override fun getLastUpdated() = lastUpdated
+    override fun getLastUpdated() = _lastUpdated
 
-    override fun getTaskDefinitionKey() = taskDefinitionKey
+    override fun getTaskDefinitionKey() = _taskDefinitionKey
 
-    override fun getDueDate() = dueDate
+    override fun getDueDate() = _dueDate
 
     override fun setDueDate(dueDate: Date?) = throw UnsupportedOperationException()
 
-    override fun getFollowUpDate() = followUpDate
+    override fun getFollowUpDate() = _followUpDate
 
     override fun setFollowUpDate(followUpDate: Date?) = throw UnsupportedOperationException()
 
@@ -159,15 +159,15 @@ class Task(
 
     override fun setParentTaskId(parentTaskId: String?) = throw UnsupportedOperationException()
 
-    override fun getParentTaskId() = parentTaskId
+    override fun getParentTaskId() = _parentTaskId
 
-    override fun isSuspended() = suspensionState == SuspensionState.SUSPENDED.stateCode
+    override fun isSuspended() = _suspensionState == SuspensionState.SUSPENDED.stateCode
 
     override fun getFormKey() = throw UnsupportedOperationException()
 
     override fun getCamundaFormRef() = throw UnsupportedOperationException()
 
-    override fun getTenantId() = tenantId
+    override fun getTenantId() = _tenantId
 
     override fun setTenantId(tenantId: String?) = throw UnsupportedOperationException()
 }
