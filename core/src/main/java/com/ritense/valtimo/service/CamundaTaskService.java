@@ -16,10 +16,13 @@
 
 package com.ritense.valtimo.service;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toSet;
-
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
+import com.ritense.valtimo.camunda.domain.CamundaTask;
+import com.ritense.valtimo.camunda.dto.CamundaIdentityLinkDto;
+import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
+import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
+import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
@@ -29,12 +32,22 @@ import com.ritense.valtimo.contract.utils.SecurityUtils;
 import com.ritense.valtimo.domain.contexts.Context;
 import com.ritense.valtimo.domain.contexts.ContextProcess;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
-import com.ritense.valtimo.repository.CamundaTaskRepository;
 import com.ritense.valtimo.repository.camunda.dto.TaskExtended;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import com.ritense.valtimo.service.util.FormUtils;
 import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;
+import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.ProcessEngineException;
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.form.TaskFormData;
+import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
+import org.camunda.bpm.engine.task.IdentityLinkType;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -44,22 +57,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.camunda.bpm.engine.AuthorizationException;
-import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.ProcessEngineException;
-import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.delegate.DelegateTask;
-import org.camunda.bpm.engine.form.TaskFormData;
-import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
-import org.camunda.bpm.engine.rest.dto.task.IdentityLinkDto;
-import org.camunda.bpm.engine.rest.dto.task.TaskDto;
-import org.camunda.bpm.engine.task.IdentityLink;
-import org.camunda.bpm.engine.task.IdentityLinkType;
-import org.camunda.bpm.engine.task.Task;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toSet;
 
 public class CamundaTaskService {
 
@@ -71,6 +71,7 @@ public class CamundaTaskService {
     private final ContextService contextService;
     private final DelegateTaskHelper delegateTaskHelper;
     private final CamundaTaskRepository camundaTaskRepository;
+    private final CamundaIdentityLinkRepository camundaIdentityLinkRepository;
     private final CamundaProcessService camundaProcessService;
     private final Optional<ResourceService> optionalResourceService;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -83,6 +84,7 @@ public class CamundaTaskService {
         ContextService contextService,
         DelegateTaskHelper delegateTaskHelper,
         CamundaTaskRepository camundaTaskRepository,
+        CamundaIdentityLinkRepository camundaIdentityLinkRepository,
         CamundaProcessService camundaProcessService,
         Optional<ResourceService> optionalResourceService,
         ApplicationEventPublisher applicationEventPublisher,
@@ -94,6 +96,7 @@ public class CamundaTaskService {
         this.contextService = contextService;
         this.delegateTaskHelper = delegateTaskHelper;
         this.camundaTaskRepository = camundaTaskRepository;
+        this.camundaIdentityLinkRepository = camundaIdentityLinkRepository;
         this.camundaProcessService = camundaProcessService;
         this.optionalResourceService = optionalResourceService;
         this.applicationEventPublisher = applicationEventPublisher;
@@ -101,49 +104,37 @@ public class CamundaTaskService {
         this.userManagementService = userManagementService;
     }
 
-    public Task findTaskById(String taskId) {
-        Task task;
-        try {
-            task = taskService.createTaskQuery().taskId(taskId).initializeFormKeys().singleResult();
-        } catch (ProcessEngineException e) {
-            throw new IllegalStateException(String.format("Found more than one task for id %s", taskId));
-        }
-        if (task == null) {
-            throw new TaskNotFoundException(String.format("Cannot find task %s", taskId));
-        }
+    public CamundaTask findTaskById(String taskId) {
+        CamundaTask task = camundaTaskRepository.findById(taskId)
+            .orElseThrow(() -> new TaskNotFoundException(String.format("Cannot find task %s", taskId)));
+        // TODO: task.initializeFormKey();
         return task;
     }
 
     public void assign(String taskId, String assignee) throws IllegalStateException {
-        final Task task = findTaskById(taskId);
+        final CamundaTask task = findTaskById(taskId);
         final String currentAssignee = task.getAssignee();
         try {
-            taskService.setAssignee(task.getId(), assignee);
-            publishTaskAssignedEvent((DelegateTask) task, currentAssignee, assignee);
-        } catch (AuthorizationException ex) {
-            throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
-        } catch (ProcessEngineException ex) {
+            camundaTaskRepository.setAssignee(task.getId(), assignee);
+            publishTaskAssignedEvent(task, currentAssignee, assignee);
+        } catch (Exception ex) {
             throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
         }
     }
 
     public void unassign(String taskId) {
-        final Task task = findTaskById(taskId);
+        final CamundaTask task = findTaskById(taskId);
         try {
-            taskService.setAssignee(task.getId(), NO_USER);
-        } catch (AuthorizationException ex) {
-            throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
-        } catch (ProcessEngineException ex) {
+            camundaTaskRepository.setAssignee(task.getId(), NO_USER);
+        } catch (Exception ex) {
             throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
         }
     }
 
     public List<ManageableUser> getCandidateUsers(String taskId) {
-        final Task task = findTaskById(taskId);
-        final Optional<IdentityLink> first = taskService
-            .getIdentityLinksForTask(task.getId())
+        final CamundaTask task = findTaskById(taskId);
+        final Optional<CamundaIdentityLink> first = camundaIdentityLinkRepository.findAllByTaskIdAndType(task.getId(), IdentityLinkType.CANDIDATE)
             .stream()
-            .filter(identityLink -> IdentityLinkType.CANDIDATE.equals(identityLink.getType()))
             .findFirst();
 
         if (first.isPresent()) {
@@ -158,7 +149,7 @@ public class CamundaTaskService {
     }
 
     public void completeTask(String taskId, Map<String, Object> variables) {
-        final Task task = findTaskById(taskId);
+        final CamundaTask task = findTaskById(taskId);
         try {
             if (variables == null || variables.isEmpty()) {
                 completeTaskWithoutFormData(task.getId());
@@ -207,29 +198,24 @@ public class CamundaTaskService {
     }
 
     public List<TaskInstanceWithIdentityLink> getProcessInstanceTasks(String processInstanceId, String businessKey) {
-        return taskService
-            .createTaskQuery()
-            .processInstanceId(processInstanceId)
-            .orderByTaskCreateTime()
-            .desc()
-            .list()
+        return camundaTaskRepository.findAllByProcessInstanceIdOrderByCreateTimeDesc(processInstanceId)
             .stream()
             .map(task -> {
                 final var identityLinks = getIdentityLinks(task.getId());
                 return new TaskInstanceWithIdentityLink(
                     businessKey,
-                    TaskDto.fromEntity(task),
+                    CamundaTaskDto.Companion.fromEntity(task),
                     delegateTaskHelper.isTaskPublic(task),
-                    getProcessDefinitionKey(task.getProcessDefinitionId()),
+                    getProcessDefinitionKey(task.getProcessDefinition().getId()),
                     identityLinks
                 );
             })
             .collect(Collectors.toList());
     }
 
-    public List<IdentityLinkDto> getIdentityLinks(String taskId) {
-        final List<IdentityLink> identityLinksForTask = taskService.getIdentityLinksForTask(taskId);
-        return identityLinksForTask.stream().map(IdentityLinkDto::fromIdentityLink).collect(Collectors.toList());
+    public List<CamundaIdentityLinkDto> getIdentityLinks(String taskId) {
+        final List<CamundaIdentityLink> identityLinksForTask = camundaIdentityLinkRepository.findAllByTaskId(taskId);
+        return identityLinksForTask.stream().map(CamundaIdentityLinkDto.Companion::fromEntity).collect(Collectors.toList());
     }
 
     public Map<String, Object> getTaskVariables(String taskInstanceId) {
@@ -240,7 +226,7 @@ public class CamundaTaskService {
         MINE, OPEN, ALL
     }
 
-    private void publishTaskAssignedEvent(DelegateTask task, String formerAssignee, String newAssignee) {
+    private void publishTaskAssignedEvent(CamundaTask task, String formerAssignee, String newAssignee) {
         final String businessKey = runtimeService
             .createProcessInstanceQuery()
             .processInstanceId(task.getProcessInstanceId())
@@ -258,7 +244,7 @@ public class CamundaTaskService {
                 task.getId(),
                 task.getName(),
                 LocalDateTime.ofInstant(task.getCreateTime().toInstant(), ZoneId.systemDefault()),
-                task.getProcessDefinitionId(),
+                task.getProcessDefinition().getId(),
                 task.getProcessInstanceId(),
                 businessKey
             )

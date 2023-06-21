@@ -15,9 +15,20 @@
  */
 package com.ritense.valtimo.camunda.repository
 
-import com.ritense.valtimo.camunda.domain.Task
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 
 @Repository
-interface TaskRepository : JpaRepository<Task, String>
+interface CamundaTaskRepository : JpaRepository<CamundaTask, String>, JpaSpecificationExecutor<CamundaTask> {
+    fun findAllByProcessInstanceIdOrderByCreateTimeDesc(processInstanceId: String): List<CamundaTask>
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE CamundaTask t SET t.assignee = :assignee WHERE t.id = :taskId")
+    fun setAssignee(taskId: String, assignee: String?)
+}

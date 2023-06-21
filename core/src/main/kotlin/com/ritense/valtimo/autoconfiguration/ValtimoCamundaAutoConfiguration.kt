@@ -17,13 +17,13 @@
 
 package com.ritense.valtimo.autoconfiguration
 
-import com.ritense.valtimo.camunda.repository.TaskRepository
+import com.ritense.valtimo.camunda.repository.CamundaTaskRepository
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
-@EnableJpaRepositories(basePackageClasses = [TaskRepository::class])
+@EnableJpaRepositories(basePackageClasses = [CamundaTaskRepository::class])
 @EntityScan("com.ritense.valtimo.camunda.domain")
 class ValtimoCamundaAutoConfiguration {
 

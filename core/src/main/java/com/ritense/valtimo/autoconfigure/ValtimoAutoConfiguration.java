@@ -20,6 +20,7 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.ProcessApplicationStartedEventListener;
 import com.ritense.valtimo.camunda.ProcessDefinitionPropertyListener;
 import com.ritense.valtimo.camunda.TaskCompletedListener;
+import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
 import com.ritense.valtimo.config.CustomDateTimeProvider;
 import com.ritense.valtimo.config.ValtimoApplicationReadyEventListener;
@@ -33,7 +34,6 @@ import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.processdefinition.repository.ProcessDefinitionPropertiesRepository;
 import com.ritense.valtimo.repository.CamundaReportingRepository;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
-import com.ritense.valtimo.repository.CamundaTaskRepository;
 import com.ritense.valtimo.repository.UserSettingsRepository;
 import com.ritense.valtimo.security.permission.Permission;
 import com.ritense.valtimo.security.permission.TaskAccessPermission;
@@ -217,14 +217,6 @@ public class ValtimoAutoConfiguration {
         final RepositoryService repositoryService
     ) {
         return new CamundaReportingRepository(sqlSession, repositoryService);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(CamundaTaskRepository.class)
-    public CamundaTaskRepository camundaTaskRepository(
-        final SqlSession sqlSession
-    ) {
-        return new CamundaTaskRepository(sqlSession);
     }
 
     @Bean
