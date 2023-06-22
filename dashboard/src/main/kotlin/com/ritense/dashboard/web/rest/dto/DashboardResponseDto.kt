@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.repository
+package com.ritense.dashboard.web.rest.dto
 
 import com.ritense.dashboard.domain.Dashboard
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
+import java.time.ZonedDateTime
 
-@Repository
-interface DashboardRepository : JpaRepository<Dashboard, String> {
-
-    fun findAllByOrderByOrder(): List<Dashboard>
-
-    fun findByTitleAndDescription(title: String, description: String): Dashboard
-
-    fun findByTitle(title: String): List<Dashboard>
+data class DashboardResponseDto(
+    val key: String,
+    val title: String,
+    val description: String,
+    val createdBy: String,
+    val createdOn: ZonedDateTime
+) {
+    companion object {
+        fun of(dashboard: Dashboard) = DashboardResponseDto(
+            key = dashboard.key,
+            title = dashboard.title,
+            description = dashboard.description,
+            createdBy = dashboard.createdBy,
+            createdOn = dashboard.createdOn,
+        )
+    }
 }

@@ -18,7 +18,20 @@ package com.ritense.dashboard.repository
 
 import com.ritense.dashboard.domain.WidgetConfiguration
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.stereotype.Repository
 
 @Repository
-interface WidgetConfigurationRepository : JpaRepository<WidgetConfiguration, String>
+interface WidgetConfigurationRepository : JpaRepository<WidgetConfiguration, String> {
+    fun findAllByDashboardKey(dashboardKey: String): List<WidgetConfiguration>
+    fun findByDashboardKeyAndKey(dashboardKey: String, widgetKey: String): WidgetConfiguration?
+
+    fun countAllByDashboardKey(dashboardKey: String): Long
+
+    fun findAllByDashboardKeyOrderByOrder(dashboardKey: String): List<WidgetConfiguration>
+
+    @Modifying
+    fun deleteByDashboardKeyAndKey(dashboardKey: String, widgetConfigurationKey: String)
+
+    fun existsByDashboardKeyAndKey(dashboardKey: String, key: String): Boolean
+}

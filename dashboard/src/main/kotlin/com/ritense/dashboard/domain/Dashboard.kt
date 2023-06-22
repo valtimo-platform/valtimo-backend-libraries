@@ -16,9 +16,15 @@
 
 package com.ritense.dashboard.domain
 
+import com.ritense.valtimo.contract.utils.SecurityUtils
+import java.time.ZonedDateTime
+import javax.persistence.CascadeType.ALL
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType.LAZY
 import javax.persistence.Id
+import javax.persistence.OneToMany
+import javax.persistence.OrderBy
 import javax.persistence.Table
 
 @Entity
@@ -29,10 +35,23 @@ data class Dashboard(
     @Column(name = "key", updatable = false, nullable = false, unique = true)
     val key: String,
 
-    @Column(name = "title", updatable = false, nullable = false)
+    @Column(name = "title", nullable = false)
     val title: String,
 
+    @Column(name = "description")
+    val description: String,
+
+    @OneToMany(mappedBy = "dashboard", fetch = LAZY, cascade = [ALL], orphanRemoval = true)
+    @OrderBy("order ASC")
+    val widgetConfigurations: List<WidgetConfiguration> = listOf(),
+
     @Column(name = "sort_order", nullable = false)
-    val order: Int
+    val order: Int,
+
+    @Column(name = "created_by")
+    val createdBy: String = SecurityUtils.getCurrentUserLogin(),
+
+    @Column(name = "created_on")
+    val createdOn: ZonedDateTime = ZonedDateTime.now()
 
 )
