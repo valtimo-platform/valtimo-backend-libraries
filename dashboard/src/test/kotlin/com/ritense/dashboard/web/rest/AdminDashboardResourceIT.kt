@@ -46,7 +46,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 
-class DashboardResourceIT : BaseIntegrationTest() {
+class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext
@@ -95,7 +95,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            get("/api/v1/dashboard")
+            get("/api/management/v1/dashboard")
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -121,7 +121,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            get("/api/v1/dashboard/{dashboardKey}", "test_dashboard")
+            get("/api/management/v1/dashboard/{dashboardKey}", "test_dashboard")
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -137,7 +137,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
             DashboardCreateRequestDto("Test dashboard", "Test description")
 
         mockMvc.perform(
-            post("/api/v1/dashboard")
+            post("/api/management/v1/dashboard")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(dashboard))
         )
@@ -156,7 +156,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
             .map { DashboardUpdateRequestDto.of(it) }
 
         mockMvc.perform(
-            put("/api/v1/dashboard")
+            put("/api/management/v1/dashboard")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(updateRequest))
         )
@@ -185,7 +185,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            delete("/api/v1/dashboard/{dashboardId}", dashboard.key)
+            delete("/api/management/v1/dashboard/{dashboardId}", dashboard.key)
         )
             .andDo(print())
             .andExpect(status().isNoContent)
@@ -209,7 +209,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            get("/api/v1/dashboard/{dashboardKey}/widget", "test_dashboard")
+            get("/api/management/v1/dashboard/{dashboardKey}/widget", "test_dashboard")
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -231,7 +231,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            post("/api/v1/dashboard/{dashboardKey}/widget", "test_dashboard")
+            post("/api/management/v1/dashboard/{dashboardKey}/widget", "test_dashboard")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(widgetConfiguration))
         )
@@ -268,7 +268,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            put("/api/v1/dashboard/{dashboardKey}/widget", "test_dashboard")
+            put("/api/management/v1/dashboard/{dashboardKey}/widget", "test_dashboard")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(widgetConfigurations))
         )
@@ -297,7 +297,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            get("/api/v1/dashboard/{dashboardKey}/widget/{widgetKey}", "test_dashboard", "doorlooptijd")
+            get("/api/management/v1/dashboard/{dashboardKey}/widget/{widgetKey}", "test_dashboard", "doorlooptijd")
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -323,7 +323,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            delete("/api/v1/dashboard/{dashboardKey}/widget/{widgetKey}", "test_dashboard", "doorlooptijd")
+            delete("/api/management/v1/dashboard/{dashboardKey}/widget/{widgetKey}", "test_dashboard", "doorlooptijd")
         )
             .andDo(print())
             .andExpect(status().isNoContent)

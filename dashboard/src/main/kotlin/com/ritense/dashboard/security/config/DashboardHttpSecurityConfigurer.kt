@@ -30,16 +30,16 @@ class DashboardHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/dashboard").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/dashboard/{dashboardKey}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/dashboard").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/dashboard").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/dashboard/{dashboard-key}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/dashboard/{dashboardKey}/widget").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/dashboard/{dashboardKey}/widget").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/dashboard/{dashboardKey}/widget").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/dashboard/{dashboardKey}/widget/{widgetKey}").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/dashboard/{dashboardKey}/widget/{widgetKey}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/management/v1/dashboard").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/management/v1/dashboard").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/management/v1/dashboard").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/management/v1/dashboard/{dashboard-key}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}/widget").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/management/v1/dashboard/{dashboardKey}/widget").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/management/v1/dashboard/{dashboardKey}/widget").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}/widget/{widgetKey}").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/management/v1/dashboard/{dashboardKey}/widget/{widgetKey}").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

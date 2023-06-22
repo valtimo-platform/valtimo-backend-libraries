@@ -33,8 +33,8 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
-@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
-class DashboardResource(
+@RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
+class AdminDashboardResource(
     private val dashboardService: DashboardService,
 ) {
 
