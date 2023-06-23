@@ -19,7 +19,6 @@ package com.ritense.mail.wordpressmail.domain
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.Recipient
 import com.ritense.valtimo.contract.mail.model.value.Subject
-import kotlin.streams.toList
 import mu.KotlinLogging
 
 data class EmailSendRequest(
@@ -57,7 +56,7 @@ data class EmailSendRequest(
                 val key = "$prefix${toVariableKey(it.key)}"
                 if (it.value is Map<*, *>) {
                     entries.addAll(toVariablesField("${key}_", it.value as Map<String, Any>))
-                } else {
+                } else if (it.value is String || it.value is Number || it.value is Boolean) {
                     entries.add(Pair(key, it.value))
                 }
             }

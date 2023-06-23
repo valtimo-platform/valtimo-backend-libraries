@@ -49,7 +49,8 @@ class TaakForm(
 enum class TaakStatus(@JsonValue val key: String) {
     OPEN("open"),
     INGEDIEND("ingediend"),
-    VERWERKT("verwerkt")
+    VERWERKT("verwerkt"),
+    GESLOTEN("gesloten")
 }
 
 enum class TaakFormType(@JsonValue val key: String) {

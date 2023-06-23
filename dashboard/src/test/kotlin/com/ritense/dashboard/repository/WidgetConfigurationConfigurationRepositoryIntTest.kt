@@ -23,7 +23,10 @@ import com.ritense.dashboard.domain.WidgetConfiguration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() {
 
     @Autowired
@@ -32,12 +35,21 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
     @Autowired
     lateinit var widgetConfigurationRepository: WidgetConfigurationRepository
 
+    @WithMockUser(username = USER_EMAIL)
     @Test
     fun `should save and get widget configuration with dashboard`() {
-        val dashboard = dashboardRepository.save(Dashboard(key = "mine", title = "My dashboard", order = 1))
+        val dashboard = dashboardRepository.save(
+            Dashboard(
+                key = "mine",
+                title = "My dashboard",
+                description = "Test description",
+                order = 1
+            )
+        )
         widgetConfigurationRepository.save(
             WidgetConfiguration(
                 key = "doorlooptijd",
+                title = "Doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().createObjectNode(),
@@ -52,10 +64,17 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
         assertThat(widgets[0].dashboard).isEqualTo(dashboard)
         assertThat(widgets[0].dashboard.key).isEqualTo("mine")
         assertThat(widgets[0].dashboard.title).isEqualTo("My dashboard")
+        assertThat(widgets[0].dashboard.description).isEqualTo("Test description")
         assertThat(widgets[0].dashboard.order).isEqualTo(1)
+        assertThat(widgets[0].key).isEqualTo("doorlooptijd")
+        assertThat(widgets[0].title).isEqualTo("Doorlooptijd")
         assertThat(widgets[0].dataSourceKey).isEqualTo("doorlooptijd")
         assertThat(widgets[0].dataSourceProperties).isNotNull
         assertThat(widgets[0].displayType).isEqualTo("gauge")
         assertThat(widgets[0].order).isEqualTo(2)
+    }
+
+    companion object {
+        private const val USER_EMAIL = "user@valtimo.nl"
     }
 }

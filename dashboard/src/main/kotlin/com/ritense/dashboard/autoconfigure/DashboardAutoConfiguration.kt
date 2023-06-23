@@ -16,6 +16,12 @@
 
 package com.ritense.dashboard.autoconfigure
 
+import com.ritense.dashboard.repository.DashboardRepository
+import com.ritense.dashboard.repository.WidgetConfigurationRepository
+import com.ritense.dashboard.security.config.DashboardHttpSecurityConfigurer
+import com.ritense.dashboard.service.DashboardService
+import com.ritense.dashboard.web.rest.AdminDashboardResource
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -38,6 +44,31 @@ class DashboardAutoConfiguration {
     @ConditionalOnMissingBean(name = ["dashboardLiquibaseMasterChangeLogLocation"])
     fun dashboardLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
         return LiquibaseMasterChangeLogLocation("config/liquibase/dashboard-master.xml")
+    }
+
+    @Order(270)
+    @Bean
+    @ConditionalOnMissingBean(DashboardHttpSecurityConfigurer::class)
+    fun dashboardHttpSecurityConfigurer(): DashboardHttpSecurityConfigurer {
+        return DashboardHttpSecurityConfigurer()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DashboardService::class)
+    fun dashboardService(
+        dashboardRepository: DashboardRepository,
+        widgetConfigurationRepository: WidgetConfigurationRepository,
+        userManagementService: UserManagementService
+    ): DashboardService {
+        return DashboardService(dashboardRepository, widgetConfigurationRepository, userManagementService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(AdminDashboardResource::class)
+    fun dashboardResource(
+        dashboardService: DashboardService
+    ): AdminDashboardResource {
+        return AdminDashboardResource(dashboardService)
     }
 
 }
