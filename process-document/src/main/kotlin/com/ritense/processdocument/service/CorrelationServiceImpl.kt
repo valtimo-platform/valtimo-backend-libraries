@@ -72,7 +72,7 @@ class CorrelationServiceImpl(
         val processInstanceId = correlationResultProcessInstance.get().processInstanceId
         val processName = camundaProcessService.findProcessDefinitionById(correlationResultProcessInstance.get().processDefinitionId).name
         val associationExists = associationExists(processInstanceId)
-        if(associationExists) {
+        if(!associationExists) {
             associateDocumentToProcess(
                 processInstanceId,
                 processName,
