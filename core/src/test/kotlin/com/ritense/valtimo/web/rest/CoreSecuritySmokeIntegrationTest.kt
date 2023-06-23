@@ -18,7 +18,7 @@ package com.ritense.valtimo.web.rest
 
 class CoreSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
     ignoredPathPatterns = setOf(
-        "/api/v1/ping",
-        "/api/v1/public/process/definition/{processDefinitionKey}/start-form"
+        "GET /api/v1/ping",
+        "GET /api/v1/public/process/definition/{processDefinitionKey}/start-form"
     )
 )

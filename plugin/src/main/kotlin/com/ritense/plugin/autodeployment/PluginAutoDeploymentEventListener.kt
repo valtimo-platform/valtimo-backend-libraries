@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
-import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import mu.KLogger
 import mu.KotlinLogging
@@ -34,7 +33,6 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.transaction.annotation.Transactional
 import java.io.IOException
-import java.lang.Exception
 
 @Transactional
 class PluginAutoDeploymentEventListener(
@@ -51,10 +49,14 @@ class PluginAutoDeploymentEventListener(
         try {
             val resources = loadResources()
             for (resource in resources) {
-                createPluginConfigurations(resource)
+                try {
+                    createPluginConfigurations(resource)
+                } catch (e: Exception) {
+                    logger.error(e) { "Error while deploying plugin configuration" }
+                }
             }
         } catch (e: Exception) {
-            logger.error(e) { "Error while deploying plugins" }
+            logger.error(e) { "Error while deploying plugin configurations" }
         }
     }
 
