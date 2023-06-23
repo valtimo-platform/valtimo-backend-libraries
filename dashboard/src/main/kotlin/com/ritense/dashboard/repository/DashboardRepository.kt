@@ -21,4 +21,11 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface DashboardRepository : JpaRepository<Dashboard, String>
+interface DashboardRepository : JpaRepository<Dashboard, String> {
+
+    fun findAllByOrderByOrder(): List<Dashboard>
+
+    fun findByTitleAndDescription(title: String, description: String): Dashboard
+
+    fun findByTitle(title: String): List<Dashboard>
+}

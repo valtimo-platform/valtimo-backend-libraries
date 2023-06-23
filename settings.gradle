@@ -23,6 +23,7 @@ include(
     "authorization",
     "besluit",
     "case",
+    "changelog",
     "connector",
     "contactmoment",
     "contract",

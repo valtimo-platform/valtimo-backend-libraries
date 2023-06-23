@@ -1,0 +1,141 @@
+{
+    "changesetId": "documents-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "list_view",
+            "roleKey": "ROLE_USER",
+            "conditionContainer": {
+                "conditions": [
+                    {
+                        "type": "expression",
+                        "field": "content.content",
+                        "path": "$.height",
+                        "operator": "<",
+                        "value": 20000,
+                        "clazz": "int"
+                    },
+                    {
+                        "type": "field",
+                        "field": "documentDefinitionId.name",
+                        "operator": "==",
+                        "value": "leningen"
+                    }
+                ]
+            }
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "list_view",
+            "roleKey": "ROLE_USER",
+            "conditionContainer": {
+                "conditions": [
+                    {
+                        "type": "field",
+                        "field": "assigneeId",
+                        "operator": "==",
+                        "value": "${currentUserId}"
+                    }
+                ]
+            }
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "view",
+            "roleKey": "ROLE_USER",
+            "conditionContainer": {
+                "conditions": [
+                    {
+                        "type": "expression",
+                        "field": "content.content",
+                        "path": "$.height",
+                        "operator": "<",
+                        "value": 20000,
+                        "clazz": "int"
+                    },
+                    {
+                        "type": "field",
+                        "field": "documentDefinitionId.name",
+                        "operator": "==",
+                        "value": "leningen"
+                    }
+                ]
+            }
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "view",
+            "roleKey": "ROLE_USER",
+            "conditionContainer": {
+                "conditions": [
+                    {
+                        "type": "field",
+                        "field": "assigneeId",
+                        "operator": "==",
+                        "value": "${currentUserId}"
+                    }
+                ]
+            }
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "claim",
+            "roleKey": "ROLE_USER",
+            "conditionContainer": {
+                "conditions": [
+                    {
+                        "type": "field",
+                        "field": "assigneeId",
+                        "operator": "==",
+                        "value": "${currentUserId}"
+                    }
+                ]
+            }
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "assignable",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "list_view",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "view",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "claim",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "assign",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "assignable",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.searchfield.SearchField",
+            "action": "view",
+            "roleKey": "ROLE_ADMIN",
+            "conditionContainer": {
+                "conditions": [
+                    {
+                        "type": "field",
+                        "field": "id.documentDefinitionName",
+                        "operator": "==",
+                        "value": "leningen"
+                    }
+                ]
+            }
+        }
+    ]
+}
