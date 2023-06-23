@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.repository
+package com.ritense.dashboard.web.rest
 
-import com.ritense.dashboard.domain.Dashboard
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-@Repository
-interface DashboardRepository : JpaRepository<Dashboard, String> {
-
-    fun findAllByOrderByOrder(): List<Dashboard>
-
-    fun findByTitleAndDescription(title: String, description: String): Dashboard
-
-    fun findByTitle(title: String): List<Dashboard>
-}
+class DashboardSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.dashboard"
+)

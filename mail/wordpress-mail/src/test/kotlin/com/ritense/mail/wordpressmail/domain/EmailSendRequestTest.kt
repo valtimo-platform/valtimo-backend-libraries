@@ -73,4 +73,23 @@ class EmailSendRequestTest : BaseTest() {
         assertThat(sendRequests[0].variables).containsEntry("VAR_EMAILADRES", "john@example.com")
     }
 
+    @Test
+    fun `should not fix placeholders from process variables with array values`() {
+        val templatedMailMessage = templatedMailMessage(
+            recipient = Recipient.to(EmailAddress.from("john@example.com"), SimpleName.from("John Doe")),
+            subject = "Welcome",
+            placeholders = mapOf(
+                "var" to mapOf("my-number" to 12, "my-boolean" to true, "my-array" to listOf(0, 1))
+            )
+        )
+
+        val sendRequests = EmailSendRequest.from(templatedMailMessage)
+
+        assertThat(sendRequests[0].variables).hasSize(3)
+        assertThat(sendRequests[0].variables).containsEntry("SUBJECT", "Welcome")
+        assertThat(sendRequests[0].variables).containsEntry("VAR_MY_NUMBER", 12)
+        assertThat(sendRequests[0].variables).containsEntry("VAR_MY_BOOLEAN", true)
+        assertThat(sendRequests[0].variables).doesNotContainEntry("VAR_MY_ARRAY", listOf(0, 1))
+    }
+
 }

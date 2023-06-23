@@ -34,6 +34,9 @@ data class WidgetConfiguration(
     @Column(name = "key", updatable = false, nullable = false, unique = true)
     val key: String,
 
+    @Column(name = "title", nullable = false)
+    val title: String,
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "dashboard_key")
     val dashboard: Dashboard,
