@@ -18,12 +18,9 @@ package com.ritense.plugin.autodeployment
 
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
-import com.ritense.plugin.annotation.PluginActionProperty
-import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
-import com.ritense.plugin.domain.EventType
+import com.ritense.valtimo.contract.validation.Url
 import java.net.URI
 
 @Plugin(
@@ -33,8 +30,9 @@ import java.net.URI
 )
 class AutoDeploymentTestPlugin(
 )  {
+    @Url
     @PluginProperty(key = "property1", secret = false)
-    lateinit var property1: String
+    lateinit var property1: URI
 
     @PluginProperty(key = "property2", required = false, secret = false)
     var property2: Boolean? = null
