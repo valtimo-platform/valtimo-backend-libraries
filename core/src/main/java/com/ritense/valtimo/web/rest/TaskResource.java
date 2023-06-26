@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.repository.camunda.dto.TaskExtended;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
@@ -29,7 +30,6 @@ import com.ritense.valtimo.web.rest.util.PaginationUtil;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Comment;
-import org.camunda.bpm.engine.task.Task;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
@@ -122,7 +122,7 @@ public class TaskResource extends AbstractTaskResource {
 
     @GetMapping("/v1/task/{taskId}/comments")
     public ResponseEntity<List<Comment>> getProcessInstanceComments(@PathVariable String taskId) {
-        final Task task = camundaTaskService.findTaskById(taskId);
+        final CamundaTask task = camundaTaskService.findTaskById(taskId);
         List<Comment> taskComments = taskService.getTaskComments(task.getId());
         taskComments.addAll(taskService.getProcessInstanceComments(task.getProcessInstanceId()));
         taskComments.sort((Comment c1, Comment c2) -> c2.getTime().compareTo(c1.getTime()));

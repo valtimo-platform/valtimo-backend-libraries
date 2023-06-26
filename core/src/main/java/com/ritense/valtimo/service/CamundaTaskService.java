@@ -20,7 +20,6 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.dto.CamundaIdentityLinkDto;
-import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
@@ -37,6 +36,7 @@ import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import com.ritense.valtimo.service.util.FormUtils;
 import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;
+import org.camunda.bpm.engine.AuthorizationException;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.RuntimeService;
@@ -115,9 +115,11 @@ public class CamundaTaskService {
         final CamundaTask task = findTaskById(taskId);
         final String currentAssignee = task.getAssignee();
         try {
-            camundaTaskRepository.setAssignee(task.getId(), assignee);
+            taskService.setAssignee(task.getId(), assignee);
             publishTaskAssignedEvent(task, currentAssignee, assignee);
-        } catch (Exception ex) {
+        } catch (AuthorizationException ex) {
+            throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
+        } catch (ProcessEngineException ex) {
             throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
         }
     }
@@ -125,8 +127,10 @@ public class CamundaTaskService {
     public void unassign(String taskId) {
         final CamundaTask task = findTaskById(taskId);
         try {
-            camundaTaskRepository.setAssignee(task.getId(), NO_USER);
-        } catch (Exception ex) {
+            taskService.setAssignee(task.getId(), NO_USER);
+        } catch (AuthorizationException ex) {
+            throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
+        } catch (ProcessEngineException ex) {
             throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
         }
     }
@@ -173,7 +177,7 @@ public class CamundaTaskService {
         TaskFilter taskFilter, Pageable pageable
     ) throws IllegalAccessException {
         var parameters = buildTaskFilterParameters(taskFilter);
-        Page<TaskExtended> tasks = camundaTaskRepository.findTasks(pageable, parameters);
+        Page<TaskExtended> tasks = Page.empty();//camundaTaskRepository.findTasks(pageable, parameters);
         if (!tasks.isEmpty()) {
             tasks.forEach(task -> task.setContext(taskService.getVariable(task.getId(), CONTEXT)));
 
@@ -204,10 +208,10 @@ public class CamundaTaskService {
                 final var identityLinks = getIdentityLinks(task.getId());
                 return new TaskInstanceWithIdentityLink(
                     businessKey,
-                    CamundaTaskDto.Companion.fromEntity(task),
-                    delegateTaskHelper.isTaskPublic(task),
+                    null,//CamundaTaskDto.Companion.fromEntity(task),
+                    false, // TODO: delegateTaskHelper.isTaskPublic(task),
                     getProcessDefinitionKey(task.getProcessDefinition().getId()),
-                    identityLinks
+                    null//identityLinks
                 );
             })
             .collect(Collectors.toList());

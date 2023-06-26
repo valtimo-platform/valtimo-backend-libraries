@@ -16,17 +16,18 @@
 
 package com.ritense.valtimo.web.rest.dto;
 
+import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
 import org.camunda.bpm.engine.form.FormField;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.camunda.bpm.engine.rest.dto.task.TaskDto;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 public class CustomTaskDto implements Serializable {
 
-    private TaskDto task;
+    private CamundaTaskDto task;
 
     private List<FormField> formFields;
 
@@ -46,7 +47,7 @@ public class CustomTaskDto implements Serializable {
     }
 
     public CustomTaskDto(
-            TaskDto task,
+            CamundaTaskDto task,
             List<FormField> formFields,
             Map<String, Object> variables,
             String formLocation,
@@ -64,7 +65,7 @@ public class CustomTaskDto implements Serializable {
         this.businessKey = processInstance.getBusinessKey();
     }
 
-    public TaskDto getTask() {
+    public CamundaTaskDto getTask() {
         return task;
     }
 
@@ -76,7 +77,7 @@ public class CustomTaskDto implements Serializable {
         return variables;
     }
 
-    public void setTask(TaskDto task) {
+    public void setTask(CamundaTaskDto task) {
         this.task = task;
     }
 

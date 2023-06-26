@@ -20,6 +20,7 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.ProcessApplicationStartedEventListener;
 import com.ritense.valtimo.camunda.ProcessDefinitionPropertyListener;
 import com.ritense.valtimo.camunda.TaskCompletedListener;
+import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
 import com.ritense.valtimo.config.CustomDateTimeProvider;
@@ -166,6 +167,7 @@ public class ValtimoAutoConfiguration {
         final ContextService contextService,
         final DelegateTaskHelper delegateTaskHelper,
         final CamundaTaskRepository camundaTaskRepository,
+        final CamundaIdentityLinkRepository camundaIdentityLinkRepository,
         final CamundaProcessService camundaProcessService,
         final Optional<ResourceService> resourceServiceOptional,
         final ApplicationEventPublisher applicationEventPublisher,
@@ -178,6 +180,7 @@ public class ValtimoAutoConfiguration {
             contextService,
             delegateTaskHelper,
             camundaTaskRepository,
+            camundaIdentityLinkRepository,
             camundaProcessService,
             resourceServiceOptional,
             applicationEventPublisher,
