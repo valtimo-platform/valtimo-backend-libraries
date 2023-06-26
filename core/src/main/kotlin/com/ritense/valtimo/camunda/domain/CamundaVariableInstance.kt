@@ -18,7 +18,10 @@ package com.ritense.valtimo.camunda.domain
 
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.Table
 
 @Entity
@@ -38,14 +41,16 @@ class CamundaVariableInstance(
     @Column(name = "NAME_")
     val name: String,
 
-    @Column(name = "EXECUTION_ID_")
-    val executionId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "EXECUTION_ID_")
+    val execution: CamundaExecution?,
 
     @Column(name = "PROC_INST_ID_")
     val processInstanceId: String?,
 
-    @Column(name = "PROC_DEF_ID_")
-    val processDefinitionId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROC_DEF_ID_")
+    val processDefinition: CamundaProcessDefinition?,
 
     @Column(name = "CASE_EXECUTION_ID_")
     val caseExecutionId: String?,
@@ -53,8 +58,9 @@ class CamundaVariableInstance(
     @Column(name = "CASE_INST_ID_")
     val caseInstanceId: String?,
 
-    @Column(name = "TASK_ID_")
-    val taskId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TASK_ID_")
+    val task: CamundaTask?,
 
     @Column(name = "BATCH_ID_")
     val batchId: String?,

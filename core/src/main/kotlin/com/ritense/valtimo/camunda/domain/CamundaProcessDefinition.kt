@@ -30,7 +30,7 @@ class CamundaProcessDefinition(
     val id: String,
 
     @Column(name = "REV_")
-    val revision: Int,
+    val revision: Int?,
 
     @Column(name = "CATEGORY_")
     val category: String?,
@@ -39,7 +39,7 @@ class CamundaProcessDefinition(
     val name: String?,
 
     @Column(name = "KEY_")
-    val key: String?,
+    val key: String,
 
     @Column(name = "VERSION_")
     val version: Int,
@@ -54,10 +54,10 @@ class CamundaProcessDefinition(
     val diagramResourceName: String?,
 
     @Column(name = "HAS_START_FORM_KEY_")
-    val startFormKey: Boolean,
+    val hasStartFormKey: Boolean?,
 
     @Column(name = "SUSPENSION_STATE_")
-    val suspensionState: Int,
+    val suspensionState: Int?,
 
     @Column(name = "TENANT_ID_")
     val tenantId: String?,

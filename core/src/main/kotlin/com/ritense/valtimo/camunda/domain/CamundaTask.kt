@@ -105,8 +105,10 @@ class CamundaTask(
     val suspensionState: Int,
 
     @Column(name = "TENANT_ID_")
-    val tenantId: String?
+    val tenantId: String?,
 
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
+    val variables: Set<CamundaVariableInstance>
 ) {
     fun isSuspended() = suspensionState == SuspensionState.SUSPENDED.stateCode
 }

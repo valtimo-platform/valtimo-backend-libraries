@@ -1,25 +1,30 @@
 /*
- *  Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
- *  Licensed under EUPL, Version 1.2 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License   distributed on an "AS  " basis,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.ritense.valtimo.camunda.domain
 
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
 import javax.persistence.Table
+import org.hibernate.mapping.Bag
 
 @Entity
 @Table(name = "ACT_RU_EXECUTION")
@@ -41,8 +46,9 @@ class CamundaExecution(
     @Column(name = "BUSINESS_KEY_")
     val businessKey: String?,
 
-    @Column(name = "PARENT_ID_")
-    val parentId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PARENT_ID_")
+    val parent: CamundaExecution?,
 
     @Column(name = "PROC_DEF_ID_")
     val processDefinitionId: String?,
@@ -84,6 +90,8 @@ class CamundaExecution(
     val sequenceCounter: Long,
 
     @Column(name = "TENANT_ID_")
-    val tenantId: String?
+    val tenantId: String?,
 
+    @OneToMany(mappedBy = "execution", fetch = FetchType.LAZY)
+    val variables: Set<CamundaVariableInstance>
 )
