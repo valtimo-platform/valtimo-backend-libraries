@@ -17,8 +17,8 @@
 package com.ritense.valtimo.web.rest;
 
 import com.ritense.valtimo.camunda.domain.CamundaTask;
+import com.ritense.valtimo.camunda.dto.TaskExtended;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
-import com.ritense.valtimo.repository.camunda.dto.TaskExtended;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;

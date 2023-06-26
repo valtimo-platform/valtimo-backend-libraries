@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.service;
 
-import camundajar.impl.scala.collection.mutable.HashMap;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
@@ -52,6 +51,7 @@ import org.camunda.bpm.engine.task.IdentityLinkType;
 import org.hibernate.query.criteria.internal.OrderImpl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -205,34 +205,33 @@ public class CamundaTaskService {
                 .setMaxResults(pageable.getPageSize());
         }
 
-        var assigneeMap = new HashMap<String, ValtimoUser>();
+        var assigneeMap = new java.util.HashMap<String, ValtimoUser>();
         var tasks = typedQuery.getResultList().stream()
             .map(tuple -> {
                 var task = tuple.get(0, CamundaTask.class);
-                var businesskey = tuple.get(1, String.class);
+                var businessKey = tuple.get(1, String.class);
                 var processDefinitionKey = tuple.get(2, String.class);
 
                 ValtimoUser valtimoUser;
-                if (assigneeMap.contains(task.getAssignee())) {
-                    valtimoUser = assigneeMap.getOrElse(task.getAssignee(), );
+                if (assigneeMap.containsKey(task.getAssignee())) {
+                    valtimoUser = assigneeMap.get(task.getAssignee());
                 } else {
                     valtimoUser = getValtimoUser(task.getAssignee());
-                    assigneeMap.put()
+                    assigneeMap.put(task.getAssignee(), valtimoUser);
                 }
-                if (valtimoUser == null)
 
-                TaskExtended.Companion.of(
+                return TaskExtended.Companion.of(
                     task,
-                    businesskey,
+                    businessKey,
                     processDefinitionKey,
-                    tuple.get(0, CamundaTask.class),
-                    tuple.get(0, CamundaTask.class)
-                )
+                    valtimoUser,
+                    null
+                );
             })
             .toList();
 
-        tuples.stream().map(tuple -> )
-        return tasks;
+        var total = camundaTaskRepository.count(specification);
+        return new PageImpl(tasks, pageable, total);
     }
 
     private ValtimoUser getValtimoUser(String assigneeEmail) {
