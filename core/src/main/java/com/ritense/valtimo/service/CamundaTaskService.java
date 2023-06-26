@@ -26,6 +26,7 @@ import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
 import com.ritense.valtimo.camunda.dto.TaskExtended;
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
@@ -195,6 +196,7 @@ public class CamundaTaskService {
         var processDefinitionKeyPath = query.from(CamundaProcessDefinition.class).get("key");
 
         query.multiselect(taskRoot, businessKeyPath, processDefinitionKeyPath);
+        query.distinct(true);
         query.where(specification.toPredicate(taskRoot, query, cb));
         query.orderBy(getOrderBy(taskRoot, pageable.getSort()));
 
@@ -231,7 +233,7 @@ public class CamundaTaskService {
             .toList();
 
         var total = camundaTaskRepository.count(specification);
-        return new PageImpl(tasks, pageable, total);
+        return new PageImpl<>(tasks, pageable, total);
     }
 
     private ValtimoUser getValtimoUser(String assigneeEmail) {
@@ -312,21 +314,21 @@ public class CamundaTaskService {
         var processDefinitionKeys = context.getProcesses().stream()
             .map(ContextProcess::getProcessDefinitionKey)
             .collect(toSet());
-        var filterSpec = camundaTaskRepository.byProcessDefinitionKeys(processDefinitionKeys);
+        var filterSpec = CamundaTaskSpecificationHelper.INSTANCE.byProcessDefinitionKeys(processDefinitionKeys);
 
         if (taskFilter == TaskFilter.MINE) {
             if (currentUserLogin == null) {
                 throw new IllegalStateException("Cannot find currentUserLogin");
             }
             return filterSpec
-                .and(camundaTaskRepository.byAssignee(currentUserLogin));
+                .and(CamundaTaskSpecificationHelper.INSTANCE.byAssignee(currentUserLogin));
         } else if (taskFilter == TaskFilter.ALL) {
             return filterSpec
-                .and(camundaTaskRepository.byCandidateGroups(userRoles));
+                .and(CamundaTaskSpecificationHelper.INSTANCE.byCandidateGroups(userRoles));
         } else if (taskFilter == TaskFilter.OPEN) {
             return filterSpec
-                .and(camundaTaskRepository.byCandidateGroups(userRoles))
-                .and(camundaTaskRepository.byUnassigned());
+                .and(CamundaTaskSpecificationHelper.INSTANCE.byCandidateGroups(userRoles))
+                .and(CamundaTaskSpecificationHelper.INSTANCE.byUnassigned());
         }
 
         return filterSpec;

@@ -64,10 +64,11 @@ public abstract class AbstractTaskResource {
         List<FormField> taskFormData = new ArrayList<>();
 
         String formLocation = null;
-        if (StringUtils.isBlank(taskDto.getFormKey())) {
+        String formKey = formService.getTaskFormKey(taskDto.getProcessDefinitionId(), taskDto.getTaskDefinitionKey());
+        if (StringUtils.isBlank(formKey)) {
             taskFormData = formService.getTaskFormData(id).getFormFields();
         } else {
-            formLocation = FormUtils.getFormLocation(taskDto.getFormKey(), request);
+            formLocation = FormUtils.getFormLocation(formKey, request);
         }
         return new CustomTaskDto(taskDto, taskFormData, variables, formLocation, processInstance, processDefinition);
     }

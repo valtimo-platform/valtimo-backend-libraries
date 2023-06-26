@@ -75,6 +75,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import javax.persistence.EntityManager;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Optional;
@@ -172,7 +173,8 @@ public class ValtimoAutoConfiguration {
         final Optional<ResourceService> resourceServiceOptional,
         final ApplicationEventPublisher applicationEventPublisher,
         final RuntimeService runtimeService,
-        final UserManagementService userManagementService
+        final UserManagementService userManagementService,
+        final EntityManager entityManager
     ) {
         return new CamundaTaskService(
             taskService,
@@ -185,7 +187,8 @@ public class ValtimoAutoConfiguration {
             resourceServiceOptional,
             applicationEventPublisher,
             runtimeService,
-            userManagementService
+            userManagementService,
+            entityManager
         );
     }
 
