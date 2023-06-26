@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.stereotype.Repository
@@ -24,4 +26,22 @@ import org.springframework.stereotype.Repository
 interface CamundaTaskRepository : JpaRepository<CamundaTask, String>, JpaSpecificationExecutor<CamundaTask> {
     fun findAllByProcessInstanceIdOrderByCreateTimeDesc(processInstanceId: String): List<CamundaTask>
 
+    fun byAssignee(assignee: String) = Specification<CamundaTask> { root, _, criteriaBuilder ->
+        criteriaBuilder.equal(root.get<Any>("assignee"), assignee)
+    }
+
+    fun byUnassigned() = Specification<CamundaTask> { root, _, criteriaBuilder ->
+        criteriaBuilder.equal(root.get<Any>("assignee"), null)
+    }
+
+    fun byCandidateGroups(candidateGroups: List<String>) = Specification<CamundaTask> { root, _, criteriaBuilder ->
+        criteriaBuilder.and(
+            criteriaBuilder.equal(root.get<Any>("identityLinks").get<Any>("type"), "candidate"),
+            root.get<Any>("identityLinks").get<Any>("groupId").`in`(candidateGroups)
+        )
+    }
+
+    fun byProcessDefinitionKeys(processDefinitionKeys: Collection<String>) = Specification<CamundaTask> { root, _, _ ->
+        root.get<Any>("processDefinition").get<Any>("key").`in`(processDefinitionKeys)
+    }
 }

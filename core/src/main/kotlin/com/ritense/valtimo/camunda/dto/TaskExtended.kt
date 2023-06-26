@@ -18,9 +18,10 @@
 package com.ritense.valtimo.camunda.dto
 
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import java.util.Date
 
-data class CamundaTaskDto(
+data class TaskExtended(
     val id: String?,
     val name: String?,
     val assignee: String?,
@@ -41,11 +42,21 @@ data class CamundaTaskDto(
     val caseInstanceId: String?,
     val caseDefinitionId: String?,
     val suspended: Boolean,
-    val tenantId: String?
+    val tenantId: String?,
+    val businessKey: String?,
+    val processDefinitionKey: String?,
+    val valtimoAssignee: ValtimoUser?,
+    val context: Any?
 ) {
 
     companion object {
-        fun of(task: CamundaTask) = CamundaTaskDto(
+        fun of(
+            task: CamundaTask,
+            businessKey: String?,
+            processDefinitionKey: String?,
+            valtimoAssignee: ValtimoUser?,
+            context: Any?
+        ) = TaskExtended(
             task.id,
             task.name,
             task.assignee,
@@ -66,7 +77,11 @@ data class CamundaTaskDto(
             task.caseInstanceId,
             task.caseDefinitionId,
             task.isSuspended(),
-            task.tenantId
+            task.tenantId,
+            businessKey,
+            processDefinitionKey,
+            valtimoAssignee,
+            context
         )
     }
 }

@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.camunda.domain
 
-import org.camunda.bpm.engine.form.CamundaFormRef
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
 import org.camunda.bpm.engine.task.DelegationState
 import java.util.Date
@@ -28,6 +27,7 @@ import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
 import javax.persistence.Table
 
 @Entity
@@ -41,8 +41,9 @@ class CamundaTask(
     @Column(name = "REV_")
     val revision: Int,
 
-    @Column(name = "EXECUTION_ID_")
-    val executionId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "EXECUTION_ID_")
+    val execution: CamundaExecution?,
 
     @Column(name = "PROC_INST_ID_")
     val processInstanceId: String?,
@@ -50,6 +51,9 @@ class CamundaTask(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_DEF_ID_")
     val processDefinition: CamundaProcessDefinition?,
+
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
+    val identityLinks: List<CamundaIdentityLink> = emptyList(),
 
     @Column(name = "CASE_EXECUTION_ID_")
     val caseExecutionId: String?,
@@ -105,11 +109,4 @@ class CamundaTask(
 
 ) {
     fun isSuspended() = suspensionState == SuspensionState.SUSPENDED.stateCode
-    fun getFormKey(): String? {
-        TODO("Not yet implemented")
-    }
-
-    fun getCamundaFormRef(): CamundaFormRef? {
-        TODO("Not yet implemented")
-    }
 }

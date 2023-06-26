@@ -18,7 +18,10 @@ package com.ritense.valtimo.camunda.domain
 
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.Table
 
 @Entity
@@ -41,11 +44,13 @@ class CamundaIdentityLink(
     @Column(name = "USER_ID_")
     val userId: String?,
 
-    @Column(name = "TASK_ID_")
-    val taskId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TASK_ID_")
+    val task: CamundaTask?,
 
-    @Column(name = "PROC_DEF_ID_")
-    val processDefinitionId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROC_DEF_ID_")
+    val processDefinition: CamundaProcessDefinition?,
 
     @Column(name = "TENANT_ID_")
     val tenantId: String?

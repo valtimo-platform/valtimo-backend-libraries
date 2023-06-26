@@ -16,14 +16,20 @@
 
 package com.ritense.valtimo.service;
 
+import camundajar.impl.scala.collection.mutable.HashMap;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.dto.CamundaIdentityLinkDto;
+import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
+import com.ritense.valtimo.camunda.dto.TaskExtended;
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
@@ -31,7 +37,6 @@ import com.ritense.valtimo.contract.utils.SecurityUtils;
 import com.ritense.valtimo.domain.contexts.Context;
 import com.ritense.valtimo.domain.contexts.ContextProcess;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
-import com.ritense.valtimo.repository.camunda.dto.TaskExtended;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import com.ritense.valtimo.service.util.FormUtils;
@@ -44,21 +49,25 @@ import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.form.TaskFormData;
 import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
 import org.camunda.bpm.engine.task.IdentityLinkType;
+import org.hibernate.query.criteria.internal.OrderImpl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toSet;
 
 public class CamundaTaskService {
@@ -77,6 +86,7 @@ public class CamundaTaskService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RuntimeService runtimeService;
     private final UserManagementService userManagementService;
+    private final EntityManager entityManager;
 
     public CamundaTaskService(
         TaskService taskService,
@@ -89,7 +99,8 @@ public class CamundaTaskService {
         Optional<ResourceService> optionalResourceService,
         ApplicationEventPublisher applicationEventPublisher,
         RuntimeService runtimeService,
-        UserManagementService userManagementService
+        UserManagementService userManagementService,
+        EntityManager entityManager
     ) {
         this.taskService = taskService;
         this.formService = formService;
@@ -102,13 +113,12 @@ public class CamundaTaskService {
         this.applicationEventPublisher = applicationEventPublisher;
         this.runtimeService = runtimeService;
         this.userManagementService = userManagementService;
+        this.entityManager = entityManager;
     }
 
     public CamundaTask findTaskById(String taskId) {
-        CamundaTask task = camundaTaskRepository.findById(taskId)
+        return camundaTaskRepository.findById(taskId)
             .orElseThrow(() -> new TaskNotFoundException(String.format("Cannot find task %s", taskId)));
-        // TODO: task.initializeFormKey();
-        return task;
     }
 
     public void assign(String taskId, String assignee) throws IllegalStateException {
@@ -176,29 +186,70 @@ public class CamundaTaskService {
     public Page<TaskExtended> findTasksFiltered(
         TaskFilter taskFilter, Pageable pageable
     ) throws IllegalAccessException {
-        var parameters = buildTaskFilterParameters(taskFilter);
-        Page<TaskExtended> tasks = Page.empty();//camundaTaskRepository.findTasks(pageable, parameters);
-        if (!tasks.isEmpty()) {
-            tasks.forEach(task -> task.setContext(taskService.getVariable(task.getId(), CONTEXT)));
+        var specification = buildTaskFilterSpecification(taskFilter);
 
-            final var tasksGroupedByAssignee = tasks
-                .stream()
-                .collect(groupingBy(t -> t.getAssignee() == null ? "" : t.getAssignee()));
+        var cb = entityManager.getCriteriaBuilder();
+        var query = cb.createTupleQuery();
+        var taskRoot = query.from(CamundaTask.class);
+        var businessKeyPath = query.from(CamundaExecution.class).get("businessKey");
+        var processDefinitionKeyPath = query.from(CamundaProcessDefinition.class).get("key");
 
-            tasksGroupedByAssignee.forEach((assigneeEmail, tasksExtended) -> {
-                if (!assigneeEmail.isEmpty()) {
-                    userManagementService.findByEmail(assigneeEmail).ifPresent(user -> {
-                        final var valtimoUser = new ValtimoUserBuilder()
-                            .id(user.getId())
-                            .firstName(user.getFirstName())
-                            .lastName(user.getLastName())
-                            .build();
-                        tasksExtended.forEach(taskExtended -> taskExtended.setValtimoAssignee(valtimoUser));
-                    });
-                }
-            });
+        query.multiselect(taskRoot, businessKeyPath, processDefinitionKeyPath);
+        query.where(specification.toPredicate(taskRoot, query, cb));
+        query.orderBy(getOrderBy(taskRoot, pageable.getSort()));
+
+        var typedQuery = entityManager.createQuery(query);
+        if (pageable.isPaged()) {
+            typedQuery
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize());
         }
+
+        var assigneeMap = new HashMap<String, ValtimoUser>();
+        var tasks = typedQuery.getResultList().stream()
+            .map(tuple -> {
+                var task = tuple.get(0, CamundaTask.class);
+                var businesskey = tuple.get(1, String.class);
+                var processDefinitionKey = tuple.get(2, String.class);
+
+                ValtimoUser valtimoUser;
+                if (assigneeMap.contains(task.getAssignee())) {
+                    valtimoUser = assigneeMap.getOrElse(task.getAssignee(), );
+                } else {
+                    valtimoUser = getValtimoUser(task.getAssignee());
+                    assigneeMap.put()
+                }
+                if (valtimoUser == null)
+
+                TaskExtended.Companion.of(
+                    task,
+                    businesskey,
+                    processDefinitionKey,
+                    tuple.get(0, CamundaTask.class),
+                    tuple.get(0, CamundaTask.class)
+                )
+            })
+            .toList();
+
+        tuples.stream().map(tuple -> )
         return tasks;
+    }
+
+    private ValtimoUser getValtimoUser(String assigneeEmail) {
+        return userManagementService.findByEmail(assigneeEmail).map(user ->
+                new ValtimoUserBuilder()
+                    .id(user.getId())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .build())
+            .orElse(null);
+    }
+
+    private List<Order> getOrderBy(Root<CamundaTask> root, Sort sort) {
+        return sort.stream()
+            .map(order -> new OrderImpl(root.get(order.getProperty()), order.getDirection().isAscending()))
+            .map(Order.class::cast)
+            .toList();
     }
 
     public List<TaskInstanceWithIdentityLink> getProcessInstanceTasks(String processInstanceId, String businessKey) {
@@ -208,10 +259,10 @@ public class CamundaTaskService {
                 final var identityLinks = getIdentityLinks(task.getId());
                 return new TaskInstanceWithIdentityLink(
                     businessKey,
-                    null,//CamundaTaskDto.Companion.fromEntity(task),
-                    false, // TODO: delegateTaskHelper.isTaskPublic(task),
+                    CamundaTaskDto.Companion.of(task),
+                    delegateTaskHelper.isTaskPublic(task),
                     getProcessDefinitionKey(task.getProcessDefinition().getId()),
-                    null//identityLinks
+                    identityLinks
                 );
             })
             .collect(Collectors.toList());
@@ -255,31 +306,31 @@ public class CamundaTaskService {
         );
     }
 
-    private Map<String, Object> buildTaskFilterParameters(TaskFilter taskFilter) throws IllegalAccessException {
-        Map<String, Object> parameters = new HashMap<>();
+    private Specification<CamundaTask> buildTaskFilterSpecification(TaskFilter taskFilter) throws IllegalAccessException {
         String currentUserLogin = SecurityUtils.getCurrentUserLogin();
         List<String> userRoles = SecurityUtils.getCurrentUserRoles();
+        Context context = contextService.getContextOfCurrentUser();
+        var processDefinitionKeys = context.getProcesses().stream()
+            .map(ContextProcess::getProcessDefinitionKey)
+            .collect(toSet());
+        var filterSpec = camundaTaskRepository.byProcessDefinitionKeys(processDefinitionKeys);
 
         if (taskFilter == TaskFilter.MINE) {
             if (currentUserLogin == null) {
                 throw new IllegalStateException("Cannot find currentUserLogin");
             }
-            parameters.put("assignee", currentUserLogin);
-            parameters.put("includeAssignedTasks", true);
+            return filterSpec
+                .and(camundaTaskRepository.byAssignee(currentUserLogin));
         } else if (taskFilter == TaskFilter.ALL) {
-            parameters.put("candidateGroups", userRoles);
-            parameters.put("includeAssignedTasks", true);
+            return filterSpec
+                .and(camundaTaskRepository.byCandidateGroups(userRoles));
         } else if (taskFilter == TaskFilter.OPEN) {
-            parameters.put("candidateGroups", userRoles);
+            return filterSpec
+                .and(camundaTaskRepository.byCandidateGroups(userRoles))
+                .and(camundaTaskRepository.byUnassigned());
         }
 
-        //Always filter on context
-        Context context = contextService.getContextOfCurrentUser();
-        parameters.put(
-            "processDefinitionKeys",
-            context.getProcesses().stream().map(ContextProcess::getProcessDefinitionKey).collect(toSet())
-        );
-        return parameters;
+        return filterSpec;
     }
 
     public boolean hasTaskFormData(String taskId) {
