@@ -119,12 +119,13 @@ class PluginService(
         ) {
             deletePluginConfiguration(PluginConfigurationId.existingId(deploymentDto.id))
         }
+        resolveProperties(deploymentDto.properties)
         validateProperties(deploymentDto.properties!!, pluginDefinition)
         val pluginId = pluginConfigurationRepository.saveAndFlush(
             PluginConfiguration(
                 deploymentDto.id?.let { PluginConfigurationId.existingId(it) } ?: PluginConfigurationId.newId(),
                 deploymentDto.title,
-                resolveProperties(deploymentDto.properties),
+                deploymentDto.properties,
                 pluginDefinition
             )
         ).id
