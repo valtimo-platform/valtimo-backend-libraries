@@ -16,8 +16,8 @@
 
 package com.ritense.note.repository
 
+import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
-import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
 import com.ritense.note.domain.Note
@@ -28,17 +28,17 @@ class NoteSpecificationFactory(
 ) : AuthorizationSpecificationFactory<Note> {
 
     override fun create(
-        context: EntityAuthorizationRequest<Note>,
+        request: AuthorizationRequest<Note>,
         permissions: List<Permission>
     ): AuthorizationSpecification<Note> {
         return NoteSpecification(
-            context,
+            request,
             permissions,
             queryDialectHelper
         )
     }
 
-    override fun canCreate(context: EntityAuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
         return Note::class.java == context.resourceType
     }
 }

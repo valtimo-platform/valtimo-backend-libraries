@@ -17,8 +17,8 @@
 package com.ritense.authorization
 
 class RelatedEntityAuthorizationRequest<T>(
-    val resourceType: Class<T>,
-    val action: Action<T>,
+    override val resourceType: Class<T>,
+    override val action: Action<T>,
     val relatedResourceType: Class<T>,
     val relatedResourceId: String
 ) : AuthorizationRequest<T>

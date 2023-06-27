@@ -25,13 +25,13 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class DenyAuthorizationSpecification<T : Any>(
-        authContext: EntityAuthorizationRequest<T>,
+        authRequest: EntityAuthorizationRequest<T>,
         permissions: List<Permission>
 ) : AuthorizationSpecification<T>(
-    authContext,
+    authRequest,
     permissions
 ) {
-    override fun isAuthorized(entity: T?): Boolean {
+    override fun isAuthorized(): Boolean {
         return false
     }
     override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {

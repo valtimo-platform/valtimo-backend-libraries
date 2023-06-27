@@ -15,7 +15,7 @@
  */
 package com.ritense.document.service
 
-import com.ritense.authorization.EntityAuthorizationRequest
+import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.searchfield.SearchField
@@ -26,10 +26,10 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class SearchFieldSpecification(
-        authContext: EntityAuthorizationRequest<SearchField>,
+        authRequest: AuthorizationRequest<SearchField>,
         permissions: List<Permission>,
         private val queryDialectHelper: QueryDialectHelper
-) : AuthorizationSpecification<SearchField>(authContext, permissions) {
+) : AuthorizationSpecification<SearchField>(authRequest, permissions) {
 
     override fun toPredicate(
         root: Root<SearchField>,
