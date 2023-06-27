@@ -92,8 +92,8 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
         var task = pagedTasks.get().findFirst().orElseThrow();
         assertThat(pagedTasks.getTotalElements()).isEqualTo(1);
-        assertThat(task.businessKey).isEqualTo(businessKey);
-        assertThat(task.processDefinitionKey).isEqualTo(processDefinitionKey);
+        assertThat(task.getBusinessKey()).isEqualTo(businessKey);
+        assertThat(task.getProcessDefinitionKey()).isEqualTo(processDefinitionKey);
         assertThat(task.getContext()).isNull();
     }
 
@@ -113,8 +113,8 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
         var task = pagedTasks.get().findFirst().orElseThrow();
         assertThat(pagedTasks.getTotalElements()).isEqualTo(1);
-        assertThat(task.businessKey).isEqualTo(businessKey);
-        assertThat(task.processDefinitionKey).isEqualTo(processDefinitionKey);
+        assertThat(task.getBusinessKey()).isEqualTo(businessKey);
+        assertThat(task.getProcessDefinitionKey()).isEqualTo(processDefinitionKey);
         assertThat(task.getContext()).isEqualTo("something");
     }
 
@@ -136,8 +136,8 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
         var task = pagedTasks.get().findFirst().orElseThrow();
         assertThat(pagedTasks.getTotalElements()).isEqualTo(10);
-        assertThat(task.businessKey).isEqualTo(businessKey);
-        assertThat(task.processDefinitionKey).isEqualTo(processDefinitionKey);
+        assertThat(task.getBusinessKey()).isEqualTo(businessKey);
+        assertThat(task.getProcessDefinitionKey()).isEqualTo(processDefinitionKey);
     }
 
     @Test
