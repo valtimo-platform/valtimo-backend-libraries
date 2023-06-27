@@ -113,10 +113,9 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                     .requirePermission(
                         new EntityAuthorizationRequest<>(
                             JsonSchemaDocument.class,
-                            CREATE
-                        ),
-                        document,
-                        null
+                            CREATE,
+                            document
+                        )
                     );
             } else {
                 document = null;

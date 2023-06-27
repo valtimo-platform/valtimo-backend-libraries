@@ -59,10 +59,9 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
                 .requirePermission(
                     new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        VIEW
-                    ),
-                    document,
-                    null
+                        VIEW,
+                        document
+                    )
                 );
         });
         return optionalSnapshot;
@@ -82,10 +81,9 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
             .requirePermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    VIEW
-                ),
-                document,
-                null
+                    VIEW,
+                    document
+                )
             );
 
         List<String> roles = SecurityUtils.getCurrentUserRoles();
@@ -125,10 +123,9 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
         authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocumentSnapshot.class,
-                Action.deny()
-            ),
-            null,
-            null
+                Action.deny(),
+                null
+            )
         );
     }
 

@@ -85,10 +85,9 @@ public class CamundaProcessJsonSchemaDocumentAuditService implements ProcessDocu
         authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                VIEW
-            ),
-            document,
-            null
+                VIEW,
+                document
+            )
         );
 
         return AuthorizationContext.runWithoutAuthorization(() ->

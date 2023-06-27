@@ -129,10 +129,9 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             authorizationService.requirePermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    CREATE
-                ),
-                document,
-                null
+                    CREATE,
+                    document
+                )
             );
 
             final var processInstanceWithDefinition = startProcess(
@@ -192,10 +191,9 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             authorizationService.requirePermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    MODIFY
-                ),
-                document,
-                null
+                    MODIFY,
+                    document
+                )
             );
 
             camundaTaskService.completeTask(request.taskId(), request.getProcessVars());
@@ -227,10 +225,9 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             authorizationService.requirePermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    CREATE
-                ),
-                document,
-                null
+                    CREATE,
+                    document
+                )
             );
 
             final String processName = camundaProcessService.getProcessDefinition(request.processDefinitionKey()).getName();
@@ -267,10 +264,9 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             authorizationService.requirePermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    MODIFY
-                ),
-                document,
-                null
+                    MODIFY,
+                    document
+                )
             );
 
             //Part 2 process start
@@ -306,10 +302,9 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             authorizationService.requirePermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    VIEW
-                ),
-                document,
-                null
+                    VIEW,
+                    document
+                )
             );
 
             //Part 2 process start
@@ -356,10 +351,9 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                VIEW
-            ),
-            document,
-            null
+                VIEW,
+                document
+            )
         );
 
         return document;

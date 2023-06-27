@@ -23,20 +23,19 @@ import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.audit.service.AuditService;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.JsonSchemaDocumentActionProvider;
 import com.ritense.valtimo.contract.audit.AuditEvent;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class AuditServiceImpl implements AuditService {
@@ -70,10 +69,9 @@ public class AuditServiceImpl implements AuditService {
         authorizationService.requirePermission(
             new EntityAuthorizationRequest(
                 JsonSchemaDocument.class,
-                JsonSchemaDocumentActionProvider.VIEW
-            ),
-            document,
-            null
+                JsonSchemaDocumentActionProvider.VIEW,
+                document
+            )
         );
 
         return auditRecordRepository.findByEventAndDocumentId(eventTypes, documentId, pageable);
@@ -106,10 +104,9 @@ public class AuditServiceImpl implements AuditService {
         authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocumentSnapshot.class,
-                Action.deny()
-            ),
-            null,
-            null
+                Action.deny(),
+                null
+            )
         );
     }
 

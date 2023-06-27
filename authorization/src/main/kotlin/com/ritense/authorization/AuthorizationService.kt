@@ -20,7 +20,7 @@ import com.ritense.authorization.permission.Permission
 
 interface AuthorizationService {
     fun <T : Any> requirePermission(
-        context: EntityAuthorizationRequest<T>
+        request: EntityAuthorizationRequest<T>
     )
 
     fun <T : Any> getAuthorizationSpecification(

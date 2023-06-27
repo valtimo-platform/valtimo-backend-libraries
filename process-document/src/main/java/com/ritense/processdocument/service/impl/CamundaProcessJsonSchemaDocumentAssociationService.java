@@ -156,10 +156,9 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         authorizationService.requirePermission(
             new EntityAuthorizationRequest(
                 JsonSchemaDocument.class,
-                JsonSchemaDocumentActionProvider.VIEW
-            ),
-            document,
-            null
+                JsonSchemaDocumentActionProvider.VIEW,
+                document
+            )
         );
 
         var processes = processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(documentId);
@@ -300,10 +299,9 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
             .requirePermission(
                 new EntityAuthorizationRequest<T>(
                     clazz,
-                    Action.deny()
-                ),
-                null,
-                null
+                    Action.deny(),
+                    null
+                )
             );
     }
 }

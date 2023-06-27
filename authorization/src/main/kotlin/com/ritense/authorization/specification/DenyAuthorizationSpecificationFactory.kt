@@ -17,21 +17,21 @@
 package com.ritense.authorization.specification
 
 import com.ritense.authorization.Action
-import com.ritense.authorization.EntityAuthorizationRequest
+import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
 
 class DenyAuthorizationSpecificationFactory<T: Any> : AuthorizationSpecificationFactory<T> {
     override fun create(
-            context: EntityAuthorizationRequest<T>,
+            request: AuthorizationRequest<T>,
             permissions: List<Permission>
     ): AuthorizationSpecification<T> {
-        return DenyAuthorizationSpecification(context, permissions)
+        return DenyAuthorizationSpecification(request, permissions)
     }
 
-    override fun canCreate(context: EntityAuthorizationRequest<*>, permissions: List<Permission>): Boolean {
-        return context.action == Action<T>(Action.DENY) ||
+    override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+        return request.action == Action<T>(Action.DENY) ||
             permissions.isEmpty()
     }
 }
