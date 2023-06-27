@@ -16,4 +16,7 @@
 
 package com.ritense.authorization
 
-interface AuthorizationRequest<T>
+interface AuthorizationRequest<T> {
+    val resourceType: Class<T>
+    val action: Action<T>
+}
