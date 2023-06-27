@@ -60,7 +60,7 @@ public abstract class AbstractTaskResource {
         ProcessInstance processInstance = camundaProcessService.findProcessInstanceById(taskDto.getProcessInstanceId()).orElseThrow();
         ProcessDefinition processDefinition = camundaProcessService.findProcessDefinitionById(processInstance.getProcessDefinitionId());
 
-        Map<String, Object> variables = taskService.getVariables(id);
+        Map<String, Object> variables = camundaTaskService.getVariables(id);
         List<FormField> taskFormData = new ArrayList<>();
 
         String formLocation = null;

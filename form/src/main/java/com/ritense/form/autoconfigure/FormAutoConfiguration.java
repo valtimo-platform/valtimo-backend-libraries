@@ -39,7 +39,7 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
-import org.camunda.bpm.engine.TaskService;
+import com.ritense.valtimo.service.CamundaTaskService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -136,7 +136,7 @@ public class FormAutoConfiguration {
         DocumentService documentService,
         FormIoFormDefinitionService formDefinitionService,
         CamundaProcessService camundaProcessService,
-        TaskService taskService,
+        CamundaTaskService taskService,
         List<FormFieldDataResolver> formFieldDataResolvers,
         ProcessDocumentAssociationService processDocumentAssociationService
     ) {
