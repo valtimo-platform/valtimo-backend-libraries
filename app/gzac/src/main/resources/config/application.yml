@@ -112,6 +112,8 @@ logging:
     level:
         org.springframework.beans: DEBUG
         reactor.netty.http.client.HttpClient: DEBUG
+        org.hibernate.SQL: debug
+        org.hibernate.type.descriptor.sql: trace
 
 server:
     port: 8080

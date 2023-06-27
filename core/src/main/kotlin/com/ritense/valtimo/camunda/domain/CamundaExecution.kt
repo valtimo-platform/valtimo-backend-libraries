@@ -24,7 +24,6 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
-import org.hibernate.mapping.Bag
 
 @Entity
 @Table(name = "ACT_RU_EXECUTION")
@@ -94,4 +93,20 @@ class CamundaExecution(
 
     @OneToMany(mappedBy = "execution", fetch = FetchType.LAZY)
     val variables: Set<CamundaVariableInstance>
-)
+) : AbstractVariableScope() {
+
+    override fun getVariable(variableName: String): Any? {
+        val variableInstance = variables.find { it.name == variableName }
+
+        if (variableInstance != null) {
+            return variableInstance.getValue()
+        }
+
+        return getParentVariableScope()?.getVariable(variableName)
+    }
+
+    override fun getVariableInstancesLocal(variableNames: Collection<String>?) = variables
+
+    override fun getParentVariableScope() = parent
+
+}

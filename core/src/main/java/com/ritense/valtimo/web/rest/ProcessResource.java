@@ -16,6 +16,9 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.camunda.domain.CamundaTask;
+import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper;
 import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
@@ -56,10 +59,8 @@ import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDiagramDto;
 import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDto;
 import org.camunda.bpm.engine.rest.dto.runtime.ActivityInstanceDto;
 import org.camunda.bpm.engine.rest.dto.runtime.ProcessInstanceDto;
-import org.camunda.bpm.engine.rest.dto.task.TaskDto;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
 import org.camunda.bpm.engine.task.Comment;
-import org.camunda.bpm.engine.task.Task;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -121,7 +122,7 @@ public class ProcessResource extends AbstractProcessResource {
             final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository,
             final ProcessPropertyService processPropertyService
     ) {
-        super(historyService, repositoryService, taskService);
+        super(historyService, repositoryService, camundaTaskService);
         this.taskService = taskService;
         this.historyService = historyService;
         this.runtimeService = runtimeService;
@@ -318,9 +319,9 @@ public class ProcessResource extends AbstractProcessResource {
             }
         }
 
-        List<Task> taskList = getAllActiveTasks(processDefinition, searchStatus, fromDate, toDate, duration);
+        List<CamundaTask> taskList = getAllActiveTasks(processDefinition, searchStatus, fromDate, toDate, duration);
         Map<String, Long> groupedList = taskList.stream()
-                .collect(Collectors.groupingBy(Task::getTaskDefinitionKey, Collectors.counting()));
+                .collect(Collectors.groupingBy(CamundaTask::getTaskDefinitionKey, Collectors.counting()));
 
         allTasksAverageDuration.forEach((k, v) -> {
             v.setAverageDurationInMilliseconds(v.getAverageDurationInMilliseconds() / v.getTotalCount());
@@ -400,14 +401,13 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     @GetMapping("/v1/process/{processInstanceId}/activetask")
-    public ResponseEntity<TaskDto> getProcessInstanceActiveTask(@PathVariable String processInstanceId) {
-        Task task = taskService.createTaskQuery()
-                .active()
-                .processInstanceId(processInstanceId)
-                .initializeFormKeys()
-                .singleResult();
+    public ResponseEntity<CamundaTaskDto> getProcessInstanceActiveTask(@PathVariable String processInstanceId) {
+        CamundaTask task = camundaTaskService.findTask(
+            CamundaTaskSpecificationHelper.INSTANCE.byActive()
+                .and(CamundaTaskSpecificationHelper.INSTANCE.byProcessInstanceId(processInstanceId))
+        );
         return Optional.ofNullable(task)
-                .map(taskResult -> ResponseEntity.ok(TaskDto.fromEntity(taskResult)))
+                .map(taskResult -> ResponseEntity.ok(CamundaTaskDto.Companion.of(taskResult)))
                 .orElse(ResponseEntity.noContent().build());
     }
 

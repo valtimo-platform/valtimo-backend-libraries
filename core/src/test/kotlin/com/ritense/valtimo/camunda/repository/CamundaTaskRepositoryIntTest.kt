@@ -17,11 +17,11 @@
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.BaseIntegrationTest
-import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 class CamundaTaskRepositoryIntTest @Autowired constructor(
     private val camundaTaskRepository: CamundaTaskRepository
@@ -45,7 +45,7 @@ class CamundaTaskRepositoryIntTest @Autowired constructor(
         Assertions.assertThat(result.isPresent).isTrue()
 
         val task = result.get()
-        Assertions.assertThat(task.processInstanceId).isEqualTo(instance.id)
+        Assertions.assertThat(task.getProcessInstanceId()).isEqualTo(instance.id)
         Assertions.assertThat(task.taskDefinitionKey).isEqualTo("do-something")
     }
 }

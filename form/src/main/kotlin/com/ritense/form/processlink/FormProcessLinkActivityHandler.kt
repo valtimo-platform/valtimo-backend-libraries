@@ -23,7 +23,7 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
-import org.camunda.bpm.engine.task.Task
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import java.util.UUID
 
 class FormProcessLinkActivityHandler(
@@ -35,11 +35,11 @@ class FormProcessLinkActivityHandler(
         return processLink is FormProcessLink
     }
 
-    override fun openTask(task: Task, processLink: ProcessLink): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
+    override fun openTask(task: CamundaTask, processLink: ProcessLink): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
         processLink as FormProcessLink
         val formDefinition = prefillFormService.getPrefilledFormDefinition(
             formDefinitionId = processLink.formDefinitionId,
-            processInstanceId = task.processInstanceId,
+            processInstanceId = task.getProcessInstanceId(),
             taskInstanceId = task.id,
         )
         return ProcessLinkActivityResult(

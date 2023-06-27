@@ -29,7 +29,7 @@ public class BpmnModelService {
     }
 
     public org.camunda.bpm.model.bpmn.instance.Task getTask(CamundaTask task) {
-        final BpmnModelInstance bpmnModelInstance = repositoryService.getBpmnModelInstance(task.getProcessDefinition().getId());
+        final BpmnModelInstance bpmnModelInstance = repositoryService.getBpmnModelInstance(task.getProcessDefinitionId());
         return bpmnModelInstance.getModelElementById(task.getTaskDefinitionKey());
     }
 

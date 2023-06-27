@@ -16,10 +16,12 @@
 
 package com.ritense.valtimo.security.permission;
 
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.task.IdentityLink;
+import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
+import com.ritense.valtimo.service.CamundaTaskService;
 import org.springframework.security.core.Authentication;
+
 import java.util.stream.Collectors;
+
 import static com.ritense.valtimo.contract.utils.SecurityUtils.getCurrentUserLogin;
 import static com.ritense.valtimo.contract.utils.SecurityUtils.isCurrentUserInRole;
 import static org.camunda.bpm.engine.task.IdentityLinkType.ASSIGNEE;
@@ -27,9 +29,9 @@ import static org.camunda.bpm.engine.task.IdentityLinkType.CANDIDATE;
 
 public class TaskAccessPermission implements Permission<String> {
 
-    private final TaskService taskService;
+    private final CamundaTaskService taskService;
 
-    public TaskAccessPermission(TaskService taskService) {
+    public TaskAccessPermission(CamundaTaskService taskService) {
         this.taskService = taskService;
     }
 
@@ -54,7 +56,7 @@ public class TaskAccessPermission implements Permission<String> {
             .size() > 0;
     }
 
-    private static boolean hasCandidateOrAssigneeMatch(IdentityLink identityLink) {
+    private static boolean hasCandidateOrAssigneeMatch(CamundaIdentityLink identityLink) {
         return identityLink.getType().equals(CANDIDATE) && isCurrentUserInRole(identityLink.getGroupId())
             ||
             identityLink.getType().equals(ASSIGNEE) && getCurrentUserLogin().equals(identityLink.getUserId());

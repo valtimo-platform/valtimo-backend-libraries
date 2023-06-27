@@ -45,7 +45,7 @@ import com.ritense.valtimo.contract.form.DataResolvingContext;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.contract.json.JsonPointerHelper;
 import com.ritense.valtimo.service.CamundaProcessService;
-import org.camunda.bpm.engine.TaskService;
+import com.ritense.valtimo.service.CamundaTaskService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -69,7 +69,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
     private final DocumentService documentService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final CamundaProcessService camundaProcessService;
-    private final TaskService taskService;
+    private final CamundaTaskService taskService;
     private final SubmissionTransformerService submissionTransformerService;
     private final List<FormFieldDataResolver> formFieldDataResolvers;
 
@@ -79,7 +79,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         DocumentService documentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
         CamundaProcessService camundaProcessService,
-        TaskService taskService,
+        CamundaTaskService taskService,
         SubmissionTransformerService submissionTransformerService,
         List<FormFieldDataResolver> formFieldDataResolvers
     ) {

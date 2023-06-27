@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.camunda.task.service.impl;
 
+import com.ritense.valtimo.camunda.domain.CamundaTask;
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper;
 import com.ritense.valtimo.camunda.task.domain.reminder.AssignedTask;
 import com.ritense.valtimo.camunda.task.domain.reminder.ReminderNotification;
 import com.ritense.valtimo.camunda.task.domain.reminder.RoleBasedTask;
@@ -23,24 +25,25 @@ import com.ritense.valtimo.camunda.task.service.ReminderService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
+import com.ritense.valtimo.service.CamundaTaskService;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.task.Task;
 import org.springframework.scheduling.annotation.Scheduled;
+
 import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import static java.util.stream.Collectors.toList;
 
 public class ReminderServiceImpl implements ReminderService {
 
-    private final TaskService taskService;
+    private final CamundaTaskService taskService;
     private final EmailNotificationSettingsService emailNotificationService;
     private final MailSender mailSender;
     private final UserManagementService userManagementService;
     private final String reminderTemplate;
 
-    public ReminderServiceImpl(TaskService taskService, EmailNotificationSettingsService emailNotificationService, MailSender mailSender, UserManagementService userManagementService, String reminderTemplate) {
+    public ReminderServiceImpl(CamundaTaskService taskService, EmailNotificationSettingsService emailNotificationService, MailSender mailSender, UserManagementService userManagementService, String reminderTemplate) {
         this.taskService = taskService;
         this.emailNotificationService = emailNotificationService;
         this.mailSender = mailSender;
@@ -79,7 +82,7 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     private List<RoleBasedTask> findRoleBasesTasksFor(String role) {
-        final List<Task> tasks = tasksFor(role);
+        final List<CamundaTask> tasks = tasksFor(role);
         if (tasks != null) {
             return tasks.stream()
                 .map(task ->
@@ -97,15 +100,15 @@ public class ReminderServiceImpl implements ReminderService {
         return null;
     }
 
-    private List<Task> tasksFor(String role) {
-        return taskService.createTaskQuery()
-            .taskCandidateGroup(role)
-            .taskUnassigned()
-            .list();
+    private List<CamundaTask> tasksFor(String role) {
+        return taskService.findTasks(
+            CamundaTaskSpecificationHelper.INSTANCE.byCandidateGroups(role)
+                .and(CamundaTaskSpecificationHelper.INSTANCE.byUnassigned())
+        );
     }
 
     private List<AssignedTask> findAssignedTasksFor(String assignee) {
-        final List<Task> tasks = assignedTasks(assignee);
+        final List<CamundaTask> tasks = assignedTasks(assignee);
         if (tasks != null) {
             return tasks.stream()
                 .map(task ->
@@ -121,10 +124,10 @@ public class ReminderServiceImpl implements ReminderService {
         return null;
     }
 
-    private List<Task> assignedTasks(String assignee) {
-        return taskService.createTaskQuery()
-            .taskAssignee(assignee)
-            .list();
+    private List<CamundaTask> assignedTasks(String assignee) {
+        return taskService.findTasks(
+            CamundaTaskSpecificationHelper.INSTANCE.byAssignee(assignee)
+        );
     }
 
 }

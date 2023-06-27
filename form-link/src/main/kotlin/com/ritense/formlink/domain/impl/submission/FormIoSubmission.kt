@@ -125,7 +125,7 @@ data class FormIoSubmission(
 
     private fun initProcessVariables() {
         if (!taskInstanceId.isNullOrEmpty()) {
-            val variables = taskService.getTaskVariables(taskInstanceId)
+            val variables = taskService.getVariables(taskInstanceId)
             processVariables = Mapper.INSTANCE.objectMapper().valueToTree(variables)
         }
     }

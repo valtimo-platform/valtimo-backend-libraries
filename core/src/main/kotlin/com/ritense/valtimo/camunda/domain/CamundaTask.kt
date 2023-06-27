@@ -29,6 +29,7 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
+import javax.persistence.Transient
 
 @Entity
 @Table(name = "ACT_RU_TASK")
@@ -45,8 +46,9 @@ class CamundaTask(
     @JoinColumn(name = "EXECUTION_ID_")
     val execution: CamundaExecution?,
 
-    @Column(name = "PROC_INST_ID_")
-    val processInstanceId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROC_INST_ID_")
+    val processInstance: CamundaExecution?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_DEF_ID_")
@@ -67,8 +69,9 @@ class CamundaTask(
     @Column(name = "NAME_")
     val name: String?,
 
-    @Column(name = "PARENT_TASK_ID_")
-    val parentTaskId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PARENT_TASK_ID_")
+    val parentTask: CamundaTask?,
 
     @Column(name = "DESCRIPTION_")
     val description: String?,
@@ -109,6 +112,35 @@ class CamundaTask(
 
     @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
     val variables: Set<CamundaVariableInstance>
-) {
+) : AbstractVariableScope() {
+
     fun isSuspended() = suspensionState == SuspensionState.SUSPENDED.stateCode
+
+    @Transient
+    fun getProcessDefinitionId() = processDefinition!!.id
+
+    @Transient
+    fun getProcessInstanceId() = processInstance!!.id
+
+    override fun getVariable(variableName: String): Any? {
+        val variableInstance = variables.find { it.name == variableName }
+
+        if (variableInstance != null) {
+            return variableInstance.getValue()
+        }
+
+        return getParentVariableScope()?.getVariable(variableName)
+    }
+
+    override fun getVariableInstancesLocal(variableNames: Collection<String>?) = variables
+
+    override fun getParentVariableScope(): AbstractVariableScope? {
+        if (execution != null) {
+            return execution
+        }
+        if (caseExecutionId != null) {
+            TODO("Not yet implemented")
+        }
+        return parentTask
+    }
 }

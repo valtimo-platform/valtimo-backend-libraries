@@ -52,7 +52,9 @@ data class TaskExtended(
     companion object {
         fun of(
             task: CamundaTask,
+            executionId: String?,
             businessKey: String?,
+            processDefinitionId: String?,
             processDefinitionKey: String?,
             valtimoAssignee: ValtimoUser?,
             context: Any?
@@ -66,12 +68,12 @@ data class TaskExtended(
             task.lastUpdated,
             task.delegationState.toString(),
             task.description,
-            task.execution?.id,
+            executionId,
             task.owner,
-            task.parentTaskId,
+            task.parentTask?.id,
             task.priority,
-            task.processDefinition?.id,
-            task.processInstanceId,
+            processDefinitionId,
+            task.getProcessInstanceId(),
             task.taskDefinitionKey,
             task.caseExecutionId,
             task.caseInstanceId,

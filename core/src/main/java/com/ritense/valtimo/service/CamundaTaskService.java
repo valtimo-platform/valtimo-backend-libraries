@@ -17,9 +17,7 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.resource.service.ResourceService;
-import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.dto.CamundaIdentityLinkDto;
 import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
@@ -56,6 +54,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Order;
@@ -69,7 +68,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.CREATE_TIME;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.DUE_DATE;
 import static java.util.stream.Collectors.toSet;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 public class CamundaTaskService {
 
@@ -184,6 +186,23 @@ public class CamundaTaskService {
             amazonS3Service -> taskCompletionDTO.getFilesToDelete().forEach(amazonS3Service::removeResource));
     }
 
+    public Page<CamundaTask> findTasks(Specification<CamundaTask> specification, Pageable pageable) {
+        return camundaTaskRepository.findAll(specification, pageable);
+    }
+
+    public List<CamundaTask> findTasks(Specification<CamundaTask> specification, Sort sort) {
+        return camundaTaskRepository.findAll(specification, sort);
+    }
+
+    public List<CamundaTask> findTasks(Specification<CamundaTask> specification) {
+        return camundaTaskRepository.findAll(specification);
+    }
+
+    public CamundaTask findTask(Specification<CamundaTask> specification) {
+        return camundaTaskRepository.findOne(specification).orElse(null);
+    }
+
+    @Transactional
     public Page<TaskExtended> findTasksFiltered(
         TaskFilter taskFilter, Pageable pageable
     ) throws IllegalAccessException {
@@ -192,10 +211,12 @@ public class CamundaTaskService {
         var cb = entityManager.getCriteriaBuilder();
         var query = cb.createTupleQuery();
         var taskRoot = query.from(CamundaTask.class);
-        var businessKeyPath = query.from(CamundaExecution.class).get("businessKey");
-        var processDefinitionKeyPath = query.from(CamundaProcessDefinition.class).get("key");
+        var executionIdPath = taskRoot.get("execution").get("id");
+        var businessKeyPath = taskRoot.get("execution").get("businessKey");
+        var processDefinitionIdPath = taskRoot.get("processDefinition").get("id");
+        var processDefinitionKeyPath = taskRoot.get("processDefinition").get("key");
 
-        query.multiselect(taskRoot, businessKeyPath, processDefinitionKeyPath);
+        query.multiselect(taskRoot, executionIdPath, businessKeyPath, processDefinitionIdPath, processDefinitionKeyPath);
         query.distinct(true);
         query.where(specification.toPredicate(taskRoot, query, cb));
         query.orderBy(getOrderBy(taskRoot, pageable.getSort()));
@@ -211,23 +232,31 @@ public class CamundaTaskService {
         var tasks = typedQuery.getResultList().stream()
             .map(tuple -> {
                 var task = tuple.get(0, CamundaTask.class);
-                var businessKey = tuple.get(1, String.class);
-                var processDefinitionKey = tuple.get(2, String.class);
+                var executionId = tuple.get(1, String.class);
+                var businessKey = tuple.get(2, String.class);
+                var processDefinitionId = tuple.get(3, String.class);
+                var processDefinitionKey = tuple.get(4, String.class);
 
                 ValtimoUser valtimoUser;
-                if (assigneeMap.containsKey(task.getAssignee())) {
+                if (task.getAssignee() == null) {
+                    valtimoUser = null;
+                } else if (assigneeMap.containsKey(task.getAssignee())) {
                     valtimoUser = assigneeMap.get(task.getAssignee());
                 } else {
                     valtimoUser = getValtimoUser(task.getAssignee());
                     assigneeMap.put(task.getAssignee(), valtimoUser);
                 }
 
+                var context = task.getVariable(CONTEXT);
+
                 return TaskExtended.Companion.of(
                     task,
+                    executionId,
                     businessKey,
+                    processDefinitionId,
                     processDefinitionKey,
                     valtimoUser,
-                    null
+                    context
                 );
             })
             .toList();
@@ -248,13 +277,23 @@ public class CamundaTaskService {
 
     private List<Order> getOrderBy(Root<CamundaTask> root, Sort sort) {
         return sort.stream()
-            .map(order -> new OrderImpl(root.get(order.getProperty()), order.getDirection().isAscending()))
+            .map(order -> {
+                String sortProperty;
+                if (order.getProperty().equals("created")) {
+                    sortProperty = CREATE_TIME;
+                } else if (order.getProperty().equals("due")) {
+                    sortProperty = DUE_DATE;
+                } else {
+                    sortProperty = order.getProperty();
+                }
+                return new OrderImpl(root.get(sortProperty), order.getDirection().isAscending());
+            })
             .map(Order.class::cast)
             .toList();
     }
 
     public List<TaskInstanceWithIdentityLink> getProcessInstanceTasks(String processInstanceId, String businessKey) {
-        return camundaTaskRepository.findAllByProcessInstanceIdOrderByCreateTimeDesc(processInstanceId)
+        return findTasks(CamundaTaskSpecificationHelper.INSTANCE.byProcessInstanceId(processInstanceId), Sort.by(DESC, CREATE_TIME))
             .stream()
             .map(task -> {
                 final var identityLinks = getIdentityLinks(task.getId());
@@ -262,7 +301,7 @@ public class CamundaTaskService {
                     businessKey,
                     CamundaTaskDto.Companion.of(task),
                     delegateTaskHelper.isTaskPublic(task),
-                    getProcessDefinitionKey(task.getProcessDefinition().getId()),
+                    getProcessDefinitionKey(task.getProcessDefinitionId()),
                     identityLinks
                 );
             })
@@ -270,12 +309,16 @@ public class CamundaTaskService {
     }
 
     public List<CamundaIdentityLinkDto> getIdentityLinks(String taskId) {
-        final List<CamundaIdentityLink> identityLinksForTask = camundaIdentityLinkRepository.findAllByTaskId(taskId);
+        final List<CamundaIdentityLink> identityLinksForTask = getIdentityLinksForTask(taskId);
         return identityLinksForTask.stream().map(CamundaIdentityLinkDto.Companion::fromEntity).collect(Collectors.toList());
     }
 
-    public Map<String, Object> getTaskVariables(String taskInstanceId) {
-        return taskService.getVariables(taskInstanceId);
+    public Map<String, Object> getVariables(String taskInstanceId) {
+        return findTaskById(taskInstanceId).getVariables(null);
+    }
+
+    public List<CamundaIdentityLink> getIdentityLinksForTask(String taskId) {
+        return camundaIdentityLinkRepository.findAllByTaskId(taskId);
     }
 
     public enum TaskFilter {
@@ -300,7 +343,7 @@ public class CamundaTaskService {
                 task.getId(),
                 task.getName(),
                 LocalDateTime.ofInstant(task.getCreateTime().toInstant(), ZoneId.systemDefault()),
-                task.getProcessDefinition().getId(),
+                task.getProcessDefinitionId(),
                 task.getProcessInstanceId(),
                 businessKey
             )

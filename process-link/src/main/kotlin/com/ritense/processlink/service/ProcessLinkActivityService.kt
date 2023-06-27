@@ -19,24 +19,24 @@ package com.ritense.processlink.service
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.exception.ProcessLinkNotFoundException
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byActive
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byId
+import com.ritense.valtimo.service.CamundaTaskService
 import mu.KotlinLogging
-import org.camunda.bpm.engine.TaskService
-import org.camunda.bpm.engine.task.Task
 import java.util.UUID
 
 open class ProcessLinkActivityService(
     private val processLinkService: ProcessLinkService,
-    private val taskService: TaskService,
+    private val taskService: CamundaTaskService,
     private val processLinkActivityHandlers: List<ProcessLinkActivityHandler<*>>
 ) {
     fun openTask(taskId: UUID): ProcessLinkActivityResult<*> {
-        val task: Task = taskService
-            .createTaskQuery()
-            .taskId(taskId.toString())
-            .active()
-            .singleResult()
+        val task = taskService.findTask(
+            byId(taskId.toString())
+                .and(byActive())
+        )
 
-        return processLinkService.getProcessLinks(task.processDefinitionId, task.taskDefinitionKey)
+        return processLinkService.getProcessLinks(task.getProcessDefinitionId(), task.taskDefinitionKey!!)
             .firstNotNullOfOrNull { processLink ->
                 processLinkActivityHandlers.firstOrNull { provider -> provider.supports(processLink) }
                     ?.openTask(task, processLink)

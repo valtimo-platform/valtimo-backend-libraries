@@ -91,7 +91,7 @@ class TaakObjectListener(
     private fun saveDataAndCompleteTask(taakObject: TaakObjectDto) {
         val task = camundaTaskService.findTaskById(taakObject.verwerkerTaakId.toString())
         if (taakObject.verzondenData != null && taakObject.verzondenData.isNotEmpty()) {
-            val processInstanceId = CamundaProcessInstanceId(task.processInstanceId)
+            val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
             val variableScope = getVariableScope(task)
             val taakObjectData = Mapper.INSTANCE.get().valueToTree<JsonNode>(taakObject.verzondenData)
             val resolvedValues = getResolvedValues(task, taakObjectData)
@@ -183,7 +183,7 @@ class TaakObjectListener(
 
     private fun getVariableScope(task: CamundaTask): VariableScope {
         return runtimeService.createProcessInstanceQuery()
-            .processInstanceId(task.processInstanceId)
+            .processInstanceId(task.getProcessInstanceId())
             .singleResult() as VariableScope
     }
 

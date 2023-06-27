@@ -30,6 +30,7 @@ import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
@@ -103,12 +104,13 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     fun caseAssigneeListener(
         taskService: TaskService,
+        camundaTaskService: CamundaTaskService,
         documentService: DocumentService,
         caseDefinitionService: CaseDefinitionService,
         userManagementService: UserManagementService
     ): CaseAssigneeListener {
         return CaseAssigneeListener(
-            taskService, documentService, caseDefinitionService, userManagementService
+            taskService, camundaTaskService, documentService, caseDefinitionService, userManagementService
         )
     }
 }

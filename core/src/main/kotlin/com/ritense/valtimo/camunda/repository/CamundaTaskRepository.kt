@@ -22,7 +22,4 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CamundaTaskRepository : JpaRepository<CamundaTask, String>, JpaSpecificationExecutor<CamundaTask> {
-    fun findAllByProcessInstanceIdOrderByCreateTimeDesc(processInstanceId: String): List<CamundaTask>
-
-}
+interface CamundaTaskRepository : JpaRepository<CamundaTask, String>, JpaSpecificationExecutor<CamundaTask>

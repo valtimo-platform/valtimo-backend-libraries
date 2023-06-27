@@ -106,7 +106,7 @@ public class ValtimoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(TaskAccessPermission.class)
-    public TaskAccessPermission taskAccessPermission(final TaskService taskService) {
+    public TaskAccessPermission taskAccessPermission(final CamundaTaskService taskService) {
         return new TaskAccessPermission(taskService);
     }
 

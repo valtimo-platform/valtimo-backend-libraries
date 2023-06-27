@@ -49,7 +49,6 @@ import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.TaskService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -76,7 +75,7 @@ public class FormLinkAutoConfiguration {
         DocumentService documentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
         CamundaProcessService camundaProcessService,
-        TaskService taskService,
+        CamundaTaskService taskService,
         SubmissionTransformerService<FormIoFormDefinition> submissionTransformerService,
         List<FormFieldDataResolver> formFieldDataResolvers
     ) {
@@ -180,7 +179,7 @@ public class FormLinkAutoConfiguration {
     @ConditionalOnMissingBean(ProcessLinkService.class)
     public ProcessLinkService processLinkService(
         RepositoryService repositoryService,
-        TaskService taskService,
+        CamundaTaskService taskService,
         FormAssociationService formAssociationService,
         List<FormLinkTaskProvider> processLinkTaskProvide
     ) {

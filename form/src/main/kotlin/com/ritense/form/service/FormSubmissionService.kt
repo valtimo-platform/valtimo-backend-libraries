@@ -136,7 +136,7 @@ open class FormSubmissionService(
 
     private fun getProcessVariables(taskInstanceId: String?): JsonNode? {
         return if (!taskInstanceId.isNullOrEmpty()) {
-            Mapper.INSTANCE.get().valueToTree(camundaTaskService.getTaskVariables(taskInstanceId))
+            Mapper.INSTANCE.get().valueToTree(camundaTaskService.getVariables(taskInstanceId))
         } else {
             null
         }

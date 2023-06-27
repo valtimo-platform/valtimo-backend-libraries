@@ -25,9 +25,9 @@ import com.ritense.formlink.domain.FormLinkTaskProvider
 import com.ritense.formlink.domain.TaskOpenResult
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
 import com.ritense.formlink.service.FormAssociationService
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.task.Task
 
 class FormFlowFormLinkTaskProvider(
     private val formFlowService: FormFlowService,
@@ -43,7 +43,7 @@ class FormFlowFormLinkTaskProvider(
         return formLink is BpmnElementFormFlowIdLink
     }
 
-    override fun getTaskResult(task: Task, formLink: FormLink): TaskOpenResult<FormFlowTaskOpenResultProperties> {
+    override fun getTaskResult(task: CamundaTask, formLink: FormLink): TaskOpenResult<FormFlowTaskOpenResultProperties> {
         val instances = formFlowService.findInstances(mapOf("taskInstanceId" to task.id))
         val instance = when (instances.size) {
             0 -> createFormFlowInstance(task)
@@ -53,16 +53,16 @@ class FormFlowFormLinkTaskProvider(
         return TaskOpenResult(FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(instance.id.id))
     }
 
-    private fun createFormFlowInstance(task: Task): FormFlowInstance {
+    private fun createFormFlowInstance(task: CamundaTask): FormFlowInstance {
         val additionalProperties = getAdditionalProperties(task)
         val formFlowId = getFormAssociationByTask(task).formLink.formFlowId
         val formFlowDefinition = formFlowService.findDefinition(formFlowId)!!
         return formFlowService.save(formFlowDefinition.createInstance(additionalProperties))
     }
 
-    private fun getFormAssociationByTask(task: Task): FormAssociation {
+    private fun getFormAssociationByTask(task: CamundaTask): FormAssociation {
         val processDefinition = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionId(task.processDefinitionId)
+            .processDefinitionId(task.getProcessDefinitionId())
             .singleResult()
 
         val formAssociation = formAssociationService.getFormAssociationByFormLinkId(

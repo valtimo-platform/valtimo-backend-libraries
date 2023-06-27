@@ -21,13 +21,18 @@ import com.ritense.document.domain.Document
 import com.ritense.document.event.DocumentAssigneeChangedEvent
 import com.ritense.document.event.DocumentUnassignedEvent
 import com.ritense.document.service.DocumentService
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssigned
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCandidateGroups
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceBusinessKey
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.service.CamundaTaskService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.TaskService
 import org.springframework.context.event.EventListener
 
 class CaseAssigneeListener(
     private val taskService: TaskService,
+    private val camundaTaskService: CamundaTaskService,
     private val documentService: DocumentService,
     private val caseDefinitionService: CaseDefinitionService,
     private val userManagementService: UserManagementService
@@ -42,14 +47,12 @@ class CaseAssigneeListener(
 
         if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
             val assignee = userManagementService.findById(document.assigneeId())
-            val tasks = taskService.createTaskQuery()
-                .processInstanceBusinessKey(document.id().toString())
-                .taskCandidateGroupIn(assignee.roles)
-                .includeAssignedTasks()
-                .list()
-                .also {
-                    logger.debug { "Updating assignee on ${it.size} task(s)" }
-                }
+            val tasks = camundaTaskService.findTasks(
+                byProcessInstanceBusinessKey(document.id().toString())
+                    .and(byCandidateGroups(assignee.roles))
+            ).also {
+                logger.debug { "Updating assignee on ${it.size} task(s)" }
+            }
 
             tasks.forEach { task ->
                 taskService.setAssignee(
@@ -69,13 +72,12 @@ class CaseAssigneeListener(
         )
 
         if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
-            val tasks = taskService.createTaskQuery()
-                .processInstanceBusinessKey(document.id().toString())
-                .taskAssigned()
-                .list()
-                .also {
-                    logger.debug { "Removing assignee from ${it.size} task(s)" }
-                }
+            val tasks = camundaTaskService.findTasks(
+                byProcessInstanceBusinessKey(document.id().toString())
+                    .and(byAssigned())
+            ).also {
+                logger.debug { "Removing assignee from ${it.size} task(s)" }
+            }
 
             tasks.forEach { task ->
                 taskService.setAssignee(
