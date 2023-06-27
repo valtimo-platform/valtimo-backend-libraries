@@ -17,7 +17,7 @@
 package com.ritense.document
 
 import com.ritense.authorization.AuthorizationSpecification
-import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.JsonSchemaDocument
@@ -29,8 +29,8 @@ class JsonSchemaDocumentSpecificationFactory(
 ): AuthorizationSpecificationFactory<JsonSchemaDocument> {
 
     override fun create(
-        context: AuthorizationRequest<JsonSchemaDocument>,
-        permissions: List<Permission>
+            context: EntityAuthorizationRequest<JsonSchemaDocument>,
+            permissions: List<Permission>
     ): AuthorizationSpecification<JsonSchemaDocument> {
         return JsonSchemaDocumentSpecification(
             context,
@@ -39,7 +39,7 @@ class JsonSchemaDocumentSpecificationFactory(
         )
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+    override fun canCreate(context: EntityAuthorizationRequest<*>, permissions: List<Permission>): Boolean {
         return JsonSchemaDocument::class.java == context.resourceType
     }
 }

@@ -15,8 +15,7 @@
  */
 package com.ritense.document.service
 
-import com.ritense.authorization.Action
-import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.JsonSchemaDocument
@@ -29,9 +28,9 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class JsonSchemaDocumentSpecification(
-    authContext: AuthorizationRequest<JsonSchemaDocument>,
-    permissions: List<Permission>,
-    private val queryDialectHelper: QueryDialectHelper
+        authContext: EntityAuthorizationRequest<JsonSchemaDocument>,
+        permissions: List<Permission>,
+        private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<JsonSchemaDocument>(authContext, permissions) {
 
     override fun toPredicate(

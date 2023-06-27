@@ -17,7 +17,7 @@
 package com.ritense.document.service;
 
 import com.ritense.authorization.Action;
-import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
@@ -73,7 +73,7 @@ public class SearchFieldService {
 
     public List<SearchField> getSearchFields(String documentDefinitionName) {
         Specification<SearchField> authorizationSpec = authorizationService.getAuthorizationSpecification(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 SearchField.class,
                 LIST_VIEW
             ),
@@ -172,7 +172,7 @@ public class SearchFieldService {
 
     private void denyAuthorization() {
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 SearchField.class,
                 Action.deny()
             ),

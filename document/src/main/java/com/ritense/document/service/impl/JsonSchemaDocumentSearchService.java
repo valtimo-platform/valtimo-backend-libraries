@@ -16,7 +16,7 @@
 
 package com.ritense.document.service.impl;
 
-import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.searchfield.SearchField;
@@ -187,7 +187,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         predicates.add(
             authorizationService
                 .getAuthorizationSpecification(
-                    new AuthorizationRequest<>(
+                    new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         VIEW
                     ),
@@ -213,7 +213,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         predicates.add(
             authorizationService
                 .getAuthorizationSpecification(
-                    new AuthorizationRequest<>(
+                    new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         VIEW
                     ),

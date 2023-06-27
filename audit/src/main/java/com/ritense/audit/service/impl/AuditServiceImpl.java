@@ -23,11 +23,9 @@ import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.audit.service.AuditService;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.JsonSchemaDocumentActionProvider;
@@ -38,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Transactional
@@ -71,7 +68,7 @@ public class AuditServiceImpl implements AuditService {
         var document = AuthorizationContext.runWithoutAuthorization(() -> documentService.get(documentId.toString()));
 
         authorizationService.requirePermission(
-            new AuthorizationRequest(
+            new EntityAuthorizationRequest(
                 JsonSchemaDocument.class,
                 JsonSchemaDocumentActionProvider.VIEW
             ),
@@ -107,7 +104,7 @@ public class AuditServiceImpl implements AuditService {
 
     private void denyAuthorization() {
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocumentSnapshot.class,
                 Action.deny()
             ),

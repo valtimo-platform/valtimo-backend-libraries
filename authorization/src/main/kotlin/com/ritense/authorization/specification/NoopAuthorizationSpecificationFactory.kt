@@ -17,20 +17,20 @@
 package com.ritense.authorization.specification
 
 import com.ritense.authorization.AuthorizationContext
-import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
 
 class NoopAuthorizationSpecificationFactory<T: Any> : AuthorizationSpecificationFactory<T> {
     override fun create(
-        context: AuthorizationRequest<T>,
-        permissions: List<Permission>
+            context: EntityAuthorizationRequest<T>,
+            permissions: List<Permission>
     ): AuthorizationSpecification<T> {
         return NoopAuthorizationSpecification(context, permissions)
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+    override fun canCreate(context: EntityAuthorizationRequest<*>, permissions: List<Permission>): Boolean {
         return AuthorizationContext.ignoreAuthorization
     }
 

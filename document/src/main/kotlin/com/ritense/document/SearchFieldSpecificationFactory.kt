@@ -16,7 +16,7 @@
 
 package com.ritense.document
 
-import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
@@ -29,8 +29,8 @@ class SearchFieldSpecificationFactory(
 ): AuthorizationSpecificationFactory<SearchField> {
 
     override fun create(
-        context: AuthorizationRequest<SearchField>,
-        permissions: List<Permission>
+            context: EntityAuthorizationRequest<SearchField>,
+            permissions: List<Permission>
     ): AuthorizationSpecification<SearchField> {
         return SearchFieldSpecification(
             context,
@@ -39,7 +39,7 @@ class SearchFieldSpecificationFactory(
         )
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+    override fun canCreate(context: EntityAuthorizationRequest<*>, permissions: List<Permission>): Boolean {
         return SearchField::class.java == context.resourceType
     }
 }

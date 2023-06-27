@@ -19,7 +19,7 @@ package com.ritense.document.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.AuthorizationSpecification;
 import com.ritense.authorization.permission.Permission;
@@ -43,7 +43,6 @@ import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentService;
-import com.ritense.document.service.JsonSchemaDocumentActionProvider;
 import com.ritense.document.service.JsonSchemaDocumentSpecification;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
@@ -115,7 +114,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         if (optionalDocument.isPresent()) {
             authorizationService.requirePermission(
-                new AuthorizationRequest<>(
+                new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     VIEW
                 ),
@@ -136,7 +135,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
 
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 VIEW
             ),
@@ -151,7 +150,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     public Page<JsonSchemaDocument> getAllByDocumentDefinitionName(Pageable pageable, String definitionName) {
         AuthorizationSpecification<JsonSchemaDocument> spec = authorizationService
             .getAuthorizationSpecification(
-                new AuthorizationRequest<>(
+                new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     LIST_VIEW
                 ),
@@ -165,13 +164,13 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Override
     public Page<JsonSchemaDocument> getAll(Pageable pageable) {
         var spec = authorizationService.getAuthorizationSpecification(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 LIST_VIEW
             ),
             null
         ).or(authorizationService.getAuthorizationSpecification(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 VIEW
             ),
@@ -211,7 +210,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                     .forEach(jsonSchemaDocument::addRelatedFile);
 
                 authorizationService.requirePermission(
-                    new AuthorizationRequest<>(
+                    new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         CREATE
                     ),
@@ -231,7 +230,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         JsonSchemaDocument jsonSchemaDocument = (JsonSchemaDocument) document;
 
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 MODIFY
             ),
@@ -261,7 +260,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
 
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 MODIFY
             ),
@@ -295,7 +294,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     ) {
         authorizationService
             .requirePermission(
-                new AuthorizationRequest<>(
+                new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     Action.deny()
                 ),
@@ -322,7 +321,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         JsonSchemaDocument document = getDocumentBy(documentId);
 
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 MODIFY
             ),
@@ -340,7 +339,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         JsonSchemaDocument document = getDocumentBy(documentId);
 
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 MODIFY
             ),
@@ -357,7 +356,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         JsonSchemaDocument document = getDocumentBy(documentId);
 
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 MODIFY
             ),
@@ -376,7 +375,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         JsonSchemaDocument document = getDocumentBy(documentId);
 
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 MODIFY
             ),
@@ -392,7 +391,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         Optional<JsonSchemaDocument> optionalDocument = findBy(documentId);
 
         optionalDocument.ifPresent(document -> authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 VIEW
             ),
@@ -412,7 +411,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         if (!documents.isEmpty()) {
             documents.forEach(document -> {
                     authorizationService.requirePermission(
-                        new AuthorizationRequest<>(
+                        new EntityAuthorizationRequest<>(
                             JsonSchemaDocument.class,
                             DELETE
                         ),
@@ -439,7 +438,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         try {
             authorizationService
                 .requirePermission(
-                    new AuthorizationRequest<>(
+                    new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         CLAIM
                     ),
@@ -449,7 +448,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         } catch (Exception e) {
             authorizationService
                 .requirePermission(
-                    new AuthorizationRequest<>(
+                    new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         ASSIGN
                     ),
@@ -476,7 +475,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         authorizationService
             .requirePermission(
-                new AuthorizationRequest<>(
+                new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     ASSIGN
                 ),
@@ -505,7 +504,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         authorizationService
             .requirePermission(
-                new AuthorizationRequest<>(
+                new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     ASSIGN
                 ),
@@ -544,7 +543,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         var document = AuthorizationContext.runWithoutAuthorization(() -> get(documentId.toString()));
         // TODO: Write tests
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 ASSIGN
             ),

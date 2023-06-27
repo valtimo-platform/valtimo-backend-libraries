@@ -34,7 +34,7 @@ class AuthorizationSpecificationTest {
     @Test
     fun `isAuthorized should return true`() {
         val spec = TestAuthorizationSpecification(
-            AuthorizationRequest(
+            EntityAuthorizationRequest(
                 TestEntity::class.java, action = TestEntityActionProvider.complete
             ),
             listOf(
@@ -53,7 +53,7 @@ class AuthorizationSpecificationTest {
     @Test
     fun `isAuthorized should return false if no permission can be found for entity class`() {
         val spec = TestAuthorizationSpecification(
-            AuthorizationRequest(
+            EntityAuthorizationRequest(
                 TestEntity::class.java, action = TestEntityActionProvider.complete
             ),
             listOf(
@@ -72,7 +72,7 @@ class AuthorizationSpecificationTest {
     @Test
     fun `isAuthorized should return false if no permission can be found for requested action`() {
         val spec = TestAuthorizationSpecification(
-            AuthorizationRequest(
+            EntityAuthorizationRequest(
                 TestEntity::class.java, action = TestEntityActionProvider.view
             ),
             listOf(
@@ -97,7 +97,7 @@ class AuthorizationSpecificationTest {
             roleKey = "")
         )
         val spec = TestAuthorizationSpecification(
-            AuthorizationRequest(
+            EntityAuthorizationRequest(
                 TestEntity::class.java, action = TestEntityActionProvider.complete
             ),
             listOf(

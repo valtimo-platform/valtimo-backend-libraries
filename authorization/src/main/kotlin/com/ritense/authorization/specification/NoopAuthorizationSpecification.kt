@@ -17,7 +17,7 @@
 package com.ritense.authorization.specification
 
 import com.ritense.authorization.AuthorizationContext
-import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import javax.persistence.criteria.CriteriaBuilder
@@ -26,8 +26,8 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class NoopAuthorizationSpecification<T : Any>(
-    authContext: AuthorizationRequest<T>,
-    permissions: List<Permission>
+        authContext: EntityAuthorizationRequest<T>,
+        permissions: List<Permission>
 ) : AuthorizationSpecification<T>(
     authContext,
     permissions

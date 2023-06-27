@@ -16,12 +16,9 @@
 
 package com.ritense.authorization
 
-import com.ritense.authorization.permission.Permission
-
-interface AuthorizationSpecificationFactory<T : Any> {
-
-    fun create(context: EntityAuthorizationRequest<T>, permissions: List<Permission>): AuthorizationSpecification<T>
-
-    // Change this to something more dynamic in the future
-    fun canCreate(context: EntityAuthorizationRequest<*>, permissions: List<Permission>): Boolean
-}
+class RelatedResourceAuthorizationRequest<T>(
+    val resourceType: Class<T>,
+    val action: Action<T>,
+    val relatedResourceType: Class<T>,
+    val relatedResourceId: String
+)

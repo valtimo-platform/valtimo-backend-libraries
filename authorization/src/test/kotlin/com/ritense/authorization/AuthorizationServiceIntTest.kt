@@ -124,7 +124,7 @@ class AuthorizationServiceIntTest @Autowired constructor(
     ) {
         authorizationService
             .requirePermission(
-                AuthorizationRequest(
+                EntityAuthorizationRequest(
                     TestEntity::class.java,
                     action = action),
                 entity,

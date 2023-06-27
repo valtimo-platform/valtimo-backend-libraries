@@ -24,15 +24,15 @@ import javax.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
 
 abstract class AuthorizationSpecification<T : Any>(
-    protected val authContext: AuthorizationRequest<T>,
+    protected val authContext: EntityAuthorizationRequest<T>,
     protected val permissions: List<Permission>
 ) : Specification<T> {
 
-    internal open fun isAuthorized(entity: T?): Boolean {
-        return entity != null && permissions.filter { permission ->
-            entity::class.java == permission.resourceType && authContext.action == permission.action
+    internal open fun isAuthorized(): Boolean {
+        return authContext.entity != null && permissions.filter { permission ->
+            authContext.resourceType == permission.resourceType && authContext.action == permission.action
         }.any { permission ->
-            permission.appliesTo(authContext.resourceType, entity)
+            permission.appliesTo(authContext.resourceType, authContext.entity)
         }
     }
 

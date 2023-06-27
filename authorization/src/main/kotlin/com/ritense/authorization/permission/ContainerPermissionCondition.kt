@@ -19,7 +19,7 @@ package com.ritense.authorization.permission
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationEntityMapper
-import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.authorization.permission.ContainerPermissionCondition.Companion.CONTAINER
@@ -65,7 +65,7 @@ data class ContainerPermissionCondition<TO : Any>(
 
     private fun findChildSpecification(): AuthorizationSpecification<TO> {
         return AuthorizationServiceHolder.currentInstance.getAuthorizationSpecification(
-            AuthorizationRequest(this.resourceType, Action(Action.IGNORE)),
+            EntityAuthorizationRequest(this.resourceType, Action(Action.IGNORE)),
             listOf(
                 Permission(
                     resourceType = resourceType,

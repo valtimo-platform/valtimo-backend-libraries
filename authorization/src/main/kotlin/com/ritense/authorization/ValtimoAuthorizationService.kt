@@ -28,16 +28,22 @@ class ValtimoAuthorizationService(
     private val permissionRepository: PermissionRepository
 ): AuthorizationService {
     override fun <T : Any> requirePermission(
-        context: AuthorizationRequest<T>,
-        entity: T?,
-        permissions: List<Permission>?
+        context: EntityAuthorizationRequest<T>
     ) {
-        if (!getAuthorizationSpecification(context, permissions).isAuthorized(entity))
+        if (!getAuthorizationSpecification(context).isAuthorized())
             throw AccessDeniedException("Unauthorized")
     }
 
+    fun <T : Any> hasPermissionWithRelatedPartialContext(
+        context
+    ) {
+        request: AuthorizationRequest<T>,
+        entity: T?,
+        permissions: List<Permission>?
+    }
+
     override fun <T : Any> getAuthorizationSpecification(
-        context: AuthorizationRequest<T>,
+        context: EntityAuthorizationRequest<T>,
         permissions: List<Permission>?
     ): AuthorizationSpecification<T> {
         val usedPermissions = permissions ?: getPermissions(context)
@@ -69,7 +75,7 @@ class ValtimoAuthorizationService(
             .flatten()
     }
 
-    private fun getPermissions(context: AuthorizationRequest<*>): List<Permission> {
+    private fun getPermissions(context: EntityAuthorizationRequest<*>): List<Permission> {
         val userRoles = SecurityUtils.getCurrentUserRoles()
         return permissionRepository.findAllByRoleKeyIn(userRoles)
             .filter { permission ->

@@ -17,7 +17,7 @@
 package com.ritense.document.service.impl;
 
 import com.ritense.authorization.Action;
-import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -57,7 +57,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
             JsonSchemaDocument document = documentService.getDocumentBy(snapshot.document().id());
             authorizationService
                 .requirePermission(
-                    new AuthorizationRequest<>(
+                    new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         VIEW
                     ),
@@ -80,7 +80,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
         JsonSchemaDocument document = documentService.getDocumentBy(documentId);
         authorizationService
             .requirePermission(
-                new AuthorizationRequest<>(
+                new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     VIEW
                 ),
@@ -123,7 +123,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
 
     private void denyAuthorization() {
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocumentSnapshot.class,
                 Action.deny()
             ),

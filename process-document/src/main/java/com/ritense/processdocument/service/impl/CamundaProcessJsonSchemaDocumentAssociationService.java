@@ -17,7 +17,7 @@
 package com.ritense.processdocument.service.impl;
 
 import com.ritense.authorization.Action;
-import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -57,7 +57,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 public class CamundaProcessJsonSchemaDocumentAssociationService implements ProcessDocumentAssociationService {
@@ -155,7 +154,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         var document = documentService.findBy(documentId).get();
 
         authorizationService.requirePermission(
-            new AuthorizationRequest(
+            new EntityAuthorizationRequest(
                 JsonSchemaDocument.class,
                 JsonSchemaDocumentActionProvider.VIEW
             ),
@@ -299,7 +298,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private <T> void denyAuthorization(Class<T> clazz) {
         authorizationService
             .requirePermission(
-                new AuthorizationRequest<T>(
+                new EntityAuthorizationRequest<T>(
                     clazz,
                     Action.deny()
                 ),
