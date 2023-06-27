@@ -16,8 +16,9 @@
 
 package com.ritense.authorization
 
-class EntityAuthorizationRequest<T>(
+class RelatedEntityAuthorizationRequest<T>(
     val resourceType: Class<T>,
     val action: Action<T>,
-    val entity: T? //TODO: Determine if this really should be nullable
+    val relatedResourceType: Class<T>,
+    val relatedResourceId: String
 ) : AuthorizationRequest<T>

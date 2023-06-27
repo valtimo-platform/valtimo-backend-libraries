@@ -46,14 +46,14 @@ class NoteSpecification(
         val predicates = permissions.stream()
             .filter { permission: Permission ->
                 Note::class.java == permission.resourceType &&
-                    authContext.action == permission.action
+                    authRequest.action == permission.action
             }
             .map { permission: Permission ->
                 permission.toPredicate(
                     root,
                     query,
                     criteriaBuilder,
-                    authContext.resourceType,
+                    authRequest.resourceType,
                     queryDialectHelper
                 )
             }.toList()

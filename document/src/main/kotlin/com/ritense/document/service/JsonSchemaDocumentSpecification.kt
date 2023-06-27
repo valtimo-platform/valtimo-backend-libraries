@@ -47,14 +47,14 @@ class JsonSchemaDocumentSpecification(
         }
         val predicates = permissions
             .filter { permission: Permission ->
-                JsonSchemaDocument::class.java == permission.resourceType && authContext.action == permission.action
+                JsonSchemaDocument::class.java == permission.resourceType && authRequest.action == permission.action
             }
             .map { permission: Permission ->
                 permission.toPredicate(
                     root,
                     query,
                     criteriaBuilder,
-                    authContext.resourceType,
+                    authRequest.resourceType,
                     queryDialectHelper
                 )
             }

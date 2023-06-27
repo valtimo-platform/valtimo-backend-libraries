@@ -24,21 +24,45 @@ import javax.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
 
 abstract class AuthorizationSpecification<T : Any>(
-    protected val authContext: EntityAuthorizationRequest<T>,
+    protected val authRequest: AuthorizationRequest<T>,
     protected val permissions: List<Permission>
 ) : Specification<T> {
-
     internal open fun isAuthorized(): Boolean {
-        return authContext.entity != null && permissions.filter { permission ->
-            authContext.resourceType == permission.resourceType && authContext.action == permission.action
-        }.any { permission ->
-            permission.appliesTo(authContext.resourceType, authContext.entity)
+        return when(authRequest) {
+            is EntityAuthorizationRequest<T> -> isAuthorizedForEntity()
+            is RelatedEntityAuthorizationRequest<T> -> isAuthorizedForRelatedEntity()
+            else -> false
         }
+    }
+
+    private fun isAuthorizedForEntity(): Boolean { // TODO: See EntityAuthorizationRequest
+        val entityAuthorizationRequest = authRequest as EntityAuthorizationRequest<T>
+        return entityAuthorizationRequest.entity != null && permissions.filter { permission ->
+            entityAuthorizationRequest.resourceType == permission.resourceType && entityAuthorizationRequest.action == permission.action
+        }.any { permission ->
+            permission.appliesTo(entityAuthorizationRequest.resourceType, entityAuthorizationRequest.entity)
+        }
+    }
+
+    private fun isAuthorizedForRelatedEntity(): Boolean {
+        val relatedEntityAuthorizationRequest = authRequest as RelatedEntityAuthorizationRequest<T>
+
+        // Are the correct resource type and actions in the permissions? (should always be true, so aren't we double checking here for no reason?
+        // Retrieve entity from table if root resource is equal to related resource (e.g. we've gone forther down the rabbit hole and are now at the correct related entity)
+
+        var authRequest = EntityAuthorizationRequest(relatedEntityAuthorizationRequest.resourceType, relatedEntityAuthorizationRequest.action, entity)
+
+        return AuthorizationSpecification<T : Any>().isAuthorized()
+
+
+        return false
     }
 
     fun combinePredicates(criteriaBuilder: CriteriaBuilder, predicates: List<Predicate>): Predicate {
         return criteriaBuilder.or(*predicates.toTypedArray())
     }
+
+    abstract fun identifierToEntity(vararg identifiers: Object): T
 
     abstract override fun toPredicate(
         root: Root<T>,

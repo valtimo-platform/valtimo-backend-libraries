@@ -43,14 +43,14 @@ class SearchFieldSpecification(
         }
         val predicates = permissions
             .filter { permission: Permission ->
-                SearchField::class.java == permission.resourceType && authContext.action == permission.action
+                SearchField::class.java == permission.resourceType && authRequest.action == permission.action
             }
             .map { permission: Permission ->
                 permission.toPredicate(
                     root,
                     query,
                     criteriaBuilder,
-                    authContext.resourceType,
+                    authRequest.resourceType,
                     queryDialectHelper
                 )
             }
