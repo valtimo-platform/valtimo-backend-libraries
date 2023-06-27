@@ -23,10 +23,6 @@ interface AuthorizationService {
         context: EntityAuthorizationRequest<T>
     )
 
-    fun <T : Any> hasPermission(
-        request: AuthorizationRequest<T>
-    ) : Boolean
-
     fun <T : Any> getAuthorizationSpecification(
         request: AuthorizationRequest<T>,
         permissions: List<Permission>? = null
@@ -38,3 +34,7 @@ interface AuthorizationService {
 
     fun <T : Any> getAvailableActionsForResource(clazz: Class<T>): List<Action<T>>
 }
+
+internal fun <T : Any> AuthorizationService.hasPermission(
+    request: AuthorizationRequest<T>
+) = Boolean

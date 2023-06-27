@@ -39,7 +39,7 @@ class ValtimoAuthorizationService(
      *
      *   @param request the <code>AuthorizationRequest</code> to use when creating new requests
      */
-    override fun <T : Any> hasPermission(
+    internal fun <T : Any> hasPermission(
         request: AuthorizationRequest<T>
     ) : Boolean {
         return getAuthorizationSpecification(request).isAuthorized();

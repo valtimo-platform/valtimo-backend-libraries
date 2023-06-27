@@ -16,27 +16,30 @@
 
 package com.ritense.authorization
 
+import com.ritense.authorization.permission.ConditionContainer
+import com.ritense.authorization.permission.ContainerPermissionCondition
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.PermissionCondition
+import org.springframework.data.jpa.domain.Specification
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
-import org.springframework.data.jpa.domain.Specification
 
 abstract class AuthorizationSpecification<T : Any>(
     protected val authRequest: AuthorizationRequest<T>,
     protected val permissions: List<Permission>
 ) : Specification<T> {
     internal open fun isAuthorized(): Boolean {
-        return when(authRequest) {
-            is EntityAuthorizationRequest<T> -> isAuthorizedForEntity()
-            is RelatedEntityAuthorizationRequest<T> -> isAuthorizedForRelatedEntity()
+        return when (authRequest) {
+            is EntityAuthorizationRequest<T> -> isAuthorizedForEntity(authRequest)
+            is RelatedEntityAuthorizationRequest<T> -> isAuthorizedForRelatedEntity(authRequest) // TODO: Maybe only have separate methods again, with RelatedEntityAuthorizationRequest function being internal
             else -> false
         }
     }
 
-    private fun isAuthorizedForEntity(): Boolean { // TODO: See EntityAuthorizationRequest
-        val entityAuthorizationRequest = authRequest as EntityAuthorizationRequest<T>
+    // TODO: See EntityAuthorizationRequest
+    private fun isAuthorizedForEntity(entityAuthorizationRequest: EntityAuthorizationRequest<T>): Boolean {
         return entityAuthorizationRequest.entity != null && permissions.filter { permission ->
             entityAuthorizationRequest.resourceType == permission.resourceType && entityAuthorizationRequest.action == permission.action
         }.any { permission ->
@@ -44,25 +47,81 @@ abstract class AuthorizationSpecification<T : Any>(
         }
     }
 
-    private fun isAuthorizedForRelatedEntity(): Boolean {
-        val relatedEntityAuthorizationRequest = authRequest as RelatedEntityAuthorizationRequest<T>
+    private fun isAuthorizedForRelatedEntity(
+        relatedEntityAuthorizationRequest: RelatedEntityAuthorizationRequest<T>
+    ): Boolean {
 
-        // Are the correct resource type and actions in the permissions? (should always be true, so aren't we double checking here for no reason?
-        // Retrieve entity from table if root resource is equal to related resource (e.g. we've gone forther down the rabbit hole and are now at the correct related entity)
+        if (relatedEntityAuthorizationRequest.resourceType == relatedEntityAuthorizationRequest.relatedResourceType) {
 
-        var authRequest = EntityAuthorizationRequest(relatedEntityAuthorizationRequest.resourceType, relatedEntityAuthorizationRequest.action, entity)
+            return isAuthorizedForEntity(
+                EntityAuthorizationRequest(
+                    relatedEntityAuthorizationRequest.resourceType,
+                    relatedEntityAuthorizationRequest.action,
+                    identifierToEntity(relatedEntityAuthorizationRequest.relatedResourceId)
+                )
+            )
+        }
 
-        return AuthorizationSpecification<T : Any>().isAuthorized()
+        return permissions
+            .filter { permission ->
+                relatedEntityAuthorizationRequest.resourceType == permission.resourceType
+                    && relatedEntityAuthorizationRequest.action == permission.action
+            }
+            .firstOrNull { permission ->
+                permission.conditionContainer.conditions.all { permissionCondition ->
+                    isAuthorizedForRelatedEntityRecursive(
+                        relatedEntityAuthorizationRequest,
+                        permissionCondition
+                    )
+                }
+            } != null
+    }
 
-
-        return false
+    private fun isAuthorizedForRelatedEntityRecursive(
+        relatedEntityAuthorizationRequest: RelatedEntityAuthorizationRequest<T>,
+        permissionCondition: PermissionCondition
+    ): Boolean {
+        return if (permissionCondition is ContainerPermissionCondition<*>) {
+            if (permissionCondition.resourceType == relatedEntityAuthorizationRequest.relatedResourceType) {
+                this.findSpecification(relatedEntityAuthorizationRequest, permissionCondition).isAuthorized()
+            } else {
+                permissionCondition.conditions.all {
+                    isAuthorizedForRelatedEntityRecursive(relatedEntityAuthorizationRequest, it)
+                }
+            }
+        } else {
+            true
+        }
     }
 
     fun combinePredicates(criteriaBuilder: CriteriaBuilder, predicates: List<Predicate>): Predicate {
         return criteriaBuilder.or(*predicates.toTypedArray())
     }
 
-    abstract fun identifierToEntity(vararg identifiers: Object): T
+    private fun <TO : Any> findSpecification(
+        authRequest: RelatedEntityAuthorizationRequest<T>,
+        container: ContainerPermissionCondition<TO>
+    ): AuthorizationSpecification<TO> {
+        // TODO: Make sure a mapper exists? Or a path of mappers that gets us to the resourceType?
+        return AuthorizationServiceHolder.currentInstance.getAuthorizationSpecification(
+            RelatedEntityAuthorizationRequest(
+                container.resourceType,
+                Action(Action.IGNORE),
+                authRequest.relatedResourceType,
+                authRequest.relatedResourceId
+            ),
+            listOf(
+                Permission(
+                    resourceType = container.resourceType,
+                    action = Action<Any>(Action.IGNORE),
+                    conditionContainer = ConditionContainer(container.conditions),
+                    roleKey = ""
+                )
+            )
+        )
+    }
+
+    abstract fun identifierToEntity(identifier: String): T
 
     abstract override fun toPredicate(
         root: Root<T>,
