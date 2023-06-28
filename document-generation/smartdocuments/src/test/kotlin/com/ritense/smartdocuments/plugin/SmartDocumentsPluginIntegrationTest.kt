@@ -117,7 +117,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         """.trimIndent()
 
         smartDocumentsPlugin = smartDocumentsPluginFactory.create(pluginConfiguration)
-        processDefinition = camundaRepositoryService.findLatestProcessDefinition("document-generation-plugin")
+        processDefinition = camundaRepositoryService.findLatestProcessDefinition("document-generation-plugin")!!
 
         saveProcessLink(generateDocumentActionProperties)
     }
