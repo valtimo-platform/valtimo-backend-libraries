@@ -45,7 +45,7 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
 
     @BeforeEach
     fun beforeEach() {
-        processDefinition = getLatestProcessDefinition()
+        processDefinition = getLatestProcessDefinition()!!
     }
 
     @Test
@@ -59,7 +59,7 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
         camundaProcessService.deploy("service-task-process.bpmn", changedProcessBpmn.byteInputStream())
 
         // then
-        val latestProcessDefinition = getLatestProcessDefinition()
+        val latestProcessDefinition = getLatestProcessDefinition()!!
         assertEquals(1, processDefinition.version)
         assertEquals(1, processLinkService.getProcessLinks(processDefinition.id, SERVICE_TASK_ID).count())
         assertEquals(2, latestProcessDefinition.version)
@@ -80,7 +80,7 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
         camundaProcessService.deploy("service-task-process.bpmn", changedAgainProcessBpmn.byteInputStream())
 
         // then
-        val latestProcessDefinition = getLatestProcessDefinition()
+        val latestProcessDefinition = getLatestProcessDefinition()!!
         assertEquals(1, processDefinition.version)
         assertEquals(1, processLinkService.getProcessLinks(processDefinition.id, SERVICE_TASK_ID).count())
         assertEquals(3, latestProcessDefinition.version)
@@ -97,7 +97,7 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
         )
     }
 
-    private fun getLatestProcessDefinition(): CamundaProcessDefinition {
+    private fun getLatestProcessDefinition(): CamundaProcessDefinition? {
         return repositoryService.findProcessDefinition(byKey(PROCESS_DEFINITION_KEY))
     }
 
