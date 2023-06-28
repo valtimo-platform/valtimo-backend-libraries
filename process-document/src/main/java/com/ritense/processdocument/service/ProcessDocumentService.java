@@ -33,6 +33,7 @@ import com.ritense.processdocument.service.result.ModifyDocumentAndStartProcessR
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.processdocument.service.result.NewDocumentForRunningProcessResult;
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
+import com.ritense.valtimo.camunda.domain.AbstractVariableScope;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.VariableScope;
 
@@ -55,6 +56,8 @@ public interface ProcessDocumentService {
     Document getDocument(DelegateExecution execution);
 
     JsonSchemaDocumentId getDocumentId(ProcessInstanceId processInstanceId, VariableScope variableScope);
+
+    JsonSchemaDocumentId getDocumentId(ProcessInstanceId processInstanceId, AbstractVariableScope variableScope);
 
     Document getDocument(ProcessInstanceId processInstanceId, VariableScope variableScope);
 

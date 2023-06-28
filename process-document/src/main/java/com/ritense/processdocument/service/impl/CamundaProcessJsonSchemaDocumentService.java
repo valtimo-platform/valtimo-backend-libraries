@@ -53,6 +53,8 @@ import com.ritense.processdocument.service.result.ModifyDocumentAndStartProcessR
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.processdocument.service.result.NewDocumentForRunningProcessResult;
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
+import com.ritense.valtimo.camunda.domain.AbstractVariableScope;
+import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.result.FunctionResult;
@@ -349,6 +351,19 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         }
     }
 
+    public JsonSchemaDocumentId getDocumentId(ProcessInstanceId processInstanceId, AbstractVariableScope variableScope) {
+        var processDocumentInstance = processDocumentAssociationService.findProcessDocumentInstance(processInstanceId).orElse(null);
+        if (processDocumentInstance != null) {
+            var jsonSchemaDocumentId = processDocumentInstance.processDocumentInstanceId().documentId().toString();
+            return JsonSchemaDocumentId.existingId(UUID.fromString(jsonSchemaDocumentId));
+        } else {
+            // In case a process has no token wait state ProcessDocumentInstance is not yet created,
+            // therefore out business-key is our last chance which is populated with the documentId also.
+            var businessKey = getBusinessKey(processInstanceId, variableScope);
+            return JsonSchemaDocumentId.existingId(UUID.fromString(businessKey));
+        }
+    }
+
     public Document getDocument(ProcessInstanceId processInstanceId, VariableScope variableScope) {
         final var document = AuthorizationContext
             .runWithoutAuthorization(
@@ -382,6 +397,18 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             return ((BaseDelegateExecution) variableScope).getBusinessKey();
         } else if (variableScope instanceof DelegateTask) {
             return ((DelegateTask) variableScope).getExecution().getBusinessKey();
+        } else {
+            var processInstance = camundaProcessService.findProcessInstanceById(processInstanceId.toString())
+                .orElseThrow(() -> new RuntimeException("Process instance not found by id $processInstanceId"));
+            return processInstance.getBusinessKey();
+        }
+    }
+
+    private String getBusinessKey(ProcessInstanceId processInstanceId, AbstractVariableScope variableScope) {
+        if (variableScope instanceof CamundaExecution) {
+            return ((CamundaExecution) variableScope).getBusinessKey();
+        } else if (variableScope instanceof CamundaTask) {
+            return ((CamundaTask) variableScope).getExecution().getBusinessKey();
         } else {
             var processInstance = camundaProcessService.findProcessInstanceById(processInstanceId.toString())
                 .orElseThrow(() -> new RuntimeException("Process instance not found by id $processInstanceId"));

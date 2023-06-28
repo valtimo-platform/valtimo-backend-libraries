@@ -38,7 +38,6 @@ import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
-import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity
 import org.springframework.context.event.EventListener
 import java.net.MalformedURLException
 import java.net.URI
@@ -83,12 +82,12 @@ class PortaalTaakEventListener(
 
                     val portaaltaakPlugin = pluginService.createInstance(it) as PortaaltaakPlugin
                     val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
-                    val document = processDocumentService.getDocument(processInstanceId, task as TaskEntity) // TODO: fix
+                    val documentId = processDocumentService.getDocumentId(processInstanceId, task)
                     saveDataInDocument(taakObject, task, receiveData)
                     startProcessToUploadDocuments(
                         taakObject,
                         portaaltaakPlugin.completeTaakProcess,
-                        document.id().id.toString(),
+                        documentId.id.toString(),
                         objectManagement.objectenApiPluginConfigurationId.toString(),
                         event.resourceUrl
                     )
