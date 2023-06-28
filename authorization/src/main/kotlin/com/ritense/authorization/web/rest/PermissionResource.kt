@@ -32,7 +32,7 @@ class PermissionResource(
     private var authorizationService: AuthorizationService
 ) {
 
-    @PostMapping("/v1/permission")
+    @PostMapping("/v1/permissions")
     fun getPluginDefinitions(@RequestBody permissionsPresentRequest: List<PermissionAvailableRequest>)
         : ResponseEntity<List<PermissionAvailableResult>> {
         // TODO: For each element, map each resource to the actual resource type
