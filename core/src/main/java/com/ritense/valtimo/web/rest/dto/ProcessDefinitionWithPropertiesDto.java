@@ -36,7 +36,7 @@ public class ProcessDefinitionWithPropertiesDto extends ProcessDefinitionDto {
         dto.id = definition.getId();
         dto.key = definition.getKey();
         dto.category = definition.getCategory();
-        dto.description = null;
+        dto.description = null; // TODO: implement
         dto.name = definition.getName();
         dto.version = definition.getVersion();
         dto.resource = definition.getResourceName();

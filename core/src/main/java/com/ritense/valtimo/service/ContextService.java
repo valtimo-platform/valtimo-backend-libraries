@@ -132,7 +132,7 @@ public class ContextService {
 
     @Transactional(readOnly = true)
     public List<CamundaProcessDefinitionDto> findVisibleContextProcesses() throws IllegalAccessException {
-        List<CamundaProcessDefinition> deployedDefinitions = repositoryService.findAll(byActive().and(byLatestVersion()));
+        List<CamundaProcessDefinition> deployedDefinitions = repositoryService.findProcessDefinitions(byActive().and(byLatestVersion()));
         Context context = getContextOfCurrentUser();
         List<CamundaProcessDefinition> contextFilteredDeployedDefinitions = new ArrayList<>();
         deployedDefinitions.forEach(p -> {

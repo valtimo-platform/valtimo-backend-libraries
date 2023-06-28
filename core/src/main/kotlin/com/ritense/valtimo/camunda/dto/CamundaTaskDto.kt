@@ -45,6 +45,8 @@ data class CamundaTaskDto(
 ) {
 
     companion object {
+
+        @JvmStatic
         fun of(task: CamundaTask) = CamundaTaskDto(
             task.id,
             task.name,

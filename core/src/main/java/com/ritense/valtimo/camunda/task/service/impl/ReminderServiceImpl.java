@@ -17,7 +17,6 @@
 package com.ritense.valtimo.camunda.task.service.impl;
 
 import com.ritense.valtimo.camunda.domain.CamundaTask;
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper;
 import com.ritense.valtimo.camunda.task.domain.reminder.AssignedTask;
 import com.ritense.valtimo.camunda.task.domain.reminder.ReminderNotification;
 import com.ritense.valtimo.camunda.task.domain.reminder.RoleBasedTask;
@@ -33,6 +32,9 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssignee;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCandidateGroups;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byUnassigned;
 import static java.util.stream.Collectors.toList;
 
 public class ReminderServiceImpl implements ReminderService {
@@ -102,8 +104,8 @@ public class ReminderServiceImpl implements ReminderService {
 
     private List<CamundaTask> tasksFor(String role) {
         return taskService.findTasks(
-            CamundaTaskSpecificationHelper.byCandidateGroups(role)
-                .and(CamundaTaskSpecificationHelper.byUnassigned())
+            byCandidateGroups(role)
+                .and(byUnassigned())
         );
     }
 
@@ -126,7 +128,7 @@ public class ReminderServiceImpl implements ReminderService {
 
     private List<CamundaTask> assignedTasks(String assignee) {
         return taskService.findTasks(
-            CamundaTaskSpecificationHelper.byAssignee(assignee)
+            byAssignee(assignee)
         );
     }
 

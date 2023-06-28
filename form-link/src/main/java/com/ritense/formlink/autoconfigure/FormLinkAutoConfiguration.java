@@ -45,10 +45,10 @@ import com.ritense.formlink.web.rest.impl.DefaultProcessLinkResource;
 import com.ritense.formlink.web.rest.impl.interceptor.PublicAccessRateLimitInterceptor;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import org.camunda.bpm.engine.RepositoryService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -178,7 +178,7 @@ public class FormLinkAutoConfiguration {
     @Bean("formProcessLinkService")
     @ConditionalOnMissingBean(ProcessLinkService.class)
     public ProcessLinkService processLinkService(
-        RepositoryService repositoryService,
+        CamundaRepositoryService repositoryService,
         CamundaTaskService taskService,
         FormAssociationService formAssociationService,
         List<FormLinkTaskProvider> processLinkTaskProvide

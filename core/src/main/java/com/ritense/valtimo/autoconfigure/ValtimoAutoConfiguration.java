@@ -25,6 +25,7 @@ import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import com.ritense.valtimo.config.CustomDateTimeProvider;
 import com.ritense.valtimo.config.ValtimoApplicationReadyEventListener;
 import com.ritense.valtimo.contract.authentication.AuthorizedUserRepository;
@@ -153,6 +154,7 @@ public class ValtimoAutoConfiguration {
     @ConditionalOnMissingBean(CamundaProcessService.class)
     public CamundaProcessService camundaProcessService(
         final RuntimeService runtimeService,
+        final CamundaRuntimeService camundaRuntimeService,
         final RepositoryService repositoryService,
         final CamundaRepositoryService camundaRepositoryService,
         final FormService formService,
@@ -160,7 +162,7 @@ public class ValtimoAutoConfiguration {
         final ProcessPropertyService processPropertyService,
         final ValtimoProperties valtimoProperties
     ) {
-        return new CamundaProcessService(runtimeService, repositoryService, camundaRepositoryService, formService, historyService,processPropertyService,valtimoProperties);
+        return new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService,processPropertyService,valtimoProperties);
     }
 
     @Bean

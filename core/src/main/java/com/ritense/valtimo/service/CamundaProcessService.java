@@ -18,9 +18,11 @@ package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
+import com.ritense.valtimo.camunda.domain.CamundaVariableInstance;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.exception.ProcessDefinitionNotFoundException;
 import com.ritense.valtimo.exception.ProcessNotUpdatableException;
@@ -29,7 +31,6 @@ import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.engine.runtime.VariableInstance;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.instance.Process;
@@ -55,6 +56,8 @@ import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpe
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
+import static com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.byNameIn;
+import static com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.byProcessInstanceId;
 
 public class CamundaProcessService {
 
@@ -63,6 +66,7 @@ public class CamundaProcessService {
     private static final Logger logger = LoggerFactory.getLogger(CamundaProcessService.class);
 
     private final RuntimeService runtimeService;
+    private final CamundaRuntimeService camundaRuntimeService;
     private final RepositoryService repositoryService;
     private final CamundaRepositoryService camundaRepositoryService;
     private final FormService formService;
@@ -71,11 +75,14 @@ public class CamundaProcessService {
     private final ValtimoProperties valtimoProperties;
 
     public CamundaProcessService(
-        RuntimeService runtimeService, RepositoryService repositoryService, CamundaRepositoryService camundaRepositoryService, FormService formService,
+        RuntimeService runtimeService,
+        CamundaRuntimeService camundaRuntimeService,
+        RepositoryService repositoryService, CamundaRepositoryService camundaRepositoryService, FormService formService,
         CamundaHistoryService historyService, ProcessPropertyService processPropertyService,
         ValtimoProperties valtimoProperties
     ) {
         this.runtimeService = runtimeService;
+        this.camundaRuntimeService = camundaRuntimeService;
         this.repositoryService = repositoryService;
         this.camundaRepositoryService = camundaRepositoryService;
         this.formService = formService;
@@ -85,7 +92,7 @@ public class CamundaProcessService {
     }
 
     public CamundaProcessDefinition findProcessDefinitionById(String processDefinitionId) {
-        return camundaRepositoryService.findById(processDefinitionId);
+        return camundaRepositoryService.findProcessDefinitionById(processDefinitionId);
     }
 
     public CamundaProcessDefinition getProcessDefinitionById(String processDefinitionId) {
@@ -98,7 +105,7 @@ public class CamundaProcessService {
     }
 
     public boolean processDefinitionExistsByKey(String processDefinitionKey) {
-        return camundaRepositoryService.count(byKey(processDefinitionKey)) >= 1;
+        return camundaRepositoryService.countProcessDefinitions(byKey(processDefinitionKey)) >= 1;
     }
 
     public Optional<ProcessInstance> findProcessInstanceById(String processInstanceId) {
@@ -133,31 +140,29 @@ public class CamundaProcessService {
     }
 
     public CamundaProcessDefinition getProcessDefinition(String processDefinitionKey) {
-        return camundaRepositoryService.find(
+        return camundaRepositoryService.findProcessDefinition(
             byKey(processDefinitionKey)
                 .and(byLatestVersion())
         );
     }
 
     public Map<String, Object> getProcessInstanceVariables(String processInstanceId, List<String> variableNames) {
-        List<VariableInstance> variableInstances = runtimeService
-            .createVariableInstanceQuery()
-            .processInstanceIdIn(processInstanceId)
-            .variableNameIn(variableNames.toArray(String[]::new))
-            .orderByVariableName()
-            .desc()
-            .list();
+        List<CamundaVariableInstance> variableInstances = camundaRuntimeService.findVariableInstances(
+            byProcessInstanceId(processInstanceId)
+                .and(byNameIn(variableNames.toArray(String[]::new))),
+            Sort.by(Sort.Direction.DESC, NAME)
+        );
 
         return variableInstances
             .stream()
             .filter(variableInstance -> variableInstance.getValue() != null)
-            .collect(Collectors.toMap(VariableInstance::getName, VariableInstance::getValue));
+            .collect(Collectors.toMap(CamundaVariableInstance::getName, CamundaVariableInstance::getValue));
     }
 
     public List<CamundaHistoricProcessInstance> getAllActiveContextProcessesStartedByCurrentUser(
         Set<String> processes, String userLogin
     ) {
-        List<CamundaHistoricProcessInstance> historicProcessInstances = historyService.findAll(
+        List<CamundaHistoricProcessInstance> historicProcessInstances = historyService.findHistoricProcessInstances(
             byStartUserId(userLogin)
                 .and(byUnfinished())
         );
@@ -170,7 +175,7 @@ public class CamundaProcessService {
     }
 
     public List<CamundaProcessDefinition> getDeployedDefinitions() {
-        return camundaRepositoryService.findAll(
+        return camundaRepositoryService.findProcessDefinitions(
             byActive()
             .and(byLatestVersion()),
             Sort.by(NAME)

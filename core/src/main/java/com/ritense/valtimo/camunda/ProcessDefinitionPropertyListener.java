@@ -48,7 +48,7 @@ public class ProcessDefinitionPropertyListener {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReadyEvent() {
-        camundaRepositoryService.findAll(byLatestVersion()).forEach(processDefinition ->
+        camundaRepositoryService.findProcessDefinitions(byLatestVersion()).forEach(processDefinition ->
             saveProcessDefinitionProperties(
                 processDefinition.getKey(),
                 isSystemProcess(repositoryService.getBpmnModelInstance(processDefinition.getId()))

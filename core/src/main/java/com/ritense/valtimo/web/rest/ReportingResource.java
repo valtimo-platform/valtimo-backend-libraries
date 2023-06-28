@@ -259,8 +259,8 @@ public class ReportingResource {
             historicProcessInstanceQueryUnfinished.and(byEndTimeBefore(toDate));
         }
 
-        Long unfinishedInstances = camundaHistoryService.count(historicProcessInstanceQueryUnfinished.and(byUnfinished()));
-        Long finishedInstances = camundaHistoryService.count(historicProcessInstanceQueryFinished.and(byFinished()));
+        Long unfinishedInstances = camundaHistoryService.countHistoricProcessInstances(historicProcessInstanceQueryUnfinished.and(byUnfinished()));
+        Long finishedInstances = camundaHistoryService.countHistoricProcessInstances(historicProcessInstanceQueryFinished.and(byFinished()));
 
         List<Long> data = new ArrayList<>();
         data.add(unfinishedInstances);

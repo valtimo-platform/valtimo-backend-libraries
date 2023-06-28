@@ -61,7 +61,7 @@ public class CamundaReportingRepository {
         if (Optional.ofNullable(processDefinitionKey).isPresent()) {
             processDefinitionQuery.and(byKey(processDefinitionKey));
         }
-        List<CamundaProcessDefinition> deploydDefinitions = repositoryService.findAll(processDefinitionQuery);
+        List<CamundaProcessDefinition> deploydDefinitions = repositoryService.findProcessDefinitions(processDefinitionQuery);
         List<InstanceCount> instanceCounts = session.selectList("com.ritense.valtimo.mapper.getInstanceCount", parameters);
         return new InstanceCountChart(deploydDefinitions, instanceCounts);
     }

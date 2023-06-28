@@ -44,12 +44,12 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ActivityTypeWithEventName.START_EVENT_START
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
 import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -79,7 +79,7 @@ class FormSubmissionServiceTest {
     lateinit var documentSequenceGeneratorService: DocumentSequenceGeneratorService
 
     lateinit var formProcessLink: FormProcessLink
-    lateinit var processDefinition: ProcessDefinition
+    lateinit var processDefinition: CamundaProcessDefinition
     lateinit var formDefinition: FormIoFormDefinition
 
     @BeforeEach
@@ -110,7 +110,7 @@ class FormSubmissionServiceTest {
 
         formProcessLink = formProcessLink()
 
-        processDefinition = mock<ProcessDefinition>()
+        processDefinition = mock<CamundaProcessDefinition>()
         whenever(processDefinition.key).thenReturn("myProcessDefinitionKey")
         whenever(camundaProcessService.getProcessDefinitionById(formProcessLink.processDefinitionId))
             .thenReturn(processDefinition)

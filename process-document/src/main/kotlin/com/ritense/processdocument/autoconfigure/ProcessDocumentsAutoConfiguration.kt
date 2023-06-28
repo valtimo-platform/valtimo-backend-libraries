@@ -27,6 +27,8 @@ import com.ritense.processdocument.service.CorrelationServiceImpl
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaProcessService
@@ -60,15 +62,18 @@ class ProcessDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(CorrelationService::class)
     fun correlationService(
         runtimeService: RuntimeService,
+        camundaRuntimeService: CamundaRuntimeService,
         documentService: DocumentService,
         processDocumentAssociationService: ProcessDocumentAssociationService,
         camundaProcessService: CamundaProcessService,
-        repositoryService: RepositoryService
+        repositoryService: RepositoryService,
+        camundaRepositoryService: CamundaRepositoryService,
     ): CorrelationService {
         return CorrelationServiceImpl(
             runtimeService = runtimeService,
+            camundaRuntimeService = camundaRuntimeService,
             documentService = documentService,
-            camundaProcessService = camundaProcessService,
+            camundaRepositoryService = camundaRepositoryService,
             repositoryService = repositoryService,
             associationService = processDocumentAssociationService
         )

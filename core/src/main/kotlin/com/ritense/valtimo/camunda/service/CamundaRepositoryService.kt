@@ -25,23 +25,29 @@ import org.camunda.bpm.engine.RepositoryService
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 
-class CamundaRepositoryService(
+open class CamundaRepositoryService(
     private val repositoryService: RepositoryService,
     private val camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository
 ) {
 
-    fun findById(processDefinitionId: String) = find(byId(processDefinitionId))
-    fun findLatest(processDefinitionKey: String) = find(byKey(processDefinitionKey).and(byLatestVersion()))
+    fun findProcessDefinitionById(processDefinitionId: String): CamundaProcessDefinition? =
+        findProcessDefinition(byId(processDefinitionId))
 
-    fun findAll(specification: Specification<CamundaProcessDefinition>, sort: Sort) =
+    fun findLatestProcessDefinition(processDefinitionKey: String): CamundaProcessDefinition? =
+        findProcessDefinition(byKey(processDefinitionKey).and(byLatestVersion()))
+
+    fun findProcessDefinitions(
+        specification: Specification<CamundaProcessDefinition>,
+        sort: Sort
+    ): List<CamundaProcessDefinition> =
         camundaProcessDefinitionRepository.findAll(specification, sort)
 
-    fun findAll(specification: Specification<CamundaProcessDefinition>) =
+    fun findProcessDefinitions(specification: Specification<CamundaProcessDefinition>): List<CamundaProcessDefinition> =
         camundaProcessDefinitionRepository.findAll(specification)
 
-    fun find(specification: Specification<CamundaProcessDefinition>) =
+    fun findProcessDefinition(specification: Specification<CamundaProcessDefinition>): CamundaProcessDefinition? =
         camundaProcessDefinitionRepository.findOne(specification).orElse(null)
 
-    fun count(specification: Specification<CamundaProcessDefinition>) =
+    fun countProcessDefinitions(specification: Specification<CamundaProcessDefinition>) =
         camundaProcessDefinitionRepository.count(specification)
 }

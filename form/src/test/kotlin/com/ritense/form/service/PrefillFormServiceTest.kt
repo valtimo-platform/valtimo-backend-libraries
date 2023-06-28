@@ -29,8 +29,8 @@ import com.ritense.valtimo.contract.json.patch.operation.AddOperation
 import com.ritense.valtimo.contract.json.patch.operation.Operation
 import com.ritense.valtimo.contract.json.patch.operation.ReplaceOperation
 import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.CamundaTaskService
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
@@ -41,7 +41,7 @@ class PrefillFormServiceTest : BaseTest() {
     lateinit var documentService: JsonSchemaDocumentService
     lateinit var formDefinitionService: FormIoFormDefinitionService
     lateinit var camundaProcessService: CamundaProcessService
-    lateinit var taskService: TaskService
+    lateinit var taskService: CamundaTaskService
     lateinit var formFieldDataResolver: FormFieldDataResolver
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
 

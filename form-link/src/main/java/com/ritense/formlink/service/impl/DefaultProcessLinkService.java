@@ -23,9 +23,8 @@ import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.ProcessLinkService;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import org.camunda.bpm.engine.RepositoryService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -33,17 +32,19 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byActive;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byId;
 import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
 public class DefaultProcessLinkService implements ProcessLinkService {
-    private final RepositoryService repositoryService;
+    private final CamundaRepositoryService repositoryService;
     private final CamundaTaskService taskService;
     private final FormAssociationService formAssociationService;
     private final List<FormLinkTaskProvider> formLinkTaskProviders;
 
     public DefaultProcessLinkService(
-        RepositoryService repositoryService,
+        CamundaRepositoryService repositoryService,
         CamundaTaskService taskService,
         FormAssociationService formAssociationService,
         List<FormLinkTaskProvider> formLinkTaskProviders
@@ -58,11 +59,11 @@ public class DefaultProcessLinkService implements ProcessLinkService {
     @Transactional(isolation = SERIALIZABLE)
     public TaskOpenResult openTask(UUID taskId) {
         CamundaTask task = taskService.findTask(
-            CamundaTaskSpecificationHelper.byId(taskId.toString())
-                .and(CamundaTaskSpecificationHelper.byActive())
+            byId(taskId.toString())
+                .and(byActive())
         );
 
-        final var processDefinition = repositoryService.getProcessDefinition(task.getProcessDefinitionId());
+        final var processDefinition = repositoryService.findProcessDefinitionById(task.getProcessDefinitionId());
 
         Optional<? extends FormAssociation> formAssociationOptional = formAssociationService.getFormAssociationByFormLinkId(
             processDefinition.getKey(),

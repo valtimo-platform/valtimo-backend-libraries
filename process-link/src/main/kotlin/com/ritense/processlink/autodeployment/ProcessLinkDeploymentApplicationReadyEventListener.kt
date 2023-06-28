@@ -70,7 +70,7 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
 
     private fun getProcessDefinitionId(fileName: String): String {
         val processDefinitionKey = fileName.substringBefore(".processlink.json")
-        return repositoryService.findLatest(processDefinitionKey).id
+        return repositoryService.findLatestProcessDefinition(processDefinitionKey)!!.id
     }
 
     private fun getProcessLinks(

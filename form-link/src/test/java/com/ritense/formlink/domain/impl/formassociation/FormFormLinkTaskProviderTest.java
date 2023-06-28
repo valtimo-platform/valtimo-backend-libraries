@@ -20,7 +20,7 @@ import com.ritense.formlink.domain.FormLink;
 import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
-import org.camunda.bpm.engine.task.Task;
+import com.ritense.valtimo.camunda.domain.CamundaTask;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -55,7 +55,7 @@ class FormFormLinkTaskProviderTest {
     void getTaskResultShouldReturnTaskKey() {
         FormLink formLink = new BpmnElementFormIdLink("task-id", UUID.randomUUID());
 
-        TaskOpenResult<FormTaskOpenResultProperties> taskResult = provider.getTaskResult(mock(Task.class), formLink);
+        TaskOpenResult<FormTaskOpenResultProperties> taskResult = provider.getTaskResult(mock(CamundaTask.class), formLink);
 
         assertEquals("form", taskResult.getType());
         assertEquals("task-id", taskResult.getProperties().getFormLinkId());

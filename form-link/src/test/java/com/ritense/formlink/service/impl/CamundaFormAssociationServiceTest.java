@@ -35,7 +35,7 @@ import com.ritense.formlink.repository.impl.JdbcProcessFormAssociationRepository
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
-import org.camunda.bpm.engine.TaskService;
+import com.ritense.valtimo.service.CamundaTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -63,7 +63,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     private ProcessDocumentAssociationService processDocumentAssociationService;
     private CamundaProcessService camundaProcessService;
     private JdbcProcessFormAssociationRepository processFormAssociationRepository;
-    private TaskService taskService;
+    private CamundaTaskService taskService;
     private FormIoJsonPatchSubmissionTransformerService submissionTransformerService;
     private CamundaProcessFormAssociation processFormAssociation;
     private UUID processFormAssociationId;
@@ -77,7 +77,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         documentService = mock(JsonSchemaDocumentService.class);
         processDocumentAssociationService = mock(ProcessDocumentAssociationService.class);
         camundaProcessService = mock(CamundaProcessService.class);
-        taskService = mock(TaskService.class);
+        taskService = mock(CamundaTaskService.class);
         submissionTransformerService = mock(FormIoJsonPatchSubmissionTransformerService.class);
         formFieldDataResolver = mock(FormFieldDataResolver.class);
 

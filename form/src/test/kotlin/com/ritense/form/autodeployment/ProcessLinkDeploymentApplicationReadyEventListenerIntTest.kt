@@ -19,10 +19,9 @@ package com.ritense.form.autodeployment
 import com.ritense.form.BaseIntegrationTest
 import com.ritense.form.domain.FormProcessLink
 import com.ritense.processlink.repository.ProcessLinkRepository
-import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.repository.ProcessDefinition
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasSize
 import org.hamcrest.Matchers.isA
 import org.hamcrest.Matchers.notNullValue
@@ -31,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 
 class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired constructor(
-    private val repositoryService: RepositoryService,
+    private val repositoryService: CamundaRepositoryService,
     private val processLinkRepository: ProcessLinkRepository
 ): BaseIntegrationTest() {
 
@@ -48,10 +47,7 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
         assertThat(processLink.formDefinitionId, notNullValue())
     }
 
-    private fun getLatestProcessDefinition(): ProcessDefinition {
-        return repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey("form-one-task-process")
-            .latestVersion()
-            .singleResult()
+    private fun getLatestProcessDefinition(): CamundaProcessDefinition {
+        return repositoryService.findLatestProcessDefinition("form-one-task-process")
     }
 }

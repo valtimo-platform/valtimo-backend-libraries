@@ -110,7 +110,6 @@ public class ProcessResource extends AbstractProcessResource {
 
     private final TaskService taskService;
     private final HistoryService historyService;
-    private final CamundaHistoryService camundaHistoryService;
     private final RuntimeService runtimeService;
     private final CamundaRepositoryService repositoryService;
     private final CamundaTaskService camundaTaskService;
@@ -135,7 +134,6 @@ public class ProcessResource extends AbstractProcessResource {
         super(camundaHistoryService, repositoryService, camundaRepositoryService, camundaTaskService);
         this.taskService = taskService;
         this.historyService = historyService;
-        this.camundaHistoryService = camundaHistoryService;
         this.runtimeService = runtimeService;
         this.repositoryService = camundaRepositoryService;
         this.camundaTaskService = camundaTaskService;
@@ -160,7 +158,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/definition/{processDefinitionKey}")
     public ResponseEntity<CamundaProcessDefinitionDto> getProcessDefinition(@PathVariable String processDefinitionKey) {
-        CamundaProcessDefinition processDefinition = repositoryService.find(
+        CamundaProcessDefinition processDefinition = repositoryService.findProcessDefinition(
             byKey(processDefinitionKey)
                 .and(byLatestVersion())
         );
@@ -173,7 +171,7 @@ public class ProcessResource extends AbstractProcessResource {
     public ResponseEntity<List<CamundaProcessDefinitionDto>> getProcessDefinitionVersions(
             @PathVariable String processDefinitionKey
     ) {
-        List<CamundaProcessDefinition> deployedDefinitions = repositoryService.findAll(
+        List<CamundaProcessDefinition> deployedDefinitions = repositoryService.findProcessDefinitions(
                 byKey(processDefinitionKey),
                 Sort.by(VERSION)
         );
@@ -417,7 +415,7 @@ public class ProcessResource extends AbstractProcessResource {
                 .and(byProcessInstanceId(processInstanceId))
         );
         return Optional.ofNullable(task)
-                .map(taskResult -> ResponseEntity.ok(CamundaTaskDto.Companion.of(taskResult)))
+                .map(taskResult -> ResponseEntity.ok(CamundaTaskDto.of(taskResult)))
                 .orElse(ResponseEntity.noContent().build());
     }
 

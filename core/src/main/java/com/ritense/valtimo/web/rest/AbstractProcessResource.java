@@ -19,7 +19,6 @@ package com.ritense.valtimo.web.rest;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.service.CamundaTaskService;
@@ -47,6 +46,10 @@ import java.util.stream.Collectors;
 import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byProcessInstanceId;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byVersion;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCreateTimeAfter;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCreateTimeBefore;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byName;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessDefinitionId;
 
 public abstract class AbstractProcessResource {
 
@@ -63,7 +66,7 @@ public abstract class AbstractProcessResource {
     }
 
     public CamundaProcessDefinition getProcessDefinition(String processDefinitionKey, Integer version) {
-        return camundaRepositoryService.find(byKey(processDefinitionKey).and(byVersion(version)));
+        return camundaRepositoryService.findProcessDefinition(byKey(processDefinitionKey).and(byVersion(version)));
     }
 
     public ProcessDefinitionDiagramDto createProcessDefinitionDiagramDto(String processDefinitionId) throws UnsupportedEncodingException {
@@ -114,24 +117,23 @@ public abstract class AbstractProcessResource {
         Integer duration
     ) {
         // Get, group and count all task instances
-        var taskQuery = CamundaTaskSpecificationHelper.byProcessDefinitionId(processDefinition.getId());
+        var taskQuery = byProcessDefinitionId(processDefinition.getId());
 
         if (StringUtils.isNotBlank(searchStatus)) {
-            taskQuery.and(CamundaTaskSpecificationHelper.byName(searchStatus));
+            taskQuery.and(byName(searchStatus));
         }
 
         if (fromDate != null) {
-            taskQuery.and(CamundaTaskSpecificationHelper.byCreateTimeAfter(fromDate));
+            taskQuery.and(byCreateTimeAfter(fromDate));
         }
 
         if (toDate != null) {
-            taskQuery.and(CamundaTaskSpecificationHelper.byCreateTimeBefore(toDate));
+            taskQuery.and(byCreateTimeBefore(toDate));
         }
 
         if (duration != null) {
             LocalDate dayinPast = LocalDate.now().minusDays(duration);
-            taskQuery.and(CamundaTaskSpecificationHelper
-                .byCreateTimeBefore(Date.from(dayinPast.atStartOfDay(ZoneId.systemDefault()).toInstant())));
+            taskQuery.and(byCreateTimeBefore(Date.from(dayinPast.atStartOfDay(ZoneId.systemDefault()).toInstant())));
         }
         return taskService.findTasks(taskQuery);
     }
@@ -189,7 +191,7 @@ public abstract class AbstractProcessResource {
     }
 
     public CamundaHistoricProcessInstance getHistoricProcessInstance(String processInstanceId) {
-        return historyService.find(byProcessInstanceId(processInstanceId));
+        return historyService.findHistoricProcessInstance(byProcessInstanceId(processInstanceId));
     }
 
     public static class ResultCount {

@@ -26,12 +26,12 @@ class CamundaHistoryService(
     private val camundaHistoricProcessInstanceRepository: CamundaHistoricProcessInstanceRepository
 ) {
 
-    fun findAll(specification: Specification<CamundaHistoricProcessInstance>) =
+    fun findHistoricProcessInstances(specification: Specification<CamundaHistoricProcessInstance>): List<CamundaHistoricProcessInstance> =
         camundaHistoricProcessInstanceRepository.findAll(specification)
 
-    fun find(specification: Specification<CamundaHistoricProcessInstance>) =
+    fun findHistoricProcessInstance(specification: Specification<CamundaHistoricProcessInstance>): CamundaHistoricProcessInstance? =
         camundaHistoricProcessInstanceRepository.findOne(specification).orElse(null)
 
-    fun count(specification: Specification<CamundaHistoricProcessInstance>) =
+    fun countHistoricProcessInstances(specification: Specification<CamundaHistoricProcessInstance>) =
         camundaHistoricProcessInstanceRepository.count(specification)
 }

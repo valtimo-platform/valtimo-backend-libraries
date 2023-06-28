@@ -108,4 +108,5 @@ public class DelegateTaskHelper {
                 && camundaProperty.getCamundaValue().equalsIgnoreCase(PUBLIC_TASK_PROPERTY_VALUE)
         );
     }
+
 }

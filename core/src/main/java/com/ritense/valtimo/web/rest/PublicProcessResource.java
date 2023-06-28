@@ -70,7 +70,7 @@ public class PublicProcessResource {
         HttpServletRequest request,
         @PathVariable String processDefinitionKey) {
 
-        CamundaProcessDefinition processDefinition = repositoryService.find(
+        CamundaProcessDefinition processDefinition = repositoryService.findProcessDefinition(
             byKey(processDefinitionKey)
                 .and(byLatestVersion())
         );

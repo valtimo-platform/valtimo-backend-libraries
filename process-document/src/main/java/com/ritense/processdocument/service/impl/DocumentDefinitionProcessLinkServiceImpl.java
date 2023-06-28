@@ -46,7 +46,7 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         var link = documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
 
         if (link.isPresent()) {
-            var processDefinition = repositoryService.findLatest(link.get().getId().getProcessDefinitionKey());
+            var processDefinition = repositoryService.findLatestProcessDefinition(link.get().getId().getProcessDefinitionKey());
 
             return new DocumentDefinitionProcess(processDefinition.getKey(), processDefinition.getName());
         }
@@ -59,7 +59,7 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         var links = documentDefinitionProcessLinkRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
 
         return links.stream().map(link -> {
-            var processDefinition = repositoryService.findLatest(link.getId().getProcessDefinitionKey());
+            var processDefinition = repositoryService.findLatestProcessDefinition(link.getId().getProcessDefinitionKey());
 
             return new DocumentDefinitionProcess(processDefinition.getKey(), processDefinition.getName());
         }).toList();
@@ -75,7 +75,7 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         String documentDefinitionName,
         DocumentDefinitionProcessRequest request) {
 
-        var processDefinition = repositoryService.findLatest(request.getProcessDefinitionKey());
+        var processDefinition = repositoryService.findLatestProcessDefinition(request.getProcessDefinitionKey());
 
         if (processDefinition == null) {
             throw new IllegalArgumentException("Unknown process definition with key: " + request.getProcessDefinitionKey());

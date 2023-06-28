@@ -36,6 +36,7 @@ import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.delegate.DelegateTask
+import org.camunda.bpm.engine.delegate.VariableScope
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -211,7 +212,7 @@ internal class PortaaltaakPluginTest {
     fun `should get a correct taak identification`() {
         val processInstanceId = UUID.randomUUID().toString()
         whenever(delegateTask.processInstanceId).thenReturn(processInstanceId)
-        whenever(processDocumentService.getDocumentId(any(), any())).thenReturn(jsonSchemaDocumentId)
+        whenever(processDocumentService.getDocumentId(any(), any<VariableScope>())).thenReturn(jsonSchemaDocumentId)
         whenever(jsonSchemaDocumentId.id).thenReturn(UUID.randomUUID())
         whenever(zaakInstanceLinkService.getByDocumentId(jsonSchemaDocumentId.id)).thenReturn(getZaakInstanceLink())
         whenever(pluginService.createInstance(any<Class<ZakenApiPlugin>>(), any())).thenReturn(zakenApiPlugin)
@@ -234,7 +235,7 @@ internal class PortaaltaakPluginTest {
     fun `should throw exception when getting zaak initiator with invalid zaakUrl`() {
         val processInstanceId = UUID.randomUUID().toString()
         whenever(delegateTask.processInstanceId).thenReturn(processInstanceId)
-        whenever(processDocumentService.getDocumentId(any(), any())).thenReturn(jsonSchemaDocumentId)
+        whenever(processDocumentService.getDocumentId(any(), any<VariableScope>())).thenReturn(jsonSchemaDocumentId)
         whenever(jsonSchemaDocumentId.id).thenReturn(UUID.randomUUID())
         whenever(zaakInstanceLinkService.getByDocumentId(jsonSchemaDocumentId.id)).thenReturn(getZaakInstanceLink())
         whenever(pluginService.createInstance(any<Class<ZakenApiPlugin>>(), any())).thenReturn(null)
@@ -252,7 +253,7 @@ internal class PortaaltaakPluginTest {
     fun `should throw exception when no rol was found for zaak url`() {
         val processInstanceId = UUID.randomUUID().toString()
         whenever(delegateTask.processInstanceId).thenReturn(processInstanceId)
-        whenever(processDocumentService.getDocumentId(any(), any())).thenReturn(jsonSchemaDocumentId)
+        whenever(processDocumentService.getDocumentId(any(), any<VariableScope>())).thenReturn(jsonSchemaDocumentId)
         whenever(jsonSchemaDocumentId.id).thenReturn(UUID.randomUUID())
         whenever(zaakInstanceLinkService.getByDocumentId(jsonSchemaDocumentId.id)).thenReturn(getZaakInstanceLink())
         whenever(pluginService.createInstance(any<Class<ZakenApiPlugin>>(), any())).thenReturn(zakenApiPlugin)
@@ -273,7 +274,7 @@ internal class PortaaltaakPluginTest {
     fun `should get a correct zaak initiator`() {
         val processInstanceId = UUID.randomUUID().toString()
         whenever(delegateTask.processInstanceId).thenReturn(processInstanceId)
-        whenever(processDocumentService.getDocumentId(any(), any())).thenReturn(jsonSchemaDocumentId)
+        whenever(processDocumentService.getDocumentId(any(), any<VariableScope>())).thenReturn(jsonSchemaDocumentId)
         whenever(jsonSchemaDocumentId.id).thenReturn(UUID.randomUUID())
         whenever(zaakInstanceLinkService.getByDocumentId(jsonSchemaDocumentId.id)).thenReturn(getZaakInstanceLink())
         whenever(pluginService.createInstance(any<Class<ZakenApiPlugin>>(), any())).thenReturn(zakenApiPlugin)

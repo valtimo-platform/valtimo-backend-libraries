@@ -27,8 +27,10 @@ import com.ritense.valtimo.camunda.repository.CamundaTaskRepository
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
 import com.ritense.valtimo.camunda.service.CamundaHistoryService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RepositoryService
+import org.camunda.bpm.engine.RuntimeService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
@@ -67,6 +69,15 @@ class ValtimoCamundaAutoConfiguration {
         camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
     ): CamundaRepositoryService {
         return CamundaRepositoryService(repositoryService, camundaProcessDefinitionRepository)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaRuntimeService::class)
+    fun camundaRuntimeService(
+        runtimeService: RuntimeService,
+        camundaVariableInstanceRepository: CamundaVariableInstanceRepository,
+    ): CamundaRuntimeService {
+        return CamundaRuntimeService(runtimeService, camundaVariableInstanceRepository)
     }
 
 }

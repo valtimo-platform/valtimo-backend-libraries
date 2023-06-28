@@ -90,7 +90,7 @@ internal class FormFlowFormLinkTaskProviderTest {
     fun `intercepts CreateTaskCmd and handle correctly`() {
         whenever(runtimeService.createProcessInstanceQuery().processInstanceId(any()).singleResult())
             .thenReturn(mock())
-        val task: CamundaTask = mock()
+        val task: CamundaTask = mock(defaultAnswer = RETURNS_DEEP_STUBS)
         val formFlowDefinition: FormFlowDefinition = mock()
         val formLink: BpmnElementFormFlowIdLink = mock()
         val formAssociation: FormAssociation = mock()

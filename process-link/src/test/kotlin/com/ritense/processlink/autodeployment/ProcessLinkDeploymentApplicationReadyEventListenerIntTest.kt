@@ -19,8 +19,8 @@ package com.ritense.processlink.autodeployment
 import com.ritense.processlink.BaseIntegrationTest
 import com.ritense.processlink.domain.CustomProcessLink
 import com.ritense.processlink.repository.ProcessLinkRepository
-import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.repository.ProcessDefinition
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.hasSize
@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 
 class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired constructor(
-    private val repositoryService: RepositoryService,
+    private val repositoryService: CamundaRepositoryService,
     private val processLinkRepository: ProcessLinkRepository
 ): BaseIntegrationTest() {
 
@@ -46,10 +46,7 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
         assertThat(processLink.someValue, Matchers.equalTo("test"))
     }
 
-    private fun getLatestProcessDefinition(): ProcessDefinition {
-        return repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey("auto-deploy-process-link")
-            .latestVersion()
-            .singleResult()
+    private fun getLatestProcessDefinition(): CamundaProcessDefinition {
+        return repositoryService.findLatestProcessDefinition("auto-deploy-process-link")
     }
 }

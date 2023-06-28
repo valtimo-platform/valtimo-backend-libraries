@@ -269,33 +269,6 @@ public class CamundaTaskService {
         return new PageImpl<>(tasks, pageable, total);
     }
 
-    private ValtimoUser getValtimoUser(String assigneeEmail) {
-        return userManagementService.findByEmail(assigneeEmail).map(user ->
-                new ValtimoUserBuilder()
-                    .id(user.getId())
-                    .firstName(user.getFirstName())
-                    .lastName(user.getLastName())
-                    .build())
-            .orElse(null);
-    }
-
-    private List<Order> getOrderBy(Root<CamundaTask> root, Sort sort) {
-        return sort.stream()
-            .map(order -> {
-                String sortProperty;
-                if (order.getProperty().equals("created")) {
-                    sortProperty = CREATE_TIME;
-                } else if (order.getProperty().equals("due")) {
-                    sortProperty = DUE_DATE;
-                } else {
-                    sortProperty = order.getProperty();
-                }
-                return new OrderImpl(root.get(sortProperty), order.getDirection().isAscending());
-            })
-            .map(Order.class::cast)
-            .toList();
-    }
-
     public List<TaskInstanceWithIdentityLink> getProcessInstanceTasks(String processInstanceId, String businessKey) {
         return findTasks(byProcessInstanceId(processInstanceId), Sort.by(DESC, CREATE_TIME))
             .stream()
@@ -303,7 +276,7 @@ public class CamundaTaskService {
                 final var identityLinks = getIdentityLinks(task.getId());
                 return new TaskInstanceWithIdentityLink(
                     businessKey,
-                    CamundaTaskDto.Companion.of(task),
+                    CamundaTaskDto.of(task),
                     delegateTaskHelper.isTaskPublic(task),
                     getProcessDefinitionKey(task.getProcessDefinitionId()),
                     identityLinks
@@ -377,6 +350,33 @@ public class CamundaTaskService {
         }
 
         return filterSpec;
+    }
+
+    private ValtimoUser getValtimoUser(String assigneeEmail) {
+        return userManagementService.findByEmail(assigneeEmail).map(user ->
+                new ValtimoUserBuilder()
+                    .id(user.getId())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .build())
+            .orElse(null);
+    }
+
+    private List<Order> getOrderBy(Root<CamundaTask> root, Sort sort) {
+        return sort.stream()
+            .map(order -> {
+                String sortProperty;
+                if (order.getProperty().equals("created")) {
+                    sortProperty = CREATE_TIME;
+                } else if (order.getProperty().equals("due")) {
+                    sortProperty = DUE_DATE;
+                } else {
+                    sortProperty = order.getProperty();
+                }
+                return new OrderImpl(root.get(sortProperty), order.getDirection().isAscending());
+            })
+            .map(Order.class::cast)
+            .toList();
     }
 
     public boolean hasTaskFormData(String taskId) {

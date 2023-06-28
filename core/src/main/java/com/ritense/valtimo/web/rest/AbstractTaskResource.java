@@ -55,7 +55,7 @@ public abstract class AbstractTaskResource {
 
     public CustomTaskDto createCustomTaskDto(String id, HttpServletRequest request) {
         final CamundaTask task = camundaTaskService.findTaskById(id);
-        CamundaTaskDto taskDto = CamundaTaskDto.Companion.of(task);
+        CamundaTaskDto taskDto = CamundaTaskDto.of(task);
 
         ProcessInstance processInstance = camundaProcessService.findProcessInstanceById(taskDto.getProcessInstanceId()).orElseThrow();
         CamundaProcessDefinition processDefinition = camundaProcessService.findProcessDefinitionById(processInstance.getProcessDefinitionId());

@@ -58,7 +58,7 @@ public class ProcessPropertyService {
     }
 
     private String getProcessDefinitionKeyById(String processDefinitionId) {
-        var processDefinition = repositoryService.findById(processDefinitionId);
+        var processDefinition = repositoryService.findProcessDefinitionById(processDefinitionId);
         if (processDefinition == null) {
             throw new RuntimeException("Failed to find process definition with id: " + processDefinitionId);
         }

@@ -59,8 +59,9 @@ class CamundaVariableInstance(
     @JoinColumn(name = "EXECUTION_ID_")
     val execution: CamundaExecution?,
 
-    @Column(name = "PROC_INST_ID_")
-    val processInstanceId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROC_INST_ID_")
+    val processInstance: CamundaExecution?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_DEF_ID_")
