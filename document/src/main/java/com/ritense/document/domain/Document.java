@@ -25,8 +25,9 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import com.ritense.valtimo.poc.Record;
 
-public interface Document {
+public interface Document extends Record {
 
     @JsonProperty
     Id id();

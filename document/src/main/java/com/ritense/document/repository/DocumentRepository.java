@@ -17,13 +17,19 @@
 package com.ritense.document.repository;
 
 import com.ritense.document.domain.Document;
+import com.ritense.valtimo.poc.RecordRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
-public interface DocumentRepository<T extends Document> extends JpaRepository<T, Document.Id> {
+public interface DocumentRepository<T extends Document> extends JpaRepository<T, Document.Id>, RecordRepository {
+    @Override
+    default boolean supports(@NotNull String recordType) {
+        return Document.class.getSimpleName().equals(recordType);
+    }
 
     Page<T> findAllByDocumentDefinitionIdName(
         Pageable pageable,
