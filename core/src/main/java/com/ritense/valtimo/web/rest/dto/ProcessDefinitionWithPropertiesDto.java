@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.web.rest.dto;
 
-import org.camunda.bpm.engine.repository.ProcessDefinition;
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDto;
 
 public class ProcessDefinitionWithPropertiesDto extends ProcessDefinitionDto {
@@ -31,12 +31,12 @@ public class ProcessDefinitionWithPropertiesDto extends ProcessDefinitionDto {
         return isReadOnly;
     }
 
-    public static ProcessDefinitionWithPropertiesDto fromProcessDefinition(ProcessDefinition definition) {
+    public static ProcessDefinitionWithPropertiesDto fromProcessDefinition(CamundaProcessDefinition definition) {
         ProcessDefinitionWithPropertiesDto dto = new ProcessDefinitionWithPropertiesDto();
         dto.id = definition.getId();
         dto.key = definition.getKey();
         dto.category = definition.getCategory();
-        dto.description = definition.getDescription();
+        dto.description = null;
         dto.name = definition.getName();
         dto.version = definition.getVersion();
         dto.resource = definition.getResourceName();

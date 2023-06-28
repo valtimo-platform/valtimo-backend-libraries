@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper;
+import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.repository.CamundaReportingRepository;
 import com.ritense.valtimo.repository.camunda.dto.ChartInstance;
 import com.ritense.valtimo.repository.camunda.dto.ChartInstanceSeries;
@@ -25,7 +27,6 @@ import org.apache.ibatis.session.SqlSession;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.history.HistoricActivityInstance;
 import org.camunda.bpm.engine.history.HistoricActivityInstanceQuery;
-import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byEndTimeAfter;
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byEndTimeBefore;
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byFinished;
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byProcessDefinitionKey;
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byUnfinished;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
@@ -56,11 +62,13 @@ public class ReportingResource {
     private static final String ACTIVITY_USER_TASK = "userTask";
     private final SqlSession session;
     private final HistoryService historyService;
+    private final CamundaHistoryService camundaHistoryService;
     private final CamundaReportingRepository camundaReportingRepository;
 
-    public ReportingResource(SqlSession session, HistoryService historyService, CamundaReportingRepository camundaReportingRepository) {
+    public ReportingResource(SqlSession session, HistoryService historyService, CamundaHistoryService camundaHistoryService, CamundaReportingRepository camundaReportingRepository) {
         this.session = session;
         this.historyService = historyService;
+        this.camundaHistoryService = camundaHistoryService;
         this.camundaReportingRepository = camundaReportingRepository;
     }
 
@@ -233,26 +241,26 @@ public class ReportingResource {
         @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
         @RequestParam(value = "processFilter", required = false) String processDefinitionKey
     ) {
-        HistoricProcessInstanceQuery historicProcessInstanceQueryFinished = historyService.createHistoricProcessInstanceQuery();
-        HistoricProcessInstanceQuery historicProcessInstanceQueryUnfinished = historyService.createHistoricProcessInstanceQuery();
+        var historicProcessInstanceQueryFinished = CamundaHistoricProcessInstanceSpecificationHelper.query();
+        var historicProcessInstanceQueryUnfinished = CamundaHistoricProcessInstanceSpecificationHelper.query();
 
         if (Optional.ofNullable(processDefinitionKey).isPresent()) {
-            historicProcessInstanceQueryFinished.processDefinitionKey(processDefinitionKey);
-            historicProcessInstanceQueryUnfinished.processDefinitionKey(processDefinitionKey);
+            historicProcessInstanceQueryFinished.and(byProcessDefinitionKey(processDefinitionKey));
+            historicProcessInstanceQueryUnfinished.and(byProcessDefinitionKey(processDefinitionKey));
         }
 
         if (fromDate != null) {
-            historicProcessInstanceQueryFinished.finishedAfter(fromLocalDateToDate(fromDate));
-            historicProcessInstanceQueryUnfinished.finishedAfter(fromLocalDateToDate(fromDate));
+            historicProcessInstanceQueryFinished.and(byEndTimeAfter(fromDate));
+            historicProcessInstanceQueryUnfinished.and(byEndTimeAfter(fromDate));
         }
 
         if (toDate != null) {
-            historicProcessInstanceQueryFinished.finishedBefore(fromLocalDateToDate(toDate));
-            historicProcessInstanceQueryUnfinished.finishedBefore(fromLocalDateToDate(toDate));
+            historicProcessInstanceQueryFinished.and(byEndTimeBefore(toDate));
+            historicProcessInstanceQueryUnfinished.and(byEndTimeBefore(toDate));
         }
 
-        Long unfinishedInstances = historicProcessInstanceQueryUnfinished.unfinished().count();
-        Long finishedInstances = historicProcessInstanceQueryFinished.finished().count();
+        Long unfinishedInstances = camundaHistoryService.count(historicProcessInstanceQueryUnfinished.and(byUnfinished()));
+        Long finishedInstances = camundaHistoryService.count(historicProcessInstanceQueryFinished.and(byFinished()));
 
         List<Long> data = new ArrayList<>();
         data.add(unfinishedInstances);

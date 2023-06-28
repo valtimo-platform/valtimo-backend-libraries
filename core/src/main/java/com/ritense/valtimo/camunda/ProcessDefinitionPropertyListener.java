@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.camunda;
 
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.domain.processdefinition.ProcessDefinitionProperties;
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent;
 import com.ritense.valtimo.processdefinition.repository.ProcessDefinitionPropertiesRepository;
@@ -25,24 +26,29 @@ import org.camunda.bpm.model.xml.ModelInstance;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
+
 public class ProcessDefinitionPropertyListener {
 
     private static final String SYSTEM_PROCESS_PROPERTY = "systemProcess";
 
     private final ProcessDefinitionPropertiesRepository processDefinitionPropertiesRepository;
     private final RepositoryService repositoryService;
+    private final CamundaRepositoryService camundaRepositoryService;
 
     public ProcessDefinitionPropertyListener(
         ProcessDefinitionPropertiesRepository processDefinitionPropertiesRepository,
-        RepositoryService repositoryService
+        RepositoryService repositoryService,
+        CamundaRepositoryService camundaRepositoryService
     ) {
         this.processDefinitionPropertiesRepository = processDefinitionPropertiesRepository;
         this.repositoryService = repositoryService;
+        this.camundaRepositoryService = camundaRepositoryService;
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReadyEvent() {
-        repositoryService.createProcessDefinitionQuery().latestVersion().list().forEach(processDefinition ->
+        camundaRepositoryService.findAll(byLatestVersion()).forEach(processDefinition ->
             saveProcessDefinitionProperties(
                 processDefinition.getKey(),
                 isSystemProcess(repositoryService.getBpmnModelInstance(processDefinition.getId()))

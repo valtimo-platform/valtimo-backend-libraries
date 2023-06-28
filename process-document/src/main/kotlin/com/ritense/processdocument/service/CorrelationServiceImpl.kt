@@ -22,10 +22,10 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult
 import org.camunda.bpm.engine.runtime.MessageCorrelationResultType
 import org.camunda.bpm.engine.runtime.ProcessInstance
@@ -104,7 +104,7 @@ class CorrelationServiceImpl(
         return correlationResultProcessList
     }
 
-    private fun getLatestProcessDefinitionIdByKey(processDefinitionKey: String): ProcessDefinition {
+    private fun getLatestProcessDefinitionIdByKey(processDefinitionKey: String): CamundaProcessDefinition {
         return camundaProcessService.getProcessDefinition(processDefinitionKey)
             ?: throw RuntimeException("Failed to get process definition with key $processDefinitionKey")
     }

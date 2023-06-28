@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.camunda.domain
 
+import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -71,4 +72,7 @@ class CamundaProcessDefinition(
     @Column(name = "STARTABLE_")
     val isStartableInTasklist: Boolean
 
-)
+) {
+    fun isSuspended() = suspensionState == SuspensionState.SUSPENDED.stateCode
+
+}

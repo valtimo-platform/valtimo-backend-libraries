@@ -102,8 +102,8 @@ public class ReminderServiceImpl implements ReminderService {
 
     private List<CamundaTask> tasksFor(String role) {
         return taskService.findTasks(
-            CamundaTaskSpecificationHelper.INSTANCE.byCandidateGroups(role)
-                .and(CamundaTaskSpecificationHelper.INSTANCE.byUnassigned())
+            CamundaTaskSpecificationHelper.byCandidateGroups(role)
+                .and(CamundaTaskSpecificationHelper.byUnassigned())
         );
     }
 
@@ -126,7 +126,7 @@ public class ReminderServiceImpl implements ReminderService {
 
     private List<CamundaTask> assignedTasks(String assignee) {
         return taskService.findTasks(
-            CamundaTaskSpecificationHelper.INSTANCE.byAssignee(assignee)
+            CamundaTaskSpecificationHelper.byAssignee(assignee)
         );
     }
 

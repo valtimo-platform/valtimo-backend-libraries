@@ -16,9 +16,9 @@
 
 package com.ritense.valtimo.web.rest.dto;
 
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
 import org.camunda.bpm.engine.form.FormField;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 
 import java.io.Serializable;
@@ -52,7 +52,7 @@ public class CustomTaskDto implements Serializable {
             Map<String, Object> variables,
             String formLocation,
             ProcessInstance processInstance,
-            ProcessDefinition processDefinition
+            CamundaProcessDefinition processDefinition
     ) {
         this.task = task;
         this.formFields = formFields;

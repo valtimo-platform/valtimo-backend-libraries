@@ -21,9 +21,9 @@ import com.ritense.document.domain.Document
 import com.ritense.document.event.DocumentAssigneeChangedEvent
 import com.ritense.document.event.DocumentUnassignedEvent
 import com.ritense.document.service.DocumentService
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssigned
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCandidateGroups
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceBusinessKey
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byAssigned
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byCandidateGroups
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceBusinessKey
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaTaskService
 import mu.KotlinLogging

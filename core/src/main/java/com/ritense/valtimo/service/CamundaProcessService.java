@@ -16,17 +16,18 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
+import com.ritense.valtimo.camunda.service.CamundaHistoryService;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.exception.ProcessDefinitionNotFoundException;
 import com.ritense.valtimo.exception.ProcessNotUpdatableException;
 import com.ritense.valtimo.service.util.FormUtils;
 import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.history.HistoricProcessInstance;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.VariableInstance;
 import org.camunda.bpm.model.bpmn.Bpmn;
@@ -35,6 +36,7 @@ import org.camunda.bpm.model.bpmn.instance.Process;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
@@ -47,6 +49,13 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byStartUserId;
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byUnfinished;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.NAME;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
+
 public class CamundaProcessService {
 
     private static final String UNDEFINED_BUSINESS_KEY = "UNDEFINED_BUSINESS_KEY";
@@ -55,32 +64,31 @@ public class CamundaProcessService {
 
     private final RuntimeService runtimeService;
     private final RepositoryService repositoryService;
+    private final CamundaRepositoryService camundaRepositoryService;
     private final FormService formService;
-    private final HistoryService historyService;
+    private final CamundaHistoryService historyService;
     private final ProcessPropertyService processPropertyService;
     private final ValtimoProperties valtimoProperties;
 
     public CamundaProcessService(
-        RuntimeService runtimeService, RepositoryService repositoryService, FormService formService,
-        HistoryService historyService, ProcessPropertyService processPropertyService,
+        RuntimeService runtimeService, RepositoryService repositoryService, CamundaRepositoryService camundaRepositoryService, FormService formService,
+        CamundaHistoryService historyService, ProcessPropertyService processPropertyService,
         ValtimoProperties valtimoProperties
     ) {
         this.runtimeService = runtimeService;
         this.repositoryService = repositoryService;
+        this.camundaRepositoryService = camundaRepositoryService;
         this.formService = formService;
         this.historyService = historyService;
         this.processPropertyService = processPropertyService;
         this.valtimoProperties = valtimoProperties;
     }
 
-    public ProcessDefinition findProcessDefinitionById(String processDefinitionId) {
-        return repositoryService
-            .createProcessDefinitionQuery()
-            .processDefinitionId(processDefinitionId)
-            .singleResult();
+    public CamundaProcessDefinition findProcessDefinitionById(String processDefinitionId) {
+        return camundaRepositoryService.findById(processDefinitionId);
     }
 
-    public ProcessDefinition getProcessDefinitionById(String processDefinitionId) {
+    public CamundaProcessDefinition getProcessDefinitionById(String processDefinitionId) {
         var processDefinition = findProcessDefinitionById(processDefinitionId);
         if (processDefinition == null) {
             throw new ProcessDefinitionNotFoundException("with id '" + processDefinitionId + "'.");
@@ -90,10 +98,7 @@ public class CamundaProcessService {
     }
 
     public boolean processDefinitionExistsByKey(String processDefinitionKey) {
-        return repositoryService
-            .createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey)
-            .count() >= 1;
+        return camundaRepositoryService.count(byKey(processDefinitionKey)) >= 1;
     }
 
     public Optional<ProcessInstance> findProcessInstanceById(String processInstanceId) {
@@ -114,7 +119,7 @@ public class CamundaProcessService {
     public ProcessInstanceWithDefinition startProcess(
         String processDefinitionKey, String businessKey, Map<String, Object> variables
     ) {
-        final ProcessDefinition processDefinition = getProcessDefinition(processDefinitionKey);
+        final CamundaProcessDefinition processDefinition = getProcessDefinition(processDefinitionKey);
         if (processDefinition == null) {
             throw new IllegalStateException("No process definition found with key: '" + processDefinitionKey + "'");
         }
@@ -127,11 +132,11 @@ public class CamundaProcessService {
         return new ProcessInstanceWithDefinition(processInstance, processDefinition);
     }
 
-    public ProcessDefinition getProcessDefinition(String processDefinitionKey) {
-        return repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey)
-            .latestVersion()
-            .singleResult();
+    public CamundaProcessDefinition getProcessDefinition(String processDefinitionKey) {
+        return camundaRepositoryService.find(
+            byKey(processDefinitionKey)
+                .and(byLatestVersion())
+        );
     }
 
     public Map<String, Object> getProcessInstanceVariables(String processInstanceId, List<String> variableNames) {
@@ -149,27 +154,27 @@ public class CamundaProcessService {
             .collect(Collectors.toMap(VariableInstance::getName, VariableInstance::getValue));
     }
 
-    public List<HistoricProcessInstance> getAllActiveContextProcessesStartedByCurrentUser(
+    public List<CamundaHistoricProcessInstance> getAllActiveContextProcessesStartedByCurrentUser(
         Set<String> processes, String userLogin
     ) {
-        List<HistoricProcessInstance> historicProcessInstances = historyService.createHistoricProcessInstanceQuery()
-            .startedBy(userLogin)
-            .unfinished()
-            .list();
+        List<CamundaHistoricProcessInstance> historicProcessInstances = historyService.findAll(
+            byStartUserId(userLogin)
+                .and(byUnfinished())
+        );
 
         return historicProcessInstances
             .stream()
             .filter(p -> processes.contains(p.getProcessDefinitionKey()))
-            .sorted(Comparator.comparing(HistoricProcessInstance::getStartTime).reversed())
+            .sorted(Comparator.comparing(CamundaHistoricProcessInstance::getStartTime).reversed())
             .collect(Collectors.toList());
     }
 
-    public List<ProcessDefinition> getDeployedDefinitions() {
-        return repositoryService.createProcessDefinitionQuery()
-            .orderByProcessDefinitionName().asc()
-            .active()
-            .latestVersion()
-            .list();
+    public List<CamundaProcessDefinition> getDeployedDefinitions() {
+        return camundaRepositoryService.findAll(
+            byActive()
+            .and(byLatestVersion()),
+            Sort.by(NAME)
+        );
     }
 
     @Transactional
@@ -202,7 +207,7 @@ public class CamundaProcessService {
             process -> {
                 String processDefinitionKey = process.getId();
                 if (processDefinitionKey == null || processDefinitionKey.isEmpty() || isSystemProcess(
-                    findLatestByProcessId(processDefinitionKey))) {
+                    getProcessDefinition(processDefinitionKey))) {
                     isDeployable.set(false);
                 } else {
                     Optional.ofNullable(process.getExtensionElements())
@@ -224,7 +229,7 @@ public class CamundaProcessService {
         return isDeployable.get();
     }
 
-    private boolean isSystemProcess(ProcessDefinition processDefinition) {
+    private boolean isSystemProcess(CamundaProcessDefinition processDefinition) {
         if (processDefinition == null) {
             return false;
         }
@@ -233,12 +238,5 @@ public class CamundaProcessService {
             return processProperties.isSystemProcess();
         }
         return false;
-    }
-
-    private ProcessDefinition findLatestByProcessId(String processDefinitionKey) {
-        return repositoryService.createProcessDefinitionQuery()
-            .latestVersion()
-            .processDefinitionKey(processDefinitionKey)
-            .singleResult();
     }
 }

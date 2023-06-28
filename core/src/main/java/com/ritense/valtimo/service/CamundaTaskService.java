@@ -24,7 +24,6 @@ import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
 import com.ritense.valtimo.camunda.dto.TaskExtended;
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
@@ -70,6 +69,11 @@ import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.CREATE_TIME;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.DUE_DATE;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssignee;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCandidateGroups;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessDefinitionKeys;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceId;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byUnassigned;
 import static java.util.stream.Collectors.toSet;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -293,7 +297,7 @@ public class CamundaTaskService {
     }
 
     public List<TaskInstanceWithIdentityLink> getProcessInstanceTasks(String processInstanceId, String businessKey) {
-        return findTasks(CamundaTaskSpecificationHelper.INSTANCE.byProcessInstanceId(processInstanceId), Sort.by(DESC, CREATE_TIME))
+        return findTasks(byProcessInstanceId(processInstanceId), Sort.by(DESC, CREATE_TIME))
             .stream()
             .map(task -> {
                 final var identityLinks = getIdentityLinks(task.getId());
@@ -357,21 +361,19 @@ public class CamundaTaskService {
         var processDefinitionKeys = context.getProcesses().stream()
             .map(ContextProcess::getProcessDefinitionKey)
             .collect(toSet());
-        var filterSpec = CamundaTaskSpecificationHelper.INSTANCE.byProcessDefinitionKeys(processDefinitionKeys);
+        var filterSpec = byProcessDefinitionKeys(processDefinitionKeys);
 
         if (taskFilter == TaskFilter.MINE) {
             if (currentUserLogin == null) {
                 throw new IllegalStateException("Cannot find currentUserLogin");
             }
-            return filterSpec
-                .and(CamundaTaskSpecificationHelper.INSTANCE.byAssignee(currentUserLogin));
+            return filterSpec.and(byAssignee(currentUserLogin));
         } else if (taskFilter == TaskFilter.ALL) {
-            return filterSpec
-                .and(CamundaTaskSpecificationHelper.INSTANCE.byCandidateGroups(userRoles));
+            return filterSpec.and(byCandidateGroups(userRoles));
         } else if (taskFilter == TaskFilter.OPEN) {
             return filterSpec
-                .and(CamundaTaskSpecificationHelper.INSTANCE.byCandidateGroups(userRoles))
-                .and(CamundaTaskSpecificationHelper.INSTANCE.byUnassigned());
+                .and(byCandidateGroups(userRoles))
+                .and(byUnassigned());
         }
 
         return filterSpec;

@@ -23,14 +23,14 @@ import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
-import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import java.util.UUID
 
 class FormFlowProcessLinkActivityHandler(
     private val formFlowService: FormFlowService,
-    private val repositoryService: RepositoryService,
+    private val repositoryService: CamundaRepositoryService,
     documentService: DocumentService,
     runtimeService: RuntimeService,
 ): AbstractFormFlowLinkTaskProvider(
@@ -59,9 +59,7 @@ class FormFlowProcessLinkActivityHandler(
         processLink: ProcessLink): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
         processLink as FormFlowProcessLink
         val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId)!!
-        val processDefinition = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionId(processDefinitionId)
-            .singleResult()
+        val processDefinition = repositoryService.findById(processDefinitionId);
 
         val additionalProperties = mutableMapOf<String, Any>("processDefinitionKey" to processDefinition.key)
         documentId?.let { additionalProperties["documentId"] = it }

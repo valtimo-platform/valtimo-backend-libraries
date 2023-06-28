@@ -17,15 +17,56 @@
 
 package com.ritense.valtimo.autoconfiguration
 
+import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository
+import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceRepository
+import com.ritense.valtimo.camunda.repository.CamundaHistoricTaskInstanceRepository
+import com.ritense.valtimo.camunda.repository.CamundaHistoricVariableInstanceRepository
+import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionRepository
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository
+import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
+import com.ritense.valtimo.camunda.service.CamundaHistoryService
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import org.camunda.bpm.engine.HistoryService
+import org.camunda.bpm.engine.RepositoryService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
-@EnableJpaRepositories(basePackageClasses = [CamundaTaskRepository::class])
+@EnableJpaRepositories(
+    basePackageClasses = [
+        CamundaExecutionRepository::class,
+        CamundaHistoricProcessInstanceRepository::class,
+        CamundaHistoricTaskInstanceRepository::class,
+        CamundaHistoricVariableInstanceRepository::class,
+        CamundaIdentityLinkRepository::class,
+        CamundaProcessDefinitionRepository::class,
+        CamundaTaskRepository::class,
+        CamundaVariableInstanceRepository::class,
+    ]
+)
 @EntityScan("com.ritense.valtimo.camunda.domain")
 class ValtimoCamundaAutoConfiguration {
 
+    @Bean
+    @ConditionalOnMissingBean(CamundaHistoryService::class)
+    fun camundaHistoryService(
+        historyService: HistoryService,
+        camundaHistoricProcessInstanceRepository: CamundaHistoricProcessInstanceRepository,
+    ): CamundaHistoryService {
+        return CamundaHistoryService(historyService, camundaHistoricProcessInstanceRepository)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaRepositoryService::class)
+    fun camundaRepositoryService(
+        repositoryService: RepositoryService,
+        camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
+    ): CamundaRepositoryService {
+        return CamundaRepositoryService(repositoryService, camundaProcessDefinitionRepository)
+    }
 
 }

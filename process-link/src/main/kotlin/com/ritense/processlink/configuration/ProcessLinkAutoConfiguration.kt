@@ -28,6 +28,7 @@ import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.web.rest.ProcessLinkResource
 import com.ritense.processlink.web.rest.ProcessLinkTaskResource
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.RepositoryService
@@ -112,7 +113,7 @@ class ProcessLinkAutoConfiguration {
     @ConditionalOnMissingBean(ProcessLinkDeploymentApplicationReadyEventListener::class)
     fun processLinkDeploymentApplicationReadyEventListener(
         resourceLoader: ResourceLoader,
-        repositoryService: RepositoryService,
+        repositoryService: CamundaRepositoryService,
         processLinkService: ProcessLinkService,
         objectMapper: ObjectMapper): ProcessLinkDeploymentApplicationReadyEventListener {
         return ProcessLinkDeploymentApplicationReadyEventListener(resourceLoader,

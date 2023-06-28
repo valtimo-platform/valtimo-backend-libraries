@@ -26,14 +26,12 @@ import com.ritense.formlink.domain.TaskOpenResult
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
 import com.ritense.formlink.service.FormAssociationService
 import com.ritense.valtimo.camunda.domain.CamundaTask
-import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 
 class FormFlowFormLinkTaskProvider(
     private val formFlowService: FormFlowService,
     private val formAssociationService: FormAssociationService,
     documentService: DocumentService,
-    private val repositoryService: RepositoryService,
     runtimeService: RuntimeService,
 ): AbstractFormFlowLinkTaskProvider(
     documentService, runtimeService
@@ -61,9 +59,7 @@ class FormFlowFormLinkTaskProvider(
     }
 
     private fun getFormAssociationByTask(task: CamundaTask): FormAssociation {
-        val processDefinition = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionId(task.getProcessDefinitionId())
-            .singleResult()
+        val processDefinition = task.processDefinition!!
 
         val formAssociation = formAssociationService.getFormAssociationByFormLinkId(
             processDefinition.key,

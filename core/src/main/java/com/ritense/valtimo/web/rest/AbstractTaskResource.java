@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
 import com.ritense.valtimo.service.CamundaProcessService;
@@ -26,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.form.FormField;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,7 +58,7 @@ public abstract class AbstractTaskResource {
         CamundaTaskDto taskDto = CamundaTaskDto.Companion.of(task);
 
         ProcessInstance processInstance = camundaProcessService.findProcessInstanceById(taskDto.getProcessInstanceId()).orElseThrow();
-        ProcessDefinition processDefinition = camundaProcessService.findProcessDefinitionById(processInstance.getProcessDefinitionId());
+        CamundaProcessDefinition processDefinition = camundaProcessService.findProcessDefinitionById(processInstance.getProcessDefinitionId());
 
         Map<String, Object> variables = camundaTaskService.getVariables(id);
         List<FormField> taskFormData = new ArrayList<>();

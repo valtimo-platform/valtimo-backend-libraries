@@ -25,9 +25,8 @@ import com.ritense.formlink.domain.FormAssociation
 import com.ritense.formlink.domain.FormLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
 import com.ritense.formlink.service.FormAssociationService
-import org.camunda.bpm.engine.RepositoryService
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.task.Task
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -46,7 +45,6 @@ internal class FormFlowFormLinkTaskProviderTest {
     private lateinit var formFlowService: FormFlowService
     private lateinit var formAssociationService: FormAssociationService
     private lateinit var documentService: DocumentService
-    private lateinit var repositoryService: RepositoryService
     private lateinit var runtimeService: RuntimeService
     private lateinit var formFlowProcessLinkTaskProvider: FormFlowFormLinkTaskProvider
 
@@ -55,13 +53,11 @@ internal class FormFlowFormLinkTaskProviderTest {
         formFlowService = mock()
         formAssociationService = mock()
         documentService = mock()
-        repositoryService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
         runtimeService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
         formFlowProcessLinkTaskProvider = FormFlowFormLinkTaskProvider(
             formFlowService,
             formAssociationService,
             documentService,
-            repositoryService,
             runtimeService,
         )
     }
@@ -77,7 +73,7 @@ internal class FormFlowFormLinkTaskProviderTest {
     @Test
     fun `getTaskResult contains formFlowId `() {
         val formLink: BpmnElementFormFlowIdLink = mock()
-        val task: Task = mock()
+        val task: CamundaTask = mock()
         val formFlowInstance: FormFlowInstance = mock()
         val formFlowInstanceId = FormFlowInstanceId.newId()
         whenever(formLink.formFlowId).thenReturn("123")
@@ -94,9 +90,7 @@ internal class FormFlowFormLinkTaskProviderTest {
     fun `intercepts CreateTaskCmd and handle correctly`() {
         whenever(runtimeService.createProcessInstanceQuery().processInstanceId(any()).singleResult())
             .thenReturn(mock())
-        whenever(repositoryService.createProcessDefinitionQuery().processDefinitionId(any()).singleResult())
-            .thenReturn(mock())
-        val task: Task = mock()
+        val task: CamundaTask = mock()
         val formFlowDefinition: FormFlowDefinition = mock()
         val formLink: BpmnElementFormFlowIdLink = mock()
         val formAssociation: FormAssociation = mock()

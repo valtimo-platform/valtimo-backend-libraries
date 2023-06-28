@@ -19,8 +19,8 @@ package com.ritense.processlink.service
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.exception.ProcessLinkNotFoundException
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byActive
-import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byId
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byActive
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byId
 import com.ritense.valtimo.service.CamundaTaskService
 import mu.KotlinLogging
 import java.util.UUID

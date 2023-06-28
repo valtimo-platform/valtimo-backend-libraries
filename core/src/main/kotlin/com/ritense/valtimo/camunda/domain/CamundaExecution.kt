@@ -24,6 +24,7 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
+import javax.persistence.Transient
 
 @Entity
 @Table(name = "ACT_RU_EXECUTION")
@@ -36,11 +37,13 @@ class CamundaExecution(
     @Column(name = "REV_")
     val revision: Int,
 
-    @Column(name = "ROOT_PROC_INST_ID_")
-    val rootProcessInstanceId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ROOT_PROC_INST_ID_")
+    val rootProcessInstance: CamundaExecution?,
 
-    @Column(name = "PROC_INST_ID_")
-    val processInstanceId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROC_INST_ID_")
+    val processInstance: CamundaExecution?,
 
     @Column(name = "BUSINESS_KEY_")
     val businessKey: String?,
@@ -49,11 +52,13 @@ class CamundaExecution(
     @JoinColumn(name = "PARENT_ID_")
     val parent: CamundaExecution?,
 
-    @Column(name = "PROC_DEF_ID_")
-    val processDefinitionId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROC_DEF_ID_")
+    val processDefinition: CamundaProcessDefinition?,
 
-    @Column(name = "SUPER_EXEC_")
-    val superExecutionId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SUPER_EXEC_")
+    val superExecution: CamundaExecution?,
 
     @Column(name = "SUPER_CASE_EXEC_")
     val superCaseExecutionId: String?,
@@ -94,6 +99,12 @@ class CamundaExecution(
     @OneToMany(mappedBy = "execution", fetch = FetchType.LAZY)
     val variables: Set<CamundaVariableInstance>
 ) : AbstractVariableScope() {
+
+    @Transient
+    fun getProcessDefinitionId() = processDefinition!!.id
+
+    @Transient
+    fun getProcessInstanceId() = processInstance!!.id
 
     override fun getVariable(variableName: String): Any? {
         val variableInstance = variables.find { it.name == variableName }

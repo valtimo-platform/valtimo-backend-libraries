@@ -19,8 +19,12 @@ package com.ritense.valtimo.camunda.domain
 import java.util.Date
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.Table
+import javax.persistence.Transient
 
 @Entity
 @Table(name = "ACT_HI_PROCINST")
@@ -39,8 +43,9 @@ class CamundaHistoricProcessInstance(
     @Column(name = "PROC_DEF_KEY_")
     val processDefinitionKey: String?,
 
-    @Column(name = "PROC_DEF_ID_")
-    val processDefinitionId: String?,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROC_DEF_ID_")
+    val processDefinition: CamundaProcessDefinition?,
 
     @Column(name = "START_TIME_")
     val startTime: Date?,
@@ -84,4 +89,7 @@ class CamundaHistoricProcessInstance(
     @Column(name = "STATE_")
     val state: String?
 
-)
+) {
+    @Transient
+    fun getProcessDefinitionId() = processDefinition!!.id
+}

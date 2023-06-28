@@ -23,6 +23,8 @@ import com.ritense.valtimo.camunda.TaskCompletedListener;
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
+import com.ritense.valtimo.camunda.service.CamundaHistoryService;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.config.CustomDateTimeProvider;
 import com.ritense.valtimo.config.ValtimoApplicationReadyEventListener;
 import com.ritense.valtimo.contract.authentication.AuthorizedUserRepository;
@@ -152,12 +154,13 @@ public class ValtimoAutoConfiguration {
     public CamundaProcessService camundaProcessService(
         final RuntimeService runtimeService,
         final RepositoryService repositoryService,
+        final CamundaRepositoryService camundaRepositoryService,
         final FormService formService,
-        final HistoryService historyService,
+        final CamundaHistoryService historyService,
         final ProcessPropertyService processPropertyService,
         final ValtimoProperties valtimoProperties
     ) {
-        return new CamundaProcessService(runtimeService, repositoryService, formService, historyService,processPropertyService,valtimoProperties);
+        return new CamundaProcessService(runtimeService, repositoryService, camundaRepositoryService, formService, historyService,processPropertyService,valtimoProperties);
     }
 
     @Bean
@@ -220,7 +223,7 @@ public class ValtimoAutoConfiguration {
     @ConditionalOnMissingBean(CamundaReportingRepository.class)
     public CamundaReportingRepository camundaReportingRepository(
         final SqlSession sqlSession,
-        final RepositoryService repositoryService
+        final CamundaRepositoryService repositoryService
     ) {
         return new CamundaReportingRepository(sqlSession, repositoryService);
     }
@@ -261,11 +264,13 @@ public class ValtimoAutoConfiguration {
     public ReportingResource reportingResource(
         final SqlSession sqlSession,
         final HistoryService historyService,
+        final CamundaHistoryService camundaHistoryService,
         final CamundaReportingRepository camundaReportingRepository
     ) {
         return new ReportingResource(
             sqlSession,
             historyService,
+            camundaHistoryService,
             camundaReportingRepository
         );
     }
@@ -274,7 +279,7 @@ public class ValtimoAutoConfiguration {
     @ConditionalOnMissingBean(PublicProcessResource.class)
     public PublicProcessResource publicProcessResource(
         final FormService formService,
-        final RepositoryService repositoryService,
+        final CamundaRepositoryService repositoryService,
         final CamundaProcessService camundaProcessService
     ) {
         return new PublicProcessResource(formService, repositoryService, camundaProcessService);
@@ -285,20 +290,23 @@ public class ValtimoAutoConfiguration {
     public ProcessResource processResource(
         final TaskService taskService,
         final HistoryService historyService,
+        final CamundaHistoryService camundaHistoryService,
         final RuntimeService runtimeService,
         final RepositoryService repositoryService,
+        final CamundaRepositoryService camundaRepositoryService,
         final CamundaTaskService camundaTaskService,
         final CamundaProcessService camundaProcessService,
         final ProcessShortTimerService processShortTimerService,
         final CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository,
-        final ProcessPropertyService processPropertyService,
-        final ValtimoProperties valtimoProperties
+        final ProcessPropertyService processPropertyService
     ) {
         return new ProcessResource(
             taskService,
             historyService,
+            camundaHistoryService,
             runtimeService,
             repositoryService,
+            camundaRepositoryService,
             camundaTaskService,
             camundaProcessService,
             processShortTimerService,
@@ -355,9 +363,10 @@ public class ValtimoAutoConfiguration {
     @ConditionalOnMissingBean(ProcessDefinitionPropertyListener.class)
     public ProcessDefinitionPropertyListener processDefinitionPropertyListener(
         final ProcessDefinitionPropertiesRepository processDefinitionPropertiesRepository,
-        final RepositoryService repositoryService
+        final RepositoryService repositoryService,
+        final CamundaRepositoryService camundaRepositoryService
     ) {
-        return new ProcessDefinitionPropertyListener(processDefinitionPropertiesRepository, repositoryService);
+        return new ProcessDefinitionPropertyListener(processDefinitionPropertiesRepository, repositoryService, camundaRepositoryService);
     }
 
     @Bean
@@ -365,7 +374,7 @@ public class ValtimoAutoConfiguration {
     public ProcessPropertyService processPropertyService(
         final ProcessDefinitionPropertiesRepository processDefinitionPropertiesRepository,
         final ValtimoProperties valtimoProperties,
-        final RepositoryService repositoryService
+        final CamundaRepositoryService repositoryService
     ) {
         return new ProcessPropertyService(
             processDefinitionPropertiesRepository,

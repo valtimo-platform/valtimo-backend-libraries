@@ -58,8 +58,8 @@ public class DefaultProcessLinkService implements ProcessLinkService {
     @Transactional(isolation = SERIALIZABLE)
     public TaskOpenResult openTask(UUID taskId) {
         CamundaTask task = taskService.findTask(
-            CamundaTaskSpecificationHelper.INSTANCE.byId(taskId.toString())
-                .and(CamundaTaskSpecificationHelper.INSTANCE.byActive())
+            CamundaTaskSpecificationHelper.byId(taskId.toString())
+                .and(CamundaTaskSpecificationHelper.byActive())
         );
 
         final var processDefinition = repositoryService.getProcessDefinition(task.getProcessDefinitionId());
