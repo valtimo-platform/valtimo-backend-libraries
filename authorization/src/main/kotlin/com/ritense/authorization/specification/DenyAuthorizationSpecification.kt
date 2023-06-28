@@ -34,6 +34,11 @@ class DenyAuthorizationSpecification<T : Any>(
     override fun isAuthorized(): Boolean {
         return false
     }
+
+    override fun identifierToEntity(identifier: String): T {
+        throw NotImplementedError()
+    }
+
     override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
         return criteriaBuilder.isTrue(root.isNull)
     }

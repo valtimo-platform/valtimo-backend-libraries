@@ -88,7 +88,7 @@ class NoteService(
         applicationEventPublisher.publishEvent(NoteDeletedEvent(noteId))
     }
 
-    private fun getNoteById(noteId: UUID): Note {
+    fun getNoteById(noteId: UUID): Note {
         return noteRepository.findById(noteId).orElseThrow { NoteNotFoundException(noteId) }
     }
 

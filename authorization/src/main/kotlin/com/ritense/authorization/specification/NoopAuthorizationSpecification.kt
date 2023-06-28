@@ -32,11 +32,15 @@ class NoopAuthorizationSpecification<T : Any>(
     authRequest,
     permissions
 ) {
-    override fun isAuthorized(entity: T?): Boolean {
+    override fun isAuthorized(): Boolean {
         return AuthorizationContext.ignoreAuthorization
     }
 
     override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
         return criteriaBuilder.isTrue(root.isNotNull)
+    }
+
+    override fun identifierToEntity(identifier: String): T {
+        throw NotImplementedError()
     }
 }

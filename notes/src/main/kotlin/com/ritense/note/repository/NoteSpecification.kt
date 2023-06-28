@@ -20,6 +20,7 @@ import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.note.domain.Note
+import com.ritense.note.service.NoteService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import java.util.UUID
 import javax.persistence.criteria.CriteriaBuilder
@@ -30,6 +31,7 @@ import javax.persistence.criteria.Root
 class NoteSpecification(
     authRequest: AuthorizationRequest<Note>,
     permissions: List<Permission>,
+    private val noteService: NoteService,
     private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<Note>(authRequest, permissions) {
     override fun toPredicate(
@@ -58,6 +60,10 @@ class NoteSpecification(
                 )
             }.toList()
         return combinePredicates(criteriaBuilder, predicates)
+    }
+
+    override fun identifierToEntity(identifier: String): Note {
+        return noteService.getNoteById(UUID.fromString(identifier))
     }
 }
 

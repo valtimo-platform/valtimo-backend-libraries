@@ -35,4 +35,8 @@ class TestAuthorizationSpecification(
     ): Predicate {
         return criteriaBuilder.isTrue(root.isNotNull)
     }
+
+    override fun identifierToEntity(identifier: String): TestEntity {
+        return TestEntity()
+    }
 }

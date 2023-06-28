@@ -33,7 +33,7 @@ abstract class AuthorizationSpecification<T : Any>(
     internal open fun isAuthorized(): Boolean {
         return when (authRequest) {
             is EntityAuthorizationRequest<T> -> isAuthorizedForEntity(authRequest)
-            is RelatedEntityAuthorizationRequest<T> -> isAuthorizedForRelatedEntity(authRequest) // TODO: Maybe only have separate methods again, with RelatedEntityAuthorizationRequest function being internal
+            is RelatedEntityAuthorizationRequest<T> -> isAuthorizedForRelatedEntity(authRequest)
             else -> false
         }
     }
@@ -121,7 +121,7 @@ abstract class AuthorizationSpecification<T : Any>(
         )
     }
 
-    abstract fun identifierToEntity(identifier: String): T
+    protected abstract fun identifierToEntity(identifier: String): T
 
     abstract override fun toPredicate(
         root: Root<T>,

@@ -56,4 +56,8 @@ class SearchFieldSpecification(
             }
         return combinePredicates(criteriaBuilder, predicates)
     }
+
+    override fun identifierToEntity(identifier: String): SearchField {
+        TODO("Not yet implemented")
+    }
 }

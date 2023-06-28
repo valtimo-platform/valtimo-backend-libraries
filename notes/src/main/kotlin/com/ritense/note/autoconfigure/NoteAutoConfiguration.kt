@@ -81,8 +81,9 @@ class NoteAutoConfiguration {
 
     @Bean
     fun noteSpecificationFactory(
+        noteService: NoteService,
         queryDialectHelper: QueryDialectHelper
     ): NoteSpecificationFactory {
-        return NoteSpecificationFactory(queryDialectHelper)
+        return NoteSpecificationFactory(noteService, queryDialectHelper)
     }
 }

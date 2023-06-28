@@ -20,6 +20,7 @@ import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import org.springframework.data.jpa.domain.Specification
 import java.util.UUID
@@ -31,6 +32,7 @@ import javax.persistence.criteria.Root
 class JsonSchemaDocumentSpecification(
         authRequest: AuthorizationRequest<JsonSchemaDocument>,
         permissions: List<Permission>,
+        private val documentService: JsonSchemaDocumentService,
         private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<JsonSchemaDocument>(authRequest, permissions) {
 
@@ -60,6 +62,10 @@ class JsonSchemaDocumentSpecification(
                 )
             }
         return combinePredicates(criteriaBuilder, predicates)
+    }
+
+    override fun identifierToEntity(identifier: String): JsonSchemaDocument {
+        return documentService.get(identifier)
     }
 
     companion object {
