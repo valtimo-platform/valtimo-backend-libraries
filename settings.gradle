@@ -17,57 +17,57 @@
 rootProject.name = projectName
 include(
     "app",
-    "app:gzac",
+/*    "app:gzac",*/
     "app:valtimo-core",
     "audit",
-    "besluit",
+/*    "besluit",*/
     "case",
-    "connector",
-    "contactmoment",
+/*    "connector",
+    "contactmoment",*/
     "contract",
     "core",
     "data-provider",
     "document",
-    "document-export",
+/*    "document-export",
     "document-generation",
     "document-generation:local-document-generation",
-    "document-generation:smartdocuments",
-    "external-event",
-    "exact-plugin",
+    "document-generation:smartdocuments",*/
+/*    "external-event",
+    "exact-plugin",*/
     "form",
-    "form-flow",
-    "form-flow-valtimo",
+/*    "form-flow",
+    "form-flow-valtimo",*/
     "form-link",
-    "gradle:license-report",
-    "haalcentraal",
-    "haalcentraal:haalcentraal-brp",
+/*    "gradle:license-report",*/
+/*    "haalcentraal",
+    "haalcentraal:haalcentraal-brp",*/
     "keycloak-iam",
-    "klant",
+/*    "klant",
     "mail",
     "mail:flowmailer",
     "mail:local-mail",
     "mail:mandrill",
-    "mail:wordpress-mail",
-    "milestones",
-    "notes",
-    "objects-api",
-    "openzaak",
-    "plugin",
+    "mail:wordpress-mail",*/
+/*    "milestones",*/
+/*   "notes",*/
+    /*   "objects-api",
+      "openzaak",*/
+/*    "plugin",
     "plugin-valtimo",
     "plugin-authentication:notificaties-api-authentication",
-    "plugin-authentication:objecten-api-authentication",
+    "plugin-authentication:objecten-api-authentication",*/
     "process-document",
     "resource",
     "resource:local-resource",
-    "resource:openzaak-resource",
+/*    "resource:openzaak-resource", */
     "resource:temporary-resource-storage",
-    "search",
+/*    "search",*/
     "test-utils-common",
     "value-resolver",
     "valtimo-dependencies",
-    "valtimo-gzac-dependencies",
+/*    "valtimo-gzac-dependencies",*/
     "web",
-    "zgw:catalogi-api",
+/*    "zgw:catalogi-api",
     "zgw:documenten-api",
     "zgw:notificaties-api",
     "zgw:object-management",
@@ -76,6 +76,6 @@ include(
     "zgw:verzoek",
     "zgw:zaken-api",
     "zgw:portaaltaak",
-    "zgw:besluiten-api"
+    "zgw:besluiten-api"*/
 )
 
