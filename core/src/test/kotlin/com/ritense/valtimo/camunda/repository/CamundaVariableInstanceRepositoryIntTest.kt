@@ -38,7 +38,7 @@ class CamundaVariableInstanceRepositoryIntTest @Autowired constructor(
 
         val result = camundaVariableInstanceRepository.findOne { root, _, criteriaBuilder ->
             criteriaBuilder.equal(
-                root.get<String>("processInstanceId"),
+                root.get<String>("processInstance").get<Any>("id"),
                 instance.id
             )
         }
