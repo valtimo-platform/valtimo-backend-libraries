@@ -30,6 +30,7 @@ import org.camunda.bpm.engine.impl.variable.serializer.ShortValueSerializer
 import org.camunda.bpm.engine.impl.variable.serializer.StringValueSerializer
 import org.camunda.bpm.engine.impl.variable.serializer.TypedValueSerializer
 import org.camunda.bpm.engine.impl.variable.serializer.ValueFields
+import org.camunda.bpm.engine.variable.value.TypedValue
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -135,7 +136,7 @@ class CamundaVariableInstance(
 
     fun getValue(): Any? = getTypedValue()?.value
 
-    fun getTypedValue() = findSerializer(serializerName).readValue(this, true, false)
+    fun getTypedValue(): TypedValue? = findSerializer(serializerName).readValue(this, true, false)
 
     private fun findSerializer(serializerName: String?): TypedValueSerializer<*> {
         if (serializerName == null) {

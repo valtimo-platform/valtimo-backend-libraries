@@ -50,8 +50,12 @@ class CamundaVariableInstanceSpecificationHelper {
         }
 
         @JvmStatic
-        fun byNameIn(vararg name: String) = Specification<CamundaVariableInstance> { root, _, _ ->
-            root.get<Any>(NAME).`in`(name)
+        fun byNameIn(vararg name: String) = Specification<CamundaVariableInstance> { root, _, cb ->
+            if (name.isEmpty()) {
+                cb.equal(cb.literal(0), 1)
+            } else {
+                root.get<Any>(NAME).`in`(name)
+            }
         }
 
         @JvmStatic

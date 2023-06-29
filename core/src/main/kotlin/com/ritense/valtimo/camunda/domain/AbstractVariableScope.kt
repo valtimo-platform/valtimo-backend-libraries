@@ -30,7 +30,7 @@ abstract class AbstractVariableScope {
         val localVariables = getVariableInstancesLocal(variableNames)
         for (variable in localVariables) {
             if (!allVariables.containsKey(variable.name) && (collectAll || variableNames!!.contains(variable.name))) {
-                allVariables[variable.name] = variable.getTypedValue().value
+                allVariables[variable.name] = variable.getTypedValue()?.value
             }
         }
 

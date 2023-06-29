@@ -41,11 +41,6 @@ class CamundaProcessDefinitionSpecificationHelper {
         const val IS_STARTABLE_IN_TASK_LIST: String = "isStartableInTasklist"
 
         @JvmStatic
-        fun query() = Specification<CamundaProcessDefinition> { _, _, cb ->
-            cb.equal(cb.literal(1), 1)
-        }
-
-        @JvmStatic
         fun byId(id: String) = Specification<CamundaProcessDefinition> { root, _, cb ->
             cb.equal(root.get<Any>(ID), id)
         }

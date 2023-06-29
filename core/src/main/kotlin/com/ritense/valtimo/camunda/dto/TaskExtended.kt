@@ -50,6 +50,8 @@ data class TaskExtended(
 ) {
 
     companion object {
+
+        @JvmStatic
         fun of(
             task: CamundaTask,
             executionId: String?,

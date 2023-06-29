@@ -25,7 +25,9 @@ data class CamundaIdentityLinkDto(
 ) {
 
     companion object {
-        fun fromEntity(identityLink: CamundaIdentityLink) = CamundaIdentityLinkDto(
+
+        @JvmStatic
+        fun of(identityLink: CamundaIdentityLink) = CamundaIdentityLinkDto(
             identityLink.userId,
             identityLink.groupId,
             identityLink.type

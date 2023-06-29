@@ -253,7 +253,7 @@ public class CamundaTaskService {
 
                 var context = task.getVariable(CONTEXT);
 
-                return TaskExtended.Companion.of(
+                return TaskExtended.of(
                     task,
                     executionId,
                     businessKey,
@@ -287,7 +287,7 @@ public class CamundaTaskService {
 
     public List<CamundaIdentityLinkDto> getIdentityLinks(String taskId) {
         final List<CamundaIdentityLink> identityLinksForTask = getIdentityLinksForTask(taskId);
-        return identityLinksForTask.stream().map(CamundaIdentityLinkDto.Companion::fromEntity).collect(Collectors.toList());
+        return identityLinksForTask.stream().map(CamundaIdentityLinkDto::of).collect(Collectors.toList());
     }
 
     public Map<String, Object> getVariables(String taskInstanceId) {
