@@ -21,6 +21,7 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.CustomProcessLinkCreateRequestDto
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.service.CamundaProcessService
 import org.junit.jupiter.api.BeforeEach
@@ -98,7 +99,7 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
     }
 
     private fun getLatestProcessDefinition(): CamundaProcessDefinition {
-        return repositoryService.findProcessDefinition(byKey(PROCESS_DEFINITION_KEY))!!
+        return repositoryService.findProcessDefinition(byKey(PROCESS_DEFINITION_KEY).and(byLatestVersion()))!!
     }
 
     private fun readFileAsString(fileName: String) = this::class.java.getResource(fileName).readText(Charsets.UTF_8)

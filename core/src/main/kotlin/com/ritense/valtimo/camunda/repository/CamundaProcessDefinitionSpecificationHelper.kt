@@ -65,7 +65,15 @@ class CamundaProcessDefinitionSpecificationHelper {
             val sub = query.subquery(Long::class.java)
             val subRoot = sub.from(CamundaProcessDefinition::class.java)
             sub.select(cb.max(subRoot.get(VERSION)))
-            sub.where(cb.equal(subRoot.get<Any>(KEY), root.get<Any>(KEY)))
+            sub.where(
+                cb.and(
+                    cb.equal(subRoot.get<Any>(KEY), root.get<Any>(KEY)),
+                    cb.or(
+                        cb.equal(subRoot.get<Any>(TENANT_ID), root.get<Any>(TENANT_ID)),
+                        cb.and(subRoot.get<Any>(TENANT_ID).isNull, root.get<Any>(TENANT_ID).isNull)
+                    )
+                )
+            )
             sub.groupBy(subRoot.get<Any>(TENANT_ID), subRoot.get<Any>(KEY))
             cb.equal(root.get<Any>(VERSION), sub)
         }

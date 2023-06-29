@@ -37,7 +37,7 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
     fun `should find 1 deployed process link on service task`() {
         val processDefinition = getLatestProcessDefinition()
         val processLinks =
-            processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinition!!.id, "my-service-task")
+            processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinition.id, "my-service-task")
 
         assertThat(processLinks, hasSize(1))
         val processLink = processLinks.first()
@@ -46,7 +46,7 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
         assertThat(processLink.someValue, Matchers.equalTo("test"))
     }
 
-    private fun getLatestProcessDefinition(): CamundaProcessDefinition? {
-        return repositoryService.findLatestProcessDefinition("auto-deploy-process-link")
+    private fun getLatestProcessDefinition(): CamundaProcessDefinition {
+        return repositoryService.findLatestProcessDefinition("auto-deploy-process-link")!!
     }
 }

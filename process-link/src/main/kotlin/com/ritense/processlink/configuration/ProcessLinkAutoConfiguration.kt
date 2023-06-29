@@ -28,10 +28,11 @@ import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.web.rest.ProcessLinkResource
 import com.ritense.processlink.web.rest.ProcessLinkTaskResource
+import com.ritense.valtimo.autoconfiguration.ValtimoCamundaAutoConfiguration
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
 import com.ritense.valtimo.service.CamundaTaskService
-import org.camunda.bpm.engine.RepositoryService
+import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -49,6 +50,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     ]
 )
 @EntityScan(basePackages = ["com.ritense.processlink.domain"])
+@AutoConfigureAfter(ValtimoCamundaAutoConfiguration::class)
 class ProcessLinkAutoConfiguration {
 
     @Order(420)
@@ -70,7 +72,6 @@ class ProcessLinkAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ProcessLinkActivityService::class)
-    @ConditionalOnBean(CamundaTaskService::class)
     fun processLinkTaskService(
         processLinkService: ProcessLinkService,
         taskService: CamundaTaskService,
@@ -109,7 +110,6 @@ class ProcessLinkAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(RepositoryService::class)
     @ConditionalOnMissingBean(ProcessLinkDeploymentApplicationReadyEventListener::class)
     fun processLinkDeploymentApplicationReadyEventListener(
         resourceLoader: ResourceLoader,
