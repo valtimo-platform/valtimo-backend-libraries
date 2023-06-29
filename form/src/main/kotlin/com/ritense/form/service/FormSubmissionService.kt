@@ -47,11 +47,11 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName.START_EVENT_STAR
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromException
-import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
@@ -65,7 +65,7 @@ open class FormSubmissionService(
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val processDocumentService: ProcessDocumentService,
     private val camundaTaskService: CamundaTaskService,
-    private val processService: CamundaProcessService,
+    private val repositoryService: CamundaRepositoryService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val prefillFormService: PrefillFormService,
 ) {
@@ -120,7 +120,7 @@ open class FormSubmissionService(
         processLink: ProcessLink,
         document: Document?
     ): ProcessDocumentDefinition {
-        val processDefinition = processService.getProcessDefinitionById(processLink.processDefinitionId)
+        val processDefinition = repositoryService.findProcessDefinitionById(processLink.processDefinitionId)!!
         val processDefinitionKey = CamundaProcessDefinitionKey(processDefinition.key)
         return AuthorizationContext.runWithoutAuthorization {
             if (document == null) {

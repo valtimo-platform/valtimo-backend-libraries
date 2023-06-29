@@ -17,7 +17,6 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
-import com.ritense.valtimo.camunda.domain.CamundaVariableInstance;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
@@ -31,14 +30,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -49,7 +46,6 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -152,63 +148,6 @@ class CamundaProcessServiceTest {
                 .and(withStartTime(FIRST_OF_JANUARY_2017))
         ));
 
-    }
-
-    @Test
-    void shouldGetProcessVariables() {
-        camundaProcessService = new CamundaProcessService(
-            runtimeService,
-            camundaRuntimeService,
-            repositoryService,
-            camundaRepositoryService,
-            formService,
-            historyService,
-            processPropertyService,
-            valtimoProperties
-        );
-        List<CamundaVariableInstance> variableInstances = new ArrayList<>();
-        variableInstances.add(createMockedVariableInstance("val1", "nothing"));
-        variableInstances.add(createMockedVariableInstance("val2", "something"));
-
-        when(camundaRuntimeService.findVariableInstances(any(), any(Sort.class))).thenReturn(variableInstances);
-
-        Map<String, Object> processInstanceVariables = camundaProcessService.getProcessInstanceVariables("123", List.of("val1", "val2"));
-
-        assertEquals(2, processInstanceVariables.size());
-        assertEquals("nothing", processInstanceVariables.get("val1"));
-        assertEquals("something", processInstanceVariables.get("val2"));
-
-    }
-
-    @Test
-    void shouldGetProcessVariablesWithEmptyValues() {
-        camundaProcessService = new CamundaProcessService(
-            runtimeService,
-            camundaRuntimeService,
-            repositoryService,
-            camundaRepositoryService,
-            formService,
-            historyService,
-            processPropertyService,
-            valtimoProperties
-        );
-        List<CamundaVariableInstance> variableInstances = new ArrayList<>();
-        variableInstances.add(createMockedVariableInstance("val1", null));
-        variableInstances.add(createMockedVariableInstance("val2", "something"));
-
-        when(camundaRuntimeService.findVariableInstances(any(), any(Sort.class))).thenReturn(variableInstances);
-
-        Map<String, Object> processInstanceVariables = camundaProcessService.getProcessInstanceVariables("123", List.of("val1", "val2"));
-
-        assertEquals(1, processInstanceVariables.size());
-        assertEquals("something", processInstanceVariables.get("val2"));
-    }
-
-    private CamundaVariableInstance createMockedVariableInstance(String name, Object value) {
-        CamundaVariableInstance instance = mock(CamundaVariableInstance.class);
-        when(instance.getName()).thenReturn(name);
-        when(instance.getValue()).thenReturn(value);
-        return instance;
     }
 
     private List<CamundaHistoricProcessInstance> getHistoricProcessInstances() {

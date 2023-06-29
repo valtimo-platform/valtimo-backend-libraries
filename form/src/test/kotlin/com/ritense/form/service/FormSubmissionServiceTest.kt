@@ -45,9 +45,9 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName.START_EVENT_STAR
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
-import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -73,7 +73,7 @@ class FormSubmissionServiceTest {
     lateinit var processDocumentAssociationService: CamundaProcessJsonSchemaDocumentAssociationService
     lateinit var processDocumentService: CamundaProcessJsonSchemaDocumentService
     lateinit var camundaTaskService: CamundaTaskService
-    lateinit var camundaProcessService: CamundaProcessService
+    lateinit var repositoryService: CamundaRepositoryService
     lateinit var applicationEventPublisher: ApplicationEventPublisher
     lateinit var prefillFormService: PrefillFormService
     lateinit var documentSequenceGeneratorService: DocumentSequenceGeneratorService
@@ -90,7 +90,7 @@ class FormSubmissionServiceTest {
         processDocumentAssociationService = mock()
         processDocumentService = mock()
         camundaTaskService = mock()
-        camundaProcessService = mock()
+        repositoryService = mock()
         applicationEventPublisher = mock()
         prefillFormService = mock()
         formSubmissionService = FormSubmissionService(
@@ -100,7 +100,7 @@ class FormSubmissionServiceTest {
             processDocumentAssociationService,
             processDocumentService,
             camundaTaskService,
-            camundaProcessService,
+            repositoryService,
             applicationEventPublisher,
             prefillFormService,
         )
@@ -112,7 +112,7 @@ class FormSubmissionServiceTest {
 
         processDefinition = mock<CamundaProcessDefinition>()
         whenever(processDefinition.key).thenReturn("myProcessDefinitionKey")
-        whenever(camundaProcessService.getProcessDefinitionById(formProcessLink.processDefinitionId))
+        whenever(repositoryService.findProcessDefinitionById(formProcessLink.processDefinitionId))
             .thenReturn(processDefinition)
 
         formDefinition = formDefinitionOf("user-task")

@@ -31,13 +31,15 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.exception.UnknownProcessDefinitionException;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
-import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,7 +56,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
     private ProcessDocumentInstanceRepository processDocumentInstanceRepository;
     private DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
     private DocumentDefinitionService documentDefinitionService;
-    private CamundaProcessService camundaProcessService;
+    private CamundaRepositoryService repositoryService;
     private RuntimeService runtimeService;
     private AuthorizationService authorizationService;
     private DocumentService documentService;
@@ -65,7 +67,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         processDocumentInstanceRepository = spy(ProcessDocumentInstanceRepository.class);
         documentDefinitionRepository = mock(DocumentDefinitionRepository.class);
         documentDefinitionService = mock(DocumentDefinitionService.class);
-        camundaProcessService = mock(CamundaProcessService.class);
+        repositoryService = mock(CamundaRepositoryService.class);
         runtimeService = mock(RuntimeService.class);
         authorizationService = mock(AuthorizationService.class);
         documentService = mock(DocumentService.class);
@@ -75,7 +77,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
             processDocumentInstanceRepository,
             documentDefinitionRepository,
             documentDefinitionService,
-            camundaProcessService,
+            repositoryService,
             runtimeService,
             authorizationService,
             documentService
@@ -93,7 +95,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
             true
         );
 
-        when(camundaProcessService.processDefinitionExistsByKey(anyString()))
+        when(repositoryService.processDefinitionExists(any()))
             .thenReturn(true);
 
         when(documentDefinitionService.findIdByName(anyString()))
@@ -125,7 +127,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         when(documentDefinitionService.findIdByName(anyString()))
             .thenReturn(definitionId);
 
-        when(camundaProcessService.processDefinitionExistsByKey(anyString()))
+        when(repositoryService.processDefinitionExists(any()))
             .thenReturn(false);
 
         assertThrows(UnknownProcessDefinitionException.class, () -> {
@@ -144,7 +146,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
             true
         );
 
-        when(camundaProcessService.processDefinitionExistsByKey(anyString()))
+        when(repositoryService.processDefinitionExists(any()))
             .thenReturn(true);
 
         when(documentDefinitionService.findIdByName(anyString()))

@@ -46,18 +46,19 @@ import com.ritense.processdocument.exception.UnknownProcessDefinitionException;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
-import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 public class CamundaProcessJsonSchemaDocumentAssociationService implements ProcessDocumentAssociationService {
@@ -67,19 +68,19 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private final ProcessDocumentInstanceRepository processDocumentInstanceRepository;
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
     private final DocumentDefinitionService documentDefinitionService;
-    private final CamundaProcessService camundaProcessService;
+    private final CamundaRepositoryService repositoryService;
     private final RuntimeService runtimeService;
     private final AuthorizationService authorizationService;
     private final DocumentService documentService;
 
-    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaProcessService camundaProcessService, RuntimeService runtimeService,
+    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaRepositoryService repositoryService, RuntimeService runtimeService,
                                                               AuthorizationService authorizationService,
                                                               DocumentService documentService) {
         this.processDocumentDefinitionRepository = processDocumentDefinitionRepository;
         this.processDocumentInstanceRepository = processDocumentInstanceRepository;
         this.documentDefinitionRepository = documentDefinitionRepository;
         this.documentDefinitionService = documentDefinitionService;
-        this.camundaProcessService = camundaProcessService;
+        this.repositoryService = repositoryService;
         this.runtimeService = runtimeService;
         this.authorizationService = authorizationService;
         this.documentService = documentService;
@@ -202,7 +203,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         boolean canInitializeDocument,
         boolean startableByUser
     ) {
-        if (!camundaProcessService.processDefinitionExistsByKey(processDefinitionKey.toString())) {
+        if (!repositoryService.processDefinitionExists(byKey(processDefinitionKey.toString()))) {
             throw new UnknownProcessDefinitionException(processDefinitionKey.toString());
         }
         if (!documentDefinitionRepository.existsById(documentDefinitionId)) {

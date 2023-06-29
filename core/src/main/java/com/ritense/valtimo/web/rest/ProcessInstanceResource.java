@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
-import com.ritense.valtimo.service.CamundaProcessService;
+import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,10 +33,10 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_J
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ProcessInstanceResource {
 
-    private final CamundaProcessService camundaProcessService;
+    private final CamundaRuntimeService runtimeService;
 
-    public ProcessInstanceResource(CamundaProcessService camundaProcessService) {
-        this.camundaProcessService = camundaProcessService;
+    public ProcessInstanceResource(CamundaRuntimeService runtimeService) {
+        this.runtimeService = runtimeService;
     }
 
     @PostMapping("/v1/process-instance/{id}/variables")
@@ -44,7 +44,7 @@ public class ProcessInstanceResource {
         @PathVariable String id,
         @RequestBody List<String> variableNames
     ) {
-        final Map<String, Object> processVariables = camundaProcessService.getProcessInstanceVariables(id, variableNames);
+        final Map<String, Object> processVariables = runtimeService.getVariables(id, variableNames);
         return ResponseEntity.ok(processVariables);
     }
 

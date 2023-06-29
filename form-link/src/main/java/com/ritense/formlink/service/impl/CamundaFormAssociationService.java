@@ -41,10 +41,10 @@ import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
+import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import com.ritense.valtimo.contract.form.DataResolvingContext;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.contract.json.JsonPointerHelper;
-import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,7 +68,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
     private final ProcessFormAssociationRepository processFormAssociationRepository;
     private final DocumentService documentService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
-    private final CamundaProcessService camundaProcessService;
+    private final CamundaRuntimeService runtimeService;
     private final CamundaTaskService taskService;
     private final SubmissionTransformerService submissionTransformerService;
     private final List<FormFieldDataResolver> formFieldDataResolvers;
@@ -78,7 +78,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         ProcessFormAssociationRepository processFormAssociationRepository,
         DocumentService documentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        CamundaProcessService camundaProcessService,
+        CamundaRuntimeService runtimeService,
         CamundaTaskService taskService,
         SubmissionTransformerService submissionTransformerService,
         List<FormFieldDataResolver> formFieldDataResolvers
@@ -87,7 +87,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         this.processFormAssociationRepository = processFormAssociationRepository;
         this.documentService = documentService;
         this.processDocumentAssociationService = processDocumentAssociationService;
-        this.camundaProcessService = camundaProcessService;
+        this.runtimeService = runtimeService;
         this.taskService = taskService;
         this.submissionTransformerService = submissionTransformerService;
         this.formFieldDataResolvers = formFieldDataResolvers;
@@ -362,7 +362,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         final Map<String, Object> processInstanceVariables = new HashMap<>();
         AuthorizationContext.runWithoutAuthorization( () -> processDocumentAssociationService.findProcessDocumentInstances(document.id()))
             .forEach(processDocumentInstance -> processInstanceVariables.putAll(
-                camundaProcessService.getProcessInstanceVariables(
+                runtimeService.getVariables(
                     processDocumentInstance.processDocumentInstanceId().processInstanceId().toString(),
                     processVarsNames
                 ))

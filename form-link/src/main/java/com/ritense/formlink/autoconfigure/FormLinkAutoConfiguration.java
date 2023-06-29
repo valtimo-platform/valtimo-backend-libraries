@@ -46,8 +46,8 @@ import com.ritense.formlink.web.rest.impl.interceptor.PublicAccessRateLimitInter
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
-import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -74,7 +74,7 @@ public class FormLinkAutoConfiguration {
         ProcessFormAssociationRepository processFormAssociationRepository,
         DocumentService documentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        CamundaProcessService camundaProcessService,
+        CamundaRuntimeService runtimeService,
         CamundaTaskService taskService,
         SubmissionTransformerService<FormIoFormDefinition> submissionTransformerService,
         List<FormFieldDataResolver> formFieldDataResolvers
@@ -84,7 +84,7 @@ public class FormLinkAutoConfiguration {
             processFormAssociationRepository,
             documentService,
             processDocumentAssociationService,
-            camundaProcessService,
+            runtimeService,
             taskService,
             submissionTransformerService,
             formFieldDataResolvers

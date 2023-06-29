@@ -278,7 +278,7 @@ public class CamundaTaskService {
                     businessKey,
                     CamundaTaskDto.of(task),
                     delegateTaskHelper.isTaskPublic(task),
-                    getProcessDefinitionKey(task.getProcessDefinitionId()),
+                    task.getProcessDefinition().getKey(),
                     identityLinks
                 );
             })
@@ -382,21 +382,6 @@ public class CamundaTaskService {
     public boolean hasTaskFormData(String taskId) {
         final TaskFormData taskFormData = formService.getTaskFormData(taskId);
         return taskFormData == null || taskFormData.getFormKey() != null || !taskFormData.getFormFields().isEmpty();
-    }
-
-    /**
-     * Gets the process definition key based on the process definition id. See url below that explains how the Id is created.
-     * https://github.com/camunda/camunda-bpm-platform/blob/master/engine/src/main/java/org/camunda/bpm/engine/impl/AbstractDefinitionDeployer.java#L331-L351
-     *
-     * @param processDefinitionId The ID of the process definition
-     * @return The key of the process definition
-     */
-    private String getProcessDefinitionKey(String processDefinitionId) {
-        if (processDefinitionId.contains(":")) {
-            return processDefinitionId.substring(0, processDefinitionId.indexOf(':'));
-        } else {
-            return camundaProcessService.findProcessDefinitionById(processDefinitionId).getKey();
-        }
     }
 
 }

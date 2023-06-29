@@ -18,6 +18,9 @@ package com.ritense.valtimo.camunda.service
 
 import com.ritense.valtimo.camunda.domain.CamundaVariableInstance
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
+import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.Companion.NAME
+import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.Companion.byNameIn
+import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.Companion.byProcessInstanceId
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.springframework.data.domain.Sort
@@ -33,6 +36,16 @@ open class CamundaRuntimeService(
         sort: Sort
     ): List<CamundaVariableInstance> =
         camundaVariableInstanceRepository.findAll(specification, sort)
+
+    open fun getVariables(processInstanceId: String, variableNames: List<String>): Map<String, Any?> {
+        val variableInstances = findVariableInstances(
+            byProcessInstanceId(processInstanceId).and(byNameIn(*variableNames.toTypedArray())),
+            Sort.by(Sort.Direction.DESC, NAME)
+        )
+        return variableInstances
+            .filter { variableInstance: CamundaVariableInstance -> variableInstance.getValue() != null }
+            .associate { obj -> obj.name to obj.getValue() }
+    }
 
     fun findProcessInstanceById(processInstanceId: String): ProcessInstance? =
         runtimeService

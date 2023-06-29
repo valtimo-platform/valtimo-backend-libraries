@@ -319,8 +319,8 @@ public class ValtimoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ProcessInstanceResource.class)
-    public ProcessInstanceResource processInstanceResource(CamundaProcessService camundaProcessService) {
-        return new ProcessInstanceResource(camundaProcessService);
+    public ProcessInstanceResource processInstanceResource(CamundaRuntimeService runtimeService) {
+        return new ProcessInstanceResource(runtimeService);
     }
 
     @Bean

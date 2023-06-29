@@ -91,7 +91,7 @@ public class ProcessDocumentAutoConfiguration {
         ProcessDocumentInstanceRepository processDocumentInstanceRepository,
         DocumentDefinitionRepository documentDefinitionRepository,
         DocumentDefinitionService documentDefinitionService,
-        CamundaProcessService camundaProcessService,
+        CamundaRepositoryService repositoryService,
         RuntimeService runtimeService,
         AuthorizationService authorizationService,
         DocumentService documentService
@@ -101,7 +101,7 @@ public class ProcessDocumentAutoConfiguration {
             processDocumentInstanceRepository,
             documentDefinitionRepository,
             documentDefinitionService,
-            camundaProcessService,
+            repositoryService,
             runtimeService,
             authorizationService,
             documentService

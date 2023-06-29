@@ -49,7 +49,7 @@ public class InstanceCountChart {
             this.categories.add(dayToProcess);
 
             // Add series data for every deployed process
-            for (CamundaProcessDefinition processDefinition :processDefinitions) {
+            for (CamundaProcessDefinition processDefinition : processDefinitions) {
                 Map<String, Long> dateCounts = instanceCountPerProces.get(processDefinition.getName());
                 Long count = dateCounts != null && dateCounts.get(dayToProcess) != null ? dateCounts.get(dayToProcess) : 0L;
                 this.addSeriesValue(processDefinition.getName(), count);

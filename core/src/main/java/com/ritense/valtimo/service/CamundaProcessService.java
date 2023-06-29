@@ -18,7 +18,6 @@ package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
-import com.ritense.valtimo.camunda.domain.CamundaVariableInstance;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
@@ -56,8 +55,6 @@ import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpe
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
-import static com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.byNameIn;
-import static com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.byProcessInstanceId;
 
 public class CamundaProcessService {
 
@@ -126,7 +123,7 @@ public class CamundaProcessService {
     public ProcessInstanceWithDefinition startProcess(
         String processDefinitionKey, String businessKey, Map<String, Object> variables
     ) {
-        final CamundaProcessDefinition processDefinition = getProcessDefinition(processDefinitionKey);
+        final CamundaProcessDefinition processDefinition = camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey);
         if (processDefinition == null) {
             throw new IllegalStateException("No process definition found with key: '" + processDefinitionKey + "'");
         }
@@ -140,31 +137,18 @@ public class CamundaProcessService {
     }
 
     public CamundaProcessDefinition getProcessDefinition(String processDefinitionKey) {
-        return camundaRepositoryService.findProcessDefinition(
-            byKey(processDefinitionKey)
-                .and(byLatestVersion())
-        );
+        return camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey);
     }
 
     public Map<String, Object> getProcessInstanceVariables(String processInstanceId, List<String> variableNames) {
-        List<CamundaVariableInstance> variableInstances = camundaRuntimeService.findVariableInstances(
-            byProcessInstanceId(processInstanceId)
-                .and(byNameIn(variableNames.toArray(String[]::new))),
-            Sort.by(Sort.Direction.DESC, NAME)
-        );
-
-        return variableInstances
-            .stream()
-            .filter(variableInstance -> variableInstance.getValue() != null)
-            .collect(Collectors.toMap(CamundaVariableInstance::getName, CamundaVariableInstance::getValue));
+        return camundaRuntimeService.getVariables(processInstanceId, variableNames);
     }
 
     public List<CamundaHistoricProcessInstance> getAllActiveContextProcessesStartedByCurrentUser(
         Set<String> processes, String userLogin
     ) {
         List<CamundaHistoricProcessInstance> historicProcessInstances = historyService.findHistoricProcessInstances(
-            byStartUserId(userLogin)
-                .and(byUnfinished())
+            byStartUserId(userLogin).and(byUnfinished())
         );
 
         return historicProcessInstances
@@ -176,8 +160,7 @@ public class CamundaProcessService {
 
     public List<CamundaProcessDefinition> getDeployedDefinitions() {
         return camundaRepositoryService.findProcessDefinitions(
-            byActive()
-            .and(byLatestVersion()),
+            byActive().and(byLatestVersion()),
             Sort.by(NAME)
         );
     }
@@ -212,7 +195,7 @@ public class CamundaProcessService {
             process -> {
                 String processDefinitionKey = process.getId();
                 if (processDefinitionKey == null || processDefinitionKey.isEmpty() || isSystemProcess(
-                    getProcessDefinition(processDefinitionKey))) {
+                    camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey))) {
                     isDeployable.set(false);
                 } else {
                     Optional.ofNullable(process.getExtensionElements())
@@ -226,7 +209,7 @@ public class CamundaProcessService {
                                             && camundaProperty.getCamundaValue().equals("true")
                                         )
                                         .findAny()
-                                        .ifPresent((property) -> isDeployable.set(false))
+                                        .ifPresent(property -> isDeployable.set(false))
                                 )
                         );
                 }

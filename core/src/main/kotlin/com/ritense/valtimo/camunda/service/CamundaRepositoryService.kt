@@ -50,4 +50,7 @@ open class CamundaRepositoryService(
 
     fun countProcessDefinitions(specification: Specification<CamundaProcessDefinition>) =
         camundaProcessDefinitionRepository.count(specification)
+
+    fun processDefinitionExists(specification: Specification<CamundaProcessDefinition>) =
+        camundaProcessDefinitionRepository.exists(specification)
 }
