@@ -26,12 +26,10 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.user;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -161,7 +159,7 @@ class ReminderServiceImplTest {
             assignee,
             null,
             0,
-            new Date(), null, null, null, 0, null,
+            LocalDateTime.now(), null, null, null, 0, null,
             Set.of()
         );
     }
@@ -176,7 +174,7 @@ class ReminderServiceImplTest {
             taskName,
             null, null, null, null, null, null,
             0,
-            new Date(), null, null, null, 0, null,
+            LocalDateTime.now(), null, null, null, 0, null,
             Set.of()
         );
     }

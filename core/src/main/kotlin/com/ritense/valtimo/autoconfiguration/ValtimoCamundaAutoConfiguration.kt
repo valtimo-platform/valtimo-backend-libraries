@@ -65,10 +65,9 @@ class ValtimoCamundaAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CamundaRepositoryService::class)
     fun camundaRepositoryService(
-        repositoryService: RepositoryService,
         camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
     ): CamundaRepositoryService {
-        return CamundaRepositoryService(repositoryService, camundaProcessDefinitionRepository)
+        return CamundaRepositoryService(camundaProcessDefinitionRepository)
     }
 
     @Bean

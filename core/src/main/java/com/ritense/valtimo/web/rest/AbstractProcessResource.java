@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
@@ -112,8 +113,8 @@ public abstract class AbstractProcessResource {
     public List<CamundaTask> getAllActiveTasks(
         CamundaProcessDefinition processDefinition,
         String searchStatus,
-        Date fromDate,
-        Date toDate,
+        LocalDateTime fromDate,
+        LocalDateTime toDate,
         Integer duration
     ) {
         // Get, group and count all task instances
@@ -133,7 +134,7 @@ public abstract class AbstractProcessResource {
 
         if (duration != null) {
             LocalDate dayinPast = LocalDate.now().minusDays(duration);
-            taskQuery.and(byCreateTimeBefore(Date.from(dayinPast.atStartOfDay(ZoneId.systemDefault()).toInstant())));
+            taskQuery.and(byCreateTimeBefore(dayinPast.atStartOfDay()));
         }
         return taskService.findTasks(taskQuery);
     }
@@ -141,8 +142,8 @@ public abstract class AbstractProcessResource {
     public Map<String, HeatmapTaskCountDTO> getActiveTasksCounts(
         CamundaProcessDefinition processDefinition,
         String searchStatus,
-        Date fromDate,
-        Date toDate,
+        LocalDateTime fromDate,
+        LocalDateTime toDate,
         Integer duration
     ) {
         // Get all available tasks for this process definition

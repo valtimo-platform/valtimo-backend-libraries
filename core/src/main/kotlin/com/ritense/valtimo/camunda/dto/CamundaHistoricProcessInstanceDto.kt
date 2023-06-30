@@ -18,7 +18,7 @@
 package com.ritense.valtimo.camunda.dto
 
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance
-import java.util.Date
+import java.time.LocalDateTime
 
 data class CamundaHistoricProcessInstanceDto(
     val id: String?,
@@ -27,9 +27,9 @@ data class CamundaHistoricProcessInstanceDto(
     val processDefinitionKey: String?,
     val processDefinitionName: String?,
     val processDefinitionVersion: Int?,
-    val startTime: Date?,
-    val endTime: Date?,
-    val removalTime: Date?,
+    val startTime: LocalDateTime?,
+    val endTime: LocalDateTime?,
+    val removalTime: LocalDateTime?,
     val durationInMillis: Long?,
     val startUserId: String?,
     val startActivityId: String?,

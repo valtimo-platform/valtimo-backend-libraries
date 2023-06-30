@@ -93,7 +93,7 @@ public class ReminderServiceImpl implements ReminderService {
                         new com.ritense.valtimo.camunda.task.domain.reminder.Task(
                             task.getId(),
                             task.getName(),
-                            task.getCreateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                            task.getCreateTime().toLocalDate()
                         )
                     )
                 )
@@ -115,7 +115,7 @@ public class ReminderServiceImpl implements ReminderService {
                         new com.ritense.valtimo.camunda.task.domain.reminder.Task(
                             task.getId(),
                             task.getName(),
-                            task.getCreateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                            task.getCreateTime().toLocalDate()
                         )
                     )
                 ).collect(Collectors.toList());

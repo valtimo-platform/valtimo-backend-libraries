@@ -16,9 +16,7 @@
 
 package com.ritense.valtimo.camunda.domain
 
-import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
-import org.camunda.bpm.engine.task.DelegationState
-import java.util.Date
+import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -30,6 +28,8 @@ import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.Table
 import javax.persistence.Transient
+import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
+import org.camunda.bpm.engine.task.DelegationState
 
 @Entity
 @Table(name = "ACT_RU_TASK")
@@ -93,16 +93,16 @@ class CamundaTask(
     val priority: Int,
 
     @Column(name = "CREATE_TIME_")
-    val createTime: Date?,
+    val createTime: LocalDateTime?,
 
     @Column(name = "LAST_UPDATED_")
-    val lastUpdated: Date?,
+    val lastUpdated: LocalDateTime?,
 
     @Column(name = "DUE_DATE_")
-    val dueDate: Date?,
+    val dueDate: LocalDateTime?,
 
     @Column(name = "FOLLOW_UP_DATE_")
-    val followUpDate: Date?,
+    val followUpDate: LocalDateTime?,
 
     @Column(name = "SUSPENSION_STATE_")
     val suspensionState: Int,

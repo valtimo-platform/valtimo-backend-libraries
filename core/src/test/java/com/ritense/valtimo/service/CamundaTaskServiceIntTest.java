@@ -168,8 +168,8 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         );
 
         var tasks = pagedTasks.toList();
-        assertThat(tasks.get(0).getDue().toInstant()).hasToString("2022-06-18T00:00:00Z");
-        assertThat(tasks.get(1).getDue().toInstant()).hasToString("2022-06-17T00:00:00Z");
+        assertThat(tasks.get(0).getDue()).hasToString("2022-06-18T00:00");
+        assertThat(tasks.get(1).getDue()).hasToString("2022-06-17T00:00");
     }
 
     @Test

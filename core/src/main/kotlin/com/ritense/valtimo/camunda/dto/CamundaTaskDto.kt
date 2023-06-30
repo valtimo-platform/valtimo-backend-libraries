@@ -18,16 +18,16 @@
 package com.ritense.valtimo.camunda.dto
 
 import com.ritense.valtimo.camunda.domain.CamundaTask
-import java.util.Date
+import java.time.LocalDateTime
 
 data class CamundaTaskDto(
     val id: String?,
     val name: String?,
     val assignee: String?,
-    val created: Date?,
-    val due: Date?,
-    val followUp: Date?,
-    val lastUpdated: Date?,
+    val created: LocalDateTime?,
+    val due: LocalDateTime?,
+    val followUp: LocalDateTime?,
+    val lastUpdated: LocalDateTime?,
     val delegationState: String?,
     val description: String?,
     val executionId: String?,

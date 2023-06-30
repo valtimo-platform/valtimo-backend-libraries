@@ -31,6 +31,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -58,9 +60,9 @@ class CamundaProcessServiceTest {
     private CamundaHistoricProcessInstance middleProcessInstance;
     private CamundaHistoricProcessInstance oldestProcessInstance;
 
-    private static final Date FIRST_OF_JANUARY_2018 = getDate(1, 1, 2018);
-    private static final Date FIRST_OF_JANUARY_2017 = getDate(1, 1, 2017);
-    private static final Date FIRST_OF_JANUARY_2016 = getDate(1, 1, 2016);
+    private static final LocalDateTime FIRST_OF_JANUARY_2018 = getDate(2018,1, 1);
+    private static final LocalDateTime FIRST_OF_JANUARY_2017 = getDate(2017,1, 1);
+    private static final LocalDateTime FIRST_OF_JANUARY_2016 = getDate(2016,1, 1);
 
     private static final String BUSINESSKEY1 = "businessKey1";
     private static final String BUSINESSKEY2 = "businessKey2";
@@ -208,17 +210,15 @@ class CamundaProcessServiceTest {
         return processes;
     }
 
-    private static Date getDate(int year, int month, int date) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(year, month, date);
-        return cal.getTime();
+    private static LocalDateTime getDate(int year, int month, int date) {
+        return LocalDate.of(year, month, date).atStartOfDay();
     }
 
     private Matcher<Object> withBusinessKey(String businessKey) {
         return hasProperty("businessKey", IsEqual.equalTo(businessKey));
     }
 
-    private Matcher<Object> withStartTime(Date date) {
+    private Matcher<Object> withStartTime(LocalDateTime date) {
         return hasProperty("startTime", IsEqual.equalTo(date));
     }
 }

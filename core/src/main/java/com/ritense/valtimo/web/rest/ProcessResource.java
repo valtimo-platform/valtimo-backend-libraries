@@ -82,11 +82,11 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +94,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.VERSION;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
@@ -220,8 +219,8 @@ public class ProcessResource extends AbstractProcessResource {
             @PathVariable String processDefinitionKey,
             @RequestParam Integer version,
             @RequestParam(required = false) String searchStatus,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fromDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate,
+            @RequestParam(required = false) LocalDate fromDate,
+            @RequestParam(required = false) LocalDate toDate,
             @RequestParam(required = false) Integer duration
     ) {
         CamundaProcessDefinition processDefinition = getProcessDefinition(processDefinitionKey, version);
@@ -234,11 +233,11 @@ public class ProcessResource extends AbstractProcessResource {
         }
 
         if (fromDate != null) {
-            historicActivityInstanceQuery.startedAfter(fromDate);
+            historicActivityInstanceQuery.startedAfter(Date.from(fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
         }
 
         if (toDate != null) {
-            historicActivityInstanceQuery.startedBefore(toDate);
+            historicActivityInstanceQuery.startedBefore(Date.from(toDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
         }
 
         if (Optional.ofNullable(duration).isPresent()) {
@@ -256,7 +255,7 @@ public class ProcessResource extends AbstractProcessResource {
                 .collect(Collectors.groupingBy(HistoricActivityInstance::getActivityId, Collectors.counting()));
 
         Map<String, HeatmapTaskCountDTO> activeTasksCount = getActiveTasksCounts(
-                processDefinition, searchStatus, fromDate, toDate, duration);
+                processDefinition, searchStatus, fromDate.atStartOfDay(), toDate.atStartOfDay(), duration);
 
         for (Map.Entry<String, Long> entry : heatmapDataCount.entrySet()) {
             HeatmapTaskCountDTO heatmapTaskCountDTO = activeTasksCount.get(entry.getKey());
@@ -278,8 +277,8 @@ public class ProcessResource extends AbstractProcessResource {
             @PathVariable String processDefinitionKey,
             @RequestParam Integer version,
             @RequestParam(required = false) String searchStatus,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fromDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
             @RequestParam(required = false) Integer duration
     ) {
         CamundaProcessDefinition processDefinition = getProcessDefinition(processDefinitionKey, version);
@@ -292,11 +291,11 @@ public class ProcessResource extends AbstractProcessResource {
         }
 
         if (fromDate != null) {
-            historicActivityInstanceQuery.startedAfter(fromDate);
+            historicActivityInstanceQuery.startedAfter(Date.from(fromDate.atStartOfDay(ZoneOffset.systemDefault()).toInstant()));
         }
 
         if (toDate != null) {
-            historicActivityInstanceQuery.startedBefore(toDate);
+            historicActivityInstanceQuery.startedBefore(Date.from(toDate.atStartOfDay(ZoneOffset.systemDefault()).toInstant()));
         }
 
         if (Optional.ofNullable(duration).isPresent()) {
@@ -327,7 +326,7 @@ public class ProcessResource extends AbstractProcessResource {
             }
         }
 
-        List<CamundaTask> taskList = getAllActiveTasks(processDefinition, searchStatus, fromDate, toDate, duration);
+        List<CamundaTask> taskList = getAllActiveTasks(processDefinition, searchStatus, fromDate.atStartOfDay(), toDate.atStartOfDay(), duration);
         Map<String, Long> groupedList = taskList.stream()
                 .collect(Collectors.groupingBy(CamundaTask::getTaskDefinitionKey, Collectors.counting()));
 

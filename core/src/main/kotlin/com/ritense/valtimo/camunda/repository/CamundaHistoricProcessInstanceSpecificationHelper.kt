@@ -67,12 +67,12 @@ class CamundaHistoricProcessInstanceSpecificationHelper {
             }
 
         @JvmStatic
-        fun byUnfinished() = Specification<CamundaHistoricProcessInstance> { root, _, cb ->
+        fun byUnfinished() = Specification<CamundaHistoricProcessInstance> { root, _, _ ->
             root.get<Any>(END_TIME).isNull
         }
 
         @JvmStatic
-        fun byFinished() = Specification<CamundaHistoricProcessInstance> { root, _, cb ->
+        fun byFinished() = Specification<CamundaHistoricProcessInstance> { root, _, _ ->
             root.get<Any>(END_TIME).isNotNull
         }
 

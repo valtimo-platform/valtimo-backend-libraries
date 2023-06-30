@@ -22,20 +22,30 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
+import org.camunda.bpm.engine.TaskService
 
 class CamundaTaskRepositoryIntTest @Autowired constructor(
+    private val taskService: TaskService,
     private val camundaTaskRepository: CamundaTaskRepository
 ): BaseIntegrationTest() {
 
     @Test
     @Transactional
-    fun `should find camunda task instance`() {
+    fun `should find camunda task instance with local variable`() {
         val instance = runtimeService.startProcessInstanceByKey(
             "one-task-process",
             UUID.randomUUID().toString(),
             mapOf("test" to true)
         )
 
+        val nativeTask = taskService.createTaskQuery()
+            .processInstanceIdIn(instance.id)
+            .taskDefinitionKey("do-something")
+            .singleResult()
+
+        taskService.setVariableLocal(nativeTask.id, "localTaskValue", "local")
+
+        //get the task
         val result = camundaTaskRepository.findOne { root, _, criteriaBuilder ->
             criteriaBuilder.equal(
                 root.get<String>("processInstance").get<Any>("id"),
@@ -47,5 +57,6 @@ class CamundaTaskRepositoryIntTest @Autowired constructor(
         val task = result.get()
         Assertions.assertThat(task.getProcessInstanceId()).isEqualTo(instance.id)
         Assertions.assertThat(task.taskDefinitionKey).isEqualTo("do-something")
+        Assertions.assertThat(task.variables.firstOrNull { it.name == "localTaskValue" }?.getValue()).isEqualTo("local")
     }
 }

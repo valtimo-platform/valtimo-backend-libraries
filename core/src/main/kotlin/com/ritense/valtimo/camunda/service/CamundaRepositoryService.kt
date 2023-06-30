@@ -26,7 +26,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 
 open class CamundaRepositoryService(
-    private val repositoryService: RepositoryService,
     private val camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository
 ) {
 

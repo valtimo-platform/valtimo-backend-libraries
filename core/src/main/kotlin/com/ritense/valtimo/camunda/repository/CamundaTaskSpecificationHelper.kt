@@ -17,9 +17,9 @@
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import java.time.LocalDateTime
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
 import org.springframework.data.jpa.domain.Specification
-import java.util.Date
 
 class CamundaTaskSpecificationHelper {
 
@@ -109,13 +109,13 @@ class CamundaTaskSpecificationHelper {
         }
 
         @JvmStatic
-        fun byCreateTimeAfter(fromDate: Date) = Specification<CamundaTask> { root, _, cb ->
-            cb.greaterThan(root.get<Any>(CREATE_TIME).`as`(Date::class.java), cb.literal(fromDate))
+        fun byCreateTimeAfter(fromDate: LocalDateTime) = Specification<CamundaTask> { root, _, cb ->
+            cb.greaterThan(root.get<Any>(CREATE_TIME).`as`(LocalDateTime::class.java), cb.literal(fromDate))
         }
 
         @JvmStatic
-        fun byCreateTimeBefore(toDate: Date) = Specification<CamundaTask> { root, _, cb ->
-            cb.lessThan(root.get<Any>(CREATE_TIME).`as`(Date::class.java), cb.literal(toDate))
+        fun byCreateTimeBefore(toDate: LocalDateTime) = Specification<CamundaTask> { root, _, cb ->
+            cb.lessThan(root.get<Any>(CREATE_TIME).`as`(LocalDateTime::class.java), cb.literal(toDate))
         }
 
         @JvmStatic

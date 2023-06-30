@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.camunda.domain
 
-import java.util.Date
+import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -48,13 +48,13 @@ class CamundaHistoricProcessInstance(
     val processDefinition: CamundaProcessDefinition?,
 
     @Column(name = "START_TIME_")
-    val startTime: Date?,
+    val startTime: LocalDateTime?,
 
     @Column(name = "END_TIME_")
-    val endTime: Date?,
+    val endTime: LocalDateTime?,
 
     @Column(name = "REMOVAL_TIME_")
-    val removalTime: Date?,
+    val removalTime: LocalDateTime?,
 
     @Column(name = "DURATION_")
     val durationInMillis: Long?,

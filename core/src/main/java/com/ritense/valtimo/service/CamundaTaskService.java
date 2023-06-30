@@ -319,7 +319,7 @@ public class CamundaTaskService {
                 newAssignee,
                 task.getId(),
                 task.getName(),
-                LocalDateTime.ofInstant(task.getCreateTime().toInstant(), ZoneId.systemDefault()),
+                task.getCreateTime(),
                 task.getProcessDefinitionId(),
                 task.getProcessInstanceId(),
                 businessKey

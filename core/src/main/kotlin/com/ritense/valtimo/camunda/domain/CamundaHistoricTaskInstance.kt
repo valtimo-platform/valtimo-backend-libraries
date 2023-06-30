@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.camunda.domain
 
-import java.util.Date
+import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -79,10 +79,10 @@ class CamundaHistoricTaskInstance (
     val assignee: String?,
 
     @Column(name = "START_TIME_")
-    val startTime: Date?,
+    val startTime: LocalDateTime?,
 
     @Column(name = "END_TIME_")
-    val endTime: Date?,
+    val endTime: LocalDateTime?,
 
     @Column(name = "DURATION_")
     val durationInMillis: Long?,
@@ -94,15 +94,15 @@ class CamundaHistoricTaskInstance (
     val priority: Int,
 
     @Column(name = "DUE_DATE_")
-    val dueDate: Date?,
+    val dueDate: LocalDateTime?,
 
     @Column(name = "FOLLOW_UP_DATE_")
-    val followUpDate: Date?,
+    val followUpDate: LocalDateTime?,
 
     @Column(name = "TENANT_ID_")
     val tenantId: String?,
 
     @Column(name = "REMOVAL_TIME_")
-    val removalTime: Date?
+    val removalTime: LocalDateTime?
 
 )

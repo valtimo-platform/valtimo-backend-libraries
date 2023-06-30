@@ -88,7 +88,7 @@ class PrefillFormServiceTest : BaseTest() {
             submission,
             placeholders,
             source
-        )!!
+        )
 
         //Assert initial submission is cleaned up
         assertThat(submission["name"]).isNullOrEmpty()
@@ -114,7 +114,7 @@ class PrefillFormServiceTest : BaseTest() {
             submission,
             placeholders,
             source
-        )!!
+        )
 
         //Assert initial submission is cleaned up
         assertThat(submission["name"]).isNullOrEmpty()
@@ -146,7 +146,7 @@ class PrefillFormServiceTest : BaseTest() {
             submission,
             placeholders,
             source
-        )!!
+        )
 
         //Assert initial submission is cleaned up
         assertThat(submission["name"]).isNullOrEmpty()
@@ -178,7 +178,7 @@ class PrefillFormServiceTest : BaseTest() {
             submission,
             placeholders,
             source
-        )!!
+        )
 
         //Assert initial submission is cleaned up
         assertThat(submission["name"]).isNullOrEmpty()
@@ -199,7 +199,7 @@ class PrefillFormServiceTest : BaseTest() {
             submission,
             placeholders,
             source
-        )!!
+        )
 
         //Assert initial submission is cleaned up
         assertThat(submission["name"]).isNullOrEmpty()
