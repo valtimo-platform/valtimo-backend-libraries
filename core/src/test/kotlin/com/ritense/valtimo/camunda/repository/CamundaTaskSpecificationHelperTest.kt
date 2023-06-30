@@ -176,7 +176,7 @@ class CamundaTaskSpecificationHelperTest @Autowired constructor(
     @Test
     @Transactional
     fun byCreateTimeBefore() {
-        val camundaTaskIds = camundaTaskRepository.findAll(CamundaTaskSpecificationHelper.byCreateTimeAfter(LocalDateTime.now()))
+        val camundaTaskIds = camundaTaskRepository.findAll(CamundaTaskSpecificationHelper.byCreateTimeBefore(LocalDateTime.now()))
             .map { it.id }
 
         val allTaskIds = getAllTaskIds()
