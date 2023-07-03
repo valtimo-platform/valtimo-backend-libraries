@@ -17,7 +17,9 @@
 package com.ritense.authorization.web.rest
 
 import com.ritense.authorization.BaseIntegrationTest
+import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.web.rest.request.DeleteRolesRequest
 import com.ritense.authorization.web.rest.request.SaveRoleRequest
 import com.ritense.authorization.web.rest.request.UpdateRoleRequest
 import com.ritense.valtimo.contract.utils.TestUtil
@@ -33,10 +35,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.nio.charset.StandardCharsets
+import kotlin.test.assertEquals
 
 class RoleManagementResourceIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var roleRepository: RoleRepository
+    @Autowired
+    lateinit var permissionRepository: PermissionRepository
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext
@@ -131,5 +136,41 @@ class RoleManagementResourceIntTest : BaseIntegrationTest() {
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().is5xxServerError)
+    }
+
+    @Test
+    fun `should delete roles and permissions if roles exist`() {
+        val roleCountBefore = roleRepository.findAll().size
+        val permissionCountBefore = permissionRepository.findAll().size
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/management/v1/roles")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .content(TestUtil.convertObjectToJsonBytes(DeleteRolesRequest(listOf("TO_REMOVE_ROLE_1", "TO_REMOVE_ROLE_2"))))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+
+        assertEquals(roleCountBefore - 2, roleRepository.findAll().size)
+        assertEquals(permissionCountBefore - 1, permissionRepository.findAll().size)
+    }
+
+    @Test
+    fun `should not delete roles and permissions if roles do not exist`() {
+        val roleCountBefore = roleRepository.findAll().size
+        val permissionCountBefore = permissionRepository.findAll().size
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/management/v1/roles")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .content(TestUtil.convertObjectToJsonBytes(DeleteRolesRequest(listOf("DOES_NOT_EXIST"))))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+
+        assertEquals(roleCountBefore, roleRepository.findAll().size)
+        assertEquals(permissionCountBefore, permissionRepository.findAll().size)
     }
 }

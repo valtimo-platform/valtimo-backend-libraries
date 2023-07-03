@@ -16,14 +16,17 @@
 
 package com.ritense.authorization.web.rest
 
+import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.Role
 import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.web.rest.request.DeleteRolesRequest
 import com.ritense.authorization.web.rest.request.SaveRoleRequest
 import com.ritense.authorization.web.rest.request.UpdateRoleRequest
 import com.ritense.authorization.web.rest.result.RoleResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -31,11 +34,13 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import javax.transaction.Transactional
 
 @RestController
 @RequestMapping("/api/management", produces = [ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE])
 class RoleManagementResource(
-    val roleRepository: RoleRepository
+    val roleRepository: RoleRepository,
+    val permissionRepository: PermissionRepository
 ) {
     @GetMapping("/v1/roles")
     fun getPluginDefinitions()
@@ -62,5 +67,15 @@ class RoleManagementResource(
         val role: Role = roleRepository.save(updateRoleRequest.toRole(oldRole!!.id))
 
         return ResponseEntity.ok(RoleResult.fromRole(role))
+    }
+
+    @DeleteMapping("/v1/roles")
+    @Transactional
+    fun deletePluginDefinitions(@RequestBody deleteRolesRequest: DeleteRolesRequest)
+        : ResponseEntity<Void> {
+        permissionRepository.deleteByRoleKeyIn(deleteRolesRequest.roles)
+        roleRepository.deleteByKeyIn(deleteRolesRequest.roles)
+
+        return ResponseEntity.ok().build()
     }
 }

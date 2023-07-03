@@ -3,6 +3,8 @@
     "roles": [
         "ROLE_USER",
         "ROLE_ADMIN",
-        "ROLE_UPDATE"
+        "ROLE_UPDATE",
+        "TO_REMOVE_ROLE_1",
+        "TO_REMOVE_ROLE_2"
     ]
 }

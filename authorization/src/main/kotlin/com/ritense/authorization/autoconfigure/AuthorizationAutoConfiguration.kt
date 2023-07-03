@@ -134,9 +134,10 @@ class AuthorizationAutoConfiguration(
     @Bean
     @ConditionalOnMissingBean(RoleManagementResource::class)
     fun roleManagementResource(
-        roleRepository: RoleRepository
+        roleRepository: RoleRepository,
+        permissionRepository: PermissionRepository
     ) : RoleManagementResource {
-        return RoleManagementResource(roleRepository)
+        return RoleManagementResource(roleRepository, permissionRepository)
     }
 
 }

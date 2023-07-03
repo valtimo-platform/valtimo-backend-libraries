@@ -47,7 +47,7 @@ internal class PermissionDeployerIntTest : BaseIntegrationTest() {
         assertThat(changeset.get().filename).endsWith("/testdocument.permission.json")
         assertThat(changeset.get().dateExecuted).isBetween(Instant.parse("2023-06-13T00:00:00Z"), Instant.now())
         assertThat(changeset.get().orderExecuted).isBetween(0, 1000)
-        assertThat(changeset.get().md5sum).isEqualTo("e3351de1c4f17eab1f1ff0a4ca97fe9c")
+        assertThat(changeset.get().md5sum).isEqualTo("e7016d7924f399170a357d870d10832b")
     }
 
     @Test
@@ -55,7 +55,7 @@ internal class PermissionDeployerIntTest : BaseIntegrationTest() {
 
         val permissions = permissionRepository.findAll()
 
-        assertThat(permissions).hasSize(1)
+        assertThat(permissions).hasSize(2)
         assertThat(permissions[0].id).isNotNull()
         assertThat(permissions[0].resourceType).isEqualTo(TestDocument::class.java)
         assertThat(permissions[0].action).isEqualTo(Action<Any>(VIEW))

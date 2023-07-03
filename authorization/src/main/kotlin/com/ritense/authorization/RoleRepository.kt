@@ -20,4 +20,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface RoleRepository: JpaRepository<Role, String> {
     fun findByKey(key: String): Role?
+    fun deleteByKeyIn(keys: List<String>)
 }
