@@ -22,6 +22,7 @@ import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationServiceHolder
+import com.ritense.authorization.Role
 import com.ritense.authorization.permission.ContainerPermissionCondition.Companion.CONTAINER
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
@@ -71,7 +72,7 @@ data class ContainerPermissionCondition<TO : Any>(
                     resourceType = resourceType,
                     action = Action<Any>(Action.IGNORE),
                     conditionContainer = ConditionContainer(conditions),
-                    roleKey = ""
+                    role = Role(key = "")
                 )
             )
         )

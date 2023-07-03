@@ -59,7 +59,7 @@ internal class PermissionDeployerIntTest : BaseIntegrationTest() {
         assertThat(permissions[0].id).isNotNull()
         assertThat(permissions[0].resourceType).isEqualTo(TestDocument::class.java)
         assertThat(permissions[0].action).isEqualTo(Action<Any>(VIEW))
-        assertThat(permissions[0].roleKey).isEqualTo("ROLE_USER")
+        assertThat(permissions[0].role.key).isEqualTo("ROLE_USER")
         assertThat(permissions[0].conditionContainer.conditions).hasSize(1)
         assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
         val condition = permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>

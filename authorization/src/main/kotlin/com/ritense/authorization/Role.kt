@@ -16,6 +16,7 @@
 
 package com.ritense.authorization
 
+import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -25,6 +26,8 @@ import javax.persistence.Table
 @Table(name = "role")
 data class Role(
     @Id
-    @Column(name = "key", nullable = false, updatable = false)
+    @Column(name = "id")
+    val id: UUID = UUID.randomUUID(),
+    @Column(name = "key", nullable = false, unique = true)
     val key: String
 )

@@ -16,8 +16,8 @@
 
 package com.ritense.authorization
 
-import org.springframework.data.jpa.repository.JpaRepository
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-interface RoleRepository: JpaRepository<Role, String> {
-    fun findByKey(key: String): Role?
-}
+class AuthorizationSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.authorization"
+)

@@ -32,8 +32,7 @@ import com.ritense.note.service.NoteActionProvider.Companion.VIEW
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
-import java.util.UUID
-import javax.inject.Inject
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
@@ -41,6 +40,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.web.servlet.config.annotation.EnableWebMvc
+import java.util.UUID
+import javax.inject.Inject
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
@@ -63,11 +64,10 @@ abstract class BaseIntegrationTest {
     @EnableWebMvc
     class TestConfiguration
 
-
     @BeforeEach
     fun beforeEachBase() {
-        roleRepository.save(Role(ADMIN))
-        roleRepository.save(Role(USER))
+        val role1 = roleRepository.save(Role(key = ADMIN))
+        val role2 = roleRepository.save(Role(key = USER))
 
         val permissions: List<Permission> = listOf(
             Permission(
@@ -75,7 +75,7 @@ abstract class BaseIntegrationTest {
                 Note::class.java,
                 LIST_VIEW,
                 ConditionContainer(listOf()),
-                ADMIN
+                role1
             ),
             Permission(
                 resourceType = Note::class.java,
@@ -85,13 +85,13 @@ abstract class BaseIntegrationTest {
                         FieldPermissionCondition("createdByUserId", PermissionConditionOperator.EQUAL_TO, "\${currentUserId}")
                     )
                 ),
-                roleKey = USER
+                role = role2
             ),
             Permission(
                 resourceType = Note::class.java,
                 action = CREATE,
                 conditionContainer = ConditionContainer(listOf()),
-                roleKey = USER
+                role = role2
             ),
             Permission(
                 resourceType = Note::class.java,
@@ -101,7 +101,7 @@ abstract class BaseIntegrationTest {
                         FieldPermissionCondition("createdByUserId", PermissionConditionOperator.EQUAL_TO, "\${currentUserId}")
                     )
                 ),
-                roleKey = USER
+                role = role2
             ),
             Permission(
                 resourceType = Note::class.java,
@@ -111,10 +111,16 @@ abstract class BaseIntegrationTest {
                         FieldPermissionCondition("createdByUserId", PermissionConditionOperator.EQUAL_TO, "\${currentUserId}")
                     )
                 ),
-                roleKey = USER
+                role = role2
             ),
         )
         permissionRepository.saveAllAndFlush(permissions)
+    }
+
+    @AfterEach
+    fun afterEachBase() {
+        permissionRepository.deleteAll()
+        roleRepository.deleteAll()
     }
 
     companion object {

@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.authorization.web.rest.request
 
-import org.springframework.data.jpa.repository.JpaRepository
+import com.ritense.authorization.Role
 
-interface RoleRepository: JpaRepository<Role, String> {
-    fun findByKey(key: String): Role?
+data class SaveRoleRequest(
+    val roleKey: String
+) {
+    fun toRole(): Role {
+        return Role(key = roleKey)
+    }
 }

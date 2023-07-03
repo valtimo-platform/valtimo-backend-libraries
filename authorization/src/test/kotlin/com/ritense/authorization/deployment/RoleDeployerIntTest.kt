@@ -51,7 +51,7 @@ internal class RoleDeployerIntTest : BaseIntegrationTest() {
         val roles = roleRepository.findAll()
 
         assertThat(roles).hasSize(2)
-        assertThat(roles[0]).isEqualTo(Role("ROLE_USER"))
-        assertThat(roles[1]).isEqualTo(Role("ROLE_ADMIN"))
+        assertThat(roles[0].key).isEqualTo("ROLE_USER")
+        assertThat(roles[1].key).isEqualTo("ROLE_ADMIN")
     }
 }

@@ -119,6 +119,8 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @AfterEach
     public void afterEach() {
+        permissionRepository.deleteAll();
+        roleRepository.deleteAll();
     }
 
     protected ManageableUser mockUser(String firstName, String lastName) {
@@ -142,7 +144,11 @@ public abstract class BaseIntegrationTest extends BaseTest {
     }
 
     private void setUpPermissions() {
-        roleRepository.save(new Role(FULL_ACCESS_ROLE));
+        Role role = roleRepository.findByKey(FULL_ACCESS_ROLE);
+
+        if (role == null) {
+            role = roleRepository.save(new Role(UUID.randomUUID(), FULL_ACCESS_ROLE));
+        }
 
         List<Permission> permissions = List.of(
             new Permission(
@@ -150,52 +156,52 @@ public abstract class BaseIntegrationTest extends BaseTest {
                 JsonSchemaDocument.class,
                 LIST_VIEW,
                 new ConditionContainer(Collections.emptyList()),
-                FULL_ACCESS_ROLE
+                role
             ),
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
                 VIEW,
                 new ConditionContainer(Collections.emptyList()),
-                FULL_ACCESS_ROLE
+                role
             ),
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
                 MODIFY,
                 new ConditionContainer(Collections.emptyList()),
-                FULL_ACCESS_ROLE
+                role
             ),
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
                 CREATE,
                 new ConditionContainer(Collections.emptyList()),
-                FULL_ACCESS_ROLE
+                role
             ),
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
                 CLAIM,
                 new ConditionContainer(Collections.emptyList()),
-                FULL_ACCESS_ROLE
+                role
             ),
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
                 ASSIGN,
                 new ConditionContainer(Collections.emptyList()),
-                FULL_ACCESS_ROLE
+                role
             ),
             new Permission(
                 UUID.randomUUID(),
                 SearchField.class,
                 SearchFieldActionProvider.LIST_VIEW,
                 new ConditionContainer(Collections.emptyList()),
-                FULL_ACCESS_ROLE
+                role
             )
         );
 
-        permissionRepository.saveAllAndFlush(permissions);
+        permissionRepository.saveAll(permissions);
     }
 }

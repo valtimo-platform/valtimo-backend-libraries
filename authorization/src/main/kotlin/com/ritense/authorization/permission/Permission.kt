@@ -17,13 +17,17 @@
 package com.ritense.authorization.permission
 
 import com.ritense.authorization.Action
+import com.ritense.authorization.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import org.hibernate.annotations.Type
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.Table
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
@@ -48,8 +52,9 @@ data class Permission(
     @Column(name = "conditions", columnDefinition = "json")
     val conditionContainer: ConditionContainer,
 
-    @Column(name = "role_key", nullable = false)
-    val roleKey: String,
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    val role: Role,
 ) {
     fun <T> appliesTo(resourceType: Class<T>, entity: Any?): Boolean {
         return if (this.resourceType == resourceType) {
