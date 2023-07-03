@@ -20,18 +20,22 @@ import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceRepository
 import org.camunda.bpm.engine.HistoryService
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.transaction.annotation.Transactional
 
-class CamundaHistoryService(
+open class CamundaHistoryService(
     private val historyService: HistoryService,
     private val camundaHistoricProcessInstanceRepository: CamundaHistoricProcessInstanceRepository
 ) {
 
-    fun findHistoricProcessInstances(specification: Specification<CamundaHistoricProcessInstance>): List<CamundaHistoricProcessInstance> =
+    @Transactional(readOnly = true)
+    open fun findHistoricProcessInstances(specification: Specification<CamundaHistoricProcessInstance>): List<CamundaHistoricProcessInstance> =
         camundaHistoricProcessInstanceRepository.findAll(specification)
 
-    fun findHistoricProcessInstance(specification: Specification<CamundaHistoricProcessInstance>): CamundaHistoricProcessInstance? =
+    @Transactional(readOnly = true)
+    open fun findHistoricProcessInstance(specification: Specification<CamundaHistoricProcessInstance>): CamundaHistoricProcessInstance? =
         camundaHistoricProcessInstanceRepository.findOne(specification).orElse(null)
 
-    fun countHistoricProcessInstances(specification: Specification<CamundaHistoricProcessInstance>) =
+    @Transactional(readOnly = true)
+    open fun countHistoricProcessInstances(specification: Specification<CamundaHistoricProcessInstance>) =
         camundaHistoricProcessInstanceRepository.count(specification)
 }

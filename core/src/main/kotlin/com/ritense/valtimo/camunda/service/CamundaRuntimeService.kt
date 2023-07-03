@@ -25,18 +25,21 @@ import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.transaction.annotation.Transactional
 
 open class CamundaRuntimeService(
     private val runtimeService: RuntimeService,
     private val camundaVariableInstanceRepository: CamundaVariableInstanceRepository
 ) {
 
-    fun findVariableInstances(
+    @Transactional(readOnly = true)
+    open fun findVariableInstances(
         specification: Specification<CamundaVariableInstance>,
         sort: Sort
     ): List<CamundaVariableInstance> =
         camundaVariableInstanceRepository.findAll(specification, sort)
 
+    @Transactional(readOnly = true)
     open fun getVariables(processInstanceId: String, variableNames: List<String>): Map<String, Any?> {
         val variableInstances = findVariableInstances(
             byProcessInstanceId(processInstanceId).and(byNameIn(*variableNames.toTypedArray())),
@@ -47,7 +50,8 @@ open class CamundaRuntimeService(
             .associate { obj -> obj.name to obj.getValue() }
     }
 
-    fun findProcessInstanceById(processInstanceId: String): ProcessInstance? =
+    @Transactional(readOnly = true)
+    open fun findProcessInstanceById(processInstanceId: String): ProcessInstance? =
         runtimeService
             .createProcessInstanceQuery()
             .processInstanceId(processInstanceId)

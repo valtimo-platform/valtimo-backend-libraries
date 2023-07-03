@@ -16,9 +16,9 @@
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.camunda.domain.CamundaHistoricTaskInstance
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import com.ritense.valtimo.repository.ReadOnlyJpaSpecificationRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CamundaHistoricTaskInstanceRepository : JpaRepository<CamundaHistoricTaskInstance, String>, JpaSpecificationExecutor<CamundaHistoricTaskInstance>
+interface CamundaHistoricTaskInstanceRepository :
+    ReadOnlyJpaSpecificationRepository<CamundaHistoricTaskInstance, String>

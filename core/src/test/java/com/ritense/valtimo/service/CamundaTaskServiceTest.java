@@ -61,7 +61,6 @@ class CamundaTaskServiceTest {
     private CamundaTaskRepository camundaTaskRepository;
     private ApplicationEventPublisher applicationEventPublisher;
     private CamundaTaskService camundaTaskService;
-    private CamundaProcessService camundaProcessService;
     private RuntimeService runtimeService;
     private UserManagementService userManagementService;
 
@@ -73,7 +72,6 @@ class CamundaTaskServiceTest {
         runtimeService = mock(RuntimeService.class);
         delegateTaskHelper = mock(DelegateTaskHelper.class);
         camundaTaskRepository = mock(CamundaTaskRepository.class);
-        camundaProcessService = mock(CamundaProcessService.class);
         userManagementService = mock(UserManagementService.class);
         task = new CamundaTask(TASK_ID, 0, null, null, null, List.of(), null, null, null, null, null, null, null, null, null, null, 0, null, null, null, null, 0, null, Set.of());
         camundaTaskService = spy(
@@ -84,7 +82,6 @@ class CamundaTaskServiceTest {
                 delegateTaskHelper,
                 camundaTaskRepository,
                 null,
-                camundaProcessService,
                 Optional.empty(),
                 applicationEventPublisher,
                 runtimeService,
@@ -158,7 +155,7 @@ class CamundaTaskServiceTest {
         //initialize own taskService here because we need to override the complete method
         TaskService taskService = mock(TaskService.class, RETURNS_DEEP_STUBS);
         CamundaTaskService camundaTaskService = spy(new CamundaTaskService(taskService, null, null, delegateTaskHelper, camundaTaskRepository, null,
-            null, Optional.empty(), applicationEventPublisher, null, userManagementService, null));
+            Optional.empty(), applicationEventPublisher, null, userManagementService, null));
 
         when(camundaTaskRepository.findById(TASK_ID)).thenReturn(Optional.of(task));
         doNothing().when(taskService).complete(TASK_ID);

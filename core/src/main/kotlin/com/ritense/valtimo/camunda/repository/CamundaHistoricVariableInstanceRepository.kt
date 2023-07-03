@@ -16,9 +16,9 @@
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.camunda.domain.CamundaHistoricVariableInstance
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import com.ritense.valtimo.repository.ReadOnlyJpaSpecificationRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CamundaHistoricVariableInstanceRepository : JpaRepository<CamundaHistoricVariableInstance, String>, JpaSpecificationExecutor<CamundaHistoricVariableInstance>
+interface CamundaHistoricVariableInstanceRepository :
+    ReadOnlyJpaSpecificationRepository<CamundaHistoricVariableInstance, String>
