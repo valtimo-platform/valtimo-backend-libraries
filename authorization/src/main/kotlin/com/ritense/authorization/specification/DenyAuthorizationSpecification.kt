@@ -35,6 +35,6 @@ class DenyAuthorizationSpecification<T : Any>(
         return false
     }
     override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
-        return criteriaBuilder.isTrue(root.isNull)
+        return criteriaBuilder.equal(criteriaBuilder.literal(0), 1)
     }
 }

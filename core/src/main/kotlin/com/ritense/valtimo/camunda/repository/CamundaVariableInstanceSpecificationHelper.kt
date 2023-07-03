@@ -50,11 +50,11 @@ class CamundaVariableInstanceSpecificationHelper {
         }
 
         @JvmStatic
-        fun byNameIn(vararg name: String) = Specification<CamundaVariableInstance> { root, _, cb ->
-            if (name.isEmpty()) {
+        fun byNameIn(vararg names: String) = Specification<CamundaVariableInstance> { root, _, cb ->
+            if (names.isEmpty()) {
                 cb.equal(cb.literal(0), 1)
             } else {
-                root.get<Any>(NAME).`in`(name)
+                root.get<Any>(NAME).`in`(*names)
             }
         }
 
@@ -64,9 +64,9 @@ class CamundaVariableInstanceSpecificationHelper {
         }
 
         @JvmStatic
-        fun byProcessInstanceIdIn(vararg processInstanceId: String) =
+        fun byProcessInstanceIdIn(vararg processInstanceIds: String) =
             Specification<CamundaVariableInstance> { root, _, _ ->
-                root.get<Any>(PROCESS_INSTANCE).get<Any>(ID).`in`(processInstanceId)
+                root.get<Any>(PROCESS_INSTANCE).get<Any>(ID).`in`(*processInstanceIds)
             }
 
     }

@@ -37,6 +37,6 @@ class NoopAuthorizationSpecification<T : Any>(
     }
 
     override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
-        return criteriaBuilder.isTrue(root.isNotNull)
+        return criteriaBuilder.equal(criteriaBuilder.literal(1), 1)
     }
 }
