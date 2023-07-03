@@ -16,6 +16,7 @@
 
 package com.ritense.authorization.permission
 
+import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.Action
 import com.ritense.authorization.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -41,13 +42,16 @@ data class Permission(
     @Column(name = "id")
     val id: UUID = UUID.randomUUID(),
 
+    @field:JsonView(PermissionView.RoleManagement::class)
     @Column(name = "resource_type")
     val resourceType: Class<*>,
 
+    @field:JsonView(PermissionView.RoleManagement::class)
     @Column(name = "action")
     @Embedded
     val action: Action<*>,
 
+    @field:JsonView(PermissionView.RoleManagement::class)
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "conditions", columnDefinition = "json")
     val conditionContainer: ConditionContainer,

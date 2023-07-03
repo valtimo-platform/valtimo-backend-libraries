@@ -16,9 +16,12 @@
 
 package com.ritense.authorization.web.rest
 
+import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.Role
 import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.web.rest.request.DeleteRolesRequest
 import com.ritense.authorization.web.rest.request.SaveRoleRequest
 import com.ritense.authorization.web.rest.request.UpdateRoleRequest
@@ -77,5 +80,13 @@ class RoleManagementResource(
         roleRepository.deleteByKeyIn(deleteRolesRequest.roles)
 
         return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/v1/roles/{roleKey}/permissions")
+    @JsonView(PermissionView.RoleManagement::class)
+    fun getRolePermissions(@PathVariable roleKey: String)
+        : ResponseEntity<List<Permission>> {
+        val rolePermissions = permissionRepository.findAllByRoleKeyIn(listOf(roleKey))
+        return ResponseEntity.ok(rolePermissions)
     }
 }

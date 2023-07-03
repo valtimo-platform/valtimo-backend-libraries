@@ -173,4 +173,40 @@ class RoleManagementResourceIntTest : BaseIntegrationTest() {
         assertEquals(roleCountBefore, roleRepository.findAll().size)
         assertEquals(permissionCountBefore, permissionRepository.findAll().size)
     }
+
+    @Test
+    fun `should retrieve role permissions if role has permissions`() {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/management/v1/roles/ROLE_USER/permissions")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$").isArray)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.*", Matchers.hasSize<Int>(
+                    Matchers.equalTo(permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER")).size))
+                )
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].id").doesNotExist()
+            )
+    }
+
+    @Test
+    fun `should not retrieve role permissions if role has no permissions`() {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/management/v1/roles/ROLE_ADMIN/permissions")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$").isEmpty)
+    }
 }

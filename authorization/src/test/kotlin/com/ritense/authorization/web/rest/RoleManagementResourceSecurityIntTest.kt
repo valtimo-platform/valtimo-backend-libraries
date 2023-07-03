@@ -139,4 +139,30 @@ class RoleManagementResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
         }
         assertHttpStatus(request, HttpStatus.FORBIDDEN)
     }
+
+    @Test
+    @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
+    fun `should have access to retrieve role permissions method with role_admin`() {
+        val request = MockMvcRequestBuilders.request(GET, "/api/management/v1/roles/ROLE_USE/permissions")
+        request.contentType(MediaType.APPLICATION_JSON)
+        request.accept(MediaType.APPLICATION_JSON)
+        request.with { r: MockHttpServletRequest ->
+            r.remoteAddr = "8.8.8.8"
+            r
+        }
+        assertHttpStatus(request, HttpStatus.OK)
+    }
+
+    @Test
+    @WithMockUser(authorities = [AuthoritiesConstants.USER])
+    fun `should not have access to retrieve role permissions method without role_admin`() {
+        val request = MockMvcRequestBuilders.request(GET, "/api/management/v1/roles/ROLE_USER/permissions")
+        request.contentType(MediaType.APPLICATION_JSON)
+        request.accept(MediaType.APPLICATION_JSON)
+        request.with { r: MockHttpServletRequest ->
+            r.remoteAddr = "8.8.8.8"
+            r
+        }
+        assertHttpStatus(request, HttpStatus.FORBIDDEN)
+    }
 }
