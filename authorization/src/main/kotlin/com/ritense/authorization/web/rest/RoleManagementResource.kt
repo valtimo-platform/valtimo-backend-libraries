@@ -19,11 +19,15 @@ package com.ritense.authorization.web.rest
 import com.ritense.authorization.Role
 import com.ritense.authorization.RoleRepository
 import com.ritense.authorization.web.rest.request.SaveRoleRequest
+import com.ritense.authorization.web.rest.request.UpdateRoleRequest
+import com.ritense.authorization.web.rest.result.RoleResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -35,18 +39,28 @@ class RoleManagementResource(
 ) {
     @GetMapping("/v1/roles")
     fun getPluginDefinitions()
-        : ResponseEntity<List<Role>> {
-        return ResponseEntity.ok(roleRepository.findAll())
+        : ResponseEntity<List<RoleResult>> {
+        return ResponseEntity.ok(roleRepository.findAll().map { RoleResult.fromRole(it) })
     }
 
     @PostMapping("/v1/roles")
     fun savePluginDefinition(@RequestBody saveRoleRequest: SaveRoleRequest)
-        : ResponseEntity<Role> {
+        : ResponseEntity<RoleResult> {
         try {
             val role: Role = roleRepository.save(saveRoleRequest.toRole())
-            return ResponseEntity.ok(role)
+            return ResponseEntity.ok(RoleResult.fromRole(role))
         } catch (ex: Exception) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build()
         }
+    }
+
+    @PutMapping("/v1/roles/{oldRoleKey}")
+    fun updatePluginDefinition(@PathVariable oldRoleKey: String, @RequestBody updateRoleRequest: UpdateRoleRequest)
+        : ResponseEntity<RoleResult> {
+
+        val oldRole = roleRepository.findByKey(oldRoleKey)
+        val role: Role = roleRepository.save(updateRoleRequest.toRole(oldRole!!.id))
+
+        return ResponseEntity.ok(RoleResult.fromRole(role))
     }
 }

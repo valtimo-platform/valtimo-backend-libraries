@@ -19,6 +19,7 @@ package com.ritense.authorization.web.rest
 import com.ritense.authorization.BaseIntegrationTest
 import com.ritense.authorization.RoleRepository
 import com.ritense.authorization.web.rest.request.SaveRoleRequest
+import com.ritense.authorization.web.rest.request.UpdateRoleRequest
 import com.ritense.valtimo.contract.utils.TestUtil
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
@@ -85,7 +86,7 @@ class RoleManagementResourceIntTest : BaseIntegrationTest() {
             .andExpect(
                 MockMvcResultMatchers.jsonPath("$").isMap)
             .andExpect(
-                MockMvcResultMatchers.jsonPath("$.key").value("TEST_ROLE")
+                MockMvcResultMatchers.jsonPath("$.roleKey").value("TEST_ROLE")
             )
     }
 
@@ -99,5 +100,36 @@ class RoleManagementResourceIntTest : BaseIntegrationTest() {
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().isConflict)
+    }
+
+    @Test
+    fun `should update role if role exists`() {
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/management/v1/roles/ROLE_UPDATE")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .content(TestUtil.convertObjectToJsonBytes(UpdateRoleRequest("ROLE_UPDATE2")))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$").isMap)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.roleKey").value("ROLE_UPDATE2")
+            )
+    }
+
+    @Test
+    fun `should not update role if role does not exist`() {
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/management/v1/roles/DOES_NOT_EXIST")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .content(TestUtil.convertObjectToJsonBytes(UpdateRoleRequest("ROLE_UPDATE2")))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is5xxServerError)
     }
 }

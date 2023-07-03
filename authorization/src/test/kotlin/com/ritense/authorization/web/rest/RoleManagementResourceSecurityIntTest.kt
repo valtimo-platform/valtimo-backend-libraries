@@ -18,6 +18,7 @@ package com.ritense.authorization.web.rest
 
 import com.ritense.authorization.RoleRepository
 import com.ritense.authorization.web.rest.request.SaveRoleRequest
+import com.ritense.authorization.web.rest.request.UpdateRoleRequest
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.contract.utils.TestUtil
 import com.ritense.valtimo.web.rest.SecuritySpecificEndpointIntegrationTest
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
+import org.springframework.http.HttpMethod.PUT
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockHttpServletRequest
@@ -55,8 +57,8 @@ class RoleManagementResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `should have access to save role method with role_admin`() {
-        val request = MockMvcRequestBuilders.request(GET, "/api/management/v1/roles")
-        request.content(TestUtil.convertObjectToJsonBytes(SaveRoleRequest("ROLE_ADMIN")))
+        val request = MockMvcRequestBuilders.request(POST, "/api/management/v1/roles")
+        request.content(TestUtil.convertObjectToJsonBytes(SaveRoleRequest("NONEXISTANT")))
         request.contentType(MediaType.APPLICATION_JSON)
         request.accept(MediaType.APPLICATION_JSON)
         request.with { r: MockHttpServletRequest ->
@@ -71,6 +73,34 @@ class RoleManagementResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     fun `should not access to save role method without role_admin`() {
         val request = MockMvcRequestBuilders.request(POST, "/api/management/v1/roles")
         request.content(TestUtil.convertObjectToJsonBytes(SaveRoleRequest("ROLE_ADMIN")))
+        request.contentType(MediaType.APPLICATION_JSON)
+        request.accept(MediaType.APPLICATION_JSON)
+        request.with { r: MockHttpServletRequest ->
+            r.remoteAddr = "8.8.8.8"
+            r
+        }
+        assertHttpStatus(request, HttpStatus.FORBIDDEN)
+    }
+
+    @Test
+    @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
+    fun `should have access to update role method with role_admin`() {
+        val request = MockMvcRequestBuilders.request(PUT, "/api/management/v1/roles/ROLE_ADMIN")
+        request.content(TestUtil.convertObjectToJsonBytes(UpdateRoleRequest("ROLE_ADMIN")))
+        request.contentType(MediaType.APPLICATION_JSON)
+        request.accept(MediaType.APPLICATION_JSON)
+        request.with { r: MockHttpServletRequest ->
+            r.remoteAddr = "8.8.8.8"
+            r
+        }
+        assertHttpStatus(request, HttpStatus.OK)
+    }
+
+    @Test
+    @WithMockUser(authorities = [AuthoritiesConstants.USER])
+    fun `should not access to update role method without role_admin`() {
+        val request = MockMvcRequestBuilders.request(PUT, "/api/management/v1/roles/ROLE_ADMIN")
+        request.content(TestUtil.convertObjectToJsonBytes(UpdateRoleRequest("ROLE_ADMIN")))
         request.contentType(MediaType.APPLICATION_JSON)
         request.accept(MediaType.APPLICATION_JSON)
         request.with { r: MockHttpServletRequest ->

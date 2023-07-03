@@ -42,7 +42,7 @@ internal class RoleDeployerIntTest : BaseIntegrationTest() {
         assertThat(changeset.get().filename).endsWith("/all.role.json")
         assertThat(changeset.get().dateExecuted).isBetween(Instant.parse("2023-06-13T00:00:00Z"), Instant.now())
         assertThat(changeset.get().orderExecuted).isBetween(0, 1000)
-        assertThat(changeset.get().md5sum).isEqualTo("804db2fd1c82bc9bb07b762356229e69")
+        assertThat(changeset.get().md5sum).isEqualTo("27be13e570abba97364428ba275a465f")
     }
 
     @Test
@@ -50,8 +50,9 @@ internal class RoleDeployerIntTest : BaseIntegrationTest() {
 
         val roles = roleRepository.findAll()
 
-        assertThat(roles).hasSize(2)
+        assertThat(roles).hasSize(3)
         assertThat(roles[0].key).isEqualTo("ROLE_USER")
         assertThat(roles[1].key).isEqualTo("ROLE_ADMIN")
+        assertThat(roles[2].key).isEqualTo("ROLE_UPDATE")
     }
 }
