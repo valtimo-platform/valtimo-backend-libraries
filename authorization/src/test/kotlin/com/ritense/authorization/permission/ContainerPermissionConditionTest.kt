@@ -100,7 +100,7 @@ class ContainerPermissionConditionTest {
 
         val result = conditionTemplate.isValid(entity)
         assertEquals(false, result)
-        verify(authSpec, never()).isAuthorized(any())
+        verify(authSpec, never()).isAuthorized()
     }
 
     @Test
@@ -118,7 +118,7 @@ class ContainerPermissionConditionTest {
 
         val result = conditionTemplate.isValid(entity)
         assertEquals(false, result)
-        verify(authSpec).isAuthorized(relatedEntity)
+        verify(authSpec).isAuthorized()
     }
 
     @Test
@@ -133,11 +133,11 @@ class ContainerPermissionConditionTest {
         whenever(authorizationService.getAuthorizationSpecification<RelatedTestEntity>(any(), any())).thenReturn(
             authSpec
         )
-        whenever(authSpec.isAuthorized(relatedEntity)).thenReturn(true)
+        whenever(authSpec.isAuthorized()).thenReturn(true)
 
         val result = conditionTemplate.isValid(entity)
         assertEquals(true, result)
-        verify(authSpec).isAuthorized(relatedEntity)
+        verify(authSpec).isAuthorized()
     }
 
     @Test

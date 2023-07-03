@@ -81,62 +81,46 @@ class AuthorizationServiceTest {
     @Test
     fun `should pass permission check`() {
         whenever(factory2.canCreate(any(), any())).thenReturn(true)
-        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW))
-        val authorizationSpecification = mock<AuthorizationSpecification<String>>()
-        whenever(factory2.create(eq(context), any())).thenReturn(authorizationSpecification)
         val entity = ""
-        whenever(authorizationSpecification.isAuthorized(entity)).thenReturn(true)
+        val request = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), entity)
+        val authorizationSpecification = mock<AuthorizationSpecification<String>>()
+        whenever(factory2.create(eq(request), any())).thenReturn(authorizationSpecification)
+        whenever(authorizationSpecification.isAuthorized()).thenReturn(true)
 
-        authorizationService.requirePermission(context, entity,
-            listOf(
-                Permission(
-                    resourceType = String::class.java,
-                    action = Action<String>(Action.VIEW),
-                    conditionContainer = ConditionContainer(), roleKey = ""
-                )
-            )
-        )
+        authorizationService.requirePermission(request)
 
-        verify(authorizationSpecification).isAuthorized(entity)
+        verify(authorizationSpecification).isAuthorized()
     }
 
     @Test
     fun `should bypass permission check`() {
         whenever(factory2.canCreate(any(), any())).thenReturn(true)
-        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW))
+        val entity = ""
+        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), entity)
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(context, listOf())).thenReturn(authorizationSpecification)
-        val entity = ""
 
         AuthorizationContext.runWithoutAuthorization {
-            authorizationService.requirePermission(context, entity)
+            authorizationService.requirePermission(context)
         }
 
-        verify(authorizationSpecification, never()).isAuthorized(entity)
+        verify(authorizationSpecification, never()).isAuthorized()
     }
 
     @Test
     fun `should fail permission check`() {
         whenever(factory2.canCreate(any(), any())).thenReturn(true)
-        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW))
+        val entity = ""
+        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), entity)
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(eq(context), any())).thenReturn(authorizationSpecification)
-        val entity = ""
-        whenever(authorizationSpecification.isAuthorized(entity)).thenReturn(false)
+        whenever(authorizationSpecification.isAuthorized()).thenReturn(false)
 
         assertThrows<RuntimeException> {
-            authorizationService.requirePermission(context, entity,
-                listOf(
-                    Permission(
-                        resourceType = String::class.java,
-                        action = Action<String>(Action.VIEW),
-                        conditionContainer = ConditionContainer(), roleKey = ""
-                    )
-                )
-            )
+            authorizationService.requirePermission(context)
         }
 
-        verify(authorizationSpecification).isAuthorized(entity)
+        verify(authorizationSpecification).isAuthorized()
     }
 
     @Test
@@ -144,8 +128,7 @@ class AuthorizationServiceTest {
         whenever(factory2.canCreate(any(), any())).thenReturn(true)
         whenever(factory3.canCreate(any(), any())).thenReturn(true)
 
-
-        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW))
+        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), null)
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(eq(context), any())).thenReturn(authorizationSpecification)
         val result = authorizationService.getAuthorizationSpecification(context,
@@ -170,7 +153,7 @@ class AuthorizationServiceTest {
         whenever(factory1.canCreate(any(), any())).thenReturn(true)
         whenever(factory2.canCreate(any(), any())).thenReturn(true)
 
-        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW))
+        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), null)
         val result = AuthorizationContext.runWithoutAuthorization {
             authorizationService.getAuthorizationSpecification(context)
         }
@@ -185,7 +168,7 @@ class AuthorizationServiceTest {
         whenever(factory1.canCreate(any(), any())).thenReturn(true)
         whenever(factory2.canCreate(any(), any())).thenReturn(true)
 
-        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.DENY))
+        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.DENY), null)
         val result = authorizationService.getAuthorizationSpecification(context)
         assertEquals(true, result is DenyAuthorizationSpecification)
 
@@ -198,7 +181,7 @@ class AuthorizationServiceTest {
         whenever(factory1.canCreate(any(), any())).thenReturn(true)
         whenever(factory2.canCreate(any(), any())).thenReturn(true)
 
-        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW))
+        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), null)
         val result = authorizationService.getAuthorizationSpecification(context, emptyList())
         assertEquals(true, result is DenyAuthorizationSpecification)
 
@@ -209,7 +192,7 @@ class AuthorizationServiceTest {
     @Test
     fun `should throw an error when no correct AuthorizationSpecification can be found`() {
         assertThrows<AccessDeniedException> {
-            val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW))
+            val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), null)
             authorizationService.getAuthorizationSpecification(context,
                 listOf(
                     Permission(

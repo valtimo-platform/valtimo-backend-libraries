@@ -16,11 +16,14 @@
 
 package com.ritense.authorization.web.rest
 
+import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.RelatedEntityAuthorizationRequest
 import com.ritense.authorization.web.rest.request.PermissionAvailableRequest
 import com.ritense.authorization.web.rest.result.PermissionAvailableResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -33,18 +36,31 @@ class PermissionResource(
 ) {
 
     @PostMapping("/v1/permissions")
-    fun getPluginDefinitions(@RequestBody permissionsPresentRequest: List<PermissionAvailableRequest>)
+    fun userHasPermission(@RequestBody permissionsPresentRequest: List<PermissionAvailableRequest>)
         : ResponseEntity<List<PermissionAvailableResult>> {
-        // TODO: For each element, map each resource to the actual resource type
-        // TODO: For each element, for each context element, map to the actual entity
-        // TODO: Check if there is a permission that would grant access to that entity given the resource and action
-        // TODO: Catch exception and take this response as a false, otherwise return a true
-        // TODO: Collect results and return as response entity
 
-        return ResponseEntity.ok(listOf())
-    }
+        val permissionResponse: List<PermissionAvailableResult>
 
-    private fun hasPermission(permissionsPresentRequest: PermissionAvailableRequest) {
-        permissionsPresentRequest.action
+        try {
+            permissionResponse = permissionsPresentRequest.map {
+                PermissionAvailableResult(
+                    it.resource,
+                    it.action,
+                    it.context,
+                    authorizationService.hasPermission(
+                        RelatedEntityAuthorizationRequest(
+                            it.getResourceAsClass(),
+                            Action(it.action),
+                            it.context.getResourceAsClass(),
+                            it.context.identifier
+                        )
+                    )
+                )
+            }
+        } catch (cnfe: ClassNotFoundException) {
+            throw AccessDeniedException("Unauthorized")
+        }
+
+        return ResponseEntity.ok(permissionResponse)
     }
 }

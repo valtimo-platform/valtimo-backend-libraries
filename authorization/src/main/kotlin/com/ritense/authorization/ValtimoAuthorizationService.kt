@@ -39,7 +39,7 @@ class ValtimoAuthorizationService(
      *
      *   @param request the <code>AuthorizationRequest</code> to use when creating new requests
      */
-    internal fun <T : Any> hasPermission(
+    override fun <T : Any> hasPermission(
         request: AuthorizationRequest<T>
     ) : Boolean {
         return getAuthorizationSpecification(request).isAuthorized();
@@ -78,7 +78,7 @@ class ValtimoAuthorizationService(
             .flatten()
     }
 
-    private fun getPermissions(context: EntityAuthorizationRequest<*>): List<Permission> {
+    private fun getPermissions(context: AuthorizationRequest<*>): List<Permission> {
         val userRoles = SecurityUtils.getCurrentUserRoles()
         return permissionRepository.findAllByRoleKeyIn(userRoles)
             .filter { permission ->

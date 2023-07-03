@@ -16,6 +16,7 @@
 
 package com.ritense.authorization.testimpl
 
+import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationSpecificationFactory
@@ -23,7 +24,7 @@ import com.ritense.authorization.permission.Permission
 
 class TestAuthorizationSpecificationFactory : AuthorizationSpecificationFactory<TestEntity> {
     override fun create(
-            context: EntityAuthorizationRequest<TestEntity>,
+            context: AuthorizationRequest<TestEntity>,
             permissions: List<Permission>
     ): AuthorizationSpecification<TestEntity> {
         return TestAuthorizationSpecification(
@@ -32,9 +33,8 @@ class TestAuthorizationSpecificationFactory : AuthorizationSpecificationFactory<
         )
     }
 
-    override fun canCreate(context: EntityAuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
         return TestEntity::class.java == context.resourceType
     }
-
 
 }
