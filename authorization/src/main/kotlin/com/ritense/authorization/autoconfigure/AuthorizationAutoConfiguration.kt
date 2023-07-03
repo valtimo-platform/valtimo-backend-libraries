@@ -29,6 +29,7 @@ import com.ritense.authorization.UserManagementServiceHolder
 import com.ritense.authorization.ValtimoAuthorizationService
 import com.ritense.authorization.deployment.PermissionDeployer
 import com.ritense.authorization.deployment.RoleDeployer
+import com.ritense.authorization.security.ValtimoAuthorizationHttpSecurityConfigurer
 import com.ritense.authorization.specification.DenyAuthorizationSpecificationFactory
 import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
 import com.ritense.valtimo.changelog.service.ChangelogService
@@ -54,6 +55,13 @@ class AuthorizationAutoConfiguration(
 
     init {
         UserManagementServiceHolder(userManagementService)
+    }
+
+    @Order(270)
+    @Bean
+    @ConditionalOnMissingBean(ValtimoAuthorizationHttpSecurityConfigurer::class)
+    fun valtimoAuthorizationHttpSecurityConfigurer(): ValtimoAuthorizationHttpSecurityConfigurer {
+        return ValtimoAuthorizationHttpSecurityConfigurer()
     }
 
     @Bean
