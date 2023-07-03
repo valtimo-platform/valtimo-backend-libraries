@@ -21,35 +21,42 @@ import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionRepository
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byId
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
-import org.camunda.bpm.engine.RepositoryService
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
+import org.springframework.transaction.annotation.Transactional
 
 open class CamundaRepositoryService(
     private val camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository
 ) {
 
-    fun findProcessDefinitionById(processDefinitionId: String): CamundaProcessDefinition? =
+    @Transactional(readOnly = true)
+    open fun findProcessDefinitionById(processDefinitionId: String): CamundaProcessDefinition? =
         findProcessDefinition(byId(processDefinitionId))
 
-    fun findLatestProcessDefinition(processDefinitionKey: String): CamundaProcessDefinition? =
+    @Transactional(readOnly = true)
+    open fun findLatestProcessDefinition(processDefinitionKey: String): CamundaProcessDefinition? =
         findProcessDefinition(byKey(processDefinitionKey).and(byLatestVersion()))
 
-    fun findProcessDefinitions(
+    @Transactional(readOnly = true)
+    open fun findProcessDefinitions(
         specification: Specification<CamundaProcessDefinition>,
         sort: Sort
     ): List<CamundaProcessDefinition> =
         camundaProcessDefinitionRepository.findAll(specification, sort)
 
-    fun findProcessDefinitions(specification: Specification<CamundaProcessDefinition>): List<CamundaProcessDefinition> =
+    @Transactional(readOnly = true)
+    open fun findProcessDefinitions(specification: Specification<CamundaProcessDefinition>): List<CamundaProcessDefinition> =
         camundaProcessDefinitionRepository.findAll(specification)
 
-    fun findProcessDefinition(specification: Specification<CamundaProcessDefinition>): CamundaProcessDefinition? =
+    @Transactional(readOnly = true)
+    open fun findProcessDefinition(specification: Specification<CamundaProcessDefinition>): CamundaProcessDefinition? =
         camundaProcessDefinitionRepository.findOne(specification).orElse(null)
 
-    fun countProcessDefinitions(specification: Specification<CamundaProcessDefinition>) =
+    @Transactional(readOnly = true)
+    open fun countProcessDefinitions(specification: Specification<CamundaProcessDefinition>) =
         camundaProcessDefinitionRepository.count(specification)
 
-    fun processDefinitionExists(specification: Specification<CamundaProcessDefinition>) =
+    @Transactional(readOnly = true)
+    open fun processDefinitionExists(specification: Specification<CamundaProcessDefinition>) =
         camundaProcessDefinitionRepository.exists(specification)
 }

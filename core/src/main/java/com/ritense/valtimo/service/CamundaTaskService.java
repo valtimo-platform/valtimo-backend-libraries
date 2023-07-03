@@ -59,7 +59,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +87,6 @@ public class CamundaTaskService {
     private final DelegateTaskHelper delegateTaskHelper;
     private final CamundaTaskRepository camundaTaskRepository;
     private final CamundaIdentityLinkRepository camundaIdentityLinkRepository;
-    private final CamundaProcessService camundaProcessService;
     private final Optional<ResourceService> optionalResourceService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final RuntimeService runtimeService;
@@ -102,7 +100,6 @@ public class CamundaTaskService {
         DelegateTaskHelper delegateTaskHelper,
         CamundaTaskRepository camundaTaskRepository,
         CamundaIdentityLinkRepository camundaIdentityLinkRepository,
-        CamundaProcessService camundaProcessService,
         Optional<ResourceService> optionalResourceService,
         ApplicationEventPublisher applicationEventPublisher,
         RuntimeService runtimeService,
@@ -115,7 +112,6 @@ public class CamundaTaskService {
         this.delegateTaskHelper = delegateTaskHelper;
         this.camundaTaskRepository = camundaTaskRepository;
         this.camundaIdentityLinkRepository = camundaIdentityLinkRepository;
-        this.camundaProcessService = camundaProcessService;
         this.optionalResourceService = optionalResourceService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.runtimeService = runtimeService;
@@ -123,6 +119,7 @@ public class CamundaTaskService {
         this.entityManager = entityManager;
     }
 
+    @Transactional(readOnly = true)
     public CamundaTask findTaskById(String taskId) {
         return camundaTaskRepository.findById(taskId)
             .orElseThrow(() -> new TaskNotFoundException(String.format("Cannot find task %s", taskId)));
@@ -190,23 +187,27 @@ public class CamundaTaskService {
             amazonS3Service -> taskCompletionDTO.getFilesToDelete().forEach(amazonS3Service::removeResource));
     }
 
+    @Transactional(readOnly = true)
     public Page<CamundaTask> findTasks(Specification<CamundaTask> specification, Pageable pageable) {
         return camundaTaskRepository.findAll(specification, pageable);
     }
 
+    @Transactional(readOnly = true)
     public List<CamundaTask> findTasks(Specification<CamundaTask> specification, Sort sort) {
         return camundaTaskRepository.findAll(specification, sort);
     }
 
+    @Transactional(readOnly = true)
     public List<CamundaTask> findTasks(Specification<CamundaTask> specification) {
         return camundaTaskRepository.findAll(specification);
     }
 
+    @Transactional(readOnly = true)
     public CamundaTask findTask(Specification<CamundaTask> specification) {
         return camundaTaskRepository.findOne(specification).orElse(null);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<TaskExtended> findTasksFiltered(
         TaskFilter taskFilter, Pageable pageable
     ) throws IllegalAccessException {

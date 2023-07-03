@@ -17,9 +17,8 @@
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.camunda.domain.CamundaTask
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import com.ritense.valtimo.repository.ReadOnlyJpaSpecificationRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CamundaTaskRepository : JpaRepository<CamundaTask, String>, JpaSpecificationExecutor<CamundaTask>
+interface CamundaTaskRepository : ReadOnlyJpaSpecificationRepository<CamundaTask, String>

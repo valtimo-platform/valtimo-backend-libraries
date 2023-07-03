@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.camunda.domain.CamundaIdentityLink
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import com.ritense.valtimo.repository.ReadOnlyJpaSpecificationRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CamundaIdentityLinkRepository : JpaRepository<CamundaIdentityLink, String>,
-    JpaSpecificationExecutor<CamundaIdentityLink> {
+interface CamundaIdentityLinkRepository : ReadOnlyJpaSpecificationRepository<CamundaIdentityLink, String> {
     fun findAllByTaskId(taskId: String): List<CamundaIdentityLink>
     fun findAllByTaskIdAndType(taskId: String, type: String): List<CamundaIdentityLink>
 }

@@ -16,9 +16,9 @@
 
 package com.ritense.valtimo.camunda.repository
 
-import com.ritense.valtimo.camunda.domain.CamundaVariableInstance
+import com.ritense.valtimo.camunda.domain.CamundaBytearray
 import com.ritense.valtimo.repository.ReadOnlyJpaSpecificationRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CamundaVariableInstanceRepository : ReadOnlyJpaSpecificationRepository<CamundaVariableInstance, String>
+interface CamundaBytearrayRepository : ReadOnlyJpaSpecificationRepository<CamundaBytearray, String>
