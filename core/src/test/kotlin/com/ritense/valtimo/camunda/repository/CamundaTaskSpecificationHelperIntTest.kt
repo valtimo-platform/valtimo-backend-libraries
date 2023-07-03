@@ -13,14 +13,14 @@ import org.junit.jupiter.api.Disabled
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
-class CamundaTaskSpecificationHelperTest @Autowired constructor(
+class CamundaTaskSpecificationHelperIntTest @Autowired constructor(
     private val taskService: TaskService,
     private val camundaTaskRepository: CamundaTaskRepository
 ): BaseIntegrationTest() {
 
-    var oneTaskInstances: List<ProcessInstance>? = null
-    var userTaskInstance: ProcessInstance? = null
-    var createDate: LocalDateTime? = null
+    lateinit var oneTaskInstances: List<ProcessInstance>
+    lateinit var userTaskInstance: ProcessInstance
+    lateinit var createDate: LocalDateTime
 
     @BeforeEach
     fun prepare() {
@@ -74,7 +74,7 @@ class CamundaTaskSpecificationHelperTest @Autowired constructor(
     @Test
     @Transactional
     fun byProcessDefinitionKeys() {
-        val allProcessInstanceIds = (oneTaskInstances!! + userTaskInstance!!).map { it.processInstanceId }
+        val allProcessInstanceIds = (oneTaskInstances + userTaskInstance).map { it.processInstanceId }
 
         val camundaTasksProcessInstanceIds = camundaTaskRepository.findAll(CamundaTaskSpecificationHelper.byProcessDefinitionKeys(setOf("one-task-process", "user-task-process")))
             .map { it.getProcessInstanceId() }
@@ -165,7 +165,7 @@ class CamundaTaskSpecificationHelperTest @Autowired constructor(
     @Test
     @Transactional
     fun byCreateTimeAfter() {
-        val camundaTaskIds = camundaTaskRepository.findAll(CamundaTaskSpecificationHelper.byCreateTimeAfter(createDate!!))
+        val camundaTaskIds = camundaTaskRepository.findAll(CamundaTaskSpecificationHelper.byCreateTimeAfter(createDate))
             .map { it.id }
 
         val allTaskIds = getAllTaskIds()
@@ -221,7 +221,7 @@ class CamundaTaskSpecificationHelperTest @Autowired constructor(
             .map { it.id }
     }
 
-    private fun getRandomOneTaskProcessInstance() = oneTaskInstances!!.random()
+    private fun getRandomOneTaskProcessInstance() = oneTaskInstances.random()
 
     private fun getRandomOneTaskProcessTask() = taskService.createTaskQuery()
         .processInstanceId(getRandomOneTaskProcessInstance().id)

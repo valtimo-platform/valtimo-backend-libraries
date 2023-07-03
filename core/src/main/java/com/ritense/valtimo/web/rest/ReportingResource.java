@@ -250,13 +250,15 @@ public class ReportingResource {
         }
 
         if (fromDate != null) {
-            historicProcessInstanceQueryFinished.and(byEndTimeAfter(fromDate));
-            historicProcessInstanceQueryUnfinished.and(byEndTimeAfter(fromDate));
+            var fromDateTime = fromDate.atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
+            historicProcessInstanceQueryFinished.and(byEndTimeAfter(fromDateTime));
+            historicProcessInstanceQueryUnfinished.and(byEndTimeAfter(fromDateTime));
         }
 
         if (toDate != null) {
-            historicProcessInstanceQueryFinished.and(byEndTimeBefore(toDate));
-            historicProcessInstanceQueryUnfinished.and(byEndTimeBefore(toDate));
+            var toDateTime = toDate.atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
+            historicProcessInstanceQueryFinished.and(byEndTimeBefore(toDateTime));
+            historicProcessInstanceQueryUnfinished.and(byEndTimeBefore(toDateTime));
         }
 
         Long unfinishedInstances = camundaHistoryService.countHistoricProcessInstances(historicProcessInstanceQueryUnfinished.and(byUnfinished()));

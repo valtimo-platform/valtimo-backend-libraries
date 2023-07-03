@@ -18,7 +18,7 @@ package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance
 import org.springframework.data.jpa.domain.Specification
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class CamundaHistoricProcessInstanceSpecificationHelper {
 
@@ -77,13 +77,13 @@ class CamundaHistoricProcessInstanceSpecificationHelper {
         }
 
         @JvmStatic
-        fun byEndTimeAfter(date: LocalDate) = Specification<CamundaHistoricProcessInstance> { root, _, cb ->
-            cb.greaterThanOrEqualTo(root.get<Any>(END_TIME).`as`(LocalDate::class.java), date)
+        fun byEndTimeAfter(dateTime: LocalDateTime) = Specification<CamundaHistoricProcessInstance> { root, _, cb ->
+            cb.greaterThanOrEqualTo(root.get<Any>(END_TIME).`as`(LocalDateTime::class.java), dateTime)
         }
 
         @JvmStatic
-        fun byEndTimeBefore(date: LocalDate) = Specification<CamundaHistoricProcessInstance> { root, _, cb ->
-            cb.lessThanOrEqualTo(root.get<Any>(END_TIME).`as`(LocalDate::class.java), date)
+        fun byEndTimeBefore(dateTime: LocalDateTime) = Specification<CamundaHistoricProcessInstance> { root, _, cb ->
+            cb.lessThanOrEqualTo(root.get<Any>(END_TIME).`as`(LocalDateTime::class.java), dateTime)
         }
 
         @JvmStatic
