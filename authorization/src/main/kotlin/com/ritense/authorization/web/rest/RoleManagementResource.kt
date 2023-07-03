@@ -20,6 +20,7 @@ import com.ritense.authorization.Role
 import com.ritense.authorization.RoleRepository
 import com.ritense.authorization.web.rest.request.SaveRoleRequest
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -29,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/management", produces = [ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE])
-class RoleManagementResource (
+class RoleManagementResource(
     val roleRepository: RoleRepository
 ) {
     @GetMapping("/v1/roles")
@@ -41,7 +42,11 @@ class RoleManagementResource (
     @PostMapping("/v1/roles")
     fun savePluginDefinition(@RequestBody saveRoleRequest: SaveRoleRequest)
         : ResponseEntity<Role> {
-        val role: Role = roleRepository.save(saveRoleRequest.toRole())
-        return ResponseEntity.ok(role)
+        try {
+            val role: Role = roleRepository.save(saveRoleRequest.toRole())
+            return ResponseEntity.ok(role)
+        } catch (ex: Exception) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build()
+        }
     }
 }

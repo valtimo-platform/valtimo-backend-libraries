@@ -16,67 +16,88 @@
 
 package com.ritense.authorization.web.rest
 
+import com.ritense.authorization.BaseIntegrationTest
 import com.ritense.authorization.RoleRepository
 import com.ritense.authorization.web.rest.request.SaveRoleRequest
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.contract.utils.TestUtil
-import com.ritense.valtimo.web.rest.SecuritySpecificEndpointIntegrationTest
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpMethod.GET
-import org.springframework.http.HttpMethod.POST
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.web.context.WebApplicationContext
+import java.nio.charset.StandardCharsets
 
-class RoleManagementResourceIntTest : SecuritySpecificEndpointIntegrationTest() {
+class RoleManagementResourceIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var roleRepository: RoleRepository
 
+    @Autowired
+    lateinit var webApplicationContext: WebApplicationContext
+
+    lateinit var mockMvc: MockMvc
+
     @BeforeEach
-    fun setUp() {
+    fun init() {
+        mockMvc = MockMvcBuilders
+            .webAppContextSetup(this.webApplicationContext)
+            .build()
     }
 
     @Test
-    @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
-    fun `should have access to retrieve roles method with role_admin`() {
-        assertHttpStatus(GET, "/api/management/v1/roles", HttpStatus.OK)
+    fun `should retrieve roles`() {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/management/v1/roles")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$").isArray)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.*", Matchers.hasSize<Int>(
+                    Matchers.equalTo(roleRepository.findAll().size))
+                )
+            )
+
     }
 
     @Test
-    @WithMockUser(authorities = [AuthoritiesConstants.USER])
-    fun `should not access to retrieve roles method without role_admin`() {
-        assertHttpStatus(GET, "/api/management/v1/roles", HttpStatus.FORBIDDEN)
+    fun `should create role if key does not exist`() {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/management/v1/roles")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .content(TestUtil.convertObjectToJsonBytes(SaveRoleRequest("TEST_ROLE")))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$").isMap)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.key").value("TEST_ROLE")
+            )
     }
 
     @Test
-    @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
-    fun `should have access to save role method with role_admin`() {
-        val request = MockMvcRequestBuilders.request(GET, "/api/management/v1/roles")
-        request.content(TestUtil.convertObjectToJsonBytes(SaveRoleRequest("ROLE_ADMIN")))
-        request.contentType(MediaType.APPLICATION_JSON)
-        request.accept(MediaType.APPLICATION_JSON)
-        request.with { r: MockHttpServletRequest ->
-            r.remoteAddr = "8.8.8.8"
-            r
-        }
-        assertHttpStatus(request, HttpStatus.OK)
-    }
-
-    @Test
-    @WithMockUser(authorities = [AuthoritiesConstants.USER])
-    fun `should not access to save role method without role_admin`() {
-        val request = MockMvcRequestBuilders.request(POST, "/api/management/v1/roles")
-        request.content(TestUtil.convertObjectToJsonBytes(SaveRoleRequest("ROLE_ADMIN")))
-        request.contentType(MediaType.APPLICATION_JSON)
-        request.accept(MediaType.APPLICATION_JSON)
-        request.with { r: MockHttpServletRequest ->
-            r.remoteAddr = "8.8.8.8"
-            r
-        }
-        assertHttpStatus(request, HttpStatus.FORBIDDEN)
+    fun `should not create role if key already exists`() {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/management/v1/roles")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .content(TestUtil.convertObjectToJsonBytes(SaveRoleRequest("ROLE_USER")))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().isConflict)
     }
 }
