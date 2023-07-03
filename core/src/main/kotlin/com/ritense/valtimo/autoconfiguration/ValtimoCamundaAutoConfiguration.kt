@@ -17,6 +17,7 @@
 
 package com.ritense.valtimo.autoconfiguration
 
+import com.ritense.valtimo.camunda.repository.CamundaBytearrayRepository
 import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceRepository
 import com.ritense.valtimo.camunda.repository.CamundaHistoricTaskInstanceRepository
@@ -29,7 +30,6 @@ import com.ritense.valtimo.camunda.service.CamundaHistoryService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import org.camunda.bpm.engine.HistoryService
-import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -40,6 +40,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @Configuration
 @EnableJpaRepositories(
     basePackageClasses = [
+        CamundaBytearrayRepository::class,
         CamundaExecutionRepository::class,
         CamundaHistoricProcessInstanceRepository::class,
         CamundaHistoricTaskInstanceRepository::class,

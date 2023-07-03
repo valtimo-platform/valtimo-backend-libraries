@@ -16,18 +16,7 @@
 
 package com.ritense.valtimo.camunda.domain
 
-import org.camunda.bpm.engine.impl.variable.serializer.BooleanValueSerializer
-import org.camunda.bpm.engine.impl.variable.serializer.ByteArrayValueSerializer
-import org.camunda.bpm.engine.impl.variable.serializer.DateValueSerializer
 import org.camunda.bpm.engine.impl.variable.serializer.DefaultVariableSerializers
-import org.camunda.bpm.engine.impl.variable.serializer.DoubleValueSerializer
-import org.camunda.bpm.engine.impl.variable.serializer.FileValueSerializer
-import org.camunda.bpm.engine.impl.variable.serializer.IntegerValueSerializer
-import org.camunda.bpm.engine.impl.variable.serializer.JavaObjectSerializer
-import org.camunda.bpm.engine.impl.variable.serializer.LongValueSerlializer
-import org.camunda.bpm.engine.impl.variable.serializer.NullValueSerializer
-import org.camunda.bpm.engine.impl.variable.serializer.ShortValueSerializer
-import org.camunda.bpm.engine.impl.variable.serializer.StringValueSerializer
 import org.camunda.bpm.engine.impl.variable.serializer.TypedValueSerializer
 import org.camunda.bpm.engine.impl.variable.serializer.ValueFields
 import org.camunda.bpm.engine.variable.value.TypedValue
@@ -37,6 +26,7 @@ import javax.persistence.FetchType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.OneToOne
 import javax.persistence.Table
 
 @Entity
@@ -81,8 +71,9 @@ class CamundaVariableInstance(
     @Column(name = "BATCH_ID_")
     val batchId: String?,
 
-    @Column(name = "BYTEARRAY_ID_")
-    val byteArrayValueId: String?,
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BYTEARRAY_ID_")
+    val byteArrayValue: CamundaBytearray?,
 
     @Column(name = "DOUBLE_")
     private val doubleValue: Double?,
@@ -128,9 +119,7 @@ class CamundaVariableInstance(
 
     override fun setDoubleValue(doubleValue: Double?) = throw RuntimeException("Can't write in an read-only interface")
 
-    override fun getByteArrayValue(): ByteArray {
-        TODO("Not yet implemented")
-    }
+    override fun getByteArrayValue(): ByteArray? = byteArrayValue?.bytes
 
     override fun setByteArrayValue(bytes: ByteArray?) = throw RuntimeException("Can't write in an read-only interface")
 
@@ -144,25 +133,11 @@ class CamundaVariableInstance(
         }
 
         return variableSerializers.getSerializerByName(serializerName)
-            ?: TODO("Not yet all serializers have been implemented. Missing serializer with name '$serializerName'")
+            ?: throw RuntimeException("Failed to find serializer with name '$serializerName'")
     }
 
     companion object {
         val variableSerializers = DefaultVariableSerializers()
-
-        init {
-            variableSerializers.addSerializer(NullValueSerializer())
-            variableSerializers.addSerializer(StringValueSerializer())
-            variableSerializers.addSerializer(BooleanValueSerializer())
-            variableSerializers.addSerializer(ShortValueSerializer())
-            variableSerializers.addSerializer(IntegerValueSerializer())
-            variableSerializers.addSerializer(LongValueSerlializer())
-            variableSerializers.addSerializer(DateValueSerializer())
-            variableSerializers.addSerializer(DoubleValueSerializer())
-            variableSerializers.addSerializer(ByteArrayValueSerializer())
-            variableSerializers.addSerializer(JavaObjectSerializer())
-            variableSerializers.addSerializer(FileValueSerializer())
-        }
     }
 
 }
