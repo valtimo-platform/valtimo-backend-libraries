@@ -29,19 +29,11 @@ class WidgetDataSourceResolver : AnnotatedClassResolver() {
 
     private fun findWidgetDataSourceClasses() {
         WIDGET_DATA_SOURCE_MAP = findMethodsWithAnnotation<WidgetDataSource>()
-            .sortedBy { it.getAnnotation(WidgetDataSource::class.java).title }
-
-        val checkedKeys = mutableSetOf<String>()
-        WIDGET_DATA_SOURCE_MAP.forEach { method ->
-            val annotation = method.getAnnotation(WidgetDataSource::class.java)
-            if (checkedKeys.contains(annotation.key)) {
-                throw RuntimeException("@WidgetDataSource(..) with key '${annotation.key}' already exists")
-            }
-            checkedKeys.add(annotation.key)
-        }
+            .associateBy { it.getAnnotation(WidgetDataSource::class.java).key }
+            .toSortedMap()
     }
 
     companion object {
-        lateinit var WIDGET_DATA_SOURCE_MAP: List<Method>
+        lateinit var WIDGET_DATA_SOURCE_MAP: Map<String, Method>
     }
 }
