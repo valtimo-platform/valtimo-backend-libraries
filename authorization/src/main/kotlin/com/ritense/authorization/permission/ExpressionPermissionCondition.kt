@@ -17,6 +17,7 @@
 package com.ritense.authorization.permission
 
 import com.fasterxml.jackson.annotation.JsonTypeName
+import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
@@ -32,11 +33,16 @@ import javax.persistence.criteria.Root
 
 @JsonTypeName(EXPRESSION)
 data class ExpressionPermissionCondition<V : Comparable<V>>(
+    @field:JsonView(PermissionView.RoleManagement::class)
     val field: String,
+    @field:JsonView(PermissionView.RoleManagement::class)
     val path: String,
+    @field:JsonView(PermissionView.RoleManagement::class)
     val operator: PermissionExpressionOperator,
+    @field:JsonView(PermissionView.RoleManagement::class)
     @JsonDeserialize(using = ComparableDeserializer::class)
     val value: V?,
+    @field:JsonView(PermissionView.RoleManagement::class)
     val clazz: Class<V>
 ) : ReflectingPermissionCondition(PermissionConditionType.EXPRESSION) {
     override fun <E : Any> isValid(entity: E): Boolean {
