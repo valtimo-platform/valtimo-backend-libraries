@@ -189,7 +189,7 @@ class RoleManagementResourceIntTest : BaseIntegrationTest() {
                 MockMvcResultMatchers.jsonPath("$").isArray)
             .andExpect(
                 MockMvcResultMatchers.jsonPath("$.*", Matchers.hasSize<Int>(
-                    Matchers.equalTo(permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER")).size))
+                    Matchers.equalTo(permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("ROLE_USER")).size))
                 )
             )
             .andExpect(

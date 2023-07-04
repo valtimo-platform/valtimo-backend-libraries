@@ -37,11 +37,11 @@ import kotlin.reflect.full.isSubclassOf
 
 @JsonTypeName(FIELD)
 data class FieldPermissionCondition<V : Comparable<V>>(
-    @field:JsonView(PermissionView.RoleManagement::class)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val field: String,
-    @field:JsonView(PermissionView.RoleManagement::class)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val operator: PermissionConditionOperator,
-    @field:JsonView(PermissionView.RoleManagement::class)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     @JsonDeserialize(using = ComparableDeserializer::class)
     val value: V?
 ) : ReflectingPermissionCondition(PermissionConditionType.FIELD) {

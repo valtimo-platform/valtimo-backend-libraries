@@ -34,7 +34,7 @@ import javax.persistence.criteria.Root
 )
 @JsonPropertyOrder("type")
 abstract class PermissionCondition(
-    @field:JsonView(PermissionView.RoleManagement::class)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val type: PermissionConditionType
 ) {
     abstract fun <T: Any> isValid(entity: T): Boolean
