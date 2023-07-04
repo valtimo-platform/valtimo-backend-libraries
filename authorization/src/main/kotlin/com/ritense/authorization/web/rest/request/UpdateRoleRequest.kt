@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.authorization.web.rest.request
 
+import com.ritense.authorization.Role
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
 
-@Entity
-@Table(name = "role")
-data class Role(
-    @Id
-    @Column(name = "id")
-    val id: UUID = UUID.randomUUID(),
-    @Column(name = "key", nullable = false, unique = true)
-    val key: String
-)
+data class UpdateRoleRequest(
+    val roleKey: String
+) {
+    fun toRole(id: UUID): Role {
+        return Role(id = id, key = roleKey)
+    }
+}

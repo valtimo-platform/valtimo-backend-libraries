@@ -2,6 +2,9 @@
     "changesetId": "roles-v1",
     "roles": [
         "ROLE_USER",
-        "ROLE_ADMIN"
+        "ROLE_ADMIN",
+        "ROLE_UPDATE",
+        "TO_REMOVE_ROLE_1",
+        "TO_REMOVE_ROLE_2"
     ]
 }

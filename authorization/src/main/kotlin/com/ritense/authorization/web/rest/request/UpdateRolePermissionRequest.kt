@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.authorization.web.rest.request
 
+import com.ritense.authorization.Action
+import com.ritense.authorization.Role
+import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
-import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
 
-interface PermissionRepository : JpaRepository<Permission, UUID> {
-    fun findAllByRoleKeyIn(roleKeys: Collection<String>): List<Permission>
-
-    fun findAllByResourceTypeAndAction(resourceType: Class<*>, action: Action<*>): List<Permission>
-    fun deleteByRoleKeyIn(roleKeys: List<String>)
+data class UpdateRolePermissionRequest(
+    val resourceType: Class<*>,
+    val action: Action<*>,
+    val conditionContainer: ConditionContainer,
+) {
+    fun toPermission(role: Role): Permission {
+        return Permission(
+            resourceType = resourceType,
+            action = action,
+            conditionContainer = conditionContainer,
+            role = role
+        )
+    }
 }

@@ -29,8 +29,10 @@ import com.ritense.authorization.UserManagementServiceHolder
 import com.ritense.authorization.ValtimoAuthorizationService
 import com.ritense.authorization.deployment.PermissionDeployer
 import com.ritense.authorization.deployment.RoleDeployer
+import com.ritense.authorization.security.ValtimoAuthorizationHttpSecurityConfigurer
 import com.ritense.authorization.specification.DenyAuthorizationSpecificationFactory
 import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
+import com.ritense.authorization.web.rest.RoleManagementResource
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
@@ -54,6 +56,13 @@ class AuthorizationAutoConfiguration(
 
     init {
         UserManagementServiceHolder(userManagementService)
+    }
+
+    @Order(270)
+    @Bean
+    @ConditionalOnMissingBean(ValtimoAuthorizationHttpSecurityConfigurer::class)
+    fun valtimoAuthorizationHttpSecurityConfigurer(): ValtimoAuthorizationHttpSecurityConfigurer {
+        return ValtimoAuthorizationHttpSecurityConfigurer()
     }
 
     @Bean
@@ -115,10 +124,20 @@ class AuthorizationAutoConfiguration(
     fun permissionDeployer(
         objectMapper: ObjectMapper,
         permissionRepository: PermissionRepository,
+        roleRepository: RoleRepository,
         changelogService: ChangelogService,
         @Value("\${valtimo.pbac.clear-tables:false}") clearTables: Boolean
     ): PermissionDeployer {
-        return PermissionDeployer(objectMapper, permissionRepository, changelogService, clearTables)
+        return PermissionDeployer(objectMapper, permissionRepository, roleRepository, changelogService, clearTables)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RoleManagementResource::class)
+    fun roleManagementResource(
+        roleRepository: RoleRepository,
+        permissionRepository: PermissionRepository
+    ) : RoleManagementResource {
+        return RoleManagementResource(roleRepository, permissionRepository)
     }
 
 }

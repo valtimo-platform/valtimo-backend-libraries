@@ -17,6 +17,7 @@
 package com.ritense.authorization.permission
 
 import com.fasterxml.jackson.annotation.JsonTypeName
+import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.ritense.authorization.jackson.ComparableDeserializer
 import com.ritense.authorization.permission.FieldPermissionCondition.Companion.FIELD
@@ -36,8 +37,11 @@ import kotlin.reflect.full.isSubclassOf
 
 @JsonTypeName(FIELD)
 data class FieldPermissionCondition<V : Comparable<V>>(
+    @field:JsonView(PermissionView.RoleManagement::class)
     val field: String,
+    @field:JsonView(PermissionView.RoleManagement::class)
     val operator: PermissionConditionOperator,
+    @field:JsonView(PermissionView.RoleManagement::class)
     @JsonDeserialize(using = ComparableDeserializer::class)
     val value: V?
 ) : ReflectingPermissionCondition(PermissionConditionType.FIELD) {

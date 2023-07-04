@@ -16,18 +16,8 @@
 
 package com.ritense.authorization
 
-import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest
 
-@Entity
-@Table(name = "role")
-data class Role(
-    @Id
-    @Column(name = "id")
-    val id: UUID = UUID.randomUUID(),
-    @Column(name = "key", nullable = false, unique = true)
-    val key: String
+class AuthorizationSecuritySmokeIntegrationTest : SecuritySmokeIntegrationTest(
+    basePackageName = "com.ritense.authorization"
 )

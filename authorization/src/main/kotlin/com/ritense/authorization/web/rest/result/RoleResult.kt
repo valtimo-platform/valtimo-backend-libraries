@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.authorization.web.rest.result
 
-import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import com.ritense.authorization.Role
 
-@Entity
-@Table(name = "role")
-data class Role(
-    @Id
-    @Column(name = "id")
-    val id: UUID = UUID.randomUUID(),
-    @Column(name = "key", nullable = false, unique = true)
-    val key: String
-)
+data class RoleResult(
+    val roleKey: String
+) {
+    companion object {
+
+        fun fromRole(role: Role): RoleResult {
+            return RoleResult(role.key)
+        }
+    }
+}

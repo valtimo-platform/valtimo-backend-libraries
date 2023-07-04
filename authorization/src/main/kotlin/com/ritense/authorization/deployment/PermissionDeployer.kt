@@ -19,6 +19,7 @@ package com.ritense.authorization.deployment
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.PermissionRepository
+import com.ritense.authorization.RoleRepository
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
@@ -26,6 +27,7 @@ import com.ritense.valtimo.changelog.service.ChangelogService
 class PermissionDeployer(
     private val objectMapper: ObjectMapper,
     private val permissionRepository: PermissionRepository,
+    private val roleRepository: RoleRepository,
     private val changelogService: ChangelogService,
     private val clearTables: Boolean
 ) : ChangesetDeployer {
@@ -52,7 +54,7 @@ class PermissionDeployer(
     }
 
     fun deploy(permissions: List<PermissionDto>) {
-        permissionRepository.saveAll(permissions.map { it.toPermission() })
+        permissionRepository.saveAll(permissions.map { it.toPermission(roleRepository) })
     }
 
     companion object {

@@ -37,7 +37,7 @@
 
     <changeSet author="Ritense" id="2">
         <addColumn tableName="permission">
-            <column name="role_key" type="VARCHAR(256)">
+            <column name="role_id" type="${uuidType}">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -45,17 +45,20 @@
 
     <changeSet author="Ritense" id="3">
         <createTable tableName="role">
-            <column name="key" type="VARCHAR(256)">
+            <column name="id" type="${uuidType}">
                 <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="key" type="VARCHAR(256)">
+                <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
     </changeSet>
 
     <changeSet author="Ritense" id="4">
-        <addForeignKeyConstraint baseTableName="permission" baseColumnNames="role_key"
-                                 constraintName="fk_permission_role_key"
+        <addForeignKeyConstraint baseTableName="permission" baseColumnNames="role_id"
+                                 constraintName="fk_permission_role_id"
                                  referencedTableName="role"
-                                 referencedColumnNames="key"/>
+                                 referencedColumnNames="id"/>
     </changeSet>
 
 </databaseChangeLog>

@@ -47,7 +47,7 @@ internal class PermissionDeployerIntTest : BaseIntegrationTest() {
         assertThat(changeset.get().filename).endsWith("/testdocument.permission.json")
         assertThat(changeset.get().dateExecuted).isBetween(Instant.parse("2023-06-13T00:00:00Z"), Instant.now())
         assertThat(changeset.get().orderExecuted).isBetween(0, 1000)
-        assertThat(changeset.get().md5sum).isEqualTo("e3351de1c4f17eab1f1ff0a4ca97fe9c")
+        assertThat(changeset.get().md5sum).isEqualTo("e7016d7924f399170a357d870d10832b")
     }
 
     @Test
@@ -55,11 +55,11 @@ internal class PermissionDeployerIntTest : BaseIntegrationTest() {
 
         val permissions = permissionRepository.findAll()
 
-        assertThat(permissions).hasSize(1)
+        assertThat(permissions).hasSize(2)
         assertThat(permissions[0].id).isNotNull()
         assertThat(permissions[0].resourceType).isEqualTo(TestDocument::class.java)
         assertThat(permissions[0].action).isEqualTo(Action<Any>(VIEW))
-        assertThat(permissions[0].roleKey).isEqualTo("ROLE_USER")
+        assertThat(permissions[0].role.key).isEqualTo("ROLE_USER")
         assertThat(permissions[0].conditionContainer.conditions).hasSize(1)
         assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
         val condition = permissions[0].conditionContainer.conditions[0] as FieldPermissionCondition<*>

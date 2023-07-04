@@ -42,7 +42,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
     @BeforeEach
     fun setup() {
-        role = Role("test-role")
+        role = Role(key = "test-role")
         roleRepository.saveAndFlush(role)
     }
 
@@ -58,7 +58,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
                     value = "loan"
                 ))
             ),
-            roleKey = role.key
+            role = role
         )
 
         permissionRepository.saveAndFlush(permission)
@@ -78,7 +78,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should retrieve all Permissions for role key`() {
-        val role2 = roleRepository.saveAndFlush(Role("test-role2"))
+        val role2 = roleRepository.saveAndFlush(Role(key = "test-role2"))
 
         val permission = Permission(
             resourceType = Class.forName("com.ritense.authorization.testimpl.TestDocument"),
@@ -90,7 +90,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
                     value = "loan"
                 ))
             ),
-            roleKey = role.key
+            role = role
         )
 
         val permission2 = Permission(
@@ -103,7 +103,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
                     value = "loan"
                 ))
             ),
-            roleKey = role.key
+            role = role
         )
 
         val permission3 = Permission(
@@ -116,7 +116,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
                     value = "loan"
                 ))
             ),
-            roleKey = role2.key
+            role = role2
         )
 
         permissionRepository.saveAllAndFlush(listOf(permission, permission2, permission3))
