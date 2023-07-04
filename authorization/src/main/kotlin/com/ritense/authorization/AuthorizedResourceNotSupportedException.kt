@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.testimpl
+package com.ritense.authorization
 
-data class TestEntity(
-    val child: TestChildEntity? = null,
-    val name: String = "test"
-)
+class AuthorizedResourceNotSupportedException(val clazz: Class<*>)
+    : RuntimeException("Authorization for resource '${clazz.canonicalName}' not supported")

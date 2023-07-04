@@ -102,7 +102,6 @@ abstract class AuthorizationSpecification<T : Any>(
         authRequest: RelatedEntityAuthorizationRequest<T>,
         container: ContainerPermissionCondition<TO>
     ): AuthorizationSpecification<TO> {
-        // TODO: Make sure a mapper exists? Or a path of mappers that gets us to the resourceType?
         return AuthorizationServiceHolder.currentInstance.getAuthorizationSpecification(
             RelatedEntityAuthorizationRequest(
                 container.resourceType,

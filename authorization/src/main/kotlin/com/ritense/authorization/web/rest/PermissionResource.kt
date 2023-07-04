@@ -18,6 +18,7 @@ package com.ritense.authorization.web.rest
 
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.AuthorizedResourceNotSupportedException
 import com.ritense.authorization.RelatedEntityAuthorizationRequest
 import com.ritense.authorization.web.rest.request.PermissionAvailableRequest
 import com.ritense.authorization.web.rest.result.PermissionAvailableResult
@@ -57,7 +58,9 @@ class PermissionResource(
                     )
                 )
             }
-        } catch (cnfe: ClassNotFoundException) {
+        } catch (ex: ClassNotFoundException) {
+            throw AccessDeniedException("Unauthorized")
+        } catch (ex: AuthorizedResourceNotSupportedException) {
             throw AccessDeniedException("Unauthorized")
         }
 

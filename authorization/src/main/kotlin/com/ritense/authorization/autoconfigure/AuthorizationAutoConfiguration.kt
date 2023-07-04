@@ -22,6 +22,7 @@ import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.authorization.AuthorizationSpecificationFactory
+import com.ritense.authorization.AuthorizationSupportedHelper
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.ResourceActionProvider
 import com.ritense.authorization.RoleRepository
@@ -127,6 +128,11 @@ class AuthorizationAutoConfiguration(
         @Value("\${valtimo.pbac.clear-tables:false}") clearTables: Boolean
     ): PermissionDeployer {
         return PermissionDeployer(objectMapper, permissionRepository, changelogService, clearTables)
+    }
+
+    @Bean
+    fun authorizationSupportedHelper(): AuthorizationSupportedHelper {
+        return AuthorizationSupportedHelper
     }
 
 }

@@ -21,4 +21,9 @@ class RelatedEntityAuthorizationRequest<T>(
     override val action: Action<T>,
     val relatedResourceType: Class<*>,
     val relatedResourceId: String
-) : AuthorizationRequest<T>
+) : AuthorizationRequest<T> {
+    init {
+        AuthorizationSupportedHelper.checkSupported(resourceType)
+        AuthorizationSupportedHelper.checkSupported(relatedResourceType)
+    }
+}
