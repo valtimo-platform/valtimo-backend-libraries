@@ -16,6 +16,7 @@
 
 package com.ritense.dashboard.web.rest
 
+import com.ritense.dashboard.datasource.WidgetDataSourceDto
 import com.ritense.dashboard.service.DashboardService
 import com.ritense.dashboard.web.rest.dto.DashboardCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.DashboardResponseDto
@@ -131,5 +132,10 @@ class AdminDashboardResource(
     ): ResponseEntity<Unit> {
         dashboardService.deleteWidgetConfiguration(dashboardKey, widgetKey)
         return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/v1/dashboard/widget-data-sources")
+    fun getWidgetDataSources(): ResponseEntity<List<WidgetDataSourceDto>> {
+        return ResponseEntity.ok(dashboardService.getWidgetDataSources())
     }
 }

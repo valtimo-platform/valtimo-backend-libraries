@@ -17,6 +17,9 @@
 package com.ritense.dashboard.service
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.dashboard.datasource.WidgetDataSource
+import com.ritense.dashboard.datasource.WidgetDataSourceDto
+import com.ritense.dashboard.datasource.WidgetDataSourceResolver
 import com.ritense.dashboard.domain.Dashboard
 import com.ritense.dashboard.domain.WidgetConfiguration
 import com.ritense.dashboard.repository.DashboardRepository
@@ -143,6 +146,19 @@ class DashboardService(
     fun deleteWidgetConfiguration(dashboardKey: String, widgetConfigurationKey: String) {
         widgetConfigurationRepository.deleteByDashboardKeyAndKey(dashboardKey, widgetConfigurationKey)
         updateWidgetConfigurationOrder(dashboardKey)
+    }
+
+    fun getWidgetDataSources(): List<WidgetDataSourceDto> {
+        return WidgetDataSourceResolver.WIDGET_DATA_SOURCE_MAP
+            .map {
+                val type = when (it.genericReturnType.typeName) {
+                    "com.ritense.dashboard.datasource.dto.DashboardWidgetListDto" -> "multi"
+                    "com.ritense.dashboard.datasource.dto.DashboardWidgetSingleDto" -> "single"
+                    else -> it.genericReturnType.typeName.substringAfterLast(".")
+                }
+                val annotation = it.getAnnotation(WidgetDataSource::class.java)
+                WidgetDataSourceDto(annotation.key, annotation.title, type)
+            }
     }
 
     private fun updateDashboardOrder() {

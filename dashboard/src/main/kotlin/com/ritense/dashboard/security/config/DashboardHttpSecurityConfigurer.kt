@@ -40,6 +40,7 @@ class DashboardHttpSecurityConfigurer : HttpSecurityConfigurer {
                 .antMatchers(PUT, "/api/management/v1/dashboard/{dashboardKey}/widget").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}/widget/{widgetKey}").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/management/v1/dashboard/{dashboardKey}/widget/{widgetKey}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/management/v1/dashboard/widget-data-sources").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
