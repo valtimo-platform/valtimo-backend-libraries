@@ -21,6 +21,7 @@ import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.RoleRepository
 import com.ritense.authorization.web.rest.request.DeleteRolesRequest
 import com.ritense.authorization.web.rest.request.SaveRoleRequest
+import com.ritense.authorization.web.rest.request.UpdateRolePermissionRequest
 import com.ritense.authorization.web.rest.request.UpdateRoleRequest
 import com.ritense.valtimo.contract.utils.TestUtil
 import org.hamcrest.Matchers
@@ -36,6 +37,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.nio.charset.StandardCharsets
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class RoleManagementResourceIntTest : BaseIntegrationTest() {
     @Autowired
@@ -208,5 +210,69 @@ class RoleManagementResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
             .andExpect(
                 MockMvcResultMatchers.jsonPath("$").isEmpty)
+    }
+
+    @Test
+    fun `should update role permissions if role exists`() {
+        val oldRolePermissions = permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER"))
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/management/v1/roles/ROLE_USER/permissions")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .content(
+                TestUtil.convertObjectToJsonBytes(
+                    listOf(
+                        UpdateRolePermissionRequest(
+                            oldRolePermissions[0].resourceType,
+                            oldRolePermissions[0].action,
+                            oldRolePermissions[0].conditionContainer
+                        )
+                    )
+                )
+            )
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$").isArray)
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.*", Matchers.hasSize<Int>(
+                    Matchers.equalTo(permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER")).size))
+                )
+            )
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$[0].id").doesNotExist()
+            )
+
+        assertNotEquals(oldRolePermissions[0].id, permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER"))[0].id)
+    }
+
+    @Test
+    fun `should not update role permissions if role does not exist`() {
+        val oldRolePermissions = permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER"))
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/management/v1/roles/NOT_EXISTING_ROLE/permissions")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .content(
+                TestUtil.convertObjectToJsonBytes(
+                    listOf(
+                        UpdateRolePermissionRequest(
+                            oldRolePermissions[0].resourceType,
+                            oldRolePermissions[0].action,
+                            oldRolePermissions[0].conditionContainer
+                        )
+                    )
+                )
+            )
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is5xxServerError)
+
+        assertEquals(oldRolePermissions, permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER")))
     }
 }

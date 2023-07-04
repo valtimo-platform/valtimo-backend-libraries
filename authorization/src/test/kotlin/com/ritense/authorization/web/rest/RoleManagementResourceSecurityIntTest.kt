@@ -16,9 +16,10 @@
 
 package com.ritense.authorization.web.rest
 
-import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.web.rest.request.DeleteRolesRequest
 import com.ritense.authorization.web.rest.request.SaveRoleRequest
+import com.ritense.authorization.web.rest.request.UpdateRolePermissionRequest
 import com.ritense.authorization.web.rest.request.UpdateRoleRequest
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.contract.utils.TestUtil
@@ -38,7 +39,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 
 class RoleManagementResourceSecurityIntTest : SecuritySpecificEndpointIntegrationTest() {
     @Autowired
-    lateinit var roleRepository: RoleRepository
+    lateinit var permissionRepository: PermissionRepository
 
     @BeforeEach
     fun setUp() {
@@ -157,6 +158,58 @@ class RoleManagementResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @WithMockUser(authorities = [AuthoritiesConstants.USER])
     fun `should not have access to retrieve role permissions method without role_admin`() {
         val request = MockMvcRequestBuilders.request(GET, "/api/management/v1/roles/ROLE_USER/permissions")
+        request.contentType(MediaType.APPLICATION_JSON)
+        request.accept(MediaType.APPLICATION_JSON)
+        request.with { r: MockHttpServletRequest ->
+            r.remoteAddr = "8.8.8.8"
+            r
+        }
+        assertHttpStatus(request, HttpStatus.FORBIDDEN)
+    }
+
+    @Test
+    @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
+    fun `should have access to update role permissions method with role_admin`() {
+        val basePermission = permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER"))[0]
+
+        val request = MockMvcRequestBuilders.request(PUT, "/api/management/v1/roles/ROLE_USER/permissions")
+        request.content(
+            TestUtil.convertObjectToJsonBytes(
+                listOf(
+                        UpdateRolePermissionRequest(
+                        basePermission.resourceType,
+                        basePermission.action,
+                        basePermission.conditionContainer
+                    )
+                )
+            )
+        )
+        request.contentType(MediaType.APPLICATION_JSON)
+        request.accept(MediaType.APPLICATION_JSON)
+        request.with { r: MockHttpServletRequest ->
+            r.remoteAddr = "8.8.8.8"
+            r
+        }
+        assertHttpStatus(request, HttpStatus.OK)
+    }
+
+    @Test
+    @WithMockUser(authorities = [AuthoritiesConstants.USER])
+    fun `should not have access to update role permissions method without role_admin`() {
+        val basePermission = permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER"))[0]
+
+        val request = MockMvcRequestBuilders.request(PUT, "/api/management/v1/roles/ROLE_USER/permissions")
+        request.content(
+            TestUtil.convertObjectToJsonBytes(
+                listOf(
+                    UpdateRolePermissionRequest(
+                        basePermission.resourceType,
+                        basePermission.action,
+                        basePermission.conditionContainer
+                    )
+                )
+            )
+        )
         request.contentType(MediaType.APPLICATION_JSON)
         request.accept(MediaType.APPLICATION_JSON)
         request.with { r: MockHttpServletRequest ->

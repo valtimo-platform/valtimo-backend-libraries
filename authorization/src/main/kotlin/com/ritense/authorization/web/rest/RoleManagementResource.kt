@@ -24,6 +24,7 @@ import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.web.rest.request.DeleteRolesRequest
 import com.ritense.authorization.web.rest.request.SaveRoleRequest
+import com.ritense.authorization.web.rest.request.UpdateRolePermissionRequest
 import com.ritense.authorization.web.rest.request.UpdateRoleRequest
 import com.ritense.authorization.web.rest.result.RoleResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
@@ -88,5 +89,20 @@ class RoleManagementResource(
         : ResponseEntity<List<Permission>> {
         val rolePermissions = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf(roleKey))
         return ResponseEntity.ok(rolePermissions)
+    }
+
+    @PutMapping("/v1/roles/{roleKey}/permissions")
+    @JsonView(PermissionView.RoleManagement::class)
+    @Transactional
+    fun updateRolePermissions(
+        @PathVariable roleKey: String,
+        @RequestBody rolePermissions: List<UpdateRolePermissionRequest>
+    )
+        : ResponseEntity<List<Permission>> {
+        val role = roleRepository.findByKey(roleKey)!!
+        permissionRepository.deleteByRoleKeyIn(listOf(roleKey))
+        val permissions = permissionRepository
+            .saveAll(rolePermissions.map { it.toPermission(role) })
+        return ResponseEntity.ok(permissions)
     }
 }
