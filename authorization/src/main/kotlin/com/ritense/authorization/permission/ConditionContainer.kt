@@ -16,6 +16,9 @@
 
 package com.ritense.authorization.permission
 
+import com.fasterxml.jackson.annotation.JsonView
+
 data class ConditionContainer(
+    @field:JsonView(PermissionView.RoleManagement::class)
     val conditions: List<PermissionCondition> = emptyList(),
 )

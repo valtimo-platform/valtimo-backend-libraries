@@ -136,7 +136,8 @@ class AuthorizationServiceTest {
                 Permission(
                     resourceType = String::class.java,
                     action = Action<String>(Action.VIEW),
-                    conditionContainer = ConditionContainer(), roleKey = ""
+                    conditionContainer = ConditionContainer(),
+                    role = Role(key = "")
                 )
             )
         )
@@ -198,7 +199,8 @@ class AuthorizationServiceTest {
                     Permission(
                         resourceType = String::class.java,
                         action = Action<String>(Action.VIEW),
-                        conditionContainer = ConditionContainer(), roleKey = ""
+                        conditionContainer = ConditionContainer(),
+                        role = Role(key = "")
                     )
                 )
             )

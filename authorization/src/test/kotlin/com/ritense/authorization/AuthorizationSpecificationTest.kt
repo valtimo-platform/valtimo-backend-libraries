@@ -42,7 +42,7 @@ class AuthorizationSpecificationTest {
                     resourceType = TestEntity::class.java,
                     action = TestEntityActionProvider.complete,
                     conditionContainer = ConditionContainer(listOf()),
-                    roleKey = ""
+                    role = Role(key = "")
                 )
             )
         )
@@ -61,7 +61,7 @@ class AuthorizationSpecificationTest {
                     resourceType = String::class.java,
                     action = TestEntityActionProvider.complete,
                     conditionContainer = ConditionContainer(listOf()),
-                    roleKey = ""
+                    role = Role(key = "")
                 )
             )
         ) as AuthorizationSpecification<Any>
@@ -80,7 +80,7 @@ class AuthorizationSpecificationTest {
                     resourceType = TestEntity::class.java,
                     action = TestEntityActionProvider.complete,
                     conditionContainer = ConditionContainer(listOf()),
-                    roleKey = ""
+                    role = Role(key = "")
                 )
             )
         )
@@ -94,7 +94,7 @@ class AuthorizationSpecificationTest {
             resourceType = TestEntity::class.java,
             action = TestEntityActionProvider.complete,
             conditionContainer = ConditionContainer(listOf()),
-            roleKey = "")
+            role = Role(key = ""))
         )
         val spec = TestAuthorizationSpecification(
             EntityAuthorizationRequest(

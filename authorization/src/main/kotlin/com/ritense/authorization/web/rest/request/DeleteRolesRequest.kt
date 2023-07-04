@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.authorization.web.rest.request
 
-import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
-
-@Entity
-@Table(name = "role")
-data class Role(
-    @Id
-    @Column(name = "id")
-    val id: UUID = UUID.randomUUID(),
-    @Column(name = "key", nullable = false, unique = true)
-    val key: String
+data class DeleteRolesRequest(
+    val roles: List<String>
 )

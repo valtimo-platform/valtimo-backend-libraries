@@ -17,6 +17,7 @@
 package com.ritense.authorization.permission
 
 import com.ritense.authorization.Action
+import com.ritense.authorization.Role
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -45,7 +46,7 @@ class PermissionTest {
                     condition1,
                     condition2
                 )),
-                roleKey = ""
+                role = Role(key = "")
             )
         )
     }

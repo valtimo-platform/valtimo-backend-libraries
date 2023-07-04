@@ -16,15 +16,25 @@
 
 package com.ritense.authorization.security
 
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
+import org.springframework.http.HttpMethod.POST
+import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
 class ValtimoAuthorizationHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
+                .antMatchers(GET, "/api/management/v1/roles").hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(POST, "/api/management/v1/roles").hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(PUT, "/api/management/v1/roles/{oldRoleKey}").hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(DELETE, "/api/management/v1/roles").hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(GET, "/api/management/v1/roles/{roleKey}/permissions").hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(PUT, "/api/management/v1/roles/{roleKey}/permissions").hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(GET, "/api/v1/permissions").authenticated()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

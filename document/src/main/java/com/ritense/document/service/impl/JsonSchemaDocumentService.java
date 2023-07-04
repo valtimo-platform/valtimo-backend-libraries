@@ -22,6 +22,7 @@ import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.AuthorizationSpecification;
+import com.ritense.authorization.Role;
 import com.ritense.authorization.permission.Permission;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.RelatedFile;
@@ -540,7 +541,8 @@ public class JsonSchemaDocumentService implements DocumentService {
         Set<String> roles = authorizationService
             .getPermissions(JsonSchemaDocument.class, ASSIGNABLE)
             .stream()
-            .map(Permission::getRoleKey)
+            .map(Permission::getRole)
+            .map(Role::getKey)
             .collect(Collectors.toSet());
 
         return userManagementService.findNamedUserByRoles(roles);

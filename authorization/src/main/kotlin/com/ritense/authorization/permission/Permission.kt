@@ -16,14 +16,19 @@
 
 package com.ritense.authorization.permission
 
+import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.Action
+import com.ritense.authorization.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import org.hibernate.annotations.Type
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
+import javax.persistence.FetchType
 import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.ManyToOne
 import javax.persistence.Table
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
@@ -37,19 +42,23 @@ data class Permission(
     @Column(name = "id")
     val id: UUID = UUID.randomUUID(),
 
+    @field:JsonView(PermissionView.RoleManagement::class)
     @Column(name = "resource_type")
     val resourceType: Class<*>,
 
+    @field:JsonView(PermissionView.RoleManagement::class)
     @Column(name = "action")
     @Embedded
     val action: Action<*>,
 
+    @field:JsonView(PermissionView.RoleManagement::class)
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "conditions", columnDefinition = "json")
     val conditionContainer: ConditionContainer,
 
-    @Column(name = "role_key", nullable = false)
-    val roleKey: String,
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    val role: Role,
 ) {
     fun <T> appliesTo(resourceType: Class<T>, entity: Any?): Boolean {
         return if (this.resourceType == resourceType) {
