@@ -75,12 +75,8 @@ public class SearchConfigurationDeploymentService {
         var searchConfiguration = objectMapper.readValue(searchConfigurationJson, SearchConfigurationDto.class);
 
         try {
-            List<SearchField> databaseSearchFields =  searchFieldService.getSearchFields(documentDefinitionName);
-            List<SearchField> searchConfigurationFields  = searchConfiguration.toEntity(documentDefinitionName);
-            databaseSearchFields.forEach(databaseSearchField ->
-                searchConfigurationFields
-                        .removeIf(
-                                searchConfigurationField -> databaseSearchField.getKey().equals(searchConfigurationField.getKey())));
+            searchFieldService.deleteSearchFields(documentDefinitionName);
+            List<SearchField> searchConfigurationFields = searchConfiguration.toEntity(documentDefinitionName);
             searchFieldService.createSearchConfiguration(searchConfigurationFields);
             logger.info("Deployed search configuration for document - {}", documentDefinitionName);
         } catch (Exception e) {
