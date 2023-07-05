@@ -63,6 +63,10 @@ public class SearchFieldService {
         return searchFieldRepository.findAllByIdDocumentDefinitionNameOrderByOrder(documentDefinitionName);
     }
 
+    public void deleteSearchFields(String documentDefinitionName) {
+        searchFieldRepository.deleteAllByIdDocumentDefinitionName(documentDefinitionName);
+    }
+
     public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
         searchFieldDtos.forEach(this::validateSearchField);
         searchFieldDtos.forEach(searchFieldDto ->

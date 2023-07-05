@@ -36,7 +36,9 @@
                         "enum": [
                             "single",
                             "multiple",
-                            "range"
+                            "range",
+                            "multi-select-dropdown",
+                            "single-select-dropdown"
                         ],
                         "description": "The field type of the form field"
                     },

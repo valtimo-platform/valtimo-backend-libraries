@@ -25,10 +25,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 
 @Deprecated("Since 10.6.0")
-@RestController
 @RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_UTF8_VALUE])
 internal class FormLinkFormFlowResource internal constructor(
     private val formLinkNewProcessFormFlowProvider: FormLinkNewProcessFormFlowProvider
