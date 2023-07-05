@@ -168,4 +168,16 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
         assertHttpStatus(DELETE, "/api/management/v1/dashboard/1/widget-configuration/1", FORBIDDEN)
     }
 
+    @Test
+    @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
+    fun `should have access to retrieve widget data sources method with role_admin`() {
+        assertHttpStatus(GET, "/api/management/v1/dashboard/widget-data-sources", OK)
+    }
+
+    @Test
+    @WithMockUser(authorities = [AuthoritiesConstants.USER])
+    fun `should not access to retrieve widget data sources method without role_admin`() {
+        assertHttpStatus(GET, "/api/management/v1/dashboard/widget-data-sources", FORBIDDEN)
+    }
+
 }

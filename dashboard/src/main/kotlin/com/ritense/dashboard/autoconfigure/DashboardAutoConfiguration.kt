@@ -16,6 +16,7 @@
 
 package com.ritense.dashboard.autoconfigure
 
+import com.ritense.dashboard.datasource.WidgetDataSourceResolver
 import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.security.config.DashboardHttpSecurityConfigurer
@@ -58,9 +59,15 @@ class DashboardAutoConfiguration {
     fun dashboardService(
         dashboardRepository: DashboardRepository,
         widgetConfigurationRepository: WidgetConfigurationRepository,
-        userManagementService: UserManagementService
+        userManagementService: UserManagementService,
+        widgetDataSourceResolver: WidgetDataSourceResolver,
     ): DashboardService {
-        return DashboardService(dashboardRepository, widgetConfigurationRepository, userManagementService)
+        return DashboardService(
+            dashboardRepository,
+            widgetConfigurationRepository,
+            userManagementService,
+            widgetDataSourceResolver
+        )
     }
 
     @Bean
@@ -69,6 +76,12 @@ class DashboardAutoConfiguration {
         dashboardService: DashboardService
     ): AdminDashboardResource {
         return AdminDashboardResource(dashboardService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(WidgetDataSourceResolver::class)
+    fun widgetDataSourceResolver(): WidgetDataSourceResolver {
+        return WidgetDataSourceResolver()
     }
 
 }

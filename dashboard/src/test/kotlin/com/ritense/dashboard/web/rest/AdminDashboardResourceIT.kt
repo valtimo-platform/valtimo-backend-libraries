@@ -328,4 +328,17 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             .andDo(print())
             .andExpect(status().isNoContent)
     }
+
+    @Test
+    fun `should get widget datasources`() {
+        mockMvc.perform(get("/api/management/v1/dashboard/widget-data-sources"))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].key").value("test-key-multi"))
+            .andExpect(jsonPath("$[0].title").value("Test title multi"))
+            .andExpect(jsonPath("$[0].type").value("multi"))
+            .andExpect(jsonPath("$[1].key").value("test-key-single"))
+            .andExpect(jsonPath("$[1].title").value("Test title single"))
+            .andExpect(jsonPath("$[1].type").value("single"))
+    }
 }
