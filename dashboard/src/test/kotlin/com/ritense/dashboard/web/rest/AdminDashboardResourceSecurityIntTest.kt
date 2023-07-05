@@ -103,13 +103,13 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `should have access to get widget configuration method with role_admin`() {
-        assertHttpStatus(GET, "/api/management/v1/dashboard/1/widget", OK)
+        assertHttpStatus(GET, "/api/management/v1/dashboard/1/widget-configuration", OK)
     }
 
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.USER])
     fun `should not access to get widget configuration method without role_admin`() {
-        assertHttpStatus(GET, "/api/management/v1/dashboard/1/widget", FORBIDDEN)
+        assertHttpStatus(GET, "/api/management/v1/dashboard/1/widget-configuration", FORBIDDEN)
     }
 
     @Test
@@ -117,7 +117,7 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     fun `should have access to create widget configuration method with role_admin`() {
         val properties = jacksonObjectMapper().createObjectNode()
         val content = WidgetConfigurationCreateRequestDto("key", "dataSourceKey", "displayType", properties)
-        assertHttpStatus(POST, "/api/management/v1/dashboard/1/widget", content, INTERNAL_SERVER_ERROR)
+        assertHttpStatus(POST, "/api/management/v1/dashboard/1/widget-configuration", content, INTERNAL_SERVER_ERROR)
     }
 
     @Test
@@ -125,7 +125,7 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     fun `should not access to create widget configuration method without role_admin`() {
         val properties = jacksonObjectMapper().createObjectNode()
         val content = WidgetConfigurationCreateRequestDto("title", "dataSourceKey", "displayType", properties)
-        assertHttpStatus(POST, "/api/management/v1/dashboard/1/widget", content, FORBIDDEN)
+        assertHttpStatus(POST, "/api/management/v1/dashboard/1/widget-configuration", content, FORBIDDEN)
     }
 
     @Test
@@ -133,7 +133,7 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     fun `should have access to update widget configuration method with role_admin`() {
         val properties = jacksonObjectMapper().createObjectNode()
         val content = WidgetConfigurationUpdateRequestDto("key", "title", "dataSourceKey", "displayType", properties)
-        assertHttpStatus(PUT, "/api/management/v1/dashboard/1/widget", listOf(content), INTERNAL_SERVER_ERROR)
+        assertHttpStatus(PUT, "/api/management/v1/dashboard/1/widget-configuration", listOf(content), INTERNAL_SERVER_ERROR)
     }
 
     @Test
@@ -141,31 +141,31 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     fun `should not access to update widget configuration method without role_admin`() {
         val properties = jacksonObjectMapper().createObjectNode()
         val content = WidgetConfigurationUpdateRequestDto("key", "title", "dataSourceKey", "displayType", properties)
-        assertHttpStatus(PUT, "/api/management/v1/dashboard/1/widget", listOf(content), FORBIDDEN)
+        assertHttpStatus(PUT, "/api/management/v1/dashboard/1/widget-configuration", listOf(content), FORBIDDEN)
     }
 
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `should have access to get widget configuration by key method with role_admin`() {
-        assertHttpStatus(GET, "/api/management/v1/dashboard/1/widget/1", INTERNAL_SERVER_ERROR)
+        assertHttpStatus(GET, "/api/management/v1/dashboard/1/widget-configuration/1", INTERNAL_SERVER_ERROR)
     }
 
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.USER])
     fun `should not access to get widget configuration by key method without role_admin`() {
-        assertHttpStatus(GET, "/api/management/v1/dashboard/1/widget/1", FORBIDDEN)
+        assertHttpStatus(GET, "/api/management/v1/dashboard/1/widget-configuration/1", FORBIDDEN)
     }
 
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `should have access to delete widget configuration method with role_admin`() {
-        assertHttpStatus(DELETE, "/api/management/v1/dashboard/1/widget/1", NO_CONTENT)
+        assertHttpStatus(DELETE, "/api/management/v1/dashboard/1/widget-configuration/1", NO_CONTENT)
     }
 
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.USER])
     fun `should not access to delete widget configuration method without role_admin`() {
-        assertHttpStatus(DELETE, "/api/management/v1/dashboard/1/widget/1", FORBIDDEN)
+        assertHttpStatus(DELETE, "/api/management/v1/dashboard/1/widget-configuration/1", FORBIDDEN)
     }
 
     @Test
