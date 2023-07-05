@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.helper;
 
+import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.service.BpmnModelService;
@@ -26,6 +27,7 @@ import org.camunda.bpm.engine.task.IdentityLink;
 import org.camunda.bpm.engine.task.IdentityLinkType;
 import org.camunda.bpm.model.bpmn.instance.Task;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -81,7 +83,7 @@ public class DelegateTaskHelper {
         return matchPublicPropertiesTrue(camundaProperties);
     }
 
-    public boolean isTaskPublic(org.camunda.bpm.engine.task.Task task) {
+    public boolean isTaskPublic(CamundaTask task) {
         return isTaskPublic(bpmnModelService.getTask(task));
     }
 

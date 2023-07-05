@@ -28,7 +28,7 @@ import com.ritense.form.web.rest.FormResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
@@ -71,7 +71,7 @@ class FormAutoConfigurationKotlin {
         processDocumentAssociationService: ProcessDocumentAssociationService,
         processDocumentService: ProcessDocumentService,
         camundaTaskService: CamundaTaskService,
-        camundaProcessService: CamundaProcessService,
+        repositoryService: CamundaRepositoryService,
         applicationEventPublisher: ApplicationEventPublisher,
         prefillFormService: PrefillFormService,
     ): FormSubmissionService {
@@ -82,7 +82,7 @@ class FormAutoConfigurationKotlin {
             processDocumentAssociationService,
             processDocumentService,
             camundaTaskService,
-            camundaProcessService,
+            repositoryService,
             applicationEventPublisher,
             prefillFormService,
         )

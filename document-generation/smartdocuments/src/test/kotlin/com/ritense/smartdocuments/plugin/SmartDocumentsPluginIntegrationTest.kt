@@ -17,7 +17,6 @@
 package com.ritense.smartdocuments.plugin
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.plugin.domain.ActivityType
@@ -32,11 +31,11 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.BaseSmartDocumentsIntegrationTest
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.json.Mapper
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -64,7 +63,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
     lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
 
     @Autowired
-    lateinit var repositoryService: RepositoryService
+    lateinit var camundaRepositoryService: CamundaRepositoryService
 
     @Autowired
     lateinit var runtimeService: RuntimeService
@@ -74,7 +73,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
 
     lateinit var smartDocumentsPlugin: SmartDocumentsPlugin
     lateinit var pluginConfiguration: PluginConfiguration
-    lateinit var processDefinition: ProcessDefinition
+    lateinit var processDefinition: CamundaProcessDefinition
 
     @BeforeEach
     internal fun beforeEach() {
@@ -118,10 +117,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         """.trimIndent()
 
         smartDocumentsPlugin = smartDocumentsPluginFactory.create(pluginConfiguration)
-        processDefinition = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey("document-generation-plugin")
-            .latestVersion()
-            .singleResult()
+        processDefinition = camundaRepositoryService.findLatestProcessDefinition("document-generation-plugin")!!
 
         saveProcessLink(generateDocumentActionProperties)
     }

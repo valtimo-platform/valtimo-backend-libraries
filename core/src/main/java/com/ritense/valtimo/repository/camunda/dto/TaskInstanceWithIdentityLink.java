@@ -18,8 +18,9 @@ package com.ritense.valtimo.repository.camunda.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import org.camunda.bpm.engine.rest.dto.task.IdentityLinkDto;
-import org.camunda.bpm.engine.rest.dto.task.TaskDto;
+import com.ritense.valtimo.camunda.dto.CamundaIdentityLinkDto;
+import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
+
 import java.util.List;
 
 public class TaskInstanceWithIdentityLink {
@@ -28,7 +29,7 @@ public class TaskInstanceWithIdentityLink {
     private String businessKey;
 
     @JsonUnwrapped
-    private final TaskDto taskDto;
+    private final CamundaTaskDto taskDto;
 
     @JsonProperty
     private boolean external;
@@ -37,14 +38,14 @@ public class TaskInstanceWithIdentityLink {
     private String processDefinitionKey;
 
     @JsonProperty
-    private final List<IdentityLinkDto> identityLinks;
+    private final List<CamundaIdentityLinkDto> identityLinks;
 
     public TaskInstanceWithIdentityLink(
         String businessKey,
-        TaskDto taskDto,
+        CamundaTaskDto taskDto,
         boolean external,
         String processDefinitionKey,
-        List<IdentityLinkDto> identityLinks
+        List<CamundaIdentityLinkDto> identityLinks
     ) {
         this.businessKey = businessKey;
         this.taskDto = taskDto;
@@ -57,7 +58,7 @@ public class TaskInstanceWithIdentityLink {
         return businessKey;
     }
 
-    public TaskDto getTaskDto() {
+    public CamundaTaskDto getTaskDto() {
         return taskDto;
     }
 
@@ -65,7 +66,7 @@ public class TaskInstanceWithIdentityLink {
         return external;
     }
 
-    public List<IdentityLinkDto> getIdentityLinks() {
+    public List<CamundaIdentityLinkDto> getIdentityLinks() {
         return identityLinks;
     }
 

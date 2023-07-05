@@ -18,27 +18,26 @@ package com.ritense.valtimo.camunda.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.rest.dto.runtime.ProcessInstanceDto;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 
 public class ProcessInstanceWithDefinition {
 
     @JsonIgnore
-    private final ProcessDefinition processDefinition;
+    private final CamundaProcessDefinition processDefinition;
 
     @JsonProperty("processInstance")
     private final ProcessInstanceDto processInstanceDto;
 
     public ProcessInstanceWithDefinition(
         final ProcessInstance processInstance,
-        final ProcessDefinition processDefinition
+        final CamundaProcessDefinition processDefinition
     ) {
         this.processInstanceDto = new ProcessInstanceDto(processInstance);
         this.processDefinition = processDefinition;
     }
 
-    public ProcessDefinition getProcessDefinition() {
+    public CamundaProcessDefinition getProcessDefinition() {
         return processDefinition;
     }
 

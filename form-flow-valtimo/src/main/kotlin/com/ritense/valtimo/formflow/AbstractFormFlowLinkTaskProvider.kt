@@ -19,21 +19,21 @@ package com.ritense.valtimo.formflow
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.task.Task
 
 abstract class AbstractFormFlowLinkTaskProvider(
     private val documentService: DocumentService,
     private val runtimeService: RuntimeService,
 ) {
 
-    protected fun getAdditionalProperties(task: Task): Map<String, Any> {
+    protected fun getAdditionalProperties(task: CamundaTask): Map<String, Any> {
         val processInstance = runtimeService.createProcessInstanceQuery()
-            .processInstanceId(task.processInstanceId)
+            .processInstanceId(task.getProcessInstanceId())
             .singleResult()
 
         val additionalProperties = mutableMapOf(
-            "processInstanceId" to task.processInstanceId,
+            "processInstanceId" to task.getProcessInstanceId(),
             "processInstanceBusinessKey" to processInstance.businessKey,
             "taskInstanceId" to task.id
         )

@@ -16,13 +16,13 @@
 
 package com.ritense.valtimo.autoconfigure;
 
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.context.repository.ContextRepository;
 import com.ritense.valtimo.context.repository.UserContextRepository;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.ContextService;
 import com.ritense.valtimo.service.CurrentUserService;
 import com.ritense.valtimo.web.rest.ContextResource;
-import org.camunda.bpm.engine.RepositoryService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +43,7 @@ public class ContextAutoConfiguration {
         final CurrentUserService currentUserService,
         final ContextRepository contextRepository,
         final UserContextRepository userContextRepository,
-        final RepositoryService repositoryService
+        final CamundaRepositoryService repositoryService
     ) {
         return new ContextService(currentUserService, contextRepository, userContextRepository, repositoryService);
     }

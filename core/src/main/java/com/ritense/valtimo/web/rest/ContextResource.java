@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
+import com.ritense.valtimo.camunda.dto.CamundaProcessDefinitionDto;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import com.ritense.valtimo.domain.contexts.Context;
 import com.ritense.valtimo.domain.contexts.ContextProcess;
@@ -24,8 +26,6 @@ import com.ritense.valtimo.service.ContextService;
 import com.ritense.valtimo.web.rest.dto.UserContextDTO;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import com.ritense.valtimo.web.rest.util.PaginationUtil;
-import org.camunda.bpm.engine.history.HistoricProcessInstance;
-import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -65,7 +65,7 @@ public class ContextResource {
     }
 
     @GetMapping("/v1/user/context/processes")
-    public ResponseEntity<List<ProcessDefinitionDto>> getContextProcess() throws IllegalAccessException {
+    public ResponseEntity<List<CamundaProcessDefinitionDto>> getContextProcess() throws IllegalAccessException {
         return ResponseEntity.ok(contextService.findVisibleContextProcesses());
     }
 
@@ -132,7 +132,7 @@ public class ContextResource {
     }
 
     @GetMapping("/v1/context/process/user/active")
-    public ResponseEntity<List<HistoricProcessInstance>> getAllActiveContextProcessesStartedByCurrentUser() throws IllegalAccessException {
+    public ResponseEntity<List<CamundaHistoricProcessInstance>> getAllActiveContextProcessesStartedByCurrentUser() throws IllegalAccessException {
         final Set<String> processes =
             contextService
                 .getContextOfCurrentUser()
@@ -141,7 +141,7 @@ public class ContextResource {
                 .map(ContextProcess::getProcessDefinitionKey)
                 .collect(Collectors.toSet());
 
-        final List<HistoricProcessInstance> processInstances =
+        final List<CamundaHistoricProcessInstance> processInstances =
             camundaProcessService.getAllActiveContextProcessesStartedByCurrentUser(processes, SecurityUtils.getCurrentUserLogin());
         return ResponseEntity.ok(processInstances);
     }

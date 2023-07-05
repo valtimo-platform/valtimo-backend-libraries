@@ -16,12 +16,11 @@
 
 package com.ritense.valtimo.formflow.autodeployment
 
-import com.ritense.form.domain.FormProcessLink
 import com.ritense.processlink.repository.ProcessLinkRepository
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.formflow.BaseIntegrationTest
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
-import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.hamcrest.Matchers.equalTo
@@ -31,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 
 class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired constructor(
-    private val repositoryService: RepositoryService,
+    private val repositoryService: CamundaRepositoryService,
     private val processLinkRepository: ProcessLinkRepository
 ): BaseIntegrationTest() {
 
@@ -48,10 +47,7 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
         assertThat(processLink.formFlowDefinitionId, equalTo("inkomens_loket:latest"))
     }
 
-    private fun getLatestProcessDefinition(): ProcessDefinition {
-        return repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey("processlink-autodeploy")
-            .latestVersion()
-            .singleResult()
+    private fun getLatestProcessDefinition(): CamundaProcessDefinition {
+        return repositoryService.findLatestProcessDefinition("processlink-autodeploy")!!
     }
 }

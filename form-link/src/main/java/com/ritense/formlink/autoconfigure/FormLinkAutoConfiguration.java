@@ -45,11 +45,10 @@ import com.ritense.formlink.web.rest.impl.DefaultProcessLinkResource;
 import com.ritense.formlink.web.rest.impl.interceptor.PublicAccessRateLimitInterceptor;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
-import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.TaskService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -75,8 +74,8 @@ public class FormLinkAutoConfiguration {
         ProcessFormAssociationRepository processFormAssociationRepository,
         DocumentService documentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        CamundaProcessService camundaProcessService,
-        TaskService taskService,
+        CamundaRuntimeService runtimeService,
+        CamundaTaskService taskService,
         SubmissionTransformerService<FormIoFormDefinition> submissionTransformerService,
         List<FormFieldDataResolver> formFieldDataResolvers
     ) {
@@ -85,7 +84,7 @@ public class FormLinkAutoConfiguration {
             processFormAssociationRepository,
             documentService,
             processDocumentAssociationService,
-            camundaProcessService,
+            runtimeService,
             taskService,
             submissionTransformerService,
             formFieldDataResolvers
@@ -179,8 +178,8 @@ public class FormLinkAutoConfiguration {
     @Bean("formProcessLinkService")
     @ConditionalOnMissingBean(ProcessLinkService.class)
     public ProcessLinkService processLinkService(
-        RepositoryService repositoryService,
-        TaskService taskService,
+        CamundaRepositoryService repositoryService,
+        CamundaTaskService taskService,
         FormAssociationService formAssociationService,
         List<FormLinkTaskProvider> processLinkTaskProvide
     ) {

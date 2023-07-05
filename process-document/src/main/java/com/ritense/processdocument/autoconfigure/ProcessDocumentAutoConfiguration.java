@@ -45,11 +45,11 @@ import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocument
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.processdocument.service.impl.DocumentDefinitionProcessLinkServiceImpl;
 import com.ritense.processdocument.web.rest.ProcessDocumentResource;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
 import com.ritense.valueresolver.ValueResolverFactory;
-import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -91,7 +91,7 @@ public class ProcessDocumentAutoConfiguration {
         ProcessDocumentInstanceRepository processDocumentInstanceRepository,
         DocumentDefinitionRepository documentDefinitionRepository,
         DocumentDefinitionService documentDefinitionService,
-        CamundaProcessService camundaProcessService,
+        CamundaRepositoryService repositoryService,
         RuntimeService runtimeService,
         AuthorizationService authorizationService,
         DocumentService documentService
@@ -101,7 +101,7 @@ public class ProcessDocumentAutoConfiguration {
             processDocumentInstanceRepository,
             documentDefinitionRepository,
             documentDefinitionService,
-            camundaProcessService,
+            repositoryService,
             runtimeService,
             authorizationService,
             documentService
@@ -209,7 +209,7 @@ public class ProcessDocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentDefinitionProcessLinkService.class)
     public DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService(
         DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository,
-        RepositoryService repositoryService
+        CamundaRepositoryService repositoryService
     )  {
         return new DocumentDefinitionProcessLinkServiceImpl(documentDefinitionProcessLinkRepository, repositoryService);
     }

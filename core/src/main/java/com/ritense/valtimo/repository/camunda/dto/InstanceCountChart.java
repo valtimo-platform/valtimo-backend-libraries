@@ -16,7 +16,8 @@
 
 package com.ritense.valtimo.repository.camunda.dto;
 
-import org.camunda.bpm.engine.repository.ProcessDefinition;
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,7 +31,7 @@ public class InstanceCountChart {
     private Map<String, ChartInstanceSeries> series = new HashMap<>();
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM");
 
-    public InstanceCountChart(List<ProcessDefinition> processDefinitions, List<InstanceCount> processInstances) {
+    public InstanceCountChart(List<CamundaProcessDefinition> processDefinitions, List<InstanceCount> processInstances) {
         // Set instance count in map
         Map<String, Map<String, Long>> instanceCountPerProces = new HashMap<>();
         for (InstanceCount instanceCount : processInstances) {
@@ -48,7 +49,7 @@ public class InstanceCountChart {
             this.categories.add(dayToProcess);
 
             // Add series data for every deployed process
-            for (ProcessDefinition processDefinition :processDefinitions) {
+            for (CamundaProcessDefinition processDefinition : processDefinitions) {
                 Map<String, Long> dateCounts = instanceCountPerProces.get(processDefinition.getName());
                 Long count = dateCounts != null && dateCounts.get(dayToProcess) != null ? dateCounts.get(dayToProcess) : 0L;
                 this.addSeriesValue(processDefinition.getName(), count);

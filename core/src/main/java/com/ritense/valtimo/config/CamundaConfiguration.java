@@ -18,6 +18,7 @@ package com.ritense.valtimo.config;
 
 import com.ritense.valtimo.camunda.ProcessDefinitionDeployedEventPublisher;
 import com.ritense.valtimo.camunda.command.ValtimoSchemaOperationsCommand;
+import com.ritense.valtimo.camunda.domain.CamundaVariableInstance;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
 import com.ritense.valtimo.validator.MaxDateValidator;
 import com.ritense.valtimo.validator.MinDateValidator;
@@ -73,6 +74,9 @@ public class CamundaConfiguration implements CamundaProcessEngineConfiguration {
         serviceImpl.setCommandExecutor(processEngineConfiguration.getCommandExecutorTxRequired());
         serviceImpl.setDeploymentCharset(processEngineConfiguration.getDefaultCharset());
         processEngineConfiguration.setRepositoryService(serviceImpl);
+        processEngineConfiguration.getVariableSerializers().getSerializers().forEach(serializer ->
+            CamundaVariableInstance.Companion.getVariableSerializers().addSerializer(serializer)
+        );
     }
 
 }

@@ -34,8 +34,8 @@ import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
 import com.ritense.valtimo.helper.CamundaCollectionHelper;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
+import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.application.impl.event.ProcessApplicationEventListenerPlugin;
-import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -116,7 +116,7 @@ public class CamundaAutoConfiguration {
     @ConditionalOnMissingBean(ReminderService.class)
     @ConditionalOnProperty(prefix = "scheduling", name = "enabled", havingValue = "true", matchIfMissing = true)
     public ReminderService reminderService(
-        final TaskService taskService,
+        final CamundaTaskService taskService,
         final EmailNotificationSettingsService emailNotificationService,
         final MailSender mailSender,
         final UserManagementService userManagementService,

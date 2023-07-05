@@ -16,6 +16,9 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
+import com.ritense.valtimo.camunda.domain.CamundaTask;
+import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.util.FormUtils;
@@ -24,10 +27,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.form.FormField;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.camunda.bpm.engine.rest.dto.task.TaskDto;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.engine.task.Task;
+
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,20 +54,21 @@ public abstract class AbstractTaskResource {
     }
 
     public CustomTaskDto createCustomTaskDto(String id, HttpServletRequest request) {
-        final Task task = camundaTaskService.findTaskById(id);
-        TaskDto taskDto = TaskDto.fromEntity(task);
+        final CamundaTask task = camundaTaskService.findTaskById(id);
+        CamundaTaskDto taskDto = CamundaTaskDto.of(task);
 
         ProcessInstance processInstance = camundaProcessService.findProcessInstanceById(taskDto.getProcessInstanceId()).orElseThrow();
-        ProcessDefinition processDefinition = camundaProcessService.findProcessDefinitionById(processInstance.getProcessDefinitionId());
+        CamundaProcessDefinition processDefinition = camundaProcessService.findProcessDefinitionById(processInstance.getProcessDefinitionId());
 
-        Map<String, Object> variables = taskService.getVariables(id);
+        Map<String, Object> variables = camundaTaskService.getVariables(id);
         List<FormField> taskFormData = new ArrayList<>();
 
         String formLocation = null;
-        if (StringUtils.isBlank(taskDto.getFormKey())) {
+        String formKey = formService.getTaskFormKey(taskDto.getProcessDefinitionId(), taskDto.getTaskDefinitionKey());
+        if (StringUtils.isBlank(formKey)) {
             taskFormData = formService.getTaskFormData(id).getFormFields();
         } else {
-            formLocation = FormUtils.getFormLocation(taskDto.getFormKey(), request);
+            formLocation = FormUtils.getFormLocation(formKey, request);
         }
         return new CustomTaskDto(taskDto, taskFormData, variables, formLocation, processInstance, processDefinition);
     }

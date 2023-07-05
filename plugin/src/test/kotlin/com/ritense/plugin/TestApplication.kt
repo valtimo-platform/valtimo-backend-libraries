@@ -19,6 +19,7 @@ package com.ritense.plugin
 import com.ritense.plugin.autodeployment.AutoDeploymentTestPlugin
 import com.ritense.plugin.autodeployment.TestAutoDeploymentPluginFactory
 import com.ritense.plugin.service.PluginService
+import com.ritense.processlink.configuration.ProcessLinkAutoConfiguration
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.community.mockito.service.RuntimeServiceFluentMock
 import org.mockito.kotlin.spy
@@ -27,7 +28,7 @@ import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 
-@SpringBootApplication
+@SpringBootApplication(exclude = [ProcessLinkAutoConfiguration::class])
 class TestApplication {
 
     fun main(args: Array<String>) {

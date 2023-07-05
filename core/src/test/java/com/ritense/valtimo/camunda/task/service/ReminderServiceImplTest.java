@@ -16,24 +16,22 @@
 
 package com.ritense.valtimo.camunda.task.service;
 
+import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.task.service.impl.ReminderServiceImpl;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
-import org.camunda.bpm.engine.task.Task;
-import org.camunda.bpm.engine.task.TaskQuery;
-import org.camunda.community.mockito.CamundaMockito;
+import com.ritense.valtimo.service.CamundaTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.test.util.ReflectionTestUtils;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.user;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -43,16 +41,14 @@ import static org.mockito.Mockito.when;
 class ReminderServiceImplTest {
 
     private ReminderService reminderService;
-    private TaskService taskService;
+    private CamundaTaskService taskService;
     private EmailNotificationSettingsService emailNotificationService;
     private MailSender mailSender;
     private UserManagementService userManagementService;
-    private Task task;
-    private TaskQuery taskQuery;
 
     @BeforeEach
     void setUp() {
-        taskService = mock(TaskService.class);
+        taskService = mock(CamundaTaskService.class);
         emailNotificationService = mock(EmailNotificationSettingsService.class);
         mailSender = mock(MailSender.class);
         userManagementService = mock(UserManagementService.class);
@@ -63,8 +59,6 @@ class ReminderServiceImplTest {
             userManagementService,
             "reminderTemplate"
         );
-        task = mock(Task.class);
-        taskQuery = CamundaMockito.mockTaskQuery(taskService).singleResult(task);
     }
 
     @Test
@@ -76,18 +70,14 @@ class ReminderServiceImplTest {
             .thenReturn(Optional.of(user("test2@test.com", List.of("dev", "po"))))
             .thenReturn(Optional.of(user("test3@test.com", List.of("po"))));
 
-        final TaskQuery taskQuery = CamundaMockito.mockTaskQuery(taskService).singleResult(task);
-        when(taskService.createTaskQuery().taskCandidateGroup(anyString()).taskUnassigned()).thenReturn(taskQuery);
-        when(taskQuery.list()).thenReturn(roleBasedTasks()).thenReturn(null).thenReturn(null);
-
-        when(taskService.createTaskQuery().orderByTaskAssignee().asc().taskAssigned()).thenReturn(taskQuery);
-        when(taskQuery.list()).thenReturn(assignedTasks());
+        when(taskService.findTasks(any()))
+            .thenReturn(roleBasedTasks()).thenReturn(List.of()).thenReturn(List.of()).thenReturn(assignedTasks());
 
         ReflectionTestUtils.setField(reminderService, "reminderTemplate", "template");
 
         reminderService.notifyUsersWithOpenTasks();
 
-        verify(mailSender, times(3)).send(ArgumentMatchers.any(TemplatedMailMessage.class));
+        verify(mailSender, times(3)).send(any(TemplatedMailMessage.class));
     }
 
     @Test
@@ -99,18 +89,13 @@ class ReminderServiceImplTest {
             .thenReturn(Optional.of(user("test2@test.com", List.of("dev", "po"))))
             .thenReturn(Optional.of(user("test3@test.com", List.of("po"))));
 
-        final TaskQuery taskQuery = CamundaMockito.mockTaskQuery(taskService).singleResult(task);
-        when(taskService.createTaskQuery().taskCandidateGroup(anyString()).taskUnassigned()).thenReturn(taskQuery);
-        when(taskQuery.list()).thenReturn(null);
-
-        when(taskService.createTaskQuery().orderByTaskAssignee().asc().taskAssigned()).thenReturn(taskQuery);
-        when(taskQuery.list()).thenReturn(null);
+        when(taskService.findTasks(any())).thenReturn(List.of());
 
         ReflectionTestUtils.setField(reminderService, "reminderTemplate", "template");
 
         reminderService.notifyUsersWithOpenTasks();
 
-        verify(mailSender, times(0)).send(ArgumentMatchers.any(TemplatedMailMessage.class));
+        verify(mailSender, times(0)).send(any(TemplatedMailMessage.class));
     }
 
     @Test
@@ -122,19 +107,16 @@ class ReminderServiceImplTest {
             .thenReturn(Optional.of(user("test2@test.com", List.of("dev", "po"))))
             .thenReturn(Optional.of(user("test3@test.com", List.of("po"))));
 
-        when(taskService.createTaskQuery().taskCandidateGroup(anyString()).taskUnassigned()).thenReturn(taskQuery);
-        when(taskQuery.list()).thenReturn(null);
-
-        when(taskService.createTaskQuery().orderByTaskAssignee().asc().taskAssigned()).thenReturn(taskQuery);
-        when(taskQuery.list()).thenReturn(null)
+        when(taskService.findTasks(any()))
+            .thenReturn(List.of())
             .thenReturn(assignedTasks())
-            .thenReturn(null);
+            .thenReturn(List.of());
 
         ReflectionTestUtils.setField(reminderService, "reminderTemplate", "template");
 
         reminderService.notifyUsersWithOpenTasks();
 
-        verify(mailSender, times(1)).send(ArgumentMatchers.any(TemplatedMailMessage.class));
+        verify(mailSender, times(1)).send(any(TemplatedMailMessage.class));
     }
 
     @Test
@@ -145,40 +127,55 @@ class ReminderServiceImplTest {
 
         reminderService.notifyUsersWithOpenTasks();
 
-        verify(mailSender, times(0)).send(ArgumentMatchers.any(TemplatedMailMessage.class));
+        verify(mailSender, times(0)).send(any(TemplatedMailMessage.class));
     }
 
     private List<String> users() {
         return List.of("test1@test.com", "test2@test.com", "test3@test.com");
     }
 
-    private List<Task> roleBasedTasks() {
-        Task taskId0 = roleBasedTaskEntity("id01", "taskDev1");
-        Task taskId1 = roleBasedTaskEntity("id2", "task2");
-        Task taskId2 = roleBasedTaskEntity("id3", "task3");
+    private List<CamundaTask> roleBasedTasks() {
+        CamundaTask taskId0 = roleBasedTaskEntity("id01", "taskDev1");
+        CamundaTask taskId1 = roleBasedTaskEntity("id2", "task2");
+        CamundaTask taskId2 = roleBasedTaskEntity("id3", "task3");
         return List.of(taskId0, taskId1, taskId2);
     }
 
-    private List<Task> assignedTasks() {
-        Task taskId0 = assignedTaskEntity("id1", "test1@test.com", "task1");
-        Task taskId2 = assignedTaskEntity("id3", "test2@test.com", "task3");
+    private List<CamundaTask> assignedTasks() {
+        CamundaTask taskId0 = assignedTaskEntity("id1", "test1@test.com", "task1");
+        CamundaTask taskId2 = assignedTaskEntity("id3", "test2@test.com", "task3");
         return List.of(taskId0, taskId2);
     }
 
-    private Task assignedTaskEntity(String id, String assignee, String taskName) {
-        TaskEntity taskEntity = new TaskEntity();
-        taskEntity.setId(id);
-        taskEntity.setAssignee(assignee);
-        taskEntity.setCreateTime(new Date());
-        taskEntity.setName(taskName);
-        return taskEntity;
+    private CamundaTask assignedTaskEntity(String id, String assignee, String taskName) {
+        return new CamundaTask(
+            id,
+            0,
+            null, null, null,
+            List.of(),
+            null, null, null,
+            taskName,
+            null, null, null, null,
+            assignee,
+            null,
+            0,
+            LocalDateTime.now(), null, null, null, 0, null,
+            Set.of()
+        );
     }
 
-    private Task roleBasedTaskEntity(String id, String taskName) {
-        TaskEntity taskEntity = new TaskEntity();
-        taskEntity.setId(id);
-        taskEntity.setCreateTime(new Date());
-        taskEntity.setName(taskName);
-        return taskEntity;
+    private CamundaTask roleBasedTaskEntity(String id, String taskName) {
+        return new CamundaTask(
+            id,
+            0,
+            null, null, null,
+            List.of(),
+            null, null, null,
+            taskName,
+            null, null, null, null, null, null,
+            0,
+            LocalDateTime.now(), null, null, null, 0, null,
+            Set.of()
+        );
     }
 }

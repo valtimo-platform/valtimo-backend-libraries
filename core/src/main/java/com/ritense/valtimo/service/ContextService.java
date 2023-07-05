@@ -16,7 +16,9 @@
 
 package com.ritense.valtimo.service;
 
-import com.ritense.valtimo.camunda.task.service.impl.NotificationServiceImpl;
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
+import com.ritense.valtimo.camunda.dto.CamundaProcessDefinitionDto;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.context.repository.ContextRepository;
 import com.ritense.valtimo.context.repository.UserContextRepository;
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
@@ -24,13 +26,6 @@ import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.exception.ValtimoRuntimeException;
 import com.ritense.valtimo.domain.contexts.Context;
 import com.ritense.valtimo.domain.contexts.UserContext;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -38,17 +33,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
+
 public class ContextService {
 
     private static final Logger logger = LoggerFactory.getLogger(ContextService.class);
     private final CurrentUserService currentUserService;
     private final ContextRepository contextRepository;
     private final UserContextRepository userContextRepository;
-    private final RepositoryService repositoryService;
+    private final CamundaRepositoryService repositoryService;
 
     public ContextService(
         CurrentUserService currentUserService, ContextRepository contextRepository,
-        UserContextRepository userContextRepository, RepositoryService repositoryService
+        UserContextRepository userContextRepository, CamundaRepositoryService repositoryService
     ) {
         this.currentUserService = currentUserService;
         this.contextRepository = contextRepository;
@@ -128,13 +131,10 @@ public class ContextService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProcessDefinitionDto> findVisibleContextProcesses() throws IllegalAccessException {
-        List<ProcessDefinition> deployedDefinitions = repositoryService.createProcessDefinitionQuery()
-            .active()
-            .latestVersion()
-            .list();
+    public List<CamundaProcessDefinitionDto> findVisibleContextProcesses() throws IllegalAccessException {
+        List<CamundaProcessDefinition> deployedDefinitions = repositoryService.findProcessDefinitions(byActive().and(byLatestVersion()));
         Context context = getContextOfCurrentUser();
-        List<ProcessDefinition> contextFilteredDeployedDefinitions = new ArrayList<>();
+        List<CamundaProcessDefinition> contextFilteredDeployedDefinitions = new ArrayList<>();
         deployedDefinitions.forEach(p -> {
             //NOTE: this also considers the menu visibility
             if (context.containsProcessAndVisibleInMenu(p.getKey())) {
@@ -142,7 +142,7 @@ public class ContextService {
             }
         });
         return contextFilteredDeployedDefinitions.stream()
-            .map(ProcessDefinitionDto::fromProcessDefinition)
+            .map(CamundaProcessDefinitionDto::of)
             .collect(Collectors.toList());
     }
 

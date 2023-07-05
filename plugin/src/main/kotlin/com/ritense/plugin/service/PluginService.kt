@@ -119,12 +119,13 @@ class PluginService(
         ) {
             deletePluginConfiguration(PluginConfigurationId.existingId(deploymentDto.id))
         }
-        validateProperties(deploymentDto.properties!!, pluginDefinition)
+        val resolvedProperties = resolveProperties(deploymentDto.properties)
+        validateProperties(resolvedProperties, pluginDefinition)
         val pluginId = pluginConfigurationRepository.saveAndFlush(
             PluginConfiguration(
                 deploymentDto.id?.let { PluginConfigurationId.existingId(it) } ?: PluginConfigurationId.newId(),
                 deploymentDto.title,
-                resolveProperties(deploymentDto.properties),
+                resolvedProperties,
                 pluginDefinition
             )
         ).id
@@ -137,21 +138,22 @@ class PluginService(
         }
     }
 
-    private fun resolveProperties(properties: ObjectNode?): ObjectNode? {
+    private fun resolveProperties(properties: ObjectNode?): ObjectNode {
+        val result = objectMapper.createObjectNode()
         properties?.fields()?.forEachRemaining {
-            if (it.value.isTextual) {
-                properties.put(it.key, resolveValue(it.value))
-            }
+            result.replace(it.key, resolveValue(it.value))
         }
-        return properties
+        return result
     }
 
-    private fun resolveValue(value: JsonNode?): String? {
-        val valueAsString = value?.textValue()
-        if (valueAsString?.startsWith("\${") == true && valueAsString.endsWith("}")) {
-            return System.getenv()[valueAsString.substringAfterLast("\${").substringBeforeLast("}")]
+    private fun resolveValue(node: JsonNode?): JsonNode? {
+        if (node != null && node.isTextual) {
+            val value = node.textValue()
+            if (value?.startsWith("\${") == true && value.endsWith("}")) {
+                return TextNode(System.getenv()[value.substringAfterLast("\${").substringBeforeLast("}")])
+            }
         }
-        return valueAsString
+        return node
     }
 
     fun updatePluginConfiguration(

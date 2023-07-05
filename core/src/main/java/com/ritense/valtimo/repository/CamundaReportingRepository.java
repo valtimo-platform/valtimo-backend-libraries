@@ -16,15 +16,16 @@
 
 package com.ritense.valtimo.repository;
 
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.repository.camunda.dto.ChartInstance;
 import com.ritense.valtimo.repository.camunda.dto.ChartInstanceSeries;
 import com.ritense.valtimo.repository.camunda.dto.InstanceCount;
 import com.ritense.valtimo.repository.camunda.dto.InstanceCountChart;
 import com.ritense.valtimo.repository.camunda.dto.Serie;
 import org.apache.ibatis.session.SqlSession;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
+
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -35,12 +36,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
+
 public class CamundaReportingRepository {
 
     private final SqlSession session;
-    private final RepositoryService repositoryService;
+    private final CamundaRepositoryService repositoryService;
 
-    public CamundaReportingRepository(SqlSession session, RepositoryService repositoryService) {
+    public CamundaReportingRepository(SqlSession session, CamundaRepositoryService repositoryService) {
         this.session = session;
         this.repositoryService = repositoryService;
     }
@@ -51,13 +55,13 @@ public class CamundaReportingRepository {
         Instant instant = defaultFromDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
         parameters.put("dateFrom", Date.from(instant));
 
-        ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery()
-            .active()
-            .latestVersion();
+        var processDefinitionQuery = CamundaProcessDefinitionSpecificationHelper
+            .byActive()
+            .and(byLatestVersion());
         if (Optional.ofNullable(processDefinitionKey).isPresent()) {
-            processDefinitionQuery.processDefinitionKey(processDefinitionKey);
+            processDefinitionQuery.and(byKey(processDefinitionKey));
         }
-        List<ProcessDefinition> deploydDefinitions = processDefinitionQuery.list();
+        List<CamundaProcessDefinition> deploydDefinitions = repositoryService.findProcessDefinitions(processDefinitionQuery);
         List<InstanceCount> instanceCounts = session.selectList("com.ritense.valtimo.mapper.getInstanceCount", parameters);
         return new InstanceCountChart(deploydDefinitions, instanceCounts);
     }

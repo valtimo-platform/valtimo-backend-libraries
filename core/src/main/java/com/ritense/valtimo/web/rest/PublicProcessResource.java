@@ -16,15 +16,15 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.util.FormUtils;
 import com.ritense.valtimo.web.rest.dto.StartFormDto;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.form.FormField;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.rest.dto.runtime.ProcessInstanceDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
@@ -49,12 +51,12 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_J
 public class PublicProcessResource {
 
     private final FormService formService;
-    private final RepositoryService repositoryService;
+    private final CamundaRepositoryService repositoryService;
     private final CamundaProcessService camundaProcessService;
 
     public PublicProcessResource(
         final FormService formService,
-        final RepositoryService repositoryService,
+        final CamundaRepositoryService repositoryService,
         final CamundaProcessService camundaProcessService
     ) {
         this.formService = formService;
@@ -68,10 +70,10 @@ public class PublicProcessResource {
         HttpServletRequest request,
         @PathVariable String processDefinitionKey) {
 
-        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey)
-            .latestVersion()
-            .singleResult();
+        CamundaProcessDefinition processDefinition = repositoryService.findProcessDefinition(
+            byKey(processDefinitionKey)
+                .and(byLatestVersion())
+        );
         String startFormKey = formService.getStartFormKey(processDefinition.getId());
 
         List<FormField> startFormData = new ArrayList<>();
