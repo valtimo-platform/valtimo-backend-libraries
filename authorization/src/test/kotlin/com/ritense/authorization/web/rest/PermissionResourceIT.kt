@@ -63,7 +63,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             .webAppContextSetup(webApplicationContext)
             .build()
 
-        roleRepository.save(Role("test-role"))
+        roleRepository.save(Role(key = "test-role"))
     }
 
     @Test
@@ -76,7 +76,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
                 TestEntity::class.java,
                 TestEntityActionProvider.view,
                 ConditionContainer(emptyList()),
-                "test-role"
+                Role(key = "test-role")
             )
         )
 
@@ -152,7 +152,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
                         "test"
                     )
                 )),
-                "test-role"
+                Role(key = "test-role")
             )
         )
 
@@ -199,7 +199,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
                         "other-value"
                     )
                 )),
-                "test-role"
+                Role(key = "test-role")
             )
         )
 
@@ -251,7 +251,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
                         )
                     )
                 )),
-                "test-role"
+                Role(key = "test-role")
             )
         )
 
@@ -303,7 +303,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
                         )
                     )
                 )),
-                "test-role"
+                Role(key = "test-role")
             )
         )
 
