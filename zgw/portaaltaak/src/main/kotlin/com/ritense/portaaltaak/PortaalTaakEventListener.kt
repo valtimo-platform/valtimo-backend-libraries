@@ -32,13 +32,12 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.delegate.VariableScope
-import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity
-import org.camunda.bpm.engine.task.Task
 import org.springframework.context.event.EventListener
 import java.net.MalformedURLException
 import java.net.URI
@@ -49,7 +48,7 @@ class PortaalTaakEventListener(
     private val pluginService: PluginService,
     private val processDocumentService: ProcessDocumentService,
     private val processService: CamundaProcessService,
-    private val taskService: TaskService,
+    private val taskService: CamundaTaskService,
     private val runtimeService: RuntimeService,
     private val valueResolverService: ValueResolverService,
     private val objectMapper: ObjectMapper
@@ -78,17 +77,17 @@ class PortaalTaakEventListener(
                 objectMapper.convertValue(getPortaalTaakObjectData(objectManagement, event))
             when (taakObject.status) {
                 TaakStatus.INGEDIEND -> {
-                    val task = getTaskById(taakObject.verwerkerTaakId) ?: return
+                    val task = taskService.findTaskById(taakObject.verwerkerTaakId) ?: return
                     val receiveData = getReceiveDataActionProperty(task, it.id.id) ?: return
 
                     val portaaltaakPlugin = pluginService.createInstance(it) as PortaaltaakPlugin
-                    val processInstanceId = CamundaProcessInstanceId(task.processInstanceId)
-                    val document = processDocumentService.getDocument(processInstanceId, task as TaskEntity)
+                    val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
+                    val documentId = processDocumentService.getDocumentId(processInstanceId, task)
                     saveDataInDocument(taakObject, task, receiveData)
                     startProcessToUploadDocuments(
                         taakObject,
                         portaaltaakPlugin.completeTaakProcess,
-                        document.id().id.toString(),
+                        documentId.id.toString(),
                         objectManagement.objectenApiPluginConfigurationId.toString(),
                         event.resourceUrl
                     )
@@ -99,10 +98,8 @@ class PortaalTaakEventListener(
         }
     }
 
-    private fun getTaskById(taskId: String) = taskService.createTaskQuery().taskId(taskId).singleResult()
-
-    private fun getReceiveDataActionProperty(task: Task, pluginConfigurationId: UUID): List<DataBindingConfig>? {
-        val processLinks = pluginService.getProcessLinks(task.processDefinitionId, task.taskDefinitionKey)
+    private fun getReceiveDataActionProperty(task: CamundaTask, pluginConfigurationId: UUID): List<DataBindingConfig>? {
+        val processLinks = pluginService.getProcessLinks(task.getProcessDefinitionId(), task.taskDefinitionKey!!)
         val processLink = processLinks.firstOrNull { processLink ->
             processLink.pluginConfigurationId == pluginConfigurationId
         }
@@ -115,11 +112,11 @@ class PortaalTaakEventListener(
 
     internal fun saveDataInDocument(
         taakObject: TaakObject,
-        task: Task,
+        task: CamundaTask,
         receiveData: List<DataBindingConfig>
     ) {
         if (!taakObject.verzondenData.isNullOrEmpty()) {
-            val processInstanceId = CamundaProcessInstanceId(task.processInstanceId)
+            val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
             val variableScope = getVariableScope(task)
             val taakObjectData = objectMapper.valueToTree<JsonNode>(taakObject.verzondenData)
             val resolvedValues = getResolvedValues(receiveData, taakObjectData)
@@ -154,9 +151,9 @@ class PortaalTaakEventListener(
         }
     }
 
-    private fun getVariableScope(task: Task): VariableScope {
+    private fun getVariableScope(task: CamundaTask): VariableScope {
         return runtimeService.createProcessInstanceQuery()
-            .processInstanceId(task.processInstanceId)
+            .processInstanceId(task.getProcessInstanceId())
             .singleResult() as VariableScope
     }
 

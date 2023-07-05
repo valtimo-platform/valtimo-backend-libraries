@@ -16,6 +16,31 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
+import com.ritense.valtimo.camunda.service.CamundaHistoryService;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
+import com.ritense.valtimo.contract.config.ValtimoProperties;
+import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.RepositoryService;
+import org.camunda.bpm.engine.RuntimeService;
+import org.hamcrest.Matcher;
+import org.hamcrest.core.IsEqual;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.contains;
@@ -23,43 +48,21 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.ritense.valtimo.contract.config.ValtimoProperties;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.HistoryService;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.history.HistoricProcessInstance;
-import org.camunda.bpm.engine.impl.persistence.entity.HistoricProcessInstanceEntity;
-import org.camunda.bpm.engine.runtime.VariableInstance;
-import org.camunda.bpm.engine.runtime.VariableInstanceQuery;
-import org.hamcrest.Matcher;
-import org.hamcrest.core.IsEqual;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-
 class CamundaProcessServiceTest {
 
     private static final String userMock = "user";
-    private HistoricProcessInstanceEntity latestProcessInstance;
-    private HistoricProcessInstanceEntity middleProcessInstance;
-    private HistoricProcessInstanceEntity oldestProcessInstance;
+    private CamundaHistoricProcessInstance latestProcessInstance;
+    private CamundaHistoricProcessInstance middleProcessInstance;
+    private CamundaHistoricProcessInstance oldestProcessInstance;
 
-    private static final Date FIRST_OF_JANUARY_2018 = getDate(1, 1, 2018);
-    private static final Date FIRST_OF_JANUARY_2017 = getDate(1, 1, 2017);
-    private static final Date FIRST_OF_JANUARY_2016 = getDate(1, 1, 2016);
+    private static final LocalDateTime FIRST_OF_JANUARY_2018 = getDate(2018,1, 1);
+    private static final LocalDateTime FIRST_OF_JANUARY_2017 = getDate(2017,1, 1);
+    private static final LocalDateTime FIRST_OF_JANUARY_2016 = getDate(2016,1, 1);
 
     private static final String BUSINESSKEY1 = "businessKey1";
     private static final String BUSINESSKEY2 = "businessKey2";
@@ -71,7 +74,13 @@ class CamundaProcessServiceTest {
     private RuntimeService runtimeService = mock(RuntimeService.class, RETURNS_DEEP_STUBS);
 
     @Mock
+    private CamundaRuntimeService camundaRuntimeService;
+
+    @Mock
     private RepositoryService repositoryService;
+
+    @Mock
+    private CamundaRepositoryService camundaRepositoryService;
 
     @Mock
     private ProcessPropertyService processPropertyService;
@@ -82,21 +91,23 @@ class CamundaProcessServiceTest {
     @Mock
     private FormService formService;
 
-    private HistoryService historyService = mock(HistoryService.class, RETURNS_DEEP_STUBS);
+    private CamundaHistoryService historyService = mock(CamundaHistoryService.class, RETURNS_DEEP_STUBS);
+
+    @BeforeEach
+    public void beforeEach() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectAll() {
-        camundaProcessService = new CamundaProcessService(runtimeService, repositoryService, formService, historyService, processPropertyService, valtimoProperties);
+        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties);
 
         //when
-        when(historyService.createHistoricProcessInstanceQuery()
-            .startedBy(any())
-            .unfinished()
-            .list())
+        when(historyService.findHistoricProcessInstances(any()))
             .thenReturn(getHistoricProcessInstances());
 
         //method call
-        List<HistoricProcessInstance> allActiveContextProcessesStartedByCurrentUser =
+        var allActiveContextProcessesStartedByCurrentUser =
             camundaProcessService.getAllActiveContextProcessesStartedByCurrentUser(contextProcessesTest1(), userMock);
         //assert
         assertThat(allActiveContextProcessesStartedByCurrentUser, hasSize(3));
@@ -118,17 +129,14 @@ class CamundaProcessServiceTest {
 
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectTwo() {
-        camundaProcessService = new CamundaProcessService(runtimeService, repositoryService, formService, historyService, processPropertyService, valtimoProperties);
+        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties);
 
         //when
-        when(historyService.createHistoricProcessInstanceQuery()
-            .startedBy(any())
-            .unfinished()
-            .list())
+        when(historyService.findHistoricProcessInstances(any()))
             .thenReturn(getHistoricProcessInstances());
 
         //method call
-        List<HistoricProcessInstance> allActiveContextProcessesStartedByCurrentUser =
+        var allActiveContextProcessesStartedByCurrentUser =
             camundaProcessService.getAllActiveContextProcessesStartedByCurrentUser(contextProcessesTest2(), userMock);
         //assert
         assertThat(allActiveContextProcessesStartedByCurrentUser, hasSize(2));
@@ -144,102 +152,38 @@ class CamundaProcessServiceTest {
 
     }
 
-    @Test
-    void shouldGetProcessVariables() {
-        camundaProcessService = new CamundaProcessService(
-            runtimeService,
-            repositoryService,
-            formService,
-            historyService,
-            processPropertyService,
-            valtimoProperties
+    private List<CamundaHistoricProcessInstance> getHistoricProcessInstances() {
+        latestProcessInstance = new CamundaHistoricProcessInstance(
+            UUID.randomUUID().toString(),
+            null,
+            BUSINESSKEY1,
+            "testprocess1",
+            null,
+            FIRST_OF_JANUARY_2018,
+            null,null,null,null,null,null,null,null,null,null,null,null,null
         );
-        List<VariableInstance> variableInstances = new ArrayList<>();
-        variableInstances.add(createMockedVariableInstance("val1", "nothing"));
-        variableInstances.add(createMockedVariableInstance("val2", "something"));
 
-        VariableInstanceQuery variableInstanceQuery = mock(VariableInstanceQuery.class);
-
-        when(runtimeService
-            .createVariableInstanceQuery()
-            .processInstanceIdIn(any())
-            .variableNameIn(any())
-            .orderByVariableName()
-            .desc()
-        ).thenReturn(variableInstanceQuery);
-
-        when(variableInstanceQuery.list()).thenReturn(variableInstances);
-
-        Map<String, Object> processInstanceVariables = camundaProcessService.getProcessInstanceVariables("123", List.of("val1", "val2"));
-
-        assertEquals(2, processInstanceVariables.size());
-        assertEquals("nothing", processInstanceVariables.get("val1"));
-        assertEquals("something", processInstanceVariables.get("val2"));
-
-    }
-
-    @Test
-    void shouldGetProcessVariablesWithEmptyValues() {
-        camundaProcessService = new CamundaProcessService(
-            runtimeService,
-            repositoryService,
-            formService,
-            historyService,
-            processPropertyService,
-            valtimoProperties
+        middleProcessInstance = new CamundaHistoricProcessInstance(
+            UUID.randomUUID().toString(),
+            null,
+            BUSINESSKEY2,
+            "testprocess2",
+            null,
+            FIRST_OF_JANUARY_2017,
+            null,null,null,null,null,null,null,null,null,null,null,null,null
         );
-        List<VariableInstance> variableInstances = new ArrayList<>();
-        variableInstances.add(createMockedVariableInstance("val1", null));
-        variableInstances.add(createMockedVariableInstance("val2", "something"));
 
-        VariableInstanceQuery variableInstanceQuery = mock(VariableInstanceQuery.class);
+        oldestProcessInstance = new CamundaHistoricProcessInstance(
+            UUID.randomUUID().toString(),
+            null,
+            BUSINESSKEY3,
+            "testprocess3",
+            null,
+            FIRST_OF_JANUARY_2016,
+            null,null,null,null,null,null,null,null,null,null,null,null,null
+        );
 
-        when(runtimeService
-            .createVariableInstanceQuery()
-            .processInstanceIdIn(any())
-            .variableNameIn(any())
-            .orderByVariableName()
-            .desc()
-        ).thenReturn(variableInstanceQuery);
-
-        when(variableInstanceQuery.list()).thenReturn(variableInstances);
-
-        Map<String, Object> processInstanceVariables = camundaProcessService.getProcessInstanceVariables("123", List.of("val1", "val2"));
-
-        assertEquals(1, processInstanceVariables.size());
-        assertEquals("something", processInstanceVariables.get("val2"));
-    }
-
-    private VariableInstance createMockedVariableInstance(String name, Object value) {
-        VariableInstance instance = mock(VariableInstance.class);
-        when(instance.getName()).thenReturn(name);
-        when(instance.getValue()).thenReturn(value);
-        return instance;
-    }
-
-    private List<HistoricProcessInstance> getHistoricProcessInstances() {
-        latestProcessInstance = new HistoricProcessInstanceEntity();
-        latestProcessInstance.setBusinessKey(BUSINESSKEY1);
-        latestProcessInstance.setProcessDefinitionName("processDefName1");
-        latestProcessInstance.setProcessInstanceId("processInstanceId1");
-        latestProcessInstance.setProcessDefinitionKey("testprocess1");
-        latestProcessInstance.setStartTime(FIRST_OF_JANUARY_2018);
-
-        middleProcessInstance = new HistoricProcessInstanceEntity();
-        middleProcessInstance.setBusinessKey(BUSINESSKEY2);
-        middleProcessInstance.setProcessDefinitionName("processDefName2");
-        middleProcessInstance.setProcessInstanceId("processInstanceId2");
-        middleProcessInstance.setProcessDefinitionKey("testprocess2");
-        middleProcessInstance.setStartTime(FIRST_OF_JANUARY_2017);
-
-        oldestProcessInstance = new HistoricProcessInstanceEntity();
-        oldestProcessInstance.setBusinessKey(BUSINESSKEY3);
-        oldestProcessInstance.setProcessDefinitionName("processDefName3");
-        oldestProcessInstance.setProcessInstanceId("processInstanceId2");
-        oldestProcessInstance.setProcessDefinitionKey("testprocess3");
-        oldestProcessInstance.setStartTime(FIRST_OF_JANUARY_2016);
-
-        List<HistoricProcessInstance> historicProcessInstances = new ArrayList<>();
+        List<CamundaHistoricProcessInstance> historicProcessInstances = new ArrayList<>();
 
         historicProcessInstances.add(latestProcessInstance);
         historicProcessInstances.add(middleProcessInstance);
@@ -266,17 +210,15 @@ class CamundaProcessServiceTest {
         return processes;
     }
 
-    private static Date getDate(int year, int month, int date) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(year, month, date);
-        return cal.getTime();
+    private static LocalDateTime getDate(int year, int month, int date) {
+        return LocalDate.of(year, month, date).atStartOfDay();
     }
 
     private Matcher<Object> withBusinessKey(String businessKey) {
         return hasProperty("businessKey", IsEqual.equalTo(businessKey));
     }
 
-    private Matcher<Object> withStartTime(Date date) {
+    private Matcher<Object> withStartTime(LocalDateTime date) {
         return hasProperty("startTime", IsEqual.equalTo(date));
     }
 }

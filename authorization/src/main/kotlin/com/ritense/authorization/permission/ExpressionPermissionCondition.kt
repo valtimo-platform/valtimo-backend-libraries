@@ -33,16 +33,16 @@ import javax.persistence.criteria.Root
 
 @JsonTypeName(EXPRESSION)
 data class ExpressionPermissionCondition<V : Comparable<V>>(
-    @field:JsonView(PermissionView.RoleManagement::class)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val field: String,
-    @field:JsonView(PermissionView.RoleManagement::class)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val path: String,
-    @field:JsonView(PermissionView.RoleManagement::class)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val operator: PermissionExpressionOperator,
-    @field:JsonView(PermissionView.RoleManagement::class)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     @JsonDeserialize(using = ComparableDeserializer::class)
     val value: V?,
-    @field:JsonView(PermissionView.RoleManagement::class)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val clazz: Class<V>
 ) : ReflectingPermissionCondition(PermissionConditionType.EXPRESSION) {
     override fun <E : Any> isValid(entity: E): Boolean {

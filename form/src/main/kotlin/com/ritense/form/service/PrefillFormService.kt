@@ -36,14 +36,14 @@ import com.ritense.valtimo.contract.json.JsonPointerHelper
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valtimo.service.CamundaProcessService
-import org.camunda.bpm.engine.TaskService
+import com.ritense.valtimo.service.CamundaTaskService
 import java.util.UUID
 
 class PrefillFormService(
     private val documentService: DocumentService,
     private val formDefinitionService: FormIoFormDefinitionService,
     private val camundaProcessService: CamundaProcessService,
-    private val taskService: TaskService,
+    private val taskService: CamundaTaskService,
     private val formFieldDataResolvers: List<FormFieldDataResolver>,
     private val processDocumentAssociationService: ProcessDocumentAssociationService
 ) {

@@ -22,15 +22,15 @@ import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
+import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
-import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.task.Task
 import java.util.UUID
 
 class FormFlowProcessLinkActivityHandler(
     private val formFlowService: FormFlowService,
-    private val repositoryService: RepositoryService,
+    private val repositoryService: CamundaRepositoryService,
     documentService: DocumentService,
     runtimeService: RuntimeService,
 ): AbstractFormFlowLinkTaskProvider(
@@ -41,7 +41,7 @@ class FormFlowProcessLinkActivityHandler(
         return processLink is FormFlowProcessLink
     }
 
-    override fun openTask(task: Task, processLink: ProcessLink): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
+    override fun openTask(task: CamundaTask, processLink: ProcessLink): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
         processLink as FormFlowProcessLink
 
         val instances = formFlowService.findInstances(mapOf("taskInstanceId" to task.id))
@@ -59,9 +59,7 @@ class FormFlowProcessLinkActivityHandler(
         processLink: ProcessLink): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
         processLink as FormFlowProcessLink
         val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId)!!
-        val processDefinition = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionId(processDefinitionId)
-            .singleResult()
+        val processDefinition = repositoryService.findProcessDefinitionById(processDefinitionId)!!
 
         val additionalProperties = mutableMapOf<String, Any>("processDefinitionKey" to processDefinition.key)
         documentId?.let { additionalProperties["documentId"] = it }
@@ -74,7 +72,7 @@ class FormFlowProcessLinkActivityHandler(
         )
     }
 
-    private fun createFormFlowInstance(task: Task, processLink: FormFlowProcessLink): FormFlowInstance {
+    private fun createFormFlowInstance(task: CamundaTask, processLink: FormFlowProcessLink): FormFlowInstance {
         val additionalProperties = getAdditionalProperties(task)
         val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId)!!
         return formFlowService.save(formFlowDefinition.createInstance(additionalProperties))

@@ -22,10 +22,10 @@ import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.ProcessLinkService;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.camunda.bpm.engine.task.Task;
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
+import com.ritense.valtimo.camunda.domain.CamundaTask;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.service.CamundaTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -37,7 +37,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -45,8 +45,8 @@ import static org.mockito.Mockito.when;
 
 class DefaultProcessLinkServiceTest {
 
-    private final TaskService taskService = mock(TaskService.class, Mockito.RETURNS_DEEP_STUBS);
-    private final RepositoryService repositoryService = mock(RepositoryService.class);
+    private final CamundaTaskService taskService = mock(CamundaTaskService.class, Mockito.RETURNS_DEEP_STUBS);
+    private final CamundaRepositoryService repositoryService = mock(CamundaRepositoryService.class);
     private final FormAssociationService formAssociationService = mock(FormAssociationService.class);
     private final FormLinkTaskProvider formLinkTaskProvider = mock(FormLinkTaskProvider.class);
     private final List<FormLinkTaskProvider> formLinkTaskProviders = List.of(formLinkTaskProvider);
@@ -56,16 +56,13 @@ class DefaultProcessLinkServiceTest {
         formAssociationService,
             formLinkTaskProviders
     );
-    Task task = mock(Task.class);
+    CamundaTask task = mock(CamundaTask.class);
     CamundaFormAssociation formAssociation = mock(CamundaFormAssociation.class);
     FormLink formLink = mock(FormLink.class);
 
     @BeforeEach
     public void beforeEach() {
-        when(taskService.createTaskQuery()
-            .taskId(anyString())
-            .active()
-            .singleResult())
+        when(taskService.findTask(any()))
             .thenReturn(task);
         when(task.getProcessDefinitionId()).thenReturn("test:1");
         when(task.getTaskDefinitionKey()).thenReturn("test");
@@ -77,9 +74,9 @@ class DefaultProcessLinkServiceTest {
 
         when(formLinkTaskProvider.supports(formLink)).thenReturn(true);
 
-        final var processDefinition = mock(ProcessDefinition.class);
+        final var processDefinition = mock(CamundaProcessDefinition.class);
         when(processDefinition.getKey()).thenReturn("test");
-        when(repositoryService.getProcessDefinition("test:1")).thenReturn(processDefinition);
+        when(repositoryService.findProcessDefinitionById("test:1")).thenReturn(processDefinition);
     }
 
     @Test

@@ -23,7 +23,7 @@ import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcess
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
 import com.ritense.processdocument.repository.DocumentDefinitionProcessLinkRepository;
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
-import org.camunda.bpm.engine.RepositoryService;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -33,10 +33,10 @@ import java.util.Optional;
 public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinitionProcessLinkService {
 
     private final DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository;
-    private final RepositoryService repositoryService;
+    private final CamundaRepositoryService repositoryService;
 
     public DocumentDefinitionProcessLinkServiceImpl(DocumentDefinitionProcessLinkRepository repo,
-                                                    RepositoryService repositoryService) {
+                                                    CamundaRepositoryService repositoryService) {
         this.documentDefinitionProcessLinkRepository = repo;
         this.repositoryService = repositoryService;
     }
@@ -46,10 +46,7 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         var link = documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
 
         if (link.isPresent()) {
-            var processDefinition = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionKey(link.get().getId().getProcessDefinitionKey())
-                .latestVersion()
-                .singleResult();
+            var processDefinition = repositoryService.findLatestProcessDefinition(link.get().getId().getProcessDefinitionKey());
 
             return new DocumentDefinitionProcess(processDefinition.getKey(), processDefinition.getName());
         }
@@ -62,10 +59,7 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         var links = documentDefinitionProcessLinkRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
 
         return links.stream().map(link -> {
-            var processDefinition = repositoryService.createProcessDefinitionQuery()
-                .processDefinitionKey(link.getId().getProcessDefinitionKey())
-                .latestVersion()
-                .singleResult();
+            var processDefinition = repositoryService.findLatestProcessDefinition(link.getId().getProcessDefinitionKey());
 
             return new DocumentDefinitionProcess(processDefinition.getKey(), processDefinition.getName());
         }).toList();
@@ -81,10 +75,7 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         String documentDefinitionName,
         DocumentDefinitionProcessRequest request) {
 
-        var processDefinition = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(request.getProcessDefinitionKey())
-            .latestVersion()
-            .singleResult();
+        var processDefinition = repositoryService.findLatestProcessDefinition(request.getProcessDefinitionKey());
 
         if (processDefinition == null) {
             throw new IllegalArgumentException("Unknown process definition with key: " + request.getProcessDefinitionKey());

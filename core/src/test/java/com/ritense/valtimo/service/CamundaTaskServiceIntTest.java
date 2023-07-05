@@ -92,8 +92,8 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
         var task = pagedTasks.get().findFirst().orElseThrow();
         assertThat(pagedTasks.getTotalElements()).isEqualTo(1);
-        assertThat(task.businessKey).isEqualTo(businessKey);
-        assertThat(task.processDefinitionKey).isEqualTo(processDefinitionKey);
+        assertThat(task.getBusinessKey()).isEqualTo(businessKey);
+        assertThat(task.getProcessDefinitionKey()).isEqualTo(processDefinitionKey);
         assertThat(task.getContext()).isNull();
     }
 
@@ -113,8 +113,8 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
         var task = pagedTasks.get().findFirst().orElseThrow();
         assertThat(pagedTasks.getTotalElements()).isEqualTo(1);
-        assertThat(task.businessKey).isEqualTo(businessKey);
-        assertThat(task.processDefinitionKey).isEqualTo(processDefinitionKey);
+        assertThat(task.getBusinessKey()).isEqualTo(businessKey);
+        assertThat(task.getProcessDefinitionKey()).isEqualTo(processDefinitionKey);
         assertThat(task.getContext()).isEqualTo("something");
     }
 
@@ -136,8 +136,8 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
         var task = pagedTasks.get().findFirst().orElseThrow();
         assertThat(pagedTasks.getTotalElements()).isEqualTo(10);
-        assertThat(task.businessKey).isEqualTo(businessKey);
-        assertThat(task.processDefinitionKey).isEqualTo(processDefinitionKey);
+        assertThat(task.getBusinessKey()).isEqualTo(businessKey);
+        assertThat(task.getProcessDefinitionKey()).isEqualTo(processDefinitionKey);
     }
 
     @Test
@@ -168,8 +168,8 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         );
 
         var tasks = pagedTasks.toList();
-        assertThat(tasks.get(0).getDue().toInstant()).hasToString("2022-06-18T00:00:00Z");
-        assertThat(tasks.get(1).getDue().toInstant()).hasToString("2022-06-17T00:00:00Z");
+        assertThat(tasks.get(0).getDue()).hasToString("2022-06-18T00:00");
+        assertThat(tasks.get(1).getDue()).hasToString("2022-06-17T00:00");
     }
 
     @Test

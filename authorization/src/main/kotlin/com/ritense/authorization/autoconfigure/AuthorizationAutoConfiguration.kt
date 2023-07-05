@@ -33,6 +33,7 @@ import com.ritense.authorization.deployment.RoleDeployer
 import com.ritense.authorization.security.ValtimoAuthorizationHttpSecurityConfigurer
 import com.ritense.authorization.specification.DenyAuthorizationSpecificationFactory
 import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
+import com.ritense.authorization.web.rest.PermissionManagementResource
 import com.ritense.authorization.web.rest.RoleManagementResource
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.authentication.UserManagementService
@@ -144,6 +145,14 @@ class AuthorizationAutoConfiguration(
     @Bean
     fun authorizationSupportedHelper(): AuthorizationSupportedHelper {
         return AuthorizationSupportedHelper
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PermissionManagementResource::class)
+    fun permissionManagementResource(
+        permissionRepository: PermissionRepository
+    ): PermissionManagementResource {
+        return PermissionManagementResource(permissionRepository)
     }
 
 }

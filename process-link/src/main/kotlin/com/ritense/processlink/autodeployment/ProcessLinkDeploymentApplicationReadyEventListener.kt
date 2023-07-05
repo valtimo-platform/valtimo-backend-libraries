@@ -23,10 +23,9 @@ import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.processlink.service.ProcessLinkExistsException
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
-import java.io.IOException
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import mu.KLogger
 import mu.KotlinLogging
-import org.camunda.bpm.engine.RepositoryService
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
@@ -34,10 +33,11 @@ import org.springframework.core.annotation.Order
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
+import java.io.IOException
 
 open class ProcessLinkDeploymentApplicationReadyEventListener(
     private val resourceLoader: ResourceLoader,
-    private val repositoryService: RepositoryService,
+    private val repositoryService: CamundaRepositoryService,
     private val processLinkService: ProcessLinkService,
     private val objectMapper: ObjectMapper
 ) {
@@ -70,11 +70,7 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
 
     private fun getProcessDefinitionId(fileName: String): String {
         val processDefinitionKey = fileName.substringBefore(".processlink.json")
-        return repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey)
-            .latestVersion()
-            .singleResult()
-            .id
+        return repositoryService.findLatestProcessDefinition(processDefinitionKey)!!.id
     }
 
     private fun getProcessLinks(

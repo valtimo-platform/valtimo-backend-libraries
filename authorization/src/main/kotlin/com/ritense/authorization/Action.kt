@@ -16,11 +16,14 @@
 
 package com.ritense.authorization
 
+import com.fasterxml.jackson.annotation.JsonView
+import com.ritense.authorization.permission.PermissionView
 import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
 data class Action<T>(
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     @Column(name = "action")
     val key: String
 ) {

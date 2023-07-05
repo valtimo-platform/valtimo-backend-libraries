@@ -23,14 +23,16 @@ import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.security.config.ProcessLinkHttpSecurityConfigurer
 import com.ritense.processlink.service.CopyProcessLinkOnProcessDeploymentListener
-import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.service.ProcessLinkActivityService
+import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.web.rest.ProcessLinkResource
 import com.ritense.processlink.web.rest.ProcessLinkTaskResource
+import com.ritense.valtimo.autoconfiguration.ValtimoCamundaAutoConfiguration
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
-import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.TaskService
+import com.ritense.valtimo.service.CamundaTaskService
+import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -48,6 +50,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
     ]
 )
 @EntityScan(basePackages = ["com.ritense.processlink.domain"])
+@AutoConfigureAfter(ValtimoCamundaAutoConfiguration::class)
 class ProcessLinkAutoConfiguration {
 
     @Order(420)
@@ -69,10 +72,9 @@ class ProcessLinkAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ProcessLinkActivityService::class)
-    @ConditionalOnBean(TaskService::class)
     fun processLinkTaskService(
         processLinkService: ProcessLinkService,
-        taskService: TaskService,
+        taskService: CamundaTaskService,
         processLinkActivityHandlers: List<ProcessLinkActivityHandler<*>>,
     ): ProcessLinkActivityService {
         return ProcessLinkActivityService(processLinkService, taskService, processLinkActivityHandlers)
@@ -108,11 +110,10 @@ class ProcessLinkAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean(RepositoryService::class)
     @ConditionalOnMissingBean(ProcessLinkDeploymentApplicationReadyEventListener::class)
     fun processLinkDeploymentApplicationReadyEventListener(
         resourceLoader: ResourceLoader,
-        repositoryService: RepositoryService,
+        repositoryService: CamundaRepositoryService,
         processLinkService: ProcessLinkService,
         objectMapper: ObjectMapper): ProcessLinkDeploymentApplicationReadyEventListener {
         return ProcessLinkDeploymentApplicationReadyEventListener(resourceLoader,

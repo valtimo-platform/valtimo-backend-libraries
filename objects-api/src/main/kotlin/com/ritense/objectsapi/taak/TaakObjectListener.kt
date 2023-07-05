@@ -30,6 +30,7 @@ import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
@@ -37,7 +38,6 @@ import com.ritense.valueresolver.ValueResolverService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
-import org.camunda.bpm.engine.task.Task
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.springframework.context.event.EventListener
 import java.net.MalformedURLException
@@ -91,7 +91,7 @@ class TaakObjectListener(
     private fun saveDataAndCompleteTask(taakObject: TaakObjectDto) {
         val task = camundaTaskService.findTaskById(taakObject.verwerkerTaakId.toString())
         if (taakObject.verzondenData != null && taakObject.verzondenData.isNotEmpty()) {
-            val processInstanceId = CamundaProcessInstanceId(task.processInstanceId)
+            val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
             val variableScope = getVariableScope(task)
             val taakObjectData = Mapper.INSTANCE.get().valueToTree<JsonNode>(taakObject.verzondenData)
             val resolvedValues = getResolvedValues(task, taakObjectData)
@@ -160,7 +160,7 @@ class TaakObjectListener(
      * @param data {"persoonsData":{"adres":{"straatnaam":"Funenpark"}}}
      * @return mapOf(doc:add:/streetName to "Funenpark")
      */
-    private fun getResolvedValues(task: Task, data: JsonNode): Map<String, Any> {
+    private fun getResolvedValues(task: CamundaTask, data: JsonNode): Map<String, Any> {
         return bpmnModelService.getTask(task).extensionElements.elements
             .filterIsInstance<CamundaProperties>()
             .single()
@@ -173,7 +173,7 @@ class TaakObjectListener(
             )
     }
 
-    private fun getValue(data: JsonNode, path: String, camundaName: String, task: Task): Any {
+    private fun getValue(data: JsonNode, path: String, camundaName: String, task: CamundaTask): Any {
         val valueNode = data.at(JsonPointer.valueOf(path))
         if (valueNode.isMissingNode) {
             throw RuntimeException("Failed to do '$camundaName' for task '${task.taskDefinitionKey}'. Missing data on path '$path'")
@@ -181,9 +181,9 @@ class TaakObjectListener(
         return Mapper.INSTANCE.get().treeToValue(valueNode, Object::class.java)
     }
 
-    private fun getVariableScope(task: Task): VariableScope {
+    private fun getVariableScope(task: CamundaTask): VariableScope {
         return runtimeService.createProcessInstanceQuery()
-            .processInstanceId(task.processInstanceId)
+            .processInstanceId(task.getProcessInstanceId())
             .singleResult() as VariableScope
     }
 

@@ -30,6 +30,7 @@ import com.ritense.authorization.web.rest.result.RoleResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -38,7 +39,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.transaction.annotation.Transactional
 
 @RestController
 @RequestMapping("/api/management", produces = [ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE])
@@ -87,7 +87,7 @@ class RoleManagementResource(
     @JsonView(PermissionView.RoleManagement::class)
     fun getRolePermissions(@PathVariable roleKey: String)
         : ResponseEntity<List<Permission>> {
-        val rolePermissions = permissionRepository.findAllByRoleKeyIn(listOf(roleKey))
+        val rolePermissions = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf(roleKey))
         return ResponseEntity.ok(rolePermissions)
     }
 

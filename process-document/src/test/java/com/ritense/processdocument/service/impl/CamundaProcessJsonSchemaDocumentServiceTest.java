@@ -27,17 +27,18 @@ import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.impl.result.StartProcessForDocumentResultFailed;
 import com.ritense.processdocument.service.impl.result.StartProcessForDocumentResultSucceeded;
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
-import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.junit.jupiter.api.Test;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -111,7 +112,7 @@ class CamundaProcessJsonSchemaDocumentServiceTest {
         String processInstanceId = UUID.randomUUID().toString();
         when(processInstance.getId()).thenReturn(processInstanceId);
 
-        ProcessDefinition processDefinition = mock(ProcessDefinition.class);
+        CamundaProcessDefinition processDefinition = mock(CamundaProcessDefinition.class);
         when(processDefinition.getName()).thenReturn("test-name");
 
         doReturn(Optional.of(document)).when(documentService).findBy(id);

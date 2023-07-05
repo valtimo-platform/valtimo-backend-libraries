@@ -18,4 +18,5 @@ package com.ritense.authorization.permission
 
 class PermissionView {
     interface RoleManagement
+    interface PermissionManagement
 }

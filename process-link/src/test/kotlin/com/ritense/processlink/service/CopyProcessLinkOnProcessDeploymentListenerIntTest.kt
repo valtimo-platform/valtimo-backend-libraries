@@ -19,9 +19,11 @@ package com.ritense.processlink.service
 import com.ritense.processlink.BaseIntegrationTest
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.CustomProcessLinkCreateRequestDto
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.service.CamundaProcessService
-import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -35,12 +37,12 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
     lateinit var processLinkService: ProcessLinkService
 
     @Autowired
-    lateinit var repositoryService: RepositoryService
+    lateinit var repositoryService: CamundaRepositoryService
 
     @Autowired
     lateinit var camundaProcessService: CamundaProcessService
 
-    private lateinit var processDefinition: ProcessDefinition
+    private lateinit var processDefinition: CamundaProcessDefinition
 
     @BeforeEach
     fun beforeEach() {
@@ -86,7 +88,7 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
         assertEquals(0, processLinkService.getProcessLinks(latestProcessDefinition.id, SERVICE_TASK_ID).count())
     }
 
-    private fun createProcessLink(processDefinition: ProcessDefinition) {
+    private fun createProcessLink(processDefinition: CamundaProcessDefinition) {
         processLinkService.createProcessLink(
             CustomProcessLinkCreateRequestDto(
                 processDefinition.id,
@@ -96,11 +98,8 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
         )
     }
 
-    private fun getLatestProcessDefinition(): ProcessDefinition {
-        return repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(PROCESS_DEFINITION_KEY)
-            .latestVersion()
-            .singleResult()
+    private fun getLatestProcessDefinition(): CamundaProcessDefinition {
+        return repositoryService.findProcessDefinition(byKey(PROCESS_DEFINITION_KEY).and(byLatestVersion()))!!
     }
 
     private fun readFileAsString(fileName: String) = this::class.java.getResource(fileName).readText(Charsets.UTF_8)

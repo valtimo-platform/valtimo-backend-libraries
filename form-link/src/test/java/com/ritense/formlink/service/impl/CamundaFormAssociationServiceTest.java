@@ -33,9 +33,9 @@ import com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation;
 import com.ritense.formlink.domain.request.FormLinkRequest;
 import com.ritense.formlink.repository.impl.JdbcProcessFormAssociationRepository;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
+import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
-import com.ritense.valtimo.service.CamundaProcessService;
-import org.camunda.bpm.engine.TaskService;
+import com.ritense.valtimo.service.CamundaTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -61,9 +61,9 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
     private FormIoFormDefinitionService formDefinitionService;
     private JsonSchemaDocumentService documentService;
     private ProcessDocumentAssociationService processDocumentAssociationService;
-    private CamundaProcessService camundaProcessService;
+    private CamundaRuntimeService runtimeService;
     private JdbcProcessFormAssociationRepository processFormAssociationRepository;
-    private TaskService taskService;
+    private CamundaTaskService taskService;
     private FormIoJsonPatchSubmissionTransformerService submissionTransformerService;
     private CamundaProcessFormAssociation processFormAssociation;
     private UUID processFormAssociationId;
@@ -76,8 +76,8 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
         formDefinitionService = mock(FormIoFormDefinitionService.class);
         documentService = mock(JsonSchemaDocumentService.class);
         processDocumentAssociationService = mock(ProcessDocumentAssociationService.class);
-        camundaProcessService = mock(CamundaProcessService.class);
-        taskService = mock(TaskService.class);
+        runtimeService = mock(CamundaRuntimeService.class);
+        taskService = mock(CamundaTaskService.class);
         submissionTransformerService = mock(FormIoJsonPatchSubmissionTransformerService.class);
         formFieldDataResolver = mock(FormFieldDataResolver.class);
 
@@ -86,7 +86,7 @@ public class CamundaFormAssociationServiceTest extends BaseTest {
             processFormAssociationRepository,
             documentService,
             processDocumentAssociationService,
-            camundaProcessService,
+            runtimeService,
             taskService,
             submissionTransformerService,
             List.of(formFieldDataResolver)

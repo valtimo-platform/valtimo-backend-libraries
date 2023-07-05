@@ -17,9 +17,9 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.BaseIntegrationTest;
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.exception.ProcessNotUpdatableException;
 import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
                 new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "shouldDeploy.xml"))
                         .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
         );
-        List<ProcessDefinition> definitions = camundaProcessService.getDeployedDefinitions();
+        List<CamundaProcessDefinition> definitions = camundaProcessService.getDeployedDefinitions();
         Assertions.assertTrue(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("deployedProcess")));
     }
 
@@ -66,7 +66,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
                 new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "shouldNotDeploy.xml"))
                         .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
         ));
-        List<ProcessDefinition> definitions = camundaProcessService.getDeployedDefinitions();
+        List<CamundaProcessDefinition> definitions = camundaProcessService.getDeployedDefinitions();
         Assertions.assertFalse(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("firstProcess")));
         Assertions.assertFalse(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("secondProcess")));
     }
@@ -77,7 +77,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         var systemProcessModel = Bpmn.readModelFromStream(new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "systemProcess.xml"))
                 .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes()));
         repositoryService.createDeployment().addModelInstance("systemProcess.bpmn", systemProcessModel).deploy();
-        List<ProcessDefinition> definitions = camundaProcessService.getDeployedDefinitions();
+        List<CamundaProcessDefinition> definitions = camundaProcessService.getDeployedDefinitions();
         Assertions.assertTrue(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("secondProcess")));
 
         Assertions.assertThrows(ProcessNotUpdatableException.class, () -> camundaProcessService.deploy(

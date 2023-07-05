@@ -20,7 +20,7 @@ import com.ritense.formlink.domain.FormLink;
 import com.ritense.formlink.domain.FormLinkTaskProvider;
 import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
-import org.camunda.bpm.engine.task.Task;
+import com.ritense.valtimo.camunda.domain.CamundaTask;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
 public class FormFormLinkTaskProvider implements FormLinkTaskProvider<FormTaskOpenResultProperties> {
@@ -33,7 +33,7 @@ public class FormFormLinkTaskProvider implements FormLinkTaskProvider<FormTaskOp
     }
 
     @Override
-    public TaskOpenResult<FormTaskOpenResultProperties> getTaskResult(Task task, FormLink formLink) {
+    public TaskOpenResult<FormTaskOpenResultProperties> getTaskResult(CamundaTask task, FormLink formLink) {
         return new TaskOpenResult<>(FORM_TASK_TYPE_KEY, new FormTaskOpenResultProperties(formLink.getId()));
     }
 }

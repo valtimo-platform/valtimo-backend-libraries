@@ -16,6 +16,8 @@
 
 package com.ritense.authorization
 
+import com.fasterxml.jackson.annotation.JsonView
+import com.ritense.authorization.permission.PermissionView
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -29,5 +31,6 @@ data class Role(
     @Column(name = "id")
     val id: UUID = UUID.randomUUID(),
     @Column(name = "key", nullable = false, unique = true)
+    @field:JsonView(PermissionView.PermissionManagement::class)
     val key: String
 )

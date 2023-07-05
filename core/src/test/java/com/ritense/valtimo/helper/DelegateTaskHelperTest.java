@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.helper;
 
+import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.service.BpmnModelService;
 import org.camunda.bpm.engine.delegate.DelegateTask;
@@ -25,8 +26,10 @@ import org.camunda.bpm.model.bpmn.instance.Task;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.Collections;
 import java.util.List;
+
 import static com.ritense.valtimo.helper.DelegateTaskHelper.PUBLIC_TASK_PROPERTY_NAME;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,7 +49,7 @@ class DelegateTaskHelperTest {
     private List<CamundaProperty> camundaProperties;
     private HistoricTaskInstanceDto historicTaskInstanceDto;
     private HistoricTaskInstance historicTaskInstance;
-    private org.camunda.bpm.engine.task.Task taskInterface;
+    private CamundaTask taskInterface;
 
     @BeforeEach
     void setUp() {
@@ -60,7 +63,7 @@ class DelegateTaskHelperTest {
         camundaProperties = Collections.singletonList(camundaProperty);
         historicTaskInstanceDto = mock(HistoricTaskInstanceDto.class);
         historicTaskInstance = mock(HistoricTaskInstance.class);
-        taskInterface = mock(org.camunda.bpm.engine.task.Task.class);
+        taskInterface = mock(CamundaTask.class);
     }
 
     @Test

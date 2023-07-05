@@ -16,22 +16,25 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
+import com.ritense.valtimo.camunda.domain.CamundaTask;
+import com.ritense.valtimo.camunda.service.CamundaHistoryService;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.web.rest.dto.HeatmapTaskCountDTO;
 import org.apache.commons.lang3.StringUtils;
-import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.impl.util.IoUtil;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDiagramDto;
-import org.camunda.bpm.engine.task.TaskQuery;
 import org.camunda.bpm.model.bpmn.instance.FlowNode;
 import org.camunda.bpm.model.bpmn.instance.Task;
+
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
@@ -41,23 +44,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byProcessInstanceId;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byVersion;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCreateTimeAfter;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCreateTimeBefore;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byName;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessDefinitionId;
+
 public abstract class AbstractProcessResource {
 
-    private final HistoryService historyService;
+    private final CamundaHistoryService historyService;
     private final RepositoryService repositoryService;
-    private final TaskService taskService;
+    private final CamundaRepositoryService camundaRepositoryService;
+    private final CamundaTaskService taskService;
 
-    public AbstractProcessResource(HistoryService historyService, RepositoryService repositoryService, TaskService taskService) {
+    public AbstractProcessResource(CamundaHistoryService historyService, RepositoryService repositoryService, CamundaRepositoryService camundaRepositoryService, CamundaTaskService taskService) {
         this.historyService = historyService;
         this.repositoryService = repositoryService;
+        this.camundaRepositoryService = camundaRepositoryService;
         this.taskService = taskService;
     }
 
-    public ProcessDefinition getProcessDefinition(String processDefinitionKey, Integer version) {
-        return repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey)
-            .processDefinitionVersion(version)
-            .singleResult();
+    public CamundaProcessDefinition getProcessDefinition(String processDefinitionKey, Integer version) {
+        return camundaRepositoryService.findProcessDefinition(byKey(processDefinitionKey).and(byVersion(version)));
     }
 
     public ProcessDefinitionDiagramDto createProcessDefinitionDiagramDto(String processDefinitionId) throws UnsupportedEncodingException {
@@ -100,40 +110,40 @@ public abstract class AbstractProcessResource {
         return uniqueFlowNodeMap;
     }
 
-    public List<org.camunda.bpm.engine.task.Task> getAllActiveTasks(
-        ProcessDefinition processDefinition,
+    public List<CamundaTask> getAllActiveTasks(
+        CamundaProcessDefinition processDefinition,
         String searchStatus,
-        Date fromDate,
-        Date toDate,
+        LocalDateTime fromDate,
+        LocalDateTime toDate,
         Integer duration
     ) {
         // Get, group and count all task instances
-        TaskQuery taskQuery = taskService.createTaskQuery().processDefinitionId(processDefinition.getId());
+        var taskQuery = byProcessDefinitionId(processDefinition.getId());
 
         if (StringUtils.isNotBlank(searchStatus)) {
-            taskQuery.taskName(searchStatus);
+            taskQuery.and(byName(searchStatus));
         }
 
         if (fromDate != null) {
-            taskQuery.taskCreatedAfter(fromDate);
+            taskQuery.and(byCreateTimeAfter(fromDate));
         }
 
         if (toDate != null) {
-            taskQuery.taskCreatedBefore(toDate);
+            taskQuery.and(byCreateTimeBefore(toDate));
         }
 
         if (duration != null) {
             LocalDate dayinPast = LocalDate.now().minusDays(duration);
-            taskQuery.taskCreatedBefore(Date.from(dayinPast.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            taskQuery.and(byCreateTimeBefore(dayinPast.atStartOfDay()));
         }
-        return taskQuery.list();
+        return taskService.findTasks(taskQuery);
     }
 
     public Map<String, HeatmapTaskCountDTO> getActiveTasksCounts(
-        ProcessDefinition processDefinition,
+        CamundaProcessDefinition processDefinition,
         String searchStatus,
-        Date fromDate,
-        Date toDate,
+        LocalDateTime fromDate,
+        LocalDateTime toDate,
         Integer duration
     ) {
         // Get all available tasks for this process definition
@@ -142,7 +152,7 @@ public abstract class AbstractProcessResource {
             .getModelElementsByType(Task.class);
 
         // Get, group and count all task instances
-        List<org.camunda.bpm.engine.task.Task> taskList = getAllActiveTasks(
+        List<CamundaTask> taskList = getAllActiveTasks(
             processDefinition,
             searchStatus,
             fromDate,
@@ -150,7 +160,7 @@ public abstract class AbstractProcessResource {
             duration
         );
         Map<String, Long> groupedList = taskList.stream()
-            .collect(Collectors.groupingBy(org.camunda.bpm.engine.task.Task::getTaskDefinitionKey, Collectors.counting()));
+            .collect(Collectors.groupingBy(CamundaTask::getTaskDefinitionKey, Collectors.counting()));
 
         // Map all tasks/counts for json output
         Map<String, HeatmapTaskCountDTO> returnList = new HashMap<>();
@@ -181,11 +191,8 @@ public abstract class AbstractProcessResource {
             })).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
-    public HistoricProcessInstance getHistoricProcessInstance(String processInstanceId) {
-        return historyService
-            .createHistoricProcessInstanceQuery()
-            .processInstanceId(processInstanceId)
-            .singleResult();
+    public CamundaHistoricProcessInstance getHistoricProcessInstance(String processInstanceId) {
+        return historyService.findHistoricProcessInstance(byProcessInstanceId(processInstanceId));
     }
 
     public static class ResultCount {

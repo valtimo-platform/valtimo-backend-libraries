@@ -18,10 +18,8 @@ package com.ritense.processlink.service
 
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
-import java.util.UUID
-import org.camunda.bpm.engine.TaskService
-import org.camunda.community.mockito.CamundaMockito
-import org.camunda.community.mockito.task.TaskFake
+import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.service.CamundaTaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
@@ -30,12 +28,13 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.UUID
 
 
 class ProcessLinkActivityServiceTest {
 
     @Mock
-    lateinit var taskService: TaskService
+    lateinit var taskService: CamundaTaskService
 
     @Mock
     lateinit var processLinkService: ProcessLinkService
@@ -54,16 +53,15 @@ class ProcessLinkActivityServiceTest {
     @Test
     fun `should use task provider to open task`() {
         val taskId = UUID.randomUUID()
-        val task = TaskFake.builder()
-            .id(taskId.toString())
-            .processDefinitionId("some-process:1")
-            .taskDefinitionKey("some-activity")
-            .build()
+        val task: CamundaTask = mock()
+        whenever(task.id).thenReturn(taskId.toString())
+        whenever(task.getProcessDefinitionId()).thenReturn("some-process:1")
+        whenever(task.taskDefinitionKey).thenReturn("some-activity")
 
         val processLink: ProcessLink = mock()
         val processLinkActivityResult = ProcessLinkActivityResult<Map<String,Any>>(UUID.randomUUID(), "test", mapOf())
 
-        CamundaMockito.mockTaskQuery(taskService).singleResult(task)
+        whenever(taskService.findTask(any())).thenReturn(task)
         whenever(processLinkService.getProcessLinks(any(), any())).thenReturn(listOf(processLink))
         whenever(processLinkActivityHandler.supports(processLink)).thenReturn(true)
         whenever(processLinkActivityHandler.openTask(task, processLink)).thenReturn(processLinkActivityResult)

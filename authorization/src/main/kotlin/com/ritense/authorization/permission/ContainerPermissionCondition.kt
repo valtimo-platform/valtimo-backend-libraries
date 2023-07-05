@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationEntityMapper
-import com.ritense.authorization.EntityAuthorizationRequest
-import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationServiceHolder
+import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.Role
 import com.ritense.authorization.permission.ContainerPermissionCondition.Companion.CONTAINER
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -33,9 +33,9 @@ import javax.persistence.criteria.Root
 
 @JsonTypeName(CONTAINER)
 data class ContainerPermissionCondition<TO : Any>(
-    @field:JsonView(PermissionView.RoleManagement::class)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val resourceType: Class<TO>,
-    @field:JsonView(PermissionView.RoleManagement::class)
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val conditions: List<PermissionCondition>
 ) : PermissionCondition(PermissionConditionType.CONTAINER) {
     override fun <FROM: Any> isValid(entity: FROM): Boolean {

@@ -16,21 +16,21 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.domain.processdefinition.ProcessDefinitionProperties;
 import com.ritense.valtimo.processdefinition.repository.ProcessDefinitionPropertiesRepository;
-import org.camunda.bpm.engine.RepositoryService;
 
 public class ProcessPropertyService {
 
     private final ProcessDefinitionPropertiesRepository processDefinitionPropertiesRepository;
     private final ValtimoProperties valtimoProperties;
-    private final RepositoryService repositoryService;
+    private final CamundaRepositoryService repositoryService;
 
     public ProcessPropertyService(
         ProcessDefinitionPropertiesRepository processDefinitionPropertiesRepository,
         ValtimoProperties valtimoProperties,
-        RepositoryService repositoryService
+        CamundaRepositoryService repositoryService
     ) {
         this.processDefinitionPropertiesRepository = processDefinitionPropertiesRepository;
         this.valtimoProperties = valtimoProperties;
@@ -58,9 +58,7 @@ public class ProcessPropertyService {
     }
 
     private String getProcessDefinitionKeyById(String processDefinitionId) {
-        var processDefinition = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionId(processDefinitionId)
-            .singleResult();
+        var processDefinition = repositoryService.findProcessDefinitionById(processDefinitionId);
         if (processDefinition == null) {
             throw new RuntimeException("Failed to find process definition with id: " + processDefinitionId);
         }

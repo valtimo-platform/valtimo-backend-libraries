@@ -170,7 +170,7 @@ class RoleManagementResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `should have access to update role permissions method with role_admin`() {
-        val basePermission = permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER"))[0]
+        val basePermission = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("ROLE_USER"))[0]
 
         val request = MockMvcRequestBuilders.request(PUT, "/api/management/v1/roles/ROLE_USER/permissions")
         request.content(
@@ -196,7 +196,7 @@ class RoleManagementResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.USER])
     fun `should not have access to update role permissions method without role_admin`() {
-        val basePermission = permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER"))[0]
+        val basePermission = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("ROLE_USER"))[0]
 
         val request = MockMvcRequestBuilders.request(PUT, "/api/management/v1/roles/ROLE_USER/permissions")
         request.content(
