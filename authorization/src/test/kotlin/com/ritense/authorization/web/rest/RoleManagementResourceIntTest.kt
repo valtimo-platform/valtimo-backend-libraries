@@ -191,7 +191,7 @@ class RoleManagementResourceIntTest : BaseIntegrationTest() {
                 MockMvcResultMatchers.jsonPath("$").isArray)
             .andExpect(
                 MockMvcResultMatchers.jsonPath("$.*", Matchers.hasSize<Int>(
-                    Matchers.equalTo(permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER")).size))
+                    Matchers.equalTo(permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("ROLE_USER")).size))
                 )
             )
             .andExpect(
@@ -214,7 +214,7 @@ class RoleManagementResourceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should update role permissions if role exists`() {
-        val oldRolePermissions = permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER"))
+        val oldRolePermissions = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("ROLE_USER"))
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/management/v1/roles/ROLE_USER/permissions")
             .characterEncoding(StandardCharsets.UTF_8.name())
@@ -240,19 +240,19 @@ class RoleManagementResourceIntTest : BaseIntegrationTest() {
                 MockMvcResultMatchers.jsonPath("$").isArray)
             .andExpect(
                 MockMvcResultMatchers.jsonPath("$.*", Matchers.hasSize<Int>(
-                    Matchers.equalTo(permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER")).size))
+                    Matchers.equalTo(permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("ROLE_USER")).size))
                 )
             )
             .andExpect(
                 MockMvcResultMatchers.jsonPath("$[0].id").doesNotExist()
             )
 
-        assertNotEquals(oldRolePermissions[0].id, permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER"))[0].id)
+        assertNotEquals(oldRolePermissions[0].id, permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("ROLE_USER"))[0].id)
     }
 
     @Test
     fun `should not update role permissions if role does not exist`() {
-        val oldRolePermissions = permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER"))
+        val oldRolePermissions = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("ROLE_USER"))
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/management/v1/roles/NOT_EXISTING_ROLE/permissions")
             .characterEncoding(StandardCharsets.UTF_8.name())
@@ -273,6 +273,6 @@ class RoleManagementResourceIntTest : BaseIntegrationTest() {
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().is5xxServerError)
 
-        assertEquals(oldRolePermissions, permissionRepository.findAllByRoleKeyIn(listOf("ROLE_USER")))
+        assertEquals(oldRolePermissions, permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("ROLE_USER")))
     }
 }

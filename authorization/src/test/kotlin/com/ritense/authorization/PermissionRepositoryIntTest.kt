@@ -121,7 +121,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         permissionRepository.saveAllAndFlush(listOf(permission, permission2, permission3))
 
-        val permissions = permissionRepository.findAllByRoleKeyIn(listOf(role.key))
+        val permissions = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf(role.key))
 
         assertThat(permissions).hasSize(2)
 
