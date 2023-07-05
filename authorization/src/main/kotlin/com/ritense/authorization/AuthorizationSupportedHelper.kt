@@ -28,7 +28,7 @@ object AuthorizationSupportedHelper: ApplicationContextAware{
     }
 
     fun checkSupported(clazz: Class<*>) {
-        val beanNames = applicationContext.getBeanNamesForType(ResolvableType.forClassWithGenerics(AuthorizationSpecification::class.java, clazz))
+        val beanNames = applicationContext.getBeanNamesForType(ResolvableType.forClassWithGenerics(AuthorizationSpecificationFactory::class.java, clazz))
         if (beanNames.isEmpty()) {
             throw AuthorizedResourceNotSupportedException(clazz)
         }
