@@ -59,9 +59,15 @@ class DashboardAutoConfiguration {
     fun dashboardService(
         dashboardRepository: DashboardRepository,
         widgetConfigurationRepository: WidgetConfigurationRepository,
-        userManagementService: UserManagementService
+        userManagementService: UserManagementService,
+        widgetDataSourceResolver: WidgetDataSourceResolver,
     ): DashboardService {
-        return DashboardService(dashboardRepository, widgetConfigurationRepository, userManagementService)
+        return DashboardService(
+            dashboardRepository,
+            widgetConfigurationRepository,
+            userManagementService,
+            widgetDataSourceResolver
+        )
     }
 
     @Bean

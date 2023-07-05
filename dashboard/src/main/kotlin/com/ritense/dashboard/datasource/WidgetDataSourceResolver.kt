@@ -16,24 +16,12 @@
 
 package com.ritense.dashboard.datasource
 
-import org.springframework.boot.context.event.ApplicationStartedEvent
-import org.springframework.context.event.EventListener
 import java.lang.reflect.Method
 
 class WidgetDataSourceResolver : AnnotatedClassResolver() {
 
-    @EventListener(ApplicationStartedEvent::class)
-    fun loadWidgetDataSources() {
-        findWidgetDataSourceClasses()
-    }
+    val widgetDataSourceMap: Map<String, Method> = findWidgetDataSourceClasses()
 
-    private fun findWidgetDataSourceClasses() {
-        WIDGET_DATA_SOURCE_MAP = findMethodsWithAnnotation<WidgetDataSource>()
-            .associateBy { it.getAnnotation(WidgetDataSource::class.java).key }
-            .toSortedMap()
-    }
-
-    companion object {
-        lateinit var WIDGET_DATA_SOURCE_MAP: Map<String, Method>
-    }
+    private fun findWidgetDataSourceClasses() = findMethodsWithAnnotation<WidgetDataSource>()
+        .associateBy { it.getAnnotation(WidgetDataSource::class.java).key }
 }
