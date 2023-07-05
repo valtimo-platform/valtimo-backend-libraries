@@ -114,7 +114,7 @@ abstract class AuthorizationSpecification<T : Any>(
                     resourceType = container.resourceType,
                     action = Action<Any>(Action.IGNORE),
                     conditionContainer = ConditionContainer(container.conditions),
-                    roleKey = ""
+                    role = Role(key = "")
                 )
             )
         )
