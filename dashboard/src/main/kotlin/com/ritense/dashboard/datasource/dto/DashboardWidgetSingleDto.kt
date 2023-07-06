@@ -17,6 +17,6 @@
 package com.ritense.dashboard.datasource.dto
 
 data class DashboardWidgetSingleDto(
-    val value: String,
+    val value: Long,
     val total: Long,
 )
