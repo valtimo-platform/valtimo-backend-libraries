@@ -25,7 +25,7 @@ abstract class AnnotatedClassResolver {
 
     inline fun <reified T : Annotation> findMethodsWithAnnotation(): List<Method> {
         return ClassGraph()
-            .rejectPaths(*REJECT_PACKAGES)
+            .rejectPackages(*REJECT_PACKAGES)
             .enableClassInfo()
             .enableMethodInfo()
             .enableAnnotationInfo()

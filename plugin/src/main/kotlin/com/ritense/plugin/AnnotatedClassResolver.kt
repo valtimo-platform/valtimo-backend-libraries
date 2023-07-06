@@ -23,7 +23,7 @@ abstract class AnnotatedClassResolver {
 
     inline fun <reified T : Annotation> findAnnotatedClasses(): Map<Class<*>, T> {
         val pluginCategoryClasses = ClassGraph()
-            .rejectPaths(*REJECT_PACKAGES)
+            .rejectPackages(*REJECT_PACKAGES)
             .enableClassInfo()
             .enableAnnotationInfo()
             .scan(1)
