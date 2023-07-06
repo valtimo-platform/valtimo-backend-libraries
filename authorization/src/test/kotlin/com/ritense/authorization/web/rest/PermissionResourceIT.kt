@@ -69,14 +69,14 @@ class PermissionResourceIT: BaseIntegrationTest() {
     @Test
     @WithMockUser(authorities = ["test-role"])
     fun `requesting permission for resource with permission returns available true`() {
-
+        val role = roleRepository.findByKey("test-role")!!
         val permissions = listOf(
             Permission(
                 UUID.randomUUID(),
                 TestEntity::class.java,
                 TestEntityActionProvider.view,
                 ConditionContainer(emptyList()),
-                Role(key = "test-role")
+                role
             )
         )
 
@@ -140,6 +140,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
     @WithMockUser(authorities = ["test-role"])
     fun `requesting permission for resource with permission and conditions returns available true`() {
 
+        val role = roleRepository.findByKey("test-role")!!
         val permissions = listOf(
             Permission(
                 UUID.randomUUID(),
@@ -152,7 +153,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
                         "test"
                     )
                 )),
-                Role(key = "test-role")
+                role
             )
         )
 
@@ -186,7 +187,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
     @Test
     @WithMockUser(authorities = ["test-role"])
     fun `requesting permission for resource with permission but not matching conditions returns available false`() {
-
+        val role = roleRepository.findByKey("test-role")!!
         val permissions = listOf(
             Permission(
                 UUID.randomUUID(),
@@ -199,7 +200,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
                         "other-value"
                     )
                 )),
-                Role(key = "test-role")
+                role
             )
         )
 
@@ -233,7 +234,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
     @Test
     @WithMockUser(authorities = ["test-role"])
     fun `requesting permission for resource with permission and context of related entity returns available true`() {
-
+        val role = roleRepository.findByKey("test-role")!!
         val permissions = listOf(
             Permission(
                 UUID.randomUUID(),
@@ -251,7 +252,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
                         )
                     )
                 )),
-                Role(key = "test-role")
+                role
             )
         )
 
@@ -285,7 +286,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
     @Test
     @WithMockUser(authorities = ["test-role"])
     fun `requesting permission for resource with permission and context of related entity with no permission returns available false`() {
-
+        val role = roleRepository.findByKey("test-role")!!
         val permissions = listOf(
             Permission(
                 UUID.randomUUID(),
@@ -303,7 +304,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
                         )
                     )
                 )),
-                Role(key = "test-role")
+                role
             )
         )
 
