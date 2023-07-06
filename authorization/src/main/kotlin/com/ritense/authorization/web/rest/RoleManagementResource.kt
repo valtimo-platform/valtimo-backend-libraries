@@ -17,6 +17,7 @@
 package com.ritense.authorization.web.rest
 
 import com.fasterxml.jackson.annotation.JsonView
+import com.ritense.authorization.AuthorizationSupportedHelper
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.Role
 import com.ritense.authorization.RoleRepository
@@ -47,13 +48,13 @@ class RoleManagementResource(
     val permissionRepository: PermissionRepository
 ) {
     @GetMapping("/v1/roles")
-    fun getPluginDefinitions()
+    fun getRoles()
         : ResponseEntity<List<RoleResult>> {
         return ResponseEntity.ok(roleRepository.findAll().map { RoleResult.fromRole(it) })
     }
 
     @PostMapping("/v1/roles")
-    fun savePluginDefinition(@RequestBody saveRoleRequest: SaveRoleRequest)
+    fun createRole(@RequestBody saveRoleRequest: SaveRoleRequest)
         : ResponseEntity<RoleResult> {
         try {
             val role: Role = roleRepository.save(saveRoleRequest.toRole())
@@ -64,7 +65,7 @@ class RoleManagementResource(
     }
 
     @PutMapping("/v1/roles/{oldRoleKey}")
-    fun updatePluginDefinition(@PathVariable oldRoleKey: String, @RequestBody updateRoleRequest: UpdateRoleRequest)
+    fun updateRole(@PathVariable oldRoleKey: String, @RequestBody updateRoleRequest: UpdateRoleRequest)
         : ResponseEntity<RoleResult> {
 
         val oldRole = roleRepository.findByKey(oldRoleKey)
@@ -75,7 +76,7 @@ class RoleManagementResource(
 
     @DeleteMapping("/v1/roles")
     @Transactional
-    fun deletePluginDefinitions(@RequestBody deleteRolesRequest: DeleteRolesRequest)
+    fun deleteRole(@RequestBody deleteRolesRequest: DeleteRolesRequest)
         : ResponseEntity<Void> {
         permissionRepository.deleteByRoleKeyIn(deleteRolesRequest.roles)
         roleRepository.deleteByKeyIn(deleteRolesRequest.roles)
@@ -102,7 +103,12 @@ class RoleManagementResource(
         val role = roleRepository.findByKey(roleKey)!!
         permissionRepository.deleteByRoleKeyIn(listOf(roleKey))
         val permissions = permissionRepository
-            .saveAll(rolePermissions.map { it.toPermission(role) })
+            .saveAll(
+                rolePermissions.map {
+                    AuthorizationSupportedHelper.checkSupported(it.resourceType)
+                    it.toPermission(role)
+                }
+            )
         return ResponseEntity.ok(permissions)
     }
 }

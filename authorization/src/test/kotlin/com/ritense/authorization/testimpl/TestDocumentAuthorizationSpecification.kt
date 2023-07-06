@@ -24,19 +24,19 @@ import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
-class TestAuthorizationSpecification(
-    authContext: AuthorizationRequest<TestEntity>,
+class TestDocumentAuthorizationSpecification(
+    authContext: AuthorizationRequest<TestDocument>,
     permissions: List<Permission>,
-): AuthorizationSpecification<TestEntity>(authContext, permissions) {
+): AuthorizationSpecification<TestDocument>(authContext, permissions) {
     override fun toPredicate(
-        root: Root<TestEntity>,
+        root: Root<TestDocument>,
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         return criteriaBuilder.isTrue(root.isNotNull)
     }
 
-    override fun identifierToEntity(identifier: String): TestEntity {
-        return TestEntity()
+    override fun identifierToEntity(identifier: String): TestDocument {
+        return TestDocument()
     }
 }

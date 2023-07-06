@@ -18,25 +18,22 @@ package com.ritense.authorization.testimpl
 
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
 
-class TestAuthorizationSpecification(
-    authContext: AuthorizationRequest<TestEntity>,
-    permissions: List<Permission>,
-): AuthorizationSpecification<TestEntity>(authContext, permissions) {
-    override fun toPredicate(
-        root: Root<TestEntity>,
-        query: CriteriaQuery<*>,
-        criteriaBuilder: CriteriaBuilder
-    ): Predicate {
-        return criteriaBuilder.isTrue(root.isNotNull)
+class TestDocumentSpecificationFactory : AuthorizationSpecificationFactory<TestDocument> {
+    override fun create(
+            request: AuthorizationRequest<TestDocument>,
+            permissions: List<Permission>
+    ): AuthorizationSpecification<TestDocument> {
+        return TestDocumentAuthorizationSpecification(
+            request,
+            permissions
+        )
     }
 
-    override fun identifierToEntity(identifier: String): TestEntity {
-        return TestEntity()
+    override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+        return TestDocument::class.java == request.resourceType
     }
+
 }

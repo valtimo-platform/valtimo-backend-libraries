@@ -28,6 +28,9 @@ class TestAuthorizationAutoConfiguration {
     fun relatedTestEntitySpecificationFactory() = RelatedTestEntitySpecificationFactory()
 
     @Bean
+    fun testDocumentSpecificationFactory() = TestDocumentSpecificationFactory()
+
+    @Bean
     fun testEntityActionProvider() = TestEntityActionProvider()
 
     @Bean

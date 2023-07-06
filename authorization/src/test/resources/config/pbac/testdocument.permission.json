@@ -30,6 +30,12 @@
                     }
                 ]
             }
+        },
+        {
+            "resourceType": "java.lang.String",
+            "action": "view",
+            "roleKey": "ROLE_USER",
+            "conditionContainer": {"conditions": []}
         }
     ]
 }
