@@ -19,13 +19,11 @@ package com.ritense.authorization.deployment
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationSupportedHelper
-import com.ritense.authorization.AuthorizedResourceNotSupportedException
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.RoleRepository
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
-import mu.KotlinLogging
 
 class PermissionDeployer(
     private val objectMapper: ObjectMapper,
@@ -57,15 +55,8 @@ class PermissionDeployer(
     }
 
     fun deploy(permissions: List<PermissionDto>) {
-        val permissionsToSave = permissions.filter {
-            try {
-                AuthorizationSupportedHelper.checkSupported(it.resourceType)
-                true
-            } catch (ex: AuthorizedResourceNotSupportedException) {
-                logger.error { "Failed to deploy permission for '${it.resourceType.canonicalName}' because no AuthorizationSpecification was found" }
-                false
-            }
-        }.map {
+        val permissionsToSave = permissions.map {
+            AuthorizationSupportedHelper.checkSupported(it.resourceType)
             it.toPermission(roleRepository)
         }
 
@@ -74,6 +65,5 @@ class PermissionDeployer(
 
     companion object {
         const val KEY = "permission"
-        val logger = KotlinLogging.logger {}
     }
 }

@@ -16,5 +16,5 @@
 
 package com.ritense.authorization
 
-class AuthorizedResourceNotSupportedException(val clazz: Class<*>)
+class ResourceNotSupportedException(val clazz: Class<*>)
     : RuntimeException("Authorization for resource '${clazz.canonicalName}' not supported")

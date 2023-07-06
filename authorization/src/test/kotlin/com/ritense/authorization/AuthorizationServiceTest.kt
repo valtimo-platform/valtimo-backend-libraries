@@ -33,6 +33,10 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.context.SecurityContextHolder
 
 class AuthorizationServiceTest {
 
@@ -80,6 +84,25 @@ class AuthorizationServiceTest {
 
     @Test
     fun `should pass permission check`() {
+        val securityContext = mock<SecurityContext>()
+        val authentication = mock<Authentication>()
+        val authority = mock<GrantedAuthority>()
+        whenever(securityContext.authentication).thenReturn(authentication)
+        whenever(authentication.authorities).thenReturn(listOf(authority))
+        whenever(authority.authority).thenReturn("some-role")
+        SecurityContextHolder.setContext(securityContext)
+
+        whenever(permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(any())).thenReturn(
+            listOf(
+                Permission(
+                    resourceType = String::class.java,
+                    action = Action<String>(Action.VIEW),
+                    conditionContainer = ConditionContainer(),
+                    role = Role(key = "")
+                )
+            )
+        )
+
         whenever(factory2.canCreate(any(), any())).thenReturn(true)
         val entity = ""
         val request = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), entity)
@@ -109,6 +132,25 @@ class AuthorizationServiceTest {
 
     @Test
     fun `should fail permission check`() {
+        val securityContext = mock<SecurityContext>()
+        val authentication = mock<Authentication>()
+        val authority = mock<GrantedAuthority>()
+        whenever(securityContext.authentication).thenReturn(authentication)
+        whenever(authentication.authorities).thenReturn(listOf(authority))
+        whenever(authority.authority).thenReturn("some-role")
+        SecurityContextHolder.setContext(securityContext)
+
+        whenever(permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(any())).thenReturn(
+            listOf(
+                Permission(
+                    resourceType = String::class.java,
+                    action = Action<String>(Action.VIEW),
+                    conditionContainer = ConditionContainer(),
+                    role = Role(key = "")
+                )
+            )
+        )
+
         whenever(factory2.canCreate(any(), any())).thenReturn(true)
         val entity = ""
         val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), entity)
