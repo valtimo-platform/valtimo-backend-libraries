@@ -16,26 +16,39 @@
 
 package com.ritense.authorization
 
+import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.testimpl.TestEntity
+import com.ritense.authorization.testimpl.TestEntityActionProvider
 import org.hamcrest.CoreMatchers.hasItems
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.test.context.support.WithMockUser
+import java.util.UUID
+import javax.transaction.Transactional
 
+@Transactional
 class AuthorizationServiceIntTest @Autowired constructor(
     private val authorizationService: AuthorizationService
 ) : BaseIntegrationTest() {
+
+    @Autowired
+    lateinit var roleRepository: RoleRepository
+
+    @Autowired
+    lateinit var permissionRepository: PermissionRepository
+
+    @BeforeEach
+    fun beforeEach() {
+        roleRepository.deleteByKeyIn(listOf("test-role"))
+        roleRepository.save(Role(key = "test-role"))
+    }
+
     @Test
     fun `should succeed when ran without authorization`() {
         assertDoesNotThrow {
@@ -69,32 +82,51 @@ class AuthorizationServiceIntTest @Autowired constructor(
     }
 
     @Test
+    @WithMockUser(authorities = ["test-role"])
     fun `should pass permission check when entity is not null`() {
-        val permission: Permission = mock()
-        doReturn(Action<TestEntity>(Action.VIEW)).whenever(permission).action
-        doReturn(TestEntity::class.java).whenever(permission).resourceType
-        doReturn(true).whenever(permission).appliesTo(eq(TestEntity::class.java), any())
+
+        val role = roleRepository.findByKey("test-role")!!
+        val permissions = listOf(
+            Permission(
+                UUID.randomUUID(),
+                TestEntity::class.java,
+                TestEntityActionProvider.view,
+                ConditionContainer(emptyList()),
+                role
+            )
+        )
+
+        permissionRepository.deleteAll()
+        permissionRepository.saveAllAndFlush(permissions)
 
         assertDoesNotThrow {
             requirePermission(
-                entity = TestEntity(),
-                permission = permission)
+                entity = TestEntity()
+            )
         }
-
-        verify(permission).appliesTo(eq(TestEntity::class.java), any())
     }
 
     @Test
+    @WithMockUser(authorities = ["test-role"])
     fun `should fail permission check when entity is null`() {
-        val permission: Permission = mock()
+
+        val role = roleRepository.findByKey("test-role")!!
+        val permissions = listOf(
+            Permission(
+                UUID.randomUUID(),
+                TestEntity::class.java,
+                TestEntityActionProvider.view,
+                ConditionContainer(emptyList()),
+                role
+            )
+        )
+
+        permissionRepository.deleteAll()
+        permissionRepository.saveAllAndFlush(permissions)
 
         assertThrows<AccessDeniedException> {
-            requirePermission(
-                permission = permission
-            )
+            requirePermission()
         }
-
-        verify(permission, never()).appliesTo(eq(TestEntity::class.java), any())
     }
 
     @Test
@@ -111,16 +143,9 @@ class AuthorizationServiceIntTest @Autowired constructor(
         )
     }
 
-    fun requirePermission(action: Action<TestEntity> = Action(Action.VIEW)) {
-        requirePermission(
-            action = action,
-            entity = TestEntity())
-    }
-
     fun requirePermission(
         action: Action<TestEntity> = Action(Action.VIEW),
-        entity: TestEntity? = null,
-        permission: Permission? = null
+        entity: TestEntity? = null
     ) {
         authorizationService
             .requirePermission(

@@ -43,7 +43,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.util.UUID
+import javax.transaction.Transactional
 
+@Transactional
 class PermissionResourceIT: BaseIntegrationTest() {
 
     @Autowired
@@ -63,6 +65,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             .webAppContextSetup(webApplicationContext)
             .build()
 
+        roleRepository.deleteByKeyIn(listOf("test-role"))
         roleRepository.save(Role(key = "test-role"))
     }
 
