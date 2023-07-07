@@ -22,11 +22,13 @@ import com.ritense.document.SearchFieldSpecificationFactory
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.searchfield.SearchField
 import com.ritense.document.listener.DocumentEventListener
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 
 @Configuration
 class DocumentEventAutoConfiguration {
@@ -40,9 +42,10 @@ class DocumentEventAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(JsonSchemaDocumentSpecificationFactory::class)
     fun jsonSchemaDocumentSpecificationFactory(
+        @Lazy documentService: JsonSchemaDocumentService,
         queryDialectHelper: QueryDialectHelper
     ): AuthorizationSpecificationFactory<JsonSchemaDocument> {
-        return JsonSchemaDocumentSpecificationFactory(queryDialectHelper)
+        return JsonSchemaDocumentSpecificationFactory(documentService, queryDialectHelper)
     }
 
     @Bean

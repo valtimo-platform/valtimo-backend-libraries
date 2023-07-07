@@ -14,32 +14,30 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.specification
+package com.ritense.authorization.testimpl
 
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.permission.Permission
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
-class DenyAuthorizationSpecification<T : Any>(
-        authRequest: AuthorizationRequest<T>,
-        permissions: List<Permission>
-) : AuthorizationSpecification<T>(
-    authRequest,
-    permissions
-) {
-    override fun isAuthorized(): Boolean {
-        return false
+class RelatedTestEntitySpecification(
+    authContext: AuthorizationRequest<RelatedTestEntity>,
+    permissions: List<Permission>,
+): AuthorizationSpecification<RelatedTestEntity>(authContext, permissions) {
+    override fun toPredicate(
+        root: Root<RelatedTestEntity>,
+        query: CriteriaQuery<*>,
+        criteriaBuilder: CriteriaBuilder
+    ): Predicate {
+        return criteriaBuilder.isTrue(root.isNotNull)
     }
 
-    override fun identifierToEntity(identifier: String): T {
-        throw NotImplementedError()
-    }
-
-    override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
-        return criteriaBuilder.equal(criteriaBuilder.literal(0), 1)
+    override fun identifierToEntity(identifier: String): RelatedTestEntity {
+        return RelatedTestEntity("test")
     }
 }

@@ -19,9 +19,8 @@ package com.ritense.audit.service.impl;
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.service.AuditSearchService;
 import com.ritense.authorization.Action;
-import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,12 +88,11 @@ public class AuditSearchServiceImpl implements AuditSearchService {
 
     private void denyAuthorization() {
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 AuditRecord.class,
-                Action.deny()
-            ),
-            null,
-            null
+                Action.deny(),
+                null
+            )
         );
     }
 

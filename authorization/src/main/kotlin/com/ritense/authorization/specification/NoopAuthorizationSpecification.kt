@@ -26,17 +26,21 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class NoopAuthorizationSpecification<T : Any>(
-    authContext: AuthorizationRequest<T>,
-    permissions: List<Permission>
+        authRequest: AuthorizationRequest<T>,
+        permissions: List<Permission>
 ) : AuthorizationSpecification<T>(
-    authContext,
+    authRequest,
     permissions
 ) {
-    override fun isAuthorized(entity: T?): Boolean {
+    override fun isAuthorized(): Boolean {
         return AuthorizationContext.ignoreAuthorization
     }
 
     override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
         return criteriaBuilder.equal(criteriaBuilder.literal(1), 1)
+    }
+
+    override fun identifierToEntity(identifier: String): T {
+        throw NotImplementedError()
     }
 }

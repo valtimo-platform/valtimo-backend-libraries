@@ -16,10 +16,11 @@
 
 package com.ritense.note.repository
 
-import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.note.domain.Note
+import com.ritense.note.service.NoteService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import java.util.UUID
 import javax.persistence.criteria.CriteriaBuilder
@@ -28,10 +29,11 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class NoteSpecification(
-    authContext: AuthorizationRequest<Note>,
+    authRequest: AuthorizationRequest<Note>,
     permissions: List<Permission>,
+    private val noteService: NoteService,
     private val queryDialectHelper: QueryDialectHelper
-) : AuthorizationSpecification<Note>(authContext, permissions) {
+) : AuthorizationSpecification<Note>(authRequest, permissions) {
     override fun toPredicate(
         root: Root<Note>,
         query: CriteriaQuery<*>,
@@ -46,18 +48,22 @@ class NoteSpecification(
         val predicates = permissions.stream()
             .filter { permission: Permission ->
                 Note::class.java == permission.resourceType &&
-                    authContext.action == permission.action
+                    authRequest.action == permission.action
             }
             .map { permission: Permission ->
                 permission.toPredicate(
                     root,
                     query,
                     criteriaBuilder,
-                    authContext.resourceType,
+                    authRequest.resourceType,
                     queryDialectHelper
                 )
             }.toList()
         return combinePredicates(criteriaBuilder, predicates)
+    }
+
+    override fun identifierToEntity(identifier: String): Note {
+        return noteService.getNoteById(UUID.fromString(identifier))
     }
 }
 

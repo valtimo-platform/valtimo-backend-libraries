@@ -26,10 +26,10 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class SearchFieldSpecification(
-    authContext: AuthorizationRequest<SearchField>,
-    permissions: List<Permission>,
-    private val queryDialectHelper: QueryDialectHelper
-) : AuthorizationSpecification<SearchField>(authContext, permissions) {
+        authRequest: AuthorizationRequest<SearchField>,
+        permissions: List<Permission>,
+        private val queryDialectHelper: QueryDialectHelper
+) : AuthorizationSpecification<SearchField>(authRequest, permissions) {
 
     override fun toPredicate(
         root: Root<SearchField>,
@@ -43,17 +43,21 @@ class SearchFieldSpecification(
         }
         val predicates = permissions
             .filter { permission: Permission ->
-                SearchField::class.java == permission.resourceType && authContext.action == permission.action
+                SearchField::class.java == permission.resourceType && authRequest.action == permission.action
             }
             .map { permission: Permission ->
                 permission.toPredicate(
                     root,
                     query,
                     criteriaBuilder,
-                    authContext.resourceType,
+                    authRequest.resourceType,
                     queryDialectHelper
                 )
             }
         return combinePredicates(criteriaBuilder, predicates)
+    }
+
+    override fun identifierToEntity(identifier: String): SearchField {
+        TODO("Not yet implemented")
     }
 }

@@ -16,17 +16,19 @@
 
 package com.ritense.document
 
-import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.JsonSchemaDocumentSpecification
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 
 class JsonSchemaDocumentSpecificationFactory(
+    private val documentService: JsonSchemaDocumentService,
     private var queryDialectHelper: QueryDialectHelper
-): AuthorizationSpecificationFactory<JsonSchemaDocument> {
+) : AuthorizationSpecificationFactory<JsonSchemaDocument> {
 
     override fun create(
         context: AuthorizationRequest<JsonSchemaDocument>,
@@ -35,6 +37,7 @@ class JsonSchemaDocumentSpecificationFactory(
         return JsonSchemaDocumentSpecification(
             context,
             permissions,
+            documentService,
             queryDialectHelper
         )
     }

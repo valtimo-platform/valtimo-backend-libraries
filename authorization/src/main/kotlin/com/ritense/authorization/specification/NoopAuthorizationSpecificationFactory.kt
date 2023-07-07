@@ -24,13 +24,13 @@ import com.ritense.authorization.permission.Permission
 
 class NoopAuthorizationSpecificationFactory<T: Any> : AuthorizationSpecificationFactory<T> {
     override fun create(
-        context: AuthorizationRequest<T>,
+        request: AuthorizationRequest<T>,
         permissions: List<Permission>
     ): AuthorizationSpecification<T> {
-        return NoopAuthorizationSpecification(context, permissions)
+        return NoopAuthorizationSpecification(request, permissions)
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+    override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
         return AuthorizationContext.ignoreAuthorization
     }
 

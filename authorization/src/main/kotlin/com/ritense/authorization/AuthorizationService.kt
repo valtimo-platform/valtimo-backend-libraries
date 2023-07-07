@@ -20,13 +20,11 @@ import com.ritense.authorization.permission.Permission
 
 interface AuthorizationService {
     fun <T : Any> requirePermission(
-        context: AuthorizationRequest<T>,
-        entity: T?,
-        permissions: List<Permission>? = null
+        request: EntityAuthorizationRequest<T>
     )
 
     fun <T : Any> getAuthorizationSpecification(
-        context: AuthorizationRequest<T>,
+        request: AuthorizationRequest<T>,
         permissions: List<Permission>? = null
     ): AuthorizationSpecification<T>
 
@@ -35,4 +33,6 @@ interface AuthorizationService {
     fun <FROM, TO> getMapper(from: Class<FROM>, to: Class<TO>): AuthorizationEntityMapper<FROM, TO>
 
     fun <T : Any> getAvailableActionsForResource(clazz: Class<T>): List<Action<T>>
+
+    fun <T : Any> hasPermission(request: AuthorizationRequest<T>): Boolean
 }

@@ -15,11 +15,12 @@
  */
 package com.ritense.document.service
 
-import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import org.springframework.data.jpa.domain.Specification
 import java.util.UUID
@@ -29,10 +30,11 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class JsonSchemaDocumentSpecification(
-    authContext: AuthorizationRequest<JsonSchemaDocument>,
-    permissions: List<Permission>,
-    private val queryDialectHelper: QueryDialectHelper
-) : AuthorizationSpecification<JsonSchemaDocument>(authContext, permissions) {
+        authRequest: AuthorizationRequest<JsonSchemaDocument>,
+        permissions: List<Permission>,
+        private val documentService: JsonSchemaDocumentService,
+        private val queryDialectHelper: QueryDialectHelper
+) : AuthorizationSpecification<JsonSchemaDocument>(authRequest, permissions) {
 
     override fun toPredicate(
         root: Root<JsonSchemaDocument>,
@@ -48,18 +50,22 @@ class JsonSchemaDocumentSpecification(
         }
         val predicates = permissions
             .filter { permission: Permission ->
-                JsonSchemaDocument::class.java == permission.resourceType && authContext.action == permission.action
+                JsonSchemaDocument::class.java == permission.resourceType && authRequest.action == permission.action
             }
             .map { permission: Permission ->
                 permission.toPredicate(
                     root,
                     query,
                     criteriaBuilder,
-                    authContext.resourceType,
+                    authRequest.resourceType,
                     queryDialectHelper
                 )
             }
         return combinePredicates(criteriaBuilder, predicates)
+    }
+
+    override fun identifierToEntity(identifier: String): JsonSchemaDocument {
+        return documentService.get(identifier)
     }
 
     companion object {

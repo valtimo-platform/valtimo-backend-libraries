@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.testimpl
+package com.ritense.authorization
 
-data class TestEntity(
-    val child: TestChildEntity? = null,
-    val name: String = "test"
-)
+class RelatedEntityAuthorizationRequest<T>(
+    override val resourceType: Class<T>,
+    override val action: Action<T>,
+    val relatedResourceType: Class<*>,
+    val relatedResourceId: String
+) : AuthorizationRequest<T> {
+    init {
+        AuthorizationSupportedHelper.checkSupported(resourceType)
+        AuthorizationSupportedHelper.checkSupported(relatedResourceType)
+    }
+}

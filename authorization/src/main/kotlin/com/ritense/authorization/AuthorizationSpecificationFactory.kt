@@ -20,8 +20,8 @@ import com.ritense.authorization.permission.Permission
 
 interface AuthorizationSpecificationFactory<T : Any> {
 
-    fun create(context: AuthorizationRequest<T>, permissions: List<Permission>): AuthorizationSpecification<T>
+    fun create(request: AuthorizationRequest<T>, permissions: List<Permission>): AuthorizationSpecification<T>
 
     // Change this to something more dynamic in the future
-    fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean
+    fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean
 }

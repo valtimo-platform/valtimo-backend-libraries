@@ -36,6 +36,7 @@ class ValtimoAuthorizationHttpSecurityConfigurer : HttpSecurityConfigurer {
                 .antMatchers(GET, "/api/management/v1/roles/{roleKey}/permissions").hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(PUT, "/api/management/v1/roles/{roleKey}/permissions").hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(POST, "/api/management/v1/permissions/search").hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(POST, "/api/v1/permissions").authenticated()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

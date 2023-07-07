@@ -16,8 +16,8 @@
 
 package com.ritense.authorization.testimpl
 
-import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
@@ -34,5 +34,9 @@ class TestAuthorizationSpecification(
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         return criteriaBuilder.isTrue(root.isNotNull)
+    }
+
+    override fun identifierToEntity(identifier: String): TestEntity {
+        return TestEntity()
     }
 }

@@ -29,17 +29,17 @@ class SearchFieldSpecificationFactory(
 ): AuthorizationSpecificationFactory<SearchField> {
 
     override fun create(
-        context: AuthorizationRequest<SearchField>,
-        permissions: List<Permission>
+            request: AuthorizationRequest<SearchField>,
+            permissions: List<Permission>
     ): AuthorizationSpecification<SearchField> {
         return SearchFieldSpecification(
-            context,
+            request,
             permissions,
             queryDialectHelper
         )
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
-        return SearchField::class.java == context.resourceType
+    override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+        return SearchField::class.java == request.resourceType
     }
 }

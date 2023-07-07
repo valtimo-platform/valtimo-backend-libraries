@@ -18,6 +18,7 @@ package com.ritense.authorization.deployment
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.authorization.AuthorizationSupportedHelper
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.RoleRepository
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
@@ -54,7 +55,12 @@ class PermissionDeployer(
     }
 
     fun deploy(permissions: List<PermissionDto>) {
-        permissionRepository.saveAll(permissions.map { it.toPermission(roleRepository) })
+        val permissionsToSave = permissions.map {
+            AuthorizationSupportedHelper.checkSupported(it.resourceType)
+            it.toPermission(roleRepository)
+        }
+
+        permissionRepository.saveAll(permissionsToSave)
     }
 
     companion object {

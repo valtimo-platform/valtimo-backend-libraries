@@ -17,7 +17,7 @@
 package com.ritense.note.service
 
 import com.ritense.authorization.Action
-import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationService
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.note.domain.Note
@@ -49,9 +49,10 @@ class NoteService(
         pageable: Pageable = Pageable.unpaged(),
     ): Page<Note> {
         val spec = authorizationService.getAuthorizationSpecification(
-            AuthorizationRequest(
+            EntityAuthorizationRequest(
                 Note::class.java,
-                NoteActionProvider.LIST_VIEW
+                NoteActionProvider.LIST_VIEW,
+                null
             ),
             null
         )
@@ -88,17 +89,17 @@ class NoteService(
         applicationEventPublisher.publishEvent(NoteDeletedEvent(noteId))
     }
 
-    private fun getNoteById(noteId: UUID): Note {
+    fun getNoteById(noteId: UUID): Note {
         return noteRepository.findById(noteId).orElseThrow { NoteNotFoundException(noteId) }
     }
 
     private fun requirePermission(note: Note, action: Action<Note>) {
         authorizationService.requirePermission(
-            AuthorizationRequest(
+            EntityAuthorizationRequest(
                 Note::class.java,
-                action
-            ),
-            note
+                action,
+                note
+            )
         )
     }
 

@@ -28,24 +28,33 @@ class ValtimoAuthorizationService(
     private val permissionRepository: PermissionRepository
 ): AuthorizationService {
     override fun <T : Any> requirePermission(
-        context: AuthorizationRequest<T>,
-        entity: T?,
-        permissions: List<Permission>?
+        request: EntityAuthorizationRequest<T>
     ) {
-        if (!getAuthorizationSpecification(context, permissions).isAuthorized(entity))
+        if (!hasPermission(request))
             throw AccessDeniedException("Unauthorized")
     }
 
+    /**
+     *   Check for permissions for an (optional) related entity.
+     *
+     *   @param request the <code>AuthorizationRequest</code> to use when creating new requests
+     */
+    override fun <T : Any> hasPermission(
+        request: AuthorizationRequest<T>
+    ) : Boolean {
+        return getAuthorizationSpecification(request).isAuthorized();
+    }
+
     override fun <T : Any> getAuthorizationSpecification(
-        context: AuthorizationRequest<T>,
+        request: AuthorizationRequest<T>,
         permissions: List<Permission>?
     ): AuthorizationSpecification<T> {
-        val usedPermissions = permissions ?: getPermissions(context)
+        val usedPermissions = permissions ?: getPermissions(request)
 
         val factory = (authorizationSpecificationFactories.firstOrNull() {
-            it.canCreate(context, usedPermissions)
+            it.canCreate(request, usedPermissions)
         } as AuthorizationSpecificationFactory<T>?)?: throw AccessDeniedException("No specification found for given context.")
-        return factory.create(context, usedPermissions)
+        return factory.create(request, usedPermissions)
     }
 
     override fun getPermissions(resourceType: Class<*>, action: Action<*>): List<Permission> {

@@ -17,7 +17,7 @@
 package com.ritense.processdocument.service.impl;
 
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -131,12 +131,11 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             final var document = newDocumentResult.resultingDocument().orElseThrow();
 
             authorizationService.requirePermission(
-                new AuthorizationRequest<>(
+                new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    CREATE
-                ),
-                document,
-                null
+                    CREATE,
+                    document
+                )
             );
 
             final var processInstanceWithDefinition = startProcess(
@@ -194,12 +193,11 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             final var document = modifyDocumentResult.resultingDocument().orElseThrow();
 
             authorizationService.requirePermission(
-                new AuthorizationRequest<>(
+                new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    MODIFY
-                ),
-                document,
-                null
+                    MODIFY,
+                    document
+                )
             );
 
             camundaTaskService.completeTask(request.taskId(), request.getProcessVars());
@@ -229,12 +227,11 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             final var document = newDocumentResult.resultingDocument().orElseThrow();
 
             authorizationService.requirePermission(
-                new AuthorizationRequest<>(
+                new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    CREATE
-                ),
-                document,
-                null
+                    CREATE,
+                    document
+                )
             );
 
             final String processName = camundaProcessService.getProcessDefinition(request.processDefinitionKey()).getName();
@@ -269,12 +266,11 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             final var document = modifyDocumentResult.resultingDocument().orElseThrow();
 
             authorizationService.requirePermission(
-                new AuthorizationRequest<>(
+                new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    MODIFY
-                ),
-                document,
-                null
+                    MODIFY,
+                    document
+                )
             );
 
             //Part 2 process start
@@ -308,12 +304,11 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             final var document = optionalDocument.get();
 
             authorizationService.requirePermission(
-                new AuthorizationRequest<>(
+                new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    VIEW
-                ),
-                document,
-                null
+                    VIEW,
+                    document
+                )
             );
 
             //Part 2 process start
@@ -371,12 +366,11 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             );
 
         authorizationService.requirePermission(
-            new AuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                VIEW
-            ),
-            document,
-            null
+                VIEW,
+                document
+            )
         );
 
         return document;

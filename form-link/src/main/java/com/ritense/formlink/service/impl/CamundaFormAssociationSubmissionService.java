@@ -18,7 +18,7 @@ package com.ritense.formlink.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
@@ -111,12 +111,11 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
 
                 authorizationService
                     .requirePermission(
-                        new AuthorizationRequest<>(
+                        new EntityAuthorizationRequest<>(
                             JsonSchemaDocument.class,
-                            CREATE
-                        ),
-                        document,
-                        null
+                            CREATE,
+                            document
+                        )
                     );
             } else {
                 document = null;

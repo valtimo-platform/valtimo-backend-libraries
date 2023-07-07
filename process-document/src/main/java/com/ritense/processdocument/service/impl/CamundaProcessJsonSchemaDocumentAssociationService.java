@@ -17,8 +17,8 @@
 package com.ritense.processdocument.service.impl;
 
 import com.ritense.authorization.Action;
-import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
@@ -49,15 +49,13 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.camunda.bpm.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
@@ -156,12 +154,11 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         var document = documentService.findBy(documentId).get();
 
         authorizationService.requirePermission(
-            new AuthorizationRequest(
+            new EntityAuthorizationRequest(
                 JsonSchemaDocument.class,
-                JsonSchemaDocumentActionProvider.VIEW
-            ),
-            document,
-            null
+                JsonSchemaDocumentActionProvider.VIEW,
+                document
+            )
         );
 
         var processes = processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(documentId);
@@ -300,12 +297,11 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private <T> void denyAuthorization(Class<T> clazz) {
         authorizationService
             .requirePermission(
-                new AuthorizationRequest<T>(
+                new EntityAuthorizationRequest<T>(
                     clazz,
-                    Action.deny()
-                ),
-                null,
-                null
+                    Action.deny(),
+                    null
+                )
             );
     }
 }

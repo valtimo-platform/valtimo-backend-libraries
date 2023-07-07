@@ -14,34 +14,26 @@
  * limitations under the License.
  */
 
-package com.ritense.note.repository
+package com.ritense.authorization.testimpl
 
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
 import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
-import com.ritense.note.domain.Note
-import com.ritense.note.service.NoteService
-import com.ritense.valtimo.contract.database.QueryDialectHelper
 
-class NoteSpecificationFactory(
-    private val noteService: NoteService,
-    private var queryDialectHelper: QueryDialectHelper
-) : AuthorizationSpecificationFactory<Note> {
-
+class TestDocumentSpecificationFactory : AuthorizationSpecificationFactory<TestDocument> {
     override fun create(
-        request: AuthorizationRequest<Note>,
-        permissions: List<Permission>
-    ): AuthorizationSpecification<Note> {
-        return NoteSpecification(
+            request: AuthorizationRequest<TestDocument>,
+            permissions: List<Permission>
+    ): AuthorizationSpecification<TestDocument> {
+        return TestDocumentAuthorizationSpecification(
             request,
-            permissions,
-            noteService,
-            queryDialectHelper
+            permissions
         )
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
-        return Note::class.java == context.resourceType
+    override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+        return TestDocument::class.java == request.resourceType
     }
+
 }

@@ -20,9 +20,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationEntityMapper
-import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.authorization.Role
 import com.ritense.authorization.permission.ContainerPermissionCondition.Companion.CONTAINER
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -42,8 +42,8 @@ data class ContainerPermissionCondition<TO : Any>(
         val mapper = findMapper(entity::class.java) as AuthorizationEntityMapper<FROM, TO>
         val relatedEntities = mapper.mapRelated(entity)
         val spec = findChildSpecification()
-        return relatedEntities.any {relatedEntity ->
-            spec.isAuthorized(relatedEntity)
+        return relatedEntities.any {relatedEntity -> //TODO: entity is not used
+            spec.isAuthorized()
         }
     }
 
@@ -69,7 +69,7 @@ data class ContainerPermissionCondition<TO : Any>(
 
     private fun findChildSpecification(): AuthorizationSpecification<TO> {
         return AuthorizationServiceHolder.currentInstance.getAuthorizationSpecification(
-            AuthorizationRequest(this.resourceType, Action(Action.IGNORE)),
+            EntityAuthorizationRequest(this.resourceType, Action(Action.IGNORE), null), //TODO: not sure if we need to pass in the child entity here or null
             listOf(
                 Permission(
                     resourceType = resourceType,

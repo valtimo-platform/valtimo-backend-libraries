@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.testimpl
+package com.ritense.authorization
 
-data class TestEntity(
-    val child: TestChildEntity? = null,
-    val name: String = "test"
-)
+interface ResourceDefinition<T> {
+    fun getAlias(): String
+    fun getClazz(): Class<T>
+    fun contextToInstance(context: Object): T
+    fun getContextProperty(): String
+}

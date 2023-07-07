@@ -34,8 +34,8 @@ class AuthorizationSpecificationTest {
     @Test
     fun `isAuthorized should return true`() {
         val spec = TestAuthorizationSpecification(
-            AuthorizationRequest(
-                TestEntity::class.java, action = TestEntityActionProvider.complete
+            EntityAuthorizationRequest(
+                TestEntity::class.java, action = TestEntityActionProvider.complete, TestEntity()
             ),
             listOf(
                 Permission(
@@ -47,14 +47,14 @@ class AuthorizationSpecificationTest {
             )
         )
 
-        assertEquals(true, spec.isAuthorized(TestEntity()))
+        assertEquals(true, spec.isAuthorized())
     }
 
     @Test
     fun `isAuthorized should return false if no permission can be found for entity class`() {
         val spec = TestAuthorizationSpecification(
-            AuthorizationRequest(
-                TestEntity::class.java, action = TestEntityActionProvider.complete
+            EntityAuthorizationRequest(
+                TestEntity::class.java, action = TestEntityActionProvider.complete, TestEntity()
             ),
             listOf(
                 Permission(
@@ -66,14 +66,14 @@ class AuthorizationSpecificationTest {
             )
         ) as AuthorizationSpecification<Any>
 
-        assertEquals(false, spec.isAuthorized(TestEntity()))
+        assertEquals(false, spec.isAuthorized())
     }
 
     @Test
     fun `isAuthorized should return false if no permission can be found for requested action`() {
         val spec = TestAuthorizationSpecification(
-            AuthorizationRequest(
-                TestEntity::class.java, action = TestEntityActionProvider.view
+            EntityAuthorizationRequest(
+                TestEntity::class.java, action = TestEntityActionProvider.view, TestEntity()
             ),
             listOf(
                 Permission(
@@ -85,7 +85,7 @@ class AuthorizationSpecificationTest {
             )
         )
 
-        assertEquals(false, spec.isAuthorized(TestEntity()))
+        assertEquals(false, spec.isAuthorized())
     }
 
     @Test
@@ -97,8 +97,8 @@ class AuthorizationSpecificationTest {
             role = Role(key = ""))
         )
         val spec = TestAuthorizationSpecification(
-            AuthorizationRequest(
-                TestEntity::class.java, action = TestEntityActionProvider.complete
+            EntityAuthorizationRequest(
+                TestEntity::class.java, action = TestEntityActionProvider.complete, TestEntity()
             ),
             listOf(
                 permission
@@ -107,7 +107,7 @@ class AuthorizationSpecificationTest {
 
         whenever(permission.appliesTo(eq(TestEntity::class.java), any())).thenReturn(false)
 
-        val authorized = spec.isAuthorized(TestEntity())
+        val authorized = spec.isAuthorized()
         assertEquals(false, authorized)
 
         verify(permission).appliesTo(eq(TestEntity::class.java), any())

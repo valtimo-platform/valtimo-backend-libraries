@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.testimpl
+package com.ritense.authorization.web.rest.request
 
-data class TestEntity(
-    val child: TestChildEntity? = null,
-    val name: String = "test"
-)
+import com.fasterxml.jackson.annotation.JsonIgnore
+
+data class PermissionAvailableRequest(
+    val resource: String,
+    val action: String,
+    val context: PermissionContext
+) {
+    @JsonIgnore
+    fun getResourceAsClass(): Class<*> {
+        return Class.forName(resource)
+    }
+}

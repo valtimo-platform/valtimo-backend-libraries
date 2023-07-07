@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.testimpl
+package com.ritense.authorization.web.rest.result
 
-data class TestEntity(
-    val child: TestChildEntity? = null,
-    val name: String = "test"
+import com.ritense.authorization.web.rest.request.PermissionContext
+
+data class PermissionAvailableResult(
+    var resource: String,
+    var action: String,
+    var context: PermissionContext,
+    var available: Boolean
 )

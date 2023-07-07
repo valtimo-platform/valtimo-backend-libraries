@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.specification
+package com.ritense.authorization.testimpl
 
-import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationSpecification
-import com.ritense.authorization.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
+import javax.persistence.criteria.CriteriaBuilder
+import javax.persistence.criteria.CriteriaQuery
+import javax.persistence.criteria.Predicate
+import javax.persistence.criteria.Root
 
-class DenyAuthorizationSpecificationFactory<T: Any> : AuthorizationSpecificationFactory<T> {
-    override fun create(
-            request: AuthorizationRequest<T>,
-            permissions: List<Permission>
-    ): AuthorizationSpecification<T> {
-        return DenyAuthorizationSpecification(request, permissions)
+class TestDocumentAuthorizationSpecification(
+    authContext: AuthorizationRequest<TestDocument>,
+    permissions: List<Permission>,
+): AuthorizationSpecification<TestDocument>(authContext, permissions) {
+    override fun toPredicate(
+        root: Root<TestDocument>,
+        query: CriteriaQuery<*>,
+        criteriaBuilder: CriteriaBuilder
+    ): Predicate {
+        return criteriaBuilder.isTrue(root.isNotNull)
     }
 
-    override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
-        return request.action == Action<T>(Action.DENY) ||
-            permissions.isEmpty()
+    override fun identifierToEntity(identifier: String): TestDocument {
+        return TestDocument()
     }
 }
