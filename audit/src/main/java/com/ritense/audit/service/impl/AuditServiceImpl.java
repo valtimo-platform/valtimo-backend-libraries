@@ -21,21 +21,20 @@ import com.ritense.audit.domain.AuditRecordId;
 import com.ritense.audit.exception.AuditRecordNotFoundException;
 import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.audit.service.AuditService;
-import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.JsonSchemaDocumentActionProvider;
 import com.ritense.valtimo.contract.audit.AuditEvent;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Transactional
 public class AuditServiceImpl implements AuditService {
@@ -56,7 +55,7 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public AuditRecord findById(AuditRecordId auditRecordId) {
-        denyAuthorization();
+        // TODO: add authorization check
         return auditRecordRepository
             .findById(auditRecordId)
             .orElseThrow(() -> new AuditRecordNotFoundException("AuditRecord not found for " + auditRecordId));
@@ -79,35 +78,25 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public List<AuditRecord> findByEventAndOccurredBetween(Class<? extends AuditEvent> eventType, LocalDateTime from, LocalDateTime until, Pageable pageable) {
-        denyAuthorization();
+        // TODO: add authorization check
         return auditRecordRepository.findByEventAndOccurredBetween(eventType.getName(), from, until, pageable);
     }
 
     @Override
     public Page<AuditRecord> findByProperty(String key, Object value, Pageable pageable) {
-        denyAuthorization();
+        // TODO: add authorization check
         return auditRecordRepository.findAuditRecordsByProperty(key, value, pageable);
     }
 
     @Override
     public List<AuditRecord> findByEventTypeAndProperty(Class<? extends AuditEvent> eventType, String key, Object value) {
-        denyAuthorization();
+        // TODO: add authorization check
         return auditRecordRepository.findAuditRecordsByEventAndProperty(eventType.getName(), key, value);
     }
 
     @Override
     public void deleteAllBefore(LocalDateTime date) {
         auditRecordRepository.deleteAllBefore(date);
-    }
-
-    private void denyAuthorization() {
-        authorizationService.requirePermission(
-            new EntityAuthorizationRequest<>(
-                JsonSchemaDocumentSnapshot.class,
-                Action.deny(),
-                null
-            )
-        );
     }
 
 }

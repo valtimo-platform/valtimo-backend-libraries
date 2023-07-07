@@ -16,9 +16,8 @@
 
 package com.ritense.document.service;
 
-import com.ritense.authorization.Action;
-import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
@@ -37,6 +36,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import static com.ritense.document.repository.SearchFieldRepository.byIdDocumentDefinitionName;
 import static com.ritense.document.service.SearchFieldActionProvider.LIST_VIEW;
 
@@ -57,7 +57,7 @@ public class SearchFieldService {
     }
 
     public void addSearchField(String documentDefinitionName, SearchField searchField) {
-        denyAuthorization();
+        // TODO: add authorization check
 
         Optional<SearchField> optSearchField = searchFieldRepository
                 .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchField.getKey());
@@ -88,7 +88,7 @@ public class SearchFieldService {
     }
 
     public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
-        denyAuthorization();
+        // TODO: add authorization check
 
         searchFieldDtos.forEach(this::validateSearchField);
         searchFieldDtos.forEach(searchFieldDto ->
@@ -101,7 +101,7 @@ public class SearchFieldService {
     }
 
     public void createSearchConfiguration(List<SearchField> searchFields) {
-        denyAuthorization();
+        // TODO: add authorization check
 
         searchFields.forEach(searchField -> {
             assert searchField.getId() != null;
@@ -119,7 +119,7 @@ public class SearchFieldService {
     }
 
     public void deleteSearchField(String documentDefinitionName, String key) {
-        denyAuthorization();
+        // TODO: add authorization check
 
         searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName, key).ifPresent(
                 searchFieldRepository::delete);
@@ -171,13 +171,4 @@ public class SearchFieldService {
         }
     }
 
-    private void denyAuthorization() {
-        authorizationService.requirePermission(
-            new EntityAuthorizationRequest<>(
-                SearchField.class,
-                Action.deny(),
-                null
-            )
-        );
-    }
 }
