@@ -16,6 +16,7 @@
 
 package com.ritense.document.service;
 
+import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.document.domain.impl.searchfield.SearchField;
@@ -57,7 +58,7 @@ public class SearchFieldService {
     }
 
     public void addSearchField(String documentDefinitionName, SearchField searchField) {
-        // TODO: add authorization check
+        denyAuthorization();
 
         Optional<SearchField> optSearchField = searchFieldRepository
                 .findByIdDocumentDefinitionNameAndKey(documentDefinitionName, searchField.getKey());
@@ -88,7 +89,7 @@ public class SearchFieldService {
     }
 
     public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
-        // TODO: add authorization check
+        denyAuthorization();
 
         searchFieldDtos.forEach(this::validateSearchField);
         searchFieldDtos.forEach(searchFieldDto ->
@@ -101,7 +102,7 @@ public class SearchFieldService {
     }
 
     public void createSearchConfiguration(List<SearchField> searchFields) {
-        // TODO: add authorization check
+        denyAuthorization();
 
         searchFields.forEach(searchField -> {
             assert searchField.getId() != null;
@@ -119,7 +120,7 @@ public class SearchFieldService {
     }
 
     public void deleteSearchField(String documentDefinitionName, String key) {
-        // TODO: add authorization check
+        denyAuthorization();
 
         searchFieldRepository.findByIdDocumentDefinitionNameAndKey(documentDefinitionName, key).ifPresent(
                 searchFieldRepository::delete);
@@ -171,4 +172,13 @@ public class SearchFieldService {
         }
     }
 
+    private void denyAuthorization() {
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                SearchField.class,
+                Action.deny(),
+                null
+            )
+        );
+    }
 }

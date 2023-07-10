@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.document.domain.Document;
@@ -101,7 +102,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     @Transactional
     @Override
     public void makeSnapshot(Document.Id documentId, LocalDateTime createdOn, String createdBy) {
-        // TODO: add authorization check
+        denyAuthorization();
 
         var document = documentService.findBy(documentId)
             .orElseThrow(() -> new DocumentNotFoundException("Document not found with id " + documentId));
@@ -115,9 +116,19 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     @Transactional
     @Override
     public void deleteSnapshotsBy(String documentDefinitionName) {
-        // TODO: add authorization check
+        denyAuthorization();
 
         documentSnapshotRepository.deleteAllByDefinitionName(documentDefinitionName);
+    }
+
+    private void denyAuthorization() {
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentSnapshot.class,
+                Action.deny(),
+                null
+            )
+        );
     }
 
 }

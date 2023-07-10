@@ -18,7 +18,9 @@ package com.ritense.audit.service.impl;
 
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.service.AuditSearchService;
+import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -55,7 +57,7 @@ public class AuditSearchServiceImpl implements AuditSearchService {
 
     @Override
     public Page<AuditRecord> search(List<SearchCriteria> criteriaList, Pageable pageable) {
-        // TODO: add authorization check
+        denyAuthorization();
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<AuditRecord> query = cb.createQuery(AuditRecord.class);
         Root<AuditRecord> root = query.from(AuditRecord.class);
@@ -83,6 +85,16 @@ public class AuditSearchServiceImpl implements AuditSearchService {
 
     private Predicate isNotNull(CriteriaBuilder cb, Root<AuditRecord> root, String path, String value) {
         return queryDialectHelper.getJsonValueExistsInPathExpression(cb, root.get("auditEvent"), path, value);
+    }
+
+    private void denyAuthorization() {
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                AuditRecord.class,
+                Action.deny(),
+                null
+            )
+        );
     }
 
 }
