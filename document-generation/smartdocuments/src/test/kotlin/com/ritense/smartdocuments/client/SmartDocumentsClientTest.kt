@@ -208,7 +208,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
     @Test
     fun `400 Bad Request response should throw exception when generating document stream`() {
         val error400ResponseBody = readFileAsString("/data/post-generate-document-400-error-response.html")
-        mockDocumentenApi.enqueue(mockResponse(error400ResponseBody, "text/html; charset=utf-8", 400))//.setBodyDelay(1, SECONDS))
+        mockDocumentenApi.enqueue(mockResponse(error400ResponseBody, "text/html; charset=utf-8", 400).setBodyDelay(1, SECONDS))
 
         val exception = assertThrows(IllegalStateException::class.java) {
             client.generateDocumentStream(
