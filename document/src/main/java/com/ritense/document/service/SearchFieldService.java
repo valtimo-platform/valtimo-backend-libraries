@@ -17,8 +17,8 @@
 package com.ritense.document.service;
 
 import com.ritense.authorization.Action;
-import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import static com.ritense.document.repository.SearchFieldRepository.byIdDocumentDefinitionName;
 import static com.ritense.document.service.SearchFieldActionProvider.LIST_VIEW;
 

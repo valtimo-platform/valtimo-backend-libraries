@@ -30,12 +30,13 @@ import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.JsonSchemaDocumentActionProvider;
 import com.ritense.valtimo.contract.audit.AuditEvent;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Transactional
 public class AuditServiceImpl implements AuditService {

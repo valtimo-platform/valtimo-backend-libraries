@@ -123,6 +123,11 @@
             "roleKey": "ROLE_ADMIN"
         },
         {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "create",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
             "resourceType": "com.ritense.document.domain.impl.searchfield.SearchField",
             "action": "view",
             "roleKey": "ROLE_ADMIN",

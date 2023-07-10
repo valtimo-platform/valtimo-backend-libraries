@@ -17,8 +17,8 @@
 package com.ritense.document.service.impl;
 
 import com.ritense.authorization.Action;
-import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
@@ -28,12 +28,14 @@ import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 
 public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotService {
