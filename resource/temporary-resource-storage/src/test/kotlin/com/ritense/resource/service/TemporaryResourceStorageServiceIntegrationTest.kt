@@ -18,11 +18,15 @@ package com.ritense.resource.service
 
 import com.ritense.resource.BaseIntegrationTest
 import com.ritense.resource.domain.MetadataType
+import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.upload.MimeTypeDeniedException
+import kotlin.io.path.Path
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.io.ClassPathResource
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TemporaryResourceStorageServiceIntegrationTest : BaseIntegrationTest() {
@@ -41,6 +45,15 @@ class TemporaryResourceStorageServiceIntegrationTest : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should not store when the mimetype is not whitelisted`() {
+        assertThrows<MimeTypeDeniedException> {
+            ClassPathResource("files/test.zip").inputStream.use {
+                temporaryResourceStorageService.store(it)
+            }
+        }
+    }
+
+    @Test
     fun `should store and retrieve metadata`() {
         val fileData = "My file data"
         val fileName = "test.txt"
@@ -52,6 +65,27 @@ class TemporaryResourceStorageServiceIntegrationTest : BaseIntegrationTest() {
 
         val metadata = temporaryResourceStorageService.getResourceMetadata(resourceId)
         assertThat(metadata[MetadataType.FILE_NAME.key]).isEqualTo(fileName)
+        assertThat(metadata).doesNotContainKey(MetadataType.FILE_PATH.key)
+    }
+
+    @Test
+    fun `should not be able to traverse the filesystem using the resourceId`() {
+        val fileData = "My file data"
+        val fileName = "test.txt"
+
+        val resourceId = temporaryResourceStorageService.store(
+            fileData.byteInputStream(),
+            mapOf(MetadataType.FILE_NAME.key to fileName)
+        )
+
+        val metadataFilePath = temporaryResourceStorageService.getMetaDataFileFromResourceId(resourceId)
+
+        val newFile = Path(metadataFilePath.parent.parent.toString(), metadataFilePath.fileName.toString()).toFile()
+        newFile.writeBytes(Mapper.INSTANCE.get().writeValueAsBytes(mapOf("traversed" to true)))
+
+        val traversedMetaData = temporaryResourceStorageService.getResourceMetadata("../$resourceId")
+        assertThat(traversedMetaData).containsEntry(MetadataType.FILE_NAME.key, fileName)
+        assertThat(traversedMetaData).doesNotContainKey("traversed")
     }
 
     @Test

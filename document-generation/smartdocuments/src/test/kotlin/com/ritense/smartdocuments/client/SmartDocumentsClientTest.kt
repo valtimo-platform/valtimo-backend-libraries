@@ -21,6 +21,7 @@ import com.ritense.smartdocuments.BaseTest
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
@@ -50,7 +51,9 @@ internal class SmartDocumentsClientTest : BaseTest() {
             url = mockDocumentenApi.url("/").toString()
         )
 
-        temporaryResourceStorageService = TemporaryResourceStorageService()
+        temporaryResourceStorageService = TemporaryResourceStorageService(
+            uploadProperties = ValtimoUploadProperties()
+        )
 
         client = SmartDocumentsClient(
             properties,
@@ -205,7 +208,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
     @Test
     fun `400 Bad Request response should throw exception when generating document stream`() {
         val error400ResponseBody = readFileAsString("/data/post-generate-document-400-error-response.html")
-        mockDocumentenApi.enqueue(mockResponse(error400ResponseBody, "text/html; charset=utf-8", 400).setBodyDelay(1, SECONDS))
+        mockDocumentenApi.enqueue(mockResponse(error400ResponseBody, "text/html; charset=utf-8", 400))//.setBodyDelay(1, SECONDS))
 
         val exception = assertThrows(IllegalStateException::class.java) {
             client.generateDocumentStream(

@@ -56,22 +56,13 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @Transactional
-internal class DocumentenApiPluginIT : BaseIntegrationTest() {
-
-    @Autowired
-    lateinit var repositoryService: RepositoryService
-
-    @Autowired
-    lateinit var runtimeService: RuntimeService
-
-    @Autowired
-    lateinit var processDocumentService: ProcessDocumentService
-
-    @Autowired
-    lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
-
-    @Autowired
-    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+internal class DocumentenApiPluginIT @Autowired constructor(
+    private val repositoryService: RepositoryService,
+    private val runtimeService: RuntimeService,
+    private val processDocumentService: ProcessDocumentService,
+    private val pluginProcessLinkRepository: PluginProcessLinkRepository,
+    private val temporaryResourceStorageService: TemporaryResourceStorageService
+) : BaseIntegrationTest() {
 
     lateinit var server: MockWebServer
 
