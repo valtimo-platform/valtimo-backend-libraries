@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.mockito.kotlin.mock
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.WebClient
 import java.util.concurrent.TimeUnit.SECONDS
@@ -207,10 +206,10 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
     @Test
     fun `400 Bad Request response should throw exception when generating document stream`() {
-        val error400ResponseBody = readFileAsString("/data/post-generate-document-400-error-response.html")
-        mockDocumentenApi.enqueue(mockResponse(error400ResponseBody, "text/html; charset=utf-8", 400).setBodyDelay(1, SECONDS))
+        val responseBody = readFileAsString("/data/post-generate-document-400-error-response.html")
+        mockDocumentenApi.enqueue(mockResponse(responseBody, "text/html; charset=utf-8", 400).setBodyDelay(1, SECONDS))
 
-        val exception = assertThrows(IllegalStateException::class.java) {
+        val exception = assertThrows(HttpClientErrorException::class.java) {
             client.generateDocumentStream(
                 SmartDocumentsRequest(
                     emptyMap(),
@@ -223,7 +222,9 @@ internal class SmartDocumentsClientTest : BaseTest() {
         }
 
         assertEquals(
-            "SmartDocuments didn't generate any document. Please check the logs above for a HttpClientErrorException.",
+            "400 The server cannot or will not process the request due to something that is perceived to be a client " +
+                "error (e.g., no valid template specified, user has no privileges for the template, malformed request syntax, " +
+                "invalid request message framing, or deceptive request routing). Response received from server:\n" + responseBody,
             exception.message
         )
     }
