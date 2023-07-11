@@ -82,7 +82,6 @@ class DashboardResourceIT : BaseIntegrationTest() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].key").value("test_dashboard"))
             .andExpect(jsonPath("$[0].title").value("Test dashboard"))
-            .andExpect(jsonPath("$[0].description").value("Test description"))
             .andExpect(jsonPath("$[0].widgets", hasSize<Int>(1)))
             .andExpect(jsonPath("$[0].widgets[0].key").value("doorlooptijd"))
             .andExpect(jsonPath("$[0].widgets[0].title").value("Doorlooptijd"))

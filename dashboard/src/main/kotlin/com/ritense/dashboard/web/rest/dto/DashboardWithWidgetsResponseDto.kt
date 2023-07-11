@@ -21,14 +21,12 @@ import com.ritense.dashboard.domain.Dashboard
 data class DashboardWithWidgetsResponseDto(
     val key: String,
     val title: String,
-    val description: String,
     val widgets: List<WidgetConfigurationResponseDto>
 ) {
     companion object {
         fun of(dashboard: Dashboard) = DashboardWithWidgetsResponseDto(
             key = dashboard.key,
             title = dashboard.title,
-            description = dashboard.description,
             widgets = dashboard.widgetConfigurations.map {
                 WidgetConfigurationResponseDto.of(it)
             }
