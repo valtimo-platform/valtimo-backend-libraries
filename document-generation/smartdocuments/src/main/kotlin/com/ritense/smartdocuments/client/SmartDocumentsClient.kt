@@ -26,27 +26,22 @@ import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
-import java.io.InputStream
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
-import java.util.Base64
-import java.util.UUID
 import org.apache.commons.io.FilenameUtils
-import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.codec.ClientCodecConfigurer
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.reactive.function.BodyExtractors
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import org.springframework.web.reactive.function.client.awaitBody
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-
+import org.springframework.web.reactive.function.client.bodyToFlux
+import java.io.InputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
+import java.util.Base64
+import java.util.UUID
 
 class SmartDocumentsClient(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
@@ -72,37 +67,20 @@ class SmartDocumentsClient(
         smartDocumentsRequest: SmartDocumentsRequest,
         outputFormat: DocumentFormatOption,
     ): FileStreamResponse {
+        val responseOut = PipedOutputStream()
+        val responseIn = PipedInputStream(responseOut)
 
-        val response = webClient().post()
+        val bodyFlux = webClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
             .contentType(APPLICATION_JSON_UTF8)
             .bodyValue(fixRequest(smartDocumentsRequest))
-            .exchangeToMono { Mono.just(it) }
-            .doOnError { throw toHttpClientErrorException(it) }
-            .block()
-
-        val statusCode = response.statusCode()
-        if(!statusCode.is2xxSuccessful) {
-            val responseBody =
-                response.bodyToMono(String::class.java).block()
-            throw toHttpClientErrorException(WebClientResponseException(
-                statusCode.value(),
-                statusCode.reasonPhrase,
-                response.headers().asHttpHeaders(),
-                responseBody.encodeToByteArray(),
-                null))
-        }
-
-        val responseOut = PipedOutputStream()
-        val responseIn = PipedInputStream(responseOut)
-        val bodyFlux = response.body<Flux<DataBuffer>>(BodyExtractors.toDataBuffers())
+            .retrieve()
+            .bodyToFlux<DataBuffer>()
             .doOnError {
-                responseIn.use {}
+                responseIn.close()
                 throw toHttpClientErrorException(it)
             }
-            .doFinally {
-                responseOut.use {}
-            }
+            .doFinally { responseOut.close() }
 
         DataBufferUtils.write(bodyFlux, responseOut).subscribe(DataBufferUtils.releaseConsumer())
         val responseResourceId = temporaryResourceStorageService.store(responseIn)
