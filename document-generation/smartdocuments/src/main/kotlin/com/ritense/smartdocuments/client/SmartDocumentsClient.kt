@@ -26,22 +26,27 @@ import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
-import org.apache.commons.io.FilenameUtils
-import org.springframework.core.io.buffer.DataBuffer
-import org.springframework.core.io.buffer.DataBufferUtils
-import org.springframework.http.HttpStatus
-import org.springframework.http.codec.ClientCodecConfigurer
-import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
-import org.springframework.web.reactive.function.client.ExchangeStrategies
-import org.springframework.web.reactive.function.client.WebClient
-import org.springframework.web.reactive.function.client.WebClientResponseException
-import org.springframework.web.reactive.function.client.bodyToFlux
 import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.util.Base64
 import java.util.UUID
+import org.apache.commons.io.FilenameUtils
+import org.springframework.core.io.ByteArrayResource
+import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.http.HttpStatus
+import org.springframework.http.codec.ClientCodecConfigurer
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.reactive.function.BodyExtractors
+import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
+import org.springframework.web.reactive.function.client.ExchangeStrategies
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.web.reactive.function.client.awaitBody
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+
 
 class SmartDocumentsClient(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
@@ -67,20 +72,37 @@ class SmartDocumentsClient(
         smartDocumentsRequest: SmartDocumentsRequest,
         outputFormat: DocumentFormatOption,
     ): FileStreamResponse {
-        val responseOut = PipedOutputStream()
-        val responseIn = PipedInputStream(responseOut)
 
-        val bodyFlux = webClient().post()
+        val response = webClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
             .contentType(APPLICATION_JSON_UTF8)
             .bodyValue(fixRequest(smartDocumentsRequest))
-            .retrieve()
-            .bodyToFlux<DataBuffer>()
+            .exchangeToMono { Mono.just(it) }
+            .doOnError { throw toHttpClientErrorException(it) }
+            .block()
+
+        val statusCode = response.statusCode()
+        if(!statusCode.is2xxSuccessful) {
+            val responseBody =
+                response.bodyToMono(String::class.java).block()
+            throw toHttpClientErrorException(WebClientResponseException(
+                statusCode.value(),
+                statusCode.reasonPhrase,
+                response.headers().asHttpHeaders(),
+                responseBody.encodeToByteArray(),
+                null))
+        }
+
+        val responseOut = PipedOutputStream()
+        val responseIn = PipedInputStream(responseOut)
+        val bodyFlux = response.body<Flux<DataBuffer>>(BodyExtractors.toDataBuffers())
             .doOnError {
-                responseIn.close()
+                responseIn.use {}
                 throw toHttpClientErrorException(it)
             }
-            .doFinally { responseOut.close() }
+            .doFinally {
+                responseOut.use {}
+            }
 
         DataBufferUtils.write(bodyFlux, responseOut).subscribe(DataBufferUtils.releaseConsumer())
         val responseResourceId = temporaryResourceStorageService.store(responseIn)

@@ -207,8 +207,29 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
     @Test
     fun `400 Bad Request response should throw exception when generating document stream`() {
-        val error400ResponseBody = readFileAsString("/data/post-generate-document-400-error-response.html")
-        mockDocumentenApi.enqueue(mockResponse(error400ResponseBody, "text/html; charset=utf-8", 400).setBodyDelay(1, SECONDS))
+        val responseBody = """
+            <!doctype html>
+            <html lang="en">
+
+            <head>
+                <title>HTTP Status 400 – Bad Request</title>
+            </head>
+
+            <body>
+                <h1>HTTP Status 400 – Bad Request</h1>
+                <hr class="line" />
+                <p><b>Type</b> Status Report</p>
+                <p><b>Message</b> INVALID_XML: No valid template specified</p>
+                <p><b>Description</b> The server cannot or will not process the request due to something that is perceived to be a
+                    client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+                </p>
+                <hr class="line" />
+                <h3>Apache Tomcat/9.0.45</h3>
+            </body>
+
+            </html>
+        """.trimIndent()
+        mockDocumentenApi.enqueue(mockResponse(responseBody, "text/html; charset=utf-8", 400))//.setBodyDelay(1, SECONDS))
 
         val exception = assertThrows(IllegalStateException::class.java) {
             client.generateDocumentStream(
