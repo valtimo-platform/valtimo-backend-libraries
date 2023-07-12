@@ -12,8 +12,8 @@
                         "field": "content.content",
                         "path": "$.height",
                         "operator": "<",
-                        "value": 20000,
-                        "clazz": "int"
+                        "value": "20000",
+                        "clazz": "java.lang.String"
                     },
                     {
                         "type": "field",

@@ -19,5 +19,13 @@ package com.ritense.authorization
 class EntityAuthorizationRequest<T>(
     override val resourceType: Class<T>,
     override val action: Action<T>,
-    val entity: T? //TODO: Determine if this really should be nullable
-) : AuthorizationRequest<T>
+    override val user: String?,
+    val entity: T?, //TODO: Determine if this really should be nullable
+) : AuthorizationRequest<T> {
+
+    constructor(
+        resourceType: Class<T>,
+        action: Action<T>,
+        entity: T?
+    ) : this(resourceType, action, null, entity)
+}

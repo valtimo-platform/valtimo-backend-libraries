@@ -29,12 +29,15 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.service.CamundaTaskService
 import java.util.UUID
-import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -58,7 +61,7 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
     lateinit var processLinkService: ProcessLinkService
 
     @Autowired
-    lateinit var taskService: TaskService
+    lateinit var taskService: CamundaTaskService
 
     @Test
     fun `should not create form flow instance when Camunda user task is created`() {
@@ -102,6 +105,7 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER, authorities = [AuthoritiesConstants.USER])
     fun `should create form flow instance when task is opened`() {
         documentDefinitionService.deploy(
             "" +
@@ -147,13 +151,15 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
             )
         }
 
-        val task = taskService.createTaskQuery()
-            .processInstanceId(result.resultingProcessInstanceId().get().toString())
-            .singleResult()
+        val task = taskService.findTask(byProcessInstanceId(result.resultingProcessInstanceId().get().toString()))
         assertEquals(0, formFlowInstanceRepository.findAll().size)
 
         processLinkService.openTask(UUID.fromString(task.id))
 
         assertEquals(1, formFlowInstanceRepository.findAll().size)
+    }
+
+    companion object {
+        private const val TEST_USER = "user@valtimo.nl"
     }
 }

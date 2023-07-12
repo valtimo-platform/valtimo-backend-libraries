@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.AuthorizationSpecification;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -29,14 +31,18 @@ import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.jpa.domain.Specification;
 
+import javax.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -63,6 +69,8 @@ class CamundaTaskServiceTest {
     private CamundaTaskService camundaTaskService;
     private RuntimeService runtimeService;
     private UserManagementService userManagementService;
+    private EntityManager entityManager;
+    private AuthorizationService authorizationService;
 
     @BeforeEach
     void setUp() {
@@ -73,6 +81,8 @@ class CamundaTaskServiceTest {
         delegateTaskHelper = mock(DelegateTaskHelper.class);
         camundaTaskRepository = mock(CamundaTaskRepository.class);
         userManagementService = mock(UserManagementService.class);
+        entityManager = mock(EntityManager.class);
+        authorizationService = mock(AuthorizationService.class);
         task = new CamundaTask(TASK_ID, 0, null, null, null, List.of(), null, null, null, null, null, null, null, null, null, null, 0, null, null, null, null, 0, null, Set.of());
         camundaTaskService = spy(
             new CamundaTaskService(
@@ -86,9 +96,12 @@ class CamundaTaskServiceTest {
                 applicationEventPublisher,
                 runtimeService,
                 userManagementService,
-                null
+                entityManager,
+                authorizationService
             )
         );
+        when(authorizationService.getAuthorizationSpecification(any(), any()))
+            .thenReturn(mock(AuthorizationSpecification.class));
     }
 
     @Test
@@ -98,14 +111,14 @@ class CamundaTaskServiceTest {
 
     @Test
     void claimTask_taskDoesNotExist() {
-        when(camundaTaskRepository.findById(TASK_ID)).thenReturn(Optional.empty());
+        when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.empty());
         assertThrows(TaskNotFoundException.class, () -> camundaTaskService.findTaskById(TASK_ID));
     }
 
     @Test
     void claimTask_taskClaimedDoesntExist() {
         //when
-        when(camundaTaskRepository.findById(TASK_ID)).thenReturn(Optional.of(task));
+        when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new ProcessEngineException()).when(taskService).setAssignee(eq(TASK_ID), eq(ASSIGNEE));
         doReturn(task).when(camundaTaskService).findTaskById(TASK_ID);
 
@@ -114,7 +127,7 @@ class CamundaTaskServiceTest {
 
     @Test
     void claimTask_taskClaimedWithNoPermissions() {
-        when(camundaTaskRepository.findById(TASK_ID)).thenReturn(Optional.of(task));
+        when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new AuthorizationException("some reason")).when(taskService).setAssignee(eq(TASK_ID), eq(ASSIGNEE));
         assertThrows(IllegalStateException.class, () -> camundaTaskService.assign(TASK_ID, ASSIGNEE));
     }
@@ -127,14 +140,14 @@ class CamundaTaskServiceTest {
 
     @Test
     void unclaimTask_taskUnclaimedDoesntExist() {
-        when(camundaTaskRepository.findById(TASK_ID)).thenReturn(Optional.of(task));
+        when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new ProcessEngineException()).when(taskService).setAssignee(eq(TASK_ID), isNull());
         assertThrows(IllegalStateException.class, () -> camundaTaskService.unassign(TASK_ID));
     }
 
     @Test
     void unclaimTask_taskClaimedWithNoPermissions() {
-        when(camundaTaskRepository.findById(TASK_ID)).thenReturn(Optional.of(task));
+        when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new AuthorizationException("some reason")).when(taskService).setAssignee(eq(TASK_ID), isNull());
         assertThrows(IllegalStateException.class, () -> camundaTaskService.unassign(TASK_ID));
     }
@@ -144,39 +157,49 @@ class CamundaTaskServiceTest {
         final HashMap<String, Object> variables = new HashMap<>();
         variables.put("test", "test");
 
-        when(camundaTaskRepository.findById(TASK_ID)).thenReturn(Optional.of(task));
+        when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new FormFieldValidationException("a error")).when(formService).submitTaskForm(anyString(), anyMap());
 
-        assertThrows(FormFieldValidationException.class, () -> camundaTaskService.completeTask(TASK_ID, variables));
+        assertThrows(FormFieldValidationException.class, () -> camundaTaskService.completeTaskWithFormData(TASK_ID, variables));
     }
 
     @Test
     void taskComplete_withoutVariablesSuccessfully() {
         //initialize own taskService here because we need to override the complete method
-        TaskService taskService = mock(TaskService.class, RETURNS_DEEP_STUBS);
-        CamundaTaskService camundaTaskService = spy(new CamundaTaskService(taskService, null, null, delegateTaskHelper, camundaTaskRepository, null,
-            Optional.empty(), applicationEventPublisher, null, userManagementService, null));
+        CamundaTaskService camundaTaskService = spy(new CamundaTaskService(
+            taskService,
+            null,
+            null,
+            delegateTaskHelper,
+            camundaTaskRepository,
+            null,
+            Optional.empty(),
+            applicationEventPublisher,
+            null,
+            userManagementService,
+            entityManager,
+            authorizationService));
 
-        when(camundaTaskRepository.findById(TASK_ID)).thenReturn(Optional.of(task));
+        when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doNothing().when(taskService).complete(TASK_ID);
 
-        camundaTaskService.completeTask(TASK_ID, null);
-        verify(camundaTaskService, times(1)).completeTask(TASK_ID, null);
+        camundaTaskService.completeTaskWithFormData(TASK_ID, null);
+        verify(camundaTaskService, times(1)).completeTaskWithFormData(TASK_ID, null);
         verify(taskService, times(1)).complete(TASK_ID);
     }
 
     @Test
     void taskComplete_withoutVariablesAndNoAuthorization() {
-        when(camundaTaskRepository.findById(TASK_ID)).thenReturn(Optional.of(task));
+        when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new AuthorizationException("some reason")).when(taskService).complete(anyString());
-        assertThrows(IllegalStateException.class, () -> camundaTaskService.completeTask(TASK_ID, null));
+        assertThrows(IllegalStateException.class, () -> camundaTaskService.completeTaskWithFormData(TASK_ID, null));
     }
 
     @Test
     void taskComplete_withoutVariablesAndProcessEngineException() {
-        when(camundaTaskRepository.findById(TASK_ID)).thenReturn(Optional.of(task));
+        when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new ProcessEngineException()).when(taskService).complete(anyString());
-        assertThrows(IllegalStateException.class, () -> camundaTaskService.completeTask(TASK_ID, null));
+        assertThrows(IllegalStateException.class, () -> camundaTaskService.completeTaskWithFormData(TASK_ID, null));
     }
 
 }

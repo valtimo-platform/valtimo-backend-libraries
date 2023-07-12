@@ -25,20 +25,22 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byName
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
-import java.util.UUID
-import kotlin.test.assertEquals
+import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
-
+import java.util.UUID
+import kotlin.test.assertEquals
 
 @Transactional
 class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
@@ -56,7 +58,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     lateinit var runtimeService: RuntimeService
 
     @Autowired
-    lateinit var taskService: TaskService
+    lateinit var taskService: CamundaTaskService
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
@@ -126,8 +128,9 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
             )
         }
 
-        val task = taskService.createTaskQuery().taskName("child process user task").singleResult()
-
+        val task = AuthorizationContext.runWithoutAuthorization {
+            taskService.findTask(byName("child process user task"))
+        }
         assertEquals(task.assignee, testUser.email)
     }
 
@@ -157,7 +160,9 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
             )
         }
 
-        val task = taskService.createTaskQuery().taskName("child process user task").singleResult()
+        val task = AuthorizationContext.runWithoutAuthorization {
+            taskService.findTask(byName("child process user task"))
+        }
 
         assertNull(task.assignee)
     }
@@ -182,13 +187,15 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
         documentService.assignUserToDocument(testDocument.id().id, testUser2.id)
 
-        val updatedTask = taskService.createTaskQuery().taskName("child process user task").singleResult()
-
+        val updatedTask = AuthorizationContext.runWithoutAuthorization {
+            taskService.findTask(byName("child process user task"))
+        }
         assertEquals(updatedTask.assignee, testUser2.email)
 
     }
 
     @Test
+    @WithMockUser(username = "user@ritense.com", authorities = [ADMIN])
     fun `should should remove task assignee when document assignee is removed`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
@@ -208,8 +215,9 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
         documentService.unassignUserFromDocument(testDocument.id().id)
 
-        val task = taskService.createTaskQuery().taskName("child process user task").singleResult()
-
+        val task = AuthorizationContext.runWithoutAuthorization {
+            taskService.findTask(byName("child process user task"))
+        }
         assertNull(task.assignee)
     }
 }

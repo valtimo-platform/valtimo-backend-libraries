@@ -17,6 +17,7 @@
 package com.ritense.processdocument.service
 
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
@@ -113,7 +114,9 @@ class CorrelationServiceImpl(
     }
 
     private fun associationExists(processInstanceId: String): Boolean {
-        return associationService.findProcessDocumentInstance(CamundaProcessInstanceId(processInstanceId)).isPresent
+        return runWithoutAuthorization {
+            associationService.findProcessDocumentInstance(CamundaProcessInstanceId(processInstanceId)).isPresent
+        }
     }
 
     private fun associateDocumentToProcess(
@@ -121,15 +124,16 @@ class CorrelationServiceImpl(
         processName: String?,
         businessKey: String
     ) {
-        AuthorizationContext.runWithoutAuthorization {
+        runWithoutAuthorization {
             documentService.findBy(JsonSchemaDocumentId.existingId(UUID.fromString(businessKey)))
-        }.ifPresentOrElse({ document: Document ->
-            associationService.createProcessDocumentInstance(
-                processInstanceId,
-                UUID.fromString(document.id().toString()),
-                processName
-            )
-        }) { throw DocumentNotFoundException("No Document found with id $businessKey") }
+                .ifPresentOrElse({ document: Document ->
+                    associationService.createProcessDocumentInstance(
+                        processInstanceId,
+                        UUID.fromString(document.id().toString()),
+                        processName
+                    )
+                }) { throw DocumentNotFoundException("No Document found with id $businessKey") }
+        }
     }
 
     private fun correlate(

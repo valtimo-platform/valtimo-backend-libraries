@@ -22,14 +22,17 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
@@ -49,7 +52,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
     lateinit var camundaProcessService: CamundaProcessService
 
     @Autowired
-    lateinit var taskService: TaskService
+    lateinit var taskService: CamundaTaskService
 
     @Autowired
     lateinit var repositoryService: RepositoryService
@@ -87,6 +90,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
     }
 
     @Test
+    @WithMockUser(username = TEST_USER, authorities = [USER])
     fun `should create form flow instance when task is opened`() {
         val processDefinition = repositoryService.createProcessDefinitionQuery()
             .latestVersion()
@@ -108,9 +112,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
             mapOf()
         )
 
-        val task = taskService.createTaskQuery()
-            .processInstanceId(processInstance.processInstanceDto.id)
-            .singleResult()
+        val task = taskService.findTask(byProcessInstanceId(processInstance.processInstanceDto.id))
 
         assertEquals(0, formFlowInstanceRepository.findAll().size)
 
@@ -150,5 +152,9 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
         val additionalProperties = dbFormFlowInstances[0].getAdditionalProperties()
         assertEquals(additionalProperties["documentDefinitionName"], "some-document")
         assertEquals(additionalProperties["processDefinitionKey"], "formflow-one-task-process")
+    }
+
+    companion object {
+        private const val TEST_USER = "user@valtimo.nl"
     }
 }

@@ -29,8 +29,8 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.task.Task;
+import com.ritense.valtimo.camunda.domain.CamundaTask;
+import com.ritense.valtimo.service.CamundaTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -41,6 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
+
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.all;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -71,7 +73,7 @@ class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
     private ProcessDocumentAssociationService pdaService;
 
     @Inject
-    private TaskService taskService;
+    private CamundaTaskService taskService;
 
     private MockMvc mockMvc;
     private FormDefinition formDefinition;
@@ -104,7 +106,7 @@ class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
             )
         )));
 
-        List<Task> list = taskService.createTaskQuery().list();
+        List<CamundaTask> list = taskService.findTasks(all());
 
         assertEquals(1, list.size());
 

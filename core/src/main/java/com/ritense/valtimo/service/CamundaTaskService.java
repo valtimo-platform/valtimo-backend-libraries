@@ -16,6 +16,12 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.AuthorizationSpecification;
+import com.ritense.authorization.EntityAuthorizationRequest;
+import com.ritense.authorization.Role;
+import com.ritense.authorization.permission.Permission;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
@@ -45,7 +51,7 @@ import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.form.TaskFormData;
 import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
-import org.camunda.bpm.engine.task.IdentityLinkType;
+import org.camunda.bpm.engine.task.Comment;
 import org.hibernate.query.criteria.internal.OrderImpl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -55,25 +61,44 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGN;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGNABLE;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.CLAIM;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.COMPLETE;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.LIST_VIEW;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.VIEW;
+import static com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.byTaskId;
+import static com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.byType;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.KEY;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessInstanceSpecificationHelper.BUSINESS_KEY;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.CREATE_TIME;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.DUE_DATE;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.EXECUTION;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.ID;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.PROCESS_DEFINITION;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssignee;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCandidateGroups;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byId;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessDefinitionKeys;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceId;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byUnassigned;
 import static java.util.stream.Collectors.toSet;
+import static org.camunda.bpm.engine.task.IdentityLinkType.CANDIDATE;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 public class CamundaTaskService {
@@ -92,6 +117,7 @@ public class CamundaTaskService {
     private final RuntimeService runtimeService;
     private final UserManagementService userManagementService;
     private final EntityManager entityManager;
+    private final AuthorizationService authorizationService;
 
     public CamundaTaskService(
         TaskService taskService,
@@ -104,7 +130,8 @@ public class CamundaTaskService {
         ApplicationEventPublisher applicationEventPublisher,
         RuntimeService runtimeService,
         UserManagementService userManagementService,
-        EntityManager entityManager
+        EntityManager entityManager,
+        AuthorizationService authorizationService
     ) {
         this.taskService = taskService;
         this.formService = formService;
@@ -117,31 +144,56 @@ public class CamundaTaskService {
         this.runtimeService = runtimeService;
         this.userManagementService = userManagementService;
         this.entityManager = entityManager;
+        this.authorizationService = authorizationService;
     }
 
     @Transactional(readOnly = true)
     public CamundaTask findTaskById(String taskId) {
-        return camundaTaskRepository.findById(taskId)
+        var spec = getAuthorizationSpecification(VIEW);
+        return Optional.ofNullable(findTask(spec.and(byId(taskId))))
             .orElseThrow(() -> new TaskNotFoundException(String.format("Cannot find task %s", taskId)));
     }
 
+    @Transactional
     public void assign(String taskId, String assignee) throws IllegalStateException {
-        final CamundaTask task = findTaskById(taskId);
-        final String currentAssignee = task.getAssignee();
-        try {
-            taskService.setAssignee(task.getId(), assignee);
-            publishTaskAssignedEvent(task, currentAssignee, assignee);
-        } catch (AuthorizationException ex) {
-            throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
-        } catch (ProcessEngineException ex) {
-            throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
+        if (assignee == null) {
+            unassign(taskId);
+        } else {
+            final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(CamundaTask.class, ASSIGNABLE, assignee, task)
+            );
+
+            final String currentUser = SecurityUtils.getCurrentUserLogin();
+            if (assignee.equals(currentUser)) {
+                if (task.getAssignee() == null) {
+                    requirePermission(task, CLAIM);
+                } else if (!task.getAssignee().equals(currentUser)) {
+                    requirePermission(task, ASSIGN);
+                }
+            } else {
+                requirePermission(task, ASSIGN);
+            }
+            final String currentAssignee = task.getAssignee();
+            try {
+                taskService.setAssignee(task.getId(), assignee);
+                entityManager.refresh(task);
+                publishTaskAssignedEvent(task, currentAssignee, assignee);
+            } catch (AuthorizationException ex) {
+                throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
+            } catch (ProcessEngineException ex) {
+                throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
+            }
         }
     }
 
+    @Transactional
     public void unassign(String taskId) {
-        final CamundaTask task = findTaskById(taskId);
+        final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
+        requirePermission(task, ASSIGN);
         try {
             taskService.setAssignee(task.getId(), NO_USER);
+            entityManager.refresh(task);
         } catch (AuthorizationException ex) {
             throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
         } catch (ProcessEngineException ex) {
@@ -149,29 +201,52 @@ public class CamundaTaskService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<ManageableUser> getCandidateUsers(String taskId) {
-        final CamundaTask task = findTaskById(taskId);
-        final Optional<CamundaIdentityLink> first = camundaIdentityLinkRepository.findAllByTaskIdAndType(task.getId(), IdentityLinkType.CANDIDATE)
+        final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
+        requirePermission(task, VIEW);
+        final Set<String> taskCandidateGroups = camundaIdentityLinkRepository.findAll(byTaskId(task.getId()).and(byType(CANDIDATE)))
             .stream()
-            .findFirst();
+            .map(CamundaIdentityLink::getGroupId)
+            .collect(toSet());
 
-        if (first.isPresent()) {
-            return userManagementService.findByRole(first.get().getGroupId());
+        if (!taskCandidateGroups.isEmpty()) {
+            var allowedRoles = authorizationService.getPermissions(CamundaTask.class, ASSIGNABLE).stream()
+                .map(Permission::getRole)
+                .map(Role::getKey)
+                .collect(toSet());
+            var nonAssignableTaskRoles = taskCandidateGroups.stream()
+                .filter(taskRole -> !allowedRoles.contains(taskRole))
+                .collect(Collectors.joining(", "));
+            if (!nonAssignableTaskRoles.isEmpty()) {
+                throw new IllegalStateException("Failed to get candidate users for task '" + task.getTaskDefinitionKey() + "'. Task candidate group role '" + nonAssignableTaskRoles + "' is missing permission 'ASSIGNABLE'");
+            }
+
+            return taskCandidateGroups.stream()
+                .map(userManagementService::findByRole)
+                .flatMap(Collection::stream)
+                .toList();
         } else {
             return Collections.emptyList();
         }
     }
 
-    public void completeTaskWithoutFormData(String taskId) {
+    @Transactional
+    public void complete(String taskId) {
+        final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
+        requirePermission(task, COMPLETE);
         taskService.complete(taskId);
+        entityManager.detach(task);
     }
 
-    public void completeTask(String taskId, Map<String, Object> variables) {
-        final CamundaTask task = findTaskById(taskId);
+    @Transactional
+    public void completeTaskWithFormData(String taskId, Map<String, Object> variables) {
         try {
             if (variables == null || variables.isEmpty()) {
-                completeTaskWithoutFormData(task.getId());
+                complete(taskId);
             } else {
+                final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
+                requirePermission(task, COMPLETE);
                 formService.submitTaskForm(task.getId(), FormUtils.createTypedVariableMap(variables));
             }
         } catch (FormFieldValidationException ex) {
@@ -181,45 +256,57 @@ public class CamundaTaskService {
         }
     }
 
+    @Transactional
     public void completeTaskAndDeleteFiles(String taskId, TaskCompletionDTO taskCompletionDTO) {
-        completeTask(taskId, taskCompletionDTO.getVariables());
+        completeTaskWithFormData(taskId, taskCompletionDTO.getVariables());
         optionalResourceService.ifPresent(
             amazonS3Service -> taskCompletionDTO.getFilesToDelete().forEach(amazonS3Service::removeResource));
     }
 
     @Transactional(readOnly = true)
     public Page<CamundaTask> findTasks(Specification<CamundaTask> specification, Pageable pageable) {
-        return camundaTaskRepository.findAll(specification, pageable);
+        var spec = getAuthorizationSpecification(LIST_VIEW);
+        return camundaTaskRepository.findAll(spec.and(specification), pageable);
     }
 
     @Transactional(readOnly = true)
     public List<CamundaTask> findTasks(Specification<CamundaTask> specification, Sort sort) {
-        return camundaTaskRepository.findAll(specification, sort);
+        var spec = getAuthorizationSpecification(LIST_VIEW);
+        return camundaTaskRepository.findAll(spec.and(specification), sort);
     }
 
     @Transactional(readOnly = true)
     public List<CamundaTask> findTasks(Specification<CamundaTask> specification) {
-        return camundaTaskRepository.findAll(specification);
+        var spec = getAuthorizationSpecification(LIST_VIEW);
+        return camundaTaskRepository.findAll(spec.and(specification));
     }
 
     @Transactional(readOnly = true)
     public CamundaTask findTask(Specification<CamundaTask> specification) {
-        return camundaTaskRepository.findOne(specification).orElse(null);
+        var spec = getAuthorizationSpecification(VIEW);
+        return camundaTaskRepository.findOne(spec.and(specification)).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public Long countTasks(Specification<CamundaTask> specification) {
+        var spec = getAuthorizationSpecification(LIST_VIEW);
+        return camundaTaskRepository.count(spec.and(specification));
     }
 
     @Transactional(readOnly = true)
     public Page<TaskExtended> findTasksFiltered(
         TaskFilter taskFilter, Pageable pageable
     ) throws IllegalAccessException {
-        var specification = buildTaskFilterSpecification(taskFilter);
+        var spec = getAuthorizationSpecification(LIST_VIEW);
+        var specification = spec.and(buildTaskFilterSpecification(taskFilter));
 
         var cb = entityManager.getCriteriaBuilder();
         var query = cb.createTupleQuery();
         var taskRoot = query.from(CamundaTask.class);
-        var executionIdPath = taskRoot.get("execution").get("id");
-        var businessKeyPath = taskRoot.get("execution").get("businessKey");
-        var processDefinitionIdPath = taskRoot.get("processDefinition").get("id");
-        var processDefinitionKeyPath = taskRoot.get("processDefinition").get("key");
+        var executionIdPath = taskRoot.get(EXECUTION).get(ID);
+        var businessKeyPath = taskRoot.get(EXECUTION).get(BUSINESS_KEY);
+        var processDefinitionIdPath = taskRoot.get(PROCESS_DEFINITION).get(ID);
+        var processDefinitionKeyPath = taskRoot.get(PROCESS_DEFINITION).get(KEY);
 
         query.multiselect(taskRoot, executionIdPath, businessKeyPath, processDefinitionIdPath, processDefinitionKeyPath);
         query.distinct(true);
@@ -266,10 +353,11 @@ public class CamundaTaskService {
             })
             .toList();
 
-        var total = camundaTaskRepository.count(specification);
+        var total = camundaTaskRepository.count(spec.and(specification));
         return new PageImpl<>(tasks, pageable, total);
     }
 
+    @Transactional(readOnly = true)
     public List<TaskInstanceWithIdentityLink> getProcessInstanceTasks(String processInstanceId, String businessKey) {
         return findTasks(byProcessInstanceId(processInstanceId), Sort.by(DESC, CREATE_TIME))
             .stream()
@@ -286,17 +374,55 @@ public class CamundaTaskService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<CamundaIdentityLinkDto> getIdentityLinks(String taskId) {
         final List<CamundaIdentityLink> identityLinksForTask = getIdentityLinksForTask(taskId);
         return identityLinksForTask.stream().map(CamundaIdentityLinkDto::of).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public Map<String, Object> getVariables(String taskInstanceId) {
         return findTaskById(taskInstanceId).getVariables(null);
     }
 
+    @Transactional(readOnly = true)
     public List<CamundaIdentityLink> getIdentityLinksForTask(String taskId) {
-        return camundaIdentityLinkRepository.findAllByTaskId(taskId);
+        final CamundaTask task = findTaskById(taskId);
+        return camundaIdentityLinkRepository.findAll(byTaskId(task.getId()));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Comment> getTaskComments(String taskId) {
+        final CamundaTask task = findTaskById(taskId);
+        return taskService.getTaskComments(task.getId());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Comment> getProcessInstanceComments(String processInstanceId) {
+        var comments = taskService.getProcessInstanceComments(processInstanceId);
+        comments.forEach(comment -> {
+            if (comment.getTaskId() != null) {
+                final CamundaTask task = runWithoutAuthorization(() -> findTaskById(comment.getTaskId()));
+                requirePermission(task, VIEW);
+            }
+        });
+        return comments;
+    }
+
+    @Transactional
+    public void createComment(@Nullable String taskId, @Nullable String processInstanceId, String message) {
+        if (taskId != null) {
+            final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
+            requirePermission(task, VIEW);
+        }
+        taskService.createComment(taskId, processInstanceId, message);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean hasTaskFormData(String taskId) {
+        final CamundaTask task = findTaskById(taskId);
+        final TaskFormData taskFormData = formService.getTaskFormData(task.getId());
+        return taskFormData == null || taskFormData.getFormKey() != null || !taskFormData.getFormFields().isEmpty();
     }
 
     public enum TaskFilter {
@@ -380,9 +506,17 @@ public class CamundaTaskService {
             .toList();
     }
 
-    public boolean hasTaskFormData(String taskId) {
-        final TaskFormData taskFormData = formService.getTaskFormData(taskId);
-        return taskFormData == null || taskFormData.getFormKey() != null || !taskFormData.getFormFields().isEmpty();
+    private AuthorizationSpecification<CamundaTask> getAuthorizationSpecification(Action<CamundaTask> action) {
+        return authorizationService.getAuthorizationSpecification(
+            new EntityAuthorizationRequest<>(CamundaTask.class, action, null),
+            null
+        );
+    }
+
+    private void requirePermission(CamundaTask task, Action<CamundaTask> action) {
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(CamundaTask.class, action, task)
+        );
     }
 
 }

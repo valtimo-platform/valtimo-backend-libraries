@@ -25,7 +25,6 @@ import com.ritense.valtimo.service.util.FormUtils;
 import com.ritense.valtimo.web.rest.dto.CustomTaskDto;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.form.FormField;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 
@@ -36,18 +35,15 @@ import java.util.Map;
 
 public abstract class AbstractTaskResource {
 
-    protected final TaskService taskService;
     final FormService formService;
     final CamundaTaskService camundaTaskService;
     private final CamundaProcessService camundaProcessService;
 
     AbstractTaskResource(
-        final TaskService taskService,
         final FormService formService,
         final CamundaTaskService camundaTaskService,
         final CamundaProcessService camundaProcessService
     ) {
-        this.taskService = taskService;
         this.formService = formService;
         this.camundaTaskService = camundaTaskService;
         this.camundaProcessService = camundaProcessService;

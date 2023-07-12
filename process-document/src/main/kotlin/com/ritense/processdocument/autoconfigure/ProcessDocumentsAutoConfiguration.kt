@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-
 package com.ritense.processdocument.autoconfigure
 
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.service.DocumentService
+import com.ritense.processdocument.camunda.authorization.CamundaTaskDocumentMapper
 import com.ritense.processdocument.domain.impl.delegate.DocumentDelegate
 import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
@@ -108,14 +108,19 @@ class ProcessDocumentsAutoConfiguration {
 
     @Bean
     fun caseAssigneeListener(
-        taskService: TaskService,
         camundaTaskService: CamundaTaskService,
         documentService: DocumentService,
         caseDefinitionService: CaseDefinitionService,
         userManagementService: UserManagementService
     ): CaseAssigneeListener {
         return CaseAssigneeListener(
-            taskService, camundaTaskService, documentService, caseDefinitionService, userManagementService
+            camundaTaskService, documentService, caseDefinitionService, userManagementService
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaTaskDocumentMapper::class)
+    fun camundaTaskDocumentMapper(): CamundaTaskDocumentMapper {
+        return CamundaTaskDocumentMapper()
     }
 }

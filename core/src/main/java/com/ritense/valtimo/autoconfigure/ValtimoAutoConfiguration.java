@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.autoconfigure;
 
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.ProcessApplicationStartedEventListener;
 import com.ritense.valtimo.camunda.ProcessDefinitionPropertyListener;
@@ -178,7 +179,8 @@ public class ValtimoAutoConfiguration {
         final ApplicationEventPublisher applicationEventPublisher,
         final RuntimeService runtimeService,
         final UserManagementService userManagementService,
-        final EntityManager entityManager
+        final EntityManager entityManager,
+        final AuthorizationService authorizationService
     ) {
         return new CamundaTaskService(
             taskService,
@@ -191,7 +193,8 @@ public class ValtimoAutoConfiguration {
             applicationEventPublisher,
             runtimeService,
             userManagementService,
-            entityManager
+            entityManager,
+            authorizationService
         );
     }
 
@@ -246,13 +249,11 @@ public class ValtimoAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(TaskResource.class)
     public TaskResource taskResource(
-        final TaskService taskService,
         final FormService formService,
         final CamundaTaskService camundaTaskService,
         final CamundaProcessService camundaProcessService
     ) {
         return new TaskResource(
-            taskService,
             formService,
             camundaTaskService,
             camundaProcessService
@@ -288,7 +289,6 @@ public class ValtimoAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ProcessResource.class)
     public ProcessResource processResource(
-        final TaskService taskService,
         final HistoryService historyService,
         final CamundaHistoryService camundaHistoryService,
         final RuntimeService runtimeService,
@@ -301,7 +301,6 @@ public class ValtimoAutoConfiguration {
         final ProcessPropertyService processPropertyService
     ) {
         return new ProcessResource(
-            taskService,
             historyService,
             camundaHistoryService,
             runtimeService,

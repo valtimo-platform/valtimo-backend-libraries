@@ -17,6 +17,7 @@
 
 package com.ritense.valtimo.autoconfiguration
 
+import com.ritense.valtimo.camunda.authorization.CamundaTaskSpecificationFactory
 import com.ritense.valtimo.camunda.repository.CamundaBytearrayRepository
 import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceRepository
@@ -29,12 +30,17 @@ import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
 import com.ritense.valtimo.camunda.service.CamundaHistoryService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
+import com.ritense.valtimo.contract.database.QueryDialectHelper
+import com.ritense.valtimo.service.CamundaTaskService
+import org.camunda.bpm.engine.AuthorizationService
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RuntimeService
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
@@ -78,6 +84,16 @@ class ValtimoCamundaAutoConfiguration {
         camundaVariableInstanceRepository: CamundaVariableInstanceRepository,
     ): CamundaRuntimeService {
         return CamundaRuntimeService(runtimeService, camundaVariableInstanceRepository)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaTaskSpecificationFactory::class)
+    @ConditionalOnBean(AuthorizationService::class)
+    fun camundaTaskSpecificationFactory(
+        @Lazy camundaTaskService: CamundaTaskService,
+        queryDialectHelper: QueryDialectHelper
+    ): CamundaTaskSpecificationFactory {
+        return CamundaTaskSpecificationFactory(camundaTaskService, queryDialectHelper)
     }
 
 }

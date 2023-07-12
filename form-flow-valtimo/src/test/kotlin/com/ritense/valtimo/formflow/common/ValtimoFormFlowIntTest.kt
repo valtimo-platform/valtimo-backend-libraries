@@ -37,18 +37,21 @@ import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResu
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.formflow.BaseIntegrationTest
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
+import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
@@ -74,7 +77,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     lateinit var newProcessLinkService: com.ritense.processlink.service.ProcessLinkService
 
     @Autowired
-    lateinit var taskService: TaskService
+    lateinit var taskService: CamundaTaskService
 
     @Autowired
     lateinit var formFlowService: FormFlowService
@@ -95,6 +98,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     lateinit var processLinkActivityHandler: ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties>
 
     @Test
+    @WithMockUser(username = TEST_USER, authorities = [AuthoritiesConstants.USER])
     fun `should completeTask`() {
         deployFormFlow(onComplete = "\${valtimoFormFlow.completeTask(additionalProperties)}")
         linkFormFlowToUserTask()
@@ -104,10 +108,11 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
 
         formFlowStepComplete(formFlowInstance)
 
-        assertEquals(0, taskService.createTaskQuery().processInstanceId(processInstanceId.toString()).count())
+        assertEquals(0, taskService.countTasks(byProcessInstanceId(processInstanceId.toString())))
     }
 
     @Test
+    @WithMockUser(username = TEST_USER, authorities = [AuthoritiesConstants.USER])
     fun `should completeTask and save submission in document`() {
         deployFormFlow(onComplete = "\${valtimoFormFlow.completeTask(additionalProperties, step.submissionData)}")
         linkFormFlowToUserTask()
@@ -117,7 +122,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
 
         formFlowStepComplete(formFlowInstance, submission = """{"firstName":"John"}""")
 
-        assertEquals(0, taskService.createTaskQuery().processInstanceId(processInstanceId.toString()).count())
+        assertEquals(0, taskService.countTasks(byProcessInstanceId(processInstanceId.toString())))
         assertEquals(
             """{"submission":{"firstName":"John"}}""",
             documentAndProcess.resultingDocument().get().content().asJson().toString()
@@ -125,6 +130,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(username = TEST_USER, authorities = [AuthoritiesConstants.USER])
     fun `should completeTask and save submission in document and process`() {
         deployFormFlow(onComplete = "\${valtimoFormFlow.completeTask(additionalProperties, step.submissionData, {'doc:/address/streetName':'/street', 'pv:approved':'/approval'})}")
         linkFormFlowToUserTask()
@@ -134,7 +140,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
 
         formFlowStepComplete(formFlowInstance, submission = """{"street":"Funenpark","approval":true}""")
 
-        assertEquals(0, taskService.createTaskQuery().processInstanceId(processInstanceId.toString()).count())
+        assertEquals(0, taskService.countTasks(byProcessInstanceId(processInstanceId.toString())))
         assertEquals(
             """{"address":{"streetName":"Funenpark"}}""",
             documentAndProcess.resultingDocument().get().content().asJson().toString()
@@ -312,14 +318,16 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     }
 
     private fun openTasks(processInstanceId: ProcessInstanceId): List<FormFlowInstance> {
-        return taskService.createTaskQuery()
-            .processInstanceId(processInstanceId.toString())
-            .list()
+        return taskService.findTasks(byProcessInstanceId(processInstanceId.toString()))
             .asSequence()
             .map { processLinkService.openTask(UUID.fromString(it.id)) }
             .filter { it.properties is FormFlowTaskOpenResultProperties }
             .map { (it.properties as FormFlowTaskOpenResultProperties).formFlowInstanceId }
             .map { formFlowService.getInstanceById(FormFlowInstanceId(it)) }
             .toList()
+    }
+
+    companion object {
+        private const val TEST_USER = "user@valtimo.nl"
     }
 }

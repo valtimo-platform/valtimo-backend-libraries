@@ -17,9 +17,13 @@
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.camunda.domain.CamundaTask
-import java.time.LocalDateTime
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.KEY
+import com.ritense.valtimo.camunda.repository.CamundaProcessInstanceSpecificationHelper.Companion.BUSINESS_KEY
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
 import org.springframework.data.jpa.domain.Specification
+import java.time.LocalDateTime
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.ID as PROCESS_DEFINITION_ID
+import com.ritense.valtimo.camunda.repository.CamundaProcessInstanceSpecificationHelper.Companion.ID as PROCESS_INSTANCE_ID
 
 class CamundaTaskSpecificationHelper {
 
@@ -51,29 +55,34 @@ class CamundaTaskSpecificationHelper {
         const val VARIABLES: String = "variables"
 
         @JvmStatic
+        fun all() = Specification<CamundaTask> { _, _, cb ->
+            cb.equal(cb.literal(1), 1)
+        }
+
+        @JvmStatic
         fun byId(taskId: String) = Specification<CamundaTask> { root, _, cb ->
             cb.equal(root.get<Any>(ID), taskId)
         }
 
         @JvmStatic
         fun byProcessInstanceId(processInstanceId: String) = Specification<CamundaTask> { root, _, cb ->
-            cb.equal(root.get<Any>(PROCESS_INSTANCE).get<Any>("id"), processInstanceId)
+            cb.equal(root.get<Any>(PROCESS_INSTANCE).get<Any>(PROCESS_INSTANCE_ID), processInstanceId)
         }
 
         @JvmStatic
         fun byProcessInstanceBusinessKey(businessKey: String) = Specification<CamundaTask> { root, _, cb ->
-            cb.equal(root.get<Any>(PROCESS_INSTANCE).get<Any>("businessKey"), businessKey)
+            cb.equal(root.get<Any>(PROCESS_INSTANCE).get<Any>(BUSINESS_KEY), businessKey)
         }
 
         @JvmStatic
         fun byProcessDefinitionKeys(processDefinitionKeys: Collection<String>) =
             Specification<CamundaTask> { root, _, _ ->
-                root.get<Any>(PROCESS_DEFINITION).get<Any>("key").`in`(processDefinitionKeys)
+                root.get<Any>(PROCESS_DEFINITION).get<Any>(KEY).`in`(processDefinitionKeys)
             }
 
         @JvmStatic
         fun byProcessDefinitionId(processDefinitionId: String) = Specification<CamundaTask> { root, _, cb ->
-            cb.equal(root.get<Any>(PROCESS_DEFINITION).get<Any>("id"), processDefinitionId)
+            cb.equal(root.get<Any>(PROCESS_DEFINITION).get<Any>(PROCESS_DEFINITION_ID), processDefinitionId)
         }
 
         @JvmStatic

@@ -21,15 +21,16 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.request.AssigneeRequest;
 import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.TaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -42,7 +43,6 @@ class TaskResourceTest {
 
     private MockMvc mockMvc;
     private TaskResource taskResource;
-    private TaskService taskService;
     private FormService formService;
     private CamundaTaskService camundaTaskService;
     private CamundaProcessService camundaProcessService;
@@ -53,13 +53,11 @@ class TaskResourceTest {
 
     @BeforeEach
     void init() {
-        taskService = mock(TaskService.class);
         formService = mock(FormService.class);
         camundaTaskService = mock(CamundaTaskService.class);
         camundaProcessService = mock(CamundaProcessService.class);
 
         taskResource = new TaskResource(
-            taskService,
             formService,
             camundaTaskService,
             camundaProcessService

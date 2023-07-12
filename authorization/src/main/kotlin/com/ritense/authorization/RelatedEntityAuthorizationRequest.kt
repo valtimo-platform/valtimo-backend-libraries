@@ -19,6 +19,7 @@ package com.ritense.authorization
 class RelatedEntityAuthorizationRequest<T>(
     override val resourceType: Class<T>,
     override val action: Action<T>,
+    override val user: String?,
     val relatedResourceType: Class<*>,
     val relatedResourceId: String
 ) : AuthorizationRequest<T> {
@@ -26,4 +27,11 @@ class RelatedEntityAuthorizationRequest<T>(
         AuthorizationSupportedHelper.checkSupported(resourceType)
         AuthorizationSupportedHelper.checkSupported(relatedResourceType)
     }
+
+    constructor(
+        resourceType: Class<T>,
+        action: Action<T>,
+        relatedResourceType: Class<*>,
+        relatedResourceId: String
+    ) : this(resourceType, action, null, relatedResourceType, relatedResourceId)
 }

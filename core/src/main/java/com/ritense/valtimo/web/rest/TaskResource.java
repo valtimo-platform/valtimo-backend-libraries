@@ -28,7 +28,6 @@ import com.ritense.valtimo.web.rest.dto.CustomTaskDto;
 import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;
 import com.ritense.valtimo.web.rest.util.PaginationUtil;
 import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Comment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -53,12 +52,11 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_J
 public class TaskResource extends AbstractTaskResource {
 
     public TaskResource(
-        final TaskService taskService,
         final FormService formService,
         final CamundaTaskService camundaTaskService,
         final CamundaProcessService camundaProcessService
     ) {
-        super(taskService, formService, camundaTaskService, camundaProcessService);
+        super(formService, camundaTaskService, camundaProcessService);
     }
 
     @GetMapping("/v1/task")
@@ -114,7 +112,7 @@ public class TaskResource extends AbstractTaskResource {
     public ResponseEntity<Void> batchComplete(@RequestBody List<String> taskIdList) {
         taskIdList.forEach(taskId -> {
             if (!camundaTaskService.hasTaskFormData(taskId)) {
-                camundaTaskService.completeTaskWithoutFormData(taskId);
+                camundaTaskService.complete(taskId);
             }
         });
         return ResponseEntity.ok().build();
@@ -123,8 +121,8 @@ public class TaskResource extends AbstractTaskResource {
     @GetMapping("/v1/task/{taskId}/comments")
     public ResponseEntity<List<Comment>> getProcessInstanceComments(@PathVariable String taskId) {
         final CamundaTask task = camundaTaskService.findTaskById(taskId);
-        List<Comment> taskComments = taskService.getTaskComments(task.getId());
-        taskComments.addAll(taskService.getProcessInstanceComments(task.getProcessInstanceId()));
+        List<Comment> taskComments = camundaTaskService.getTaskComments(task.getId());
+        taskComments.addAll(camundaTaskService.getProcessInstanceComments(task.getProcessInstanceId()));
         taskComments.sort((Comment c1, Comment c2) -> c2.getTime().compareTo(c1.getTime()));
         return ResponseEntity.ok(taskComments);
     }

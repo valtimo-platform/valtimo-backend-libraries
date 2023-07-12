@@ -40,14 +40,17 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byActive
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byId
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
 import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.service.CamundaTaskService
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.TaskService
-import org.camunda.bpm.engine.task.Task
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.endsWith
@@ -79,7 +82,6 @@ import java.util.Optional
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 @Transactional
 class PortaaltaakPluginIT : BaseIntegrationTest() {
@@ -100,7 +102,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     lateinit var procesDocumentService: ProcessDocumentService
 
     @Autowired
-    lateinit var taskService: TaskService
+    lateinit var taskService: CamundaTaskService
 
     lateinit var server: MockWebServer
 
@@ -197,7 +199,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
                 "lastname": "test"
             }
         """.trimIndent())
-        assertNotNull(taskService.createTaskQuery().taskId(task.id).singleResult())
+        assertNotNull(taskService.findTaskById(task.id))
 
         val portaaltaakPlugin = spy(pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin)
         val delegateExecution = DelegateExecutionFake()
@@ -219,7 +221,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
 
         val sentTaakObject: TaakObject = jacksonObjectMapper().treeToValue(jsonNodeCaptor.firstValue,TaakObject::class.java)
         assertEquals(TaakStatus.VERWERKT, sentTaakObject.status)
-        assertNull(taskService.createTaskQuery().taskId(task.id).singleResult())
+        assertEquals(0, taskService.countTasks(byId(task.id)))
     }
 
     private fun getObjectWrapper(): ObjectWrapper {
@@ -285,15 +287,11 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         )
     }
 
-    private fun startPortaalTaakProcess(content: String): Task {
+    private fun startPortaalTaakProcess(content: String): CamundaTask {
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().readTree(content))
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
         val processResult = procesDocumentService.newDocumentAndStartProcess(request)
-        return taskService
-            .createTaskQuery()
-            .active()
-            .processInstanceId(processResult.resultingProcessInstanceId().get().toString())
-            .singleResult()
+        return taskService.findTask(byActive().and(byProcessInstanceId(processResult.resultingProcessInstanceId().get().toString())))
     }
 
     private fun createObjectManagement(

@@ -22,6 +22,7 @@ import com.ritense.authorization.specification.DenyAuthorizationSpecification
 import com.ritense.authorization.specification.DenyAuthorizationSpecificationFactory
 import com.ritense.authorization.specification.NoopAuthorizationSpecification
 import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -48,6 +49,7 @@ class AuthorizationServiceTest {
     lateinit var mapper3: AuthorizationEntityMapper<Boolean, Boolean>
     lateinit var permissionRepository: PermissionRepository
     lateinit var authorizationService: AuthorizationService
+    lateinit var userManagementService: UserManagementService
 
     @BeforeEach
     fun setup() {
@@ -58,6 +60,7 @@ class AuthorizationServiceTest {
         mapper2 = mock()
         mapper3 = mock()
         permissionRepository = mock()
+        userManagementService = mock()
 
         authorizationService = ValtimoAuthorizationService(
             listOf(
@@ -77,7 +80,8 @@ class AuthorizationServiceTest {
                 OtherStringTestActionProvider(),
                 IntTestActionProvider()
             ),
-            permissionRepository
+            permissionRepository,
+            userManagementService
         )
 
     }

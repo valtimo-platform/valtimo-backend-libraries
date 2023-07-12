@@ -16,17 +16,9 @@
 
 package com.ritense.valtimo.service;
 
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
-import java.sql.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import javax.inject.Inject;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +27,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import java.sql.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
 class CamundaTaskServiceIntTest extends BaseIntegrationTest {
@@ -57,7 +58,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void getProcessInstanceTasks() {
         ProcessInstanceWithDefinition processInstanceWithDefinition = camundaProcessService.startProcess(
             processDefinitionKey,
@@ -77,7 +78,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldFindTasksFiltered() throws IllegalAccessException {
         camundaProcessService.startProcess(
             processDefinitionKey,
@@ -98,7 +99,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldFindTasksFilteredWithContext() throws IllegalAccessException {
         camundaProcessService.startProcess(
             processDefinitionKey,
@@ -119,7 +120,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldFind10TasksFiltered() throws IllegalAccessException {
         for (int i = 0; i < 10; i++) {
             camundaProcessService.startProcess(
@@ -141,7 +142,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldSortTasksByName() throws IllegalAccessException {
         startProcessAndModifyTask(task1 -> task1.setName("B"));
         startProcessAndModifyTask(task2 -> task2.setName("A"));
@@ -157,7 +158,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldSortTasksByDueDate() throws IllegalAccessException {
         startProcessAndModifyTask(task1 -> task1.setDueDate(Date.valueOf("2022-06-17")));
         startProcessAndModifyTask(task2 -> task2.setDueDate(Date.valueOf("2022-06-18")));
@@ -173,7 +174,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldSortTasksByAssignee() throws IllegalAccessException {
         startProcessAndModifyTask(task1 -> task1.setAssignee("userA@ritense.com"));
         startProcessAndModifyTask(task2 -> task2.setAssignee("userB@ritense.com"));
@@ -189,7 +190,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldFindCandidateUsers() throws IllegalAccessException {
         final var processInstance = camundaProcessService.startProcess(
             processDefinitionKey,
