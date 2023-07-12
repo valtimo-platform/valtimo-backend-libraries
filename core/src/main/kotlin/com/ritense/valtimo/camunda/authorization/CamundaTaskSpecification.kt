@@ -22,7 +22,6 @@ import com.ritense.authorization.permission.Permission
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaTaskService
-import java.util.UUID
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
@@ -39,10 +38,6 @@ class CamundaTaskSpecification(
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
-       /* val groupList = query.groupList.toMutableList()
-        groupList.add(root.get<UUID>("id"))
-        query.groupBy(groupList)*/ // TODO: check
-
         val predicates = permissions
             .filter { permission ->
                 CamundaTask::class.java == permission.resourceType &&
