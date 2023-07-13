@@ -27,6 +27,7 @@ import com.ritense.processdocument.service.CorrelationServiceImpl
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
+import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.annotation.ProcessBean
@@ -39,6 +40,7 @@ import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 
 @Configuration
 class ProcessDocumentsAutoConfiguration {
@@ -120,7 +122,9 @@ class ProcessDocumentsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(CamundaTaskDocumentMapper::class)
-    fun camundaTaskDocumentMapper(): CamundaTaskDocumentMapper {
-        return CamundaTaskDocumentMapper()
+    fun camundaTaskDocumentMapper(
+        @Lazy processDocumentService: CamundaProcessJsonSchemaDocumentService
+    ): CamundaTaskDocumentMapper {
+        return CamundaTaskDocumentMapper(processDocumentService)
     }
 }

@@ -374,6 +374,22 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         return document;
     }
 
+    public JsonSchemaDocument getDocument(ProcessInstanceId processInstanceId, AbstractVariableScope variableScope) {
+        final var document = runWithoutAuthorization(
+                () -> documentService.get(getDocumentId(processInstanceId, variableScope).toString())
+            );
+
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                VIEW,
+                document
+            )
+        );
+
+        return document;
+    }
+
     @Override
     public Optional<ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessInstanceId processInstanceId) {
         return camundaProcessService.findProcessInstanceById(processInstanceId.toString())

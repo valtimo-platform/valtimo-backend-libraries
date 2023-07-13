@@ -20,19 +20,26 @@ import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationEntityMapperResult
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.Companion.BUSINESS_KEY
-import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.Companion.ROOT_PROCESS_INSTANCE_ID
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.ID
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.PROCESS_INSTANCE
 import java.util.UUID
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Root
 
-class CamundaTaskDocumentMapper : AuthorizationEntityMapper<CamundaTask, JsonSchemaDocument> {
+class CamundaTaskDocumentMapper(
+    private val processDocumentService: CamundaProcessJsonSchemaDocumentService
+) : AuthorizationEntityMapper<CamundaTask, JsonSchemaDocument> {
 
     override fun mapRelated(entity: CamundaTask): List<JsonSchemaDocument> {
-        TODO("Not yet implemented")
+        val processInstanceId = CamundaProcessInstanceId(entity.getProcessInstanceId())
+        val document = processDocumentService.getDocument(processInstanceId, entity)
+        return listOf(document)
     }
 
     override fun mapQuery(
@@ -41,14 +48,13 @@ class CamundaTaskDocumentMapper : AuthorizationEntityMapper<CamundaTask, JsonSch
         criteriaBuilder: CriteriaBuilder
     ): AuthorizationEntityMapperResult<JsonSchemaDocument> {
         val documentRoot = query.from(JsonSchemaDocument::class.java)
-        val processBusinessKey = root.get<CamundaExecution>(ROOT_PROCESS_INSTANCE_ID).get<String>(BUSINESS_KEY)
-        val groupList = query.groupList.toMutableList() + processBusinessKey
-        query.groupBy(groupList)
+        val processBusinessKey = root.get<CamundaExecution>(PROCESS_INSTANCE).get<String>(BUSINESS_KEY)
+        query.groupBy(query.groupList + processBusinessKey)
 
         return AuthorizationEntityMapperResult(
             documentRoot,
             query,
-            criteriaBuilder.equal(processBusinessKey, documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id"))
+            criteriaBuilder.equal(processBusinessKey, documentRoot.get<JsonSchemaDocumentId>(ID).get<UUID>(ID))
         )
     }
 
