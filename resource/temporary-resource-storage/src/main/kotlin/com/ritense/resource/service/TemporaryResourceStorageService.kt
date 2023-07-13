@@ -48,10 +48,12 @@ class TemporaryResourceStorageService(
 
     fun store(inputStream: InputStream, metadata: Map<String, Any> = emptyMap()): String {
         val dataFile = BufferedInputStream(inputStream).use { bis ->
-            //Tika marks the stream, reads the first few bytes and resets it when done.
-            val mediaType = Tika().detect(bis)
-            if(!uploadProperties.acceptedMimeTypes.contains(mediaType)) {
-                throw MimeTypeDeniedException("$mediaType is not whitelisted for uploads.")
+            if(uploadProperties.acceptedMimeTypes.isNotEmpty()) {
+                //Tika marks the stream, reads the first few bytes and resets it when done.
+                val mediaType = Tika().detect(bis)
+                if (!uploadProperties.acceptedMimeTypes.contains(mediaType)) {
+                    throw MimeTypeDeniedException("$mediaType is not whitelisted for uploads.")
+                }
             }
             val tempFile = Files.createTempFile(tempDir, "temporaryResource", ".tmp")
             tempFile.toFile().outputStream().use { bis.copyTo(it) }

@@ -21,9 +21,5 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConfigurationProperties(prefix = "valtimo.upload")
 @ConstructorBinding
 data class ValtimoUploadProperties(
-    val acceptedMimeTypes: Set<String> = setOf(
-        "text/plain",
-        "application/pdf",
-        "image/jpeg",
-    )
+    val acceptedMimeTypes: Set<String> = setOf()
 )

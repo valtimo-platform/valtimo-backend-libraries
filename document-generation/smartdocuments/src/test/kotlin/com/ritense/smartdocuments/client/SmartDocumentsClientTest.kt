@@ -22,6 +22,8 @@ import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
+import java.time.Instant
+import java.util.concurrent.TimeUnit.MILLISECONDS
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
@@ -33,6 +35,18 @@ import org.junit.jupiter.api.TestInstance
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.WebClient
 import java.util.concurrent.TimeUnit.SECONDS
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.mockito.Mockito
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.never
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.springframework.cache.annotation.Cacheable
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class SmartDocumentsClientTest : BaseTest() {
@@ -50,16 +64,21 @@ internal class SmartDocumentsClientTest : BaseTest() {
             url = mockDocumentenApi.url("/").toString()
         )
 
-        temporaryResourceStorageService = TemporaryResourceStorageService(
+        temporaryResourceStorageService = spy( TemporaryResourceStorageService(
             uploadProperties = ValtimoUploadProperties()
-        )
+        ))
 
-        client = SmartDocumentsClient(
+        client = spy( SmartDocumentsClient(
             properties,
             WebClient.builder(),
             5,
             temporaryResourceStorageService
-        )
+        ))
+    }
+
+    @BeforeEach
+    fun resetMocks() {
+        Mockito.reset(temporaryResourceStorageService, client)
     }
 
     @AfterAll
@@ -203,6 +222,61 @@ internal class SmartDocumentsClientTest : BaseTest() {
         )
     }
 
+    @Test
+    @Cacheable
+    fun `200 ok response should return FilesResponse when generating document stream`() {
+        val responseBody = """
+            {
+                "file": [
+                    {
+                        "filename": "test.pdf",
+                        "document": {
+                            "data": "Y29udGVudA=="
+                        },
+                        "outputFormat": "PDF"
+                    }
+                ]
+            }
+        """.trimIndent()
+
+        val bodyDelayInMs = 1000L
+        val mockResponse = spy(
+            mockResponse(responseBody)
+                .setBodyDelay(bodyDelayInMs, MILLISECONDS)
+        )
+        doReturn(mockResponse).whenever(mockResponse).clone()
+
+        mockDocumentenApi.enqueue(mockResponse)
+
+        lateinit var storeFileInstant : Instant
+        doAnswer {
+            storeFileInstant = Instant.now()
+            it.callRealMethod()
+        }.whenever(temporaryResourceStorageService).store(any(), any())
+
+        lateinit var responseStartInstant : Instant
+        doAnswer {
+            responseStartInstant = Instant.now()
+            it.callRealMethod()
+        }.whenever(mockResponse).getThrottlePeriod(any())
+
+        val startInstant = Instant.now()
+        val documentResult = client.generateDocumentStream(
+            SmartDocumentsRequest(
+                emptyMap(),
+                SmartDocumentsRequest.SmartDocument(
+                    SmartDocumentsRequest.Selection("group", "template")
+                )
+            ),
+            DocumentFormatOption.PDF
+        )
+
+        //Assert that the body delay is working correctly
+        assertThat(startInstant.plusMillis(bodyDelayInMs)).isBefore(responseStartInstant)
+        //Assert that the store() method is called before server started sending the response
+        assertThat(storeFileInstant).isBefore(responseStartInstant)
+        verify(temporaryResourceStorageService, times(1)).store(any(), any())
+    }
 
     @Test
     fun `400 Bad Request response should throw exception when generating document stream`() {
@@ -227,6 +301,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
                 "invalid request message framing, or deceptive request routing). Response received from server:\n" + responseBody,
             exception.message
         )
+        verify(temporaryResourceStorageService, never()).store(any(), any())
     }
 
     private fun mockResponse(
