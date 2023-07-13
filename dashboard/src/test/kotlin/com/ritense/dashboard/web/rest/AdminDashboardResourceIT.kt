@@ -45,9 +45,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import javax.transaction.Transactional
 
-@Transactional
 class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Autowired

@@ -134,7 +134,6 @@ class DashboardService(
             )
         }
 
-        widgetConfigurationRepository.deleteByDashboardKey(dashboardKey)
         return widgetConfigurationRepository.saveAll(widgetConfigurations)
     }
 
