@@ -45,12 +45,23 @@ class TemporaryResourceStorageServiceIntegrationTest : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should not store when the mimetype is not whitelisted`() {
-        assertThrows<MimeTypeDeniedException> {
+    fun `should correctly detect zip files and throw exception`() {
+        val exception = assertThrows<MimeTypeDeniedException> {
             ClassPathResource("files/test.zip").inputStream.use {
                 temporaryResourceStorageService.store(it)
             }
         }
+        assertThat(exception.message).contains("application/zip")
+    }
+
+    @Test
+    fun `should correctly detect docx files and throw exception`() {
+        val exception = assertThrows<MimeTypeDeniedException> {
+            ClassPathResource("files/test.docx").inputStream.use {
+                temporaryResourceStorageService.store(it)
+            }
+        }
+        assertThat(exception.message).contains("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     }
 
     @Test
