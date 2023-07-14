@@ -20,6 +20,7 @@ import com.ritense.resource.security.config.TemporaryResourceStorageHttpSecurity
 import com.ritense.resource.service.TemporaryResourceStorageDeletionService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.resource.web.rest.TemporaryResourceStorageResource
+import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -38,9 +39,11 @@ class TemporaryResourceStorageAutoConfiguration {
     @ConditionalOnMissingBean(TemporaryResourceStorageService::class)
     fun temporaryResourceStorageService(
         @Value("\${valtimo.resource.temp.directory:}") valtimoResourceTempDirectory: String,
+        uploadProperties: ValtimoUploadProperties,
     ): TemporaryResourceStorageService {
         return TemporaryResourceStorageService(
             valtimoResourceTempDirectory = valtimoResourceTempDirectory,
+            uploadProperties = uploadProperties
         )
     }
 
