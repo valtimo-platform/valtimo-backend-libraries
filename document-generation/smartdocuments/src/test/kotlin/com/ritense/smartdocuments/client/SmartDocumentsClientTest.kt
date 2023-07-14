@@ -223,7 +223,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
     }
 
     @Test
-    @Cacheable
     fun `200 ok response should return FilesResponse when generating document stream`() {
         val responseBody = """
             {
@@ -255,6 +254,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
         }.whenever(temporaryResourceStorageService).store(any(), any())
 
         lateinit var responseStartInstant : Instant
+        // getThrottlePeriod is used because it's called right before sending the response
         doAnswer {
             responseStartInstant = Instant.now()
             it.callRealMethod()
@@ -271,6 +271,9 @@ internal class SmartDocumentsClientTest : BaseTest() {
             DocumentFormatOption.PDF
         )
 
+        assertThat(documentResult.documentData.available()).isGreaterThan(0)
+        assertThat(documentResult.filename).isEqualTo("test.pdf")
+        assertThat(documentResult.extension).isEqualTo("pdf")
         //Assert that the body delay is working correctly
         assertThat(startInstant.plusMillis(bodyDelayInMs)).isBefore(responseStartInstant)
         //Assert that the store() method is called before server started sending the response
@@ -281,7 +284,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
     @Test
     fun `400 Bad Request response should throw exception when generating document stream`() {
         val responseBody = readFileAsString("/data/post-generate-document-400-error-response.html")
-        mockDocumentenApi.enqueue(mockResponse(responseBody, "text/html; charset=utf-8", 400).setBodyDelay(1, SECONDS))
+        mockDocumentenApi.enqueue(mockResponse(responseBody, "text/html; charset=utf-8", 400))
 
         val exception = assertThrows(HttpClientErrorException::class.java) {
             client.generateDocumentStream(
