@@ -29,13 +29,10 @@ import java.time.Duration
 import java.time.Instant
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TemporaryResourceStorageDeletionServiceIntegrationTest : BaseIntegrationTest() {
-
-    @Autowired
-    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
-
-    @Autowired
-    lateinit var temporaryResourceStorageDeletionService: TemporaryResourceStorageDeletionService
+class TemporaryResourceStorageDeletionServiceIntegrationTest @Autowired constructor(
+    private val temporaryResourceStorageService: TemporaryResourceStorageService,
+    private val temporaryResourceStorageDeletionService: TemporaryResourceStorageDeletionService
+) : BaseIntegrationTest() {
 
     @Test
     fun `should delete files older that 60 minutes`() {
