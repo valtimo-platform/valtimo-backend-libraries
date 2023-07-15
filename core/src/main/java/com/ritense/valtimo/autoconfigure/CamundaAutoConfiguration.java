@@ -146,12 +146,4 @@ public class CamundaAutoConfiguration {
     ) {
         return new ProcessDefinitionDeployedEventPublisher(applicationEventPublisher);
     }
-
-    @Bean
-    @ConditionalOnMissingBean(IncidentHealthIndicator.class)
-    public IncidentHealthIndicator incidentHealthIndicator(
-        RuntimeService runtimeService
-    ) {
-        return new IncidentHealthIndicator(runtimeService);
-    }
 }
