@@ -18,6 +18,7 @@ package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.valtimo.camunda.ProcessDefinitionDeployedEventPublisher;
 import com.ritense.valtimo.camunda.command.ValtimoSchemaOperationsCommand;
+import com.ritense.valtimo.camunda.health.IncidentHealthIndicator;
 import com.ritense.valtimo.camunda.processaudit.HistoryEventAuditProcessEnginePlugin;
 import com.ritense.valtimo.camunda.processaudit.TaskEventHandler;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
@@ -35,6 +36,7 @@ import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSe
 import com.ritense.valtimo.helper.CamundaCollectionHelper;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import org.camunda.bpm.application.impl.event.ProcessApplicationEventListenerPlugin;
+import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -145,4 +147,11 @@ public class CamundaAutoConfiguration {
         return new ProcessDefinitionDeployedEventPublisher(applicationEventPublisher);
     }
 
+    @Bean
+    @ConditionalOnMissingBean(IncidentHealthIndicator.class)
+    public IncidentHealthIndicator incidentHealthIndicator(
+        RuntimeService runtimeService
+    ) {
+        return new IncidentHealthIndicator(runtimeService);
+    }
 }
