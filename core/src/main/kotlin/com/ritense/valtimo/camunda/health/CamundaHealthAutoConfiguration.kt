@@ -31,5 +31,4 @@ class CamundaHealthAutoConfiguration {
     fun incidentHealthIndicator(runtimeService: RuntimeService): IncidentHealthIndicator {
         return IncidentHealthIndicator(runtimeService)
     }
-
 }
