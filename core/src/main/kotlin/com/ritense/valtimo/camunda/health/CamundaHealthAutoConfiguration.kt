@@ -17,7 +17,6 @@
 
 package com.ritense.valtimo.camunda.health
 
-import com.ritense.valtimo.contract.annotation.ProcessBean
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -26,7 +25,6 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class CamundaHealthAutoConfiguration {
     @Bean
-    @ProcessBean
     @ConditionalOnMissingBean(IncidentHealthIndicator::class)
     fun incidentHealthIndicator(runtimeService: RuntimeService): IncidentHealthIndicator {
         return IncidentHealthIndicator(runtimeService)
