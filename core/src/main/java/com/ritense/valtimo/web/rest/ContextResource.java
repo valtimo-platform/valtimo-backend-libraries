@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.dto.CamundaProcessDefinitionDto;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
@@ -142,7 +143,10 @@ public class ContextResource {
                 .collect(Collectors.toSet());
 
         final List<CamundaHistoricProcessInstance> processInstances =
-            camundaProcessService.getAllActiveContextProcessesStartedByCurrentUser(processes, SecurityUtils.getCurrentUserLogin());
+            AuthorizationContext.runWithoutAuthorization(
+                () -> camundaProcessService
+                    .getAllActiveContextProcessesStartedByCurrentUser(processes, SecurityUtils.getCurrentUserLogin())
+            );
         return ResponseEntity.ok(processInstances);
     }
 

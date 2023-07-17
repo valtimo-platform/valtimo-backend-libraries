@@ -17,6 +17,8 @@
 
 package com.ritense.valtimo
 
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.ProcessEngine
 import org.junit.jupiter.api.Test
@@ -42,9 +44,11 @@ class JobServiceIntTest: BaseIntegrationTest() {
     @Test
     fun `should delay job`(){
         val testProcessDefinition = "test-timer-event"
-        val testProcessInstance = camundaProcessService.startProcess(
-            testProcessDefinition, UUID.randomUUID().toString(),null
-        )
+        val testProcessInstance = runWithoutAuthorization{
+            camundaProcessService.startProcess(
+                testProcessDefinition, UUID.randomUUID().toString(),null
+            )
+        }
         processEngine.runtimeService.createMessageCorrelation("message-start-event-offset-delay")
             .processInstanceBusinessKey(testProcessInstance.processInstanceDto.businessKey)
             .correlate()
@@ -56,9 +60,11 @@ class JobServiceIntTest: BaseIntegrationTest() {
     @Test
     fun `should move the job forward`(){
         val testProcessDefinition = "test-timer-event"
-        val testProcessInstance = camundaProcessService.startProcess(
-            testProcessDefinition, UUID.randomUUID().toString(),null
-        )
+        val testProcessInstance = runWithoutAuthorization {
+            camundaProcessService.startProcess(
+                testProcessDefinition, UUID.randomUUID().toString(),null
+            )
+        }
         processEngine.runtimeService.createMessageCorrelation("message-start-event-offset-forward")
             .processInstanceBusinessKey(testProcessInstance.processInstanceDto.businessKey)
             .correlate()
@@ -69,9 +75,11 @@ class JobServiceIntTest: BaseIntegrationTest() {
     @Test
     fun `should change job date`(){
         val testProcessDefinition = "test-timer-event"
-        val testProcessInstance = camundaProcessService.startProcess(
-            testProcessDefinition, UUID.randomUUID().toString(),null
-        )
+        val testProcessInstance = runWithoutAuthorization {
+            camundaProcessService.startProcess(
+                testProcessDefinition, UUID.randomUUID().toString(),null
+            )
+        }
         processEngine.runtimeService.createMessageCorrelation("message-start-event-change-date")
             .processInstanceBusinessKey(testProcessInstance.processInstanceDto.businessKey)
             .correlate()

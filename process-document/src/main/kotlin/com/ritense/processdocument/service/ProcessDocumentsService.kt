@@ -17,6 +17,7 @@
 package com.ritense.processdocument.service
 
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
@@ -30,17 +31,20 @@ class ProcessDocumentsService(
     private val camundaProcessService: CamundaProcessService,
     private val associationService: ProcessDocumentAssociationService
 ) {
-
+    //TODO: Determine what to with this
     fun startProcessByProcessDefinitionKey(processDefinitionKey: String, businessKey: String) {
         startProcessByProcessDefinitionKey(processDefinitionKey, businessKey, null)
     }
 
+    //TODO: Determine what to with this
     fun startProcessByProcessDefinitionKey(
         processDefinitionKey: String,
         businessKey: String,
         variables: Map<String, Any>?
     ) {
-        val processInstance = camundaProcessService.startProcess(processDefinitionKey, businessKey, variables)
+        val processInstance = runWithoutAuthorization {
+            camundaProcessService.startProcess(processDefinitionKey, businessKey, variables)
+        }
         associateDocumentToProcess(
             processInstance.processInstanceDto.id,
             processInstance.processDefinition.name,
@@ -53,7 +57,7 @@ class ProcessDocumentsService(
         processName: String?,
         businessKey: String
     ) {
-        AuthorizationContext.runWithoutAuthorization {
+        runWithoutAuthorization {
             documentService.findBy(JsonSchemaDocumentId.existingId(UUID.fromString(businessKey)))
         }.ifPresentOrElse({ document: Document ->
             associationService.createProcessDocumentInstance(

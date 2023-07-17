@@ -16,6 +16,7 @@
 
 package com.ritense.formlink.service.impl;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.formlink.domain.FormAssociation;
 import com.ritense.formlink.domain.FormLink;
 import com.ritense.formlink.domain.FormLinkTaskProvider;
@@ -60,7 +61,8 @@ public class DefaultProcessLinkService implements ProcessLinkService {
     public TaskOpenResult openTask(UUID taskId) {
         CamundaTask task = taskService.findTask(byId(taskId.toString()).and(byActive()));
 
-        final var processDefinition = repositoryService.findProcessDefinitionById(task.getProcessDefinitionId());
+        final var processDefinition = AuthorizationContext
+            .runWithoutAuthorization(() -> repositoryService.findProcessDefinitionById(task.getProcessDefinitionId()));
 
         Optional<? extends FormAssociation> formAssociationOptional = formAssociationService.getFormAssociationByFormLinkId(
             processDefinition.getKey(),

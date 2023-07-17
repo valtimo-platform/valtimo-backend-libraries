@@ -16,6 +16,7 @@
 
 package com.ritense.processlink.autodeployment
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.processlink.BaseIntegrationTest
 import com.ritense.processlink.domain.CustomProcessLink
 import com.ritense.processlink.repository.ProcessLinkRepository
@@ -47,6 +48,8 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
     }
 
     private fun getLatestProcessDefinition(): CamundaProcessDefinition {
-        return repositoryService.findLatestProcessDefinition("auto-deploy-process-link")!!
+        return AuthorizationContext.runWithoutAuthorization {
+            repositoryService.findLatestProcessDefinition("auto-deploy-process-link")!!
+        }
     }
 }

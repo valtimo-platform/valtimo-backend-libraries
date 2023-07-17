@@ -16,6 +16,7 @@
 
 package com.ritense.processlink.service
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.processlink.BaseIntegrationTest
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.CustomProcessLinkCreateRequestDto
@@ -57,7 +58,9 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
             .replace("My service task", "My service task changed")
 
         // when
-        camundaProcessService.deploy("service-task-process.bpmn", changedProcessBpmn.byteInputStream())
+        runWithoutAuthorization {
+            camundaProcessService.deploy("service-task-process.bpmn", changedProcessBpmn.byteInputStream())
+        }
 
         // then
         val latestProcessDefinition = getLatestProcessDefinition()
@@ -72,13 +75,17 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
         // given
         val changedProcessBpmn = readFileAsString("/bpmn/service-task-process.bpmn")
             .replace("My service task", "My service task changed")
-        camundaProcessService.deploy("service-task-process.bpmn", changedProcessBpmn.byteInputStream())
+        runWithoutAuthorization {
+            camundaProcessService.deploy("service-task-process.bpmn", changedProcessBpmn.byteInputStream())
+        }
         createProcessLink(processDefinition)
         val changedAgainProcessBpmn = readFileAsString("/bpmn/service-task-process.bpmn")
             .replace("My service task", "My service task changed again")
 
         // when
-        camundaProcessService.deploy("service-task-process.bpmn", changedAgainProcessBpmn.byteInputStream())
+        runWithoutAuthorization {
+            camundaProcessService.deploy("service-task-process.bpmn", changedAgainProcessBpmn.byteInputStream())
+        }
 
         // then
         val latestProcessDefinition = getLatestProcessDefinition()
@@ -99,7 +106,9 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
     }
 
     private fun getLatestProcessDefinition(): CamundaProcessDefinition {
-        return repositoryService.findProcessDefinition(byKey(PROCESS_DEFINITION_KEY).and(byLatestVersion()))!!
+        return runWithoutAuthorization {
+            repositoryService.findProcessDefinition(byKey(PROCESS_DEFINITION_KEY).and(byLatestVersion()))!!
+        }
     }
 
     private fun readFileAsString(fileName: String) = this::class.java.getResource(fileName).readText(Charsets.UTF_8)

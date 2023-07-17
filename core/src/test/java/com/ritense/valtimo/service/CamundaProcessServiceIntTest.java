@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.exception.ProcessNotUpdatableException;
@@ -49,24 +50,33 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     @Test
     void shouldDeployNewProcess() throws IOException, ProcessNotUpdatableException {
         List<Resource> processes = List.of(bpmn);
-        camundaProcessService.deploy(
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaProcessService.deploy(
                 "aProcessName.bpmn",
                 new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "shouldDeploy.xml"))
-                        .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
-        );
-        List<CamundaProcessDefinition> definitions = camundaProcessService.getDeployedDefinitions();
+                    .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+            );
+            return null;
+        });
+        List<CamundaProcessDefinition> definitions = AuthorizationContext
+            .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
         Assertions.assertTrue(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("deployedProcess")));
     }
 
     @Test
     void shouldNotDeployNewSystemProcess() {
         List<Resource> processes = List.of(bpmn);
-        Assertions.assertThrows(ProcessNotUpdatableException.class, () -> camundaProcessService.deploy(
-                "aProcessName.bpmn",
-                new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "shouldNotDeploy.xml"))
-                        .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+        Assertions.assertThrows(ProcessNotUpdatableException.class,
+            () -> AuthorizationContext.runWithoutAuthorization(() -> {
+                camundaProcessService.deploy(
+                    "aProcessName.bpmn",
+                    new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "shouldNotDeploy.xml"))
+                        .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes()));
+                return null;
+            }
         ));
-        List<CamundaProcessDefinition> definitions = camundaProcessService.getDeployedDefinitions();
+        List<CamundaProcessDefinition> definitions = AuthorizationContext
+            .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
         Assertions.assertFalse(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("firstProcess")));
         Assertions.assertFalse(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("secondProcess")));
     }
@@ -77,13 +87,18 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         var systemProcessModel = Bpmn.readModelFromStream(new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "systemProcess.xml"))
                 .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes()));
         repositoryService.createDeployment().addModelInstance("systemProcess.bpmn", systemProcessModel).deploy();
-        List<CamundaProcessDefinition> definitions = camundaProcessService.getDeployedDefinitions();
+        List<CamundaProcessDefinition> definitions = AuthorizationContext
+            .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
         Assertions.assertTrue(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("secondProcess")));
 
-        Assertions.assertThrows(ProcessNotUpdatableException.class, () -> camundaProcessService.deploy(
-                "aProcessName.bpmn",
-                new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "shouldNotDeploy.xml"))
-                        .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+        Assertions.assertThrows(ProcessNotUpdatableException.class,
+            () -> AuthorizationContext.runWithoutAuthorization(() -> {
+                camundaProcessService.deploy(
+                    "aProcessName.bpmn",
+                    new ByteArrayInputStream(processes.stream().filter(process -> Objects.equals(process.getFilename(), "shouldNotDeploy.xml"))
+                        .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes()));
+                return null;
+            }
         ));
         Assertions.assertFalse(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("firstProcess")));
         Assertions.assertTrue(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("secondProcess")));

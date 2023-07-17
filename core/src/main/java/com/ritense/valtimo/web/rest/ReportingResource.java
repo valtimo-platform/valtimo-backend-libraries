@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.repository.CamundaReportingRepository;
@@ -261,8 +262,16 @@ public class ReportingResource {
             historicProcessInstanceQueryUnfinished.and(byEndTimeBefore(toDateTime));
         }
 
-        Long unfinishedInstances = camundaHistoryService.countHistoricProcessInstances(historicProcessInstanceQueryUnfinished.and(byUnfinished()));
-        Long finishedInstances = camundaHistoryService.countHistoricProcessInstances(historicProcessInstanceQueryFinished.and(byFinished()));
+        Long unfinishedInstances = AuthorizationContext
+            .runWithoutAuthorization(
+                () -> camundaHistoryService
+                    .countHistoricProcessInstances(historicProcessInstanceQueryUnfinished.and(byUnfinished()))
+            );
+        Long finishedInstances = AuthorizationContext
+            .runWithoutAuthorization(
+                () -> camundaHistoryService
+                    .countHistoricProcessInstances(historicProcessInstanceQueryFinished.and(byFinished()))
+            );
 
         List<Long> data = new ArrayList<>();
         data.add(unfinishedInstances);

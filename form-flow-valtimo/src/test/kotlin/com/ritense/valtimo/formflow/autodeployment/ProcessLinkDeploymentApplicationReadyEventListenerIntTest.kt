@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow.autodeployment
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
@@ -48,6 +49,8 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
     }
 
     private fun getLatestProcessDefinition(): CamundaProcessDefinition {
-        return repositoryService.findLatestProcessDefinition("processlink-autodeploy")!!
+        return AuthorizationContext.runWithoutAuthorization {
+            repositoryService.findLatestProcessDefinition("processlink-autodeploy")!!
+        }
     }
 }

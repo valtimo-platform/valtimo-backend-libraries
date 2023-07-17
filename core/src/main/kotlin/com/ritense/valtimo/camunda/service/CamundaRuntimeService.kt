@@ -16,6 +16,11 @@
 
 package com.ritense.valtimo.camunda.service
 
+import com.ritense.authorization.Action
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.EntityAuthorizationRequest
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.domain.CamundaVariableInstance
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.Companion.NAME
@@ -29,31 +34,50 @@ import org.springframework.transaction.annotation.Transactional
 
 open class CamundaRuntimeService(
     private val runtimeService: RuntimeService,
-    private val camundaVariableInstanceRepository: CamundaVariableInstanceRepository
+    private val camundaVariableInstanceRepository: CamundaVariableInstanceRepository,
+    private val authorizationService: AuthorizationService
 ) {
 
     @Transactional(readOnly = true)
     open fun findVariableInstances(
         specification: Specification<CamundaVariableInstance>,
         sort: Sort
-    ): List<CamundaVariableInstance> =
-        camundaVariableInstanceRepository.findAll(specification, sort)
+    ): List<CamundaVariableInstance> {
+        denyAuthorization()
+        return camundaVariableInstanceRepository.findAll(specification, sort)
+    }
 
     @Transactional(readOnly = true)
     open fun getVariables(processInstanceId: String, variableNames: List<String>): Map<String, Any?> {
-        val variableInstances = findVariableInstances(
-            byProcessInstanceId(processInstanceId).and(byNameIn(*variableNames.toTypedArray())),
-            Sort.by(Sort.Direction.DESC, NAME)
-        )
+        denyAuthorization()
+
+        val variableInstances = runWithoutAuthorization {
+            findVariableInstances(
+                byProcessInstanceId(processInstanceId).and(byNameIn(*variableNames.toTypedArray())),
+                Sort.by(Sort.Direction.DESC, NAME)
+            )
+        }
         return variableInstances
             .filter { variableInstance: CamundaVariableInstance -> variableInstance.getValue() != null }
             .associate { obj -> obj.name to obj.getValue() }
     }
 
     @Transactional(readOnly = true)
-    open fun findProcessInstanceById(processInstanceId: String): ProcessInstance? =
-        runtimeService
+    open fun findProcessInstanceById(processInstanceId: String): ProcessInstance? {
+        denyAuthorization()
+        return runtimeService
             .createProcessInstanceQuery()
             .processInstanceId(processInstanceId)
             .singleResult()
+    }
+
+    private fun denyAuthorization() {
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CamundaProcessDefinition::class.java,
+                Action.deny(),
+                null
+            )
+        )
+    }
 }
