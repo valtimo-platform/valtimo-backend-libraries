@@ -22,6 +22,7 @@ dependencies {
     api "org.springframework.data:spring-data-commons"
     api "javax.inject:javax.inject:1"
 
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"

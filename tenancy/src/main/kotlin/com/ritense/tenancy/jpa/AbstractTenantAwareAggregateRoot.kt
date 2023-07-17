@@ -40,7 +40,7 @@ abstract class AbstractTenantAwareAggregateRoot<T : AbstractTenantAwareAggregate
     TenantAware {
 
     @JsonIgnore
-    @Column(name = TENANT_COLUMN, columnDefinition = "VARCHAR(256)")
+    @Column(name = TENANT_COLUMN, columnDefinition = "VARCHAR(256)", updatable = false)
     override var tenantId: String = "" // TenantAwareListener will populate value
 
     companion object {

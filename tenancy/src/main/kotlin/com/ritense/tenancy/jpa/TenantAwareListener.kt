@@ -17,6 +17,7 @@
 package com.ritense.tenancy.jpa;
 
 import com.ritense.tenancy.TenantResolver
+import mu.KotlinLogging
 import javax.persistence.EntityNotFoundException
 import javax.persistence.PrePersist
 import javax.persistence.PreRemove
@@ -28,7 +29,9 @@ class TenantAwareListener {
     @PrePersist
     fun setTenant(entity: Any) {
         if (entity is TenantAware) {
-            entity.tenantId = TenantResolver.getTenantId()
+            val tenantId = TenantResolver.getTenantId()
+            logger.debug { "PrePersist/PreUpdate setting tenantId ($tenantId) for ${entity.javaClass.simpleName}" }
+            entity.tenantId = tenantId
         }
     }
 
@@ -36,10 +39,15 @@ class TenantAwareListener {
     fun preRemove(entity: Any) {
         if (entity is TenantAware) {
             val tenantId = TenantResolver.getTenantId()
+            logger.debug { "PreRemove checking tenantId ($tenantId=${entity.tenantId}) for ${entity.javaClass.simpleName}" }
             if (tenantId != entity.tenantId) {
                 throw EntityNotFoundException("Tenant mismatch")
             }
         }
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 
 }
