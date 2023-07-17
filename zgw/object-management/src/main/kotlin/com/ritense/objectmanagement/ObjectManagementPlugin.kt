@@ -23,7 +23,6 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.domain.ActivityType
 import java.net.URI
-import java.util.UUID
 import org.springframework.http.HttpStatus
 
 @Plugin(
@@ -31,13 +30,12 @@ import org.springframework.http.HttpStatus
     title = "Object Management",
     description = "Provides object-management plugin actions for process-links"
 )
-class ObjectManagementPlugin(
-) {
+class ObjectManagementPlugin {
 
     @PluginAction(
         key = "create-object",
         title = "Create object",
-        description = "Creates an object by Object Management",
+        description = "Create an object by Object Management",
         activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun createObject(objectRequest: ObjectRequest): ObjectWrapper {
@@ -47,7 +45,7 @@ class ObjectManagementPlugin(
     @PluginAction(
         key = "get-object",
         title = "Get object",
-        description = "Gets an object by Object Management",
+        description = "Get an object by Object Management",
         activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun getObject(objectUrl: URI): ObjectWrapper {
