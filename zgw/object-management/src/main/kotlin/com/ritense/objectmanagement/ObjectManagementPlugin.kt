@@ -16,11 +16,61 @@
 
 package com.ritense.objectmanagement
 
+import com.ritense.objectenapi.client.ObjectRequest
+import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.plugin.annotation.Plugin
+import com.ritense.plugin.annotation.PluginAction
+import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.domain.ActivityType
+import java.net.URI
+import java.util.UUID
+import org.springframework.http.HttpStatus
 
 @Plugin(
     key = "objectmanagement",
     title = "Object Management",
     description = "Provides object-management plugin actions for process-links"
 )
-class ObjectManagementPlugin
+class ObjectManagementPlugin(
+) {
+
+    @PluginAction(
+        key = "create-object",
+        title = "Create object",
+        description = "Creates an object by Object Management",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun createObject(objectRequest: ObjectRequest): ObjectWrapper {
+        TODO("Not implemented!")
+    }
+
+    @PluginAction(
+        key = "get-object",
+        title = "Get object",
+        description = "Gets an object by Object Management",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun getObject(objectUrl: URI): ObjectWrapper {
+        TODO("Not implemented!")
+    }
+
+    @PluginAction(
+        key = "update-object",
+        title = "Update object",
+        description = "Update an object by Object Management",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun updateObject(objectUrl: URI, objectRequest: ObjectRequest): ObjectWrapper {
+        TODO("Not implemented!")
+    }
+
+    @PluginAction(
+        key = "delete-object",
+        title = "Delete object",
+        description = "Delete an object by Object Management",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun deleteObject(@PluginActionProperty objectUrl: URI): HttpStatus {
+        TODO("Not implemented!")
+    }
+}
