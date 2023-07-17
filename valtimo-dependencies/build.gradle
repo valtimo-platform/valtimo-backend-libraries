@@ -58,7 +58,6 @@ dependencies {
         api("com.ritense.valtimo:notes:${projectVersion}!!")
         api("com.ritense.valtimo:plugin-valtimo:${projectVersion}!!")
         api("com.ritense.valtimo:plugin:${projectVersion}!!")
-        api("com.ritense.valtimo:portaaltaak:${projectVersion}!!")
         api("com.ritense.valtimo:process-document:${projectVersion}!!")
         api("com.ritense.valtimo:process-link:${projectVersion}!!")
         api("com.ritense.valtimo:smartdocuments:${projectVersion}!!")

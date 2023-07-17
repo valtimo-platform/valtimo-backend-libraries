@@ -51,6 +51,7 @@ dependencies {
         api("com.ritense.valtimo:objects-api:${projectVersion}")
         api("com.ritense.valtimo:openzaak-resource:${projectVersion}")
         api("com.ritense.valtimo:openzaak:${projectVersion}")
+        api("com.ritense.valtimo:portaaltaak:${projectVersion}!!")
 
         api("com.ritense.valtimo:besluiten-api:${projectVersion}")
         api("com.ritense.valtimo:catalogi-api:${projectVersion}")
