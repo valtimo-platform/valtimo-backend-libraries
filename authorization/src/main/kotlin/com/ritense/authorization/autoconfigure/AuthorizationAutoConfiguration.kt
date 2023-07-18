@@ -26,6 +26,7 @@ import com.ritense.authorization.AuthorizationSupportedHelper
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.ResourceActionProvider
 import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.RunWithoutAuthorizationAspect
 import com.ritense.authorization.UserManagementServiceHolder
 import com.ritense.authorization.ValtimoAuthorizationService
 import com.ritense.authorization.deployment.PermissionDeployer
@@ -162,6 +163,12 @@ class AuthorizationAutoConfiguration(
         permissionRepository: PermissionRepository
     ): PermissionManagementResource {
         return PermissionManagementResource(permissionRepository)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RunWithoutAuthorizationAspect::class)
+    fun runWithoutAuthorizationAspect(): RunWithoutAuthorizationAspect {
+        return RunWithoutAuthorizationAspect()
     }
 
 }
