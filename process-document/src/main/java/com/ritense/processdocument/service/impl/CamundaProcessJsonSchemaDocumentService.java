@@ -16,9 +16,10 @@
 
 package com.ritense.processdocument.service.impl;
 
+import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
@@ -290,7 +291,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         } catch (RuntimeException ex) {
             return new ModifyDocumentAndStartProcessResultFailed(parseAndLogException(ex));
         }
-   }
+    }
 
     public StartProcessForDocumentResult startProcessForDocument(StartProcessForDocumentRequest request) {
         try {
@@ -331,11 +332,15 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     }
 
     public Document getDocument(DelegateExecution execution) {
+        denyAuthorization();
         return getDocument(ProcessInstanceId.fromExecution(execution, CamundaProcessInstanceId.class), execution);
     }
 
     public JsonSchemaDocumentId getDocumentId(ProcessInstanceId processInstanceId, VariableScope variableScope) {
-        var processDocumentInstance = processDocumentAssociationService.findProcessDocumentInstance(processInstanceId).orElse(null);
+        denyAuthorization();
+        var processDocumentInstance = processDocumentAssociationService
+            .findProcessDocumentInstance(processInstanceId)
+            .orElse(null);
         if (processDocumentInstance != null) {
             var jsonSchemaDocumentId = processDocumentInstance.processDocumentInstanceId().documentId().toString();
             return JsonSchemaDocumentId.existingId(UUID.fromString(jsonSchemaDocumentId));
@@ -348,7 +353,10 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     }
 
     public JsonSchemaDocumentId getDocumentId(ProcessInstanceId processInstanceId, AbstractVariableScope variableScope) {
-        var processDocumentInstance = processDocumentAssociationService.findProcessDocumentInstance(processInstanceId).orElse(null);
+        denyAuthorization();
+        var processDocumentInstance = processDocumentAssociationService
+            .findProcessDocumentInstance(processInstanceId)
+            .orElse(null);
         if (processDocumentInstance != null) {
             var jsonSchemaDocumentId = processDocumentInstance.processDocumentInstanceId().documentId().toString();
             return JsonSchemaDocumentId.existingId(UUID.fromString(jsonSchemaDocumentId));
@@ -379,6 +387,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
 
     @Override
     public Optional<ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessInstanceId processInstanceId) {
+        denyAuthorization();
         return AuthorizationContext
             .runWithoutAuthorization(
                 () -> camundaProcessService.findProcessInstanceById(processInstanceId.toString())
@@ -445,6 +454,16 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         final UUID referenceId = UUID.randomUUID();
         logger.error("Unexpected error occurred - {}", referenceId, ex);
         return new OperationError.FromString("Unexpected error occurred, please contact support - referenceId: " + referenceId);
+    }
+
+    private void denyAuthorization() {
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                Action.deny(),
+                null
+            )
+        );
     }
 
 }

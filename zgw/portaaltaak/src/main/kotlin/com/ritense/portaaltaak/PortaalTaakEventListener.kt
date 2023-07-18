@@ -83,7 +83,9 @@ class PortaalTaakEventListener(
 
                     val portaaltaakPlugin = pluginService.createInstance(it) as PortaaltaakPlugin
                     val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
-                    val documentId = processDocumentService.getDocumentId(processInstanceId, task)
+                    val documentId = runWithoutAuthorization {
+                        processDocumentService.getDocumentId(processInstanceId, task)
+                    }
                     saveDataInDocument(taakObject, task, receiveData)
                     startProcessToUploadDocuments(
                         taakObject,
