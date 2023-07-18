@@ -463,14 +463,36 @@ public class JsonSchemaDocumentService implements DocumentService {
                 )
             );
 
-        authorizationService
-            .requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocument.class,
-                    ASSIGN,
-                    document
-                )
-            );
+        if (assigneeId.equals(userManagementService.getCurrentUser().getId())) {
+            try {
+                authorizationService
+                    .requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            CLAIM,
+                            document
+                        )
+                    );
+            } catch (Exception e) {
+                authorizationService
+                    .requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            ASSIGN,
+                            document
+                        )
+                    );
+            }
+        } else {
+            authorizationService
+                .requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        ASSIGN,
+                        document
+                    )
+                );
+        }
 
         var assignee = runWithoutAuthorization(() -> userManagementService.findById(assigneeId));
         if (assignee == null) {

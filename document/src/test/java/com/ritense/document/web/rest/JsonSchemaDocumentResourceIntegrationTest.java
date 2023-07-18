@@ -81,7 +81,9 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     @WithMockUser(username = USER_EMAIL, authorities = {FULL_ACCESS_ROLE})
     void shouldAssignUserToCase() throws Exception {
         var user = mockUser("John", "Doe");
+        var loggedInUser = mockUser("Henk", "de Vries");
         when(userManagementService.findById(user.getId())).thenReturn(user);
+        when(userManagementService.getCurrentUser()).thenReturn(loggedInUser);
 
         var postContent = "{ \"assigneeId\": \"" + user.getId() + "\"}";
 

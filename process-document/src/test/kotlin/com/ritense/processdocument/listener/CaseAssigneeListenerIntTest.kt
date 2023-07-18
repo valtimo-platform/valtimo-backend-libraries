@@ -112,6 +112,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun `should set assignee when task is created and autoAssignTasks is on`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
+        whenever(userManagementService.currentUser).thenReturn(testUser)
 
         documentService.assignUserToDocument(testDocument.id().id, testUser.id)
         val processInstance = runtimeService.startProcessInstanceByKey(
@@ -143,6 +144,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         )
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
+        whenever(userManagementService.currentUser).thenReturn(testUser)
 
         documentService.assignUserToDocument(testDocument.id().id, testUser.id)
         val processInstance = runtimeService.startProcessInstanceByKey(
@@ -166,6 +168,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun `should should update task assignee when document assignee is changed`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser, testUser2)
+        whenever(userManagementService.currentUser).thenReturn(testUser)
 
         documentService.assignUserToDocument(testDocument.id().id, testUser.id)
         val processInstance = runtimeService.startProcessInstanceByKey(
@@ -192,6 +195,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     fun `should should remove task assignee when document assignee is removed`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
+        whenever(userManagementService.currentUser).thenReturn(testUser)
 
         documentService.assignUserToDocument(testDocument.id().id, testUser.id)
         val processInstance = runtimeService.startProcessInstanceByKey(
