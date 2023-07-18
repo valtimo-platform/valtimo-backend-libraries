@@ -16,6 +16,7 @@
 
 package com.ritense.authorization.web.rest
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.web.rest.request.DeleteRolesRequest
 import com.ritense.authorization.web.rest.request.SaveRoleRequest
@@ -170,7 +171,8 @@ class RoleManagementResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `should have access to update role permissions method with role_admin`() {
-        val basePermission = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("ROLE_USER"))[0]
+        System.out.println(jacksonObjectMapper().writeValueAsString(permissionRepository.findAll()))
+        val basePermission = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("test-role"))[0]
 
         val request = MockMvcRequestBuilders.request(PUT, "/api/management/v1/roles/ROLE_USER/permissions")
         request.content(
@@ -196,7 +198,7 @@ class RoleManagementResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.USER])
     fun `should not have access to update role permissions method without role_admin`() {
-        val basePermission = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("ROLE_USER"))[0]
+        val basePermission = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("test-role"))[0]
 
         val request = MockMvcRequestBuilders.request(PUT, "/api/management/v1/roles/ROLE_USER/permissions")
         request.content(
