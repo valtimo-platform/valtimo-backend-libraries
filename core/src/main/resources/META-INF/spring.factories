@@ -14,5 +14,4 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.valtimo.autoconfigure.HibernateJsonMapperConfiguration, \
   com.ritense.valtimo.autoconfigure.SchedulerAutoConfiguration, \
   com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration,\
-  com.ritense.valtimo.autoconfigure.CamundaContextConfiguration,\
-  com.ritense.valtimo.sse.autoconfigure.SseAutoConfiguration
+  com.ritense.valtimo.autoconfigure.CamundaContextConfiguration
