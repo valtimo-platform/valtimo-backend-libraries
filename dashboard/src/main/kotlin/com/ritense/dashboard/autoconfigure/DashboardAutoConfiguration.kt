@@ -22,6 +22,7 @@ import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.security.config.DashboardHttpSecurityConfigurer
 import com.ritense.dashboard.service.DashboardService
 import com.ritense.dashboard.web.rest.AdminDashboardResource
+import com.ritense.dashboard.web.rest.DashboardResource
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
@@ -72,10 +73,18 @@ class DashboardAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(AdminDashboardResource::class)
-    fun dashboardResource(
+    fun adminDashboardResource(
         dashboardService: DashboardService
     ): AdminDashboardResource {
         return AdminDashboardResource(dashboardService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DashboardResource::class)
+    fun dashboardResource(
+        dashboardService: DashboardService
+    ): DashboardResource {
+        return DashboardResource(dashboardService)
     }
 
     @Bean
