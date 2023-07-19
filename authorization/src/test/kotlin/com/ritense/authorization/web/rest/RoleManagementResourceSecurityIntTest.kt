@@ -171,7 +171,6 @@ class RoleManagementResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `should have access to update role permissions method with role_admin`() {
-        System.out.println(jacksonObjectMapper().writeValueAsString(permissionRepository.findAll()))
         val basePermission = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("test-role"))[0]
 
         val request = MockMvcRequestBuilders.request(PUT, "/api/management/v1/roles/ROLE_USER/permissions")
