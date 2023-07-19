@@ -36,9 +36,9 @@ class ValtimoAuthorizationService(
         if (!hasPermission(request)) {
             val user = request.user
             if (request.action.key == Action.DENY) {
-                logger.error { "Access denied on '${request.resourceType}'. Have you considered using AuthorizationContext.runWithoutAuthorization(.)?" }
+                logger.error { "Access denied on '${request.resourceType}'. This generally indicates attempting to access a resource without considering authorization. Please refer to the Valtimo documentation." }
             } else {
-                logger.error { "Unauthorized. User '$user' is missing permission '${request.action.key}' on '${request.resourceType}'." }
+                logger.debug { "Unauthorized. User is missing permission '${request.action.key}' on '${request.resourceType}'." }
             }
             throw AccessDeniedException("Unauthorized")
         }
