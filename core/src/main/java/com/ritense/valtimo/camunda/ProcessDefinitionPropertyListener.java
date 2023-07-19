@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.camunda;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.domain.processdefinition.ProcessDefinitionProperties;
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent;
@@ -48,12 +49,15 @@ public class ProcessDefinitionPropertyListener {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReadyEvent() {
-        camundaRepositoryService.findProcessDefinitions(byLatestVersion()).forEach(processDefinition ->
-            saveProcessDefinitionProperties(
-                processDefinition.getKey(),
-                isSystemProcess(repositoryService.getBpmnModelInstance(processDefinition.getId()))
-            )
-        );
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaRepositoryService.findProcessDefinitions(byLatestVersion()).forEach(processDefinition ->
+                saveProcessDefinitionProperties(
+                    processDefinition.getKey(),
+                    isSystemProcess(repositoryService.getBpmnModelInstance(processDefinition.getId()))
+                )
+            );
+            return null;
+        });
     }
 
     @EventListener(ProcessDefinitionDeployedEvent.class)

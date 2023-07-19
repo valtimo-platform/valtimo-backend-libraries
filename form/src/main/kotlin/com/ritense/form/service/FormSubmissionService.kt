@@ -120,7 +120,10 @@ open class FormSubmissionService(
         processLink: ProcessLink,
         document: Document?
     ): ProcessDocumentDefinition {
-        val processDefinition = repositoryService.findProcessDefinitionById(processLink.processDefinitionId)!!
+        val processDefinition = AuthorizationContext
+            .runWithoutAuthorization {
+                repositoryService.findProcessDefinitionById(processLink.processDefinitionId)!!
+            }
         val processDefinitionKey = CamundaProcessDefinitionKey(processDefinition.key)
         return AuthorizationContext.runWithoutAuthorization {
             if (document == null) {

@@ -18,7 +18,7 @@ package com.ritense.processdocument.service
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -88,7 +88,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
             "parent-process",
             document.id().toString()
         )
-        AuthorizationContext.runWithoutAuthorization {
+        runWithoutAuthorization {
             processDocumentAssociationService.createProcessDocumentInstance(
                 processInstance.id,
                 document.id().id,
@@ -100,7 +100,9 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
         val startedProcessId = task.processInstanceId
         val associatedProcessDocuments =
             processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
-        val resultProcessInstance = camundaProcessService.findProcessInstanceById(startedProcessId).get()
+        val resultProcessInstance = runWithoutAuthorization {
+            camundaProcessService.findProcessInstanceById(startedProcessId).get()
+        }
         assertEquals(document.id().toString(), resultProcessInstance.businessKey)
         assertEquals(associatedProcessDocuments.size, 2)
         assertNotNull(associatedProcessDocuments.firstOrNull { it.processName().equals("parent process") })

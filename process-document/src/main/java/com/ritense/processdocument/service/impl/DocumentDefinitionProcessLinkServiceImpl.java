@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.service.impl;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcess;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLink;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLinkId;
@@ -46,7 +47,10 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         var link = documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
 
         if (link.isPresent()) {
-            var processDefinition = repositoryService.findLatestProcessDefinition(link.get().getId().getProcessDefinitionKey());
+            var processDefinition = AuthorizationContext
+                .runWithoutAuthorization(
+                    () -> repositoryService.findLatestProcessDefinition(link.get().getId().getProcessDefinitionKey())
+                );
 
             return new DocumentDefinitionProcess(processDefinition.getKey(), processDefinition.getName());
         }
@@ -59,7 +63,10 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         var links = documentDefinitionProcessLinkRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
 
         return links.stream().map(link -> {
-            var processDefinition = repositoryService.findLatestProcessDefinition(link.getId().getProcessDefinitionKey());
+            var processDefinition = AuthorizationContext
+                .runWithoutAuthorization(
+                    () -> repositoryService.findLatestProcessDefinition(link.getId().getProcessDefinitionKey())
+                );
 
             return new DocumentDefinitionProcess(processDefinition.getKey(), processDefinition.getName());
         }).toList();
@@ -75,7 +82,10 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         String documentDefinitionName,
         DocumentDefinitionProcessRequest request) {
 
-        var processDefinition = repositoryService.findLatestProcessDefinition(request.getProcessDefinitionKey());
+        var processDefinition = AuthorizationContext
+            .runWithoutAuthorization(
+                () -> repositoryService.findLatestProcessDefinition(request.getProcessDefinitionKey())
+            );
 
         if (processDefinition == null) {
             throw new IllegalArgumentException("Unknown process definition with key: " + request.getProcessDefinitionKey());

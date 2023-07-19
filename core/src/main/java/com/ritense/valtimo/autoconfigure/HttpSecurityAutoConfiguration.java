@@ -39,7 +39,6 @@ import com.ritense.valtimo.security.config.OpenApiHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.PingHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ProcessHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ProcessInstanceHttpSecurityConfigurer;
-import com.ritense.valtimo.security.config.PublicProcessHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ReportingHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.StatelessHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.StaticResourcesHttpSecurityConfigurer;
@@ -163,13 +162,6 @@ public class HttpSecurityAutoConfiguration {
     @ConditionalOnMissingBean(ProcessHttpSecurityConfigurer.class)
     public ProcessHttpSecurityConfigurer processHttpSecurityConfigurer() {
         return new ProcessHttpSecurityConfigurer();
-    }
-
-    @Order(341)
-    @Bean
-    @ConditionalOnMissingBean(PublicProcessHttpSecurityConfigurer.class)
-    public PublicProcessHttpSecurityConfigurer publicProcessHttpSecurityConfigurer() {
-        return new PublicProcessHttpSecurityConfigurer();
     }
 
     @Order(350)

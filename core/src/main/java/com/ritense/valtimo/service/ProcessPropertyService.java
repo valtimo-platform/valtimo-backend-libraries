@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.domain.processdefinition.ProcessDefinitionProperties;
@@ -58,7 +59,8 @@ public class ProcessPropertyService {
     }
 
     private String getProcessDefinitionKeyById(String processDefinitionId) {
-        var processDefinition = repositoryService.findProcessDefinitionById(processDefinitionId);
+        var processDefinition = AuthorizationContext
+            .runWithoutAuthorization(() -> repositoryService.findProcessDefinitionById(processDefinitionId));
         if (processDefinition == null) {
             throw new RuntimeException("Failed to find process definition with id: " + processDefinitionId);
         }

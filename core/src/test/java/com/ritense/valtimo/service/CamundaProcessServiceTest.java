@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
@@ -91,6 +93,9 @@ class CamundaProcessServiceTest {
     @Mock
     private FormService formService;
 
+    @Mock
+    private AuthorizationService authorizationService;
+
     private CamundaHistoryService historyService = mock(CamundaHistoryService.class, RETURNS_DEEP_STUBS);
 
     @BeforeEach
@@ -100,7 +105,7 @@ class CamundaProcessServiceTest {
 
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectAll() {
-        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties);
+        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties, authorizationService);
 
         //when
         when(historyService.findHistoricProcessInstances(any()))
@@ -108,7 +113,10 @@ class CamundaProcessServiceTest {
 
         //method call
         var allActiveContextProcessesStartedByCurrentUser =
-            camundaProcessService.getAllActiveContextProcessesStartedByCurrentUser(contextProcessesTest1(), userMock);
+            AuthorizationContext.runWithoutAuthorization(
+                () -> camundaProcessService
+                    .getAllActiveContextProcessesStartedByCurrentUser(contextProcessesTest1(), userMock)
+            );
         //assert
         assertThat(allActiveContextProcessesStartedByCurrentUser, hasSize(3));
         assertThat(allActiveContextProcessesStartedByCurrentUser, contains(latestProcessInstance, middleProcessInstance, oldestProcessInstance));
@@ -129,15 +137,15 @@ class CamundaProcessServiceTest {
 
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectTwo() {
-        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties);
+        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties, authorizationService);
 
         //when
         when(historyService.findHistoricProcessInstances(any()))
             .thenReturn(getHistoricProcessInstances());
 
         //method call
-        var allActiveContextProcessesStartedByCurrentUser =
-            camundaProcessService.getAllActiveContextProcessesStartedByCurrentUser(contextProcessesTest2(), userMock);
+        var allActiveContextProcessesStartedByCurrentUser = AuthorizationContext.runWithoutAuthorization(() ->
+            camundaProcessService.getAllActiveContextProcessesStartedByCurrentUser(contextProcessesTest2(), userMock));
         //assert
         assertThat(allActiveContextProcessesStartedByCurrentUser, hasSize(2));
         assertThat(allActiveContextProcessesStartedByCurrentUser, contains(latestProcessInstance, middleProcessInstance));

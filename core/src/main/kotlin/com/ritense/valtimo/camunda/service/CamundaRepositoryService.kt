@@ -16,6 +16,10 @@
 
 package com.ritense.valtimo.camunda.service
 
+import com.ritense.authorization.Action
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionRepository
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byId
@@ -26,37 +30,64 @@ import org.springframework.data.jpa.domain.Specification
 import org.springframework.transaction.annotation.Transactional
 
 open class CamundaRepositoryService(
-    private val camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository
+    private val camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
+    private val authorizationService: AuthorizationService
 ) {
 
     @Transactional(readOnly = true)
-    open fun findProcessDefinitionById(processDefinitionId: String): CamundaProcessDefinition? =
-        findProcessDefinition(byId(processDefinitionId))
+    open fun findProcessDefinitionById(processDefinitionId: String): CamundaProcessDefinition? {
+        denyAuthorization()
+        return runWithoutAuthorization{ findProcessDefinition(byId(processDefinitionId)) }
+    }
 
     @Transactional(readOnly = true)
-    open fun findLatestProcessDefinition(processDefinitionKey: String): CamundaProcessDefinition? =
-        findProcessDefinition(byKey(processDefinitionKey).and(byLatestVersion()))
+    open fun findLatestProcessDefinition(processDefinitionKey: String): CamundaProcessDefinition? {
+        denyAuthorization()
+        return runWithoutAuthorization { findProcessDefinition(byKey(processDefinitionKey).and(byLatestVersion())) }
+    }
 
     @Transactional(readOnly = true)
     open fun findProcessDefinitions(
         specification: Specification<CamundaProcessDefinition>,
         sort: Sort
-    ): List<CamundaProcessDefinition> =
-        camundaProcessDefinitionRepository.findAll(specification, sort)
+    ): List<CamundaProcessDefinition> {
+        denyAuthorization()
+        return camundaProcessDefinitionRepository.findAll(specification, sort)
+    }
 
     @Transactional(readOnly = true)
-    open fun findProcessDefinitions(specification: Specification<CamundaProcessDefinition>): List<CamundaProcessDefinition> =
-        camundaProcessDefinitionRepository.findAll(specification)
+    open fun findProcessDefinitions(
+        specification: Specification<CamundaProcessDefinition>
+    ): List<CamundaProcessDefinition> {
+        denyAuthorization()
+        return camundaProcessDefinitionRepository.findAll(specification)
+    }
 
     @Transactional(readOnly = true)
-    open fun findProcessDefinition(specification: Specification<CamundaProcessDefinition>): CamundaProcessDefinition? =
-        camundaProcessDefinitionRepository.findOne(specification).orElse(null)
+    open fun findProcessDefinition(specification: Specification<CamundaProcessDefinition>): CamundaProcessDefinition? {
+        denyAuthorization()
+        return camundaProcessDefinitionRepository.findOne(specification).orElse(null)
+    }
 
     @Transactional(readOnly = true)
-    open fun countProcessDefinitions(specification: Specification<CamundaProcessDefinition>) =
-        camundaProcessDefinitionRepository.count(specification)
+    open fun countProcessDefinitions(specification: Specification<CamundaProcessDefinition>): Long {
+        denyAuthorization()
+        return camundaProcessDefinitionRepository.count(specification)
+    }
 
     @Transactional(readOnly = true)
-    open fun processDefinitionExists(specification: Specification<CamundaProcessDefinition>) =
-        camundaProcessDefinitionRepository.exists(specification)
+    open fun processDefinitionExists(specification: Specification<CamundaProcessDefinition>): Boolean {
+        denyAuthorization()
+        return camundaProcessDefinitionRepository.exists(specification)
+    }
+
+    private fun denyAuthorization() {
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CamundaProcessDefinition::class.java,
+                Action.deny(),
+                null
+            )
+        )
+    }
 }

@@ -17,6 +17,7 @@
 package com.ritense.smartdocuments.plugin
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.plugin.domain.ActivityType
@@ -117,7 +118,9 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         """.trimIndent()
 
         smartDocumentsPlugin = smartDocumentsPluginFactory.create(pluginConfiguration)
-        processDefinition = camundaRepositoryService.findLatestProcessDefinition("document-generation-plugin")!!
+        processDefinition = runWithoutAuthorization {
+            camundaRepositoryService.findLatestProcessDefinition("document-generation-plugin")!!
+        }
 
         saveProcessLink(generateDocumentActionProperties)
     }

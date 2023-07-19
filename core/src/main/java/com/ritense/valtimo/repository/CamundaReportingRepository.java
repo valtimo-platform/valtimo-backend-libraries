@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.repository;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
@@ -61,7 +62,8 @@ public class CamundaReportingRepository {
         if (Optional.ofNullable(processDefinitionKey).isPresent()) {
             processDefinitionQuery.and(byKey(processDefinitionKey));
         }
-        List<CamundaProcessDefinition> deploydDefinitions = repositoryService.findProcessDefinitions(processDefinitionQuery);
+        List<CamundaProcessDefinition> deploydDefinitions = AuthorizationContext
+            .runWithoutAuthorization(() -> repositoryService.findProcessDefinitions(processDefinitionQuery));
         List<InstanceCount> instanceCounts = session.selectList("com.ritense.valtimo.mapper.getInstanceCount", parameters);
         return new InstanceCountChart(deploydDefinitions, instanceCounts);
     }

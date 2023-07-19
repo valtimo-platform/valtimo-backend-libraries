@@ -17,6 +17,7 @@
 
 package com.ritense.valtimo.autoconfiguration
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.valtimo.camunda.repository.CamundaBytearrayRepository
 import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceRepository
@@ -59,16 +60,18 @@ class ValtimoCamundaAutoConfiguration {
     fun camundaHistoryService(
         historyService: HistoryService,
         camundaHistoricProcessInstanceRepository: CamundaHistoricProcessInstanceRepository,
+        authorizationService: AuthorizationService
     ): CamundaHistoryService {
-        return CamundaHistoryService(historyService, camundaHistoricProcessInstanceRepository)
+        return CamundaHistoryService(historyService, camundaHistoricProcessInstanceRepository, authorizationService)
     }
 
     @Bean
     @ConditionalOnMissingBean(CamundaRepositoryService::class)
     fun camundaRepositoryService(
         camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
+        authorizationService: AuthorizationService
     ): CamundaRepositoryService {
-        return CamundaRepositoryService(camundaProcessDefinitionRepository)
+        return CamundaRepositoryService(camundaProcessDefinitionRepository, authorizationService)
     }
 
     @Bean
@@ -76,8 +79,9 @@ class ValtimoCamundaAutoConfiguration {
     fun camundaRuntimeService(
         runtimeService: RuntimeService,
         camundaVariableInstanceRepository: CamundaVariableInstanceRepository,
+        authorizationService: AuthorizationService
     ): CamundaRuntimeService {
-        return CamundaRuntimeService(runtimeService, camundaVariableInstanceRepository)
+        return CamundaRuntimeService(runtimeService, camundaVariableInstanceRepository, authorizationService)
     }
 
 }

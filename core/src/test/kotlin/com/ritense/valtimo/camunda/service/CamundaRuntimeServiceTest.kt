@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.camunda.service
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.authorization.AuthorizationService
 import com.ritense.valtimo.camunda.domain.CamundaVariableInstance
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
 import org.camunda.bpm.engine.RuntimeService
@@ -30,19 +32,23 @@ class CamundaRuntimeServiceTest {
 
     val runtimeService: RuntimeService = mock()
     val camundaVariableInstanceRepository: CamundaVariableInstanceRepository = mock()
+    val authorizationService: AuthorizationService = mock()
 
     @Test
     fun `should get variables`() {
         val camundaRuntimeService = CamundaRuntimeService(
             runtimeService,
-            camundaVariableInstanceRepository
+            camundaVariableInstanceRepository,
+            authorizationService
         )
         val variableInstances = listOf(
             createMockedVariableInstance("val1", "nothing"),
             createMockedVariableInstance("val2", "something")
         )
         whenever(camundaVariableInstanceRepository.findAll(any(), any<Sort>())).thenReturn(variableInstances)
-        val processInstanceVariables = camundaRuntimeService.getVariables("123", listOf("val1", "val2"))
+        val processInstanceVariables = runWithoutAuthorization {
+            camundaRuntimeService.getVariables("123", listOf("val1", "val2"))
+        }
         assertEquals(2, processInstanceVariables.size)
         assertEquals("nothing", processInstanceVariables["val1"])
         assertEquals("something", processInstanceVariables["val2"])
@@ -52,14 +58,17 @@ class CamundaRuntimeServiceTest {
     fun `should get process variables with empty values`() {
         val camundaRuntimeService = CamundaRuntimeService(
             runtimeService,
-            camundaVariableInstanceRepository
+            camundaVariableInstanceRepository,
+            authorizationService
         )
         val variableInstances = listOf(
             createMockedVariableInstance("val1", null),
             createMockedVariableInstance("val2", "something")
         )
         whenever(camundaVariableInstanceRepository.findAll(any(), any<Sort>())).thenReturn(variableInstances)
-        val processInstanceVariables = camundaRuntimeService.getVariables("123", listOf("val1", "val2"))
+        val processInstanceVariables = runWithoutAuthorization {
+            camundaRuntimeService.getVariables("123", listOf("val1", "val2"))
+        }
         assertEquals(1, processInstanceVariables.size)
         assertEquals("something", processInstanceVariables["val2"])
     }

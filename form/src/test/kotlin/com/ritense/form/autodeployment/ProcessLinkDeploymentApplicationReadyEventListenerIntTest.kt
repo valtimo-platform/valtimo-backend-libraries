@@ -16,6 +16,7 @@
 
 package com.ritense.form.autodeployment
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.form.BaseIntegrationTest
 import com.ritense.form.domain.FormProcessLink
 import com.ritense.processlink.repository.ProcessLinkRepository
@@ -48,6 +49,8 @@ class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired const
     }
 
     private fun getLatestProcessDefinition(): CamundaProcessDefinition {
-        return repositoryService.findLatestProcessDefinition("form-one-task-process")!!
+        return AuthorizationContext.runWithoutAuthorization {
+            repositoryService.findLatestProcessDefinition("form-one-task-process")!!
+        }
     }
 }
