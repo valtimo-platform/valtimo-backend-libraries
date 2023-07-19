@@ -33,5 +33,8 @@ interface WidgetConfigurationRepository : JpaRepository<WidgetConfiguration, Str
     @Modifying
     fun deleteByDashboardKeyAndKey(dashboardKey: String, widgetConfigurationKey: String)
 
+    @Modifying
+    fun deleteByDashboardKey(dashboardKey: String)
+
     fun existsByDashboardKeyAndKey(dashboardKey: String, key: String): Boolean
 }
