@@ -19,6 +19,7 @@ package com.ritense.valtimo.service;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.AuthorizationSpecification;
+import com.ritense.authorization.DelegateUserEntityAuthorizationRequest;
 import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.Role;
 import com.ritense.authorization.permission.Permission;
@@ -161,7 +162,7 @@ public class CamundaTaskService {
         } else {
             final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
             authorizationService.requirePermission(
-                new EntityAuthorizationRequest<>(CamundaTask.class, ASSIGNABLE, assignee, task)
+                new DelegateUserEntityAuthorizationRequest<>(CamundaTask.class, ASSIGNABLE, assignee, task)
             );
 
             final String currentUser = SecurityUtils.getCurrentUserLogin();

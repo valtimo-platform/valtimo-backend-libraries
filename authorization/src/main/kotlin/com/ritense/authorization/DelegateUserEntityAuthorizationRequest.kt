@@ -16,19 +16,13 @@
 
 package com.ritense.authorization
 
-import com.ritense.valtimo.contract.utils.SecurityUtils
-
-class RelatedEntityAuthorizationRequest<T>(
-    override val resourceType: Class<T>,
-    override val action: Action<T>,
-    val relatedResourceType: Class<*>,
-    val relatedResourceId: String
-) : AuthorizationRequest<T> {
-    init {
-        AuthorizationSupportedHelper.checkSupported(resourceType)
-        AuthorizationSupportedHelper.checkSupported(relatedResourceType)
-    }
-
-    override val user: String?
-        get() = SecurityUtils.getCurrentUserLogin()
-}
+class DelegateUserEntityAuthorizationRequest<T>(
+    resourceType: Class<T>,
+    action: Action<T>,
+    override val user: String?,
+    entity: T?, //TODO: Determine if this really should be nullable
+) : EntityAuthorizationRequest<T>(
+    resourceType,
+    action,
+    entity
+)

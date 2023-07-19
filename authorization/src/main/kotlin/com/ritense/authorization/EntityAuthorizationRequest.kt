@@ -16,16 +16,13 @@
 
 package com.ritense.authorization
 
-class EntityAuthorizationRequest<T>(
+import com.ritense.valtimo.contract.utils.SecurityUtils
+
+open class EntityAuthorizationRequest<T>(
     override val resourceType: Class<T>,
     override val action: Action<T>,
-    override val user: String?,
     val entity: T?, //TODO: Determine if this really should be nullable
 ) : AuthorizationRequest<T> {
-
-    constructor(
-        resourceType: Class<T>,
-        action: Action<T>,
-        entity: T?
-    ) : this(resourceType, action, null, entity)
+    override val user: String?
+        get() = SecurityUtils.getCurrentUserLogin()
 }
