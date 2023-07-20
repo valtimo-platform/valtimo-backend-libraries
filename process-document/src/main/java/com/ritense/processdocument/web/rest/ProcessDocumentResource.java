@@ -121,7 +121,7 @@ public class ProcessDocumentResource {
     public ResponseEntity<ProcessDocumentDefinition> getProcessDocumentDefinition(
         @PathVariable String processInstanceId
     ) {
-        return processDocumentService.findProcessDocumentDefinition(new CamundaProcessInstanceId(processInstanceId))
+        return AuthorizationContext.runWithoutAuthorization(() -> processDocumentService.findProcessDocumentDefinition(new CamundaProcessInstanceId(processInstanceId)))
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.badRequest().build());
     }
