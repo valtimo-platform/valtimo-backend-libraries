@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
@@ -142,11 +143,12 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/definition")
     public ResponseEntity<List<ProcessDefinitionWithPropertiesDto>> getProcessDefinitions() {
-        final List<ProcessDefinitionWithPropertiesDto> definitions = camundaProcessService
+        final List<ProcessDefinitionWithPropertiesDto> definitions = AuthorizationContext
+            .runWithoutAuthorization(() -> camundaProcessService
                 .getDeployedDefinitions()
                 .stream()
                 .map(ProcessDefinitionWithPropertiesDto::fromProcessDefinition)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
         definitions.forEach(definition ->
                 definition.setReadOnly(processPropertyService.isReadOnly(definition.getKey()))
         );
@@ -155,9 +157,11 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/definition/{processDefinitionKey}")
     public ResponseEntity<CamundaProcessDefinitionDto> getProcessDefinition(@PathVariable String processDefinitionKey) {
-        CamundaProcessDefinition processDefinition = repositoryService.findProcessDefinition(
-            byKey(processDefinitionKey)
-                .and(byLatestVersion())
+        CamundaProcessDefinition processDefinition = AuthorizationContext
+            .runWithoutAuthorization(() -> repositoryService.findProcessDefinition(
+                byKey(processDefinitionKey)
+                    .and(byLatestVersion())
+            )
         );
         return Optional.ofNullable(processDefinition)
                 .map(process -> ResponseEntity.ok(CamundaProcessDefinitionDto.of(processDefinition)))
@@ -168,10 +172,11 @@ public class ProcessResource extends AbstractProcessResource {
     public ResponseEntity<List<CamundaProcessDefinitionDto>> getProcessDefinitionVersions(
             @PathVariable String processDefinitionKey
     ) {
-        List<CamundaProcessDefinition> deployedDefinitions = repositoryService.findProcessDefinitions(
+        List<CamundaProcessDefinition> deployedDefinitions = AuthorizationContext
+            .runWithoutAuthorization(() -> repositoryService.findProcessDefinitions(
                 byKey(processDefinitionKey),
                 Sort.by(VERSION)
-        );
+            ));
         List<CamundaProcessDefinitionDto> result = deployedDefinitions.stream()
                 .map(CamundaProcessDefinitionDto::of)
                 .collect(Collectors.toList());
@@ -348,14 +353,16 @@ public class ProcessResource extends AbstractProcessResource {
             @PathVariable String businessKey,
             @RequestBody Map<String, Object> variables
     ) {
-        final var processInstanceWithDefinition = camundaProcessService.startProcess(
-                processDefinitionKey, businessKey, variables);
+        final var processInstanceWithDefinition = AuthorizationContext.runWithoutAuthorization(() ->
+            camundaProcessService.startProcess(processDefinitionKey, businessKey, variables));
         return ResponseEntity.ok(processInstanceWithDefinition.getProcessInstanceDto());
     }
 
     @GetMapping("/v1/process/{processInstanceId}")
     public ResponseEntity<CamundaHistoricProcessInstanceDto> getProcessInstance(@PathVariable String processInstanceId) {
-        CamundaHistoricProcessInstance historicProcessInstance = getHistoricProcessInstance(processInstanceId);
+        CamundaHistoricProcessInstance historicProcessInstance = AuthorizationContext.runWithoutAuthorization(() ->
+            getHistoricProcessInstance(processInstanceId)
+        );
         return Optional.ofNullable(historicProcessInstance)
                 .map(process -> ResponseEntity.ok(
                     CamundaHistoricProcessInstanceDto.of(historicProcessInstance)))
@@ -399,10 +406,13 @@ public class ProcessResource extends AbstractProcessResource {
     public ResponseEntity<List<TaskInstanceWithIdentityLink>> getProcessInstanceTasks(
             @PathVariable String processInstanceId
     ) {
-        return camundaProcessService.findProcessInstanceById(processInstanceId)
-                .map(processInstance -> ResponseEntity.ok(
-                        camundaTaskService.getProcessInstanceTasks(processInstance.getId(), processInstance.getBusinessKey())))
-                .orElse(ResponseEntity.noContent().build());
+        return AuthorizationContext
+            .runWithoutAuthorization(
+                () -> camundaProcessService.findProcessInstanceById(processInstanceId)
+                    .map(processInstance -> ResponseEntity.ok(
+                            camundaTaskService.getProcessInstanceTasks(processInstance.getId(), processInstance.getBusinessKey())))
+                    .orElse(ResponseEntity.noContent().build())
+            );
     }
 
     @GetMapping("/v1/process/{processInstanceId}/activetask")
@@ -418,7 +428,9 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/{processInstanceId}/xml")
     public ResponseEntity<ProcessInstanceDiagramDto> getProcessInstanceXml(@PathVariable String processInstanceId) {
-        CamundaHistoricProcessInstance processInstance = getHistoricProcessInstance(processInstanceId);
+        CamundaHistoricProcessInstance processInstance = AuthorizationContext.runWithoutAuthorization(() ->
+            getHistoricProcessInstance(processInstanceId)
+        );
         try {
             ProcessDefinitionDiagramDto definitionDiagramDto = createProcessDefinitionDiagramDto(
                     processInstance.getProcessDefinitionId());
@@ -527,7 +539,10 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PostMapping("/v1/process/{processInstanceId}/delete")
     public ResponseEntity<Void> delete(@PathVariable String processInstanceId, @RequestBody String reason) {
-        camundaProcessService.deleteProcessInstanceById(processInstanceId, reason);
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaProcessService.deleteProcessInstanceById(processInstanceId, reason);
+            return null;
+        });
         return ResponseEntity.ok().build();
     }
 
@@ -549,7 +564,10 @@ public class ProcessResource extends AbstractProcessResource {
             return ResponseEntity.badRequest().body("Invalid file name. Must have '.bpmn' suffix.");
         }
         try {
-            camundaProcessService.deploy(bpmn.getOriginalFilename(), new ByteArrayInputStream(bpmn.getBytes()));
+            AuthorizationContext.runWithoutAuthorization(() -> {
+                camundaProcessService.deploy(bpmn.getOriginalFilename(), new ByteArrayInputStream(bpmn.getBytes()));
+                return null;
+            });
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

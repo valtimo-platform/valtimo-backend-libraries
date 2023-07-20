@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.service.DocumentService
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.service.FormFlowService
@@ -59,7 +60,9 @@ class FormFlowProcessLinkActivityHandler(
         processLink: ProcessLink): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
         processLink as FormFlowProcessLink
         val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId)!!
-        val processDefinition = repositoryService.findProcessDefinitionById(processDefinitionId)!!
+        val processDefinition = AuthorizationContext.runWithoutAuthorization {
+            repositoryService.findProcessDefinitionById(processDefinitionId)!!
+        }
 
         val additionalProperties = mutableMapOf<String, Any>("processDefinitionKey" to processDefinition.key)
         documentId?.let { additionalProperties["documentId"] = it }

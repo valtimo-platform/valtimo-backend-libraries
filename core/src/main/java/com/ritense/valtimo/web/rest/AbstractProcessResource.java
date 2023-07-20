@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
@@ -67,7 +68,11 @@ public abstract class AbstractProcessResource {
     }
 
     public CamundaProcessDefinition getProcessDefinition(String processDefinitionKey, Integer version) {
-        return camundaRepositoryService.findProcessDefinition(byKey(processDefinitionKey).and(byVersion(version)));
+        return AuthorizationContext
+            .runWithoutAuthorization(
+                () -> camundaRepositoryService
+                    .findProcessDefinition(byKey(processDefinitionKey).and(byVersion(version)))
+            );
     }
 
     public ProcessDefinitionDiagramDto createProcessDefinitionDiagramDto(String processDefinitionId) throws UnsupportedEncodingException {

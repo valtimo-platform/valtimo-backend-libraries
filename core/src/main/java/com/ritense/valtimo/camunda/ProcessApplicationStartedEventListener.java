@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.camunda;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.contract.event.ProcessDefinitionAvailableEvent;
 import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.spring.boot.starter.event.ProcessApplicationStartedEvent;
@@ -38,7 +39,7 @@ public class ProcessApplicationStartedEventListener {
     @EventListener(ProcessApplicationStartedEvent.class)
     public void engineStarted(ProcessApplicationStartedEvent event) {
         logger.debug("{} - handle - processApplicationStartedEvent", Thread.currentThread().getName());
-        camundaProcessService.getDeployedDefinitions()
+        AuthorizationContext.runWithoutAuthorization(camundaProcessService::getDeployedDefinitions)
             .forEach(processDefinition -> applicationEventPublisher.publishEvent(new ProcessDefinitionAvailableEvent(processDefinition.getId())));
     }
 

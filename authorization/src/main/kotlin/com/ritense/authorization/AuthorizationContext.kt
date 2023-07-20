@@ -36,10 +36,6 @@ class AuthorizationContext {
                 try {
                     ignoreAuthorizationThreadLocal.set(true)
                     callable.call()
-                } catch (e: RuntimeException) {
-                    throw e
-                } catch (e: Exception) {
-                    throw RuntimeException(e)
                 } finally {
                     ignoreAuthorizationThreadLocal.set(false)
                 }

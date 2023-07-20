@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
@@ -80,11 +81,13 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
             )
         )
 
-        camundaProcessService.startProcess(
-            processDefinition.key,
-            UUID.randomUUID().toString(),
-            mapOf()
-        )
+        runWithoutAuthorization{
+            camundaProcessService.startProcess(
+                processDefinition.key,
+                UUID.randomUUID().toString(),
+                mapOf()
+            )
+        }
 
         assertEquals(0, formFlowInstanceRepository.findAll().size)
     }
@@ -106,11 +109,13 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
             )
         )
 
-        val processInstance = camundaProcessService.startProcess(
-            processDefinition.key,
-            UUID.randomUUID().toString(),
-            mapOf()
-        )
+        val processInstance = runWithoutAuthorization {
+            camundaProcessService.startProcess(
+                processDefinition.key,
+                UUID.randomUUID().toString(),
+                mapOf()
+            )
+        }
 
         val task = taskService.findTask(byProcessInstanceId(processInstance.processInstanceDto.id))
 

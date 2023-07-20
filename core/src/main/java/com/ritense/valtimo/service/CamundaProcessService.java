@@ -16,6 +16,10 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
@@ -70,13 +74,15 @@ public class CamundaProcessService {
     private final CamundaHistoryService historyService;
     private final ProcessPropertyService processPropertyService;
     private final ValtimoProperties valtimoProperties;
+    private final AuthorizationService authorizationService;
 
     public CamundaProcessService(
         RuntimeService runtimeService,
         CamundaRuntimeService camundaRuntimeService,
         RepositoryService repositoryService, CamundaRepositoryService camundaRepositoryService, FormService formService,
         CamundaHistoryService historyService, ProcessPropertyService processPropertyService,
-        ValtimoProperties valtimoProperties
+        ValtimoProperties valtimoProperties,
+        AuthorizationService authorizationService
     ) {
         this.runtimeService = runtimeService;
         this.camundaRuntimeService = camundaRuntimeService;
@@ -86,14 +92,19 @@ public class CamundaProcessService {
         this.historyService = historyService;
         this.processPropertyService = processPropertyService;
         this.valtimoProperties = valtimoProperties;
+        this.authorizationService = authorizationService;
     }
 
     public CamundaProcessDefinition findProcessDefinitionById(String processDefinitionId) {
-        return camundaRepositoryService.findProcessDefinitionById(processDefinitionId);
+        denyAuthorization();
+        return AuthorizationContext
+            .runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitionById(processDefinitionId));
     }
 
     public CamundaProcessDefinition getProcessDefinitionById(String processDefinitionId) {
-        var processDefinition = findProcessDefinitionById(processDefinitionId);
+        denyAuthorization();
+        var processDefinition = AuthorizationContext
+            .runWithoutAuthorization(() -> findProcessDefinitionById(processDefinitionId));
         if (processDefinition == null) {
             throw new ProcessDefinitionNotFoundException("with id '" + processDefinitionId + "'.");
         } else {
@@ -102,10 +113,15 @@ public class CamundaProcessService {
     }
 
     public boolean processDefinitionExistsByKey(String processDefinitionKey) {
-        return camundaRepositoryService.countProcessDefinitions(byKey(processDefinitionKey)) >= 1;
+        denyAuthorization();
+        return AuthorizationContext
+            .runWithoutAuthorization(
+                () -> camundaRepositoryService.countProcessDefinitions(byKey(processDefinitionKey)) >= 1
+            );
     }
 
     public Optional<ProcessInstance> findProcessInstanceById(String processInstanceId) {
+        denyAuthorization();
         return Optional.ofNullable(runtimeService
             .createProcessInstanceQuery()
             .processInstanceId(processInstanceId)
@@ -113,17 +129,21 @@ public class CamundaProcessService {
     }
 
     public void deleteProcessInstanceById(String processInstanceId, String reason) {
+        denyAuthorization();
         runtimeService.deleteProcessInstance(processInstanceId, reason);
     }
 
     public void removeProcessVariables(String processInstanceId, Collection<String> variableNames) {
+        denyAuthorization();
         runtimeService.removeVariables(processInstanceId, variableNames);
     }
 
     public ProcessInstanceWithDefinition startProcess(
         String processDefinitionKey, String businessKey, Map<String, Object> variables
     ) {
-        final CamundaProcessDefinition processDefinition = camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey);
+        denyAuthorization();
+        final CamundaProcessDefinition processDefinition = AuthorizationContext
+            .runWithoutAuthorization(() -> camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey));
         if (processDefinition == null) {
             throw new IllegalStateException("No process definition found with key: '" + processDefinitionKey + "'");
         }
@@ -137,18 +157,25 @@ public class CamundaProcessService {
     }
 
     public CamundaProcessDefinition getProcessDefinition(String processDefinitionKey) {
-        return camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey);
+        denyAuthorization();
+        return AuthorizationContext
+            .runWithoutAuthorization(() -> camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey));
     }
 
     public Map<String, Object> getProcessInstanceVariables(String processInstanceId, List<String> variableNames) {
-        return camundaRuntimeService.getVariables(processInstanceId, variableNames);
+        denyAuthorization();
+        return AuthorizationContext
+            .runWithoutAuthorization(() -> camundaRuntimeService.getVariables(processInstanceId, variableNames));
     }
 
     public List<CamundaHistoricProcessInstance> getAllActiveContextProcessesStartedByCurrentUser(
         Set<String> processes, String userLogin
     ) {
-        List<CamundaHistoricProcessInstance> historicProcessInstances = historyService.findHistoricProcessInstances(
-            byStartUserId(userLogin).and(byUnfinished())
+        denyAuthorization();
+        List<CamundaHistoricProcessInstance> historicProcessInstances = AuthorizationContext.runWithoutAuthorization(
+            () -> historyService.findHistoricProcessInstances(
+                byStartUserId(userLogin).and(byUnfinished())
+            )
         );
 
         return historicProcessInstances
@@ -159,25 +186,32 @@ public class CamundaProcessService {
     }
 
     public List<CamundaProcessDefinition> getDeployedDefinitions() {
-        return camundaRepositoryService.findProcessDefinitions(
+        denyAuthorization();
+        return AuthorizationContext.runWithoutAuthorization(() -> camundaRepositoryService.findProcessDefinitions(
             byActive().and(byLatestVersion()),
             Sort.by(NAME)
-        );
+        ));
     }
 
     @Transactional
     public void deleteAllProcesses(String processDefinitionKey, String reason) {
+        denyAuthorization();
+
         logger.debug("delete all running process instances for processes with key: {}", processDefinitionKey);
 
         List<ProcessInstance> runningInstances = runtimeService.createProcessInstanceQuery()
             .processDefinitionKey(processDefinitionKey)
             .list();
 
-        runningInstances.forEach(i -> deleteProcessInstanceById(i.getProcessInstanceId(), reason));
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            runningInstances.forEach(i -> deleteProcessInstanceById(i.getProcessInstanceId(), reason));
+            return null;
+        });
     }
 
     @Transactional
     public void deploy(String processName, ByteArrayInputStream bpmn) throws ProcessNotUpdatableException {
+        denyAuthorization();
         BpmnModelInstance model = Bpmn.readModelFromStream(bpmn);
         if (!isDeployable(model)) {
             throw new ProcessNotUpdatableException("Process is not eligible to be deployed.");
@@ -195,7 +229,10 @@ public class CamundaProcessService {
             process -> {
                 String processDefinitionKey = process.getId();
                 if (processDefinitionKey == null || processDefinitionKey.isEmpty() || isSystemProcess(
-                    camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey))) {
+                    AuthorizationContext
+                        .runWithoutAuthorization(
+                            () -> camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey)))
+                ) {
                     isDeployable.set(false);
                 } else {
                     Optional.ofNullable(process.getExtensionElements())
@@ -226,5 +263,15 @@ public class CamundaProcessService {
             return processProperties.isSystemProcess();
         }
         return false;
+    }
+
+    private void denyAuthorization() {
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest(
+                CamundaProcessDefinition.class,
+            Action.deny(),
+            null
+            )
+        );
     }
 }

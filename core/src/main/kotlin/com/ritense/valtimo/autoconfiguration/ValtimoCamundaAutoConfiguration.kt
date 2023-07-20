@@ -17,6 +17,7 @@
 
 package com.ritense.valtimo.autoconfiguration
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.valtimo.camunda.authorization.CamundaTaskSpecificationFactory
 import com.ritense.valtimo.camunda.repository.CamundaBytearrayRepository
 import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository
@@ -32,7 +33,6 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaTaskService
-import org.camunda.bpm.engine.AuthorizationService
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
@@ -65,16 +65,18 @@ class ValtimoCamundaAutoConfiguration {
     fun camundaHistoryService(
         historyService: HistoryService,
         camundaHistoricProcessInstanceRepository: CamundaHistoricProcessInstanceRepository,
+        authorizationService: AuthorizationService
     ): CamundaHistoryService {
-        return CamundaHistoryService(historyService, camundaHistoricProcessInstanceRepository)
+        return CamundaHistoryService(historyService, camundaHistoricProcessInstanceRepository, authorizationService)
     }
 
     @Bean
     @ConditionalOnMissingBean(CamundaRepositoryService::class)
     fun camundaRepositoryService(
         camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
+        authorizationService: AuthorizationService
     ): CamundaRepositoryService {
-        return CamundaRepositoryService(camundaProcessDefinitionRepository)
+        return CamundaRepositoryService(camundaProcessDefinitionRepository, authorizationService)
     }
 
     @Bean
@@ -82,8 +84,9 @@ class ValtimoCamundaAutoConfiguration {
     fun camundaRuntimeService(
         runtimeService: RuntimeService,
         camundaVariableInstanceRepository: CamundaVariableInstanceRepository,
+        authorizationService: AuthorizationService
     ): CamundaRuntimeService {
-        return CamundaRuntimeService(runtimeService, camundaVariableInstanceRepository)
+        return CamundaRuntimeService(runtimeService, camundaVariableInstanceRepository, authorizationService)
     }
 
     @Bean

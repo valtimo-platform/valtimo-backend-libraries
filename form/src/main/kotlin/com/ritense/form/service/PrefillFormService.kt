@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.patch.JsonPatchFilterFlag
 import com.ritense.document.domain.patch.JsonPatchService
@@ -53,10 +53,12 @@ class PrefillFormService(
         processInstanceId: String,
         taskInstanceId: String,
     ): FormIoFormDefinition {
-        val documentId = camundaProcessService.findProcessInstanceById(processInstanceId)
-            .orElseThrow { RuntimeException("Process instance not found by id $processInstanceId") }
-            .businessKey
-        val document = AuthorizationContext.runWithoutAuthorization { documentService.get(documentId.toString()) }
+        val documentId = runWithoutAuthorization {
+            camundaProcessService.findProcessInstanceById(processInstanceId)
+                .orElseThrow { RuntimeException("Process instance not found by id $processInstanceId") }
+                .businessKey
+        }
+        val document = runWithoutAuthorization { documentService.get(documentId.toString()) }
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
         prefillFormDefinition(formDefinition, document, taskInstanceId)
@@ -70,7 +72,7 @@ class PrefillFormService(
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
         if (documentId != null) {
-            val document = AuthorizationContext.runWithoutAuthorization { documentService.get(documentId.toString()) }
+            val document = runWithoutAuthorization { documentService.get(documentId.toString()) }
             prefillFormDefinition(formDefinition, document)
         }
         return formDefinition
@@ -97,7 +99,7 @@ class PrefillFormService(
 
     fun prefillProcessVariables(formDefinition: FormIoFormDefinition, document: Document) {
         val processVarsNames = formDefinition.extractProcessVarNames()
-        val processInstanceVariables = AuthorizationContext.runWithoutAuthorization {
+        val processInstanceVariables = runWithoutAuthorization {
             processDocumentAssociationService.findProcessDocumentInstances(document.id())
                 .map { it.processDocumentInstanceId().processInstanceId().toString() }
                 .flatMap { camundaProcessService.getProcessInstanceVariables(it, processVarsNames).entries }

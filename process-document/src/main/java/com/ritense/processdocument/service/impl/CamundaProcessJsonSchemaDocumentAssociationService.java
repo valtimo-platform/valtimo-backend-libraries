@@ -17,6 +17,7 @@
 package com.ritense.processdocument.service.impl;
 
 import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.document.domain.Document;
@@ -202,7 +203,9 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         boolean canInitializeDocument,
         boolean startableByUser
     ) {
-        if (!repositoryService.processDefinitionExists(byKey(processDefinitionKey.toString()))) {
+        if (!AuthorizationContext.runWithoutAuthorization(
+            () -> repositoryService.processDefinitionExists(byKey(processDefinitionKey.toString())))
+        ) {
             throw new UnknownProcessDefinitionException(processDefinitionKey.toString());
         }
         if (!documentDefinitionRepository.existsById(documentDefinitionId)) {

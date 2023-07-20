@@ -55,7 +55,6 @@ import com.ritense.valtimo.web.rest.AccountResource;
 import com.ritense.valtimo.web.rest.PingResource;
 import com.ritense.valtimo.web.rest.ProcessInstanceResource;
 import com.ritense.valtimo.web.rest.ProcessResource;
-import com.ritense.valtimo.web.rest.PublicProcessResource;
 import com.ritense.valtimo.web.rest.ReportingResource;
 import com.ritense.valtimo.web.rest.TaskResource;
 import com.ritense.valtimo.web.rest.UserResource;
@@ -161,9 +160,20 @@ public class ValtimoAutoConfiguration {
         final FormService formService,
         final CamundaHistoryService historyService,
         final ProcessPropertyService processPropertyService,
-        final ValtimoProperties valtimoProperties
+        final ValtimoProperties valtimoProperties,
+        final AuthorizationService authorizationService
     ) {
-        return new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService,processPropertyService,valtimoProperties);
+        return new CamundaProcessService(
+            runtimeService,
+            camundaRuntimeService,
+            repositoryService,
+            camundaRepositoryService,
+            formService,
+            historyService,
+            processPropertyService,
+            valtimoProperties,
+            authorizationService
+        );
     }
 
     @Bean
@@ -277,16 +287,6 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(PublicProcessResource.class)
-    public PublicProcessResource publicProcessResource(
-        final FormService formService,
-        final CamundaRepositoryService repositoryService,
-        final CamundaProcessService camundaProcessService
-    ) {
-        return new PublicProcessResource(formService, repositoryService, camundaProcessService);
-    }
-
-    @Bean
     @ConditionalOnMissingBean(ProcessResource.class)
     public ProcessResource processResource(
         final HistoryService historyService,
@@ -328,7 +328,7 @@ public class ValtimoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(UserSettingsService.class)
-    public UserSettingsService userSettingsService(UserSettingsRepository userSettingsRepository){
+    public UserSettingsService userSettingsService(UserSettingsRepository userSettingsRepository) {
         return new UserSettingsService(userSettingsRepository);
     }
 

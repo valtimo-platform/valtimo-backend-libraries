@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +45,8 @@ public class ProcessInstanceResource {
         @PathVariable String id,
         @RequestBody List<String> variableNames
     ) {
-        final Map<String, Object> processVariables = runtimeService.getVariables(id, variableNames);
+        final Map<String, Object> processVariables = AuthorizationContext
+            .runWithoutAuthorization(() -> runtimeService.getVariables(id, variableNames));
         return ResponseEntity.ok(processVariables);
     }
 

@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.dto.CamundaProcessDefinitionDto;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
@@ -132,7 +133,8 @@ public class ContextService {
 
     @Transactional(readOnly = true)
     public List<CamundaProcessDefinitionDto> findVisibleContextProcesses() throws IllegalAccessException {
-        List<CamundaProcessDefinition> deployedDefinitions = repositoryService.findProcessDefinitions(byActive().and(byLatestVersion()));
+        List<CamundaProcessDefinition> deployedDefinitions = AuthorizationContext
+            .runWithoutAuthorization(() -> repositoryService.findProcessDefinitions(byActive().and(byLatestVersion())));
         Context context = getContextOfCurrentUser();
         List<CamundaProcessDefinition> contextFilteredDeployedDefinitions = new ArrayList<>();
         deployedDefinitions.forEach(p -> {

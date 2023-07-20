@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -463,14 +464,36 @@ public class JsonSchemaDocumentService implements DocumentService {
                 )
             );
 
-        authorizationService
-            .requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocument.class,
-                    ASSIGN,
-                    document
-                )
-            );
+        if (assigneeId.equals(userManagementService.getCurrentUser().getId())) {
+            try {
+                authorizationService
+                    .requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            CLAIM,
+                            document
+                        )
+                    );
+            } catch (AccessDeniedException e) {
+                authorizationService
+                    .requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            ASSIGN,
+                            document
+                        )
+                    );
+            }
+        } else {
+            authorizationService
+                .requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        ASSIGN,
+                        document
+                    )
+                );
+        }
 
         var assignee = runWithoutAuthorization(() -> userManagementService.findById(assigneeId));
         if (assignee == null) {

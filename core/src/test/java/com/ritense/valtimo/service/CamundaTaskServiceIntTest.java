@@ -16,9 +16,15 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
+import java.sql.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import javax.inject.Inject;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,13 +33,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
-import java.sql.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,14 +59,17 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void getProcessInstanceTasks() {
-        ProcessInstanceWithDefinition processInstanceWithDefinition = camundaProcessService.startProcess(
-            processDefinitionKey,
-            businessKey,
-            Map.of()
-        );
+        ProcessInstanceWithDefinition processInstanceWithDefinition = AuthorizationContext
+            .runWithoutAuthorization(() -> camundaProcessService.startProcess(
+                processDefinitionKey,
+                businessKey,
+                Map.of()
+            ));
 
-        final var processInstance = camundaProcessService
-            .findProcessInstanceById(processInstanceWithDefinition.getProcessInstanceDto().getId()).orElseThrow();
+        final var processInstance = AuthorizationContext
+            .runWithoutAuthorization(
+                () -> camundaProcessService
+            .findProcessInstanceById(processInstanceWithDefinition.getProcessInstanceDto().getId()).orElseThrow());
         final var processInstanceTasks = camundaTaskService
             .getProcessInstanceTasks(processInstance.getId(), processInstance.getBusinessKey());
 
@@ -80,11 +82,11 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldFindTasksFiltered() throws IllegalAccessException {
-        camundaProcessService.startProcess(
+        AuthorizationContext.runWithoutAuthorization(() -> camundaProcessService.startProcess(
             processDefinitionKey,
             businessKey,
             Map.of()
-        );
+        ));
 
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
@@ -101,11 +103,11 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldFindTasksFilteredWithContext() throws IllegalAccessException {
-        camundaProcessService.startProcess(
+        AuthorizationContext.runWithoutAuthorization(() -> camundaProcessService.startProcess(
             processDefinitionKey,
             businessKey,
             Map.of("context", "something")
-        );
+        ));
 
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
@@ -122,13 +124,16 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldFind10TasksFiltered() throws IllegalAccessException {
-        for (int i = 0; i < 10; i++) {
-            camundaProcessService.startProcess(
-                processDefinitionKey,
-                businessKey,
-                Map.of()
-            );
-        }
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            for (int i = 0; i < 10; i++) {
+                    camundaProcessService.startProcess(
+                        processDefinitionKey,
+                        businessKey,
+                        Map.of()
+                    );
+                }
+            return null;
+            });
 
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
@@ -192,11 +197,11 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldFindCandidateUsers() throws IllegalAccessException {
-        final var processInstance = camundaProcessService.startProcess(
+        AuthorizationContext.runWithoutAuthorization(() -> camundaProcessService.startProcess(
             processDefinitionKey,
             businessKey,
             Map.of()
-        );
+        ));
 
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
@@ -211,11 +216,12 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     }
 
     private void startProcessAndModifyTask(Consumer<Task> taskHandler) {
-        final var processInstance = camundaProcessService.startProcess(
-            processDefinitionKey,
-            businessKey,
-            Map.of()
-        );
+        final var processInstance = AuthorizationContext.
+            runWithoutAuthorization(() -> camundaProcessService.startProcess(
+                processDefinitionKey,
+                businessKey,
+                Map.of()
+            ));
 
         final var task = taskService.createTaskQuery()
             .processInstanceId(processInstance.getProcessInstanceDto().getId())

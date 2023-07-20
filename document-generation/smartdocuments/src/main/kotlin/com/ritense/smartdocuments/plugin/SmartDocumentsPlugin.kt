@@ -15,6 +15,7 @@
  */
 package com.ritense.smartdocuments.plugin
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document.Id
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
@@ -76,7 +77,9 @@ class SmartDocumentsPlugin(
         @PluginActionProperty templateData: Array<TemplateDataEntry>,
         @PluginActionProperty resultingDocumentProcessVariableName: String,
     ) {
-        val document = processDocumentService.getDocument(execution)
+        val document = runWithoutAuthorization {
+            processDocumentService.getDocument(execution)
+        }
         val resolvedTemplateData = resolveTemplateData(templateData, execution)
         val generatedDocument = generateDocument(templateGroup, templateName, resolvedTemplateData, DocumentFormatOption.valueOf(format))
         publishDossierDocumentGeneratedEvent(document.id(), templateName)

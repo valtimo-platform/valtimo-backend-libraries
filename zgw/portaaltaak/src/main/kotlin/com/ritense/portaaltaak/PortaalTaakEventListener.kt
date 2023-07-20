@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
 import com.ritense.notificatiesapi.exception.NotificatiesNotificationEventException
 import com.ritense.objectenapi.ObjectenApiPlugin
@@ -82,7 +83,9 @@ class PortaalTaakEventListener(
 
                     val portaaltaakPlugin = pluginService.createInstance(it) as PortaaltaakPlugin
                     val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
-                    val documentId = processDocumentService.getDocumentId(processInstanceId, task)
+                    val documentId = runWithoutAuthorization {
+                        processDocumentService.getDocumentId(processInstanceId, task)
+                    }
                     saveDataInDocument(taakObject, task, receiveData)
                     startProcessToUploadDocuments(
                         taakObject,
@@ -205,11 +208,13 @@ class PortaalTaakEventListener(
             "documentUrls" to getDocumentenUrls(jacksonObjectMapper().valueToTree(taakObject.verzondenData))
         )
         try {
-            processService.startProcess(
-                processDefinitionKey,
-                businessKey,
-                variables
-            )
+            runWithoutAuthorization {
+                processService.startProcess(
+                    processDefinitionKey,
+                    businessKey,
+                    variables
+                )
+            }
         } catch (ex: RuntimeException) {
             throw NotificatiesNotificationEventException(
                 "Could not start process with definition: $processDefinitionKey and businessKey: $businessKey.\n " +

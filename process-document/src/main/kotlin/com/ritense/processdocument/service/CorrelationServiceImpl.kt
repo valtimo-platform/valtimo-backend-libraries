@@ -49,7 +49,9 @@ class CorrelationServiceImpl(
 
     override fun sendStartMessage(message: String, businessKey: String, variables: Map<String, Any>?): MessageCorrelationResult {
         val result = correlate(message, businessKey,variables)
-        val processName = camundaRepositoryService.findProcessDefinitionById(result.processInstance.processDefinitionId)!!.name
+        val processName = runWithoutAuthorization {
+            camundaRepositoryService.findProcessDefinitionById(result.processInstance.processDefinitionId)!!.name
+        }
         associateDocumentToProcess(result.processInstance.id, processName, businessKey)
 
         return result
@@ -63,7 +65,9 @@ class CorrelationServiceImpl(
     ){
         val processDefinitionId = getLatestProcessDefinitionIdByKey(targetProcessDefinitionKey)
         val correlationResultProcess = correlateWithProcessDefinitionId(message, businessKey, processDefinitionId.id, variables)
-        val processName = camundaRepositoryService.findProcessDefinitionById(correlationResultProcess.processDefinitionId)!!.name
+        val processName = runWithoutAuthorization {
+            camundaRepositoryService.findProcessDefinitionById(correlationResultProcess.processDefinitionId)!!.name
+        }
         associateDocumentToProcess(correlationResultProcess.processInstanceId, processName, businessKey)
     }
 
@@ -73,9 +77,13 @@ class CorrelationServiceImpl(
 
     override fun sendCatchEventMessage(message: String, businessKey: String, variables: Map<String, Any>?): MessageCorrelationResult {
         val result = correlate(message, businessKey, variables)
-        val correlationResultProcessInstance = camundaRuntimeService.findProcessInstanceById(result.execution.processInstanceId)!!
+        val correlationResultProcessInstance = runWithoutAuthorization {
+            camundaRuntimeService.findProcessInstanceById(result.execution.processInstanceId)!!
+        }
         val processInstanceId = correlationResultProcessInstance.processInstanceId
-        val processName = camundaRepositoryService.findProcessDefinitionById(correlationResultProcessInstance.processDefinitionId)!!.name
+        val processName = AuthorizationContext.runWithoutAuthorization {
+            camundaRepositoryService.findProcessDefinitionById(correlationResultProcessInstance.processDefinitionId)!!.name
+        }
         val associationExists = associationExists(processInstanceId)
         if(!associationExists) {
             associateDocumentToProcess(
@@ -94,8 +102,12 @@ class CorrelationServiceImpl(
         val correlationResultProcessList = correlateAll(message, businessKey, variables)
         correlationResultProcessList.forEach { correlationResultProcess ->
             val processInstanceId = correlationResultProcess.execution.processInstanceId
-            val runningProcessInstance = camundaRuntimeService.findProcessInstanceById(processInstanceId)!!
-            val processName = camundaRepositoryService.findProcessDefinitionById(runningProcessInstance.processDefinitionId)!!.name
+            val runningProcessInstance = runWithoutAuthorization {
+                camundaRuntimeService.findProcessInstanceById(processInstanceId)!!
+            }
+            val processName = runWithoutAuthorization {
+                camundaRepositoryService.findProcessDefinitionById(runningProcessInstance.processDefinitionId)!!.name
+            }
             val correlationStartedNewProcess = MessageCorrelationResultType.ProcessDefinition.equals(correlationResultProcess.resultType)
             val associationExists = associationExists(processInstanceId)
             if(correlationStartedNewProcess || !associationExists) {
@@ -109,8 +121,10 @@ class CorrelationServiceImpl(
     }
 
     private fun getLatestProcessDefinitionIdByKey(processDefinitionKey: String): CamundaProcessDefinition {
-        return camundaRepositoryService.findProcessDefinition(byKey(processDefinitionKey))
-            ?: throw RuntimeException("Failed to get process definition with key $processDefinitionKey")
+        return runWithoutAuthorization {
+            camundaRepositoryService.findProcessDefinition(byKey(processDefinitionKey))
+                ?: throw RuntimeException("Failed to get process definition with key $processDefinitionKey")
+        }
     }
 
     private fun associationExists(processInstanceId: String): Boolean {
