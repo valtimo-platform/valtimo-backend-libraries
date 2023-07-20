@@ -3,7 +3,7 @@
     "permissions": [
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
-            "action": "list_view",
+            "action": "view_list",
             "roleKey": "ROLE_USER",
             "conditionContainer": {
                 "conditions": [
@@ -26,7 +26,7 @@
         },
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
-            "action": "list_view",
+            "action": "view_list",
             "roleKey": "ROLE_USER",
             "conditionContainer": {
                 "conditions": [
@@ -99,7 +99,7 @@
         },
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
-            "action": "list_view",
+            "action": "view_list",
             "roleKey": "ROLE_ADMIN"
         },
         {

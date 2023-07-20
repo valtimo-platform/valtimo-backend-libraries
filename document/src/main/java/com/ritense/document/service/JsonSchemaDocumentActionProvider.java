@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 public class JsonSchemaDocumentActionProvider implements ResourceActionProvider<JsonSchemaDocument> {
 
     public static Action<JsonSchemaDocument> VIEW = new Action<>(Action.VIEW);
-    public static Action<JsonSchemaDocument> LIST_VIEW = new Action<>(Action.LIST_VIEW);
+    public static Action<JsonSchemaDocument> VIEW_LIST = new Action<>(Action.VIEW_LIST);
     public static Action<JsonSchemaDocument> CREATE = new Action<>(Action.CREATE);
     public static Action<JsonSchemaDocument> MODIFY = new Action<>(Action.MODIFY);
     public static Action<JsonSchemaDocument> DELETE = new Action<>(Action.DELETE);
@@ -36,6 +36,6 @@ public class JsonSchemaDocumentActionProvider implements ResourceActionProvider<
     @NotNull
     @Override
     public List<Action<JsonSchemaDocument>> getAvailableActions() {
-        return List.of(VIEW, LIST_VIEW, CREATE, MODIFY, DELETE, CLAIM, ASSIGN, ASSIGNABLE);
+        return List.of(VIEW, VIEW_LIST, CREATE, MODIFY, DELETE, CLAIM, ASSIGN, ASSIGNABLE);
     }
 }

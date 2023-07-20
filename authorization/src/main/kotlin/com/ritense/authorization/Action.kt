@@ -34,7 +34,7 @@ data class Action<T>(
         }
 
         // common action keys are defined here
-        const val LIST_VIEW = "list_view"
+        const val VIEW_LIST = "view_list"
         const val VIEW = "view"
         const val START = "start"
         const val CREATE = "create"

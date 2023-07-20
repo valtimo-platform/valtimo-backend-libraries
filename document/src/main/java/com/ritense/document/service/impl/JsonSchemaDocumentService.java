@@ -72,7 +72,7 @@ import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSI
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CLAIM;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.DELETE;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.LIST_VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
@@ -151,7 +151,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             .getAuthorizationSpecification(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    LIST_VIEW,
+                    VIEW_LIST,
                     null
                 ),
                 null
@@ -166,7 +166,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         var spec = authorizationService.getAuthorizationSpecification(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                LIST_VIEW,
+                VIEW_LIST,
                 null
             ),
             null

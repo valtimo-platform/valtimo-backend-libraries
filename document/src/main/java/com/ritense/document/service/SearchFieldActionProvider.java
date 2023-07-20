@@ -23,11 +23,11 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public class SearchFieldActionProvider implements ResourceActionProvider<SearchField> {
-    public static Action<SearchField> LIST_VIEW = new Action<>(Action.LIST_VIEW);
+    public static Action<SearchField> VIEW_LIST = new Action<>(Action.VIEW_LIST);
 
     @NotNull
     @Override
     public List<Action<SearchField>> getAvailableActions() {
-        return List.of(LIST_VIEW);
+        return List.of(VIEW_LIST);
     }
 }

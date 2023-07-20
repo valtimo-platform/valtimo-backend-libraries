@@ -26,7 +26,7 @@ import com.ritense.authorization.permission.PermissionConditionOperator
 import com.ritense.note.domain.Note
 import com.ritense.note.service.NoteActionProvider.Companion.CREATE
 import com.ritense.note.service.NoteActionProvider.Companion.DELETE
-import com.ritense.note.service.NoteActionProvider.Companion.LIST_VIEW
+import com.ritense.note.service.NoteActionProvider.Companion.VIEW_LIST
 import com.ritense.note.service.NoteActionProvider.Companion.MODIFY
 import com.ritense.note.service.NoteActionProvider.Companion.VIEW
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
@@ -73,7 +73,7 @@ abstract class BaseIntegrationTest {
             Permission(
                 UUID.randomUUID(),
                 Note::class.java,
-                LIST_VIEW,
+                VIEW_LIST,
                 ConditionContainer(listOf()),
                 role1
             ),

@@ -81,7 +81,7 @@ import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvide
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGNABLE;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.CLAIM;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.COMPLETE;
-import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.LIST_VIEW;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.VIEW_LIST;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.VIEW;
 import static com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.byTaskId;
 import static com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.byType;
@@ -266,19 +266,19 @@ public class CamundaTaskService {
 
     @Transactional(readOnly = true)
     public Page<CamundaTask> findTasks(Specification<CamundaTask> specification, Pageable pageable) {
-        var spec = getAuthorizationSpecification(LIST_VIEW);
+        var spec = getAuthorizationSpecification(VIEW_LIST);
         return camundaTaskRepository.findAll(spec.and(specification), pageable);
     }
 
     @Transactional(readOnly = true)
     public List<CamundaTask> findTasks(Specification<CamundaTask> specification, Sort sort) {
-        var spec = getAuthorizationSpecification(LIST_VIEW);
+        var spec = getAuthorizationSpecification(VIEW_LIST);
         return camundaTaskRepository.findAll(spec.and(specification), sort);
     }
 
     @Transactional(readOnly = true)
     public List<CamundaTask> findTasks(Specification<CamundaTask> specification) {
-        var spec = getAuthorizationSpecification(LIST_VIEW);
+        var spec = getAuthorizationSpecification(VIEW_LIST);
         return camundaTaskRepository.findAll(spec.and(specification));
     }
 
@@ -290,7 +290,7 @@ public class CamundaTaskService {
 
     @Transactional(readOnly = true)
     public Long countTasks(Specification<CamundaTask> specification) {
-        var spec = getAuthorizationSpecification(LIST_VIEW);
+        var spec = getAuthorizationSpecification(VIEW_LIST);
         return camundaTaskRepository.count(spec.and(specification));
     }
 
@@ -298,7 +298,7 @@ public class CamundaTaskService {
     public Page<TaskExtended> findTasksFiltered(
         TaskFilter taskFilter, Pageable pageable
     ) throws IllegalAccessException {
-        var spec = getAuthorizationSpecification(LIST_VIEW);
+        var spec = getAuthorizationSpecification(VIEW_LIST);
         var specification = spec.and(buildTaskFilterSpecification(taskFilter));
 
         var cb = entityManager.getCriteriaBuilder();

@@ -3,12 +3,12 @@
     "permissions": [
         {
             "resourceType": "com.ritense.note.domain.Note",
-            "action": "list_view",
+            "action": "view_list",
             "roleKey": "ROLE_ADMIN"
         },
         {
             "resourceType": "com.ritense.note.domain.Note",
-            "action": "list_view",
+            "action": "view_list",
             "roleKey": "ROLE_USER",
             "conditionContainer": {
                 "conditions": [

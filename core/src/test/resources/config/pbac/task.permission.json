@@ -23,7 +23,7 @@
         },
         {
             "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
-            "action": "list_view",
+            "action": "view_list",
             "roleKey": "ROLE_ADMIN"
         },
         {

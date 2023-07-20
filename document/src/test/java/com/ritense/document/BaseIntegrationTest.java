@@ -59,7 +59,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CLAIM;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.LIST_VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 
@@ -154,7 +154,7 @@ public abstract class BaseIntegrationTest extends BaseTest {
             new Permission(
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
-                LIST_VIEW,
+                VIEW_LIST,
                 new ConditionContainer(Collections.emptyList()),
                 role
             ),
@@ -196,7 +196,7 @@ public abstract class BaseIntegrationTest extends BaseTest {
             new Permission(
                 UUID.randomUUID(),
                 SearchField.class,
-                SearchFieldActionProvider.LIST_VIEW,
+                SearchFieldActionProvider.VIEW_LIST,
                 new ConditionContainer(Collections.emptyList()),
                 role
             )
