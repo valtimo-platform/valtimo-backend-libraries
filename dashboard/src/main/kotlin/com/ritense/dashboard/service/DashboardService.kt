@@ -134,7 +134,6 @@ class DashboardService(
             )
         }
 
-        widgetConfigurationRepository.deleteAll()
         return widgetConfigurationRepository.saveAll(widgetConfigurations)
     }
 
