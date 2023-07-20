@@ -9,7 +9,7 @@
       <bpmn:incoming>sequence-flow-2</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="sequence-flow-2" sourceRef="do-something" targetRef="end-event" />
-    <bpmn:userTask id="do-something" name="Do something" camunda:candidateGroups="ROLE_USER">
+    <bpmn:userTask id="do-something" name="Do something" camunda:candidateGroups="ROLE_ADMIN">
       <bpmn:incoming>sequence-flow-1</bpmn:incoming>
       <bpmn:outgoing>sequence-flow-2</bpmn:outgoing>
     </bpmn:userTask>

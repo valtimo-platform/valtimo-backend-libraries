@@ -1,0 +1,15 @@
+{
+    "changesetId": "task-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "view_list",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "view",
+            "roleKey": "ROLE_USER"
+        }
+    ]
+}

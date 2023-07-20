@@ -39,7 +39,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.ritense.document.repository.SearchFieldRepository.byIdDocumentDefinitionName;
-import static com.ritense.document.service.SearchFieldActionProvider.LIST_VIEW;
+import static com.ritense.document.service.SearchFieldActionProvider.VIEW_LIST;
 
 public class SearchFieldService {
 
@@ -76,7 +76,7 @@ public class SearchFieldService {
         Specification<SearchField> authorizationSpec = authorizationService.getAuthorizationSpecification(
             new EntityAuthorizationRequest<>(
                 SearchField.class,
-                LIST_VIEW,
+                VIEW_LIST,
                 null
             ),
             null

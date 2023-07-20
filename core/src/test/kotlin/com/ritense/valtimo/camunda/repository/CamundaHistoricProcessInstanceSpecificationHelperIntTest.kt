@@ -1,21 +1,24 @@
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.BaseIntegrationTest
-import java.time.LocalDateTime
-import java.util.UUID
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
+import com.ritense.valtimo.service.CamundaTaskService
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.IdentityService
-import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.util.UUID
 
 class CamundaHistoricProcessInstanceSpecificationHelperIntTest @Autowired constructor(
     private val camundaHistoricProcessInstanceRepository: CamundaHistoricProcessInstanceRepository,
-    private val taskService: TaskService,
+    private val taskService: CamundaTaskService,
     private val identityService: IdentityService
 ) :
     BaseIntegrationTest() {
@@ -125,12 +128,11 @@ class CamundaHistoricProcessInstanceSpecificationHelperIntTest @Autowired constr
 
     @Test
     @Transactional
+    @WithMockUser(username = TEST_USER, authorities = [ADMIN])
     fun byEndTimeAfter() {
         val now = LocalDateTime.now()
         val processInstanceId = getRandomProcessInstanceByKey(USER_TASK_PROCESS).processInstanceId
-        val task = taskService.createTaskQuery()
-            .processInstanceId(processInstanceId)
-            .singleResult()
+        val task = taskService.findTask(CamundaTaskSpecificationHelper.byProcessInstanceId(processInstanceId))
         taskService.complete(task.id)
 
         val instanceIds = camundaHistoricProcessInstanceRepository.findAll(
@@ -143,12 +145,11 @@ class CamundaHistoricProcessInstanceSpecificationHelperIntTest @Autowired constr
 
     @Test
     @Transactional
+    @WithMockUser(username = TEST_USER, authorities = [ADMIN])
     fun byEndTimeBefore() {
         val now = LocalDateTime.now()
         val processInstanceId = getRandomProcessInstanceByKey(USER_TASK_PROCESS).processInstanceId
-        val task = taskService.createTaskQuery()
-            .processInstanceId(processInstanceId)
-            .singleResult()
+        val task = taskService.findTask(CamundaTaskSpecificationHelper.byProcessInstanceId(processInstanceId))
         taskService.complete(task.id)
 
         val instanceIds = camundaHistoricProcessInstanceRepository.findAll(
@@ -179,5 +180,6 @@ class CamundaHistoricProcessInstanceSpecificationHelperIntTest @Autowired constr
     companion object {
         const val TEST_PROCESS = "test-process"
         const val USER_TASK_PROCESS = "user-task-process"
+        private const val TEST_USER = "user@valtimo.nl"
     }
 }

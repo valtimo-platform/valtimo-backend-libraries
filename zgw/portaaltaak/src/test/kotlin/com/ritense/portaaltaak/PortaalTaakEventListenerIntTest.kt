@@ -34,16 +34,17 @@ import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byActive
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
 import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.service.CamundaTaskService
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.camunda.bpm.engine.RepositoryService
-import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.delegate.VariableScope
-import org.camunda.bpm.engine.task.Task
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.containsInAnyOrder
 import org.junit.jupiter.api.BeforeEach
@@ -75,9 +76,6 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     lateinit var repositoryService: RepositoryService
 
     @Autowired
-    lateinit var runtimeService: RuntimeService
-
-    @Autowired
     lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
 
     @Autowired
@@ -90,7 +88,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     lateinit var processDocumentService: ProcessDocumentService
 
     @Autowired
-    lateinit var taskService: TaskService
+    lateinit var taskService: CamundaTaskService
 
     lateinit var processDefinitionId: String
     lateinit var objectManagement: ObjectManagement
@@ -100,7 +98,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     lateinit var server: MockWebServer
     lateinit var notificatiesApiPluginConfiguration: PluginConfiguration
     lateinit var objectenApiPluginConfiguration: PluginConfiguration
-    var task: Task? = null
+    var task: CamundaTask? = null
     var documentId: UUID? = null
 
 
@@ -183,7 +181,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
         )
 
         // assert call to valueResolverService where data is saved
-        assertEquals(task!!.processInstanceId, processInstanceIdCaptor.firstValue)
+        assertEquals(task!!.getProcessInstanceId(), processInstanceIdCaptor.firstValue)
         assertNotNull(variableScopeCaptor.firstValue)
         val mapOfValuesToUpdate = mapCaptor.firstValue
         assertEquals(1, mapOfValuesToUpdate.size)
@@ -392,16 +390,15 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
         )
     }
 
-    private fun startPortaalTaakProcess(content: String): Task {
+    private fun startPortaalTaakProcess(content: String): CamundaTask {
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().readTree(content))
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
         val processResult = processDocumentService.newDocumentAndStartProcess(request)
         documentId = processResult.resultingDocument().get().id().id
-        return taskService
-            .createTaskQuery()
-            .active()
-            .processInstanceId(processResult.resultingProcessInstanceId().get().toString())
-            .singleResult()
+        return taskService.findTask(
+            byActive()
+                .and(byProcessInstanceId(processResult.resultingProcessInstanceId().get().toString()))
+        )
     }
 
     private fun createProcessLink(propertiesConfig: String) {

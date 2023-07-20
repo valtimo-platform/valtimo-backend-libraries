@@ -61,7 +61,6 @@ class PermissionResourceSecurityIT : SecuritySpecificEndpointIntegrationTest() {
             )
         )
 
-        permissionRepository.deleteAll()
         permissionRepository.saveAllAndFlush(permissions)
 
         val permissionRequests = listOf(

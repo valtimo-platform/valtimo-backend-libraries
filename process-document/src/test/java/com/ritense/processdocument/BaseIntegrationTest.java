@@ -17,10 +17,15 @@
 package com.ritense.processdocument;
 
 import com.ritense.audit.service.impl.AuditServiceImpl;
+import com.ritense.authorization.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.EntityAuthorizationRequest;
+import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider;
+import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
@@ -29,10 +34,17 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import javax.inject.Inject;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Tag("integration")
@@ -64,12 +76,21 @@ public abstract class BaseIntegrationTest extends BaseTest {
     @MockBean
     public AuthorizationService authorizationService;
 
+    @Autowired
+    public NoopAuthorizationSpecificationFactory noopAuthorizationSpecificationFactory;
+
     @BeforeAll
     static void beforeAll() {
     }
 
     @BeforeEach
     public void beforeEach() {
+        var noopAuthSpec = noopAuthorizationSpecificationFactory.create(
+            new EntityAuthorizationRequest<>(CamundaTask.class, CamundaTaskActionProvider.VIEW, null),
+            List.of()
+        );
+        when(authorizationService.getAuthorizationSpecification(ArgumentMatchers.<AuthorizationRequest<CamundaTask>>any(), eq(null)))
+            .thenReturn(noopAuthSpec);
     }
 
     @AfterEach

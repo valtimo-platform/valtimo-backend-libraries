@@ -30,15 +30,15 @@ import com.ritense.formflow.expression.FormFlowBean
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
-import org.camunda.bpm.engine.TaskService
 import org.springframework.transaction.annotation.Transactional
 import java.util.Objects
 import java.util.UUID
 
 @FormFlowBean
 open class ValtimoFormFlow(
-    private val taskService: TaskService,
+    private val taskService: CamundaTaskService,
     private val objectMapper: ObjectMapper,
     private val valueResolverService: ValueResolverService,
     private val formFlowService: FormFlowService,

@@ -41,9 +41,9 @@ import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigur
 import com.ritense.valtimo.formflow.service.FormFlowSupportedProcessLinksHandler
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
 import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
+import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.AutoConfigureBefore
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -141,7 +141,7 @@ class FormFlowValtimoAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ValtimoFormFlow::class)
     fun valtimoFormFlow(
-        taskService: TaskService,
+        taskService: CamundaTaskService,
         objectMapper: ObjectMapper,
         valueResolverService: ValueResolverService,
         formFlowService: FormFlowService,

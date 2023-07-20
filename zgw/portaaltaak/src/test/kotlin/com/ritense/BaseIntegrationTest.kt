@@ -16,19 +16,31 @@
 
 package com.ritense
 
+import com.ritense.authorization.AuthorizationRequest
 import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.EntityAuthorizationRequest
+import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.ResourceService
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ResourceProvider
 import com.ritense.zakenapi.ZaakUrlProvider
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.mock.mockito.SpyBean
@@ -72,4 +84,21 @@ abstract class BaseIntegrationTest {
     // TODO: remove authorization service mocking when call to run without permissions is added
     @MockBean
     lateinit var authorizationService: AuthorizationService
+
+    @Autowired
+    lateinit var noopAuthorizationSpecificationFactory: NoopAuthorizationSpecificationFactory<CamundaTask>
+
+    @BeforeEach
+    fun beforeEach() {
+        val noopAuthSpec: AuthorizationSpecification<CamundaTask> = noopAuthorizationSpecificationFactory.create(
+            EntityAuthorizationRequest(CamundaTask::class.java, CamundaTaskActionProvider.VIEW, null),
+            listOf()
+        )
+        whenever(
+            authorizationService.getAuthorizationSpecification(
+                any<AuthorizationRequest<CamundaTask>>(),
+                eq<List<Permission>?>(null)
+            )
+        ).thenReturn(noopAuthSpec)
+    }
 }

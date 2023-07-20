@@ -48,7 +48,6 @@ import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.batch.Batch;
 import org.camunda.bpm.engine.history.HistoricActivityInstance;
 import org.camunda.bpm.engine.history.HistoricActivityInstanceQuery;
@@ -83,6 +82,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
@@ -95,6 +95,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.VERSION;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
@@ -108,7 +109,6 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ProcessResource extends AbstractProcessResource {
 
-    private final TaskService taskService;
     private final HistoryService historyService;
     private final RuntimeService runtimeService;
     private final CamundaRepositoryService repositoryService;
@@ -119,7 +119,6 @@ public class ProcessResource extends AbstractProcessResource {
     private final ProcessPropertyService processPropertyService;
 
     public ProcessResource(
-            final TaskService taskService,
             final HistoryService historyService,
             final CamundaHistoryService camundaHistoryService,
             final RuntimeService runtimeService,
@@ -132,7 +131,6 @@ public class ProcessResource extends AbstractProcessResource {
             final ProcessPropertyService processPropertyService
     ) {
         super(camundaHistoryService, repositoryService, camundaRepositoryService, camundaTaskService);
-        this.taskService = taskService;
         this.historyService = historyService;
         this.runtimeService = runtimeService;
         this.repositoryService = camundaRepositoryService;
@@ -461,7 +459,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/{processInstanceId}/comments")
     public ResponseEntity<List<Comment>> getProcessInstanceComments(@PathVariable String processInstanceId) {
-        List<Comment> processInstanceComments = taskService.getProcessInstanceComments(processInstanceId);
+        List<Comment> processInstanceComments = camundaTaskService.getProcessInstanceComments(processInstanceId);
         processInstanceComments.sort((Comment c1, Comment c2) -> c2.getTime().compareTo(c1.getTime()));
         return ResponseEntity.ok(processInstanceComments);
     }
@@ -535,7 +533,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PostMapping("/v1/process/{processInstanceId}/comment")
     public ResponseEntity<Void> createComment(@PathVariable String processInstanceId, @RequestBody CommentDto comment) {
-        taskService.createComment(null, processInstanceId, comment.getText());
+        camundaTaskService.createComment(null, processInstanceId, comment.getText());
         return ResponseEntity.ok().build();
     }
 

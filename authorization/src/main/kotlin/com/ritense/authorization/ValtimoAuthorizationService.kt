@@ -17,7 +17,9 @@
 package com.ritense.authorization
 
 import com.ritense.authorization.permission.Permission
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.utils.SecurityUtils
+import mu.KotlinLogging
 import org.springframework.security.access.AccessDeniedException
 import java.lang.reflect.ParameterizedType
 
@@ -25,13 +27,22 @@ class ValtimoAuthorizationService(
     private val authorizationSpecificationFactories: List<AuthorizationSpecificationFactory<*>>,
     private val mappers: List<AuthorizationEntityMapper<*, *>>,
     private val actionProviders: List<ResourceActionProvider<*>>,
-    private val permissionRepository: PermissionRepository
+    private val permissionRepository: PermissionRepository,
+    private val userManagementService: UserManagementService
 ): AuthorizationService {
     override fun <T : Any> requirePermission(
         request: EntityAuthorizationRequest<T>
     ) {
-        if (!hasPermission(request))
+        if (!hasPermission(request)) {
+            val user = request.user
+            if (request.action.key == Action.DENY) {
+                logger.error { "Access denied on '${request.resourceType}'. This generally indicates attempting to " +
+                    "access a resource without considering authorization. Please refer to the Valtimo documentation." }
+            } else {
+                logger.debug { "Unauthorized. User is missing permission '${request.action.key}' on '${request.resourceType}'." }
+            }
             throw AccessDeniedException("Unauthorized")
+        }
     }
 
     /**
@@ -79,10 +90,20 @@ class ValtimoAuthorizationService(
     }
 
     private fun getPermissions(context: AuthorizationRequest<*>): List<Permission> {
-        val userRoles = SecurityUtils.getCurrentUserRoles()
+        val userRoles = if (context.user == null || context.user == SecurityUtils.getCurrentUserLogin()) {
+            SecurityUtils.getCurrentUserRoles()
+        } else {
+            userManagementService.findByEmail(context.user).orElse(null)
+                ?.roles
+                ?: return emptyList()
+        }
         return permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(userRoles)
             .filter { permission ->
                 context.resourceType == permission.resourceType && context.action == permission.action
             }
+    }
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }

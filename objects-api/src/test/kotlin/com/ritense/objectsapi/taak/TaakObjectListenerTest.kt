@@ -106,7 +106,7 @@ internal class TaakObjectListenerTest {
 
         listener.notificationReceived(event)
 
-        verify(camundaTaskService).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
+        verify(camundaTaskService).complete("0155b054-ceb1-42ab-888b-c522b203685e")
         verify(connector).modifyTaakObjectStatusVerwerkt(any())
     }
 
@@ -127,7 +127,7 @@ internal class TaakObjectListenerTest {
 
         listener.notificationReceived(event)
 
-        verify(camundaTaskService, never()).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
+        verify(camundaTaskService, never()).complete("0155b054-ceb1-42ab-888b-c522b203685e")
     }
 
     @Test
@@ -147,7 +147,7 @@ internal class TaakObjectListenerTest {
 
         listener.notificationReceived(event)
 
-        verify(camundaTaskService, never()).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
+        verify(camundaTaskService, never()).complete("0155b054-ceb1-42ab-888b-c522b203685e")
     }
 
     @Test
@@ -170,7 +170,7 @@ internal class TaakObjectListenerTest {
 
         listener.notificationReceived(event)
 
-        verify(camundaTaskService, never()).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
+        verify(camundaTaskService, never()).complete("0155b054-ceb1-42ab-888b-c522b203685e")
     }
 
     @Test
@@ -201,7 +201,7 @@ internal class TaakObjectListenerTest {
 
         listener.notificationReceived(event)
 
-        verify(camundaTaskService, never()).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
+        verify(camundaTaskService, never()).complete("0155b054-ceb1-42ab-888b-c522b203685e")
         verify(connector, never()).deleteTaakObject(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))
     }
 
@@ -248,7 +248,7 @@ internal class TaakObjectListenerTest {
 
         listener.notificationReceived(event)
 
-        verify(camundaTaskService, never()).completeTaskWithoutFormData("0155b054-ceb1-42ab-888b-c522b203685e")
+        verify(camundaTaskService, never()).complete("0155b054-ceb1-42ab-888b-c522b203685e")
         verify(connector, never()).deleteTaakObject(UUID.fromString("321f370a-b8cc-4286-91d8-2fd293796b4c"))
     }
 }

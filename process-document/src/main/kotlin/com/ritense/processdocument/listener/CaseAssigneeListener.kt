@@ -15,6 +15,7 @@
  */
 package com.ritense.processdocument.listener
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.domain.Document
@@ -27,11 +28,9 @@ import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Com
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaTaskService
 import mu.KotlinLogging
-import org.camunda.bpm.engine.TaskService
 import org.springframework.context.event.EventListener
 
 class CaseAssigneeListener(
-    private val taskService: TaskService,
     private val camundaTaskService: CamundaTaskService,
     private val documentService: DocumentService,
     private val caseDefinitionService: CaseDefinitionService,
@@ -40,22 +39,28 @@ class CaseAssigneeListener(
 
     @EventListener(DocumentAssigneeChangedEvent::class)
     fun updateAssigneeOnTasks(event: DocumentAssigneeChangedEvent) {
-        val document: Document = documentService.get(event.documentId.toString())
+        val document: Document = runWithoutAuthorization {
+            documentService.get(event.documentId.toString())
+        }
         val caseSettings: CaseDefinitionSettings = caseDefinitionService.getCaseSettings(
             document.definitionId().name()
         )
 
         if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
             val assignee = userManagementService.findById(document.assigneeId())
-            val tasks = camundaTaskService.findTasks(
-                byProcessInstanceBusinessKey(document.id().toString())
-                    .and(byCandidateGroups(assignee.roles))
-            ).also {
+            val tasks = runWithoutAuthorization {
+                camundaTaskService.findTasks(
+                    byProcessInstanceBusinessKey(document.id().toString())
+                        .and(byCandidateGroups(assignee.roles))
+
+                )
+            }.also {
                 logger.debug { "Updating assignee on ${it.size} task(s)" }
             }
 
+
             tasks.forEach { task ->
-                taskService.setAssignee(
+                camundaTaskService.assign(
                     task.id,
                     assignee.email
                 )
@@ -66,24 +71,25 @@ class CaseAssigneeListener(
     @EventListener(DocumentUnassignedEvent::class)
     fun removeAssigneeFromTasks(event: DocumentUnassignedEvent) {
 
-        val document: Document = documentService.get(event.documentId.toString())
+        val document: Document = runWithoutAuthorization {
+            documentService.get(event.documentId.toString())
+        }
         val caseSettings: CaseDefinitionSettings = caseDefinitionService.getCaseSettings(
             document.definitionId().name()
         )
 
         if (caseSettings.canHaveAssignee && caseSettings.autoAssignTasks) {
-            val tasks = camundaTaskService.findTasks(
-                byProcessInstanceBusinessKey(document.id().toString())
-                    .and(byAssigned())
-            ).also {
+            val tasks = runWithoutAuthorization {
+                camundaTaskService.findTasks(
+                    byProcessInstanceBusinessKey(document.id().toString())
+                        .and(byAssigned())
+                )
+            }.also {
                 logger.debug { "Removing assignee from ${it.size} task(s)" }
             }
 
             tasks.forEach { task ->
-                taskService.setAssignee(
-                    task.id,
-                    null
-                )
+                camundaTaskService.unassign(task.id)
             }
         }
     }

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-
 package com.ritense.processdocument.autoconfigure
 
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.service.DocumentService
+import com.ritense.processdocument.camunda.authorization.CamundaTaskDocumentMapper
 import com.ritense.processdocument.domain.impl.delegate.DocumentDelegate
 import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
@@ -27,6 +27,7 @@ import com.ritense.processdocument.service.CorrelationServiceImpl
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
+import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.annotation.ProcessBean
@@ -39,6 +40,7 @@ import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 
 @Configuration
 class ProcessDocumentsAutoConfiguration {
@@ -108,14 +110,21 @@ class ProcessDocumentsAutoConfiguration {
 
     @Bean
     fun caseAssigneeListener(
-        taskService: TaskService,
         camundaTaskService: CamundaTaskService,
         documentService: DocumentService,
         caseDefinitionService: CaseDefinitionService,
         userManagementService: UserManagementService
     ): CaseAssigneeListener {
         return CaseAssigneeListener(
-            taskService, camundaTaskService, documentService, caseDefinitionService, userManagementService
+            camundaTaskService, documentService, caseDefinitionService, userManagementService
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaTaskDocumentMapper::class)
+    fun camundaTaskDocumentMapper(
+        @Lazy processDocumentService: CamundaProcessJsonSchemaDocumentService
+    ): CamundaTaskDocumentMapper {
+        return CamundaTaskDocumentMapper(processDocumentService)
     }
 }

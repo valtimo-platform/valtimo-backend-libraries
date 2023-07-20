@@ -98,7 +98,7 @@ class TaakObjectListener(
             loadTaakObjectDocuments(processInstanceId, variableScope, taakObjectData)
             handleTaakObjectData(processInstanceId, variableScope, resolvedValues)
         }
-        camundaTaskService.completeTaskWithoutFormData(taakObject.verwerkerTaakId.toString())
+        camundaTaskService.complete(taakObject.verwerkerTaakId.toString())
     }
 
     private fun loadTaakObjectDocuments(

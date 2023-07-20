@@ -22,12 +22,12 @@ import com.ritense.note.domain.Note
 
 class NoteActionProvider: ResourceActionProvider<Note> {
     override fun getAvailableActions(): List<Action<Note>> {
-        return listOf(VIEW, LIST_VIEW, CREATE, MODIFY, DELETE)
+        return listOf(VIEW, VIEW_LIST, CREATE, MODIFY, DELETE)
     }
 
     companion object {
         val VIEW = Action<Note>(Action.VIEW)
-        var LIST_VIEW = Action<Note>(Action.LIST_VIEW)
+        var VIEW_LIST = Action<Note>(Action.VIEW_LIST)
         var CREATE = Action<Note>(Action.CREATE)
         var MODIFY = Action<Note>(Action.MODIFY)
         var DELETE = Action<Note>(Action.DELETE)

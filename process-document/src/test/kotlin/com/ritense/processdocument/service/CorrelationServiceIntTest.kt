@@ -25,10 +25,11 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.all
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byName
 import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.TaskService
-import org.camunda.bpm.engine.task.Task
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -55,7 +56,7 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
     lateinit var documentService: DocumentService
 
     @Autowired
-    lateinit var taskService: TaskService
+    lateinit var taskService: CamundaTaskService
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
@@ -82,11 +83,11 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
     fun `should correlate start event`() {
         val variables = HashMap<String, Any>()
         variables["variable"] = "start-event-test"
-        document = documentService.createDocument(
-            NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson)
-            )
-        ).resultingDocument().orElseThrow()
+        document = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest("house", objectMapper.readTree(documentJson))
+            ).resultingDocument().orElseThrow()
+        }
         val processInstance = runtimeService.startProcessInstanceByKey(
             "start-correlation-test-id",
             document.id().toString(),
@@ -99,9 +100,11 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
                 "start-correlation-test-process"
             )
         }
-        val task = taskService.createTaskQuery().taskName("message-start-event-user-task").singleResult()
+        val task = runWithoutAuthorization {
+            taskService.findTask(byName("message-start-event-user-task"))
+        }
         assertNotNull(task)
-        val startedProcessId = task.processInstanceId
+        val startedProcessId = task.getProcessInstanceId()
         val associatedProcessDocuments =
             processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
         val resultProcessInstance = runWithoutAuthorization {
@@ -127,30 +130,36 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
         val variables = HashMap<String, Any>()
         variables["variable"] = "multiple-intermediate-catch-event-test-with-business-key"
 
-        document = documentService.createDocument(
-            NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson)
-            )
-        ).resultingDocument().orElseThrow()
+        document = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest("house", objectMapper.readTree(documentJson))
+            ).resultingDocument().orElseThrow()
+        }
         variables["businessKey"] = document.id()
-        val documentTwo = documentService.createDocument(
-            NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson)
-            )
-        ).resultingDocument().orElseThrow()
+        val documentTwo = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    "house", objectMapper.readTree(documentJson)
+                )
+            ).resultingDocument().orElseThrow()
+        }
         runtimeService.startProcessInstanceByKey(
             "intermediate-catch-event-sample-one-id",
             document.id().toString(),
             emptyMap()
         )
-        var taskOne = taskService.createTaskQuery().taskName("intermediate-catch-event-1-user-task").singleResult()
+        var taskOne = runWithoutAuthorization {
+            taskService.findTask(byName("intermediate-catch-event-1-user-task"))
+        }
         assertNull(taskOne)
         runtimeService.startProcessInstanceByKey(
             "intermediate-catch-event-sample-two-id",
             documentTwo.id().toString(),
             emptyMap()
         )
-        var taskTwo = taskService.createTaskQuery().taskName("intermediate-catch-event-2-user-task").singleResult()
+        var taskTwo = runWithoutAuthorization {
+            taskService.findTask(byName("intermediate-catch-event-2-user-task"))
+        }
         assertNull(taskTwo)
 
         val processInstance = runtimeService.startProcessInstanceByKey(
@@ -166,11 +175,15 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
                 "start-correlation-test-process"
             )
         }
-        taskOne = taskService.createTaskQuery().taskName("intermediate-catch-event-1-user-task").singleResult()
+        taskOne = runWithoutAuthorization {
+            taskService.findTask(byName("intermediate-catch-event-1-user-task"))
+        }
         assertNotNull(taskOne)
-        taskTwo = taskService.createTaskQuery().taskName("intermediate-catch-event-2-user-task").singleResult()
+        taskTwo = runWithoutAuthorization {
+            taskService.findTask(byName("intermediate-catch-event-2-user-task"))
+        }
         assertNull(taskTwo)
-        val startedProcessOneId = taskOne.processInstanceId
+        val startedProcessOneId = taskOne.getProcessInstanceId()
         val resultProcessOneInstance = runWithoutAuthorization {
             camundaProcessService.findProcessInstanceById(startedProcessOneId).get()
         }
@@ -200,11 +213,11 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
     fun `should correlate event to a process definition key`() {
         val variables = HashMap<String, Any>()
         variables["variable"] = "process-definition-start-event-test"
-        document = documentService.createDocument(
-            NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson)
-            )
-        ).resultingDocument().orElseThrow()
+        document = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest("house", objectMapper.readTree(documentJson))
+            ).resultingDocument().orElseThrow()
+        }
         val processInstance = runtimeService.startProcessInstanceByKey(
             "start-correlation-test-id",
             document.id().toString(),
@@ -217,9 +230,11 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
                 "start-correlation-test-process"
             )
         }
-        val task = taskService.createTaskQuery().taskName("target-process-definition-user-task").singleResult()
+        val task = runWithoutAuthorization {
+            taskService.findTask(byName("target-process-definition-user-task"))
+        }
         assertNotNull(task)
-        val startedProcessId = task.processInstanceId
+        val startedProcessId = task.getProcessInstanceId()
         val associatedProcessDocuments =
             processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
         val resultProcessInstance = runWithoutAuthorization {
@@ -244,18 +259,18 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
     fun `should correlate a process for message ref with business key`() {
         val variables = HashMap<String, Any>()
         variables["variable"] = "intermediate-catch-event-test-with-business-key"
-        document = documentService.createDocument(
-            NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson)
-            )
-        ).resultingDocument().orElseThrow()
+        document = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest("house", objectMapper.readTree(documentJson))
+            ).resultingDocument().orElseThrow()
+        }
         variables["businessKey"] = document.id()
         runtimeService.startProcessInstanceByKey(
             "intermediate-catch-event-sample-one-id",
             document.id().toString(),
             emptyMap()
         )
-        var taskOne = taskService.createTaskQuery().taskName("intermediate-catch-event-1-user-task").singleResult()
+        var taskOne = taskService.findTask(byName("intermediate-catch-event-1-user-task"))
         assertNull(taskOne)
 
         val processInstance = runtimeService.startProcessInstanceByKey(
@@ -270,9 +285,11 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
                 "start-correlation-test-process"
             )
         }
-        taskOne = taskService.createTaskQuery().taskName("intermediate-catch-event-1-user-task").singleResult()
+        taskOne = runWithoutAuthorization {
+            taskService.findTask(byName("intermediate-catch-event-1-user-task"))
+        }
         assertNotNull(taskOne)
-        val startedProcessOneId = taskOne.processInstanceId
+        val startedProcessOneId = taskOne.getProcessInstanceId()
         val resultProcessOneInstance = runWithoutAuthorization {
             camundaProcessService.findProcessInstanceById(startedProcessOneId).get()
         }
@@ -295,8 +312,8 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
 
     @AfterEach
     fun destroy() {
-        val tasks = taskService.createTaskQuery().list()
-        tasks.forEach(Consumer { task: Task ->
+        val tasks = taskService.findTasks(all())
+        tasks.forEach(Consumer { task ->
             taskService.complete(
                 task.id
             )

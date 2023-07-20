@@ -39,13 +39,13 @@ import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundExce
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
+import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 import java.net.URI
@@ -63,7 +63,7 @@ class PortaaltaakPlugin(
     private val valueResolverService: ValueResolverService,
     private val processDocumentService: ProcessDocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
-    private val taskService: TaskService
+    private val taskService: CamundaTaskService
     ) {
 
     @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)

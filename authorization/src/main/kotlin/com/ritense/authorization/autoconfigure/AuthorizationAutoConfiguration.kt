@@ -76,10 +76,16 @@ class AuthorizationAutoConfiguration(
         mappers: List<AuthorizationEntityMapper<*, *>>,
         actionProviders: List<ResourceActionProvider<*>>,
         permissionRepository: PermissionRepository,
-        roleRepository: RoleRepository
+        roleRepository: RoleRepository,
+        userManagementService: UserManagementService
     ): AuthorizationService {
-        val authorizationService =
-            ValtimoAuthorizationService(authorizationSpecificationFactories, mappers, actionProviders, permissionRepository)
+        val authorizationService = ValtimoAuthorizationService(
+            authorizationSpecificationFactories,
+            mappers,
+            actionProviders,
+            permissionRepository,
+            userManagementService
+        )
         AuthorizationServiceHolder(authorizationService)
         return authorizationService
     }
@@ -100,13 +106,13 @@ class AuthorizationAutoConfiguration(
 
     @Bean
     @Order(HIGHEST_PRECEDENCE)
-    fun <T: Any> noopAuthorizationSpecificationFactory(): AuthorizationSpecificationFactory<T> {
+    fun <T : Any> noopAuthorizationSpecificationFactory(): AuthorizationSpecificationFactory<T> {
         return NoopAuthorizationSpecificationFactory()
     }
 
     @Bean
     @Order(HIGHEST_PRECEDENCE + 1)
-    fun <T: Any> denyAuthorizationSpecificationFactory(): AuthorizationSpecificationFactory<T> {
+    fun <T : Any> denyAuthorizationSpecificationFactory(): AuthorizationSpecificationFactory<T> {
         return DenyAuthorizationSpecificationFactory()
     }
 
@@ -140,7 +146,7 @@ class AuthorizationAutoConfiguration(
     fun roleManagementResource(
         roleRepository: RoleRepository,
         permissionRepository: PermissionRepository
-    ) : RoleManagementResource {
+    ): RoleManagementResource {
         return RoleManagementResource(roleRepository, permissionRepository)
     }
 
@@ -148,7 +154,7 @@ class AuthorizationAutoConfiguration(
     @ConditionalOnMissingBean(PermissionResource::class)
     fun permissionResource(
         authorizationService: AuthorizationService
-    ) : PermissionResource {
+    ): PermissionResource {
         return PermissionResource(authorizationService)
     }
 

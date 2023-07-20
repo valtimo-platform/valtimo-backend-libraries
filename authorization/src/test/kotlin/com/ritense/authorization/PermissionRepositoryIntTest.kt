@@ -50,7 +50,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
     fun `should save Permission`() {
         val permission = Permission(
             resourceType = Class.forName("com.ritense.authorization.testimpl.TestDocument"),
-            action = Action<TestDocument>(Action.LIST_VIEW),
+            action = Action<TestDocument>(Action.VIEW_LIST),
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
@@ -67,7 +67,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
         assertThat(permissions).hasSize(1)
         assertThat(permissions[0].id).isNotNull
         assertThat(permissions[0].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
-        assertThat(permissions[0].action).isEqualTo(Action<TestDocument>(Action.LIST_VIEW))
+        assertThat(permissions[0].action).isEqualTo(Action<TestDocument>(Action.VIEW_LIST))
         assertThat(permissions[0].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[0].conditionContainer.conditions[0].type).isEqualTo(FIELD)
         assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
@@ -82,7 +82,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         val permission = Permission(
             resourceType = Class.forName("com.ritense.authorization.testimpl.TestDocument"),
-            action = Action<TestDocument>(Action.LIST_VIEW),
+            action = Action<TestDocument>(Action.VIEW_LIST),
             conditionContainer = ConditionContainer(listOf(
                 FieldPermissionCondition(
                     field = "document.name",
@@ -127,7 +127,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         assertThat(permissions[0].id).isNotNull
         assertThat(permissions[0].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
-        assertThat(permissions[0].action).isEqualTo(Action<TestDocument>(Action.LIST_VIEW))
+        assertThat(permissions[0].action).isEqualTo(Action<TestDocument>(Action.VIEW_LIST))
         assertThat(permissions[0].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[0].conditionContainer.conditions[0].type).isEqualTo(FIELD)
         assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)

@@ -25,18 +25,19 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
+import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byName
 import com.ritense.valtimo.service.CamundaProcessService
+import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.ProcessEngineException
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import java.util.UUID
 
 @Transactional
 class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
@@ -54,7 +55,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
     lateinit var documentService: DocumentService
 
     @Autowired
-    lateinit var taskService: TaskService
+    lateinit var taskService: CamundaTaskService
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
@@ -79,11 +80,11 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
     @Test
     @Throws(JsonProcessingException::class)
     fun `should start process by process definition key`() {
-        document = documentService.createDocument(
-            NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson)
-            )
-        ).resultingDocument().orElseThrow()
+        document = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest("house", objectMapper.readTree(documentJson))
+            ).resultingDocument().orElseThrow()
+        }
         val processInstance = runtimeService.startProcessInstanceByKey(
             "parent-process",
             document.id().toString()
@@ -95,9 +96,11 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
                 "parent process"
             )
         }
-        val task = taskService.createTaskQuery().taskName("child process user task").singleResult()
+        val task = runWithoutAuthorization {
+            taskService.findTask(byName("child process user task"))
+        }
         assertNotNull(task)
-        val startedProcessId = task.processInstanceId
+        val startedProcessId = task.getProcessInstanceId()
         val associatedProcessDocuments =
             processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(JsonSchemaDocumentId.existingId(document.id().id))
         val resultProcessInstance = runWithoutAuthorization {
@@ -122,11 +125,11 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
     @Test
     @Throws(JsonProcessingException::class)
     fun `should fail to start process with non existing process definition key`() {
-        document = documentService.createDocument(
-            NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson)
-            )
-        ).resultingDocument().orElseThrow()
+        document = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest("house", objectMapper.readTree(documentJson))
+            ).resultingDocument().orElseThrow()
+        }
         val exception = assertThrows<ProcessEngineException> {
             runtimeService.startProcessInstanceByKey(
                 "parent-process-with-non-existing-key",

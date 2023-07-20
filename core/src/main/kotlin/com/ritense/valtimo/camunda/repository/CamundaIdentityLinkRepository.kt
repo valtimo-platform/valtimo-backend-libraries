@@ -21,7 +21,4 @@ import com.ritense.valtimo.repository.ReadOnlyJpaSpecificationRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CamundaIdentityLinkRepository : ReadOnlyJpaSpecificationRepository<CamundaIdentityLink, String> {
-    fun findAllByTaskId(taskId: String): List<CamundaIdentityLink>
-    fun findAllByTaskIdAndType(taskId: String, type: String): List<CamundaIdentityLink>
-}
+interface CamundaIdentityLinkRepository : ReadOnlyJpaSpecificationRepository<CamundaIdentityLink, String>

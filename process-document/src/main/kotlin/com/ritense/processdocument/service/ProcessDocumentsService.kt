@@ -59,12 +59,13 @@ class ProcessDocumentsService(
     ) {
         runWithoutAuthorization {
             documentService.findBy(JsonSchemaDocumentId.existingId(UUID.fromString(businessKey)))
-        }.ifPresentOrElse({ document: Document ->
-            associationService.createProcessDocumentInstance(
-                processInstanceId,
-                UUID.fromString(document.id().toString()),
-                processName
-            )
-        }) { throw DocumentNotFoundException("No Document found with id $businessKey") }
+                .ifPresentOrElse({ document: Document ->
+                    associationService.createProcessDocumentInstance(
+                        processInstanceId,
+                        UUID.fromString(document.id().toString()),
+                        processName
+                    )
+                }) { throw DocumentNotFoundException("No Document found with id $businessKey") }
+        }
     }
 }

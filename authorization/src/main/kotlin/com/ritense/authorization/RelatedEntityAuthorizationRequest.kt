@@ -16,6 +16,8 @@
 
 package com.ritense.authorization
 
+import com.ritense.valtimo.contract.utils.SecurityUtils
+
 class RelatedEntityAuthorizationRequest<T>(
     override val resourceType: Class<T>,
     override val action: Action<T>,
@@ -26,4 +28,7 @@ class RelatedEntityAuthorizationRequest<T>(
         AuthorizationSupportedHelper.checkSupported(resourceType)
         AuthorizationSupportedHelper.checkSupported(relatedResourceType)
     }
+
+    override val user: String?
+        get() = SecurityUtils.getCurrentUserLogin()
 }
