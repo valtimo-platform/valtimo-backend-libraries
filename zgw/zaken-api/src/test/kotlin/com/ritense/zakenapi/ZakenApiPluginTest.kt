@@ -21,11 +21,7 @@ import com.ritense.zakenapi.ZakenApiPlugin.Companion.DOCUMENT_URL_PROCESS_VAR
 import com.ritense.zakenapi.ZakenApiPlugin.Companion.RESOURCE_ID_PROCESS_VAR
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
-import com.ritense.zakenapi.domain.CreateZaakRequest
-import com.ritense.zakenapi.domain.CreateZaakResponse
-import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
-import com.ritense.zakenapi.domain.CreateZaakStatusRequest
-import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.*
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
@@ -501,5 +497,46 @@ internal class ZakenApiPluginTest {
         assertEquals(zaakUrl, request.zaak)
         assertEquals(resultaattypeUrl, request.resultaattype)
         assertEquals("Result description", request.toelichting)
+    }
+
+    @Test
+    fun `should update zaakopschorting and verlenging`() {
+        val zakenApiClient: ZakenApiClient = mock()
+        val zaakUrlProvider: ZaakUrlProvider = mock()
+        val storageService: TemporaryResourceStorageService = mock()
+        val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
+        val executionMock = mock<DelegateExecution>()
+        val authenticationMock = mock<ZakenApiAuthentication>()
+
+        val documentId = UUID.randomUUID()
+        val zaakUrl = URI("https://example.com/zaken/1234")
+
+        whenever(executionMock.businessKey).thenReturn(documentId.toString())
+        whenever(zaakUrlProvider.getZaakUrl(documentId)).thenReturn(zaakUrl)
+
+        val plugin = ZakenApiPlugin(
+            zakenApiClient,
+            zaakUrlProvider,
+            storageService,
+            zaakInstanceLinkRepository
+        )
+        plugin.url = URI("https://zaken.plugin.url")
+        plugin.authenticationPluginConfiguration = authenticationMock
+
+        plugin.setZaakOpschorting(
+            execution = executionMock,
+            verlengingsduur = "P3Y",
+            toelichtingVerlenging = "testing verlenging",
+            toelichtingOpschorting = "testing opschorting"
+        )
+
+        val captor = argumentCaptor<SetZaakopschortingRequest>()
+        verify(zakenApiClient).setZaakOpschorting(any(), any(), captor.capture())
+
+        val request = captor.firstValue
+        assertEquals(zaakUrl, request.zaak)
+        assertEquals("true", request.opschorting.indicatie)
+        assertEquals("testing verlenging", request.verlenging.reden)
+        assertEquals("testing opschorting", request.opschorting.reden)
     }
 }
