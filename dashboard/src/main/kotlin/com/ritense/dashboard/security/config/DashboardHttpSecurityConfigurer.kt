@@ -17,6 +17,7 @@
 package com.ritense.dashboard.security.config
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.DELETE
@@ -30,6 +31,8 @@ class DashboardHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
+                .antMatchers(GET, "/api/v1/dashboard").hasAuthority(USER)
+
                 .antMatchers(GET, "/api/management/v1/dashboard").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/management/v1/dashboard").hasAuthority(ADMIN)
