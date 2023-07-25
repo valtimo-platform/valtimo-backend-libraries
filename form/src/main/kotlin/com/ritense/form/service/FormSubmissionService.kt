@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.EntityAuthorizationRequest
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -47,6 +49,8 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName.START_EVENT_STAR
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
+import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.patch.JsonPatch
@@ -68,6 +72,7 @@ open class FormSubmissionService(
     private val repositoryService: CamundaRepositoryService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val prefillFormService: PrefillFormService,
+    private val authorizationService: AuthorizationService,
 ) {
 
     @Transactional
@@ -78,6 +83,18 @@ open class FormSubmissionService(
         taskInstanceId: String?,
     ): FormSubmissionResult {
         return try {
+            // TODO: Implement else, done by verifying what the processLink contains
+            if (taskInstanceId != null) {
+                camundaTaskService.findTaskById(taskInstanceId)
+                authorizationService.requirePermission(
+                    EntityAuthorizationRequest(
+                        CamundaTask::class.java,
+                        COMPLETE,
+                        camundaTaskService.findTaskById(taskInstanceId)
+                    )
+                )
+            }
+
             return AuthorizationContext.runWithoutAuthorization {
                 val processLink = processLinkService.getProcessLink(processLinkId, FormProcessLink::class.java)
                 val document = documentId
