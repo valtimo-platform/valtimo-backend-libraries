@@ -45,6 +45,7 @@ import org.springframework.context.annotation.Lazy
 @Configuration
 class ProcessDocumentsAutoConfiguration {
 
+    @ProcessBean
     @Bean
     @ConditionalOnMissingBean(DocumentDelegate::class)
     fun documentDelegate(

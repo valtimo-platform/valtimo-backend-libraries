@@ -25,6 +25,7 @@ import com.ritense.mail.repository.BlacklistRepository
 import com.ritense.mail.service.BlacklistService
 import com.ritense.mail.service.FilteredMailSender
 import com.ritense.mail.service.MailService
+import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.mail.MailFilter
 import com.ritense.valtimo.contract.mail.MailSender
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -38,9 +39,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EnableConfigurationProperties(MailingProperties::class)
 @EnableJpaRepositories(basePackages = ["com.ritense.mail.repository"])
 @EntityScan("com.ritense.mail.domain")
+@ProcessBean
 class MailAutoConfiguration {
 
     @Bean
+    @ProcessBean
     @ConditionalOnMissingBean(MailService::class)
     fun mailService(mailSender: MailSender): MailService {
         return MailService(mailSender)
