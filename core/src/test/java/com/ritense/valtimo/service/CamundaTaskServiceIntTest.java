@@ -17,14 +17,16 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.PermissionRepository;
+import com.ritense.authorization.RoleRepository;
+import com.ritense.authorization.permission.ConditionContainer;
+import com.ritense.authorization.permission.Permission;
 import com.ritense.valtimo.BaseIntegrationTest;
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider;
+import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
-import java.sql.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import javax.inject.Inject;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,8 +35,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
+import javax.inject.Inject;
+import java.sql.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Consumer;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @Transactional
 class CamundaTaskServiceIntTest extends BaseIntegrationTest {
@@ -47,6 +60,12 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Inject
     private CamundaProcessService camundaProcessService;
+
+    @Inject
+    private RoleRepository roleRepository;
+
+    @Inject
+    private PermissionRepository permissionRepository;
 
     private final String processDefinitionKey = "one-task-process";
     private final String businessKey = "some-id";
@@ -196,23 +215,50 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
-    void shouldFindCandidateUsers() throws IllegalAccessException {
+    void shouldFindCandidateUsers() {
+        var adminRole = roleRepository.findByKey(ADMIN);
+        var userRole = roleRepository.findByKey(USER);
+        var permissions = List.of(
+            new Permission(
+                UUID.randomUUID(),
+                CamundaTask.class,
+                CamundaTaskActionProvider.ASSIGN,
+                new ConditionContainer(),
+                adminRole
+            ),
+            new Permission(
+                UUID.randomUUID(),
+                CamundaTask.class,
+                CamundaTaskActionProvider.ASSIGNABLE,
+                new ConditionContainer(),
+                userRole
+            )
+        );
+
+        permissionRepository.deleteAll();
+        permissionRepository.saveAllAndFlush(permissions);
+
+        ManageableUser manageableUser = mock(ManageableUser.class);
+        when(userManagementService.findByRole(userRole.getKey())).thenReturn(List.of(manageableUser));
+
         AuthorizationContext.runWithoutAuthorization(() -> camundaProcessService.startProcess(
             processDefinitionKey,
             businessKey,
             Map.of()
         ));
 
-        var pagedTasks = camundaTaskService.findTasksFiltered(
+
+        var pagedTasks = AuthorizationContext.runWithoutAuthorization(() -> camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
             PageRequest.of(0, 20)
-        );
+        ));
 
         var task = pagedTasks.get().findFirst().orElseThrow().getId();
 
         List<ManageableUser> candidateUsers = camundaTaskService.getCandidateUsers(task);
 
-        assertThat(candidateUsers).isEmpty();
+        assertThat(candidateUsers).contains(manageableUser);
+        verify(userManagementService, never()).findByRole(ADMIN);
     }
 
     private void startProcessAndModifyTask(Consumer<Task> taskHandler) {

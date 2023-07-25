@@ -3,7 +3,7 @@
     "permissions": [
         {
             "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
-            "action": "view",
+            "action": "assign",
             "roleKey": "ROLE_ADMIN"
         }
     ]
