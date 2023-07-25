@@ -22,7 +22,6 @@ import com.ritense.form.web.rest.dto.FormSubmissionResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -38,7 +37,6 @@ class FormResource(
 ) {
 
     @PostMapping("/v1/process-link/{processLinkId}/form/submission")
-    @PreAuthorize("#taskInstanceId == null or hasPermission(#taskInstanceId, 'taskAccess')")
     fun handleSubmission(
         @PathVariable processLinkId: UUID,
         @RequestParam(required = false) documentId: String?,

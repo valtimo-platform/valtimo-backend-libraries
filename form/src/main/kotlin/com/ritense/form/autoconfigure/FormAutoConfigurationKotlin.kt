@@ -17,6 +17,7 @@
 
 package com.ritense.form.autoconfigure
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.security.config.FormHttpSecurityConfigurerKotlin
 import com.ritense.form.service.FormDefinitionService
@@ -74,6 +75,7 @@ class FormAutoConfigurationKotlin {
         repositoryService: CamundaRepositoryService,
         applicationEventPublisher: ApplicationEventPublisher,
         prefillFormService: PrefillFormService,
+        authorizationService: AuthorizationService,
     ): FormSubmissionService {
         return FormSubmissionService(
             processLinkService,
@@ -85,6 +87,7 @@ class FormAutoConfigurationKotlin {
             repositoryService,
             applicationEventPublisher,
             prefillFormService,
+            authorizationService
         )
     }
 
