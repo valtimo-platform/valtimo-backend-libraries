@@ -61,10 +61,6 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
                 )
             )
         }
-
-//        val user = ValtimoUserBuilder().username(USERNAME).email(USERNAME).id(USER_ID).build()
-//        Mockito.`when`(userManagementService.findById(USER_ID)).thenReturn(user)
-//        Mockito.`when`(userManagementService.currentUser).thenReturn(user)
     }
 
     @Test
