@@ -22,7 +22,6 @@ import com.ritense.authorization.AuthorizationSpecification;
 import com.ritense.authorization.DelegateUserEntityAuthorizationRequest;
 import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.Role;
-import com.ritense.authorization.permission.Permission;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
@@ -61,30 +60,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGN;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGNABLE;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.CLAIM;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.COMPLETE;
-import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.VIEW_LIST;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.VIEW;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.VIEW_LIST;
 import static com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.byTaskId;
-import static com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.byType;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.KEY;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessInstanceSpecificationHelper.BUSINESS_KEY;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.CREATE_TIME;
@@ -98,8 +92,10 @@ import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHel
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessDefinitionKeys;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceId;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byUnassigned;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsLast;
 import static java.util.stream.Collectors.toSet;
-import static org.camunda.bpm.engine.task.IdentityLinkType.CANDIDATE;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 public class CamundaTaskService {
@@ -205,31 +201,22 @@ public class CamundaTaskService {
     @Transactional(readOnly = true)
     public List<ManageableUser> getCandidateUsers(String taskId) {
         final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
-        requirePermission(task, VIEW);
-        final Set<String> taskCandidateGroups = camundaIdentityLinkRepository.findAll(byTaskId(task.getId()).and(byType(CANDIDATE)))
-            .stream()
-            .map(CamundaIdentityLink::getGroupId)
-            .collect(toSet());
+        requirePermission(task, ASSIGN);
 
-        if (!taskCandidateGroups.isEmpty()) {
-            var allowedRoles = authorizationService.getPermissions(CamundaTask.class, ASSIGNABLE).stream()
-                .map(Permission::getRole)
-                .map(Role::getKey)
-                .collect(toSet());
-            var nonAssignableTaskRoles = taskCandidateGroups.stream()
-                .filter(taskRole -> !allowedRoles.contains(taskRole))
-                .collect(Collectors.joining(", "));
-            if (!nonAssignableTaskRoles.isEmpty()) {
-                throw new IllegalStateException("Failed to get candidate users for task '" + task.getTaskDefinitionKey() + "'. Task candidate group role '" + nonAssignableTaskRoles + "' is missing permission 'ASSIGNABLE'");
-            }
-
-            return taskCandidateGroups.stream()
-                .map(userManagementService::findByRole)
-                .flatMap(Collection::stream)
-                .toList();
-        } else {
-            return Collections.emptyList();
-        }
+        return authorizationService.getAuthorizedRoles(
+                new EntityAuthorizationRequest<>(
+                    CamundaTask.class,
+                    ASSIGNABLE,
+                    task
+                )
+            ).stream()
+            .map(Role::getKey)
+            .map(userManagementService::findByRole)
+            .flatMap(Collection::stream)
+            .distinct()
+            .sorted(comparing(ManageableUser::getFirstName, nullsLast(naturalOrder()))
+                .thenComparing(ManageableUser::getLastName, nullsLast(naturalOrder())))
+            .toList();
     }
 
     @Transactional

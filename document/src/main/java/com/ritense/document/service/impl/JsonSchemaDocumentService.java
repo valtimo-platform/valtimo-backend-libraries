@@ -19,11 +19,10 @@ package com.ritense.document.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.AuthorizationSpecification;
+import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.Role;
-import com.ritense.authorization.permission.Permission;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -66,16 +65,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGNABLE;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CLAIM;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.DELETE;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
 public class JsonSchemaDocumentService implements DocumentService {
@@ -561,14 +559,15 @@ public class JsonSchemaDocumentService implements DocumentService {
             )
         );
 
-        Set<String> roles = authorizationService
-            .getPermissions(JsonSchemaDocument.class, ASSIGNABLE)
-            .stream()
-            .map(Permission::getRole)
-            .map(Role::getKey)
-            .collect(Collectors.toSet());
+        Set<String> authorizedRoles = authorizationService.getAuthorizedRoles(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                ASSIGNABLE,
+                document
+            )
+        ).stream().map(Role::getKey).collect(Collectors.toSet());
 
-        return userManagementService.findNamedUserByRoles(roles);
+        return userManagementService.findNamedUserByRoles(authorizedRoles);
     }
 
 }
