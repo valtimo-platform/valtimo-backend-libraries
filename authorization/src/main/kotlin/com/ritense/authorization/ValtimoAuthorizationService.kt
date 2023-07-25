@@ -45,6 +45,14 @@ class ValtimoAuthorizationService(
         }
     }
 
+    override fun <T : Any> getAuthorizedRoles(request: EntityAuthorizationRequest<T>): Set<Role> {
+        return getPermissions(request.resourceType, request.action)
+            .groupBy { it.role }
+            .filter { getAuthorizationSpecification(request, it.value).isAuthorized() }
+            .map { it.key }
+            .toSet()
+    }
+
     /**
      *   Check for permissions for an (optional) related entity.
      *
