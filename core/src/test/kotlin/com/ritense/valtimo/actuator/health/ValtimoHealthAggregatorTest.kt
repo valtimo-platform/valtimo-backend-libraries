@@ -42,4 +42,14 @@ class ValtimoHealthAggregatorTest {
 
         Assertions.assertEquals(Status.DOWN, aggregator.getAggregateStatus(statusSet))
     }
+
+    @Test
+    fun `should return out of service when one of the components is out of service`(){
+        val statusSet = HashSet<Status>()
+        statusSet.add(Status.UP)
+        statusSet.add(Status.UNKNOWN)
+        statusSet.add(Status.OUT_OF_SERVICE)
+
+        Assertions.assertEquals(Status.OUT_OF_SERVICE, aggregator.getAggregateStatus(statusSet))
+    }
 }
