@@ -57,8 +57,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.*;
-
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGNABLE;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CLAIM;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 @SpringBootTest
 @Tag("integration")
 @ExtendWith({SpringExtension.class, LiquibaseRunnerExtension.class})
