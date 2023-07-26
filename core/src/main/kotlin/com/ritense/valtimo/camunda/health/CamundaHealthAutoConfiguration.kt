@@ -26,9 +26,9 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class CamundaHealthAutoConfiguration {
     @Bean
-    @ConditionalOnMissingBean(IncidentHealthIndicator::class)
-    @ConditionalOnEnabledHealthIndicator("camunda-incidents")
-    fun incidentHealthIndicator(runtimeService: RuntimeService): IncidentHealthIndicator {
-        return IncidentHealthIndicator(runtimeService)
+    @ConditionalOnMissingBean(CamundaIncidentHealthIndicator::class)
+    @ConditionalOnEnabledHealthIndicator("camundaIncident")
+    fun camundaIncidentHealthIndicator(runtimeService: RuntimeService): CamundaIncidentHealthIndicator {
+        return CamundaIncidentHealthIndicator(runtimeService)
     }
 }

@@ -25,14 +25,14 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.boot.actuate.health.Health
 
-class IncidentHealthIndicatorTest {
+class CamundaIncidentHealthIndicatorTest {
     lateinit var runtimeService: RuntimeService
-    lateinit var indicator: IncidentHealthIndicator
+    lateinit var indicator: CamundaIncidentHealthIndicator
 
     @BeforeEach
     fun beforeEach() {
         runtimeService = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
-        indicator = IncidentHealthIndicator(runtimeService)
+        indicator = CamundaIncidentHealthIndicator(runtimeService)
     }
 
     @Test
