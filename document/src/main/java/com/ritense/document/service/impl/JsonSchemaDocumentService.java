@@ -471,6 +471,11 @@ public class JsonSchemaDocumentService implements DocumentService {
                 )
             );
 
+        var assignee = runWithoutAuthorization(() -> userManagementService.findById(assigneeId));
+        if (assignee == null) {
+            logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
+            throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
+        }
         if (assigneeId.equals(userManagementService.getCurrentUser().getId())) {
             try {
                 authorizationService
@@ -513,16 +518,10 @@ public class JsonSchemaDocumentService implements DocumentService {
                     new DelegateUserEntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         ASSIGNABLE,
-                        assigneeId,
+                        assignee.getEmail(),
                         document
                     )
                 );
-        }
-
-        var assignee = runWithoutAuthorization(() -> userManagementService.findById(assigneeId));
-        if (assignee == null) {
-            logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
-            throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
         }
 
         document.setAssignee(assigneeId, assignee.getFullName());
