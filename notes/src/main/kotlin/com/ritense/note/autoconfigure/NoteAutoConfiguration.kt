@@ -77,7 +77,7 @@ class NoteAutoConfiguration {
 
     @Bean
     fun noteDocumentMapper(
-        documentService: DocumentService,
+        @Lazy documentService: DocumentService,
     ): NoteDocumentMapper {
         return NoteDocumentMapper(documentService)
     }
