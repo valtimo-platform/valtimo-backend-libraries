@@ -17,23 +17,9 @@
 package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
-
-public interface DocumentSearchFields {
-
-    ResponseEntity<Void> addSearchField(
-        String documentDefinitionName,
-        SearchFieldDto searchField);
-
-    ResponseEntity<List<SearchFieldDto>> getSearchFields(String documentDefinitionName);
-
-    ResponseEntity<Void> updateSearchField(
-        String documentDefinitionName,
-        List<SearchFieldDto> searchFieldDto);
-
-    ResponseEntity<Void> deleteSearchField(
-        String documentDefinitionName,
-        String key);
+public interface DocumentSearchFieldsManagement {
+    ResponseEntity<List<SearchFieldDto>> getAdminSearchFields(String documentDefinitionName);
 }

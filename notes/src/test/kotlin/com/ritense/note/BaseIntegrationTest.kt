@@ -28,7 +28,6 @@ import com.ritense.note.service.NoteActionProvider.Companion.CREATE
 import com.ritense.note.service.NoteActionProvider.Companion.DELETE
 import com.ritense.note.service.NoteActionProvider.Companion.VIEW_LIST
 import com.ritense.note.service.NoteActionProvider.Companion.MODIFY
-import com.ritense.note.service.NoteActionProvider.Companion.VIEW
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
@@ -76,16 +75,6 @@ abstract class BaseIntegrationTest {
                 VIEW_LIST,
                 ConditionContainer(listOf()),
                 role1
-            ),
-            Permission(
-                resourceType = Note::class.java,
-                action = VIEW,
-                conditionContainer = ConditionContainer(
-                    listOf(
-                        FieldPermissionCondition("createdByUserId", PermissionConditionOperator.EQUAL_TO, "\${currentUserId}")
-                    )
-                ),
-                role = role2
             ),
             Permission(
                 resourceType = Note::class.java,

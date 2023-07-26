@@ -16,19 +16,23 @@
 
 package com.ritense.note.repository
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationEntityMapperResult
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
+import com.ritense.document.service.DocumentService
 import com.ritense.note.domain.Note
 import java.util.UUID
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Root
 
-class NoteDocumentMapper() : AuthorizationEntityMapper<Note, JsonSchemaDocument> {
+class NoteDocumentMapper(
+    private val documentService: DocumentService
+) : AuthorizationEntityMapper<Note, JsonSchemaDocument> {
     override fun mapRelated(entity: Note): List<JsonSchemaDocument> {
-        TODO("Not yet implemented")
+        return runWithoutAuthorization { listOf(documentService.get(entity.documentId.toString()) as JsonSchemaDocument) }
     }
 
     override fun mapQuery(root: Root<Note>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<JsonSchemaDocument> {
