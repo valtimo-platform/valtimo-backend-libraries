@@ -444,6 +444,14 @@ public class JsonSchemaDocumentService implements DocumentService {
                         document
                     )
                 );
+            authorizationService
+                .requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        ASSIGNABLE,
+                        document
+                    )
+                );
         }
         var assignee = userManagementService.getCurrentUser();
 
@@ -478,6 +486,14 @@ public class JsonSchemaDocumentService implements DocumentService {
                         new EntityAuthorizationRequest<>(
                             JsonSchemaDocument.class,
                             ASSIGN,
+                            document
+                        )
+                    );
+                authorizationService
+                    .requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            ASSIGNABLE,
                             document
                         )
                     );
