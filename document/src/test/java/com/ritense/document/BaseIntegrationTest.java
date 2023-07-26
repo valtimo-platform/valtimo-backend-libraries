@@ -56,12 +56,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CLAIM;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
+
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.*;
 
 @SpringBootTest
 @Tag("integration")
@@ -190,6 +186,13 @@ public abstract class BaseIntegrationTest extends BaseTest {
                 UUID.randomUUID(),
                 JsonSchemaDocument.class,
                 ASSIGN,
+                new ConditionContainer(Collections.emptyList()),
+                role
+            ),
+            new Permission(
+                UUID.randomUUID(),
+                JsonSchemaDocument.class,
+                ASSIGNABLE,
                 new ConditionContainer(Collections.emptyList()),
                 role
             ),
