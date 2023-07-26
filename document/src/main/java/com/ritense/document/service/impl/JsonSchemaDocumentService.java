@@ -21,6 +21,7 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.AuthorizationSpecification;
+import com.ritense.authorization.DelegateUserEntityAuthorizationRequest;
 import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.Role;
 import com.ritense.document.domain.Document;
@@ -504,6 +505,15 @@ public class JsonSchemaDocumentService implements DocumentService {
                     new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         ASSIGN,
+                        document
+                    )
+                );
+            authorizationService
+                .requirePermission(
+                    new DelegateUserEntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        ASSIGNABLE,
+                        assigneeId,
                         document
                     )
                 );
