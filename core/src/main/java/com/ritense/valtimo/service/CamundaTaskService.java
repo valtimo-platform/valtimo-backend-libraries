@@ -59,6 +59,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
@@ -157,19 +158,19 @@ public class CamundaTaskService {
             unassign(taskId);
         } else {
             final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
-            authorizationService.requirePermission(
-                new DelegateUserEntityAuthorizationRequest<>(CamundaTask.class, ASSIGNABLE, assignee, task)
-            );
-
             final String currentUser = SecurityUtils.getCurrentUserLogin();
             if (assignee.equals(currentUser)) {
-                if (task.getAssignee() == null) {
+                try {
                     requirePermission(task, CLAIM);
-                } else if (!task.getAssignee().equals(currentUser)) {
+                } catch (AccessDeniedException e) {
                     requirePermission(task, ASSIGN);
+                    requirePermission(task, ASSIGNABLE);
                 }
             } else {
                 requirePermission(task, ASSIGN);
+                authorizationService.requirePermission(
+                    new DelegateUserEntityAuthorizationRequest<>(CamundaTask.class, ASSIGNABLE, assignee, task)
+                );
             }
             final String currentAssignee = task.getAssignee();
             try {

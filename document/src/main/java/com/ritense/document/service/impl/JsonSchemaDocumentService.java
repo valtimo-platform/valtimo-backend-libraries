@@ -21,6 +21,7 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.AuthorizationSpecification;
+import com.ritense.authorization.DelegateUserEntityAuthorizationRequest;
 import com.ritense.authorization.EntityAuthorizationRequest;
 import com.ritense.authorization.Role;
 import com.ritense.document.domain.Document;
@@ -444,6 +445,14 @@ public class JsonSchemaDocumentService implements DocumentService {
                         document
                     )
                 );
+            authorizationService
+                .requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        ASSIGNABLE,
+                        document
+                    )
+                );
         }
         var assignee = userManagementService.getCurrentUser();
 
@@ -462,6 +471,11 @@ public class JsonSchemaDocumentService implements DocumentService {
                 )
             );
 
+        var assignee = runWithoutAuthorization(() -> userManagementService.findById(assigneeId));
+        if (assignee == null) {
+            logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
+            throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
+        }
         if (assigneeId.equals(userManagementService.getCurrentUser().getId())) {
             try {
                 authorizationService
@@ -481,6 +495,14 @@ public class JsonSchemaDocumentService implements DocumentService {
                             document
                         )
                     );
+                authorizationService
+                    .requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            ASSIGNABLE,
+                            document
+                        )
+                    );
             }
         } else {
             authorizationService
@@ -491,12 +513,15 @@ public class JsonSchemaDocumentService implements DocumentService {
                         document
                     )
                 );
-        }
-
-        var assignee = runWithoutAuthorization(() -> userManagementService.findById(assigneeId));
-        if (assignee == null) {
-            logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
-            throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
+            authorizationService
+                .requirePermission(
+                    new DelegateUserEntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        ASSIGNABLE,
+                        assignee.getEmail(),
+                        document
+                    )
+                );
         }
 
         document.setAssignee(assigneeId, assignee.getFullName());
