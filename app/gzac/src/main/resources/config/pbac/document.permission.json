@@ -87,7 +87,7 @@
                         "type": "field",
                         "field": "assigneeId",
                         "operator": "==",
-                        "value": "${currentUserId}"
+                        "value": null
                     }
                 ]
             }
