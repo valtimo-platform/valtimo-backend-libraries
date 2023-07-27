@@ -44,7 +44,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
         }
     }
 
-    companion object{
+    companion object {
         const val API_V1_CASE_CASE_DEFINITION_NAME_LIST_COLUMN = "/api/v1/case/{caseDefinitionName}/list-column"
     }
 }
