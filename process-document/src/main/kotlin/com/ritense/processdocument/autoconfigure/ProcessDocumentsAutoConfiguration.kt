@@ -51,12 +51,12 @@ class ProcessDocumentsAutoConfiguration {
     fun documentDelegate(
         processDocumentService: ProcessDocumentService,
         userManagementService: UserManagementService,
-        documentService: DocumentService,
+        documentService: DocumentService
     ): DocumentDelegate {
         return DocumentDelegate(
             processDocumentService,
             userManagementService,
-            documentService,
+            documentService
         )
     }
 

@@ -23,12 +23,14 @@ import com.ritense.connector.config.ObjectMapperHolder
 import com.ritense.connector.config.SpringContextHelper
 import com.ritense.connector.config.SpringHandlerInstantiatorImpl
 import com.ritense.connector.domain.Connector
+import com.ritense.connector.domain.impl.delegate.ConnectorDelegate
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
 import com.ritense.connector.repository.ConnectorTypeRepository
 import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorFluentBuilder
 import com.ritense.connector.service.ConnectorService
 import com.ritense.connector.web.rest.impl.ConnectorResource
+import com.ritense.valtimo.contract.annotation.ProcessBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -72,6 +74,15 @@ class ConnectorAutoConfiguration {
         connectorTypeRepository: ConnectorTypeRepository
     ): ConnectorService {
         return ConnectorService(applicationContext, connectorTypeInstanceRepository, connectorTypeRepository)
+    }
+
+    @Bean
+    @ProcessBean
+    @ConditionalOnMissingBean(ConnectorDelegate::class)
+    fun connectorDelegate(
+        connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
+    ): ConnectorDelegate {
+        return ConnectorDelegate(connectorTypeInstanceRepository)
     }
 
     @Bean
