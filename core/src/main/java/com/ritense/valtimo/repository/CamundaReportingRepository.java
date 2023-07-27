@@ -54,7 +54,7 @@ public class CamundaReportingRepository {
         Map<String, Object> parameters = new HashMap<>();
         LocalDate defaultFromDate = LocalDate.now().minusDays(14);
         Instant instant = defaultFromDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
-        parameters.put("dateFrom", Date.from(instant));
+        parameters.put("dateFrom", java.util.Date.from(instant));
 
         var processDefinitionQuery = CamundaProcessDefinitionSpecificationHelper
             .byActive()
