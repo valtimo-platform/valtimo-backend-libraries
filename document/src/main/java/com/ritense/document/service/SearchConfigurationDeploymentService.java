@@ -34,7 +34,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -77,12 +76,8 @@ public class SearchConfigurationDeploymentService {
 
         try {
             AuthorizationContext.runWithoutAuthorization(() -> {
-                List<SearchField> databaseSearchFields =  searchFieldService.getSearchFields(documentDefinitionName);
-                List<SearchField> searchConfigurationFields  = searchConfiguration.toEntity(documentDefinitionName);
-                databaseSearchFields.forEach(databaseSearchField ->
-                    searchConfigurationFields
-                            .removeIf(
-                                    searchConfigurationField -> databaseSearchField.getKey().equals(searchConfigurationField.getKey())));
+                searchFieldService.deleteSearchFields(documentDefinitionName);
+                List<SearchField> searchConfigurationFields = searchConfiguration.toEntity(documentDefinitionName);
                 searchFieldService.createSearchConfiguration(searchConfigurationFields);
                 logger.info("Deployed search configuration for document - {}", documentDefinitionName);
                 return null;

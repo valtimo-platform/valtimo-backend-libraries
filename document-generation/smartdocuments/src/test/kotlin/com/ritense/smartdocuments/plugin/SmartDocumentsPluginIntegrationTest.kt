@@ -32,6 +32,7 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.BaseSmartDocumentsIntegrationTest
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.json.Mapper
@@ -49,28 +50,15 @@ import java.util.UUID
 @Transactional
 @AutoConfigureWebTestClient(timeout = "36000")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() {
-
-    @Autowired
-    lateinit var processDocumentService: ProcessDocumentService
-
-    @Autowired
-    lateinit var pluginService: PluginService
-
-    @Autowired
-    lateinit var smartDocumentsPluginFactory: SmartDocumentsPluginFactory
-
-    @Autowired
-    lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
-
-    @Autowired
-    lateinit var camundaRepositoryService: CamundaRepositoryService
-
-    @Autowired
-    lateinit var runtimeService: RuntimeService
-
-    @Autowired
-    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+class SmartDocumentsPluginIntegrationTest @Autowired constructor(
+    private val processDocumentService: ProcessDocumentService,
+    private val pluginService: PluginService,
+    private val smartDocumentsPluginFactory: SmartDocumentsPluginFactory,
+    private val pluginProcessLinkRepository: PluginProcessLinkRepository,
+    private val camundaRepositoryService: CamundaRepositoryService,
+    private val runtimeService: RuntimeService,
+    private val temporaryResourceStorageService: TemporaryResourceStorageService
+): BaseSmartDocumentsIntegrationTest() {
 
     lateinit var smartDocumentsPlugin: SmartDocumentsPlugin
     lateinit var pluginConfiguration: PluginConfiguration

@@ -81,7 +81,7 @@ class CorrelationServiceImpl(
             camundaRuntimeService.findProcessInstanceById(result.execution.processInstanceId)!!
         }
         val processInstanceId = correlationResultProcessInstance.processInstanceId
-        val processName = AuthorizationContext.runWithoutAuthorization {
+        val processName = runWithoutAuthorization {
             camundaRepositoryService.findProcessDefinitionById(correlationResultProcessInstance.processDefinitionId)!!.name
         }
         val associationExists = associationExists(processInstanceId)
@@ -115,6 +115,7 @@ class CorrelationServiceImpl(
                     processInstanceId,
                     processName,
                     runningProcessInstance.businessKey)
+            }
             }
         }
         return correlationResultProcessList
