@@ -47,14 +47,14 @@ public class AuditEventJsonSerializingTest extends AbstractTestHelper {
     @Test
     public void shouldParseJson() throws IOException {
         final TestEvent testEvent = testEvent(id, LocalDateTime.parse(dateString));
-        ObjectContent<TestEvent> testEventObjectContent = jacksonTester.parse(jsonString);
+        ObjectContent<TestEvent> testEventObjectContent = this.jacksonTester.parse(jsonString);
         assertThat(testEventObjectContent.getObject()).isEqualTo(testEvent);
     }
 
     @Test
     public void shouldMarshalObjectToJson() throws IOException {
         final TestEvent testEvent = testEvent(id, LocalDateTime.parse(dateString));
-        JsonContent<TestEvent> testEventObjectContent = jacksonTester.write(testEvent);
+        JsonContent<TestEvent> testEventObjectContent = this.jacksonTester.write(testEvent);
         assertThat(testEventObjectContent.getJson()).isEqualTo(jsonString);
     }
 }
