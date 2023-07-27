@@ -95,15 +95,12 @@ public class AuditAutoConfiguration {
     @Bean
     @ConditionalOnProperty(prefix = "valtimo", name = "database", havingValue = "postgres")
     public JpaRepositoryFactoryBean<AuditRecordRepository<AuditRecord, AuditRecordId>, AuditRecord, AuditRecordId> postgresAuditRecordRepository() {
-        JpaRepositoryFactoryBean factory = new JpaRepositoryFactoryBean(PostgresAuditRecordRepository.class);
-        return factory;
+        return new JpaRepositoryFactoryBean<>(PostgresAuditRecordRepository.class);
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "valtimo", name = "database", havingValue = "mysql", matchIfMissing = true)
     public JpaRepositoryFactoryBean<AuditRecordRepository<AuditRecord, AuditRecordId>, AuditRecord, AuditRecordId> mysqlAuditRecordRepository() {
-        JpaRepositoryFactoryBean factory = new JpaRepositoryFactoryBean(MySqlAuditRecordRepository.class);
-        return factory;
+        return new JpaRepositoryFactoryBean<>(MySqlAuditRecordRepository.class);
     }
-
 }
