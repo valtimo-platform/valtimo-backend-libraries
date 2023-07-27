@@ -22,6 +22,9 @@ import com.ritense.valtimo.contract.json.Mapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonContent;
+import org.springframework.boot.test.json.ObjectContent;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +36,7 @@ public class AuditEventJsonSerializingTest extends AbstractTestHelper {
     private final String id = "edb1a672-4ba1-4e79-a5ee-b9658c55fe52";
     private String jsonString;
 
-    private ObjectMapper objectMapper = Mapper.INSTANCE.get();
+    private final ObjectMapper objectMapper = Mapper.INSTANCE.get();
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -44,13 +47,14 @@ public class AuditEventJsonSerializingTest extends AbstractTestHelper {
     @Test
     public void shouldParseJson() throws IOException {
         final TestEvent testEvent = testEvent(id, LocalDateTime.parse(dateString));
-        assertThat(this.jacksonTester.parse(jsonString)).isEqualTo(testEvent);
+        ObjectContent<TestEvent> testEventObjectContent = jacksonTester.parse(jsonString);
+        assertThat(testEventObjectContent.getObject()).isEqualTo(testEvent);
     }
 
     @Test
     public void shouldMarshalObjectToJson() throws IOException {
         final TestEvent testEvent = testEvent(id, LocalDateTime.parse(dateString));
-        assertThat(this.jacksonTester.write(testEvent)).isEqualTo(jsonString);
+        JsonContent<TestEvent> testEventObjectContent = jacksonTester.write(testEvent);
+        assertThat(testEventObjectContent.getJson()).isEqualTo(jsonString);
     }
-
 }
