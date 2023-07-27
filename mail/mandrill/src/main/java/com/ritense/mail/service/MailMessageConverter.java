@@ -88,15 +88,15 @@ public class MailMessageConverter {
     }
 
     private MandrillMessage.Recipient.Type convert(Recipient.Type type) {
-        if (type == Recipient.Type.To) {
+        if (type == Recipient.Type.TO) {
             return MandrillMessage.Recipient.Type.TO;
         }
 
-        if (type == Recipient.Type.Cc) {
+        if (type == Recipient.Type.CC) {
             return MandrillMessage.Recipient.Type.CC;
         }
 
-        if (type == Recipient.Type.Bcc) {
+        if (type == Recipient.Type.BCC) {
             return MandrillMessage.Recipient.Type.BCC;
         }
         String message = String.format("Cannot convert Recipient.Type value '%s' to MandrillMessage.Recipient.Type. No mapping exists", type);
