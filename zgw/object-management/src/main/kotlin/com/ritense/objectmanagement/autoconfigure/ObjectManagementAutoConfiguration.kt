@@ -16,6 +16,7 @@
 
 package com.ritense.objectmanagement.autoconfigure
 
+import com.ritense.objectmanagement.ObjectManagementPluginFactory
 import com.ritense.objectmanagement.autodeployment.ObjectManagementDefinitionDeploymentService
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
@@ -96,4 +97,12 @@ class ObjectManagementAutoConfiguration {
         return ObjectManagementHttpSecurityConfigurer()
     }
 
+    @Bean
+    fun objectManagementPluginFactory(
+        pluginService: PluginService,
+    ): ObjectManagementPluginFactory {
+        return ObjectManagementPluginFactory(
+            pluginService
+        )
+    }
 }
