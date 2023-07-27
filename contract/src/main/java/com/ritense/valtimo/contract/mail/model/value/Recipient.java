@@ -39,19 +39,19 @@ public class Recipient {
     }
 
     public enum Type {
-        To, Cc, Bcc
+        TO, CC, BCC
     }
 
     public static Recipient to(EmailAddress emailAddress, SimpleName name) {
-        return Recipient.forType(emailAddress, name, Type.To);
+        return Recipient.forType(emailAddress, name, Type.TO);
     }
 
     public static Recipient cc(EmailAddress emailAddress, SimpleName name) {
-        return Recipient.forType(emailAddress, name, Type.Cc);
+        return Recipient.forType(emailAddress, name, Type.CC);
     }
 
     public static Recipient bcc(EmailAddress emailAddress, SimpleName name) {
-        return Recipient.forType(emailAddress, name, Type.Bcc);
+        return Recipient.forType(emailAddress, name, Type.BCC);
     }
 
     @Override

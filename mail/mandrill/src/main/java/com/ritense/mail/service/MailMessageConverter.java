@@ -48,10 +48,12 @@ public class MailMessageConverter {
             rawMailMessage.attachments
         );
 
+        assert rawMailMessage.mailBody.textBody != null;
         if (rawMailMessage.mailBody.textBody.isPresent()) {
             mandrillMessageWithContent.setText(rawMailMessage.mailBody.textBody.get());
         }
 
+        assert rawMailMessage.mailBody.htmlBody != null;
         if (rawMailMessage.mailBody.htmlBody.isPresent()) {
             mandrillMessageWithContent.setHtml(rawMailMessage.mailBody.htmlBody.get());
         }
