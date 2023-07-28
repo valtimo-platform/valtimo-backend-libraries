@@ -203,8 +203,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             content,
             user,
             documentSequenceGeneratorService,
-            JsonSchemaDocumentRelation.from(newDocumentRequest.documentRelation()),
-            MetaJsonSchemaV7Draft.getInstance()
+            JsonSchemaDocumentRelation.from(newDocumentRequest.documentRelation())
         );
         result.resultingDocument().ifPresent(
             jsonSchemaDocument -> {
