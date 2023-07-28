@@ -29,35 +29,35 @@ open class BaseInputStream(
 
     override fun read(): Int {
         if (closed) {
-            throw IOException(errorMessage)
+            generateException(errorMessage)
         }
         return inputStream.read()
     }
 
     override fun read(b: ByteArray): Int {
         if (closed) {
-            throw IOException(errorMessage)
+            generateException(errorMessage)
         }
         return super.read(b)
     }
 
     override fun read(b: ByteArray, off: Int, len: Int): Int {
         if (closed) {
-            throw IOException(errorMessage)
+            generateException(errorMessage)
         }
         return super.read(b, off, len)
     }
 
     override fun skip(n: Long): Long {
         if (closed) {
-            throw IOException(errorMessage)
+            generateException(errorMessage)
         }
         return inputStream.skip(n)
     }
 
     override fun available(): Int {
         if (closed) {
-            throw IOException(errorMessage)
+            generateException(errorMessage)
         }
         return inputStream.available()
     }
@@ -72,4 +72,8 @@ open class BaseInputStream(
     override fun mark(readlimit: Int) = inputStream.mark(readlimit)
     override fun reset() = inputStream.reset()
     override fun markSupported() = inputStream.markSupported()
+
+    fun generateException(errorMessage: String) {
+        throw IOException(errorMessage)
+    }
 }
