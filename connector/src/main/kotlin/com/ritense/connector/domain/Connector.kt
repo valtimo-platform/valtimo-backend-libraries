@@ -19,7 +19,13 @@ package com.ritense.connector.domain
 interface Connector {
     fun getProperties(): ConnectorProperties
     fun setProperties(connectorProperties: ConnectorProperties)
-    fun onCreate(connectorInstance: ConnectorInstance) {}
-    fun onEdit(connectorInstance: ConnectorInstance) {}
-    fun onDelete(connectorInstance: ConnectorInstance) {}
+    fun onCreate(connectorInstance: ConnectorInstance) {
+        //Not implemented by default.
+    }
+    fun onEdit(connectorInstance: ConnectorInstance) {
+        //Not implemented by default.
+    }
+    fun onDelete(connectorInstance: ConnectorInstance) {
+        //Not implemented by default.
+    }
 }

@@ -85,7 +85,7 @@ internal class ProcessVariableValueResolverTest {
             .thenReturn(listOf(variableInstance))
 
         val resolvedValue = processVariableValueResolver.createResolver(
-            documentInstanceId = documentInstanceId
+            documentId = documentInstanceId
         ).apply(
             somePropertyName
         )
@@ -102,6 +102,6 @@ internal class ProcessVariableValueResolverTest {
             processInstanceId, variableScope, mapOf("firstName" to "John")
         )
 
-        verify(runtimeService).setVariables(processInstanceId.toString(), mapOf("firstName" to "John"))
+        verify(runtimeService).setVariables(processInstanceId, mapOf("firstName" to "John"))
     }
 }
