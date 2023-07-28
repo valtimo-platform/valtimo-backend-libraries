@@ -19,6 +19,6 @@ package com.ritense.authorization
 interface ResourceDefinition<T> {
     fun getAlias(): String
     fun getClazz(): Class<T>
-    fun contextToInstance(context: Object): T
+    fun contextToInstance(context: Any): T
     fun getContextProperty(): String
 }
