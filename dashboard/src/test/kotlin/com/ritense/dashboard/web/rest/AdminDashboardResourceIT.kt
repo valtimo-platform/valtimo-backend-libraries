@@ -90,6 +90,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
                 displayType = "gauge",
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
                 order = 1
             )
         )
@@ -116,6 +117,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
                 displayType = "gauge",
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
                 order = 1
             )
         )
@@ -180,6 +182,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().createObjectNode(),
                 displayType = "gauge",
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
                 order = 1
             )
         )
@@ -204,6 +207,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
                 displayType = "gauge",
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
                 order = 1
             )
         )
@@ -218,6 +222,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$[0].dataSourceKey").value("doorlooptijd"))
             .andExpect(jsonPath("$[0].dataSourceProperties.threshold").value(50))
             .andExpect(jsonPath("$[0].displayType").value("gauge"))
+            .andExpect(jsonPath("$[0].displayTypeProperties.useKpi").value(true))
     }
 
     @Test
@@ -227,7 +232,8 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             title = "Doorlooptijd",
             dataSourceKey = "doorlooptijd",
             dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
-            displayType = "gauge"
+            displayType = "gauge",
+            displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
         )
 
         mockMvc.perform(
@@ -241,6 +247,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$.dataSourceKey").value("doorlooptijd"))
             .andExpect(jsonPath("$.dataSourceProperties.threshold").value(50))
             .andExpect(jsonPath("$.displayType").value("gauge"))
+            .andExpect(jsonPath("$.displayTypeProperties.useKpi").value(true))
     }
 
     @Test
@@ -254,7 +261,8 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
                 displayType = "gauge",
-                order = 0
+                order = 0,
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
             )
         )
         val widgetConfigurations = listOf(
@@ -263,7 +271,8 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 title = "Doorlooptijd",
                 dataSourceKey = "doorlooptijd2",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 500 }""") as ObjectNode,
-                displayType = "donut"
+                displayType = "donut",
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": false }""") as ObjectNode,
             )
         )
 
@@ -279,6 +288,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$[0].dataSourceKey").value("doorlooptijd2"))
             .andExpect(jsonPath("$[0].dataSourceProperties.threshold").value(500))
             .andExpect(jsonPath("$[0].displayType").value("donut"))
+            .andExpect(jsonPath("$[0].displayTypeProperties.useKpi").value(false))
     }
 
     @Test
@@ -292,7 +302,8 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
                 displayType = "gauge",
-                order = 1
+                order = 1,
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
             )
         )
 
@@ -305,6 +316,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$.dataSourceKey").value("doorlooptijd"))
             .andExpect(jsonPath("$.dataSourceProperties.threshold").value(50))
             .andExpect(jsonPath("$.displayType").value("gauge"))
+            .andExpect(jsonPath("$.displayTypeProperties.useKpi").value(true))
     }
 
     @Test
@@ -318,7 +330,8 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
                 displayType = "gauge",
-                order = 1
+                order = 1,
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
             )
         )
 
@@ -336,9 +349,10 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].key").value("test-key-multi"))
             .andExpect(jsonPath("$[0].title").value("Test title multi"))
-            .andExpect(jsonPath("$[0].type").value("multi"))
+            .andExpect(jsonPath("$[0].displayTypes[0]").value("number"))
             .andExpect(jsonPath("$[1].key").value("test-key-single"))
             .andExpect(jsonPath("$[1].title").value("Test title single"))
-            .andExpect(jsonPath("$[1].type").value("single"))
+            .andExpect(jsonPath("$[1].displayTypes[0]").value("number"))
+            .andExpect(jsonPath("$[1].displayTypes[1]").value("custom"))
     }
 }

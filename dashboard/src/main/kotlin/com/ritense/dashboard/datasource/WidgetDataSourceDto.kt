@@ -19,5 +19,5 @@ package com.ritense.dashboard.datasource
 data class WidgetDataSourceDto(
     val key: String,
     val title: String,
-    val type: String
+    val displayTypes: List<String>
 )
