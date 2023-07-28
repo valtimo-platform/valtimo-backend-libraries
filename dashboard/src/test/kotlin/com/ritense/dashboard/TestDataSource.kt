@@ -34,7 +34,9 @@ class TestDataSource {
         key = "test-key-single",
         title = "Test title single"
     )
-    fun dashboardWidgetSingleDto() = DashboardWidgetSingleDto(1, 0)
+    fun dashboardWidgetSingleDto(testDataSourceProperties: TestDataSourceProperties): DashboardWidgetSingleDto {
+        return DashboardWidgetSingleDto(1, 0)
+    }
 
     fun testNonAnnotatedMethod(): String {
         return "test"

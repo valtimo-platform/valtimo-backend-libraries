@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource
+package com.ritense.dashboard.web.rest.dto
 
-import java.lang.reflect.Method
+import com.fasterxml.jackson.annotation.JsonUnwrapped
 
-class WidgetDataSourceResolver : AnnotatedClassResolver() {
-
-    val widgetDataSourceMap: Map<WidgetDataSource, Method> = findWidgetDataSourceClasses()
-
-    private fun findWidgetDataSourceClasses() = findMethodsWithAnnotation<WidgetDataSource>()
-        .associateBy { it.getAnnotation(WidgetDataSource::class.java) }
-}
+class DashboardWidgetDataResultDto(
+    val key: String,
+    @JsonUnwrapped val result: Any
+)

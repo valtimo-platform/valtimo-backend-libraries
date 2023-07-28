@@ -32,6 +32,7 @@ class DashboardHttpSecurityConfigurer : HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/dashboard").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/dashboard/{dashboardKey}/data").hasAuthority(USER)
 
                 .antMatchers(GET, "/api/management/v1/dashboard").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}").hasAuthority(ADMIN)

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource
+package com.ritense.dashboard
 
-import java.lang.reflect.Method
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 
-class WidgetDataSourceResolver : AnnotatedClassResolver() {
-
-    val widgetDataSourceMap: Map<WidgetDataSource, Method> = findWidgetDataSourceClasses()
-
-    private fun findWidgetDataSourceClasses() = findMethodsWithAnnotation<WidgetDataSource>()
-        .associateBy { it.getAnnotation(WidgetDataSource::class.java) }
+@TestConfiguration
+class TestAutoConfiguration {
+    @Bean
+    fun testDataSource() = TestDataSource()
 }
