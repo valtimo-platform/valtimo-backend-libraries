@@ -30,9 +30,9 @@ class ConnectorHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, API_V1_CONNECTOR_INSTANCE).hasAuthority(ADMIN)
-                .antMatchers(POST, API_V1_CONNECTOR_INSTANCE).hasAuthority(ADMIN)
-                .antMatchers(PUT, API_V1_CONNECTOR_INSTANCE).hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/connector/instance").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/connector/instance").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/connector/instance").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/connector/type").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/connector/instance/{typeId}").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/connector/instance/{instanceId}").hasAuthority(ADMIN)
@@ -40,8 +40,5 @@ class ConnectorHttpSecurityConfigurer : HttpSecurityConfigurer {
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
-    }
-    companion object {
-        const val API_V1_CONNECTOR_INSTANCE = "/api/v1/connector/instance"
     }
 }

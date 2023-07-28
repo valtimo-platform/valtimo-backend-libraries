@@ -32,9 +32,9 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, API_V1_CASE_CASE_DEFINITION_NAME_LIST_COLUMN).hasAuthority(USER)
-                .antMatchers(POST, API_V1_CASE_CASE_DEFINITION_NAME_LIST_COLUMN).hasAuthority(ADMIN)
-                .antMatchers(PUT, API_V1_CASE_CASE_DEFINITION_NAME_LIST_COLUMN).hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/v1/case/{caseDefinitionName}/list-column/{columnKey}").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(USER)
                 .antMatchers(PATCH, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(ADMIN)
@@ -42,9 +42,5 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
-    }
-
-    companion object {
-        const val API_V1_CASE_CASE_DEFINITION_NAME_LIST_COLUMN = "/api/v1/case/{caseDefinitionName}/list-column"
     }
 }

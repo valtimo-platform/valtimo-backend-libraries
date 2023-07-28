@@ -29,10 +29,10 @@ class ValtimoAuthorizationHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, API_MANAGEMENT_V1_ROLES).hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers(POST, API_MANAGEMENT_V1_ROLES).hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(GET, "/api/management/v1/roles").hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(POST, "/api/management/v1/roles").hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(PUT, "/api/management/v1/roles/{oldRoleKey}").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers(DELETE, API_MANAGEMENT_V1_ROLES).hasAuthority(AuthoritiesConstants.ADMIN)
+                .antMatchers(DELETE, "/api/management/v1/roles").hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(GET, "/api/management/v1/roles/{roleKey}/permissions").hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(PUT, "/api/management/v1/roles/{roleKey}/permissions").hasAuthority(AuthoritiesConstants.ADMIN)
                 .antMatchers(POST, "/api/management/v1/permissions/search").hasAuthority(AuthoritiesConstants.ADMIN)
@@ -40,9 +40,5 @@ class ValtimoAuthorizationHttpSecurityConfigurer : HttpSecurityConfigurer {
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
-    }
-
-    companion object {
-        const val API_MANAGEMENT_V1_ROLES = "/api/management/v1/roles"
     }
 }
