@@ -57,10 +57,11 @@ public class HistoryEventAuditProcessEnginePlugin implements ProcessEnginePlugin
 
     @Override
     public void postInit(ProcessEngineConfigurationImpl processEngineConfiguration) {
+        //Not implemented. This plugin is only needed for the preInit()
     }
 
     @Override
     public void postProcessEngineBuild(ProcessEngine processEngine) {
+        //Not implemented. This plugin is only needed for the preInit()
     }
-
 }
