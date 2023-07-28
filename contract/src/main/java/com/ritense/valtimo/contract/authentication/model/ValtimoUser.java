@@ -43,6 +43,7 @@ public class ValtimoUser implements Serializable, ManageableUser {
     private String password;
 
     public ValtimoUser() {
+        //Default value for empty constructor
     }
 
     public void setId(String id) {

@@ -29,6 +29,7 @@ public class Http401UnauthorizedEntryPoint implements AuthenticationEntryPoint {
     private static final Logger logger = LoggerFactory.getLogger(Http401UnauthorizedEntryPoint.class);
 
     public Http401UnauthorizedEntryPoint() {
+        //Default value for this constructor
     }
 
     /**

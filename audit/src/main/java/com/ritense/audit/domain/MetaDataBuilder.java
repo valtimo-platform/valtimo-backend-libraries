@@ -24,6 +24,7 @@ public class MetaDataBuilder {
     private String user;
 
     public MetaDataBuilder() {
+        //Default value for empty constructor
     }
 
     public MetaDataBuilder origin(String origin) {
