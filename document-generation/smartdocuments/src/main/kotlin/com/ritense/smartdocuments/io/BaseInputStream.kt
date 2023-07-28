@@ -21,41 +21,43 @@ import java.io.InputStream
 
 open class BaseInputStream(
     val inputStream: InputStream
+
 ) : InputStream() {
 
     protected var closed: Boolean = false
+    private val errorMessage: String = "Stream is closed"
 
     override fun read(): Int {
         if (closed) {
-            throw IOException("Stream is closed")
+            throw IOException(errorMessage)
         }
         return inputStream.read()
     }
 
     override fun read(b: ByteArray): Int {
         if (closed) {
-            throw IOException("Stream is closed")
+            throw IOException(errorMessage)
         }
         return super.read(b)
     }
 
     override fun read(b: ByteArray, off: Int, len: Int): Int {
         if (closed) {
-            throw IOException("Stream is closed")
+            throw IOException(errorMessage)
         }
         return super.read(b, off, len)
     }
 
     override fun skip(n: Long): Long {
         if (closed) {
-            throw IOException("Stream is closed")
+            throw IOException(errorMessage)
         }
         return inputStream.skip(n)
     }
 
     override fun available(): Int {
         if (closed) {
-            throw IOException("Stream is closed")
+            throw IOException(errorMessage)
         }
         return inputStream.available()
     }

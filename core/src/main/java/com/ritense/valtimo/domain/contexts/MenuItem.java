@@ -47,6 +47,7 @@ public class MenuItem implements Serializable {
     private String url;
 
     public MenuItem() {
+        // Default value for empty constructor
     }
 
     public Long getId() {
