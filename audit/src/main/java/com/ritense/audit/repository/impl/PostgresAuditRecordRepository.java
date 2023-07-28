@@ -39,10 +39,10 @@ public interface PostgresAuditRecordRepository extends AuditRecordRepository<Aud
         "    WHERE   className = :className ")
     List<AuditRecord> findAuditRecordsByEvent(@Param("className") String className);
 
-    @Query(value=" SELECT  ar " +
+    @Query(value = " SELECT  ar " +
         "    FROM    AuditRecord ar " +
         "    WHERE   className = :className " +
-        "    AND     ar.auditEvent ->> :key = :value ", nativeQuery=true)
+        "    AND     ar.auditEvent ->> :key = :value ", nativeQuery = true)
     List<AuditRecord> findAuditRecordsByEventAndProperty(
         @Param("className") String className,
         @Param("key") String key,
@@ -71,9 +71,9 @@ public interface PostgresAuditRecordRepository extends AuditRecordRepository<Aud
         Pageable pageable
     );
 
-    @Query(value=" SELECT ar.* " +
+    @Query(value = " SELECT ar.* " +
         "    FROM        audit_record ar " +
-        "    WHERE       ar.audit_event ->> ?1 = ?2 ", nativeQuery=true)
+        "    WHERE       ar.audit_event ->> ?1 = ?2 ", nativeQuery = true)
     Page<AuditRecord> findAuditRecordsByProperty(String key, Object value, Pageable pageable);
 
     @Modifying
