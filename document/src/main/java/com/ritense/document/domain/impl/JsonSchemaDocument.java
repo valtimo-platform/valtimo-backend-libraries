@@ -22,7 +22,6 @@ import com.ritense.document.domain.DocumentVersion;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentCreatedEvent;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent;
-import com.ritense.document.domain.impl.meta.MetaJsonSchemaV7Draft;
 import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.domain.validation.DocumentContentValidationResult;
@@ -78,7 +77,6 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     implements Document, Persistable<JsonSchemaDocumentId> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocument.class);
-
     @EmbeddedId
     private JsonSchemaDocumentId id;
 
@@ -117,17 +115,13 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Column(name = "related_files", columnDefinition = "json")
     private Set<JsonSchemaRelatedFile> relatedFiles = new HashSet<>();
 
-    @Transient
-    private MetaJsonSchemaV7Draft documentMetadata;
-
     private JsonSchemaDocument(
         final JsonSchemaDocumentId id,
         final JsonDocumentContent content,
         final JsonSchemaDocumentDefinition documentDefinition,
         final String createdBy,
         final Long sequence,
-        final JsonSchemaDocumentRelation documentRelation,
-        final MetaJsonSchemaV7Draft documentMetadata
+        final JsonSchemaDocumentRelation documentRelation
         ) {
         assertArgumentNotNull(id, "id is required");
         assertArgumentNotNull(content, "content is required");
@@ -158,13 +152,15 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         );
     }
 
+    JsonSchemaDocument() {
+    }
+
     public static CreateDocumentResultImpl create(
         final JsonSchemaDocumentDefinition definition,
         final JsonDocumentContent content,
         final String createdBy,
         final DocumentSequenceGeneratorService documentSequenceGeneratorService,
-        final JsonSchemaDocumentRelation documentRelation,
-        final MetaJsonSchemaV7Draft documentMetadata
+        final JsonSchemaDocumentRelation documentRelation
     ) {
         assertArgumentNotNull(definition, "definition is required");
         assertArgumentNotNull(content, "content is required");
@@ -185,8 +181,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
             definition,
             createdBy,
             sequence,
-            documentRelation,
-            documentMetadata
+            documentRelation
         );
         return new CreateDocumentResultImpl(document);
     }
