@@ -48,17 +48,17 @@ public class MailMessageConverter {
             rawMailMessage.attachments
         );
 
-        assert rawMailMessage.mailBody.textBody != null;
-        if (rawMailMessage.mailBody.textBody.isPresent()) {
+        boolean textBodyIsPresent = rawMailMessage.mailBody.textBody != null && rawMailMessage.mailBody.textBody.isPresent();
+        if (textBodyIsPresent) {
             mandrillMessageWithContent.setText(rawMailMessage.mailBody.textBody.get());
         }
 
-        assert rawMailMessage.mailBody.htmlBody != null;
-        if (rawMailMessage.mailBody.htmlBody.isPresent()) {
+        boolean mailBodyIsPresent = rawMailMessage.mailBody.htmlBody != null && rawMailMessage.mailBody.htmlBody.isPresent();
+        if (mailBodyIsPresent) {
             mandrillMessageWithContent.setHtml(rawMailMessage.mailBody.htmlBody.get());
         }
 
-        if (!rawMailMessage.mailBody.textBody.isPresent() && !rawMailMessage.mailBody.htmlBody.isPresent()) {
+        if (!textBodyIsPresent && !mailBodyIsPresent) {
             throw new IllegalArgumentException("Cannot convert RawMailMessage into MandrillMessage: rawMailMessage not contain a text or html body");
         }
 
