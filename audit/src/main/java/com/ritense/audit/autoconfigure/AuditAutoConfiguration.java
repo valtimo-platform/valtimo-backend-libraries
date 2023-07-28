@@ -52,14 +52,14 @@ public class AuditAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(AuditEventProcessor.class)
-    public AuditEventProcessor auditEventProcessor(AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository) {
+    public AuditEventProcessor auditEventProcessor(AuditRecordRepository<AuditRecord> auditRecordRepository) {
         return new AuditEventProcessorImpl(auditRecordRepository);
     }
 
     @Bean
     @ConditionalOnMissingBean(AuditService.class)
     public AuditService auditService(
-        AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository,
+        AuditRecordRepository<AuditRecord> auditRecordRepository,
         AuthorizationService authorizationService,
         DocumentService documentService
     ) {
@@ -94,13 +94,13 @@ public class AuditAutoConfiguration {
 
     @Bean
     @ConditionalOnProperty(prefix = "valtimo", name = "database", havingValue = "postgres")
-    public JpaRepositoryFactoryBean<AuditRecordRepository<AuditRecord, AuditRecordId>, AuditRecord, AuditRecordId> postgresAuditRecordRepository() {
+    public JpaRepositoryFactoryBean<AuditRecordRepository<AuditRecord>, AuditRecord, AuditRecordId> postgresAuditRecordRepository() {
         return new JpaRepositoryFactoryBean<>(PostgresAuditRecordRepository.class);
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "valtimo", name = "database", havingValue = "mysql", matchIfMissing = true)
-    public JpaRepositoryFactoryBean<AuditRecordRepository<AuditRecord, AuditRecordId>, AuditRecord, AuditRecordId> mysqlAuditRecordRepository() {
+    public JpaRepositoryFactoryBean<AuditRecordRepository<AuditRecord>, AuditRecord, AuditRecordId> mysqlAuditRecordRepository() {
         return new JpaRepositoryFactoryBean<>(MySqlAuditRecordRepository.class);
     }
 }

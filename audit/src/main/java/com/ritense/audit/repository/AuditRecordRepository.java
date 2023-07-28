@@ -28,8 +28,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
-public interface AuditRecordRepository<T extends AuditRecord, ID extends AuditRecordId>
-    extends JpaRepository<T, ID> {
+public interface AuditRecordRepository<T extends AuditRecord>
+    extends JpaRepository<T, AuditRecordId> {
 
     List<AuditRecord> findAuditRecordsByEvent(String className);
 

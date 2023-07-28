@@ -36,9 +36,9 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 public class AuditEventProcessorImpl implements AuditEventProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(AuditEventProcessorImpl.class);
-    private final AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository;
+    private final AuditRecordRepository<AuditRecord> auditRecordRepository;
 
-    public AuditEventProcessorImpl(AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository) {
+    public AuditEventProcessorImpl(AuditRecordRepository<AuditRecord> auditRecordRepository) {
         this.auditRecordRepository = auditRecordRepository;
     }
 
