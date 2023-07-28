@@ -16,6 +16,7 @@
 
 package com.ritense.dashboard.web.rest
 
+import com.ritense.dashboard.datasource.WidgetDataSourceDto
 import com.ritense.dashboard.service.DashboardService
 import com.ritense.dashboard.web.rest.dto.DashboardCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.DashboardResponseDto
@@ -81,7 +82,7 @@ class AdminDashboardResource(
         return ResponseEntity.noContent().build()
     }
 
-    @GetMapping("/v1/dashboard/{dashboardKey}/widget")
+    @GetMapping("/v1/dashboard/{dashboardKey}/widget-configuration")
     fun getWidgetConfigurations(
         @PathVariable(name = "dashboardKey") dashboardKey: String
     ): ResponseEntity<List<WidgetConfigurationResponseDto>> {
@@ -90,7 +91,7 @@ class AdminDashboardResource(
         return ResponseEntity.ok(widgetDtos)
     }
 
-    @PostMapping("/v1/dashboard/{dashboardKey}/widget")
+    @PostMapping("/v1/dashboard/{dashboardKey}/widget-configuration")
     fun createWidgetConfigurations(
         @PathVariable(name = "dashboardKey") dashboardKey: String,
         @RequestBody widgetDto: WidgetConfigurationCreateRequestDto,
@@ -105,7 +106,7 @@ class AdminDashboardResource(
         return ResponseEntity.ok(WidgetConfigurationResponseDto.of(widget))
     }
 
-    @PutMapping("/v1/dashboard/{dashboardKey}/widget")
+    @PutMapping("/v1/dashboard/{dashboardKey}/widget-configuration")
     fun editWidgetConfigurations(
         @PathVariable(name = "dashboardKey") dashboardKey: String,
         @RequestBody widgetUpdateRequestDtos: List<WidgetConfigurationUpdateRequestDto>
@@ -115,7 +116,7 @@ class AdminDashboardResource(
         return ResponseEntity.ok(widgetResponseDtos)
     }
 
-    @GetMapping("/v1/dashboard/{dashboardKey}/widget/{widgetKey}")
+    @GetMapping("/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}")
     fun getWidgetConfigurations(
         @PathVariable(name = "dashboardKey") dashboardKey: String,
         @PathVariable(name = "widgetKey") widgetKey: String,
@@ -124,12 +125,17 @@ class AdminDashboardResource(
         return ResponseEntity.ok(WidgetConfigurationResponseDto.of(widget))
     }
 
-    @DeleteMapping("/v1/dashboard/{dashboardKey}/widget/{widgetKey}")
+    @DeleteMapping("/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}")
     fun deleteWidgetConfigurations(
         @PathVariable(name = "dashboardKey") dashboardKey: String,
         @PathVariable(name = "widgetKey") widgetKey: String,
     ): ResponseEntity<Unit> {
         dashboardService.deleteWidgetConfiguration(dashboardKey, widgetKey)
         return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/v1/dashboard/widget-data-sources")
+    fun getWidgetDataSources(): ResponseEntity<List<WidgetDataSourceDto>> {
+        return ResponseEntity.ok(dashboardService.getWidgetDataSources())
     }
 }

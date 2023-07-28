@@ -21,7 +21,7 @@ import java.time.ZonedDateTime
 import javax.persistence.CascadeType.ALL
 import javax.persistence.Column
 import javax.persistence.Entity
-import javax.persistence.FetchType.LAZY
+import javax.persistence.FetchType.EAGER
 import javax.persistence.Id
 import javax.persistence.OneToMany
 import javax.persistence.OrderBy
@@ -41,7 +41,7 @@ data class Dashboard(
     @Column(name = "description")
     val description: String,
 
-    @OneToMany(mappedBy = "dashboard", fetch = LAZY, cascade = [ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "dashboard", fetch = EAGER, cascade = [ALL], orphanRemoval = true)
     @OrderBy("order ASC")
     val widgetConfigurations: List<WidgetConfiguration> = listOf(),
 
