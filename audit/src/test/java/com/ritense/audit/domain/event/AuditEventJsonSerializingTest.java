@@ -19,8 +19,11 @@ package com.ritense.audit.domain.event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.audit.AbstractTestHelper;
 import com.ritense.valtimo.contract.json.Mapper;
+import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.json.ObjectContent;
@@ -52,9 +55,9 @@ public class AuditEventJsonSerializingTest extends AbstractTestHelper {
     }
 
     @Test
-    public void shouldMarshalObjectToJson() throws IOException {
+    public void shouldMarshalObjectToJson() throws IOException, JSONException {
         final TestEvent testEvent = testEvent(id, LocalDateTime.parse(dateString));
         JsonContent<TestEvent> testEventObjectContent = this.jacksonTester.write(testEvent);
-        assertThat(testEventObjectContent.getJson()).isEqualTo(jsonString);
+        JSONAssert.assertEquals(testEventObjectContent.getJson(), jsonString, JSONCompareMode.STRICT);
     }
 }

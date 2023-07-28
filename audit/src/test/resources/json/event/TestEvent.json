@@ -1,1 +1,12 @@
-{"className":"com.ritense.audit.domain.event.TestEvent","id":"edb1a672-4ba1-4e79-a5ee-b9658c55fe52","origin":"somewhere","occurredOn":"2019-03-18T14:17:11.639114","user":"somebody","name":"John Doe","age":21,"country":"USA","gender":"M","processInstanceId":"myProcessInstanceId"}
+{
+    "className": "com.ritense.audit.domain.event.TestEvent",
+    "id": "edb1a672-4ba1-4e79-a5ee-b9658c55fe52",
+    "origin": "somewhere",
+    "occurredOn": "2019-03-18T14:17:11.639114",
+    "user": "somebody",
+    "name": "John Doe",
+    "age": 21,
+    "country": "USA",
+    "gender": "M",
+    "processInstanceId": "myProcessInstanceId"
+}

@@ -20,8 +20,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.audit.AbstractTestHelper;
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
 import com.ritense.valtimo.contract.json.Mapper;
+import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.json.ObjectContent;
@@ -53,10 +56,11 @@ public class TaskCompletedJsonSerializingTest extends AbstractTestHelper {
     }
 
     @Test
-    public void shouldMarshalObjectToJson() throws IOException {
+    public void shouldMarshalObjectToJson() throws IOException, JSONException {
         final TaskCompletedEvent taskCompletedEvent = taskCompletedEvent(id, LocalDateTime.parse(dateString));
         JsonContent<TaskCompletedEvent> taskCompletedEventJsonContent = this.jacksonTester.write(taskCompletedEvent);
-        assertThat(taskCompletedEventJsonContent.getJson()).isEqualTo(jsonString);
+        JSONAssert.assertEquals(taskCompletedEventJsonContent.getJson(), jsonString, JSONCompareMode.STRICT);
+
     }
 
 }
