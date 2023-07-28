@@ -60,7 +60,5 @@ public class TaskCompletedJsonSerializingTest extends AbstractTestHelper {
         final TaskCompletedEvent taskCompletedEvent = taskCompletedEvent(id, LocalDateTime.parse(dateString));
         JsonContent<TaskCompletedEvent> taskCompletedEventJsonContent = this.jacksonTester.write(taskCompletedEvent);
         JSONAssert.assertEquals(taskCompletedEventJsonContent.getJson(), jsonString, JSONCompareMode.STRICT);
-
     }
-
 }
