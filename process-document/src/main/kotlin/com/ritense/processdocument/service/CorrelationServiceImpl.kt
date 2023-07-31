@@ -16,7 +16,6 @@
 
 package com.ritense.processdocument.service
 
-import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
@@ -27,12 +26,12 @@ import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
+import java.util.UUID
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult
 import org.camunda.bpm.engine.runtime.MessageCorrelationResultType
 import org.camunda.bpm.engine.runtime.ProcessInstance
-import java.util.UUID
 
 class CorrelationServiceImpl(
     val runtimeService: RuntimeService,
@@ -81,7 +80,7 @@ class CorrelationServiceImpl(
             camundaRuntimeService.findProcessInstanceById(result.execution.processInstanceId)!!
         }
         val processInstanceId = correlationResultProcessInstance.processInstanceId
-        val processName = AuthorizationContext.runWithoutAuthorization {
+        val processName = runWithoutAuthorization {
             camundaRepositoryService.findProcessDefinitionById(correlationResultProcessInstance.processDefinitionId)!!.name
         }
         val associationExists = associationExists(processInstanceId)
@@ -108,7 +107,7 @@ class CorrelationServiceImpl(
             val processName = runWithoutAuthorization {
                 camundaRepositoryService.findProcessDefinitionById(runningProcessInstance.processDefinitionId)!!.name
             }
-            val correlationStartedNewProcess = MessageCorrelationResultType.ProcessDefinition.equals(correlationResultProcess.resultType)
+            val correlationStartedNewProcess = MessageCorrelationResultType.ProcessDefinition == correlationResultProcess.resultType
             val associationExists = associationExists(processInstanceId)
             if(correlationStartedNewProcess || !associationExists) {
                 associateDocumentToProcess(
@@ -117,6 +116,7 @@ class CorrelationServiceImpl(
                     runningProcessInstance.businessKey)
             }
         }
+
         return correlationResultProcessList
     }
 
