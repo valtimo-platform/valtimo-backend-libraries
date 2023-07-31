@@ -82,9 +82,11 @@ class ChangeLog20220415ZaakInstanceLinkSetZaakTypeUrl : CustomTaskChange {
     }
 
     override fun setUp() {
+        //No implementation needed for this custom change.
     }
 
     override fun setFileOpener(resourceAccessor: ResourceAccessor?) {
+        //No implementation needed for this custom change.
     }
 
     override fun validate(database: Database?): ValidationErrors {

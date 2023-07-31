@@ -34,6 +34,7 @@ public class MilestoneInstanceDTO {
     private ZonedDateTime reachedDate;
 
     public MilestoneInstanceDTO() {
+        //Default constructor
     }
 
     public Long getId() {
