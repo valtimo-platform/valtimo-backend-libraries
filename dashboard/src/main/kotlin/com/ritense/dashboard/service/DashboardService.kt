@@ -20,8 +20,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.dashboard.datasource.WidgetDataSource
 import com.ritense.dashboard.datasource.WidgetDataSourceDto
 import com.ritense.dashboard.datasource.WidgetDataSourceResolver
-import com.ritense.dashboard.datasource.dto.DashboardWidgetListDto
-import com.ritense.dashboard.datasource.dto.DashboardWidgetSingleDto
 import com.ritense.dashboard.domain.Dashboard
 import com.ritense.dashboard.domain.WidgetConfiguration
 import com.ritense.dashboard.repository.DashboardRepository
@@ -96,7 +94,8 @@ class DashboardService(
         title: String,
         dataSourceKey: String,
         displayType: String,
-        dataSourceProperties: ObjectNode
+        dataSourceProperties: ObjectNode,
+        displayTypeProperties: ObjectNode
     ): WidgetConfiguration {
         val key = generateWidgetKey(title)
         val order = widgetConfigurationRepository.countAllByDashboardKey(dashboardKey).toInt()
@@ -107,6 +106,7 @@ class DashboardService(
                 dashboard = getDashboard(dashboardKey),
                 dataSourceKey = dataSourceKey,
                 dataSourceProperties = dataSourceProperties,
+                displayTypeProperties = displayTypeProperties,
                 displayType = displayType,
                 order = order,
             )
@@ -131,6 +131,7 @@ class DashboardService(
                 dashboard = dashboard,
                 dataSourceKey = widgetConfigurationUpdateDto.dataSourceKey,
                 dataSourceProperties = widgetConfigurationUpdateDto.dataSourceProperties,
+                displayTypeProperties = widgetConfigurationUpdateDto.displayTypeProperties,
                 displayType = widgetConfigurationUpdateDto.displayType,
                 order = index,
             )
@@ -152,13 +153,8 @@ class DashboardService(
 
     fun getWidgetDataSources(): List<WidgetDataSourceDto> {
         return widgetDataSourceResolver.widgetDataSourceMap.values.map {
-            val type = when (it.genericReturnType.typeName) {
-                DashboardWidgetListDto::class.qualifiedName -> "multi"
-                DashboardWidgetSingleDto::class.qualifiedName -> "single"
-                else -> it.genericReturnType.typeName.substringAfterLast(".")
-            }
             val annotation = it.getAnnotation(WidgetDataSource::class.java)
-            WidgetDataSourceDto(annotation.key, annotation.title, type)
+            WidgetDataSourceDto(annotation.key, annotation.title, annotation.displayTypes.toSet())
         }.sortedBy { it.title }
     }
 

@@ -84,7 +84,8 @@ class DashboardResourceIT @Autowired constructor(
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
-                displayType = "gauge",
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
+                displayType = "number",
                 order = 1
             )
         )
@@ -99,9 +100,8 @@ class DashboardResourceIT @Autowired constructor(
             .andExpect(jsonPath("$[0].widgets", hasSize<Int>(1)))
             .andExpect(jsonPath("$[0].widgets[0].key").value("doorlooptijd"))
             .andExpect(jsonPath("$[0].widgets[0].title").value("Doorlooptijd"))
-            .andExpect(jsonPath("$[0].widgets[0].dataSourceKey").value("doorlooptijd"))
-            .andExpect(jsonPath("$[0].widgets[0].displayType").value("gauge"))
-            .andExpect(jsonPath("$[0].widgets[0].dataSourceProperties.threshold").value("50"))
+            .andExpect(jsonPath("$[0].widgets[0].displayType").value("number"))
+            .andExpect(jsonPath("$[0].widgets[0].displayTypeProperties.useKpi").value(true))
     }
 
     @Test

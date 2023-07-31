@@ -48,6 +48,10 @@ data class WidgetConfiguration(
     @Column(name = "data_source_properties", columnDefinition = "JSON")
     val dataSourceProperties: ObjectNode,
 
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "display_type_properties", columnDefinition = "JSON")
+    val displayTypeProperties: ObjectNode,
+
     @Column(name = "display_type", nullable = false)
     val displayType: String,
 
