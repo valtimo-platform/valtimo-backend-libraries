@@ -271,42 +271,43 @@ class ObjectManagementService(
         val value = searchRequestValue.value!!
         return when (searchField.dataType) {
             TEXT -> value as String
-
             NUMBER -> if (value is String) value else (value as Number).toString()
-
             BOOLEAN -> if (value is String) value else (value as Boolean).toString()
+            DATE -> parseDate(value)
+            DATETIME -> parseDatetime(value, searchField)
+            TIME -> parseTime(value, searchField)
+        }
+    }
 
-            DATE -> {
-                if (value is String) {
-                    LocalDate.parse(value).toString()
-                } else {
-                    (value as LocalDate).toString()
-                }
-            }
+    private fun parseDate(value: Any): String {
+        return if (value is String) {
+            LocalDate.parse(value).toString()
+        } else {
+            (value as LocalDate).toString()
+        }
+    }
 
-            DATETIME -> {
-                if (value is String) {
-                    val dateTimeValue = ZonedDateTime.parse(value)
-                    if (searchField.fieldType == RANGE) {
-                        // Note: Objects API doesn't support field type 'RANGE' with data type 'DATETIME'
-                        dateTimeValue.toLocalDate().toString()
-                    } else {
-                        dateTimeValue.toString()
-                    }
-                } else {
-                    (value as ZonedDateTime).toString()
-                }
+    private fun parseDatetime(value: Any, searchField: SearchFieldV2): String {
+        return if (value is String) {
+            val dateTimeValue = ZonedDateTime.parse(value)
+            if (searchField.fieldType == RANGE) {
+                // Note: Objects API doesn't support field type 'RANGE' with data type 'DATETIME'
+                dateTimeValue.toLocalDate().toString()
+            } else {
+                dateTimeValue.toString()
             }
+        } else {
+            (value as ZonedDateTime).toString()
+        }
+    }
 
-            TIME -> {
-                if (searchField.fieldType == RANGE) {
-                    throw IllegalStateException("Objects API doesn't support field type 'RANGE' with data type 'TIME'")
-                } else if (value is String) {
-                    LocalTime.parse(value).toString()
-                } else {
-                    (value as LocalTime).toString()
-                }
-            }
+    private fun parseTime(value: Any, searchField: SearchFieldV2): String {
+        return if (searchField.fieldType == RANGE) {
+            throw IllegalStateException("Objects API doesn't support field type 'RANGE' with data type 'TIME'")
+        } else if (value is String) {
+            LocalTime.parse(value).toString()
+        } else {
+            (value as LocalTime).toString()
         }
     }
 
@@ -321,5 +322,4 @@ class ObjectManagementService(
         ) as ObjecttypenApiPlugin
 
     fun findByObjectTypeId(id: String) = objectManagementRepository.findByObjecttypeId(id)
-
 }

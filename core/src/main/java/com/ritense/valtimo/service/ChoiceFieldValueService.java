@@ -67,7 +67,7 @@ public class ChoiceFieldValueService {
      */
     @Transactional(readOnly = true)
     public Page<ChoiceFieldValue> findAllByChoiceFieldId(Pageable pageable, Long choicefieldId) {
-        logger.debug("Request to get all ChoiceFieldValues for choiceField witd id {}", choicefieldId);
+        logger.debug("Request to get all ChoiceFieldValues for choiceField with id {}", choicefieldId);
         return choiceFieldValueRepository.findByChoiceField_Id(pageable, choicefieldId);
     }
 
