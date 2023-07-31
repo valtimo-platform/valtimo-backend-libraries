@@ -67,9 +67,11 @@ class ChangeLog20211130AddProcessDefinitionKeyToServiceTaskHandler : CustomTaskC
     }
 
     override fun setUp() {
+        //No implementation needed for this custom change.
     }
 
     override fun setFileOpener(resourceAccessor: ResourceAccessor?) {
+        //No implementation needed for this custom change.
     }
 
     override fun validate(database: Database?): ValidationErrors {
