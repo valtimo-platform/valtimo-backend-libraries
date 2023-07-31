@@ -154,7 +154,7 @@ class DashboardService(
     fun getWidgetDataSources(): List<WidgetDataSourceDto> {
         return widgetDataSourceResolver.widgetDataSourceMap.values.map {
             val annotation = it.getAnnotation(WidgetDataSource::class.java)
-            WidgetDataSourceDto(annotation.key, annotation.title, annotation.displayTypes.asList())
+            WidgetDataSourceDto(annotation.key, annotation.title, annotation.displayTypes.toSet())
         }.sortedBy { it.title }
     }
 
