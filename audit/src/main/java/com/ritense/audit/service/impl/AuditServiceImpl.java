@@ -40,12 +40,12 @@ import java.util.UUID;
 @Transactional
 public class AuditServiceImpl implements AuditService {
 
-    private final AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository;
+    private final AuditRecordRepository<AuditRecord> auditRecordRepository;
     private final AuthorizationService authorizationService;
     private final DocumentService documentService;
 
     public AuditServiceImpl(
-        AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository,
+        AuditRecordRepository<AuditRecord> auditRecordRepository,
         AuthorizationService authorizationService,
         DocumentService documentService
     ) {

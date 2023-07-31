@@ -32,6 +32,7 @@ public class ChoiceFieldValueService {
     private static final Logger logger = LoggerFactory.getLogger(ChoiceFieldValueService.class);
     private final ChoiceFieldValueRepository choiceFieldValueRepository;
 
+    private final static String REQUEST_CHOICEFIELD_VALUES = "Request to get all ChoiceFieldValues for choiceField {}";
     public ChoiceFieldValueService(ChoiceFieldValueRepository choiceFieldValueRepository) {
         this.choiceFieldValueRepository = choiceFieldValueRepository;
     }
@@ -67,7 +68,7 @@ public class ChoiceFieldValueService {
      */
     @Transactional(readOnly = true)
     public Page<ChoiceFieldValue> findAllByChoiceFieldId(Pageable pageable, Long choicefieldId) {
-        logger.debug("Request to get all ChoiceFieldValues for choiceField {}", choicefieldId);
+        logger.debug(REQUEST_CHOICEFIELD_VALUES, choicefieldId);
         return choiceFieldValueRepository.findByChoiceField_Id(pageable, choicefieldId);
     }
 
@@ -79,7 +80,7 @@ public class ChoiceFieldValueService {
      */
     @Transactional(readOnly = true)
     public List<ChoiceFieldValue> findAllByChoiceFieldIdAndDeprecatedIsFalse(Long choicefieldId) {
-        logger.debug("Request to get all ChoiceFieldValues for choiceField {}", choicefieldId);
+        logger.debug(REQUEST_CHOICEFIELD_VALUES, choicefieldId);
         return choiceFieldValueRepository.findByChoiceField_IdAndDeprecatedIsFalse(choicefieldId);
     }
 
@@ -113,7 +114,7 @@ public class ChoiceFieldValueService {
      */
     @Transactional(readOnly = true)
     public Page<ChoiceFieldValue> findAllByChoiceFieldKeyName(Pageable pageable, String choiceFieldName) {
-        logger.debug("Request to get all ChoiceFieldValues for choiceField {}", choiceFieldName);
+        logger.debug(REQUEST_CHOICEFIELD_VALUES, choiceFieldName);
         return choiceFieldValueRepository.findByChoiceField_KeyName(pageable, choiceFieldName);
     }
 

@@ -17,7 +17,6 @@
 package com.ritense.audit.repository.impl;
 
 import com.ritense.audit.domain.AuditRecord;
-import com.ritense.audit.domain.AuditRecordId;
 import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import java.time.LocalDateTime;
@@ -32,7 +31,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 @NoRepositoryBean
-public interface PostgresAuditRecordRepository extends AuditRecordRepository<AuditRecord, AuditRecordId> {
+public interface PostgresAuditRecordRepository extends AuditRecordRepository<AuditRecord> {
 
     @Query(" SELECT  ar " +
         "    FROM    AuditRecord ar " +

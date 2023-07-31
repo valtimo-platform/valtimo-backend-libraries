@@ -26,6 +26,7 @@ public class ChoiceFieldDTO {
     private List<ChoiceFieldValue> choiceFieldValues;
 
     public ChoiceFieldDTO() {
+        // Default value empty constructor
     }
 
     public Long getId() {
