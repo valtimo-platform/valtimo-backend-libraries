@@ -21,10 +21,13 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.dashboard.BaseIntegrationTest
 import com.ritense.dashboard.TestDataSourceProperties
 import com.ritense.dashboard.domain.WidgetConfiguration
+import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.service.DashboardService
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import org.hamcrest.collection.IsCollectionWithSize.hasSize
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.eq
@@ -39,22 +42,19 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 
-@Transactional
-class DashboardResourceIT : BaseIntegrationTest() {
-
-    @Autowired
-    lateinit var webApplicationContext: WebApplicationContext
-
-    @Autowired
-    lateinit var dashboardService: DashboardService
-
-    @Autowired
-    lateinit var widgetConfigurationRepository: WidgetConfigurationRepository
+class DashboardResourceIT @Autowired constructor(
+    val webApplicationContext: WebApplicationContext,
+    val dashboardService: DashboardService,
+    val dashboardRepository: DashboardRepository,
+    val widgetConfigurationRepository: WidgetConfigurationRepository
+): BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
 
     @BeforeEach
     fun beforeEach() {
+        clean()
+
         mockMvc = MockMvcBuilders
             .webAppContextSetup(webApplicationContext)
             .build()
@@ -62,6 +62,16 @@ class DashboardResourceIT : BaseIntegrationTest() {
         testUser.firstName = "John"
         testUser.lastName = "Joe"
         whenever(userManagementService.currentUser).thenReturn(testUser)
+    }
+
+    @AfterEach
+    fun afterEach() {
+        clean()
+    }
+
+    private fun clean() {
+        widgetConfigurationRepository.deleteAll()
+        dashboardRepository.deleteAll()
     }
 
     @Test
@@ -95,6 +105,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
     }
 
     @Test
+    @Transactional
     fun `should get dashboards widget data`() {
         val dashboard = dashboardService.createDashboard("Widget dashboard", "Test description")
         widgetConfigurationRepository.save(
@@ -122,7 +133,7 @@ class DashboardResourceIT : BaseIntegrationTest() {
 
 
         mockMvc.perform(
-            get("/api/v1/dashboard/{dashboard-key}/widget-configuration/data", dashboard.key)
+            get("/api/v1/dashboard/{dashboard-key}/data", dashboard.key)
         )
             .andDo(print())
             .andExpect(status().isOk)
