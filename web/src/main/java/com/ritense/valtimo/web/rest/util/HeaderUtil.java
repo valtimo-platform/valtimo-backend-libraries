@@ -29,6 +29,7 @@ public final class HeaderUtil {
     private static final Logger logger = LoggerFactory.getLogger(HeaderUtil.class);
 
     public HeaderUtil() {
+        //Default constructor
     }
 
     public static HttpHeaders createAlert(String message, String param) {

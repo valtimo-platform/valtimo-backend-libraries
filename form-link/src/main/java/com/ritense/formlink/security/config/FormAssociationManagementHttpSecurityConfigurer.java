@@ -30,6 +30,7 @@ import static org.springframework.http.HttpMethod.PUT;
 public class FormAssociationManagementHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     public FormAssociationManagementHttpSecurityConfigurer() {
+        //Default constructor
     }
 
     @Override

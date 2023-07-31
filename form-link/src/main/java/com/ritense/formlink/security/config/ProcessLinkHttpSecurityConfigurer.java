@@ -28,6 +28,7 @@ import static org.springframework.http.HttpMethod.POST;
 public class ProcessLinkHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     public ProcessLinkHttpSecurityConfigurer() {
+        //Default constructor
     }
 
     @Override
