@@ -21,6 +21,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "org.apache.tika:tika-core:${apacheTikaVersion}"
+    implementation "org.apache.tika:tika-parser-microsoft-module:${apacheTikaVersion}"
 
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"

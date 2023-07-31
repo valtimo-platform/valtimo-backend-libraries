@@ -409,9 +409,10 @@ public class ProcessResource extends AbstractProcessResource {
         return AuthorizationContext
             .runWithoutAuthorization(
                 () -> camundaProcessService.findProcessInstanceById(processInstanceId)
-                    .map(processInstance -> ResponseEntity.ok(
-                            camundaTaskService.getProcessInstanceTasks(processInstance.getId(), processInstance.getBusinessKey())))
-                    .orElse(ResponseEntity.noContent().build())
+            )
+                .map(processInstance -> ResponseEntity.ok(
+                        camundaTaskService.getProcessInstanceTasks(processInstance.getId(), processInstance.getBusinessKey())))
+                .orElse(ResponseEntity.noContent().build()
             );
     }
 

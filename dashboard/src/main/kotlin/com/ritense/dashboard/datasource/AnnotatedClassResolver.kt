@@ -14,32 +14,37 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.dashboard.datasource
 
 import io.github.classgraph.ClassGraph
+import io.github.classgraph.ClassInfo
 import mu.KotlinLogging
+import java.lang.reflect.Method
 
 abstract class AnnotatedClassResolver {
 
-    inline fun <reified T : Annotation> findAnnotatedClasses(): Map<Class<*>, T> {
-        val pluginCategoryClasses = ClassGraph()
+    inline fun <reified T : Annotation> findMethodsWithAnnotation(): List<Method> {
+        return ClassGraph()
             .rejectPackages(*REJECT_PACKAGES)
             .enableClassInfo()
+            .enableMethodInfo()
             .enableAnnotationInfo()
             .scan(1)
-            .getClassesWithAnnotation(T::class.java)
+            .getClassesWithMethodAnnotation(T::class.java)
+            .filter { canLoadClass<T>(it) }
+            .flatMap { it.methodInfo }
+            .filter { it.hasAnnotation(T::class.java) }
+            .map { it.loadClassAndGetMethod() }
+    }
 
-        return pluginCategoryClasses.filter {
-            try {
-                it.loadClass()
-                true
-            } catch (e: Exception) {
-                logger.warn { "Unable to load ${T::class.simpleName} ${it.name} class, skipped" }
-                logger.debug(e) { "Unable to load ${T::class.simpleName} ${it.name} because of the following exception" }
-                false
-            }
-        }.associate {
-            it.loadClass() to it.getAnnotationInfo(T::class.java).loadClassAndInstantiate() as T
+    inline fun <reified T> canLoadClass(classInfo: ClassInfo): Boolean {
+        return try {
+            classInfo.loadClass()
+            true
+        } catch (e: Exception) {
+            logger.warn { "Unable to load ${T::class.simpleName} ${classInfo.name} class, skipped" }
+            logger.debug(e) { "Unable to load ${T::class.simpleName} ${classInfo.name} because of the following exception" }
+            false
         }
     }
 

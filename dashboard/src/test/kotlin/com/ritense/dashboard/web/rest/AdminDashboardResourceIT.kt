@@ -209,7 +209,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            get("/api/management/v1/dashboard/{dashboardKey}/widget", "test_dashboard")
+            get("/api/management/v1/dashboard/{dashboardKey}/widget-configuration", "test_dashboard")
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -231,7 +231,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            post("/api/management/v1/dashboard/{dashboardKey}/widget", "test_dashboard")
+            post("/api/management/v1/dashboard/{dashboardKey}/widget-configuration", "test_dashboard")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(widgetConfiguration))
         )
@@ -268,7 +268,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            put("/api/management/v1/dashboard/{dashboardKey}/widget", "test_dashboard")
+            put("/api/management/v1/dashboard/{dashboardKey}/widget-configuration", "test_dashboard")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(widgetConfigurations))
         )
@@ -297,7 +297,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            get("/api/management/v1/dashboard/{dashboardKey}/widget/{widgetKey}", "test_dashboard", "doorlooptijd")
+            get("/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}", "test_dashboard", "doorlooptijd")
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -323,9 +323,22 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            delete("/api/management/v1/dashboard/{dashboardKey}/widget/{widgetKey}", "test_dashboard", "doorlooptijd")
+            delete("/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}", "test_dashboard", "doorlooptijd")
         )
             .andDo(print())
             .andExpect(status().isNoContent)
+    }
+
+    @Test
+    fun `should get widget datasources`() {
+        mockMvc.perform(get("/api/management/v1/dashboard/widget-data-sources"))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].key").value("test-key-multi"))
+            .andExpect(jsonPath("$[0].title").value("Test title multi"))
+            .andExpect(jsonPath("$[0].type").value("multi"))
+            .andExpect(jsonPath("$[1].key").value("test-key-single"))
+            .andExpect(jsonPath("$[1].title").value("Test title single"))
+            .andExpect(jsonPath("$[1].type").value("single"))
     }
 }
