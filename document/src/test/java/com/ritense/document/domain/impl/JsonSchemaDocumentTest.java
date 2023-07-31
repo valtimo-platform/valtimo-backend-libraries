@@ -163,7 +163,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
         assertThat(createResult.resultingDocument()).isPresent();
 
         final var jsonSchemaDocument = createResult.resultingDocument().orElseThrow();
-        assertThat(jsonSchemaDocument.content().asJson().get("birthday").asText()).isEqualTo("2018-11-13");
+        assertThat(jsonSchemaDocument.content().asJson().get("birthday").asText()).isEqualTo("1982-01-01");
     }
 
     @Test
