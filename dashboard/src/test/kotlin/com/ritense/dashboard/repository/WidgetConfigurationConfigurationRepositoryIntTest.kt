@@ -54,6 +54,7 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().createObjectNode(),
                 displayType = "gauge",
+                displayTypeProperties = jacksonObjectMapper().createObjectNode(),
                 order = 2
             )
         )
@@ -71,6 +72,7 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
         assertThat(widgets[0].dataSourceKey).isEqualTo("doorlooptijd")
         assertThat(widgets[0].dataSourceProperties).isNotNull
         assertThat(widgets[0].displayType).isEqualTo("gauge")
+        assertThat(widgets[0].displayTypeProperties).isNotNull
         assertThat(widgets[0].order).isEqualTo(2)
     }
 

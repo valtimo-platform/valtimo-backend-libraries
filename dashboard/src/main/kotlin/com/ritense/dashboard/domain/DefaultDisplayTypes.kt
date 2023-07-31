@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.web.rest.dto
+package com.ritense.dashboard.domain
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-
-data class WidgetConfigurationUpdateRequestDto(
-    val key: String,
-    val title: String,
-    val dataSourceKey: String,
-    val displayType: String,
-    val dataSourceProperties: ObjectNode,
-    val displayTypeProperties: ObjectNode
-)
+class DefaultDisplayTypes {
+    companion object {
+        const val NUMBER = "number"
+    }
+}

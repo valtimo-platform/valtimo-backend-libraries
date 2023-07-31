@@ -22,7 +22,7 @@ import com.ritense.dashboard.web.rest.dto.DashboardCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.DashboardResponseDto
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationCreateRequestDto
-import com.ritense.dashboard.web.rest.dto.WidgetConfigurationResponseDto
+import com.ritense.dashboard.web.rest.dto.AdminWidgetConfigurationResponseDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -85,9 +85,9 @@ class AdminDashboardResource(
     @GetMapping("/v1/dashboard/{dashboardKey}/widget-configuration")
     fun getWidgetConfigurations(
         @PathVariable(name = "dashboardKey") dashboardKey: String
-    ): ResponseEntity<List<WidgetConfigurationResponseDto>> {
+    ): ResponseEntity<List<AdminWidgetConfigurationResponseDto>> {
         val widgetDtos = dashboardService.getWidgetConfigurations(dashboardKey)
-            .map { WidgetConfigurationResponseDto.of(it) }
+            .map { AdminWidgetConfigurationResponseDto.of(it) }
         return ResponseEntity.ok(widgetDtos)
     }
 
@@ -95,24 +95,25 @@ class AdminDashboardResource(
     fun createWidgetConfigurations(
         @PathVariable(name = "dashboardKey") dashboardKey: String,
         @RequestBody widgetDto: WidgetConfigurationCreateRequestDto,
-    ): ResponseEntity<WidgetConfigurationResponseDto> {
+    ): ResponseEntity<AdminWidgetConfigurationResponseDto> {
         val widget = dashboardService.createWidgetConfiguration(
             dashboardKey,
             widgetDto.title,
             widgetDto.dataSourceKey,
             widgetDto.displayType,
             widgetDto.dataSourceProperties,
+            widgetDto.displayTypeProperties
         )
-        return ResponseEntity.ok(WidgetConfigurationResponseDto.of(widget))
+        return ResponseEntity.ok(AdminWidgetConfigurationResponseDto.of(widget))
     }
 
     @PutMapping("/v1/dashboard/{dashboardKey}/widget-configuration")
     fun editWidgetConfigurations(
         @PathVariable(name = "dashboardKey") dashboardKey: String,
         @RequestBody widgetUpdateRequestDtos: List<WidgetConfigurationUpdateRequestDto>
-    ): ResponseEntity<List<WidgetConfigurationResponseDto>> {
+    ): ResponseEntity<List<AdminWidgetConfigurationResponseDto>> {
         val widgetResponseDtos = dashboardService.updateWidgetConfigurations(dashboardKey, widgetUpdateRequestDtos)
-            .map { WidgetConfigurationResponseDto.of(it) }
+            .map { AdminWidgetConfigurationResponseDto.of(it) }
         return ResponseEntity.ok(widgetResponseDtos)
     }
 
@@ -120,9 +121,9 @@ class AdminDashboardResource(
     fun getWidgetConfigurations(
         @PathVariable(name = "dashboardKey") dashboardKey: String,
         @PathVariable(name = "widgetKey") widgetKey: String,
-    ): ResponseEntity<WidgetConfigurationResponseDto> {
+    ): ResponseEntity<AdminWidgetConfigurationResponseDto> {
         val widget = dashboardService.getWidgetConfiguration(dashboardKey, widgetKey)
-        return ResponseEntity.ok(WidgetConfigurationResponseDto.of(widget))
+        return ResponseEntity.ok(AdminWidgetConfigurationResponseDto.of(widget))
     }
 
     @DeleteMapping("/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}")
