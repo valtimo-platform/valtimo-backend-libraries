@@ -28,6 +28,7 @@ public class SearchRequest {
     private List<SearchCriteria> otherFilters;
 
     public SearchRequest() {
+        //Default constructor
     }
 
     public String getDocumentDefinitionName() {
