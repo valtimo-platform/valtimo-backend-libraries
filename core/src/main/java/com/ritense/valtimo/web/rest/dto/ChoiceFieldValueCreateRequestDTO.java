@@ -18,27 +18,33 @@ package com.ritense.valtimo.web.rest.dto;
 
 import javax.validation.constraints.NotNull;
 
-public class ChoiceFieldUpdateRequestDTO {
+public class ChoiceFieldValueCreateRequestDTO {
     @NotNull
-    private Long id;
+    private String name;
     @NotNull
-    private String keyName;
+    private Boolean deprecated;
     @NotNull
-    private String title;
+    private Long sortOrder;
+    @NotNull
+    private String value;
 
-    public ChoiceFieldUpdateRequestDTO() {
+    public ChoiceFieldValueCreateRequestDTO() {
         //Default constructor
     }
 
-    public Long getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public String getKeyName() {
-        return keyName;
+    public Boolean getDeprecated() {
+        return deprecated;
     }
 
-    public String getTitle() {
-        return title;
+    public Long getSortOrder() {
+        return sortOrder;
+    }
+
+    public String getValue() {
+        return value;
     }
 }
