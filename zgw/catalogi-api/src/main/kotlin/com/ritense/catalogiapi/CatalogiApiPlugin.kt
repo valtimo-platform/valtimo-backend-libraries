@@ -72,7 +72,7 @@ class CatalogiApiPlugin(
         @PluginActionProperty statustype: String,
         @PluginActionProperty processVariable: String,
     ) {
-        val statustypeUrl = if (statustype.matches("https?://.+".toRegex())) {
+        val statustypeUrl = if (statustype.matches(HTTPS_REGEX)) {
             statustype
         } else {
             val document = AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
@@ -94,7 +94,7 @@ class CatalogiApiPlugin(
         @PluginActionProperty resultaattype: String,
         @PluginActionProperty processVariable: String,
     ) {
-        val resultaattypeUrl = if (resultaattype.matches("https?://.+".toRegex())) {
+        val resultaattypeUrl = if (resultaattype.matches(HTTPS_REGEX)) {
             resultaattype
         } else {
             val document = AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
@@ -116,7 +116,7 @@ class CatalogiApiPlugin(
         @PluginActionProperty besluittype: String,
         @PluginActionProperty processVariable: String,
     ) {
-        val besluittypeUrl = if (besluittype.matches("https?://.+".toRegex())) {
+        val besluittypeUrl = if (besluittype.matches(HTTPS_REGEX)) {
             besluittype
         } else {
             val document = AuthorizationContext.runWithoutAuthorization { documentService.get(execution.businessKey) }
@@ -263,6 +263,7 @@ class CatalogiApiPlugin(
     companion object {
         val logger = KotlinLogging.logger {}
         const val URL_PROPERTY = "url"
+        private val HTTPS_REGEX = "https?://.+".toRegex()
 
         fun findConfigurationByUrl(url: URI) =
             { properties: JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
