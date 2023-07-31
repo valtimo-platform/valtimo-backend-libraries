@@ -34,7 +34,7 @@ public class CamundaExceptionTranslator {
 
     @ExceptionHandler(ProcessNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<?> handleProcessNotFoundException(ProcessNotFoundException ex) {
+    public ResponseEntity handleProcessNotFoundException(ProcessNotFoundException ex) {
         return ResponseEntity.badRequest()
             .headers(HeaderUtil.createFailureAlert(ex.getMessage(), "processNotFound", ex.getMessage()))
             .body(null);
@@ -42,7 +42,7 @@ public class CamundaExceptionTranslator {
 
     @ExceptionHandler(DocumentParserException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<?> handleDocumentParserException(DocumentParserException ex) {
+    public ResponseEntity handleDocumentParserException(DocumentParserException ex) {
         return ResponseEntity.badRequest()
             .headers(HeaderUtil.createFailureAlert(ex.getMessage(), "parsingFailure", ex.getMessage()))
             .body(null);

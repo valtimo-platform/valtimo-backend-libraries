@@ -43,6 +43,7 @@ public class Variable  {
     private boolean local;
 
     public Variable() {
+        //Default value for this constructor
     }
 
     public String getId() {

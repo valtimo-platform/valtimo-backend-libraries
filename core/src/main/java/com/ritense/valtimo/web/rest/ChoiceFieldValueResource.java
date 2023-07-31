@@ -52,6 +52,7 @@ public class ChoiceFieldValueResource {
     private static final Logger logger = LoggerFactory.getLogger(ChoiceFieldValueResource.class);
     private final ChoiceFieldValueService choiceFieldValueService;
     private final ChoiceFieldRepository choiceFieldRepository;
+    private final static String CHOICE_FIELD_VALUE = "choiceFieldValue";
 
     public ChoiceFieldValueResource(ChoiceFieldValueService choiceFieldValueService, ChoiceFieldRepository choiceFieldRepository) {
         this.choiceFieldValueService = choiceFieldValueService;
@@ -66,14 +67,14 @@ public class ChoiceFieldValueResource {
         logger.debug("REST request to save ChoiceFieldValue : {}", choiceFieldValue);
         if (choiceFieldValue.getId() != null) {
             return ResponseEntity.badRequest().headers(
-                HeaderUtil.createFailureAlert("choiceFieldValue", "idexists", "A new choiceFieldValue cannot already have an ID")
+                HeaderUtil.createFailureAlert(CHOICE_FIELD_VALUE, "idexists", "A new choiceFieldValue cannot already have an ID")
             ).body(null);
         }
         ChoiceField choiceField = choiceFieldRepository.findByKeyName(choiceFieldName);
         choiceFieldValue.setChoiceField(choiceField);
         ChoiceFieldValue result = choiceFieldValueService.save(choiceFieldValue);
         return ResponseEntity.created(new URI("/api/v1/choice-field-values/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert("choiceFieldValue", result.getName()))
+            .headers(HeaderUtil.createEntityCreationAlert(CHOICE_FIELD_VALUE, result.getName()))
             .body(result);
     }
 
@@ -90,7 +91,7 @@ public class ChoiceFieldValueResource {
         choiceFieldValue.setChoiceField(choiceField);
         ChoiceFieldValue result = choiceFieldValueService.save(choiceFieldValue);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert("choiceFieldValue", choiceFieldValue.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(CHOICE_FIELD_VALUE, choiceFieldValue.getId().toString()))
             .body(result);
     }
 
@@ -114,7 +115,7 @@ public class ChoiceFieldValueResource {
     public ResponseEntity<Void> deleteChoiceFieldValue(@PathVariable Long id) {
         logger.debug("REST request to delete ChoiceFieldValue : {}", id);
         choiceFieldValueService.delete(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert("choiceFieldValue", id.toString())).build();
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(CHOICE_FIELD_VALUE, id.toString())).build();
     }
 
     @GetMapping("/v1/choice-field-values/choice-field/{choicefield_name}/value/{value}")
