@@ -32,7 +32,7 @@ class DashboardDataService(
 ) {
 
     fun getWidgetDataForDashboard(dashboardKey: String): List<DashboardWidgetDataResultDto> {
-        val dataSourceMap = widgetDataSourceResolver.widgetDataSourceMap
+        val dataSourceMap = widgetDataSourceResolver.dataSourceMethodMap
             .mapKeys { it.key.key }
 
         return widgetConfigurationRepository.findAllByDashboardKey(dashboardKey)
@@ -53,5 +53,4 @@ class DashboardDataService(
                 DashboardWidgetDataResultDto(config.key, dataResult)
             }
     }
-
 }

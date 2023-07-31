@@ -16,7 +16,9 @@
 
 package com.ritense.dashboard.datasource.dto
 
-data class DashboardWidgetSingleDto(
-    val value: Long,
-    val total: Long,
-)
+import com.ritense.dashboard.datasource.WidgetDataFeature
+
+@WidgetDataFeature("total")
+interface HasTotal {
+    val total: Long
+}

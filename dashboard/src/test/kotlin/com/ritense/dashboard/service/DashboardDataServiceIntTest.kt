@@ -1,11 +1,10 @@
 package com.ritense.dashboard.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.dashboard.BaseIntegrationTest
 import com.ritense.dashboard.TestDataSourceProperties
-import com.ritense.dashboard.datasource.dto.DashboardWidgetListDto
-import com.ritense.dashboard.datasource.dto.DashboardWidgetSingleDto
+import com.ritense.dashboard.TestWidgetNumbersResult
+import com.ritense.dashboard.TestWidgetNumberResult
 import com.ritense.dashboard.domain.WidgetConfiguration
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -28,14 +27,16 @@ class DashboardDataServiceIntTest @Autowired constructor(
             listOf(
                 WidgetConfiguration("single-test", "", mock(), "test-key-single",
                     objectMapper.valueToTree(TestDataSourceProperties("xyz")),
+                    objectMapper.createObjectNode(),
                     "", 0),
                 WidgetConfiguration("multi-test", "", mock(), "test-key-multi",
-                    objectMapper.createObjectNode() , "", 1)
+                    objectMapper.createObjectNode() , objectMapper.createObjectNode(),
+                    "", 1)
             )
         )
         val widgetData = dashboardDataService.getWidgetDataForDashboard(dashboardKey)
         assertThat(widgetData).hasSize(2)
-        assertThat(widgetData[0].result).isInstanceOf(DashboardWidgetSingleDto::class.java)
-        assertThat(widgetData[1].result).isInstanceOf(DashboardWidgetListDto::class.java)
+        assertThat(widgetData[0].data).isInstanceOf(TestWidgetNumberResult::class.java)
+        assertThat(widgetData[1].data).isInstanceOf(TestWidgetNumbersResult::class.java)
     }
 }

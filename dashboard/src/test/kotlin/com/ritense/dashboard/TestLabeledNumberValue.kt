@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource
+package com.ritense.dashboard
 
-data class WidgetDataSourceDto(
-    val key: String,
-    val title: String,
-    val dataFeatures: Set<String>
-)
+import com.ritense.dashboard.datasource.dto.HasLabel
+import com.ritense.dashboard.datasource.dto.HasNumberValue
+
+class TestLabeledNumberValue(
+    override val value: Long,
+    override val label: String
+) : HasNumberValue, HasLabel

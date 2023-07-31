@@ -16,6 +16,7 @@
 
 package com.ritense.dashboard.web.rest
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.dashboard.BaseIntegrationTest
@@ -43,10 +44,11 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 
 class DashboardResourceIT @Autowired constructor(
-    val webApplicationContext: WebApplicationContext,
-    val dashboardService: DashboardService,
-    val dashboardRepository: DashboardRepository,
-    val widgetConfigurationRepository: WidgetConfigurationRepository
+    private val webApplicationContext: WebApplicationContext,
+    private val dashboardService: DashboardService,
+    private val dashboardRepository: DashboardRepository,
+    private val widgetConfigurationRepository: WidgetConfigurationRepository,
+    private val objectMapper: ObjectMapper
 ): BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
@@ -116,7 +118,8 @@ class DashboardResourceIT @Autowired constructor(
                 dataSourceKey = "test-key-single",
                 dataSourceProperties = jacksonObjectMapper().valueToTree(TestDataSourceProperties("x")),
                 displayType = "x",
-                order = 0
+                order = 0,
+                displayTypeProperties = objectMapper.createObjectNode()
             )
         )
         widgetConfigurationRepository.save(
@@ -127,7 +130,8 @@ class DashboardResourceIT @Autowired constructor(
                 dataSourceKey = "test-key-multi",
                 dataSourceProperties = jacksonObjectMapper().valueToTree(TestDataSourceProperties("x")),
                 displayType = "x",
-                order = 1
+                order = 1,
+                displayTypeProperties = objectMapper.createObjectNode()
             )
         )
 
@@ -138,11 +142,11 @@ class DashboardResourceIT @Autowired constructor(
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].key").value("single-test"))
-            .andExpect(jsonPath("$[0].value").value("1"))
-            .andExpect(jsonPath("$[0].total").value("0"))
+            .andExpect(jsonPath("$[0].data.value").value("1"))
+            .andExpect(jsonPath("$[0].data.total").value("0"))
             .andExpect(jsonPath("$[1].key").value("multi-test"))
-            .andExpect(jsonPath("$[1].values").isArray)
-            .andExpect(jsonPath("$[1].values").isEmpty)
-            .andExpect(jsonPath("$[1].total").value("0"))
+            .andExpect(jsonPath("$[1].data.values").isArray)
+            .andExpect(jsonPath("$[1].data.values").isEmpty)
+            .andExpect(jsonPath("$[1].data.total").value("0"))
     }
 }

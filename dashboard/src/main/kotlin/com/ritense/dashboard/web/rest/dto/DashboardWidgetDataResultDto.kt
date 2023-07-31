@@ -20,5 +20,5 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped
 
 class DashboardWidgetDataResultDto(
     val key: String,
-    @JsonUnwrapped val result: Any
+    val data: Any
 )

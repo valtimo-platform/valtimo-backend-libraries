@@ -29,6 +29,7 @@ import com.ritense.dashboard.web.rest.dto.WidgetConfigurationCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import org.assertj.core.api.Assertions.assertThat
+import org.hamcrest.Matchers.contains
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -349,10 +350,9 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].key").value("test-key-multi"))
             .andExpect(jsonPath("$[0].title").value("Test title multi"))
-            .andExpect(jsonPath("$[0].displayTypes[0]").value("number"))
+            .andExpect(jsonPath("$[0].dataFeatures").value(contains("numbers", "total")))
             .andExpect(jsonPath("$[1].key").value("test-key-single"))
             .andExpect(jsonPath("$[1].title").value("Test title single"))
-            .andExpect(jsonPath("$[1].displayTypes[0]").value("number"))
-            .andExpect(jsonPath("$[1].displayTypes[1]").value("custom"))
+            .andExpect(jsonPath("$[1].dataFeatures").value(contains("number", "total")))
     }
 }

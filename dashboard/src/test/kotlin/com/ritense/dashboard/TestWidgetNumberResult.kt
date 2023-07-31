@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource.dto
+package com.ritense.dashboard
 
-data class DashboardWidgetListDto(
-    val values: List<DashboardWidgetListItemDto>,
-    val total: Long,
-)
+import com.ritense.dashboard.datasource.dto.HasNumberValue
+import com.ritense.dashboard.datasource.dto.HasTotal
+
+data class TestWidgetNumberResult(
+    override val value: Long,
+    override val total: Long,
+): HasNumberValue, HasTotal
