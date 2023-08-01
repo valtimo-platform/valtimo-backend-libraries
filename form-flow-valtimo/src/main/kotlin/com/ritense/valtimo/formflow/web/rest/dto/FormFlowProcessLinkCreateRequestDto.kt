@@ -20,9 +20,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM_FLOW
+import java.util.UUID
 
 @JsonTypeName(PROCESS_LINK_TYPE_FORM_FLOW)
 data class FormFlowProcessLinkCreateRequestDto(
+    override val processLinkId: UUID = UUID.randomUUID(),
     override val processDefinitionId: String,
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
