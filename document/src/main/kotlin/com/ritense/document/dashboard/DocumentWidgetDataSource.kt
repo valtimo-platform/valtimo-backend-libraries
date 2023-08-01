@@ -34,6 +34,7 @@ class DocumentWidgetDataSource(
         spec.and { root, _, criteriaBuilder ->
             criteriaBuilder.and(
                 *caseCountDataSourceProperties.queryConditions.map {
+                    //TODO: handle doc: and case: prefixes
                     val path = createDatabaseObjectPath("content.content", root)
                     it.queryOperator.toPredicate(
                         criteriaBuilder,
