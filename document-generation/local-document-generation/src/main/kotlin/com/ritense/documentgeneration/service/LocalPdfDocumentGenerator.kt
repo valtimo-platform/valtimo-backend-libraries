@@ -22,17 +22,20 @@ import com.ritense.documentgeneration.domain.templatedata.TemplateData
 import org.springframework.http.MediaType
 
 class LocalPdfDocumentGenerator : PdfDocumentGenerator {
-    private val todoMessage: String = "Not yet implemented"
 
     override fun getTemplatePlaceholders(templateName: String?): TemplatePlaceholders {
-        TODO(todoMessage)
+        TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
     override fun generateDocument(templateName: String?, templateData: TemplateData?): GeneratedDocument {
-        TODO(todoMessage)
+        TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
     override fun getDocumentMediaType(): MediaType {
-        TODO(todoMessage)
+        TODO(NOT_YET_IMPLEMENTED_MSG)
+    }
+
+    companion object {
+        private const val NOT_YET_IMPLEMENTED_MSG = "Not yet implemented"
     }
 }

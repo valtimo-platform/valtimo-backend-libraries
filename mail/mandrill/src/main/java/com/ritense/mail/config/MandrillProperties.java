@@ -34,6 +34,7 @@ public class MandrillProperties {
     private String webhookUrl;
 
     public MandrillProperties() {
+        //Default constructor
     }
 
     public Optional<String> getFromEmailAddress() {

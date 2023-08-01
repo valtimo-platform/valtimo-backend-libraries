@@ -27,6 +27,7 @@ import static org.springframework.http.HttpMethod.POST;
 public class FormFileHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     public FormFileHttpSecurityConfigurer() {
+        //Default constructor
     }
 
     @Override

@@ -14,13 +14,31 @@
  * limitations under the License.
  */
 
-package com.ritense.processdocument.exception;
+package com.ritense.valtimo.web.rest.dto;
 
-public class UnknownProcessDefinitionException extends RuntimeException {
-    private static final String MESSAGE = "No process definition with key %s exist";
+import javax.validation.constraints.NotNull;
 
-    public UnknownProcessDefinitionException(String processDefinitionKey) {
-        super(String.format(MESSAGE, processDefinitionKey));
+public class ChoiceFieldUpdateRequestDTO {
+    @NotNull
+    private Long id;
+    @NotNull
+    private String keyName;
+    @NotNull
+    private String title;
+
+    public ChoiceFieldUpdateRequestDTO() {
+        //Default constructor
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getKeyName() {
+        return keyName;
+    }
+
+    public String getTitle() {
+        return title;
+    }
 }

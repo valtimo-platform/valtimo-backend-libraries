@@ -28,6 +28,7 @@ import static org.springframework.http.HttpMethod.PUT;
 public class FormManagementHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     public FormManagementHttpSecurityConfigurer() {
+        //Default constructor
     }
 
     @Override

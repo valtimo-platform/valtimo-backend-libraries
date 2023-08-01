@@ -16,8 +16,12 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.valtimo.choicefield.repository.ChoiceFieldRepository;
 import com.ritense.valtimo.choicefield.repository.ChoiceFieldValueRepository;
+import com.ritense.valtimo.domain.choicefield.ChoiceField;
 import com.ritense.valtimo.domain.choicefield.ChoiceFieldValue;
+import com.ritense.valtimo.web.rest.dto.ChoiceFieldValueCreateRequestDTO;
+import com.ritense.valtimo.web.rest.dto.ChoiceFieldValueUpdateRequestDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -30,20 +34,50 @@ import java.util.Optional;
 public class ChoiceFieldValueService {
 
     private static final Logger logger = LoggerFactory.getLogger(ChoiceFieldValueService.class);
+    private final ChoiceFieldRepository choiceFieldRepository;
+
     private final ChoiceFieldValueRepository choiceFieldValueRepository;
 
-    public ChoiceFieldValueService(ChoiceFieldValueRepository choiceFieldValueRepository) {
+    public ChoiceFieldValueService(
+        ChoiceFieldRepository choiceFieldRepository,
+        ChoiceFieldValueRepository choiceFieldValueRepository
+    ) {
+        this.choiceFieldRepository = choiceFieldRepository;
         this.choiceFieldValueRepository = choiceFieldValueRepository;
     }
 
     /**
      * Save a choiceFieldValue.
      *
-     * @param choiceFieldValue the entity to save
+     * @param requestDTO the entity to save
      * @return the persisted entity
      */
-    public ChoiceFieldValue save(ChoiceFieldValue choiceFieldValue) {
-        logger.debug("Request to save ChoiceFieldValue : {}", choiceFieldValue);
+    public ChoiceFieldValue create(ChoiceFieldValueCreateRequestDTO requestDTO, String choiceFieldName) {
+        logger.debug("Request to create ChoiceFieldValue : {}", requestDTO);
+
+        ChoiceField choiceField = choiceFieldRepository.findByKeyName(choiceFieldName);
+        ChoiceFieldValue choiceFieldValue = new ChoiceFieldValue();
+        choiceFieldValue.setName(requestDTO.getName());
+        choiceFieldValue.setDeprecated(requestDTO.getDeprecated());
+        choiceFieldValue.setSortOrder(requestDTO.getSortOrder());
+        choiceFieldValue.setValue(requestDTO.getValue());
+        choiceFieldValue.setChoiceField(choiceField);
+
+        return choiceFieldValueRepository.save(choiceFieldValue);
+    }
+
+    public ChoiceFieldValue update(ChoiceFieldValueUpdateRequestDTO requestDTO, String choiceFieldName) {
+        logger.debug("Request to update ChoiceFieldValue : {}", requestDTO);
+
+        ChoiceField choiceField = choiceFieldRepository.findByKeyName(choiceFieldName);
+
+        ChoiceFieldValue choiceFieldValue = choiceFieldValueRepository.findById(requestDTO.getId()).get();
+        choiceFieldValue.setName(requestDTO.getName());
+        choiceFieldValue.setDeprecated(requestDTO.getDeprecated());
+        choiceFieldValue.setSortOrder(requestDTO.getSortOrder());
+        choiceFieldValue.setValue(requestDTO.getValue());
+        choiceFieldValue.setChoiceField(choiceField);
+
         return choiceFieldValueRepository.save(choiceFieldValue);
     }
 
@@ -67,7 +101,7 @@ public class ChoiceFieldValueService {
      */
     @Transactional(readOnly = true)
     public Page<ChoiceFieldValue> findAllByChoiceFieldId(Pageable pageable, Long choicefieldId) {
-        logger.debug("Request to get all ChoiceFieldValues for choiceField witd id {}", choicefieldId);
+        logger.debug("Request to get all ChoiceFieldValues for choiceField with id {}", choicefieldId);
         return choiceFieldValueRepository.findByChoiceField_Id(pageable, choicefieldId);
     }
 
