@@ -67,7 +67,7 @@ import java.util.stream.Collectors;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Transactional
-public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionService {
+public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionService<JsonSchemaDocumentDefinition> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentDefinitionService.class);
     private static final String PATH = "classpath*:config/document/definition/*.json";

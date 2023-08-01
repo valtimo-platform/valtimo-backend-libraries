@@ -29,17 +29,17 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.Set;
 
-public interface DocumentDefinitionService {
+public interface DocumentDefinitionService<T extends DocumentDefinition> {
 
-    Page<? extends DocumentDefinition> findAll(Pageable pageable);
+    Page<T> findAll(Pageable pageable);
 
-    Page<? extends DocumentDefinition> findForUser(boolean filteredForRole, Pageable pageable);
+    Page<T> findForUser(boolean filteredForRole, Pageable pageable);
 
     JsonSchemaDocumentDefinitionId findIdByName(String name);
 
-    Optional<? extends DocumentDefinition> findBy(DocumentDefinition.Id id);
+    Optional<T> findBy(DocumentDefinition.Id id);
 
-    Optional<? extends DocumentDefinition> findLatestByName(String documentDefinitionName);
+    Optional<T> findLatestByName(String documentDefinitionName);
 
     void deployAll();
 
