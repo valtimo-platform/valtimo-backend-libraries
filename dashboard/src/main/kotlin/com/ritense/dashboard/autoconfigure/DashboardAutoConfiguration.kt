@@ -61,12 +61,14 @@ class DashboardAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DashboardService::class)
     fun dashboardService(
+        applicationContext: ApplicationContext,
         dashboardRepository: DashboardRepository,
         widgetConfigurationRepository: WidgetConfigurationRepository,
         userManagementService: UserManagementService,
         widgetDataSourceResolver: WidgetDataSourceResolver,
     ): DashboardService {
         return DashboardService(
+            applicationContext,
             dashboardRepository,
             widgetConfigurationRepository,
             userManagementService,
