@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.document.dashboard
+package com.ritense.valtimo.contract.dashboard.feature
 
-import com.ritense.valtimo.contract.repository.ExpressionOperator
-
-data class QueryCondition(
-    val queryPath: String,
-    val queryOperator: ExpressionOperator,
-    val queryValue: String
-)
+@WidgetDataFeature("label")
+interface HasLabel {
+    val label: String
+}

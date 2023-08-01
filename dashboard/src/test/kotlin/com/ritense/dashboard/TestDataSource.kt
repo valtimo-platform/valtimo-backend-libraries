@@ -16,7 +16,7 @@
 
 package com.ritense.dashboard
 
-import com.ritense.dashboard.datasource.WidgetDataSource
+import com.ritense.valtimo.contract.dashboard.WidgetDataSource
 import mu.KLogger
 import mu.KotlinLogging
 

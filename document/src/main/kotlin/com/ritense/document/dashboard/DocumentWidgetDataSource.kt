@@ -16,13 +16,9 @@
 
 package com.ritense.document.dashboard
 
-import com.ritense.document.domain.impl.JsonSchemaDocument
-import com.ritense.document.repository.DocumentRepository
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
-import com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper
 import com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.Companion.byDocumentDefinitionIdName
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
-import com.ritense.valtimo.contract.dashboard.dto.DashboardWidgetSingleDto
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.Path
 import javax.persistence.criteria.Root
@@ -33,12 +29,12 @@ class DocumentWidgetDataSource(
 ) {
 
     @WidgetDataSource("case-count", "Case count")
-    fun getCaseCount(caseCountDataSourceProperties: DocumentCountDataSourceProperties): DashboardWidgetSingleDto {
+    fun getCaseCount(caseCountDataSourceProperties: DocumentCountDataSourceProperties): DocumentCountDataResult {
         val spec = byDocumentDefinitionIdName(caseCountDataSourceProperties.documentDefinition)
         spec.and { root, _, criteriaBuilder ->
             criteriaBuilder.and(
                 *caseCountDataSourceProperties.queryConditions.map {
-                    val path = root.get<String>("content.content")
+                    val path = createDatabaseObjectPath("content.content", root)
                     it.queryOperator.toPredicate(
                         criteriaBuilder,
                         queryDialectHelper.getJsonValueExpression(criteriaBuilder, path, it.queryPath,
@@ -50,7 +46,7 @@ class DocumentWidgetDataSource(
         }
 
         val count = documentRepository.count(spec)
-        return DashboardWidgetSingleDto(count, count)
+        return DocumentCountDataResult(count)
     }
 
     private fun <T> createDatabaseObjectPath(field: String, root: Root<T>): Path<Any>? {

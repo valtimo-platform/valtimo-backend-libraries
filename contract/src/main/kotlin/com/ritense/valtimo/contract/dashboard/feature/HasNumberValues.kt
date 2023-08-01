@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource.dto
-
-import com.ritense.dashboard.datasource.WidgetDataFeature
+package com.ritense.valtimo.contract.dashboard.feature
 
 @WidgetDataFeature("numbers")
 interface HasNumberValues<T> where T : HasNumberValue, T : HasLabel {
