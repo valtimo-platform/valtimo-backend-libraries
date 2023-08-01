@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource
+package com.ritense.dashboard.web.rest.dto
 
-data class WidgetDataSourceDto(
+import com.fasterxml.jackson.annotation.JsonUnwrapped
+
+class DashboardWidgetDataResultDto(
     val key: String,
-    val title: String,
-    val dataFeatures: Set<String>
+    val data: Any
 )

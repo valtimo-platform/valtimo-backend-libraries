@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.domain
+package com.ritense.dashboard
 
-class DefaultDisplayTypes {
-    companion object {
-        const val NUMBER = "number"
-    }
-}
+import com.ritense.dashboard.datasource.dto.HasNumberValues
+import com.ritense.dashboard.datasource.dto.HasTotal
+
+data class TestWidgetNumbersResult(
+    override val values: List<TestLabeledNumberValue>,
+    override val total: Long,
+): HasNumberValues<TestLabeledNumberValue>, HasTotal

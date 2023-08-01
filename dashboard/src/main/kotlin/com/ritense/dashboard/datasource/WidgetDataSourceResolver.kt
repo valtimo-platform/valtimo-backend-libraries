@@ -17,11 +17,31 @@
 package com.ritense.dashboard.datasource
 
 import java.lang.reflect.Method
+import mu.KLogger
+import mu.KotlinLogging
 
 class WidgetDataSourceResolver : AnnotatedClassResolver() {
 
-    val widgetDataSourceMap: Map<String, Method> = findWidgetDataSourceClasses()
+    val dataSourceMethodMap: Map<WidgetDataSource, Method> = findMethodsWithAnnotation<WidgetDataSource>()
+        .associateBy { it.getAnnotation(WidgetDataSource::class.java) }
 
-    private fun findWidgetDataSourceClasses() = findMethodsWithAnnotation<WidgetDataSource>()
-        .associateBy { it.getAnnotation(WidgetDataSource::class.java).key }
+    val dataFeatureClassMap: Map<Class<*>, List<WidgetDataFeature>> = findClassesWithAnnotation<WidgetDataFeature>()
+        .associateWith { it.getAnnotationsByType(WidgetDataFeature::class.java).toList() }
+
+    init {
+        if (logger.isWarnEnabled) {
+            val duplicates = dataFeatureClassMap.flatMap { it.value }
+                .groupBy { it.value }
+                .filterValues { it.size > 1 }
+                .keys
+
+            require(duplicates.isEmpty()) {
+                logger.warn { "Found duplicate widget dataFeature values: $duplicates. Consider implementing interfaces." }
+            }
+        }
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
+    }
 }

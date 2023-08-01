@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource
+package com.ritense.dashboard.datasource.dto
 
-data class WidgetDataSourceDto(
-    val key: String,
-    val title: String,
-    val dataFeatures: Set<String>
-)
+import com.ritense.dashboard.datasource.WidgetDataFeature
+
+@WidgetDataFeature("number")
+interface HasNumberValue {
+    val value: Long
+}

@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource
+package com.ritense.dashboard
 
-data class WidgetDataSourceDto(
-    val key: String,
-    val title: String,
-    val dataFeatures: Set<String>
+data class TestDataSourceProperties(
+    val someProperty: String
 )
