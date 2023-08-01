@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.formlink.domain.FormAssociation;
 import com.ritense.formlink.domain.FormLink;
+import kotlin.jvm.Transient;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -30,6 +31,8 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 public abstract class CamundaFormAssociation implements FormAssociation, Serializable {
 
     protected UUID id;
+
+    @Transient
     protected FormLink formLink;
 
     @JsonCreator
