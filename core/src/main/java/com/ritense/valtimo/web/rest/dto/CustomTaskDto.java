@@ -30,10 +30,8 @@ public class CustomTaskDto implements Serializable {
 
     private CamundaTaskDto task;
 
-    @Transient
     private List<FormField> formFields;
 
-    @Transient
     private Map<String, Object> variables;
 
     private String formLocation;
