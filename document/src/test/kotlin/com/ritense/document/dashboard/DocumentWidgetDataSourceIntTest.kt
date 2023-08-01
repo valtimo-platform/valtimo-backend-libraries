@@ -50,7 +50,7 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
             documentDefinitionName,
             listOf(
                 QueryCondition(
-                    "/street",
+                    "$.street", //TODO: This is a JSONPath where it should be a JSON Pointer
                     ExpressionOperator.EQUAL_TO,
                     street
                 )

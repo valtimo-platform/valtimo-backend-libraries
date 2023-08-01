@@ -31,20 +31,20 @@ class DocumentWidgetDataSource(
     @WidgetDataSource("case-count", "Case count")
     fun getCaseCount(caseCountDataSourceProperties: DocumentCountDataSourceProperties): DocumentCountDataResult {
         val spec = byDocumentDefinitionIdName(caseCountDataSourceProperties.documentDefinition)
-        spec.and { root, _, criteriaBuilder ->
-            criteriaBuilder.and(
-                *caseCountDataSourceProperties.queryConditions.map {
-                    //TODO: handle doc: and case: prefixes
-                    val path = createDatabaseObjectPath("content.content", root)
-                    it.queryOperator.toPredicate(
-                        criteriaBuilder,
-                        queryDialectHelper.getJsonValueExpression(criteriaBuilder, path, it.queryPath,
-                            String::class.java) /** TODO: I don't know about this type */,
-                        it.queryValue
-                    )
-                }.toTypedArray()
-            )
-        }
+            .and { root, _, criteriaBuilder ->
+                criteriaBuilder.and(
+                    *caseCountDataSourceProperties.queryConditions.map {
+                        //TODO: handle doc: and case: prefixes
+                        val path = createDatabaseObjectPath("content.content", root)
+                        it.queryOperator.toPredicate(
+                            criteriaBuilder,
+                            queryDialectHelper.getJsonValueExpression(criteriaBuilder, path, it.queryPath,
+                                String::class.java) /** TODO: I don't know about this type */,
+                            it.queryValue
+                        )
+                    }.toTypedArray()
+                )
+            }
 
         val count = documentRepository.count(spec)
         return DocumentCountDataResult(count)
