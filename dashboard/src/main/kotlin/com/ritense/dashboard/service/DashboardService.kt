@@ -28,10 +28,14 @@ import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import java.util.SortedSet
 import kotlin.jvm.optionals.getOrElse
+import mu.KLogger
+import mu.KotlinLogging
+import org.springframework.context.ApplicationContext
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class DashboardService(
+    private val applicationContext: ApplicationContext,
     private val dashboardRepository: DashboardRepository,
     private val widgetConfigurationRepository: WidgetConfigurationRepository,
     private val userManagementService: UserManagementService,
@@ -153,6 +157,14 @@ class DashboardService(
 
     fun getWidgetDataSources(): List<WidgetDataSourceDto> {
         return widgetDataSourceResolver.dataSourceMethodMap.entries
+            .filter { (_, method) ->
+                val beanExists = applicationContext.getBeanNamesForType(method.declaringClass).isNotEmpty()
+                if(!beanExists) {
+                    logger.warn { "DataSource of type ${method.declaringClass} is not listed as a Spring Bean!" }
+                }
+
+                beanExists
+            }
             .map { (datasource, method) ->
                 val dataFeatures = getDataFeaturesForClass(method.returnType)
 
@@ -210,5 +222,9 @@ class DashboardService(
             .lowercase()
             .replace("(^[^a-z]+)|([^0-9a-z]+\$)".toRegex(), "") // trim start and end
             .replace("[^0-9a-z]+".toRegex(), "_") // replace all non-alphanumeric characters with '_'
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }
