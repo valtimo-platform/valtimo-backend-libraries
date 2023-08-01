@@ -38,7 +38,7 @@ import java.util.Optional;
 
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 
-public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotService {
+public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotService<JsonSchemaDocumentSnapshot> {
 
     private final DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
     private final JsonSchemaDocumentService documentService;

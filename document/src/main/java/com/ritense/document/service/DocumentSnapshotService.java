@@ -25,11 +25,11 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public interface DocumentSnapshotService {
+public interface DocumentSnapshotService<T extends DocumentSnapshot> {
 
     Optional<JsonSchemaDocumentSnapshot> findById(DocumentSnapshot.Id id);
 
-    Page<? extends DocumentSnapshot> getDocumentSnapshots(
+    Page<T> getDocumentSnapshots(
         String definitionName,
         JsonSchemaDocumentId documentId,
         LocalDateTime fromDateTime,

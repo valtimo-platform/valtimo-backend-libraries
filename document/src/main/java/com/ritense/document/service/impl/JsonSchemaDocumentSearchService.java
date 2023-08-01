@@ -60,13 +60,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
 @Transactional
-public class JsonSchemaDocumentSearchService implements DocumentSearchService {
+public class JsonSchemaDocumentSearchService implements DocumentSearchService<JsonSchemaDocument> {
 
     private static final String DOCUMENT_DEFINITION_ID = "documentDefinitionId";
     private static final String NAME = "name";
@@ -170,10 +169,10 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         // TODO: Should be turned into a subquery, and then do a count over the results from the subquery.
         List<Long> countResultList = entityManager.createQuery(countQuery).getResultList();
 
-        Long count = 0L;
+        long count = 0L;
 
         if (!countResultList.isEmpty()) {
-            count = (long) countResultList.size();
+            count = countResultList.size();
         }
 
         return count;

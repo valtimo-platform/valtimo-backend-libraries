@@ -17,6 +17,7 @@
 package com.ritense.document.autoconfigure;
 
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.listener.DocumentSnapshotCapturedEventListener;
 import com.ritense.document.domain.impl.listener.DocumentSnapshotCapturedEventPublisher;
 import com.ritense.document.domain.impl.listener.UndeployDocumentDefinitionEventListener;
@@ -47,7 +48,7 @@ public class DocumentSnapshotAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(DocumentSnapshotService.class)
-    public DocumentSnapshotService documentSnapshotService(
+    public DocumentSnapshotService<JsonSchemaDocumentSnapshot> documentSnapshotService(
         final DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository,
         final JsonSchemaDocumentService documentService,
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
@@ -59,8 +60,8 @@ public class DocumentSnapshotAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentSnapshotResource.class)
     public DocumentSnapshotResource documentSnapshotResource(
-        final DocumentSnapshotService documentSnapshotService,
-        DocumentDefinitionService documentDefinitionService
+        final DocumentSnapshotService<JsonSchemaDocumentSnapshot> documentSnapshotService,
+        DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService
     ) {
         return new JsonSchemaDocumentSnapshotResource(documentSnapshotService, documentDefinitionService);
     }
@@ -76,7 +77,7 @@ public class DocumentSnapshotAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentSnapshotCapturedEventListener.class)
     public DocumentSnapshotCapturedEventListener documentSnapshotEventListener(
-        final DocumentSnapshotService documentSnapshotService
+        final DocumentSnapshotService<JsonSchemaDocumentSnapshot> documentSnapshotService
     ) {
         return new DocumentSnapshotCapturedEventListener(documentSnapshotService);
     }
@@ -84,7 +85,7 @@ public class DocumentSnapshotAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(UndeployDocumentDefinitionEventListener.class)
     public UndeployDocumentDefinitionEventListener undeployDocumentDefinitionListener(
-        final DocumentSnapshotService documentSnapshotService
+        final DocumentSnapshotService<JsonSchemaDocumentSnapshot> documentSnapshotService
     ) {
         return new UndeployDocumentDefinitionEventListener(documentSnapshotService);
     }

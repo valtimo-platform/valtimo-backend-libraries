@@ -23,19 +23,19 @@ import com.ritense.document.service.impl.SearchRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface DocumentSearchService {
+public interface DocumentSearchService<T extends Document> {
 
     @SuppressWarnings({"squid:S1452","java:S1452"})
-    Page<? extends Document> search(
+    Page<T> search(
         SearchRequest searchRequest,
         Pageable pageable
     );
 
     @SuppressWarnings({"squid:S1452","java:S1452"})
-    Page<? extends Document> search(String documentDefinitionName, SearchWithConfigRequest searchWithConfigRequest, Pageable pageable);
+    Page<T> search(String documentDefinitionName, SearchWithConfigRequest searchWithConfigRequest, Pageable pageable);
 
     @SuppressWarnings({"squid:S1452","java:S1452"})
-    Page<? extends Document> search(String documentDefinitionName, AdvancedSearchRequest searchRequest, Pageable pageable);
+    Page<T> search(String documentDefinitionName, AdvancedSearchRequest searchRequest, Pageable pageable);
 
     Long count(String documentDefinitionName, AdvancedSearchRequest advancedSearchRequest);
 
