@@ -77,7 +77,7 @@ import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
-public class JsonSchemaDocumentService implements DocumentService {
+public class JsonSchemaDocumentService implements DocumentService<JsonSchemaDocument> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentService.class);
 
@@ -113,15 +113,13 @@ public class JsonSchemaDocumentService implements DocumentService {
     public Optional<JsonSchemaDocument> findBy(Document.Id documentId) {
         Optional<JsonSchemaDocument> optionalDocument = documentRepository.findById(documentId);
 
-        if (optionalDocument.isPresent()) {
-            authorizationService.requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocument.class,
-                    VIEW,
-                    optionalDocument.get()
-                )
-            );
-        }
+        optionalDocument.ifPresent(jsonSchemaDocument -> authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                VIEW,
+                jsonSchemaDocument
+            )
+        ));
         return optionalDocument;
     }
 

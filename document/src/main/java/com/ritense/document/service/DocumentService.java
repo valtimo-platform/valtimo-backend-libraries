@@ -31,16 +31,15 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
-public interface DocumentService {
+public interface DocumentService<T extends Document> {
 
-    Page<? extends Document> getAll(Pageable pageable);
+    Page<T> getAll(Pageable pageable);
 
-    Page<? extends Document> getAllByDocumentDefinitionName(Pageable pageable, String definitionName);
+    Page<T> getAllByDocumentDefinitionName(Pageable pageable, String definitionName);
 
-    Optional<? extends Document> findBy(Document.Id documentId);
+    Optional<T> findBy(Document.Id documentId);
 
     Document get(String documentId);
 
