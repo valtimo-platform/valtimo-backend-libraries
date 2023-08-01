@@ -75,20 +75,4 @@ enum class ExpressionOperator(
                 }
         }
     }
-
-    private class NullableComparator<T: Comparable<T>>(private val notEqualResult: Int): Comparator<T?> {
-        override fun compare(left: T?, right: T?): Int {
-            return if (left == right) {
-                0
-            } else if (
-                left == null ||
-                right == null ||
-                (!left::class.isSubclassOf(right::class))
-            ) {
-                notEqualResult
-            } else {
-                left.compareTo(right)
-            }
-        }
-    }
 }
