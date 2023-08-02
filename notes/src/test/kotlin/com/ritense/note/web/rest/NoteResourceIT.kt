@@ -20,6 +20,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.ritense.audit.service.AuditService
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -59,7 +61,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     lateinit var webApplicationContext: WebApplicationContext
 
     @Autowired
-    lateinit var documentService: DocumentService
+    lateinit var documentService: DocumentService<JsonSchemaDocument>
 
     @Autowired
     lateinit var noteService: NoteService
@@ -68,7 +70,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     lateinit var noteRepository: NoteRepository
 
     @Autowired
-    lateinit var documentDefinitionService: DocumentDefinitionService
+    lateinit var documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>
 
     @Autowired
     lateinit var auditService: AuditService
