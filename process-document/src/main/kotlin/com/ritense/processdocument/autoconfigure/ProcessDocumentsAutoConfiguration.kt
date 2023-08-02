@@ -17,6 +17,7 @@
 package com.ritense.processdocument.autoconfigure
 
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.camunda.authorization.CamundaTaskDocumentMapper
 import com.ritense.processdocument.domain.impl.delegate.DocumentDelegate
@@ -50,7 +51,7 @@ class ProcessDocumentsAutoConfiguration {
     fun documentDelegate(
         processDocumentService: ProcessDocumentService,
         userManagementService: UserManagementService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
     ): DocumentDelegate {
         return DocumentDelegate(
             processDocumentService,
@@ -65,7 +66,7 @@ class ProcessDocumentsAutoConfiguration {
     fun correlationService(
         runtimeService: RuntimeService,
         camundaRuntimeService: CamundaRuntimeService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         processDocumentAssociationService: ProcessDocumentAssociationService,
         camundaProcessService: CamundaProcessService,
         repositoryService: RepositoryService,
@@ -85,7 +86,7 @@ class ProcessDocumentsAutoConfiguration {
     @Bean("processService")
     @ConditionalOnMissingBean(ProcessDocumentsService::class)
     fun processDocumentsService(
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         processDocumentAssociationService: ProcessDocumentAssociationService,
         camundaProcessService: CamundaProcessService
     ): ProcessDocumentsService {
@@ -99,7 +100,7 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     fun caseAssigneeCamundaTaskListener(
         taskService: TaskService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         caseDefinitionService: CaseDefinitionService,
         userManagementService: UserManagementService
     ): CaseAssigneeTaskCreatedListener {
@@ -111,7 +112,7 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     fun caseAssigneeListener(
         camundaTaskService: CamundaTaskService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         caseDefinitionService: CaseDefinitionService,
         userManagementService: UserManagementService
     ): CaseAssigneeListener {

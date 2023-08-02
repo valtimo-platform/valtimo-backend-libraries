@@ -17,6 +17,7 @@
 package com.ritense.processdocument.domain.impl.delegate
 
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -27,7 +28,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution
 class DocumentDelegate(
     val processDocumentService: ProcessDocumentService,
     val userManagementService: UserManagementService,
-    val documentService: DocumentService,
+    val documentService: DocumentService<JsonSchemaDocument>,
 ) {
 
     fun setAssignee(execution: DelegateExecution, userEmail: String?) {

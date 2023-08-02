@@ -18,6 +18,7 @@ package com.ritense.processdocument.resolver
 
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
@@ -34,7 +35,7 @@ import java.util.function.Function
  */
 class DocumentTableValueResolver(
     private val processDocumentService: ProcessDocumentService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {

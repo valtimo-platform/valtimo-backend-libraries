@@ -20,6 +20,7 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.contract.authentication.UserManagementService
@@ -36,7 +37,7 @@ import org.camunda.bpm.extension.reactor.spring.listener.ReactorTaskListener
 @CamundaSelector(type = ActivityTypes.TASK_USER_TASK, event = TaskListener.EVENTNAME_CREATE)
 open class CaseAssigneeTaskCreatedListener(
     private val taskService: TaskService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val caseDefinitionService: CaseDefinitionService,
     private val userManagementService: UserManagementService
 ) : ReactorTaskListener() {

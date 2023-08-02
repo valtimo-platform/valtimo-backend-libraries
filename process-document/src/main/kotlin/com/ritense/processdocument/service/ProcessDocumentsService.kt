@@ -16,9 +16,9 @@
 
 package com.ritense.processdocument.service
 
-import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
@@ -27,7 +27,7 @@ import java.util.UUID
 
 
 class ProcessDocumentsService(
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val camundaProcessService: CamundaProcessService,
     private val associationService: ProcessDocumentAssociationService
 ) {

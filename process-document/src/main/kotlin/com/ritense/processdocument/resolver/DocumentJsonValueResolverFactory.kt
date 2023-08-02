@@ -25,6 +25,7 @@ import com.jayway.jsonpath.PathNotFoundException
 import com.jayway.jsonpath.internal.path.PathCompiler
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.exception.ModifyDocumentException
@@ -48,7 +49,7 @@ import org.camunda.bpm.engine.delegate.VariableScope
  */
 class DocumentJsonValueResolverFactory(
     private val processDocumentService: ProcessDocumentService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
 ) : ValueResolverFactory {
 
@@ -77,9 +78,9 @@ class DocumentJsonValueResolverFactory(
         }
     }
 
-    override fun createResolver(documentInstanceId: String): Function<String, Any?> {
+    override fun createResolver(documentId: String): Function<String, Any?> {
         return createResolver(
-            AuthorizationContext.runWithoutAuthorization { documentService.get(documentInstanceId) }
+            AuthorizationContext.runWithoutAuthorization { documentService.get(documentId) }
         )
     }
 
@@ -143,7 +144,7 @@ class DocumentJsonValueResolverFactory(
     private fun validateJsonPointer(documentDefinition: JsonSchemaDocumentDefinition, jsonPointer: String) {
         if (!documentDefinition.schema.schema.definesProperty(jsonPointer)) {
             throw ValueResolverValidationException(
-                "JsonPointer '$jsonPointer' doesn't point to any property inside document definition '${documentDefinition.id.name()}'"
+                "JsonPointer '$jsonPointer' doesn't point to any property inside document definition '${documentDefinition.id?.name()}'"
             )
         }
     }
@@ -154,13 +155,13 @@ class DocumentJsonValueResolverFactory(
             PathCompiler.compile(jsonPath)
         } catch (e: InvalidPathException) {
             throw ValueResolverValidationException(
-                "Failed to compile JsonPath '$jsonPath' for document definition '${documentDefinition.id.name()}'",
+                "Failed to compile JsonPath '$jsonPath' for document definition '${documentDefinition.id?.name()}'",
                 e
             )
         }
         if (!documentDefinitionService.isValidJsonPath(documentDefinition, jsonPath)) {
             throw ValueResolverValidationException(
-                "JsonPath '$jsonPath' doesn't point to any property inside document definition '${documentDefinition.id.name()}'"
+                "JsonPath '$jsonPath' doesn't point to any property inside document definition '${documentDefinition.id?.name()}'"
             )
         }
     }

@@ -19,6 +19,7 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.event.DocumentAssigneeChangedEvent
 import com.ritense.document.event.DocumentUnassignedEvent
 import com.ritense.document.service.DocumentService
@@ -32,7 +33,7 @@ import org.springframework.context.event.EventListener
 
 class CaseAssigneeListener(
     private val camundaTaskService: CamundaTaskService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val caseDefinitionService: CaseDefinitionService,
     private val userManagementService: UserManagementService
 ) {

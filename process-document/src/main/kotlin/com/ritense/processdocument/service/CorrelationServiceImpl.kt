@@ -18,6 +18,7 @@ package com.ritense.processdocument.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
@@ -36,7 +37,7 @@ import org.camunda.bpm.engine.runtime.ProcessInstance
 class CorrelationServiceImpl(
     val runtimeService: RuntimeService,
     val camundaRuntimeService: CamundaRuntimeService,
-    val documentService: DocumentService,
+    val documentService: DocumentService<JsonSchemaDocument>,
     val camundaRepositoryService: CamundaRepositoryService,
     val repositoryService: RepositoryService,
     val associationService: ProcessDocumentAssociationService
