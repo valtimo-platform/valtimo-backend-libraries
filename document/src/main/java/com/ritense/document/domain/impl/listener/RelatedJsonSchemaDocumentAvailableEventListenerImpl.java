@@ -17,6 +17,7 @@
 package com.ritense.document.domain.impl.listener;
 
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
 import com.ritense.document.domain.listener.RelatedDocumentAvailableEventListener;
@@ -27,9 +28,11 @@ import java.util.UUID;
 
 public class RelatedJsonSchemaDocumentAvailableEventListenerImpl implements RelatedDocumentAvailableEventListener {
 
-    private final DocumentService documentService;
+    private final DocumentService<JsonSchemaDocument> documentService;
 
-    public RelatedJsonSchemaDocumentAvailableEventListenerImpl(final DocumentService documentService) {
+    public RelatedJsonSchemaDocumentAvailableEventListenerImpl(
+        final DocumentService<JsonSchemaDocument> documentService
+    ) {
         this.documentService = documentService;
     }
 

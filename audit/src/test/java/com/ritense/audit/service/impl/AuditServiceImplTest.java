@@ -25,7 +25,9 @@ import com.ritense.audit.exception.AuditRecordNotFoundException;
 import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.audit.service.AuditService;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,7 +55,7 @@ public class AuditServiceImplTest extends AbstractTestHelper {
     public void setUp() {
         auditRecordRepository = mock(AuditRecordRepository.class);
         AuthorizationService authorizationService = mock(AuthorizationService.class);
-        DocumentService documentService = mock(DocumentService.class);
+        DocumentService<JsonSchemaDocument> documentService = mock(JsonSchemaDocumentService.class);
         auditService = new AuditServiceImpl(auditRecordRepository, authorizationService, documentService);
     }
 

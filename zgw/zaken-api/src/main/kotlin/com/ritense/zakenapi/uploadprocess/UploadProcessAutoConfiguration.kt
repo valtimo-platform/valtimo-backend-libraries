@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.uploadprocess
 
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -53,7 +54,7 @@ class UploadProcessAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(UploadProcessService::class)
     fun uploadProcessService(
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         processDocumentService: ProcessDocumentService,
         documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
     ): UploadProcessService {

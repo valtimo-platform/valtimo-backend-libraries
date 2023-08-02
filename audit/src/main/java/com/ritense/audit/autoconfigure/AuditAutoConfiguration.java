@@ -32,6 +32,7 @@ import com.ritense.audit.service.impl.AuditRetentionServiceImpl;
 import com.ritense.audit.service.impl.AuditSearchServiceImpl;
 import com.ritense.audit.service.impl.AuditServiceImpl;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.service.DocumentService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,7 +62,7 @@ public class AuditAutoConfiguration {
     public AuditService auditService(
         AuditRecordRepository<AuditRecord> auditRecordRepository,
         AuthorizationService authorizationService,
-        DocumentService documentService
+        DocumentService<JsonSchemaDocument> documentService
     ) {
         return new AuditServiceImpl(auditRecordRepository, authorizationService, documentService);
     }

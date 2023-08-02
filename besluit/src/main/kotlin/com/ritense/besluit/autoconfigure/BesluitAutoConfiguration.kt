@@ -24,6 +24,7 @@ import com.ritense.besluit.listener.BesluitServiceTaskListener
 import com.ritense.besluit.service.BesluitService
 import com.ritense.besluit.web.rest.BesluitResource
 import com.ritense.connector.service.ConnectorService
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.catalogi.CatalogiClient
 import com.ritense.openzaak.service.ZaakTypeLinkService
@@ -100,7 +101,7 @@ class BesluitAutoConfiguration {
     @ConditionalOnMissingBean(BesluitServiceTaskListener::class)
     fun besluitServiceTaskListener(
         zaakTypeLinkService: ZaakTypeLinkService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         zaakInstanceLinkService: ZaakInstanceLinkService,
         repositoryService: RepositoryService,
         connectorService: ConnectorService,

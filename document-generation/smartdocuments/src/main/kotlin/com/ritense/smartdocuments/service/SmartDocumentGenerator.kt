@@ -19,6 +19,7 @@ package com.ritense.smartdocuments.service
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile
 import com.ritense.document.service.DocumentService
 import com.ritense.documentgeneration.domain.GeneratedDocument
@@ -36,7 +37,7 @@ import java.util.UUID
 
 class SmartDocumentGenerator(
     private val connectorService: ConnectorService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val resourceService: ResourceService,
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) {

@@ -42,12 +42,12 @@ public class AuditServiceImpl implements AuditService {
 
     private final AuditRecordRepository<AuditRecord> auditRecordRepository;
     private final AuthorizationService authorizationService;
-    private final DocumentService documentService;
+    private final DocumentService<JsonSchemaDocument> documentService;
 
     public AuditServiceImpl(
         AuditRecordRepository<AuditRecord> auditRecordRepository,
         AuthorizationService authorizationService,
-        DocumentService documentService
+        DocumentService<JsonSchemaDocument> documentService
     ) {
         this.auditRecordRepository = auditRecordRepository;
         this.authorizationService = authorizationService;

@@ -19,6 +19,7 @@ package com.ritense.smartdocuments.service
 import com.fasterxml.jackson.core.JsonPointer
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -30,7 +31,7 @@ import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 class CamundaSmartDocumentGenerator(
     private val smartDocumentGenerator: SmartDocumentGenerator,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
 ) {
 
     fun generate(execution: DelegateExecution, templateGroup: String, templateId: String, format: DocumentFormatOption) {

@@ -17,6 +17,7 @@
 package com.ritense.document.domain.impl.listener;
 
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile;
 import com.ritense.document.service.DocumentService;
@@ -27,10 +28,13 @@ import com.ritense.valtimo.contract.utils.SecurityUtils;
 
 public class DocumentRelatedFileSubmittedEventListenerImpl implements DocumentRelatedFileEventListener {
 
-    private final DocumentService documentService;
+    private final DocumentService<JsonSchemaDocument> documentService;
     private final ResourceService resourceService;
 
-    public DocumentRelatedFileSubmittedEventListenerImpl(DocumentService documentService, ResourceService resourceService) {
+    public DocumentRelatedFileSubmittedEventListenerImpl(
+        DocumentService<JsonSchemaDocument> documentService,
+        ResourceService resourceService
+    ) {
         this.documentService = documentService;
         this.resourceService = resourceService;
     }

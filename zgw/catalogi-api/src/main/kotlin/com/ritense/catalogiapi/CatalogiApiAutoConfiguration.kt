@@ -21,6 +21,7 @@ import com.ritense.catalogiapi.security.CatalogiApiHttpSecurityConfigurer
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.catalogiapi.web.rest.CatalogiResource
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -42,7 +43,7 @@ class CatalogiApiAutoConfiguration {
         pluginService: PluginService,
         client: CatalogiApiClient,
         zaaktypeUrlProvider: ZaaktypeUrlProvider,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
     ): CatalogiApiPluginFactory {
         return CatalogiApiPluginFactory(pluginService, client, zaaktypeUrlProvider, documentService)
     }

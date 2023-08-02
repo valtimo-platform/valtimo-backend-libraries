@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.ritense.besluit.connector.BesluitConnector
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
@@ -36,7 +37,7 @@ import java.util.UUID
 
 open class BesluitServiceTaskListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
     private val repositoryService: RepositoryService,
     private val connectorService: ConnectorService,

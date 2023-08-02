@@ -18,6 +18,7 @@ package com.ritense.smartdocuments.autoconfigure
 
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.service.ConnectorService
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.service.ResourceService
@@ -44,7 +45,7 @@ class SmartDocumentsAutoConfiguration {
     fun camundaSmartDocumentGenerator(
         smartDocumentGenerator: SmartDocumentGenerator,
         processDocumentAssociationService: ProcessDocumentAssociationService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>
     ): CamundaSmartDocumentGenerator {
         return CamundaSmartDocumentGenerator(
             smartDocumentGenerator,
@@ -57,7 +58,7 @@ class SmartDocumentsAutoConfiguration {
     @ConditionalOnMissingBean(SmartDocumentGenerator::class)
     fun smartDocumentGenerator(
         connectorService: ConnectorService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         resourceService: ResourceService,
         applicationEventPublisher: ApplicationEventPublisher,
     ): SmartDocumentGenerator {
