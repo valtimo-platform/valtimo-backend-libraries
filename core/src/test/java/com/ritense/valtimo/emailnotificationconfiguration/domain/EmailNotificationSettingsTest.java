@@ -21,22 +21,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettingsRequestImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class EmailNotificationSettingsTest {
-
-    private final String correctJson = " {" +
-        "\"emailNotifications\": true, " +
-        "\"emailNotificationOnMonday\": true, " +
-        "\"emailNotificationOnTuesday\": false, " +
-        "\"emailNotificationOnWednesday\": false, " +
-        "\"emailNotificationOnThursday\": false, " +
-        "\"emailNotificationOnFriday\": false, " +
-        "\"emailNotificationOnSaturday\": false, " +
-        "\"emailNotificationOnSunday\": false, " +
-        "\"taskNotifications\": true" +
-        "}";
 
     private final String inCorrectJson = " {" +
         "\"emailNotifications\": true, " +
@@ -58,15 +47,26 @@ class EmailNotificationSettingsTest {
     }
 
     @Test
-    void shouldDeserializeCorrectJson() throws IOException {
-        mapper.reader().forType(EmailNotificationSettingsRequestImpl.class).readValue(correctJson);
+    void shouldDeserializeCorrectJson() {
+        String correctJson = " {" +
+            "\"emailNotifications\": true, " +
+            "\"emailNotificationOnMonday\": true, " +
+            "\"emailNotificationOnTuesday\": false, " +
+            "\"emailNotificationOnWednesday\": false, " +
+            "\"emailNotificationOnThursday\": false, " +
+            "\"emailNotificationOnFriday\": false, " +
+            "\"emailNotificationOnSaturday\": false, " +
+            "\"emailNotificationOnSunday\": false, " +
+            "\"taskNotifications\": true" +
+            "}";
+        assertDoesNotThrow(() -> {
+            mapper.reader().forType(EmailNotificationSettingsRequestImpl.class).readValue(correctJson);
+        });
     }
 
     @Test
     void shouldNotDeserializeCorruptJson() {
-        assertThrows(JsonParseException.class, () -> {
-            mapper.reader().forType(EmailNotificationSettingsRequestImpl.class).readValue(inCorrectJson);
-        });
+        assertThrows(JsonParseException.class, () -> mapper.reader().forType(EmailNotificationSettingsRequestImpl.class).readValue(inCorrectJson));
     }
 
 }
