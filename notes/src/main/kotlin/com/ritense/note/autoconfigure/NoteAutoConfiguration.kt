@@ -17,6 +17,7 @@
 package com.ritense.note.autoconfigure
 
 import com.ritense.authorization.AuthorizationService
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.note.repository.NoteDocumentMapper
 import com.ritense.note.repository.NoteRepository
@@ -59,12 +60,10 @@ class NoteAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(NoteResource::class)
     fun noteResource(
-        noteService: NoteService,
-        documentService: DocumentService,
+        noteService: NoteService
     ): NoteResource {
         return NoteResource(
-            noteService,
-            documentService,
+            noteService
         )
     }
 
@@ -77,7 +76,7 @@ class NoteAutoConfiguration {
 
     @Bean
     fun noteDocumentMapper(
-        @Lazy documentService: DocumentService,
+        @Lazy documentService: DocumentService<JsonSchemaDocument>,
     ): NoteDocumentMapper {
         return NoteDocumentMapper(documentService)
     }

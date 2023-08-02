@@ -17,6 +17,7 @@
 package com.ritense.zakenapi.uploadprocess
 
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
@@ -25,7 +26,7 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import java.util.UUID
 
 class UploadProcessService(
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val processDocumentService: ProcessDocumentService,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {

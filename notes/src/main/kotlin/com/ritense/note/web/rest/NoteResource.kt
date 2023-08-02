@@ -17,7 +17,6 @@
 package com.ritense.note.web.rest
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
-import com.ritense.document.service.DocumentService
 import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.dto.NoteCreateRequestDto
 import com.ritense.note.web.rest.dto.NoteResponseDto
@@ -42,8 +41,7 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class NoteResource(
-    private val noteService: NoteService,
-    private val documentService: DocumentService,
+    private val noteService: NoteService
 ) {
     @GetMapping("/v1/document/{documentId}/note")
     fun getNotes(

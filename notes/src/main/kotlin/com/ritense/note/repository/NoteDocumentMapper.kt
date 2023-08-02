@@ -29,7 +29,7 @@ import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Root
 
 class NoteDocumentMapper(
-    private val documentService: DocumentService
+    private val documentService: DocumentService<JsonSchemaDocument>
 ) : AuthorizationEntityMapper<Note, JsonSchemaDocument> {
     override fun mapRelated(entity: Note): List<JsonSchemaDocument> {
         return runWithoutAuthorization { listOf(documentService.get(entity.documentId.toString()) as JsonSchemaDocument) }
