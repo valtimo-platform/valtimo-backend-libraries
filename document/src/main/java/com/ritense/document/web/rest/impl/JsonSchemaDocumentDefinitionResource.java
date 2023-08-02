@@ -16,7 +16,6 @@
 
 package com.ritense.document.web.rest.impl;
 
-import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.service.DocumentDefinitionService;
@@ -39,7 +38,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.ResponseEntity.ok;
 
-public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionResource {
+public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionResource<JsonSchemaDocumentDefinition> {
 
     private final DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
     private final UndeployDocumentDefinitionService undeployDocumentDefinitionService;
@@ -56,7 +55,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(boolean filteredOnRole, Pageable pageable) {
+    public ResponseEntity<Page<JsonSchemaDocumentDefinition>> getDocumentDefinitions(boolean filteredOnRole, Pageable pageable) {
         // this keeps the API backwards compatible with old jpa entity columns in the sort
         PageRequest pageRequest = PageRequest.of(
             pageable.getPageNumber(),
@@ -90,7 +89,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(String name) {
+    public ResponseEntity<JsonSchemaDocumentDefinition> getDocumentDefinition(String name) {
         if (!documentDefinitionService.currentUserCanAccessDocumentDefinition(true, name)) {
             ResponseEntity.notFound();
         }
@@ -104,7 +103,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<DeployDocumentDefinitionResult> deployDocumentDefinition(DocumentDefinitionCreateRequest request) {
+    public ResponseEntity<DeployDocumentDefinitionResult<JsonSchemaDocumentDefinition>> deployDocumentDefinition(DocumentDefinitionCreateRequest request) {
         return applyResult(documentDefinitionService.deploy(request.getDefinition()));
     }
 
@@ -126,7 +125,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
         return ResponseEntity.ok().build();
     }
 
-    <T extends DeployDocumentDefinitionResult> ResponseEntity<T> applyResult(T result) {
+    <T extends DeployDocumentDefinitionResult<JsonSchemaDocumentDefinition>> ResponseEntity<T> applyResult(T result) {
         var httpStatus = result.documentDefinition() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(httpStatus).body(result);
     }

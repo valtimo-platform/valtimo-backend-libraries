@@ -45,22 +45,22 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping(value = "/api/v1", produces = APPLICATION_JSON_UTF8_VALUE)
-public interface DocumentDefinitionResource {
+public interface DocumentDefinitionResource<T extends DocumentDefinition> {
 
     @GetMapping("/document-definition")
-    ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
+    ResponseEntity<Page<T>> getDocumentDefinitions(
         @RequestParam(name = "filteredOnRole", defaultValue = "true") boolean filteredOnRole,
         @PageableDefault(sort = {"document_definition_name"}, direction = ASC) Pageable pageable
     );
 
     @GetMapping("/document-definition/{name}")
-    ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(@PathVariable String name);
+    ResponseEntity<T> getDocumentDefinition(@PathVariable String name);
 
     @GetMapping("/document-definition/open/count")
     ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount();
 
     @PostMapping(value = "/document-definition", consumes = APPLICATION_JSON_VALUE)
-    ResponseEntity<DeployDocumentDefinitionResult> deployDocumentDefinition(
+    ResponseEntity<DeployDocumentDefinitionResult<T>> deployDocumentDefinition(
         @Valid @RequestBody DocumentDefinitionCreateRequest request
     );
 

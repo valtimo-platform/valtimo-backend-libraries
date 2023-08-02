@@ -43,13 +43,13 @@ public interface DocumentDefinitionService<T extends DocumentDefinition> {
 
     void deployAll();
 
-    DeployDocumentDefinitionResult deploy(String schema);
+    DeployDocumentDefinitionResult<T> deploy(String schema);
 
     void deploy(InputStream inputStream) throws IOException;
 
     void deployAll(boolean readOnly, boolean force);
 
-    DeployDocumentDefinitionResult deploy(String schema, boolean readOnly, boolean force);
+    DeployDocumentDefinitionResult<T> deploy(String schema, boolean readOnly, boolean force);
 
     void deploy(InputStream inputStream, boolean readOnly, boolean force) throws IOException;
 

@@ -81,7 +81,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         undeployDocumentDefinitionService = mock(UndeployJsonSchemaDocumentDefinitionService.class);
         documentStatisticService = mock(DocumentStatisticService.class);
 
-        DocumentDefinitionResource documentDefinitionResource = new JsonSchemaDocumentDefinitionResource(
+        DocumentDefinitionResource<JsonSchemaDocumentDefinition> documentDefinitionResource = new JsonSchemaDocumentDefinitionResource(
             documentDefinitionService,
             undeployDocumentDefinitionService,
             documentStatisticService
