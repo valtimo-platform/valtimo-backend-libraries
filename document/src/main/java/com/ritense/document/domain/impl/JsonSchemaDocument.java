@@ -390,7 +390,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     //// DocumentResult IMPLEMENTATIONS ////
     ////////////////////////////////////////
 
-    public static class CreateDocumentResultImpl extends AbstractDocumentResult implements CreateDocumentResult {
+    public static class CreateDocumentResultImpl extends AbstractDocumentResult implements CreateDocumentResult<JsonSchemaDocument> {
         CreateDocumentResultImpl(JsonSchemaDocument resultingDocument) {
             super(resultingDocument);
         }
@@ -400,7 +400,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         }
     }
 
-    public static class ModifyDocumentResultImpl extends AbstractDocumentResult implements ModifyDocumentResult {
+    public static class ModifyDocumentResultImpl extends AbstractDocumentResult implements ModifyDocumentResult<JsonSchemaDocument> {
         public ModifyDocumentResultImpl(JsonSchemaDocument resultingDocument) {
             super(resultingDocument);
         }
@@ -410,7 +410,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         }
     }
 
-    private abstract static class AbstractDocumentResult implements DocumentResult {
+    private abstract static class AbstractDocumentResult implements DocumentResult<JsonSchemaDocument> {
         private final JsonSchemaDocument resultingDocument;
         private final List<DocumentOperationError> errors;
 

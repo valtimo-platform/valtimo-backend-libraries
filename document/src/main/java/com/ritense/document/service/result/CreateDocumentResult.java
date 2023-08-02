@@ -16,5 +16,7 @@
 
 package com.ritense.document.service.result;
 
-public interface CreateDocumentResult extends DocumentResult {
+import com.ritense.document.domain.Document;
+
+public interface CreateDocumentResult<T extends Document> extends DocumentResult<T> {
 }

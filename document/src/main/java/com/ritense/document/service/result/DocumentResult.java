@@ -22,10 +22,10 @@ import com.ritense.document.service.result.error.DocumentOperationError;
 import java.util.List;
 import java.util.Optional;
 
-public interface DocumentResult {
+public interface DocumentResult<T extends Document> {
 
     @JsonProperty("document")
-    Optional<? extends Document> resultingDocument();
+    Optional<T> resultingDocument();
 
     @JsonProperty
     List<DocumentOperationError> errors();
