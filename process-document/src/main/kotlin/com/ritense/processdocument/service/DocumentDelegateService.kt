@@ -76,10 +76,6 @@ class DocumentDelegateService(
         return jsonSchemaDocumentService.getDocumentBy(documentId)
     }
 
-    /*
-    * Functionality of documentVariableDocuments
-    */
-
     open fun findValueByJsonPointer(jsonPointer: String?, execution: DelegateExecution?): Any? {
         return Optional.ofNullable(findValueByJsonPointerOrDefault(jsonPointer, execution!!, null))
             .orElseThrow()
@@ -113,9 +109,6 @@ class DocumentDelegateService(
         }
         return null
     }
-    /*
-     * end of functionality DocumentVariableDelegate
-     */
 
     companion object {
         val logger = KotlinLogging.logger {}

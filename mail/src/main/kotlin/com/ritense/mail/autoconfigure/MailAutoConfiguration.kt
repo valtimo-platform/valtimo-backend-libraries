@@ -39,7 +39,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EnableConfigurationProperties(MailingProperties::class)
 @EnableJpaRepositories(basePackages = ["com.ritense.mail.repository"])
 @EntityScan("com.ritense.mail.domain")
-@ProcessBean
 class MailAutoConfiguration {
 
     @Bean
