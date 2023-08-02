@@ -20,6 +20,8 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.BaseIntegrationTest
 import com.ritense.document.domain.DocumentDefinition
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
@@ -71,10 +73,10 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     lateinit var objectManagementService: ObjectManagementService
 
     @Autowired
-    lateinit var documentService: DocumentService
+    lateinit var documentService: DocumentService<JsonSchemaDocument>
 
     @Autowired
-    lateinit var documentDefinitionService: DocumentDefinitionService
+    lateinit var documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>
 
     @Autowired
     lateinit var processService: RuntimeService

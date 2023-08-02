@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.connector.service.ConnectorFluentBuilder
 import com.ritense.connector.service.ConnectorService
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentCreatedEvent
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent
 import com.ritense.document.service.DocumentService
@@ -37,7 +38,7 @@ open class DocumentEventListener(
     val objectSyncService: ObjectSyncService,
     val connectorService: ConnectorService,
     val connectorFluentBuilder: ConnectorFluentBuilder,
-    val documentService: DocumentService
+    val documentService: DocumentService<JsonSchemaDocument>
 ) {
 
     @TransactionalEventListener(

@@ -20,6 +20,7 @@ import com.ritense.connector.domain.Connector
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
 import com.ritense.connector.service.ConnectorFluentBuilder
 import com.ritense.connector.service.ConnectorService
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.domain.sync.listener.DocumentEventListener
 import com.ritense.objectsapi.repository.ObjectSyncConfigRepository
@@ -58,7 +59,7 @@ class ObjectsApiAutoConfiguration {
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     fun objectsApiConnector(
         objectsApiProperties: ObjectsApiProperties,
-        documentService: DocumentService
+        documentService: DocumentService<JsonSchemaDocument>
     ): Connector {
         return ObjectsApiConnector(objectsApiProperties, documentService)
     }
@@ -77,7 +78,7 @@ class ObjectsApiAutoConfiguration {
         objectSyncService: ObjectSyncService,
         connectorService: ConnectorService,
         connectorFluentBuilder: ConnectorFluentBuilder,
-        documentService: DocumentService
+        documentService: DocumentService<JsonSchemaDocument>
     ): DocumentEventListener {
         return DocumentEventListener(
             objectSyncService,

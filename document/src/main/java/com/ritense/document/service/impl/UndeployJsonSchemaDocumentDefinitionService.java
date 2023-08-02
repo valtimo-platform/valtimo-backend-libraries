@@ -17,6 +17,7 @@
 package com.ritense.document.service.impl;
 
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
@@ -33,10 +34,14 @@ import java.util.Optional;
 public class UndeployJsonSchemaDocumentDefinitionService implements UndeployDocumentDefinitionService {
 
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
-    private final DocumentService documentService;
+    private final DocumentService<JsonSchemaDocument> documentService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public UndeployJsonSchemaDocumentDefinitionService(JsonSchemaDocumentDefinitionService documentDefinitionService, DocumentService documentService, ApplicationEventPublisher applicationEventPublisher) {
+    public UndeployJsonSchemaDocumentDefinitionService(
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        DocumentService<JsonSchemaDocument> documentService,
+        ApplicationEventPublisher applicationEventPublisher
+    ) {
         this.documentDefinitionService = documentDefinitionService;
         this.documentService = documentService;
         this.applicationEventPublisher = applicationEventPublisher;

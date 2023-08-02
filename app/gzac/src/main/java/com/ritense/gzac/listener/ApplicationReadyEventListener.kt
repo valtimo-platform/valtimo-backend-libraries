@@ -21,6 +21,7 @@ import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
@@ -55,7 +56,7 @@ class ApplicationReadyEventListener(
     private val objectSyncService: ObjectSyncService,
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
-    private val documentDefinitionService: DocumentDefinitionService,
+    private val documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {
     @EventListener(ApplicationReadyEvent::class)

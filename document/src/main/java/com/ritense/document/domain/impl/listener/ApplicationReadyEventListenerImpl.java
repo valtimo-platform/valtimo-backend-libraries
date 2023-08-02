@@ -16,6 +16,7 @@
 
 package com.ritense.document.domain.impl.listener;
 
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.DocumentDefinitionService;
 import javax.transaction.Transactional;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -25,7 +26,7 @@ import org.springframework.core.annotation.Order;
 
 public class ApplicationReadyEventListenerImpl {
 
-    private final DocumentDefinitionService documentDefinitionService;
+    private final DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
 
     public ApplicationReadyEventListenerImpl(DocumentDefinitionService documentDefinitionService) {
         this.documentDefinitionService = documentDefinitionService;

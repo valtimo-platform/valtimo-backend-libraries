@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
@@ -43,7 +44,7 @@ open class ValtimoFormFlow(
     private val valueResolverService: ValueResolverService,
     private val formFlowService: FormFlowService,
     private val processDocumentService: ProcessDocumentService,
-    private val documentService: DocumentService
+    private val documentService: DocumentService<JsonSchemaDocument>
 ) {
 
     /**

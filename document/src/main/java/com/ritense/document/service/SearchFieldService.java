@@ -19,6 +19,7 @@ package com.ritense.document.service;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.EntityAuthorizationRequest;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
@@ -44,12 +45,12 @@ import static com.ritense.document.service.SearchFieldActionProvider.VIEW_LIST;
 public class SearchFieldService {
 
     private final SearchFieldRepository searchFieldRepository;
-    private final DocumentDefinitionService documentDefinitionService;
+    private final DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
     private final AuthorizationService authorizationService;
 
     public SearchFieldService(
             final SearchFieldRepository searchFieldRepository,
-            final DocumentDefinitionService documentDefinitionService,
+            final DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService,
             final AuthorizationService authorizationService
     ) {
         this.searchFieldRepository = searchFieldRepository;

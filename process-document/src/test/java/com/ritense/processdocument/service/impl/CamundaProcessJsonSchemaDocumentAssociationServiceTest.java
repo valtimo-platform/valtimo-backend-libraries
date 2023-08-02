@@ -17,12 +17,15 @@
 package com.ritense.processdocument.service.impl;
 
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
+import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.processdocument.BaseTest;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstance;
@@ -55,22 +58,22 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
     private ProcessDocumentDefinitionRepository processDocumentDefinitionRepository;
     private ProcessDocumentInstanceRepository processDocumentInstanceRepository;
     private DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
-    private DocumentDefinitionService documentDefinitionService;
+    private DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
     private CamundaRepositoryService repositoryService;
     private RuntimeService runtimeService;
     private AuthorizationService authorizationService;
-    private DocumentService documentService;
+    private DocumentService<JsonSchemaDocument> documentService;
 
     @BeforeEach
     public void setUp() {
         processDocumentDefinitionRepository = spy(ProcessDocumentDefinitionRepository.class);
         processDocumentInstanceRepository = spy(ProcessDocumentInstanceRepository.class);
         documentDefinitionRepository = mock(DocumentDefinitionRepository.class);
-        documentDefinitionService = mock(DocumentDefinitionService.class);
+        documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
         repositoryService = mock(CamundaRepositoryService.class);
         runtimeService = mock(RuntimeService.class);
         authorizationService = mock(AuthorizationService.class);
-        documentService = mock(DocumentService.class);
+        documentService = mock(JsonSchemaDocumentService.class);
 
         service = new CamundaProcessJsonSchemaDocumentAssociationService(
             processDocumentDefinitionRepository,

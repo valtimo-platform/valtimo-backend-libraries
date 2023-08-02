@@ -68,15 +68,21 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private final ProcessDocumentDefinitionRepository processDocumentDefinitionRepository;
     private final ProcessDocumentInstanceRepository processDocumentInstanceRepository;
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
-    private final DocumentDefinitionService documentDefinitionService;
+    private final DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
     private final CamundaRepositoryService repositoryService;
     private final RuntimeService runtimeService;
     private final AuthorizationService authorizationService;
-    private final DocumentService documentService;
+    private final DocumentService<JsonSchemaDocument> documentService;
 
-    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaRepositoryService repositoryService, RuntimeService runtimeService,
-                                                              AuthorizationService authorizationService,
-                                                              DocumentService documentService) {
+    public CamundaProcessJsonSchemaDocumentAssociationService(
+        ProcessDocumentDefinitionRepository processDocumentDefinitionRepository,
+        ProcessDocumentInstanceRepository processDocumentInstanceRepository,
+        DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
+        DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService,
+        CamundaRepositoryService repositoryService,
+        RuntimeService runtimeService,
+        AuthorizationService authorizationService,
+        DocumentService<JsonSchemaDocument> documentService) {
         this.processDocumentDefinitionRepository = processDocumentDefinitionRepository;
         this.processDocumentInstanceRepository = processDocumentInstanceRepository;
         this.documentDefinitionRepository = documentDefinitionRepository;

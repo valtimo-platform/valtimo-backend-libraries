@@ -17,6 +17,7 @@
 package com.ritense.document.web.rest.impl;
 
 import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentStatisticService;
@@ -40,12 +41,12 @@ import static org.springframework.http.ResponseEntity.ok;
 
 public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionResource {
 
-    private final DocumentDefinitionService documentDefinitionService;
+    private final DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
     private final UndeployDocumentDefinitionService undeployDocumentDefinitionService;
     private final DocumentStatisticService documentStatisticService;
 
     public JsonSchemaDocumentDefinitionResource(
-        DocumentDefinitionService documentDefinitionService,
+        DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService,
         UndeployDocumentDefinitionService undeployDocumentDefinitionService,
         DocumentStatisticService documentStatisticService
     ) {

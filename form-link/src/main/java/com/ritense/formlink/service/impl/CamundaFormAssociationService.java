@@ -66,7 +66,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 public class CamundaFormAssociationService implements FormAssociationService {
     private final FormDefinitionService formDefinitionService;
     private final ProcessFormAssociationRepository processFormAssociationRepository;
-    private final DocumentService documentService;
+    private final DocumentService<JsonSchemaDocument> documentService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final CamundaRuntimeService runtimeService;
     private final CamundaTaskService taskService;
@@ -76,7 +76,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
     public CamundaFormAssociationService(
         FormDefinitionService formDefinitionService,
         ProcessFormAssociationRepository processFormAssociationRepository,
-        DocumentService documentService,
+        DocumentService<JsonSchemaDocument> documentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
         CamundaRuntimeService runtimeService,
         CamundaTaskService taskService,

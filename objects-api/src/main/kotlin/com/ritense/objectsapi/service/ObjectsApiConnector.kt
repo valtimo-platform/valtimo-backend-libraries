@@ -23,6 +23,7 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.domain.Object
@@ -39,7 +40,7 @@ import java.util.UUID
 @ConnectorType(name = "ObjectsApi")
 class ObjectsApiConnector(
     objectsApiProperties: ObjectsApiProperties,
-    private var documentService: DocumentService
+    private var documentService: DocumentService<JsonSchemaDocument>
 ) : Connector, ObjectsApiService(objectsApiProperties) {
 
     var payload: MutableMap<String, JsonNode> = mutableMapOf()

@@ -22,6 +22,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSnapshotService;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSnapshotResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,12 +59,12 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
     private JsonSchemaDocumentSnapshot documentSnapshot;
     private Page<JsonSchemaDocumentSnapshot> documentSnapshotPage;
     private JsonSchemaDocumentDefinition documentDefinition;
-    private DocumentDefinitionService documentDefinitionService;
+    private DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
 
     @BeforeEach
     public void setUp() {
         documentSnapshotService = mock(JsonSchemaDocumentSnapshotService.class);
-        documentDefinitionService = mock(DocumentDefinitionService.class);
+        documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
         documentSnapshotResource = new JsonSchemaDocumentSnapshotResource(documentSnapshotService, documentDefinitionService);
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentSnapshotResource)

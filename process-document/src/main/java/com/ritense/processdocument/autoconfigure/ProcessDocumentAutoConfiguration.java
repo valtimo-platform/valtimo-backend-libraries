@@ -17,6 +17,8 @@
 package com.ritense.processdocument.autoconfigure;
 
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
@@ -89,12 +91,12 @@ public class ProcessDocumentAutoConfiguration {
     public CamundaProcessJsonSchemaDocumentAssociationService processDocumentAssociationService(
         ProcessDocumentDefinitionRepository processDocumentDefinitionRepository,
         ProcessDocumentInstanceRepository processDocumentInstanceRepository,
-        DocumentDefinitionRepository documentDefinitionRepository,
-        DocumentDefinitionService documentDefinitionService,
+        DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
+        DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService,
         CamundaRepositoryService repositoryService,
         RuntimeService runtimeService,
         AuthorizationService authorizationService,
-        DocumentService documentService
+        DocumentService<JsonSchemaDocument> documentService
     ) {
         return new CamundaProcessJsonSchemaDocumentAssociationService(
             processDocumentDefinitionRepository,
@@ -111,7 +113,7 @@ public class ProcessDocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentVariableDelegate.class)
     public DocumentVariableDelegateImpl documentVariableDelegate(
-        DocumentService documentService
+        DocumentService<JsonSchemaDocument> documentService
     ) {
         return new DocumentVariableDelegateImpl(documentService);
     }
@@ -120,7 +122,7 @@ public class ProcessDocumentAutoConfiguration {
     @ConditionalOnMissingBean(ProcessDocumentStartEventMessageDelegate.class)
     public ProcessDocumentStartEventMessageDelegateImpl processDocumentStartEventMessageDelegate(
         ProcessDocumentAssociationService processDocumentAssociationService,
-        DocumentService documentService,
+        DocumentService<JsonSchemaDocument> documentService,
         RuntimeService runtimeService
     ) {
         return new ProcessDocumentStartEventMessageDelegateImpl(

@@ -17,6 +17,7 @@
 package com.ritense.valtimo.formflow
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.formflow.repository.FormFlowInstanceRepository
@@ -43,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
     @Autowired
-    lateinit var documentDefinitionService: DocumentDefinitionService
+    lateinit var documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>
 
     @Autowired
     lateinit var processDocumentService: ProcessDocumentService

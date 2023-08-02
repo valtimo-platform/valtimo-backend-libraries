@@ -17,6 +17,7 @@
 package com.ritense.valtimo.core.listener
 
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import org.springframework.context.event.EventListener
@@ -24,7 +25,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class ApplicationReadyEventListener(
-    private val documentDefinitionService: DocumentDefinitionService,
+    private val documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>,
 ) {
 
     @EventListener(DocumentDefinitionDeployedEvent::class)

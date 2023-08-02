@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.domain.config.ProcessDocumentLinkConfigItem;
@@ -49,9 +50,14 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
     private final ResourceLoader resourceLoader;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final ContextService contextService;
-    private final DocumentDefinitionService documentDefinitionService;
+    private final DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
 
-    public CamundaProcessJsonSchemaDocumentDeploymentService(ResourceLoader resourceLoader, ProcessDocumentAssociationService processDocumentAssociationService, ContextService contextService, DocumentDefinitionService documentDefinitionService) {
+    public CamundaProcessJsonSchemaDocumentDeploymentService(
+        ResourceLoader resourceLoader,
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        ContextService contextService,
+        DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService
+    ) {
         this.resourceLoader = resourceLoader;
         this.processDocumentAssociationService = processDocumentAssociationService;
         this.contextService = contextService;

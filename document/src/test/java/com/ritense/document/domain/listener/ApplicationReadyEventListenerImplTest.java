@@ -16,6 +16,7 @@
 
 package com.ritense.document.domain.listener;
 
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
@@ -27,7 +28,7 @@ import static org.mockito.Mockito.verify;
 public class ApplicationReadyEventListenerImplTest {
 
     private ApplicationReadyEventListenerImpl applicationReadyEventListener;
-    private DocumentDefinitionService documentDefinitionService;
+    private DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
 
     @BeforeEach
     public void setUp() {

@@ -18,6 +18,7 @@ package com.ritense.document.autoconfigure;
 
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.config.DocumentSpringContextHelper;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
@@ -144,7 +145,7 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ApplicationReadyEventListenerImpl.class)
     public ApplicationReadyEventListenerImpl applicationReadyEventListenerImpl(
-        final DocumentDefinitionService documentDefinitionService
+        final DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService
     ) {
         return new ApplicationReadyEventListenerImpl(documentDefinitionService);
     }
@@ -152,7 +153,7 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(RelatedJsonSchemaDocumentAvailableEventListenerImpl.class)
     public RelatedJsonSchemaDocumentAvailableEventListenerImpl relatedDocumentAvailableEventListener(
-        final DocumentService documentService
+        final DocumentService<JsonSchemaDocument> documentService
     ) {
         return new RelatedJsonSchemaDocumentAvailableEventListenerImpl(documentService);
     }
@@ -170,7 +171,7 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentDefinitionResource.class)
     public JsonSchemaDocumentDefinitionResource documentDefinitionResource(
-        final DocumentDefinitionService documentDefinitionService,
+        final DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService,
         final UndeployDocumentDefinitionService undeployDocumentDefinitionService,
         final DocumentStatisticService documentStatisticService
     ) {

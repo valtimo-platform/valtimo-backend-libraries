@@ -44,7 +44,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     private JsonSchemaDocumentDefinition definition;
     private JsonSchemaDocument document;
     @Inject
-    private DocumentDefinitionService documentDefinitionService;
+    private DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
     @Inject
     private PostgresJsonSchemaDocumentSnapshotRepository documentSnapshotRepository;
 

@@ -52,7 +52,7 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
 
     private static final Logger logger = LoggerFactory.getLogger(CamundaFormAssociationSubmissionService.class);
     private final FormDefinitionService formDefinitionService;
-    private final DocumentService documentService;
+    private final DocumentService<JsonSchemaDocument> documentService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final FormAssociationService formAssociationService;
     private final ProcessDocumentService processDocumentService;
@@ -63,7 +63,7 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
 
     public CamundaFormAssociationSubmissionService(
         FormDefinitionService formDefinitionService,
-        DocumentService documentService,
+        DocumentService<JsonSchemaDocument> documentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
         FormAssociationService formAssociationService,
         ProcessDocumentService processDocumentService,

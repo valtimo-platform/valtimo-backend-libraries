@@ -19,6 +19,7 @@ package com.ritense.form.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.repository.FormDefinitionRepository;
@@ -28,11 +29,11 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 
 public class FormIoFormLoaderService implements FormLoaderService {
 
-    private final DocumentService documentService;
+    private final DocumentService<JsonSchemaDocument> documentService;
     private final FormDefinitionRepository formDefinitionRepository;
 
     public FormIoFormLoaderService(
-        final DocumentService documentService,
+        final DocumentService<JsonSchemaDocument> documentService,
         final FormDefinitionRepository formDefinitionRepository
     ) {
         this.documentService = documentService;
