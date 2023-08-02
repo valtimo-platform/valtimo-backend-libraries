@@ -32,6 +32,7 @@ import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.catalogiapi.exception.StatustypeNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
@@ -52,7 +53,7 @@ import java.net.URI
 class CatalogiApiPlugin(
     val client: CatalogiApiClient,
     val zaaktypeUrlProvider: ZaaktypeUrlProvider,
-    val documentService: DocumentService,
+    val documentService: DocumentService<JsonSchemaDocument>,
 ) {
     @Url
     @PluginProperty(key = "url", secret = false)

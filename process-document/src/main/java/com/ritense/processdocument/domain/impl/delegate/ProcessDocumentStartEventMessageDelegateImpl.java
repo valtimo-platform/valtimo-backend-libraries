@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.relation.DocumentRelationType;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.domain.ProcessInstanceId;
@@ -43,10 +44,14 @@ public class ProcessDocumentStartEventMessageDelegateImpl implements ProcessDocu
     private static final Logger logger = LoggerFactory.getLogger(ProcessDocumentStartEventMessageDelegateImpl.class);
 
     private final ProcessDocumentAssociationService processDocumentAssociationService;
-    private final DocumentService documentService;
+    private final DocumentService<JsonSchemaDocument> documentService;
     private final RuntimeService runtimeService;
 
-    public ProcessDocumentStartEventMessageDelegateImpl(ProcessDocumentAssociationService processDocumentAssociationService, DocumentService documentService, RuntimeService runtimeService) {
+    public ProcessDocumentStartEventMessageDelegateImpl(
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        DocumentService<JsonSchemaDocument> documentService,
+        RuntimeService runtimeService
+    ) {
         this.processDocumentAssociationService = processDocumentAssociationService;
         this.documentService = documentService;
         this.runtimeService = runtimeService;

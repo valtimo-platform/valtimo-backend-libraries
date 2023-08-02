@@ -18,6 +18,7 @@ package com.ritense.catalogiapi
 
 import com.ritense.catalogiapi.client.CatalogiApiClient
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
@@ -26,7 +27,7 @@ class CatalogiApiPluginFactory(
     pluginService: PluginService,
     val client: CatalogiApiClient,
     val zaaktypeUrlProvider: ZaaktypeUrlProvider,
-    val documentService: DocumentService,
+    val documentService: DocumentService<JsonSchemaDocument>,
 ) : PluginFactory<CatalogiApiPlugin>(pluginService) {
 
     override fun create(): CatalogiApiPlugin {

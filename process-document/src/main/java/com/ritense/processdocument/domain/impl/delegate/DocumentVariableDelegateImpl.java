@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
@@ -35,9 +36,9 @@ public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
 
     private static final Logger logger = LoggerFactory.getLogger(DocumentVariableDelegateImpl.class);
     private static final ObjectMapper mapper = Mapper.INSTANCE.get();
-    private final DocumentService documentService;
+    private final DocumentService<JsonSchemaDocument> documentService;
 
-    public DocumentVariableDelegateImpl(DocumentService documentService) {
+    public DocumentVariableDelegateImpl(DocumentService<JsonSchemaDocument> documentService) {
         this.documentService = documentService;
     }
 
