@@ -119,7 +119,7 @@ open class ValtimoFormFlow(
             if (result.errors().size > 0) {
                 throw RuntimeException(
                     "Could not create document for document definition $documentDefinitionName\n" +
-                        "Reason:\n" +
+                        REASON +
                         result.errors().joinToString(separator = "\n - ")
                 )
             }
@@ -138,7 +138,7 @@ open class ValtimoFormFlow(
         if (startProcessForDocumentResult.errors().isNotEmpty()) {
             throw RuntimeException(
                 "Could not start process with definition $processDefinitionKey for document ${document.id()}\n" +
-                    "Reason:\n" +
+                    REASON +
                     startProcessForDocumentResult.errors().joinToString(separator = "\n - ")
             )
         }
@@ -176,7 +176,7 @@ open class ValtimoFormFlow(
         if (startProcessForDocumentResult.errors().isNotEmpty()) {
             throw RuntimeException(
                 "Could not start process with definition $processDefinitionKey for document ${documentId}\n" +
-                    "Reason:\n" +
+                    REASON +
                     startProcessForDocumentResult.errors().joinToString(separator = "\n - ")
             )
         }
@@ -194,5 +194,9 @@ open class ValtimoFormFlow(
             throw RuntimeException("Missing data on path '$path'")
         }
         return objectMapper.treeToValue(valueNode, Object::class.java)
+    }
+
+    companion object {
+        private const val REASON = "Reason:\n"
     }
 }

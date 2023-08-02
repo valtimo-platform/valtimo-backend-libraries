@@ -23,6 +23,7 @@ public class InstanceCount {
     private List<InstanceCountValue> values;
 
     public InstanceCount() {
+        //Default value for this constructor
     }
 
     public String getName() {

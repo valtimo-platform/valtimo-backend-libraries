@@ -17,10 +17,10 @@
 package com.ritense.processdocument.exception;
 
 public class DuplicateProcessDocumentDefinitionException extends RuntimeException {
-    private static final String message = "The process '%s' is already connected to document '%s'.";
+    private static final String MESSAGE = "The process '%s' is already connected to document '%s'.";
 
     public DuplicateProcessDocumentDefinitionException(String processDefinitionKey, String documentDefinitionId) {
-        super(String.format(message, processDefinitionKey, documentDefinitionId));
+        super(String.format(MESSAGE, processDefinitionKey, documentDefinitionId));
     }
 
 }

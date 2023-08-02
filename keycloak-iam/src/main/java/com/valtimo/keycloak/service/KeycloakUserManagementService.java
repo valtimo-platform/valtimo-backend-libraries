@@ -68,6 +68,7 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public void deleteUser(String userId) {
+        //Not implemented
     }
 
     @Override
@@ -77,10 +78,12 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public void activateUser(String userId) {
+        //Not implemented
     }
 
     @Override
     public void deactivateUser(String userId) {
+        //Not implemented
     }
 
     @Override
@@ -144,7 +147,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             .toList();
 
         return allUsers.stream()
-            .filter(user -> user.getRoles().containsAll(groupsCriteria.getRequiredUserGroups()))
+            .filter(user -> new HashSet<>(user.getRoles()).containsAll(groupsCriteria.getRequiredUserGroups()))
             .filter(user -> groupsCriteria.getOrUserGroups().stream()
                 .map(userGroups -> user.getRoles().stream().anyMatch(userGroups::contains))
                 .reduce(true, (orUserGroup1, orUserGroup2) -> orUserGroup1 && orUserGroup2))

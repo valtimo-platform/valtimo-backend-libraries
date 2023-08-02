@@ -61,24 +61,23 @@ public class ExceptionTranslator implements ProblemHandling {
                 .withTitle(problem.getTitle())
                 .with("path", request.getNativeRequest(HttpServletRequest.class).getRequestURI());
 
+        String MESSAGE = "message";
         if (problem instanceof ConstraintViolationProblem) {
             builder
                 .with("violations", ((ConstraintViolationProblem) problem).getViolations())
-                .with("message", ErrorConstants.ERR_VALIDATION);
+                .with(MESSAGE, ErrorConstants.ERR_VALIDATION);
         } else {
             builder
                 .withInstance(problem.getInstance());
 
             problem.getParameters().forEach(builder::with);
-            if (!problem.getParameters().containsKey("message") && problem.getStatus() != null) {
-                builder.with("message", "error.http." + problem.getStatus().getStatusCode());
+            if (!problem.getParameters().containsKey(MESSAGE) && problem.getStatus() != null) {
+                builder.with(MESSAGE, "error.http." + problem.getStatus().getStatusCode());
             }
         }
 
         builder.withCause(((DefaultProblem) problem).getCause());
-        hardeningServiceOptional.ifPresent((hardeningService) -> {
-            hardeningService.harden((ThrowableProblem) problem, builder, (HttpServletRequest) request.getNativeRequest());
-        });
+        hardeningServiceOptional.ifPresent((hardeningService) -> hardeningService.harden((ThrowableProblem) problem, builder, (HttpServletRequest) request.getNativeRequest()));
 
         return new ResponseEntity<>(builder.build(), entity.getHeaders(), entity.getStatusCode());
     }

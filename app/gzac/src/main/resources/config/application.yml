@@ -189,6 +189,14 @@ valtimo:
     genericTemplateName: "template-name"
     besluitDocumentRequired: true
 
+    upload:
+        acceptedMimeTypes:
+            - text/plain
+            - application/pdf
+            - image/jpeg
+            - application/xml
+
+
 
 spring-actuator:
     username: admin

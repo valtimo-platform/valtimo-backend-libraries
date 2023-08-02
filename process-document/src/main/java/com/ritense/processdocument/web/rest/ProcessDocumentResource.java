@@ -143,7 +143,6 @@ public class ProcessDocumentResource {
         return ResponseEntity.status(httpStatus).body(result);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_USER') and hasPermission(#request.taskId(), 'taskAccess')")
     @PostMapping(value = "/v1/process-document/operation/modify-document-and-complete-task", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<ModifyDocumentAndCompleteTaskResult> modifyDocumentAndCompleteTask(
         @Valid @RequestBody ModifyDocumentAndCompleteTaskRequest request

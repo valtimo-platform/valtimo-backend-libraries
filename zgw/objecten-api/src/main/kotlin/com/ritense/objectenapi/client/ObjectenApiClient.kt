@@ -43,10 +43,10 @@ class ObjectenApiClient(
 
         val responseBody = result?.body!!
 
-        return if (responseBody.type.host == "host.docker.internal") {
+        return if (responseBody.type.host == HOST_DOCKER_INTERNAL) {
             responseBody.copy(
                 type = URI.create(
-                    responseBody.type.toString().replace("host.docker.internal", "localhost")
+                    responseBody.type.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
                 )
             )
         } else {
@@ -62,7 +62,7 @@ class ObjectenApiClient(
         pageable: Pageable
     ): ObjectsList {
         val host = if (objecttypesApiUrl.host == "localhost") {
-            "host.docker.internal"
+            HOST_DOCKER_INTERNAL
         } else {
             objecttypesApiUrl.host
         }
@@ -86,7 +86,7 @@ class ObjectenApiClient(
                     .queryParam("page", pageable.pageNumber + 1) //objects api pagination starts at 1 instead of 0
                     .build()
             }
-            .header("Accept-Crs", "EPSG:4326")
+            .header(ACCEPT_CRS, EPSG_4326)
             .retrieve()
             .toEntity(ObjectsList::class.java)
             .block()
@@ -103,7 +103,7 @@ class ObjectenApiClient(
         pageable: Pageable
     ): ObjectsList {
         val host = if (objecttypesApiUrl.host == "localhost") {
-            "host.docker.internal"
+            HOST_DOCKER_INTERNAL
         } else {
             objecttypesApiUrl.host
         }
@@ -128,7 +128,7 @@ class ObjectenApiClient(
                     .queryParam("data_attrs", searchString)
                     .build()
             }
-            .header("Accept-Crs", "EPSG:4326")
+            .header(ACCEPT_CRS, EPSG_4326)
             .retrieve()
             .toEntity(ObjectsList::class.java)
             .block()
@@ -145,7 +145,7 @@ class ObjectenApiClient(
             objectRequest.copy(
                 type = UriComponentsBuilder
                     .fromUri(objectRequest.type)
-                    .host("host.docker.internal")
+                    .host(HOST_DOCKER_INTERNAL)
                     .build()
                     .toUri()
             )
@@ -160,8 +160,8 @@ class ObjectenApiClient(
             .build()
             .post()
             .uri("objects")
-            .header("Accept-Crs", "EPSG:4326")
-            .header("Content-Crs", "EPSG:4326")
+            .header(ACCEPT_CRS, EPSG_4326)
+            .header(CONTENT_CRS, EPSG_4326)
             .bodyValue(objectRequestCorrectedHost)
             .retrieve()
             .toEntity(ObjectWrapper::class.java)
@@ -178,7 +178,7 @@ class ObjectenApiClient(
             objectRequest.copy(
                 type = UriComponentsBuilder
                     .fromUri(objectRequest.type)
-                    .host("host.docker.internal")
+                    .host(HOST_DOCKER_INTERNAL)
                     .build()
                     .toUri()
             )
@@ -191,7 +191,7 @@ class ObjectenApiClient(
             .build()
             .patch()
             .uri(objectUrl)
-            .header("Content-Crs", "EPSG:4326")
+            .header(CONTENT_CRS, EPSG_4326)
             .bodyValue(objectRequestCorrectedHost)
             .retrieve()
             .toEntity(ObjectWrapper::class.java)
@@ -211,7 +211,7 @@ class ObjectenApiClient(
             .build()
             .put()
             .uri(objectUrl)
-            .header("Content-Crs", "EPSG:4326")
+            .header(CONTENT_CRS, EPSG_4326)
             .bodyValue(objectRequest)
             .retrieve()
             .toEntity(ObjectWrapper::class.java)
@@ -227,7 +227,7 @@ class ObjectenApiClient(
             .build()
             .delete()
             .uri(objectUrl)
-            .header("Content-Crs", "EPSG:4326")
+            .header(CONTENT_CRS, EPSG_4326)
             .retrieve()
             .toBodilessEntity()
             .block()
@@ -235,4 +235,10 @@ class ObjectenApiClient(
         return result?.statusCode!!
     }
 
+    companion object {
+        private const val HOST_DOCKER_INTERNAL = "host.docker.internal"
+        private const val CONTENT_CRS = "Content-Crs"
+        private const val ACCEPT_CRS = "Accept-Crs"
+        private const val EPSG_4326 = "EPSG:4326"
+    }
 }

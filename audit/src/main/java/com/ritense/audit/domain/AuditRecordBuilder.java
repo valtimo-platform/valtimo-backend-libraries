@@ -30,6 +30,7 @@ public class AuditRecordBuilder {
     private UUID documentId;
 
     public AuditRecordBuilder() {
+        //Default value for empty constructor
     }
 
     public AuditRecordBuilder id(UUID id) {

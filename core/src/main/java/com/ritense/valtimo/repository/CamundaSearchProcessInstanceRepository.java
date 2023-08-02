@@ -30,6 +30,8 @@ import java.util.List;
 public class CamundaSearchProcessInstanceRepository {
 
     private final SqlSession session;
+    private final static String SEARCH_INSTANCE_COUNT_STATEMENT = "com.ritense.valtimo.camunda.processinstance.searchInstancesCount";
+    private final static String SEARCH_INSTANCES_STATEMENT = "com.ritense.valtimo.camunda.processinstance.searchInstances";
 
     public CamundaSearchProcessInstanceRepository(SqlSession session) {
         this.session = session;
@@ -43,7 +45,7 @@ public class CamundaSearchProcessInstanceRepository {
         ListQueryParameterObject queryParameterObject = new ListQueryParameterObject();
         queryParameterObject.setParameter(processInstanceQueryParametersV2.createParameters());
 
-        return session.selectOne("com.ritense.valtimo.camunda.processinstance.searchInstancesCount", queryParameterObject);
+        return session.selectOne(SEARCH_INSTANCE_COUNT_STATEMENT, queryParameterObject);
     }
 
     public Long searchInstancesCountByDefinitionName(String processDefinitionName, ProcessInstanceSearchDTO processInstanceSearchDTO) {
@@ -54,7 +56,7 @@ public class CamundaSearchProcessInstanceRepository {
         ListQueryParameterObject queryParameterObject = new ListQueryParameterObject();
         queryParameterObject.setParameter(processInstanceQueryParametersV2.createParameters());
 
-        return session.selectOne("com.ritense.valtimo.camunda.processinstance.searchInstancesCount", queryParameterObject);
+        return session.selectOne(SEARCH_INSTANCE_COUNT_STATEMENT, queryParameterObject);
     }
 
     public Page<ProcessInstance> searchInstances(String processDefinitionName, ProcessInstanceSearchDTO processInstanceSearchDTO, Pageable pageable) {
@@ -68,8 +70,8 @@ public class CamundaSearchProcessInstanceRepository {
             pageable.getPageSize()
         );
         query.setOrderingProperties(CamundaOrderByHelper.sortToOrders("HistoricProcessInstance", pageable.getSort()));
-        List<ProcessInstance> processInstances = session.selectList("com.ritense.valtimo.camunda.processinstance.searchInstances", query);
-        Long processInstanceCount = session.selectOne("com.ritense.valtimo.camunda.processinstance.searchInstancesCount", query);
+        List<ProcessInstance> processInstances = session.selectList(SEARCH_INSTANCES_STATEMENT, query);
+        Long processInstanceCount = session.selectOne(SEARCH_INSTANCE_COUNT_STATEMENT, query);
 
         return new PageImpl<>(processInstances, pageable, processInstanceCount);
     }

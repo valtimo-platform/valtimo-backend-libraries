@@ -33,7 +33,6 @@ import com.ritense.valtimo.contract.audit.AuditEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -41,12 +40,12 @@ import java.util.UUID;
 @Transactional
 public class AuditServiceImpl implements AuditService {
 
-    private final AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository;
+    private final AuditRecordRepository<AuditRecord> auditRecordRepository;
     private final AuthorizationService authorizationService;
     private final DocumentService documentService;
 
     public AuditServiceImpl(
-        AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository,
+        AuditRecordRepository<AuditRecord> auditRecordRepository,
         AuthorizationService authorizationService,
         DocumentService documentService
     ) {

@@ -28,6 +28,7 @@ import static org.springframework.http.HttpMethod.POST;
 public class FormAssociationHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     public FormAssociationHttpSecurityConfigurer() {
+        //Default constructor
     }
 
     @Override

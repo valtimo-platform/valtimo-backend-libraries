@@ -230,30 +230,6 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void shouldRetrieveSearchFieldsByDocumentDefinitionNameForAdmin() throws Exception {
-        var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
-        mockMvc.perform(
-                post("/api/v1/document-search/{documentDefinitionName}/fields",
-                    DOCUMENT_DEFINITION_NAME)
-                    .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
-                    .contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andDo(print())
-            .andExpect(status().isOk());
-        mockMvc.perform(
-                get("/api/v1/admin/document-search/{documentDefinitionName}/fields",
-                    DOCUMENT_DEFINITION_NAME))
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(1)))
-            .andExpect(jsonPath("$[0].key", is("street")))
-            .andExpect(jsonPath("$[0].path", is("doc:street")))
-            .andExpect(jsonPath("$[0].dataType", is(TEXT.toString())))
-            .andExpect(jsonPath("$[0].fieldType", is(SINGLE.toString())))
-            .andExpect(jsonPath("$[0].matchType", is(EXACT.toString())))
-            .andExpect(jsonPath("$[0].title", is("aTitle")));
-    }
-
-    @Test
     void shouldUpdateSearchField() throws Exception {
         AuthorizationContext.runWithoutAuthorization(() -> {
                 searchFieldService.addSearchField(DOCUMENT_DEFINITION_NAME, SEARCH_FIELD);

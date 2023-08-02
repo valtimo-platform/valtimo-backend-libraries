@@ -129,7 +129,7 @@ class RequestBuilder {
                 )
                 when {
                     responseEntity.statusCode.isError ->
-                        throw IllegalAccessException("Invalid http call")
+                        throw IllegalStateException("Invalid http call")
                 }
                 return responseEntity.body!!
             } catch (ex: Exception) {

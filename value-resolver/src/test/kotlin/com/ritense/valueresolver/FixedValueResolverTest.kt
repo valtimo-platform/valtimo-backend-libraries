@@ -106,7 +106,7 @@ internal class FixedValueResolverTest {
         val documentInstanceId = UUID.randomUUID().toString()
 
         val resolvedValue = fixedValueResolver.createResolver(
-            documentInstanceId = documentInstanceId,
+            documentId = documentInstanceId,
         ).apply(
             "true"
         )

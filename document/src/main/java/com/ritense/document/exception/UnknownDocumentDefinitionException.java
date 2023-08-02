@@ -18,10 +18,10 @@ package com.ritense.document.exception;
 
 public class UnknownDocumentDefinitionException extends RuntimeException {
 
-    private static final String message = "No document definition with name %s exist";
+    private static final String MESSAGE = "No document definition with name %s exist";
 
     public UnknownDocumentDefinitionException(String definitionName) {
-        super(String.format(message, definitionName));
+        super(String.format(MESSAGE, definitionName));
     }
 
 }

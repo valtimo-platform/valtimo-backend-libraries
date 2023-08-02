@@ -23,6 +23,7 @@ public class KeyAndPasswordDTO {
     private String newPassword;
 
     public KeyAndPasswordDTO() {
+        //Default constructor
     }
 
     public String getKey() {

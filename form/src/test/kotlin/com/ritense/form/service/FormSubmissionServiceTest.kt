@@ -18,6 +18,7 @@ package com.ritense.form.service
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationService
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchema
 import com.ritense.document.domain.impl.JsonSchemaDocument
@@ -77,6 +78,7 @@ class FormSubmissionServiceTest {
     lateinit var applicationEventPublisher: ApplicationEventPublisher
     lateinit var prefillFormService: PrefillFormService
     lateinit var documentSequenceGeneratorService: DocumentSequenceGeneratorService
+    lateinit var authorizationService: AuthorizationService
 
     lateinit var formProcessLink: FormProcessLink
     lateinit var processDefinition: CamundaProcessDefinition
@@ -93,6 +95,7 @@ class FormSubmissionServiceTest {
         repositoryService = mock()
         applicationEventPublisher = mock()
         prefillFormService = mock()
+        authorizationService = mock()
         formSubmissionService = FormSubmissionService(
             processLinkService,
             formDefinitionService,
@@ -103,6 +106,7 @@ class FormSubmissionServiceTest {
             repositoryService,
             applicationEventPublisher,
             prefillFormService,
+            authorizationService
         )
 
         documentSequenceGeneratorService = mock()

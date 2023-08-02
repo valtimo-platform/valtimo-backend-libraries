@@ -47,15 +47,13 @@ import static org.mockito.Mockito.when;
 public class AuditServiceImplTest extends AbstractTestHelper {
 
     private AuditService auditService;
-    private AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository;
-    private AuthorizationService authorizationService;
-    private DocumentService documentService;
+    private AuditRecordRepository<AuditRecord> auditRecordRepository;
 
     @BeforeEach
     public void setUp() {
         auditRecordRepository = mock(AuditRecordRepository.class);
-        authorizationService = mock(AuthorizationService.class);
-        documentService = mock(DocumentService.class);
+        AuthorizationService authorizationService = mock(AuthorizationService.class);
+        DocumentService documentService = mock(DocumentService.class);
         auditService = new AuditServiceImpl(auditRecordRepository, authorizationService, documentService);
     }
 
@@ -65,9 +63,7 @@ public class AuditServiceImplTest extends AbstractTestHelper {
         final AuditRecordId auditRecordId = AuditRecordId.existingId(event.getId());
         when(auditRecordRepository.findById(auditRecordId)).thenReturn(Optional.empty());
 
-        assertThrows(AuditRecordNotFoundException.class, () -> {
-            auditService.findById(auditRecordId);
-        });
+        assertThrows(AuditRecordNotFoundException.class, () -> auditService.findById(auditRecordId));
     }
 
     @Test
@@ -92,7 +88,7 @@ public class AuditServiceImplTest extends AbstractTestHelper {
         final MetaData metaData = metaData(testEvent);
         final AuditRecord auditRecord = auditRecord(testEvent, metaData);
 
-        final Class event = testEvent.getClass();
+        final Class<? extends TestEvent> event = testEvent.getClass();
         final LocalDateTime from = now.minusDays(2);
         final LocalDateTime until = now.plusDays(2);
         final Pageable unpaged = Pageable.unpaged();

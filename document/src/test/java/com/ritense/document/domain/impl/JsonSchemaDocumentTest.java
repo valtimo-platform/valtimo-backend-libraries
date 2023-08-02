@@ -16,7 +16,6 @@
 
 package com.ritense.document.domain.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ritense.document.BaseTest;
 import com.ritense.document.domain.DocumentVersion;
 import org.junit.jupiter.api.Test;
@@ -152,7 +151,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
         assertThat(createResult.resultingDocument()).isPresent();
 
         final var jsonSchemaDocument = createResult.resultingDocument().orElseThrow();
-        assertThat(jsonSchemaDocument.content()).extracting(jsonDocumentContent -> jsonDocumentContent.asJson().get("age").equals(40));
+        assertThat(jsonSchemaDocument.content().asJson().get("age").asInt()).isEqualTo(40);
     }
 
     @Test
@@ -164,7 +163,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
         assertThat(createResult.resultingDocument()).isPresent();
 
         final var jsonSchemaDocument = createResult.resultingDocument().orElseThrow();
-        assertThat(jsonSchemaDocument.content()).extracting(jsonDocumentContent -> jsonDocumentContent.asJson().get("birthday").equals("2018-11-13"));
+        assertThat(jsonSchemaDocument.content().asJson().get("birthday").asText()).isEqualTo("1982-01-01");
     }
 
     @Test
@@ -176,7 +175,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
         assertThat(createResult.resultingDocument()).isPresent();
 
         final var jsonSchemaDocument = createResult.resultingDocument().orElseThrow();
-        assertThat(jsonSchemaDocument.content()).extracting(jsonDocumentContent -> jsonDocumentContent.asJson().get("is-cool").equals(true));
+        assertThat(jsonSchemaDocument.content().asJson().get("is-cool").asBoolean()).isTrue();
     }
 
     @Test
@@ -247,7 +246,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldAddArrayItem() throws JsonProcessingException {
+    public void shouldAddArrayItem() {
         var definition = definitionOf("person");
         final var content = new JsonDocumentContent("{\"files\": [{\"id\" : \"1\"}]}");
         final var createResult = createDocument(definitionOf("array-example"), content);

@@ -20,6 +20,7 @@ public class CommentDto {
     private String text;
 
     public CommentDto() {
+        // Default value empty constructor
     }
 
     public String getText() {
