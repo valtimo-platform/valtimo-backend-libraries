@@ -19,12 +19,13 @@ package com.ritense.case.service.validations
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valueresolver.ValueResolverService
 
 class CreateColumnValidator(
     override val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
-    override val documentDefinitionService: DocumentDefinitionService,
+    override val documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>,
     override val valueResolverService: ValueResolverService,
 ) : ValidationUtils(
     caseDefinitionListColumnRepository,

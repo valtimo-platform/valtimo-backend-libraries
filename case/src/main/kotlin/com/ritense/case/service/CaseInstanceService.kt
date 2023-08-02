@@ -20,6 +20,7 @@ import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.valueresolver.ValueResolverService
@@ -33,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional
 class CaseInstanceService(
     private val caseDefinitionService: CaseDefinitionService,
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
-    private val documentSearchService: DocumentSearchService,
+    private val documentSearchService: DocumentSearchService<JsonSchemaDocument>,
     private val valueResolverService: ValueResolverService,
 ) {
     fun search(

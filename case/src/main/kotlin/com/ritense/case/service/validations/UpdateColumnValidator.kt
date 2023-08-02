@@ -19,13 +19,14 @@ package com.ritense.case.service.validations
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valueresolver.ValueResolverService
 import org.zalando.problem.Status
 
 class UpdateColumnValidator(
     caseDefinitionSettingsRepository: CaseDefinitionListColumnRepository,
-    documentDefinitionService: DocumentDefinitionService,
+    documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>,
     valueResolverService: ValueResolverService,
 ) : ValidationUtils(
     caseDefinitionSettingsRepository,

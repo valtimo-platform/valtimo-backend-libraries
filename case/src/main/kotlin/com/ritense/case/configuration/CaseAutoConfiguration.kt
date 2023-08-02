@@ -31,6 +31,8 @@ import com.ritense.case.service.CaseListDeploymentService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.web.rest.CaseDefinitionResource
 import com.ritense.case.web.rest.CaseInstanceResource
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
@@ -75,7 +77,7 @@ class CaseAutoConfiguration {
     fun caseDefinitionService(
         repository: CaseDefinitionSettingsRepository,
         caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
-        documentDefinitionService: DocumentDefinitionService,
+        documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>,
         valueResolverService: ValueResolverService,
         ): CaseDefinitionService {
         return CaseDefinitionService(
@@ -90,7 +92,7 @@ class CaseAutoConfiguration {
     fun caseInstanceService(
         caseDefinitionService: CaseDefinitionService,
         caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
-        documentSearchService: DocumentSearchService,
+        documentSearchService: DocumentSearchService<JsonSchemaDocument>,
         valueResolverService: ValueResolverService,
     ): CaseInstanceService {
         return CaseInstanceService(

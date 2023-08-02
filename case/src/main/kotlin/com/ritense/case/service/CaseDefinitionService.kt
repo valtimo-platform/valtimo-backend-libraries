@@ -28,6 +28,7 @@ import com.ritense.case.service.validations.UpdateColumnValidator
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valueresolver.ValueResolverService
@@ -37,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional
 class CaseDefinitionService(
     private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository,
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
-    private val documentDefinitionService: DocumentDefinitionService,
+    private val documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>,
     private val valueResolverService: ValueResolverService,
 ) {
     var validators: Map<Operation, CaseDefinitionColumnValidator> = mapOf(

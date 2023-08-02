@@ -22,6 +22,7 @@ import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valueresolver.ValueResolverService
@@ -29,7 +30,7 @@ import org.zalando.problem.Status
 
 open class ValidationUtils(
     open val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
-    open val documentDefinitionService: DocumentDefinitionService,
+    open val documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>,
     open val valueResolverService: ValueResolverService,
 ) {
 
