@@ -28,13 +28,13 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.UUID;
 
-public interface DocumentResource {
+public interface DocumentResource<T extends Document> {
 
-    ResponseEntity<? extends Document> getDocument(UUID id);
+    ResponseEntity<T> getDocument(UUID id);
 
-    ResponseEntity<CreateDocumentResult> createNewDocument(NewDocumentRequest request);
+    ResponseEntity<CreateDocumentResult<T>> createNewDocument(NewDocumentRequest request);
 
-    ResponseEntity<ModifyDocumentResult> modifyDocumentContent(ModifyDocumentRequest request);
+    ResponseEntity<ModifyDocumentResult<T>> modifyDocumentContent(ModifyDocumentRequest request);
 
     ResponseEntity<Void> assignResource(UUID documentId, UUID resourceId);
 

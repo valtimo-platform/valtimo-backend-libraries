@@ -43,11 +43,11 @@ public interface DocumentService<T extends Document> {
 
     Document get(String documentId);
 
-    CreateDocumentResult createDocument(NewDocumentRequest newDocumentRequest);
+    CreateDocumentResult<T> createDocument(NewDocumentRequest newDocumentRequest);
 
     void modifyDocument(Document document, JsonNode jsonNode);
 
-    ModifyDocumentResult modifyDocument(ModifyDocumentRequest modifyDocumentRequest);
+    ModifyDocumentResult<T> modifyDocument(ModifyDocumentRequest modifyDocumentRequest);
 
     void assignDocumentRelation(Document.Id documentId, DocumentRelation documentRelation);
 

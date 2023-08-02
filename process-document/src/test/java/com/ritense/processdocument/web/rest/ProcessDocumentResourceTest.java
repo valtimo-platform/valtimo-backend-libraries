@@ -19,6 +19,7 @@ package com.ritense.processdocument.web.rest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.domain.impl.JsonDocumentContent;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
@@ -49,9 +50,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -96,7 +94,6 @@ class ProcessDocumentResourceTest extends BaseTest {
     private MockMvc mockMvc;
     private CamundaProcessJsonSchemaDocumentDefinition processDocumentDefinition;
     private CamundaProcessJsonSchemaDocumentInstance processDocumentInstance;
-    private Page<CamundaProcessJsonSchemaDocumentDefinition> processDocumentInstancesPage;
     private ObjectMapper objectMapper;
     private JsonSchemaDocumentDefinitionId documentDefinitionId;
     private CamundaProcessDefinitionKey processDefinitionKey;
@@ -136,12 +133,6 @@ class ProcessDocumentResourceTest extends BaseTest {
             ),
             "aName"
         );
-
-        List<CamundaProcessJsonSchemaDocumentDefinition> camundaProcessJsonSchemaDocumentDefinitions = List.of(
-            processDocumentDefinition
-        );
-        Pageable unpaged = Pageable.unpaged();
-        processDocumentInstancesPage = new PageImpl<>(camundaProcessJsonSchemaDocumentDefinitions, unpaged, 1);
     }
 
     @Test
@@ -213,7 +204,7 @@ class ProcessDocumentResourceTest extends BaseTest {
     @Test
     void shouldReturnOkWhenCreatingNewDocumentAndStartProcess() throws Exception {
         var content = new JsonDocumentContent("{\"street\": \"Funenparks\"}");
-        final CreateDocumentResult result = createDocument(definition(), content);
+        final CreateDocumentResult<JsonSchemaDocument> result = createDocument(definition(), content);
 
         final CamundaProcessInstanceId processInstanceId = new CamundaProcessInstanceId(UUID.randomUUID().toString());
         var resultSucceeded = new NewDocumentAndStartProcessResultSucceeded(
@@ -247,7 +238,7 @@ class ProcessDocumentResourceTest extends BaseTest {
     @Test
     void shouldReturnOkWhenModifyDocumentAndCompleteTask() throws Exception {
         var content = new JsonDocumentContent("{\"street\": \"Funenparks\"}");
-        final CreateDocumentResult result = createDocument(definition(), content);
+        final CreateDocumentResult<JsonSchemaDocument> result = createDocument(definition(), content);
 
         var resultSucceeded = new ModifyDocumentAndCompleteTaskResultSucceeded(result.resultingDocument().orElseThrow());
         when(processDocumentService.modifyDocumentAndCompleteTask(any())).thenReturn(resultSucceeded);
@@ -321,7 +312,7 @@ class ProcessDocumentResourceTest extends BaseTest {
     @Test
     void shouldReturnOkWhenModifyDocumentAndStartProcess() throws Exception {
         var content = new JsonDocumentContent("{\"street\": \"Funenparks\"}");
-        final CreateDocumentResult result = createDocument(definition(), content);
+        final CreateDocumentResult<JsonSchemaDocument> result = createDocument(definition(), content);
 
         final var camundaProcessInstanceId = new CamundaProcessInstanceId(UUID.randomUUID().toString());
         var resultSucceeded = new ModifyDocumentAndStartProcessResultSucceeded(

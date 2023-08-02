@@ -67,7 +67,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     private static final String USER_ID = "a28994a3-31f9-4327-92a4-210c479d3055";
     private static final String USERNAME = "john@ritense.com";
     private JsonSchemaDocumentDefinition definition;
-    private CreateDocumentResult originalDocument;
+    private CreateDocumentResult<JsonSchemaDocument> originalDocument;
 
     @BeforeEach
     public void beforeEach() {
@@ -268,7 +268,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void searchShouldFindDocumentBySequence() {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setDocumentDefinitionName(definition.id().name());
-        searchRequest.setSequence(originalDocument.resultingDocument().get().sequence());
+        searchRequest.setSequence(originalDocument.resultingDocument().orElseThrow().sequence());
 
         final Page<? extends Document> page = documentSearchService.search(
             searchRequest,
@@ -442,8 +442,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldOrderAllDocumentsByOtherField() {
 
-        CreateDocumentResult documentOne = createDocument("{\"street\": \"Alexanderkade\"}");
-        CreateDocumentResult documentTwo = createDocument("{\"street\": \"Alexanderkade\"}");
+        CreateDocumentResult<JsonSchemaDocument> documentOne = createDocument("{\"street\": \"Alexanderkade\"}");
+        CreateDocumentResult<JsonSchemaDocument> documentTwo = createDocument("{\"street\": \"Alexanderkade\"}");
 
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "kade")
@@ -459,16 +459,16 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         );
         assertThat(page).isNotNull();
         assertThat(page.getTotalElements()).isEqualTo(2);
-        assertThat(page.getContent().get(0).sequence()).isEqualTo(documentTwo.resultingDocument().get().sequence());
-        assertThat(page.getContent().get(1).sequence()).isEqualTo(documentOne.resultingDocument().get().sequence());
+        assertThat(page.getContent().get(0).sequence()).isEqualTo(documentTwo.resultingDocument().orElseThrow().sequence());
+        assertThat(page.getContent().get(1).sequence()).isEqualTo(documentOne.resultingDocument().orElseThrow().sequence());
     }
 
     @Test
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldOrderAllDocumentsWithoutCapitals() {
 
-        CreateDocumentResult documentOne = createDocument("{\"street\": \"abc\",\"place\": \"test\"}");
-        CreateDocumentResult documentTwo = createDocument("{\"street\": \"Ade\",\"place\": \"test\"}");
+        CreateDocumentResult<JsonSchemaDocument> documentOne = createDocument("{\"street\": \"abc\",\"place\": \"test\"}");
+        CreateDocumentResult<JsonSchemaDocument> documentTwo = createDocument("{\"street\": \"Ade\",\"place\": \"test\"}");
 
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.place", "test")
@@ -484,17 +484,17 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         );
         assertThat(page).isNotNull();
         assertThat(page.getTotalElements()).isEqualTo(2);
-        assertThat(page.getContent().get(0).id()).isEqualTo(documentOne.resultingDocument().get().id());
-        assertThat(page.getContent().get(1).id()).isEqualTo(documentTwo.resultingDocument().get().id());
+        assertThat(page.getContent().get(0).id()).isEqualTo(documentOne.resultingDocument().orElseThrow().id());
+        assertThat(page.getContent().get(1).id()).isEqualTo(documentTwo.resultingDocument().orElseThrow().id());
     }
 
     @Test
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldOrderAllDocumentsBasedOnAssigneeFullName() {
         documentRepository.deleteAllInBatch();
-        var documentOne = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
-        var documentTwo = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
-        var documentThree = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
+        var documentOne = (JsonSchemaDocument) createDocument("{}").resultingDocument().orElseThrow();
+        var documentTwo = (JsonSchemaDocument) createDocument("{}").resultingDocument().orElseThrow();
+        var documentThree = (JsonSchemaDocument) createDocument("{}").resultingDocument().orElseThrow();
         documentOne.setAssignee("1111", "Beth Xander");
         documentTwo.setAssignee("2222", "Anna Yablon");
         documentThree.setAssignee("33", "Beth Zabala");
@@ -519,8 +519,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndLikeText() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -542,9 +542,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndLikeTextInListOfMultipleValues() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -567,9 +567,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndTextInListOfMultipleValues() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -594,9 +594,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndBetweenRangedValues() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"housenumber\": 1}").resultingDocument().get();
-        createDocument("{\"housenumber\": 2}").resultingDocument().get();
-        createDocument("{\"housenumber\": 3}").resultingDocument().get();
+        createDocument("{\"housenumber\": 1}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 2}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 3}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -616,8 +616,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var content = result.getContent();
         assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).isPresent());
         assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/housenumber")).isPresent());
-        assertEquals(1, content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
-        assertEquals(2, content.get(1).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
+        assertEquals(1, content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).orElseThrow().asInt());
+        assertEquals(2, content.get(1).content().getValueBy(JsonPointer.valueOf("/housenumber")).orElseThrow().asInt());
     }
 
     @Test
@@ -625,9 +625,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndFromRangedValue() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"housenumber\": 1}").resultingDocument().get();
-        createDocument("{\"housenumber\": 2}").resultingDocument().get();
-        createDocument("{\"housenumber\": 3}").resultingDocument().get();
+        createDocument("{\"housenumber\": 1}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 2}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 3}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -646,8 +646,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var content = result.getContent();
         assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).isPresent());
         assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/housenumber")).isPresent());
-        assertEquals(2, content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
-        assertEquals(3, content.get(1).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
+        assertEquals(2, content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).orElseThrow().asInt());
+        assertEquals(3, content.get(1).content().getValueBy(JsonPointer.valueOf("/housenumber")).orElseThrow().asInt());
     }
 
     @Test
@@ -655,9 +655,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndToRangedValue() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"housenumber\": 1}").resultingDocument().get();
-        createDocument("{\"housenumber\": 2}").resultingDocument().get();
-        createDocument("{\"housenumber\": 3}").resultingDocument().get();
+        createDocument("{\"housenumber\": 1}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 2}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 3}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -675,7 +675,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         var content = result.getContent();
         assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).isPresent());
-        assertEquals(1, content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).get().asInt());
+        assertEquals(1, content.get(0).content().getValueBy(JsonPointer.valueOf("/housenumber")).orElseThrow().asInt());
     }
 
     @Test
@@ -683,9 +683,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldFailOnFromSearchWithoutRangeFrom() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"housenumber\": 1}").resultingDocument().get();
-        createDocument("{\"housenumber\": 2}").resultingDocument().get();
-        createDocument("{\"housenumber\": 3}").resultingDocument().get();
+        createDocument("{\"housenumber\": 1}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 2}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 3}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -705,9 +705,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndRangedDateValues() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"movedAtDate\": \"2022-01-01\"}").resultingDocument().get();
-        createDocument("{\"movedAtDate\": \"2022-02-01\"}").resultingDocument().get();
-        createDocument("{\"movedAtDate\": \"2022-03-01\"}").resultingDocument().get();
+        createDocument("{\"movedAtDate\": \"2022-01-01\"}").resultingDocument().orElseThrow();
+        createDocument("{\"movedAtDate\": \"2022-02-01\"}").resultingDocument().orElseThrow();
+        createDocument("{\"movedAtDate\": \"2022-03-01\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -727,8 +727,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var content = result.getContent();
         assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).isPresent());
         assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).isPresent());
-        assertEquals("2022-01-01", content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).get().asText());
-        assertEquals("2022-02-01", content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).get().asText());
+        assertEquals("2022-01-01", content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).orElseThrow().asText());
+        assertEquals("2022-02-01", content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDate")).orElseThrow().asText());
     }
 
     @Test
@@ -736,9 +736,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndFromDateTimeValues() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:00:00\"}").resultingDocument().get();
-        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:10:00\"}").resultingDocument().get();
-        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:20:00\"}").resultingDocument().get();
+        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:00:00\"}").resultingDocument().orElseThrow();
+        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:10:00\"}").resultingDocument().orElseThrow();
+        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:20:00\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -758,9 +758,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).isPresent());
         assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).isPresent());
         assertEquals("2022-01-01T12:10:00",
-            content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText());
+            content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).orElseThrow().asText());
         assertEquals("2022-01-01T12:20:00",
-            content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText());
+            content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).orElseThrow().asText());
     }
 
     @Test
@@ -793,9 +793,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndOrderBySequence() {
         documentRepository.deleteAllInBatch();
 
-        var document1 = createDocument("{}").resultingDocument().get();
-        var document2 = createDocument("{}").resultingDocument().get();
-        var document3 = createDocument("{}").resultingDocument().get();
+        var document1 = createDocument("{}").resultingDocument().orElseThrow();
+        var document2 = createDocument("{}").resultingDocument().orElseThrow();
+        var document3 = createDocument("{}").resultingDocument().orElseThrow();
 
         var result = documentSearchService.search(
             definition.id().name(),
@@ -816,7 +816,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForCreatedOnCasePropertyWithLocalDateClass() {
         documentRepository.deleteAllInBatch();
 
-        var document = createDocument("{}").resultingDocument().get();
+        var document = createDocument("{}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -839,8 +839,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForBooleanTrueProperty() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"loan-approved\": true}").resultingDocument().get();
-        createDocument("{\"loan-approved\": false}").resultingDocument().get();
+        createDocument("{\"loan-approved\": true}").resultingDocument().orElseThrow();
+        createDocument("{\"loan-approved\": false}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -856,7 +856,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(1);
-        assertThat(result.toList().get(0).content().getValueBy(JsonPointer.valueOf("/loan-approved")).get().booleanValue())
+        assertThat(result.toList().get(0).content().getValueBy(JsonPointer.valueOf("/loan-approved")).orElseThrow().booleanValue())
             .isTrue();
     }
 
@@ -865,8 +865,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForBooleanFalseProperty() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"loan-approved\": true}").resultingDocument().get();
-        createDocument("{\"loan-approved\": false}").resultingDocument().get();
+        createDocument("{\"loan-approved\": true}").resultingDocument().orElseThrow();
+        createDocument("{\"loan-approved\": false}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -882,7 +882,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(1);
-        assertThat(result.toList().get(0).content().getValueBy(JsonPointer.valueOf("/loan-approved")).get().booleanValue())
+        assertThat(result.toList().get(0).content().getValueBy(JsonPointer.valueOf("/loan-approved")).orElseThrow().booleanValue())
             .isFalse();
     }
 
@@ -891,8 +891,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForIntegerProperty() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"size\": 5}").resultingDocument().get();
-        createDocument("{\"size\": 6}").resultingDocument().get();
+        createDocument("{\"size\": 5}").resultingDocument().orElseThrow();
+        createDocument("{\"size\": 6}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -915,9 +915,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestWithMultipleFieldsUsingAnd() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().orElseThrow();
 
         // relying on default SearchOperator being AND
         var searchRequest = new AdvancedSearchRequest()
@@ -944,9 +944,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestWithMultipleFieldsUsingOr() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .searchOperator(SearchOperator.OR)
@@ -973,9 +973,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestWithIn() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Wallstreet\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Wallstreet\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -998,9 +998,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForOpenCases() {
         documentRepository.deleteAllInBatch();
 
-        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().get();
-        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
-        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
+        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().orElseThrow();
+        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().orElseThrow();
+        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().orElseThrow();
 
         AuthorizationContext.runWithoutAuthorization(() -> {
                 documentService.assignUserToDocument(document2.id().getId(), USER_ID);
@@ -1026,9 +1026,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForMyCases() {
         documentRepository.deleteAllInBatch();
 
-        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().get();
-        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
-        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
+        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().orElseThrow();
 
         AuthorizationContext.runWithoutAuthorization(() -> {
                 documentService.assignUserToDocument(document2.id().getId(), USER_ID);
@@ -1053,9 +1051,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForAll() {
         documentRepository.deleteAllInBatch();
 
-        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().get();
-        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
-        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
+        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().orElseThrow();
+        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().orElseThrow();
+        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().orElseThrow();
 
         AuthorizationContext
             .runWithoutAuthorization(() -> {
@@ -1081,7 +1079,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         assertThat(result.toList().get(2).id().getId()).isEqualTo(document3.id().getId());
     }
 
-    private CreateDocumentResult createDocument(String content) {
+    private CreateDocumentResult<JsonSchemaDocument> createDocument(String content) {
         var documentContent = new JsonDocumentContent(content);
 
         return AuthorizationContext.runWithoutAuthorization(

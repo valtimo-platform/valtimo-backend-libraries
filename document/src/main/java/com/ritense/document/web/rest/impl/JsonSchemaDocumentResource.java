@@ -16,7 +16,7 @@
 
 package com.ritense.document.web.rest.impl;
 
-import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
@@ -49,7 +49,7 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_J
 
 @RestController
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
-public class JsonSchemaDocumentResource implements DocumentResource {
+public class JsonSchemaDocumentResource implements DocumentResource<JsonSchemaDocument> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentResource.class);
 
@@ -63,7 +63,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
 
     @Override
     @GetMapping("/v1/document/{id}")
-    public ResponseEntity<? extends Document> getDocument(@PathVariable(name = "id") UUID id) {
+    public ResponseEntity<JsonSchemaDocument> getDocument(@PathVariable(name = "id") UUID id) {
         return documentService.findBy(JsonSchemaDocumentId.existingId(id))
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
@@ -71,7 +71,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
 
     @Override
     @PostMapping(value = "/v1/document", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CreateDocumentResult> createNewDocument(
+    public ResponseEntity<CreateDocumentResult<JsonSchemaDocument>> createNewDocument(
         @RequestBody @Valid NewDocumentRequest request
     ) {
         return applyResult(documentService.createDocument(request));
@@ -79,7 +79,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
 
     @Override
     @PutMapping(value = "/v1/document", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ModifyDocumentResult> modifyDocumentContent(
+    public ResponseEntity<ModifyDocumentResult<JsonSchemaDocument>> modifyDocumentContent(
         @RequestBody @Valid ModifyDocumentRequest request
     ) {
         return applyResult(documentService.modifyDocument(request));
@@ -144,9 +144,8 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         return ResponseEntity.ok(users);
     }
 
-    <T extends DocumentResult> ResponseEntity<T> applyResult(T result) {
+    <T extends DocumentResult<JsonSchemaDocument>> ResponseEntity<T> applyResult(T result) {
         var httpStatus = result.resultingDocument().isPresent() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(httpStatus).body(result);
     }
-
 }
