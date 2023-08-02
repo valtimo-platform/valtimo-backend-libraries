@@ -44,7 +44,7 @@ import org.springframework.security.test.context.support.WithMockUser
 @Transactional
 internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
     lateinit var definition: JsonSchemaDocumentDefinition
-    lateinit var originalDocument: CreateDocumentResult
+    lateinit var originalDocument: CreateDocumentResult<JsonSchemaDocument>
     @BeforeEach
     fun beforeEach() {
         definition = definition()
