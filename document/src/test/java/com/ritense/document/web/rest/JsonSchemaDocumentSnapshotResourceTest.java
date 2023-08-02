@@ -53,7 +53,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
 
     private JsonSchemaDocumentSnapshotService documentSnapshotService;
-    private DocumentSnapshotResource documentSnapshotResource;
     private MockMvc mockMvc;
     private JsonSchemaDocument document;
     private JsonSchemaDocumentSnapshot documentSnapshot;
@@ -65,7 +64,7 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
     public void setUp() {
         documentSnapshotService = mock(JsonSchemaDocumentSnapshotService.class);
         documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
-        documentSnapshotResource = new JsonSchemaDocumentSnapshotResource(documentSnapshotService, documentDefinitionService);
+        DocumentSnapshotResource<JsonSchemaDocumentSnapshot> documentSnapshotResource = new JsonSchemaDocumentSnapshotResource(documentSnapshotService, documentDefinitionService);
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentSnapshotResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())

@@ -23,11 +23,11 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public interface DocumentSnapshotResource {
+public interface DocumentSnapshotResource<T extends DocumentSnapshot> {
 
-    ResponseEntity<? extends DocumentSnapshot> getDocumentSnapshot(UUID snapshotId);
+    ResponseEntity<T> getDocumentSnapshot(UUID snapshotId);
 
-    ResponseEntity<Page<? extends DocumentSnapshot>> getDocumentSnapshots(
+    ResponseEntity<Page<T>> getDocumentSnapshots(
         String definitionName,
         UUID documentId,
         LocalDateTime fromDateTime,

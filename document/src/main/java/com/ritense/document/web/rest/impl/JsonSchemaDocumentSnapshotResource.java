@@ -20,7 +20,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshotId;
-import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.document.web.rest.DocumentSnapshotResource;
@@ -41,7 +40,7 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_J
 
 @RestController
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
-public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResource {
+public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResource<JsonSchemaDocumentSnapshot> {
 
     private final DocumentSnapshotService<JsonSchemaDocumentSnapshot> documentSnapshotService;
     private final DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
@@ -56,7 +55,7 @@ public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResou
 
     @Override
     @GetMapping("/v1/document-snapshot/{id}")
-    public ResponseEntity<? extends DocumentSnapshot> getDocumentSnapshot(@PathVariable(name = "id") UUID snapshotId) {
+    public ResponseEntity<JsonSchemaDocumentSnapshot> getDocumentSnapshot(@PathVariable(name = "id") UUID snapshotId) {
         return documentSnapshotService.findById(JsonSchemaDocumentSnapshotId.existingId(snapshotId))
             .filter(it -> hasAccessToDefinitionName(it.document().definitionId().name()))
             .map(ResponseEntity::ok)
@@ -65,7 +64,7 @@ public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResou
 
     @Override
     @GetMapping("/v1/document-snapshot")
-    public ResponseEntity<Page<? extends DocumentSnapshot>> getDocumentSnapshots(
+    public ResponseEntity<Page<JsonSchemaDocumentSnapshot>> getDocumentSnapshots(
         @RequestParam(value = "definitionName", required = false) String definitionName,
         @RequestParam(value = "documentId", required = false) UUID documentId,
         @RequestParam(value = "fromDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,

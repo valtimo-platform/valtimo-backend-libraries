@@ -59,7 +59,7 @@ public class DocumentSnapshotAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(DocumentSnapshotResource.class)
-    public DocumentSnapshotResource documentSnapshotResource(
+    public DocumentSnapshotResource<JsonSchemaDocumentSnapshot> documentSnapshotResource(
         final DocumentSnapshotService<JsonSchemaDocumentSnapshot> documentSnapshotService,
         DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService
     ) {
