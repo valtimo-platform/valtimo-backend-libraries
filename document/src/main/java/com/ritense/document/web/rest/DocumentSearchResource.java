@@ -23,17 +23,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
-public interface DocumentSearchResource {
+public interface DocumentSearchResource<T extends Document> {
 
-    ResponseEntity<Page<? extends Document>> search(
+    ResponseEntity<Page<T>> search(
         SearchRequest searchRequest,
         Pageable pageable
     );
 
-    <T extends Document> ResponseEntity<Page<T>> search(
+    ResponseEntity<Page<T>> search(
         String documentDefinitionName,
         SearchWithConfigRequest searchRequest,
         Pageable pageable
     );
-
 }

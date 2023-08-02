@@ -115,7 +115,7 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(UndeployDocumentDefinitionService.class)
     public UndeployJsonSchemaDocumentDefinitionService undeployDocumentDefinitionService(
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
-        final DocumentService documentService,
+        final DocumentService<JsonSchemaDocument> documentService,
         final ApplicationEventPublisher applicationEventPublisher
     ) {
         return new UndeployJsonSchemaDocumentDefinitionService(
@@ -161,7 +161,7 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentRelatedFileSubmittedEventListenerImpl.class)
     public DocumentRelatedFileSubmittedEventListenerImpl documentRelatedFileSubmittedEventListener(
-        final DocumentService documentService,
+        final DocumentService<JsonSchemaDocument> documentService,
         final ResourceService resourceService
     ) {
         return new DocumentRelatedFileSubmittedEventListenerImpl(documentService, resourceService);
@@ -192,7 +192,9 @@ public class DocumentAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(DocumentSearchResource.class)
-    public JsonSchemaDocumentSearchResource documentSearchResource(DocumentSearchService documentSearchService) {
+    public JsonSchemaDocumentSearchResource documentSearchResource(
+        DocumentSearchService<JsonSchemaDocument> documentSearchService
+    ) {
         return new JsonSchemaDocumentSearchResource(documentSearchService);
     }
 

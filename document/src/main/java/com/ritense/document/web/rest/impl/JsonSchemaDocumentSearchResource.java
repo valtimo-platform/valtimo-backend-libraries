@@ -16,7 +16,7 @@
 
 package com.ritense.document.web.rest.impl;
 
-import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.DocumentSearchService;
@@ -37,17 +37,19 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
-public class JsonSchemaDocumentSearchResource implements DocumentSearchResource {
+public class JsonSchemaDocumentSearchResource implements DocumentSearchResource<JsonSchemaDocument> {
 
-    private final DocumentSearchService documentSearchService;
+    private final DocumentSearchService<JsonSchemaDocument> documentSearchService;
 
-    public JsonSchemaDocumentSearchResource(DocumentSearchService documentSearchService) {
+    public JsonSchemaDocumentSearchResource(
+        DocumentSearchService<JsonSchemaDocument> documentSearchService
+    ) {
         this.documentSearchService = documentSearchService;
     }
 
     @Override
     @PostMapping("/v1/document-search")
-    public ResponseEntity<Page<? extends Document>> search(
+    public ResponseEntity<Page<JsonSchemaDocument>> search(
         @RequestBody SearchRequest searchRequest,
         @PageableDefault(sort = {"createdOn"}, direction = DESC) Pageable pageable
     ) {
@@ -58,7 +60,7 @@ public class JsonSchemaDocumentSearchResource implements DocumentSearchResource 
 
     @Override
     @PostMapping("/v1/document-definition/{name}/search")
-    public ResponseEntity<Page<? extends Document>> search(
+    public ResponseEntity<Page<JsonSchemaDocument>> search(
         @PathVariable(name = "name") String documentDefinitionName,
         @RequestBody SearchWithConfigRequest searchRequest,
         @PageableDefault(sort = {"createdOn"}, direction = DESC) Pageable pageable
@@ -68,5 +70,4 @@ public class JsonSchemaDocumentSearchResource implements DocumentSearchResource 
             documentSearchService.search(documentDefinitionName, searchRequest, pageable)
         );
     }
-
 }
