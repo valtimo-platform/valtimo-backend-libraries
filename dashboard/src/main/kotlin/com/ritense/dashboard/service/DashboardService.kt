@@ -83,6 +83,17 @@ class DashboardService(
         return dashboardRepository.saveAll(dashboards)
     }
 
+    fun updateDashboard(dashboardUpdateRequestDto: DashboardUpdateRequestDto): Dashboard {
+        val dashboard = dashboardRepository.findById(dashboardUpdateRequestDto.key)
+            .getOrElse { throw RuntimeException("Failed to update dashboard. Dashboard with key '${dashboardUpdateRequestDto.key}' doesn't exist.") }
+            .copy(
+                title = dashboardUpdateRequestDto.title,
+                description = dashboardUpdateRequestDto.description
+            )
+
+        return dashboardRepository.save(dashboard)
+    }
+
     fun deleteDashboard(dashboardKey: String) {
         dashboardRepository.deleteById(dashboardKey)
         updateDashboardOrder()

@@ -66,7 +66,7 @@ class AdminDashboardResource(
     }
 
     @PutMapping("/v1/dashboard")
-    fun editDashboard(
+    fun editDashboards(
         @RequestBody dashboardUpdateRequestDtos: List<DashboardUpdateRequestDto>
     ): ResponseEntity<List<DashboardResponseDto>> {
         val dashboardResponseDtos = dashboardService.updateDashboards(dashboardUpdateRequestDtos)
@@ -80,6 +80,19 @@ class AdminDashboardResource(
     ): ResponseEntity<Unit> {
         dashboardService.deleteDashboard(dashboardKey)
         return ResponseEntity.noContent().build()
+    }
+
+    @PutMapping("/v1/dashboard/{dashboardKey}")
+    fun editDashboard(
+        @PathVariable(name = "dashboardKey") dashboardKey: String,
+        @RequestBody dashboardUpdateRequestDto: DashboardUpdateRequestDto
+    ): ResponseEntity<DashboardResponseDto> {
+        if (dashboardKey != dashboardUpdateRequestDto.key) {
+            throw RuntimeException("Failed to update dashboard. Key specified in the path does not match key in the request body.")
+        }
+        val dashboardResponseDto = DashboardResponseDto
+            .of(dashboardService.updateDashboard(dashboardUpdateRequestDto))
+        return ResponseEntity.ok(dashboardResponseDto)
     }
 
     @GetMapping("/v1/dashboard/{dashboardKey}/widget-configuration")

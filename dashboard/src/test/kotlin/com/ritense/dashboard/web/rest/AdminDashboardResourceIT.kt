@@ -198,6 +198,25 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should update single dashboard`() {
+        val dashboard1 = dashboardService.createDashboard("First dashboard", "Test description")
+        val dashboard2 = dashboardService.createDashboard("Second dashboard", "Test description")
+        val updateRequest = DashboardUpdateRequestDto.of(dashboard1.copy(title = "Third dashboard"))
+
+        mockMvc.perform(
+            put("/api/management/v1/dashboard/{dashboardKey}", dashboard1.key)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(jacksonObjectMapper().writeValueAsString(updateRequest))
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.key").value("first_dashboard"))
+            .andExpect(jsonPath("$.title").value("Third dashboard"))
+
+        assertThat(dashboardRepository.existsById(dashboard2.key)).isTrue
+    }
+
+    @Test
     fun `should get widget configurations`() {
         val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
         widgetConfigurationRepository.save(
