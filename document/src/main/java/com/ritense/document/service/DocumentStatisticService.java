@@ -16,22 +16,23 @@
 
 package com.ritense.document.service;
 
+import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
 import com.ritense.document.domain.search.AssigneeFilter;
-import com.ritense.document.repository.DocumentRepository;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public class DocumentStatisticService {
 
-    private final DocumentDefinitionService documentDefinitionService;
-    private final DocumentSearchService documentSearchService;
+    private final DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
+    private final DocumentSearchService<JsonSchemaDocument> documentSearchService;
 
     public DocumentStatisticService(
-        DocumentDefinitionService documentDefinitionService,
-        DocumentSearchService documentSearchService) {
+        DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService,
+        DocumentSearchService<JsonSchemaDocument> documentSearchService) {
         this.documentDefinitionService = documentDefinitionService;
         this.documentSearchService = documentSearchService;
     }

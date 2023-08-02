@@ -16,7 +16,9 @@
 
 package com.ritense.document.web.rest.impl;
 
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
+import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshotId;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.service.DocumentDefinitionService;
@@ -41,10 +43,13 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_J
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResource {
 
-    private final DocumentSnapshotService documentSnapshotService;
-    private final DocumentDefinitionService documentDefinitionService;
+    private final DocumentSnapshotService<JsonSchemaDocumentSnapshot> documentSnapshotService;
+    private final DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService;
 
-    public JsonSchemaDocumentSnapshotResource(DocumentSnapshotService documentSnapshotService, DocumentDefinitionService documentDefinitionService) {
+    public JsonSchemaDocumentSnapshotResource(
+        DocumentSnapshotService<JsonSchemaDocumentSnapshot> documentSnapshotService,
+        DocumentDefinitionService<JsonSchemaDocumentDefinition> documentDefinitionService
+    ) {
         this.documentSnapshotService = documentSnapshotService;
         this.documentDefinitionService = documentDefinitionService;
     }

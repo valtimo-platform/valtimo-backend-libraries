@@ -21,16 +21,16 @@ import com.ritense.valtimo.contract.result.OperationError;
 import java.util.Collections;
 import java.util.List;
 
-public class DeployDocumentDefinitionResultSucceeded implements DeployDocumentDefinitionResult {
+public class DeployDocumentDefinitionResultSucceeded<T extends DocumentDefinition> implements DeployDocumentDefinitionResult<T> {
 
-    private final DocumentDefinition documentDefinition;
+    private final T documentDefinition;
 
-    public DeployDocumentDefinitionResultSucceeded(DocumentDefinition documentDefinition) {
+    public DeployDocumentDefinitionResultSucceeded(T documentDefinition) {
         this.documentDefinition = documentDefinition;
     }
 
     @Override
-    public DocumentDefinition documentDefinition() {
+    public T documentDefinition() {
         return documentDefinition;
     }
 

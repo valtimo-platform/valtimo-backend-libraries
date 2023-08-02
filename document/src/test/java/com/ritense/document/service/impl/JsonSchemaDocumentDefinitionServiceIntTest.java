@@ -17,7 +17,6 @@
 package com.ritense.document.service.impl;
 
 import com.ritense.document.BaseIntegrationTest;
-import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import org.junit.jupiter.api.Tag;
@@ -45,11 +44,12 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = USER)
     public void shouldDeployFromString() {
-        DeployDocumentDefinitionResult result = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"testing.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n");
+        DeployDocumentDefinitionResult<JsonSchemaDocumentDefinition> result = documentDefinitionService.deploy("""
+            {
+                "$id": "testing.schema",
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+            """);
 
         assertThat(result.documentDefinition()).isNotNull();
         assertThat(result.errors()).isEmpty();
@@ -82,11 +82,12 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
 
         documentDefinitionService.deploy(resource.getInputStream());
 
-        DeployDocumentDefinitionResult result = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"rhino.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n");
+        DeployDocumentDefinitionResult<JsonSchemaDocumentDefinition> result = documentDefinitionService.deploy("""
+            {
+                "$id": "rhino.schema",
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+            """);
 
         final var documentDefinition = (JsonSchemaDocumentDefinition) documentDefinitionService
             .findLatestByName("rhino").orElseThrow();
@@ -100,18 +101,19 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
     @WithMockUser(username = "john@ritense.com", authorities = USER)
     public void shouldDeployNextVersionWhenDifferentSchema() {
 
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"clown.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n");
+        documentDefinitionService.deploy("""
+            {
+                "$id": "clown.schema",
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+            """);
 
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"clown.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n"  +
-            "    \"title\": \"Clown\"" +
-            "}\n");
+        documentDefinitionService.deploy("""
+            {
+                "$id": "clown.schema",
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "title": "Clown"}
+            """);
 
         final var documentDefinition = (JsonSchemaDocumentDefinition) documentDefinitionService
             .findLatestByName("clown").orElseThrow();
@@ -134,70 +136,75 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
 
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = USER)
-    public void shouldGetForRolesOnly() throws IllegalAccessException {
-        DocumentDefinition expectedDefinition = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"roles1.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n").documentDefinition();
+    public void shouldGetForRolesOnly() {
+        JsonSchemaDocumentDefinition expectedDefinition = documentDefinitionService.deploy("""
+            {
+                "$id": "roles1.schema",
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+            """).documentDefinition();
 
         //Unused documentDefinition
-        DocumentDefinition unexpectedDefinition = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"roles2.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n").documentDefinition();
+        JsonSchemaDocumentDefinition unexpectedDefinition = documentDefinitionService.deploy("""
+            {
+                "$id": "roles2.schema",
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+            """).documentDefinition();
 
         documentDefinitionService.putDocumentDefinitionRoles(expectedDefinition.id().name(), Set.of(USER));
 
         boolean filteredForRole = false;
-        List<DocumentDefinition> all = (List<DocumentDefinition>)documentDefinitionService.findForUser(filteredForRole, Pageable.unpaged()).getContent();
+        List<JsonSchemaDocumentDefinition> all = documentDefinitionService.findForUser(filteredForRole, Pageable.unpaged()).getContent();
         assertThat(all).contains(expectedDefinition);
         assertThat(all).doesNotContain(unexpectedDefinition);
     }
 
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = ADMIN)
-    public void shouldGetAllForAdmin() throws IllegalAccessException {
-        DocumentDefinition documentDefinition1 = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"roles1.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n").documentDefinition();
+    public void shouldGetAllForAdmin() {
+        JsonSchemaDocumentDefinition documentDefinition1 = documentDefinitionService.deploy("""
+            {
+                "$id": "roles1.schema",
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+            """).documentDefinition();
 
-        DocumentDefinition documentDefinition2 = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"roles2.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n").documentDefinition();
+        JsonSchemaDocumentDefinition documentDefinition2 = documentDefinitionService.deploy("""
+            {
+                "$id": "roles2.schema",
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+            """).documentDefinition();
 
         boolean filteredForRole = false;
-        List<DocumentDefinition> all = (List<DocumentDefinition>)documentDefinitionService.findForUser(filteredForRole, Pageable.unpaged()).getContent();
+        List<JsonSchemaDocumentDefinition> all = documentDefinitionService.findForUser(filteredForRole, Pageable.unpaged()).getContent();
         assertThat(all).hasSizeGreaterThanOrEqualTo(2);
         assertThat(all).contains(documentDefinition1, documentDefinition2);
     }
 
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = ADMIN)
-    public void shouldNotGetAllForAdmin() throws IllegalAccessException {
-        DocumentDefinition documentDefinition1 = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"roles1.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n").documentDefinition();
+    public void shouldNotGetAllForAdmin() {
+        JsonSchemaDocumentDefinition documentDefinition1 = documentDefinitionService.deploy("""
+            {
+                "$id": "roles1.schema",
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+            """).documentDefinition();
 
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"roles2.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n").documentDefinition();
+        documentDefinitionService.deploy("""
+            {
+                "$id": "roles2.schema",
+                "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+            """).documentDefinition();
 
         documentDefinitionService.putDocumentDefinitionRoles(documentDefinition1.id().name(), Set.of(ADMIN));
 
         boolean filteredForRole = true;
-        List<DocumentDefinition> all = (List<DocumentDefinition>)documentDefinitionService.findForUser(filteredForRole, Pageable.unpaged()).getContent();
+        List<JsonSchemaDocumentDefinition> all = documentDefinitionService.findForUser(filteredForRole, Pageable.unpaged()).getContent();
         assertThat(all).hasSize(1);
         assertThat(all).containsOnly(documentDefinition1);
     }
-
 }

@@ -29,15 +29,14 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
-import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
-import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSearchService;
-import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.document.service.SearchFieldActionProvider;
 import com.ritense.document.service.SearchFieldService;
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
+import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
@@ -70,22 +69,19 @@ import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW
 public abstract class BaseIntegrationTest extends BaseTest {
 
     @Inject
-    protected DocumentDefinitionService documentDefinitionService;
+    protected JsonSchemaDocumentDefinitionService documentDefinitionService;
 
     @Inject
-    protected DocumentService documentService;
+    protected JsonSchemaDocumentService documentService;
 
     @Inject
     protected JsonSchemaDocumentRepository documentRepository;
 
     @Inject
-    protected DocumentSearchService documentSearchService;
+    protected DocumentSearchService<JsonSchemaDocument> documentSearchService;
 
     @Inject
-    protected DocumentSnapshotService documentSnapshotService;
-
-    @Inject
-    protected DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
+    protected DocumentSnapshotService<JsonSchemaDocumentSnapshot> documentSnapshotService;
 
     @Inject
     protected SearchFieldService searchFieldService;

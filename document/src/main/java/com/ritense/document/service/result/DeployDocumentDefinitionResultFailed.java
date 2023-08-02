@@ -20,7 +20,7 @@ import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.valtimo.contract.result.OperationError;
 import java.util.List;
 
-public class DeployDocumentDefinitionResultFailed implements DeployDocumentDefinitionResult {
+public class DeployDocumentDefinitionResultFailed<T extends DocumentDefinition> implements DeployDocumentDefinitionResult<T> {
 
     private final List<OperationError> errors;
 
@@ -29,7 +29,7 @@ public class DeployDocumentDefinitionResultFailed implements DeployDocumentDefin
     }
 
     @Override
-    public DocumentDefinition documentDefinition() {
+    public T documentDefinition() {
         return null;
     }
 

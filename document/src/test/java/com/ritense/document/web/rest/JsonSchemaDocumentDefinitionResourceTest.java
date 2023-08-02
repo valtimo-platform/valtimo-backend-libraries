@@ -69,7 +69,6 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
     public static final String SOME_ROLE = "SOME_ROLE";
     private JsonSchemaDocumentDefinitionService documentDefinitionService;
-    private DocumentDefinitionResource documentDefinitionResource;
     private UndeployDocumentDefinitionService undeployDocumentDefinitionService;
     private DocumentStatisticService documentStatisticService;
     private MockMvc mockMvc;
@@ -82,7 +81,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         undeployDocumentDefinitionService = mock(UndeployJsonSchemaDocumentDefinitionService.class);
         documentStatisticService = mock(DocumentStatisticService.class);
 
-        documentDefinitionResource = new JsonSchemaDocumentDefinitionResource(
+        DocumentDefinitionResource documentDefinitionResource = new JsonSchemaDocumentDefinitionResource(
             documentDefinitionService,
             undeployDocumentDefinitionService,
             documentStatisticService
@@ -178,30 +177,32 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     @Test
     void shouldReturnCreateSuccessResult() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest("{\n" +
-            "  \"$id\": \"person.schema\",\n" +
-            "  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-            "  \"title\": \"Person\",\n" +
-            "  \"type\": \"object\",\n" +
-            "  \"properties\": {\n" +
-            "    \"firstName\": {\n" +
-            "      \"type\": \"string\",\n" +
-            "      \"description\": \"The person's first name.\"\n" +
-            "    },\n" +
-            "    \"lastName\": {\n" +
-            "      \"type\": \"string\",\n" +
-            "      \"description\": \"The person's last name.\"\n" +
-            "    },\n" +
-            "    \"age\": {\n" +
-            "      \"description\": \"Age in years which must be equal to or greater than zero.\",\n" +
-            "      \"type\": \"integer\",\n" +
-            "      \"minimum\": 0\n" +
-            "    }\n" +
-            "  }\n" +
-            "}\n");
+        DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest("""
+            {
+              "$id": "person.schema",
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "title": "Person",
+              "type": "object",
+              "properties": {
+                "firstName": {
+                  "type": "string",
+                  "description": "The person's first name."
+                },
+                "lastName": {
+                  "type": "string",
+                  "description": "The person's last name."
+                },
+                "age": {
+                  "description": "Age in years which must be equal to or greater than zero.",
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+            """);
 
         when(documentDefinitionService.deploy(anyString()))
-            .thenReturn(new DeployDocumentDefinitionResultSucceeded(definition));
+            .thenReturn(new DeployDocumentDefinitionResultSucceeded<>(definition));
 
         mockMvc.perform(post("/api/v1/document-definition")
             .content(objectMapper.writeValueAsString(documentDefinitionCreateRequest))
@@ -218,30 +219,32 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     @Test
     void shouldReturnCreateFailedResult() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
-        DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest("{\n" +
-            "  \"$id\": \"person.schema\",\n" +
-            "  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
-            "  \"title\": \"Person\",\n" +
-            "  \"type\": \"object\",\n" +
-            "  \"properties\": {\n" +
-            "    \"firstName\": {\n" +
-            "      \"type\": \"string\",\n" +
-            "      \"description\": \"The person's first name.\"\n" +
-            "    },\n" +
-            "    \"lastName\": {\n" +
-            "      \"type\": \"string\",\n" +
-            "      \"description\": \"The person's last name.\"\n" +
-            "    },\n" +
-            "    \"age\": {\n" +
-            "      \"description\": \"Age in years which must be equal to or greater than zero.\",\n" +
-            "      \"type\": \"integer\",\n" +
-            "      \"minimum\": 0\n" +
-            "    }\n" +
-            "  }\n" +
-            "}\n");
+        DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest("""
+            {
+              "$id": "person.schema",
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "title": "Person",
+              "type": "object",
+              "properties": {
+                "firstName": {
+                  "type": "string",
+                  "description": "The person's first name."
+                },
+                "lastName": {
+                  "type": "string",
+                  "description": "The person's last name."
+                },
+                "age": {
+                  "description": "Age in years which must be equal to or greater than zero.",
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+            """);
 
         when(documentDefinitionService.deploy(anyString()))
-            .thenReturn(new DeployDocumentDefinitionResultFailed(List.of(() -> "This schema was already deployed")));
+            .thenReturn(new DeployDocumentDefinitionResultFailed<>(List.of(() -> "This schema was already deployed")));
 
         mockMvc.perform(post("/api/v1/document-definition")
             .content(objectMapper.writeValueAsString(documentDefinitionCreateRequest))

@@ -17,7 +17,6 @@
 package com.ritense.document.web.rest;
 
 import com.ritense.document.BaseIntegrationTest;
-import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.repository.DocumentRepository;
@@ -46,12 +45,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     private static final String USER_EMAIL = "user@valtimo.nl";
 
-    private Document document;
-    private JsonSchemaDocumentResource jsonSchemaDocumentResource;
+    private JsonSchemaDocument document;
     private MockMvc mockMvc;
 
     @Autowired
-    private DocumentRepository documentRepository;
+    private DocumentRepository<JsonSchemaDocument> documentRepository;
 
     @BeforeEach
     void setUp() {
@@ -71,7 +69,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
             Set.of(USER)
         );
 
-        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService, documentDefinitionService);
+        JsonSchemaDocumentResource jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService);
         mockMvc = MockMvcBuilders
             .standaloneSetup(jsonSchemaDocumentResource)
             .build();
@@ -98,7 +96,6 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var result = documentRepository.findById(document.id());
 
         assertTrue(result.isPresent());
-        assertTrue(result.get() instanceof JsonSchemaDocument);
 
         var savedDocument = (JsonSchemaDocument) result.get();
         assertNotNull(savedDocument.assigneeId());
@@ -112,8 +109,6 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     void shouldNotAssignInvalidUserId() throws Exception {
         var user = mockUser("John", "Doe");
         when(userManagementService.findById(user.getId())).thenReturn(null);
-
-        var postContent = "{ \"assigneeId\": \"" + user.getId() + "\"}";
 
         mockMvc.perform(
                 post("/api/v1/document/{documentId}/assign", document.id().getId().toString())
@@ -139,7 +134,6 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var result = documentRepository.findById(document.id());
 
         assertTrue(result.isPresent());
-        assertTrue(result.get() instanceof JsonSchemaDocument);
 
         var savedDocument = (JsonSchemaDocument) result.get();
         assertNull(savedDocument.assigneeId());

@@ -21,10 +21,10 @@ import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.valtimo.contract.result.OperationError;
 import java.util.List;
 
-public interface DeployDocumentDefinitionResult {
+public interface DeployDocumentDefinitionResult<T extends DocumentDefinition> {
 
     @JsonProperty("documentDefinition")
-    DocumentDefinition documentDefinition();
+    T documentDefinition();
 
     @JsonProperty
     List<OperationError> errors();

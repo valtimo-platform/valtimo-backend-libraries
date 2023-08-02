@@ -21,8 +21,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
-import com.ritense.document.service.DocumentDefinitionService;
-import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
@@ -54,15 +53,12 @@ public class JsonSchemaDocumentResource implements DocumentResource {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentResource.class);
 
-    private final DocumentService documentService;
-    private final DocumentDefinitionService documentDefinitionService;
+    private final JsonSchemaDocumentService documentService;
 
     public JsonSchemaDocumentResource(
-        final DocumentService documentService,
-        final DocumentDefinitionService documentDefinitionService
+        final JsonSchemaDocumentService documentService
     ) {
         this.documentService = documentService;
-        this.documentDefinitionService = documentDefinitionService;
     }
 
     @Override

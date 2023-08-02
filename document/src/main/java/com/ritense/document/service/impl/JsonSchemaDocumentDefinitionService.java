@@ -125,7 +125,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
-    public DeployDocumentDefinitionResult deploy(String schema) {
+    public DeployDocumentDefinitionResult<JsonSchemaDocumentDefinition> deploy(String schema) {
         return deploy(schema, false, false);
     }
 
@@ -151,17 +151,17 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
-    public DeployDocumentDefinitionResult deploy(String schema, boolean readOnly, boolean force) {
+    public DeployDocumentDefinitionResult<JsonSchemaDocumentDefinition> deploy(String schema, boolean readOnly, boolean force) {
         try {
             var jsonSchema = JsonSchema.fromString(schema);
             return deploy(jsonSchema, readOnly, force);
         } catch (Exception ex) {
             DocumentDefinitionError error = ex::getMessage;
-            return new DeployDocumentDefinitionResultFailed(List.of(error));
+            return new DeployDocumentDefinitionResultFailed<>(List.of(error));
         }
     }
 
-    private DeployDocumentDefinitionResult deploy(JsonSchema jsonSchema, boolean readOnly, boolean force) {
+    private DeployDocumentDefinitionResult<JsonSchemaDocumentDefinition> deploy(JsonSchema jsonSchema, boolean readOnly, boolean force) {
         try {
             var documentDefinitionName = jsonSchema.getSchema().getId().replace(".schema", "");
             var existingDefinition = findLatestByName(documentDefinitionName);
@@ -173,13 +173,13 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                 // Check read-only of previous definition
                 if (existingDocumentDefinition.isReadOnly() && !force) {
                     DocumentDefinitionError error = () -> "This schema cannot be updated, because its readonly in previous versions";
-                    return new DeployDocumentDefinitionResultFailed(List.of(error));
+                    return new DeployDocumentDefinitionResultFailed<>(List.of(error));
                 }
 
                 if (existingDocumentDefinition.getSchema().equals(jsonSchema)) {
                     logger.info("Schema already deployed - {} - {} ", existingDocumentDefinition.getId(), jsonSchema.getSchema().getId());
                     DocumentDefinitionError error = () -> "This exact schema is already deployed";
-                    return new DeployDocumentDefinitionResultFailed(List.of(error));
+                    return new DeployDocumentDefinitionResultFailed<>(List.of(error));
                 } else {
                     // Definition changed increase version
                     documentDefinitionId = JsonSchemaDocumentDefinitionId.nextVersion(existingDocumentDefinition.id());
@@ -195,11 +195,11 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
             store(documentDefinition);
             logger.info("Deployed schema - {} - {} ", documentDefinitionId, jsonSchema.getSchema().getId());
-            return new DeployDocumentDefinitionResultSucceeded(documentDefinition);
+            return new DeployDocumentDefinitionResultSucceeded<>(documentDefinition);
         } catch (Exception ex) {
             DocumentDefinitionError error = ex::getMessage;
             logger.warn(ex.getMessage());
-            return new DeployDocumentDefinitionResultFailed(List.of(error));
+            return new DeployDocumentDefinitionResultFailed<>(List.of(error));
         }
     }
 
