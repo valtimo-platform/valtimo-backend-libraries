@@ -21,7 +21,12 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.relation.DocumentRelationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonContent;
+import org.springframework.boot.test.json.ObjectContent;
+
 import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
@@ -32,16 +37,16 @@ public class DocumentRelationListJsonSerializingTest {
     private static final String UUID_STRING = "91e750e1-53ab-4922-9979-6a2dacd009cf";
     private JacksonTester<Set<JsonSchemaDocumentRelation>> jacksonTester;
     private String jsonString;
-    private ObjectMapper objectMapper;
 
     @BeforeEach
     public void setUp() {
-        objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
         JacksonTester.initFields(this, objectMapper);
-        jsonString = "[{\n" +
-            "\t\"id\": \"91e750e1-53ab-4922-9979-6a2dacd009cf\",\n" +
-            "\t\"relationType\": \"NEXT\"\n" +
-            "}]";
+        jsonString = """
+            [{
+            \t"id": "91e750e1-53ab-4922-9979-6a2dacd009cf",
+            \t"relationType": "NEXT"
+            }]""";
     }
 
     @Test
@@ -51,7 +56,8 @@ public class DocumentRelationListJsonSerializingTest {
             DocumentRelationType.NEXT
         );
         final Set<JsonSchemaDocumentRelation> relationships = Set.of(relationship);
-        assertThat(jacksonTester.parse(jsonString)).isEqualTo(relationships);
+        ObjectContent<Set<JsonSchemaDocumentRelation>> jsonSchemaDocumentRelationObjectContent = jacksonTester.parse(jsonString);
+        assertThat(jsonSchemaDocumentRelationObjectContent.getObject()).isEqualTo(relationships);
     }
 
     @Test
@@ -61,7 +67,7 @@ public class DocumentRelationListJsonSerializingTest {
             DocumentRelationType.NEXT
         );
         final Set<JsonSchemaDocumentRelation> relationships = Set.of(relationship);
-        assertThat(jacksonTester.write(relationships)).isEqualTo(jsonString);
+        JsonContent<Set<JsonSchemaDocumentRelation>> jsonContent = jacksonTester.write(relationships);
+        JSONAssert.assertEquals(jsonContent.getJson(), jsonString, JSONCompareMode.STRICT);
     }
-
 }

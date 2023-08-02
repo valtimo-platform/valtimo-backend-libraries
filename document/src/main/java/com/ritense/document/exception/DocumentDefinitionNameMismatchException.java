@@ -21,14 +21,13 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 
 public class DocumentDefinitionNameMismatchException extends RuntimeException {
 
-    private static final String message = "The supplied document definition id [%s] and schema id [%s] do not match";
+    private static final String MESSAGE = "The supplied document definition id [%s] and schema id [%s] do not match";
 
     public DocumentDefinitionNameMismatchException(String message) {
         super(message);
     }
 
     public DocumentDefinitionNameMismatchException(JsonSchemaDocumentDefinitionId id, JsonSchema schema) {
-        super(String.format(message, id.toString(), schema.getSchema().getId()));
+        super(String.format(MESSAGE, id.toString(), schema.getSchema().getId()));
     }
-
 }

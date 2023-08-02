@@ -87,7 +87,6 @@ import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -104,6 +103,8 @@ import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHel
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
+import static java.time.ZoneId.systemDefault;
 
 @RestController
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
@@ -294,11 +295,11 @@ public class ProcessResource extends AbstractProcessResource {
         }
 
         if (fromDate != null) {
-            historicActivityInstanceQuery.startedAfter(Date.from(fromDate.atStartOfDay(ZoneOffset.systemDefault()).toInstant()));
+            historicActivityInstanceQuery.startedAfter(Date.from(fromDate.atStartOfDay(systemDefault()).toInstant()));
         }
 
         if (toDate != null) {
-            historicActivityInstanceQuery.startedBefore(Date.from(toDate.atStartOfDay(ZoneOffset.systemDefault()).toInstant()));
+            historicActivityInstanceQuery.startedBefore(Date.from(toDate.atStartOfDay(systemDefault()).toInstant()));
         }
 
         if (Optional.ofNullable(duration).isPresent()) {

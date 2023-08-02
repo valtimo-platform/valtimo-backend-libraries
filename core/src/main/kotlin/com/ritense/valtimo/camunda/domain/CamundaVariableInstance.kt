@@ -105,23 +105,23 @@ class CamundaVariableInstance(
 
     override fun getTextValue() = textValue
 
-    override fun setTextValue(textValue: String?) = throw RuntimeException("Can't write in an read-only interface")
+    override fun setTextValue(textValue: String?) = throw RuntimeException(CANT_WRITE_READONLY_INTERFACE)
 
     override fun getTextValue2() = textValue2
 
-    override fun setTextValue2(textValue2: String?) = throw RuntimeException("Can't write in an read-only interface")
+    override fun setTextValue2(textValue2: String?) = throw RuntimeException(CANT_WRITE_READONLY_INTERFACE)
 
     override fun getLongValue() = longValue
 
-    override fun setLongValue(longValue: Long?) = throw RuntimeException("Can't write in an read-only interface")
+    override fun setLongValue(longValue: Long?) = throw RuntimeException(CANT_WRITE_READONLY_INTERFACE)
 
     override fun getDoubleValue() = doubleValue
 
-    override fun setDoubleValue(doubleValue: Double?) = throw RuntimeException("Can't write in an read-only interface")
+    override fun setDoubleValue(doubleValue: Double?) = throw RuntimeException(CANT_WRITE_READONLY_INTERFACE)
 
     override fun getByteArrayValue(): ByteArray? = byteArrayValue?.bytes
 
-    override fun setByteArrayValue(bytes: ByteArray?) = throw RuntimeException("Can't write in an read-only interface")
+    override fun setByteArrayValue(bytes: ByteArray?) = throw RuntimeException(CANT_WRITE_READONLY_INTERFACE)
 
     fun getValue(): Any? = getTypedValue()?.value
 
@@ -138,6 +138,6 @@ class CamundaVariableInstance(
 
     companion object {
         val variableSerializers = DefaultVariableSerializers()
+        private const val CANT_WRITE_READONLY_INTERFACE = "Can't write in an read-only interface"
     }
-
 }

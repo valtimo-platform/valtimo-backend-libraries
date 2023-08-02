@@ -27,6 +27,7 @@ public class ChoiceFieldUpdateRequestDTO {
     private String title;
 
     public ChoiceFieldUpdateRequestDTO() {
+        //Default constructor
     }
 
     public Long getId() {

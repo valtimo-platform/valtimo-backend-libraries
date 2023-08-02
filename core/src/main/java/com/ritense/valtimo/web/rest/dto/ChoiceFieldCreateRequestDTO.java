@@ -25,6 +25,7 @@ public class ChoiceFieldCreateRequestDTO {
     private String title;
 
     public ChoiceFieldCreateRequestDTO() {
+        //Default constructor
     }
 
     public String getKeyName() {

@@ -28,6 +28,7 @@ public class FormLinkConfigItem {
     private FormAssociationType formAssociationType;
 
     public FormLinkConfigItem() {
+        //Default constructor
     }
 
     public String getFormName() {

@@ -16,29 +16,39 @@
 
 package com.ritense.valtimo.web.rest.dto;
 
-public class KeyAndPasswordDTO {
+import javax.validation.constraints.NotNull;
 
-    private String key;
+public class ChoiceFieldValueUpdateRequestDTO {
+    @NotNull
+    private Long id;
+    @NotNull
+    private String name;
+    @NotNull
+    private Boolean deprecated;
+    @NotNull
+    private Long sortOrder;
+    @NotNull
+    private String value;
 
-    private String newPassword;
-
-    public KeyAndPasswordDTO() {
+    public ChoiceFieldValueUpdateRequestDTO() {
         //Default constructor
     }
 
-    public String getKey() {
-        return key;
+    public Long getId() { return id; }
+
+    public String getName() {
+        return name;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public Boolean getDeprecated() {
+        return deprecated;
     }
 
-    public String getNewPassword() {
-        return newPassword;
+    public Long getSortOrder() {
+        return sortOrder;
     }
 
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
+    public String getValue() {
+        return value;
     }
 }
