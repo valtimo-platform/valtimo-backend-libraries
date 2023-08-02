@@ -21,6 +21,7 @@ import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -43,7 +44,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     lateinit var mockMvc: MockMvc
 
     @Autowired
-    lateinit var documentDefinitionService: DocumentDefinitionService
+    lateinit var documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext

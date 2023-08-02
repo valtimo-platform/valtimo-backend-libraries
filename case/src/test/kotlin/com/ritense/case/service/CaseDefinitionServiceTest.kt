@@ -27,6 +27,7 @@ import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
@@ -52,7 +53,7 @@ class CaseDefinitionServiceTest {
 
     lateinit var service: CaseDefinitionService
 
-    lateinit var documentDefinitionService: DocumentDefinitionService
+    lateinit var documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>
 
     lateinit var valueResolverService: ValueResolverService
 
@@ -95,7 +96,7 @@ class CaseDefinitionServiceTest {
         )
 
         assertThrows<UnknownDocumentDefinitionException> {
-            val foundCaseDefinitionSettings = service.getCaseSettings(caseDefinitionName)
+            service.getCaseSettings(caseDefinitionName)
         }
     }
 
@@ -126,7 +127,7 @@ class CaseDefinitionServiceTest {
             )
         )
         assertThrows<UnknownDocumentDefinitionException> {
-            val foundCaseDefinitionSettings = service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
+            service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
         }
     }
 

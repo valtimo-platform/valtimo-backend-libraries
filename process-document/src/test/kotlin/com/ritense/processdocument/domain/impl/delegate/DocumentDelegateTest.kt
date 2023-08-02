@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.domain.impl.delegate
 
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
@@ -36,7 +37,7 @@ internal class DocumentDelegateTest {
 
     lateinit var processDocumentService: ProcessDocumentService
     lateinit var userManagementService: UserManagementService
-    lateinit var documentService: DocumentService
+    lateinit var documentService: DocumentService<JsonSchemaDocument>
     lateinit var documentDelegate: DocumentDelegate
 
     @BeforeEach

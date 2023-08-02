@@ -18,6 +18,7 @@
 package com.ritense.form.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.form.BaseIntegrationTest
@@ -46,7 +47,7 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
     lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    lateinit var documentService: DocumentService
+    lateinit var documentService: DocumentService<JsonSchemaDocument>
 
     @Test
     fun `should retrieve form definition`() {

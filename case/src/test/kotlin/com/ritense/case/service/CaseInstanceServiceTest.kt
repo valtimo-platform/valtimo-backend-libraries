@@ -31,7 +31,6 @@ import com.ritense.document.service.DocumentSearchService
 import com.ritense.valueresolver.ValueResolverService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageImpl
@@ -49,7 +48,7 @@ class CaseInstanceServiceTest {
 
     private lateinit var caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository
 
-    private lateinit var documentSearchService: DocumentSearchService
+    private lateinit var documentSearchService: DocumentSearchService<JsonSchemaDocument>
 
     private lateinit var valueResolverService: ValueResolverService
 

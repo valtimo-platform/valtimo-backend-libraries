@@ -22,7 +22,9 @@ import com.ritense.connector.domain.ConnectorInstanceId
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.objectsapi.BaseTest
 import com.ritense.objectsapi.domain.GenericObject
 import com.ritense.objectsapi.domain.ObjectRecord
@@ -46,7 +48,7 @@ import java.util.UUID
 class ProductAanvraagConnectorTest : BaseTest() {
     lateinit var productAanvraagProperties: ProductAanvraagProperties
     lateinit var connectorService: ConnectorService
-    lateinit var documentService: DocumentService
+    lateinit var documentService: DocumentService<JsonSchemaDocument>
     lateinit var abonnementLinkRepository: AbonnementLinkRepository
     lateinit var objectsApiConnector: ObjectsApiConnector
     lateinit var openNotificatieConnector: OpenNotificatieConnector
@@ -65,7 +67,7 @@ class ProductAanvraagConnectorTest : BaseTest() {
             aanvragerRolTypeUrl = "http://aanvragerroltype.url/zaken/api/v1/rollen/281fdae4-fc32-46e9-b621-bb4b444b8f52",
         )
         connectorService = mock(ConnectorService::class.java)
-        documentService = mock(DocumentService::class.java)
+        documentService = mock(JsonSchemaDocumentService::class.java)
         abonnementLinkRepository = mock(AbonnementLinkRepository::class.java)
         objectsApiConnector = mock(ObjectsApiConnector::class.java)
         openNotificatieConnector = mock(OpenNotificatieConnector::class.java)

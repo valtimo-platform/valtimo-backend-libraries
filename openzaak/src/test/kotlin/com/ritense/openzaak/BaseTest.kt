@@ -63,7 +63,7 @@ abstract class BaseTest {
     lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
 
     @Mock
-    lateinit var documentService: DocumentService
+    lateinit var documentService: DocumentService<JsonSchemaDocument>
 
     lateinit var document: JsonSchemaDocument
 

@@ -17,7 +17,9 @@
 package com.ritense.mail.flowmailer.connector
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
@@ -37,7 +39,7 @@ class FlowmailerConnectorTest : BaseTest() {
     lateinit var flowmailerConnectorProperties: FlowmailerConnectorProperties
     lateinit var flowmailerMailDispatcher: FlowmailerMailDispatcher
     lateinit var flowmailerConnector: FlowmailerConnector
-    lateinit var documentService: DocumentService
+    lateinit var documentService: DocumentService<JsonSchemaDocument>
     lateinit var resourceService: ResourceService
 
     @BeforeEach
@@ -50,7 +52,7 @@ class FlowmailerConnectorTest : BaseTest() {
         )
         flowmailerConnectorProperties = FlowmailerConnectorProperties(flowmailerProperties)
         flowmailerMailDispatcher = mock(FlowmailerMailDispatcher::class.java)
-        documentService = mock(DocumentService::class.java)
+        documentService = mock(JsonSchemaDocumentService::class.java)
         resourceService = mock(ResourceService::class.java)
         flowmailerConnector = FlowmailerConnector(
             flowmailerConnectorProperties = flowmailerConnectorProperties,

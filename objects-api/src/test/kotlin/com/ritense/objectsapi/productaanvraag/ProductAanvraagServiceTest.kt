@@ -1,9 +1,9 @@
 package com.ritense.objectsapi.productaanvraag
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.document.domain.Document
-import com.ritense.document.service.DocumentService
-import com.ritense.document.service.result.CreateDocumentResult
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentId
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.klant.domain.Klant
 import com.ritense.klant.service.BedrijfService
 import com.ritense.klant.service.BurgerService
@@ -29,7 +29,7 @@ import java.util.UUID
 internal class ProductAanvraagServiceTest {
 
     val processDocumentService = mock<ProcessDocumentService>()
-    val documentService = mock<DocumentService>()
+    val documentService = mock<JsonSchemaDocumentService>()
     val openNotificatieService = mock<OpenNotificatieService>()
     val zaakRolService = mock<ZaakRolService>()
     val zaakInstanceLinkService = mock<ZaakInstanceLinkService>()
@@ -48,9 +48,9 @@ internal class ProductAanvraagServiceTest {
 
     @BeforeEach
     fun setup() {
-        val createDocumentResult = mock<CreateDocumentResult>()
-        val document = mock<Document>()
-        val documentId = mock<Document.Id>()
+        val createDocumentResult = mock<JsonSchemaDocument.CreateDocumentResultImpl>()
+        val document = mock<JsonSchemaDocument>()
+        val documentId = mock<JsonSchemaDocumentId>()
         val instanceLink = mock<ZaakInstanceLink>()
         val klant = mock<Klant>()
         val processStartResult = mock<StartProcessForDocumentResult>()

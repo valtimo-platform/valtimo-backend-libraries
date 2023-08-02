@@ -25,9 +25,9 @@ import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.catalogiapi.exception.StatustypeNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
-import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
-import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.zgw.Page
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.BeforeEach
@@ -45,7 +45,7 @@ internal class CatalogiApiPluginTest {
 
     val client = mock<CatalogiApiClient>()
     val zaaktypeUrlProvider = mock<ZaaktypeUrlProvider>()
-    val documentService = mock<DocumentService>()
+    val documentService = mock<JsonSchemaDocumentService>()
     val plugin = CatalogiApiPlugin(client, zaaktypeUrlProvider, documentService)
 
     @BeforeEach
@@ -179,7 +179,7 @@ internal class CatalogiApiPluginTest {
     @Test
     fun `should get status type`() {
         val documentId = UUID.randomUUID().toString()
-        val document = mock<Document>()
+        val document = mock<JsonSchemaDocument>()
         val statustype = "Registered"
         val statustypeUrl = "https://example.com/statustype/456"
         val zaaktypeUrl = "https://example.com/zaaktype/123"
@@ -207,7 +207,7 @@ internal class CatalogiApiPluginTest {
     @Test
     fun `should throw StatustypeNotFoundException when get status type doesn't exist`() {
         val documentId = UUID.randomUUID().toString()
-        val document = mock<Document>()
+        val document = mock<JsonSchemaDocument>()
         val statustype = "Registered"
         val zaaktypeUrl = "https://example.com/zaaktype/123"
         val execution = DelegateExecutionFake().withBusinessKey(documentId)
@@ -231,7 +231,7 @@ internal class CatalogiApiPluginTest {
     fun `should get resultaat type`() {
         val exampleUrl = URI("example.com")
         val documentId = UUID.randomUUID().toString()
-        val document = mock<Document>()
+        val document = mock<JsonSchemaDocument>()
         val resultaattype = "Registered"
         val resultaattypeUrl = "https://example.com/resultaattype/456"
         val zaaktypeUrl = "https://example.com/zaaktype/123"
@@ -282,9 +282,8 @@ internal class CatalogiApiPluginTest {
 
     @Test
     fun `should get besluit type`() {
-        val exampleUrl = URI("example.com")
         val documentId = UUID.randomUUID().toString()
-        val document = mock<Document>()
+        val document = mock<JsonSchemaDocument>()
         val besluittype = "Allocated"
         val besluittypeUrl = "https://example.com/besluittype/456"
         val zaaktypeUrl = "https://example.com/zaaktype/123"

@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow
 
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 import com.ritense.formflow.domain.instance.FormFlowInstance
@@ -44,7 +45,7 @@ internal class FormFlowFormLinkTaskProviderTest {
 
     private lateinit var formFlowService: FormFlowService
     private lateinit var formAssociationService: FormAssociationService
-    private lateinit var documentService: DocumentService
+    private lateinit var documentService: DocumentService<JsonSchemaDocument>
     private lateinit var runtimeService: RuntimeService
     private lateinit var formFlowProcessLinkTaskProvider: FormFlowFormLinkTaskProvider
 

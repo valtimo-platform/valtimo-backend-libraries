@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
@@ -53,7 +54,7 @@ class CorrelationServiceIntTest: BaseIntegrationTest() {
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
 
     @Autowired
-    lateinit var documentService: DocumentService
+    lateinit var documentService: DocumentService<JsonSchemaDocument>
 
     @Autowired
     lateinit var taskService: CamundaTaskService

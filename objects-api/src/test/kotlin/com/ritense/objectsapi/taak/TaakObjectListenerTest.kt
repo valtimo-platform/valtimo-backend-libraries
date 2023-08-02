@@ -1,6 +1,7 @@
 package com.ritense.objectsapi.taak
 
 import com.ritense.connector.domain.Connector
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.domain.GenericObject
 import com.ritense.objectsapi.domain.ObjectRecord
@@ -34,7 +35,7 @@ internal class TaakObjectListenerTest {
     lateinit var valueResolverService: ValueResolverService
     lateinit var bpmnModelService: BpmnModelService
     lateinit var runtimeService: RuntimeService
-    lateinit var documentService: DocumentService
+    lateinit var documentService: DocumentService<JsonSchemaDocument>
     lateinit var processDocumentService: ProcessDocumentService
     lateinit var zaakService: ZaakService
     lateinit var openZaakService: OpenZaakService

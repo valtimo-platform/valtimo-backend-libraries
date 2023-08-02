@@ -1,6 +1,7 @@
 package com.ritense.zakenapi
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.domain.ActivityType
@@ -53,7 +54,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
     lateinit var procesDocumentService: ProcessDocumentService
 
     @Autowired
-    lateinit var documentService: DocumentService
+    lateinit var documentService: DocumentService<JsonSchemaDocument>
 
     lateinit var server: MockWebServer
 

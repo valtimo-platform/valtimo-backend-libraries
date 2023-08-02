@@ -18,6 +18,7 @@ package com.ritense.valtimo.formflow.common
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.formflow.domain.instance.FormFlowInstance
@@ -71,7 +72,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     lateinit var processLinkService: ProcessLinkService
 
     @Autowired
-    lateinit var documentService: DocumentService
+    lateinit var documentService: DocumentService<JsonSchemaDocument>
 
     @Autowired
     lateinit var newProcessLinkService: com.ritense.processlink.service.ProcessLinkService

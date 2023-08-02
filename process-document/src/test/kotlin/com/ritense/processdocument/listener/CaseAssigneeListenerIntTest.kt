@@ -21,6 +21,7 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.BaseIntegrationTest
@@ -49,7 +50,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     lateinit var caseDefinitionService: CaseDefinitionService
 
     @Autowired
-    lateinit var documentService: DocumentService
+    lateinit var documentService: DocumentService<JsonSchemaDocument>
 
     @Autowired
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService

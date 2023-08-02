@@ -2,6 +2,7 @@ package com.ritense.case.service
 
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import javax.transaction.Transactional
 import kotlin.test.assertEquals
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 class CaseDefinitionDeploymentServiceIntTest : BaseIntegrationTest() {
     @Autowired
-    lateinit var documentDefinitionService: DocumentDefinitionService
+    lateinit var documentDefinitionService: DocumentDefinitionService<JsonSchemaDocumentDefinition>
 
     @Autowired
     lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
