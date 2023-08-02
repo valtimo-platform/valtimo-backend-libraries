@@ -18,6 +18,7 @@ package com.ritense.objectsapi.productaanvraag
 
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.klant.service.BedrijfService
@@ -34,7 +35,7 @@ import java.net.URI
 
 class ProductAanvraagService(
     private val processDocumentService: ProcessDocumentService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val openNotificatieService: OpenNotificatieService,
     private val zaakRolService: ZaakRolService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,

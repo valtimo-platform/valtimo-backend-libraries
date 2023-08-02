@@ -21,6 +21,7 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.mail.MailDispatcher
@@ -61,7 +62,7 @@ import java.util.UUID
 class FlowmailerConnector(
     private var flowmailerConnectorProperties: FlowmailerConnectorProperties,
     private val mailDispatcher: MailDispatcher,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val resourceService: ResourceService
 ) : Connector {
 

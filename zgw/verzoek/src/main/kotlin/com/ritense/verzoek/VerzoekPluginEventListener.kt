@@ -22,6 +22,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentService
@@ -44,7 +45,7 @@ import java.net.URI
 class VerzoekPluginEventListener(
     private val pluginService: PluginService,
     private val objectManagementService: ObjectManagementService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val zaaktypeUrlProvider: ZaaktypeUrlProvider,
     private val processDocumentService: ProcessDocumentService
 ) {

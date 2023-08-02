@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.patch.JsonPatchFilterFlag
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentService
@@ -40,7 +41,7 @@ import com.ritense.valtimo.service.CamundaTaskService
 import java.util.UUID
 
 class PrefillFormService(
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val formDefinitionService: FormIoFormDefinitionService,
     private val camundaProcessService: CamundaProcessService,
     private val taskService: CamundaTaskService,

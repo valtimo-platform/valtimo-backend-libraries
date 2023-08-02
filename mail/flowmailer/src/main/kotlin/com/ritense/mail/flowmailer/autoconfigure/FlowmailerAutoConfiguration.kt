@@ -18,6 +18,7 @@ package com.ritense.mail.flowmailer.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.connector.domain.Connector
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.mail.MailDispatcher
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
@@ -74,7 +75,7 @@ class FlowmailerAutoConfiguration {
     fun flowmailerConnector(
         flowmailerConnectorProperties: FlowmailerConnectorProperties,
         mailDispatcher: MailDispatcher,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         resourceService: ResourceService
     ): Connector {
         return FlowmailerConnector(

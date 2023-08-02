@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow
 
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.service.FormFlowService
@@ -31,7 +32,7 @@ import org.camunda.bpm.engine.RuntimeService
 class FormFlowFormLinkTaskProvider(
     private val formFlowService: FormFlowService,
     private val formAssociationService: FormAssociationService,
-    documentService: DocumentService,
+    documentService: DocumentService<JsonSchemaDocument>,
     runtimeService: RuntimeService,
 ): AbstractFormFlowLinkTaskProvider(
     documentService, runtimeService

@@ -17,6 +17,7 @@
 package com.ritense.verzoek
 
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.objectmanagement.service.ObjectManagementService
@@ -43,7 +44,7 @@ class VerzoekAutoConfiguration {
     fun verzoekPluginEventListener(
         pluginService: PluginService,
         objectManagementService: ObjectManagementService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         zaaktypeUrlProvider: ZaaktypeUrlProvider,
         processDocumentService: ProcessDocumentService
     ): VerzoekPluginEventListener {

@@ -17,6 +17,7 @@
 package com.ritense.valtimo.formflow.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.service.FormFlowService
@@ -64,7 +65,7 @@ class FormFlowValtimoAutoConfiguration {
     fun formFlowFormLinkTaskProvider(
         formFlowService: FormFlowService,
         formAssociationService: FormAssociationService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         runtimeService: RuntimeService,
     ): FormLinkTaskProvider<FormFlowTaskOpenResultProperties> {
         return FormFlowFormLinkTaskProvider(
@@ -79,7 +80,7 @@ class FormFlowValtimoAutoConfiguration {
     fun formFlowProcessLinkTaskProvider(
         formFlowService: FormFlowService,
         repositoryService: CamundaRepositoryService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         runtimeService: RuntimeService,
     ): ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties> {
         return FormFlowProcessLinkActivityHandler(
@@ -127,7 +128,7 @@ class FormFlowValtimoAutoConfiguration {
     fun formFlowStepTypeFormHandler(
         formIoFormDefinitionService: FormIoFormDefinitionService,
         camundaFormAssociationService: CamundaFormAssociationService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         objectMapper: ObjectMapper
     ): FormFlowStepTypeFormHandler {
         return FormFlowStepTypeFormHandler(
@@ -146,7 +147,7 @@ class FormFlowValtimoAutoConfiguration {
         valueResolverService: ValueResolverService,
         formFlowService: FormFlowService,
         processDocumentService: ProcessDocumentService,
-        documentService: DocumentService
+        documentService: DocumentService<JsonSchemaDocument>
 
     ): ValtimoFormFlow {
         return ValtimoFormFlow(

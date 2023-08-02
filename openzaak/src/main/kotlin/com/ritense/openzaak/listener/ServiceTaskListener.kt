@@ -17,6 +17,7 @@
 package com.ritense.openzaak.listener
 
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
@@ -29,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional
 
 open class ServiceTaskListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
-    documentService: DocumentService,
+    documentService: DocumentService<JsonSchemaDocument>,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
     private val zaakService: ZaakService,
     repositoryService: RepositoryService

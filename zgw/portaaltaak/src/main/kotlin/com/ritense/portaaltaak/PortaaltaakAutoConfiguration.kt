@@ -17,6 +17,7 @@
 package com.ritense.portaaltaak
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.service.PluginService
@@ -64,7 +65,7 @@ class PortaaltaakAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         processService: CamundaProcessService,
         taskService: CamundaTaskService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         runtimeService: RuntimeService,
         valueResolverService: ValueResolverService,
         objectMapper: ObjectMapper

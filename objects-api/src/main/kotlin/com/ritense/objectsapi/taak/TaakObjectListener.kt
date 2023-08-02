@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile
 import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
@@ -50,7 +51,7 @@ class TaakObjectListener(
     private val valueResolverService: ValueResolverService,
     private val bpmnModelService: BpmnModelService,
     private val runtimeService: RuntimeService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val processDocumentService: ProcessDocumentService,
     private val zaakService: ZaakService,
     private val openZaakService: OpenZaakService,

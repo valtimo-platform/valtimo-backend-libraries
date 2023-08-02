@@ -17,13 +17,14 @@
 package com.ritense.valtimo.formflow
 
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import org.camunda.bpm.engine.RuntimeService
 
 abstract class AbstractFormFlowLinkTaskProvider(
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val runtimeService: RuntimeService,
 ) {
 

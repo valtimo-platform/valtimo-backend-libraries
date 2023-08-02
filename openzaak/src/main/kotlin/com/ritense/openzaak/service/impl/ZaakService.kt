@@ -18,6 +18,7 @@ package com.ritense.openzaak.service.impl
 
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.service.ZaakService
@@ -46,7 +47,7 @@ class ZaakService(
     private val openZaakConfigService: OpenZaakConfigService,
     private val openZaakTokenGeneratorService: OpenZaakTokenGeneratorService,
     private val zaakTypeLinkService: ZaakTypeLinkService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val zaakInstanceLinkService: ZaakInstanceLinkService
 ) : ZaakService {
 

@@ -18,6 +18,7 @@ package com.ritense.objectsapi.productaanvraag
 
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.service.ConnectorService
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.klant.service.BedrijfService
 import com.ritense.klant.service.BurgerService
@@ -64,7 +65,7 @@ class ProductAanvraagAutoConfiguration {
     @ConditionalOnMissingBean(ProductAanvraagService::class)
     fun productAanvraagService(
         processDocumentService: ProcessDocumentService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         openNotificatieService: OpenNotificatieService,
         zaakRolService: ZaakRolService,
         zaakInstanceLinkService: ZaakInstanceLinkService,

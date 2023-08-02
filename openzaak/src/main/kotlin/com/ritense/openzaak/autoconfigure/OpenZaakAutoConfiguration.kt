@@ -18,6 +18,7 @@ package com.ritense.openzaak.autoconfigure
 
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
 import com.ritense.connector.repository.ConnectorTypeRepository
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.domain.connector.OpenZaakConnector
 import com.ritense.openzaak.domain.connector.OpenZaakProperties
@@ -114,7 +115,7 @@ class OpenZaakAutoConfiguration {
         openZaakConfigService: OpenZaakConfigService,
         tokenGeneratorService: OpenZaakTokenGeneratorService,
         zaakTypeLinkService: ZaakTypeLinkService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         zaakInstanceLinkService: ZaakInstanceLinkService
     ): ZaakService {
         return ZaakService(
@@ -143,7 +144,7 @@ class OpenZaakAutoConfiguration {
         restTemplate: RestTemplate,
         openZaakConfigService: OpenZaakConfigService,
         tokenGeneratorService: OpenZaakTokenGeneratorService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         zaakTypeLinkService: com.ritense.openzaak.service.ZaakTypeLinkService,
         zaakInstanceLinkService: ZaakInstanceLinkService
     ): ZaakStatusService {
@@ -208,7 +209,7 @@ class OpenZaakAutoConfiguration {
     @ConditionalOnMissingBean(ServiceTaskListener::class)
     fun serviceTaskListener(
         zaakTypeLinkService: ZaakTypeLinkService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         zaakInstanceLinkService: ZaakInstanceLinkService,
         zaakService: ZaakService,
         repositoryService: RepositoryService

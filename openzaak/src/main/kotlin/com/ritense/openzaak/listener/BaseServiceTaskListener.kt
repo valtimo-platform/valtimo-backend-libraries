@@ -18,6 +18,7 @@ package com.ritense.openzaak.listener
 
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
@@ -33,7 +34,7 @@ import java.util.UUID
 @CamundaSelector(type = "serviceTask", event = ExecutionListener.EVENTNAME_START)
 open class BaseServiceTaskListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val repositoryService: RepositoryService
 ) : ReactorExecutionListener() {
 

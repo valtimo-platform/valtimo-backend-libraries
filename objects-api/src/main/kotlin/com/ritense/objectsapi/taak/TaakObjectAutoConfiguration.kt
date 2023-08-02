@@ -17,6 +17,7 @@
 package com.ritense.objectsapi.taak
 
 import com.ritense.connector.service.ConnectorService
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.openzaak.provider.BsnProvider
@@ -46,7 +47,7 @@ class TaakObjectAutoConfiguration {
         valueResolverService: ValueResolverService,
         bpmnModelService: BpmnModelService,
         runtimeService: RuntimeService,
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         processDocumentService: ProcessDocumentService,
         zaakService: ZaakService,
         openZaakService: OpenZaakService,

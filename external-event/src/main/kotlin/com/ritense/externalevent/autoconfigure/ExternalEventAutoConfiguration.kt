@@ -16,6 +16,7 @@
 
 package com.ritense.externalevent.autoconfigure
 
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.externalevent.config.MappedCasesConfig
@@ -127,7 +128,7 @@ class ExternalEventAutoConfiguration {
 
     @Bean
     fun externalCaseService(
-        documentService: DocumentService,
+        documentService: DocumentService<JsonSchemaDocument>,
         processDocumentService: ProcessDocumentService,
         mappedCasesConfig: MappedCasesConfig,
         sink: Sinks.Many<ExternalDomainMessage>,

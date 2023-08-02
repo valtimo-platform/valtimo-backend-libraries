@@ -19,6 +19,7 @@ package com.ritense.externalevent.service
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
@@ -40,7 +41,7 @@ import java.util.UUID
 
 @Transactional
 class ExternalCaseService(
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val processDocumentService: ProcessDocumentService,
     private val mappedCasesConfig: MappedCasesConfig,
     private val sink: Sinks.Many<ExternalDomainMessage>,

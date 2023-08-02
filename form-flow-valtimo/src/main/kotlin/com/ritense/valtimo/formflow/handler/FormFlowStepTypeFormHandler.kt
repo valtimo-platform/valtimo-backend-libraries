@@ -19,6 +19,7 @@ package com.ritense.valtimo.formflow.handler
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.DocumentService
 import com.ritense.form.domain.FormDefinition
 import com.ritense.form.domain.FormIoFormDefinition
@@ -31,7 +32,7 @@ import com.ritense.formlink.service.impl.CamundaFormAssociationService
 class FormFlowStepTypeFormHandler(
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
     private val camundaFormAssociationService: CamundaFormAssociationService,
-    private val documentService: DocumentService,
+    private val documentService: DocumentService<JsonSchemaDocument>,
     private val objectMapper: ObjectMapper
 ) : FormFlowStepTypeHandler {
 
