@@ -22,16 +22,16 @@ import com.ritense.document.domain.Document;
 
 import java.util.List;
 
-public interface DocumentModifiedEvent {
+public interface DocumentModifiedEvent<T extends DocumentFieldChangedEvent> {
 
     @JsonProperty
     Document.Id documentId();
 
-    List<? extends DocumentFieldChangedEvent> changes();
+    List<T> changes();
 
     @JsonProperty("changes")
-    default List<? extends DocumentFieldChangedEvent> registeredChanges() {
-        List<? extends DocumentFieldChangedEvent> changes = null;
+    default List<T> registeredChanges() {
+        List<T> changes = null;
 
         Boolean registerDocumentChanges = DocumentSpringContextHelper
             .getProperty("valtimo.audit.auditDocumentChanges", Boolean.class);

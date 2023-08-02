@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.UUID;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
-public class JsonSchemaDocumentModifiedEvent extends AuditMetaData implements DocumentModifiedEvent, AuditEvent {
+public class JsonSchemaDocumentModifiedEvent extends AuditMetaData implements DocumentModifiedEvent<JsonSchemaDocumentFieldChangedEvent>, AuditEvent {
 
     private final JsonSchemaDocumentId documentId;
     private final List<JsonSchemaDocumentFieldChangedEvent> changes;
@@ -73,13 +73,12 @@ public class JsonSchemaDocumentModifiedEvent extends AuditMetaData implements Do
         if (this == o) {
             return true;
         }
-        if (!(o instanceof JsonSchemaDocumentModifiedEvent)) {
+        if (!(o instanceof JsonSchemaDocumentModifiedEvent that)) {
             return false;
         }
         if (!super.equals(o)) {
             return false;
         }
-        JsonSchemaDocumentModifiedEvent that = (JsonSchemaDocumentModifiedEvent) o;
         return changes.equals(that.changes) &&
             documentId.equals(that.documentId);
     }

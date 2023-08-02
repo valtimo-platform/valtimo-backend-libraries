@@ -60,7 +60,7 @@ public class TaskResource extends AbstractTaskResource {
     }
 
     @GetMapping("/v1/task")
-    public ResponseEntity<List<? extends TaskExtended>> getTasks(
+    public ResponseEntity<List<TaskExtended>> getTasks(
         @RequestParam CamundaTaskService.TaskFilter filter,
         Pageable pageable
     ) throws Exception {
