@@ -30,8 +30,8 @@ import com.ritense.valtimo.contract.json.Mapper
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.time.LocalDateTime
-import java.util.*
-
+import java.util.UUID
+import java.util.Optional
 
 class DocumentDelegateService(
     private val processDocumentService: ProcessDocumentService,

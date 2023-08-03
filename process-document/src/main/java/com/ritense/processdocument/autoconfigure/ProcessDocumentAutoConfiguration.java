@@ -112,7 +112,7 @@ public class ProcessDocumentAutoConfiguration {
     @Bean
     @ProcessBean
     @ConditionalOnMissingBean(DocumentVariableDelegate.class)
-    @Deprecated
+    @Deprecated(since = "11.0.0", forRemoval = true)
     public DocumentVariableDelegateImpl documentVariableDelegate(
         DocumentService documentService
     ) {

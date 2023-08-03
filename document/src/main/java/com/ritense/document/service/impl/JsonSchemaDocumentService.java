@@ -32,7 +32,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile;
-import com.ritense.document.domain.impl.meta.MetaJsonSchemaV7Draft;
 import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
 import com.ritense.document.domain.impl.request.DocumentRelationRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
