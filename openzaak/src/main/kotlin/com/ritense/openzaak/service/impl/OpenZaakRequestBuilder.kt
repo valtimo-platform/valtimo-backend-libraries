@@ -61,7 +61,8 @@ data class OpenZaakRequestBuilder(
 
     fun build() = apply {
         if (this.config == null) {
-            this.config = openZaakConfigService.getOpenZaakConfig() ?: throw IllegalStateException("OpenZaak config is not found")
+            this.config = openZaakConfigService.getOpenZaakConfig()
+                ?: throw IllegalStateException("OpenZaak config is not found")
         }
         val builder = UriComponentsBuilder
             .fromUriString(this.config!!.url)
@@ -100,7 +101,7 @@ data class OpenZaakRequestBuilder(
         )
         when {
             responseEntity.statusCode.isError ->
-                throw IllegalAccessException("OpenZaak invalid http call")
+                throw IllegalStateException("OpenZaak invalid http call")
         }
         return responseEntity.body!!
     }
@@ -114,7 +115,7 @@ data class OpenZaakRequestBuilder(
         )
         when {
             responseEntity.statusCode.isError ->
-                throw IllegalAccessException("OpenZaak invalid http call")
+                throw IllegalStateException("OpenZaak invalid http call")
         }
         return responseEntity.body!!
     }

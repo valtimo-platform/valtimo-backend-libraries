@@ -65,16 +65,13 @@ class NotificationServiceImplTest {
 
     @Test
     void shouldSendNotification() {
-        //when
-        DelegateTaskFake task = mockTask("id");
-
-        //then
         when(delegateTaskHelper.isTaskBeingAssigned(ArgumentMatchers.any())).thenReturn(true);
         when(userManagementService.findByEmail(null))
             .thenReturn(Optional.of(user("test1@test.com", List.of("dev"))));
         when(emailNotificationService.existsByEmailAddressAndTaskNotificationsEnabled(anyString())).thenReturn(true);
         when(valtimoProperties.getApp().getBaselUrl()).thenReturn("http://baseUrl");
 
+        DelegateTaskFake task = mockTask("id");
         notificationService.sendNotification(task, "mail-template-test");
 
         verify(mailSender).send(ArgumentMatchers.any(TemplatedMailMessage.class));

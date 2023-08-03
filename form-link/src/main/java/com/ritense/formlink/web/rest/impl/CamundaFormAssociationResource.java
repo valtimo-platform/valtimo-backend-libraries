@@ -94,7 +94,6 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
 
     @Override
     @PostMapping("/v1/form-association/form-definition/submission")
-    @PreAuthorize("#taskInstanceId.present == false or hasPermission(#taskInstanceId.orElseThrow(), 'taskAccess')")
     public ResponseEntity<FormSubmissionResult> handleSubmission(
         @RequestParam String processDefinitionKey,
         @RequestParam String formLinkId,

@@ -61,6 +61,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
 
@@ -189,7 +190,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .getAuthorizationSpecification(
                     new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        VIEW,
+                        VIEW_LIST,
                         null
                     ),
                     null
@@ -216,7 +217,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .getAuthorizationSpecification(
                     new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        VIEW,
+                        VIEW_LIST,
                         null
                     ),
                     null

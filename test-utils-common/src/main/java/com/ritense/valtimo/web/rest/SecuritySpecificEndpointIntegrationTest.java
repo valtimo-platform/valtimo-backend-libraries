@@ -33,7 +33,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static com.ritense.valtimo.contract.utils.TestUtil.convertObjectToJsonBytes;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -61,6 +63,23 @@ public abstract class SecuritySpecificEndpointIntegrationTest {
             r.setRemoteAddr("8.8.8.8");
             return r;
         });
+        assertHttpStatus(request, shouldBeStatus);
+    }
+
+    protected void assertHttpStatus(
+        HttpMethod method,
+        String path,
+        Object jsonContent,
+        HttpStatus shouldBeStatus
+    ) throws Exception {
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(method, path)
+            .content(convertObjectToJsonBytes(jsonContent))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
+            .with(r -> {
+                r.setRemoteAddr("8.8.8.8");
+                return r;
+            });
         assertHttpStatus(request, shouldBeStatus);
     }
 

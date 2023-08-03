@@ -48,15 +48,16 @@ public class FakeUserRepository implements CurrentUserRepository {
 
     @Override
     public void changePassword(String currentUserLogin, String newPassword) {
+        //Not implemented
     }
 
     @Override
     public void updateProfile(String currentUserLogin, Profile profile) {
+        //Not implemented
     }
 
     @Override
     public boolean supports(Class<? extends Authentication> authentication) {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
-
 }

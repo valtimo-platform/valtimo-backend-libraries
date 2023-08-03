@@ -30,17 +30,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.sql.SQLIntegrityConstraintViolationException;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class AuditEventProcessorImpl implements AuditEventProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(AuditEventProcessorImpl.class);
-    private final AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository;
+    private final AuditRecordRepository<AuditRecord> auditRecordRepository;
 
-    public AuditEventProcessorImpl(AuditRecordRepository<AuditRecord, AuditRecordId> auditRecordRepository) {
+    public AuditEventProcessorImpl(AuditRecordRepository<AuditRecord> auditRecordRepository) {
         this.auditRecordRepository = auditRecordRepository;
     }
 

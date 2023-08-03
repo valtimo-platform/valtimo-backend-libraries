@@ -17,11 +17,17 @@
 package com.ritense.authorization
 
 import com.ritense.authorization.permission.ConditionContainer
+import com.ritense.authorization.permission.FieldPermissionCondition
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.PermissionConditionOperator
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityActionProvider
+import java.util.UUID
+import javax.transaction.Transactional
 import org.hamcrest.CoreMatchers.hasItems
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.empty
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -29,8 +35,6 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
-import java.util.UUID
-import javax.transaction.Transactional
 
 @Transactional
 class AuthorizationServiceIntTest @Autowired constructor(
@@ -141,6 +145,92 @@ class AuthorizationServiceIntTest @Autowired constructor(
                 Action("custom")
             )
         )
+    }
+
+    @Test
+    fun `should find all roles that pass an authorization check`() {
+        val entity = TestEntity()
+        val role = roleRepository.findByKey("test-role")!!
+        val permissions = listOf(
+            Permission(
+                UUID.randomUUID(),
+                TestEntity::class.java,
+                TestEntityActionProvider.view,
+                ConditionContainer(
+                    listOf(
+                        FieldPermissionCondition(
+                            field = "name",
+                            operator = PermissionConditionOperator.EQUAL_TO,
+                            value = "fail"
+                        )
+                    )
+                ),
+                role
+            ),
+            Permission(
+                UUID.randomUUID(),
+                TestEntity::class.java,
+                TestEntityActionProvider.view,
+                ConditionContainer(
+                    listOf(
+                        FieldPermissionCondition(
+                            field = "name",
+                            operator = PermissionConditionOperator.EQUAL_TO,
+                            value = entity.name
+                        )
+                    )
+                ),
+                role
+            )
+        )
+
+        permissionRepository.deleteAll()
+        permissionRepository.saveAllAndFlush(permissions)
+
+        val authorizedRoles = authorizationService.getAuthorizedRoles(
+            EntityAuthorizationRequest(
+                TestEntity::class.java,
+                action = Action(Action.VIEW),
+                TestEntity()
+            )
+        )
+
+        assertThat(authorizedRoles, hasItems(role))
+    }
+
+    @Test
+    fun `should not find roles that fail an authorization check`() {
+        val role = roleRepository.findByKey("test-role")!!
+        val permissions = listOf(
+            Permission(
+                UUID.randomUUID(),
+                TestEntity::class.java,
+                TestEntityActionProvider.view,
+                ConditionContainer(
+                    listOf(
+                        FieldPermissionCondition(
+                            field = "name",
+                            operator = PermissionConditionOperator.EQUAL_TO,
+                            "fail"
+                        )
+                    )
+                ),
+                role
+            )
+        )
+
+        permissionRepository.deleteAll()
+        permissionRepository.saveAllAndFlush(permissions)
+
+        val authorizedRoles = authorizationService.getAuthorizedRoles(
+            EntityAuthorizationRequest(
+                TestEntity::class.java,
+                action = Action(Action.VIEW),
+                TestEntity()
+            )
+        )
+
+        assertThat(authorizedRoles, `is`(empty()))
     }
 
     fun requirePermission(

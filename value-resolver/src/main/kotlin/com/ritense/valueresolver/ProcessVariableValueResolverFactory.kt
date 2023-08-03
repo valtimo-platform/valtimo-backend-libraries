@@ -43,9 +43,9 @@ class ProcessVariableValueResolverFactory(
         }
     }
 
-    override fun createResolver(documentInstanceId: String): Function<String, Any?> {
+    override fun createResolver(documentId: String): Function<String, Any?> {
         val processInstanceIds = runtimeService.createProcessInstanceQuery()
-            .processInstanceBusinessKey(documentInstanceId)
+            .processInstanceBusinessKey(documentId)
             .list()
             .map { it.id }
             .toTypedArray()

@@ -25,6 +25,7 @@ public class ProcessDocumentLinkConfigItem {
     private Boolean processIsVisibleInMenu;
 
     public ProcessDocumentLinkConfigItem() {
+        //Default constructor
     }
 
     public String getProcessDefinitionKey() {

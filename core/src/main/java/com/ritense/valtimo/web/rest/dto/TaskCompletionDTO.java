@@ -27,6 +27,7 @@ public class TaskCompletionDTO {
     private List<UUID> filesToDelete = new ArrayList<>();
 
     public TaskCompletionDTO() {
+        // Default value empty constructor
     }
 
     public Map<String, Object> getVariables() {

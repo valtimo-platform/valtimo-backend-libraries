@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserSettingsServiceIntTest extends BaseIntegrationTest {
     @Autowired
@@ -54,10 +55,9 @@ class UserSettingsServiceIntTest extends BaseIntegrationTest {
 
         // then
         Optional<UserSettings> foundUserSettings = userSettingsService.findUserSettings(user);
-        assertThat(foundUserSettings.isPresent());
+        assertTrue(foundUserSettings.isPresent());
         assertThat(foundUserSettings.get().getUserId()).isEqualTo("12345");
         assertThat(foundUserSettings.get().getSettings()).isEqualTo(userSettings.getSettings());
-
     }
 
     @Test
@@ -79,7 +79,7 @@ class UserSettingsServiceIntTest extends BaseIntegrationTest {
 
         // then
         Optional<UserSettings> foundUserSettings = userSettingsRepository.findById("12345");
-        assertThat(foundUserSettings.isPresent());
+        assertTrue(foundUserSettings.isPresent());
         assertThat(foundUserSettings.get().getUserId()).isEqualTo("12345");
         assertThat(foundUserSettings.get().getSettings()).isEqualTo(userSettings.getSettings());
     }

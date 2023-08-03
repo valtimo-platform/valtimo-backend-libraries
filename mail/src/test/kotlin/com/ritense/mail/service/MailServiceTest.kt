@@ -90,7 +90,7 @@ internal class MailServiceTest {
         assertThat(argumentCaptor.value.sender.email.toString()).isEqualTo("sender@domain.com")
         assertThat(argumentCaptor.value.templateIdentifier.toString()).isEqualTo("Mail template identifier")
         assertThat(argumentCaptor.value.recipients.get().first().email.toString()).isEqualTo("Jan Jansen")
-        assertThat(argumentCaptor.value.recipients.get().first().type).isEqualTo(Recipient.Type.To)
+        assertThat(argumentCaptor.value.recipients.get().first().type).isEqualTo(Recipient.Type.TO)
     }
 
     @Test

@@ -58,7 +58,6 @@ class ApplicationReadyEventListener(
     private val documentDefinitionService: DocumentDefinitionService,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {
-
     @EventListener(ApplicationReadyEvent::class)
     fun handleApplicationReady() {
         createConnectors()
@@ -111,7 +110,7 @@ class ApplicationReadyEventListener(
                 OpenZaakConfig(
                     "http://localhost:8001",
                     "valtimo_client",
-                    "e09b8bc5-5831-4618-ab28-41411304309d",
+                    CLIENT_ID,
                     Rsin("051845623"),
                     "http://localhost:4200/catalogi/api/v1/catalogussen/8225508a-6840-413e-acc9-6422af120db1"
                 )
@@ -126,7 +125,7 @@ class ApplicationReadyEventListener(
             connectorProperties = ContactMomentProperties(
                 "http://localhost:8006",
                 "valtimo_client",
-                "e09b8bc5-5831-4618-ab28-41411304309d",
+                CLIENT_ID,
                 "051845623"
             )
         )
@@ -144,11 +143,11 @@ class ApplicationReadyEventListener(
             name = "ObjectsApiInstance",
             connectorProperties = ObjectsApiProperties(
                 objectsApi = ServerAuthSpecification(
-                    "http://localhost:8010",
+                    OBJECTEN_API_URL,
                     "cd63e158f3aca276ef284e3033d020a22899c728"
                 ),
                 objectsTypeApi = ServerAuthSpecification(
-                    "http://localhost:8011",
+                    OBJECTTYPEN_API_URL,
                     "cd63e158f3aca276ef284e3033d020a22899c728"
                 ),
                 objectType = ObjectTypeConfig(
@@ -177,11 +176,11 @@ class ApplicationReadyEventListener(
             name = TAAK_OBJECTAPI_CONNECTOR_NAME,
             connectorProperties = ObjectsApiProperties(
                 objectsApi = ServerAuthSpecification(
-                    "http://localhost:8010",
+                    OBJECTEN_API_URL,
                     "182c13e2209161852c53cef53a879f7a2f923430"
                 ),
                 objectsTypeApi = ServerAuthSpecification(
-                    "http://localhost:8011",
+                    OBJECTTYPEN_API_URL,
                     "cd63e158f3aca276ef284e3033d020a22899c728"
                 ),
                 objectType = ObjectTypeConfig(
@@ -200,11 +199,11 @@ class ApplicationReadyEventListener(
             name = PRODUCTAANVRAAG_OBJECTAPI_CONNECTOR_NAME,
             connectorProperties = ObjectsApiProperties(
                 objectsApi = ServerAuthSpecification(
-                    "http://localhost:8010",
+                    OBJECTEN_API_URL,
                     "182c13e2209161852c53cef53a879f7a2f923430"
                 ),
                 objectsTypeApi = ServerAuthSpecification(
-                    "http://localhost:8011",
+                    OBJECTTYPEN_API_URL,
                     "cd63e158f3aca276ef284e3033d020a22899c728"
                 ),
                 objectType = ObjectTypeConfig(
@@ -267,7 +266,7 @@ class ApplicationReadyEventListener(
             connectorProperties = BesluitProperties(
                 "http://localhost:8001",
                 "valtimo_client",
-                "e09b8bc5-5831-4618-ab28-41411304309d",
+                CLIENT_ID,
                 Rsin("051845623")
             )
         )
@@ -278,29 +277,29 @@ class ApplicationReadyEventListener(
             zaakTypeLinkService.createZaakTypeLink(
                 CreateZaakTypeLinkRequest(
                     "bezwaar",
-                    URI("http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"),
+                    URI(ZAAKTYPE_URL),
                     true
                 )
             )
             informatieObjectTypeLinkService.create(
                 CreateInformatieObjectTypeLinkRequest(
                     "bezwaar",
-                    URI("http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"),
+                    URI(ZAAKTYPE_URL),
                     URI("http://localhost:8001/catalogi/api/v1/informatieobjecttypen/efc332f2-be3b-4bad-9e3c-49a6219c92ad")
                 )
             )
         }
-        if (event.documentDefinition().id().name().equals("portal-person")) {
+        if (event.documentDefinition().id().name().equals(PORTAL_PERSON)) {
             zaakTypeLinkService.createZaakTypeLink(
                 CreateZaakTypeLinkRequest(
-                    "portal-person",
-                    URI("http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"),
+                    PORTAL_PERSON,
+                    URI(ZAAKTYPE_URL),
                     true
                 )
             )
         }
         documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-            "portal-person",
+            PORTAL_PERSON,
             DocumentDefinitionProcessRequest("document-upload", "DOCUMENT_UPLOAD")
         )
         documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
@@ -321,5 +320,10 @@ class ApplicationReadyEventListener(
         const val OPENNOTIFICATIES_CONNECTOR_NAME = "OpenNotificaties"
         const val TAAK_OBJECTAPI_CONNECTOR_NAME = "TaakObjects"
         const val PRODUCTAANVRAAG_OBJECTAPI_CONNECTOR_NAME = "ProductAanvraagObjects"
+        const val CLIENT_ID = "e09b8bc5-5831-4618-ab28-41411304309d"
+        const val OBJECTEN_API_URL = "http://localhost:8010"
+        const val OBJECTTYPEN_API_URL = "http://localhost:8011"
+        const val ZAAKTYPE_URL = "http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"
+        const val PORTAL_PERSON = "portal-person"
     }
 }

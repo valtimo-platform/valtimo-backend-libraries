@@ -73,14 +73,6 @@ public class SearchFieldResource implements DocumentSearchFields {
     }
 
     @Override
-    @GetMapping("/v1/admin/document-search/{documentDefinitionName}/fields")
-    public ResponseEntity<List<SearchFieldDto>> getAdminSearchFields(
-        @PathVariable String documentDefinitionName) {
-        return AuthorizationContext.runWithoutAuthorization(() -> ResponseEntity.ok(SearchFieldMapper
-                .toDtoList(searchFieldService.getSearchFields(documentDefinitionName))));
-    }
-
-    @Override
     @PutMapping("/v1/document-search/{documentDefinitionName}/fields")
     public ResponseEntity<Void> updateSearchField(
             @PathVariable String documentDefinitionName,

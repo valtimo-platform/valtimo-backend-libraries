@@ -78,6 +78,7 @@ import static com.ritense.authorization.AuthorizationContext.runWithoutAuthoriza
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.COMPLETE;
 
 public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentService {
 
@@ -175,6 +176,15 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             }
 
             final var task = taskResult.resultingValue().orElseThrow();
+
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    CamundaTask.class,
+                    COMPLETE,
+                    task
+                )
+            );
+
             final var modifyDocumentRequest = request.modifyDocumentRequest();
             final var modifiedDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(modifyDocumentRequest.documentId()));
             final var processInstanceId = new CamundaProcessInstanceId(task.getProcessInstanceId());
@@ -196,15 +206,11 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
 
             final var document = modifyDocumentResult.resultingDocument().orElseThrow();
 
-            authorizationService.requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocument.class,
-                    MODIFY,
-                    document
-                )
-            );
-
-            camundaTaskService.completeTaskWithFormData(request.taskId(), request.getProcessVars());
+            AuthorizationContext.runWithoutAuthorization(
+                () -> {
+                    camundaTaskService.completeTaskWithFormData(request.taskId(), request.getProcessVars());
+                    return null;
+                });
 
             return new ModifyDocumentAndCompleteTaskResultSucceeded(document);
         } catch (Exception ex) {

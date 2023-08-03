@@ -17,10 +17,10 @@
 package com.ritense.processdocument.exception;
 
 public class UnknownProcessDefinitionException extends RuntimeException {
-    private static final String message = "No process definition with key %s exist";
+    private static final String MESSAGE = "No process definition with key %s exist";
 
     public UnknownProcessDefinitionException(String processDefinitionKey) {
-        super(String.format(message, processDefinitionKey));
+        super(String.format(MESSAGE, processDefinitionKey));
     }
 
 }

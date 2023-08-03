@@ -20,9 +20,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.audit.AbstractTestHelper;
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
 import com.ritense.valtimo.contract.json.Mapper;
+import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonContent;
+import org.springframework.boot.test.json.ObjectContent;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,10 +37,10 @@ public class TaskCompletedJsonSerializingTest extends AbstractTestHelper {
 
     private static final String dateString = "2019-03-18T14:17:11.639114";
     private JacksonTester<TaskCompletedEvent> jacksonTester;
-    private String id = "edb1a672-4ba1-4e79-a5ee-b9658c55fe52";
+    private final String id = "edb1a672-4ba1-4e79-a5ee-b9658c55fe52";
     private String jsonString;
 
-    private ObjectMapper objectMapper = Mapper.INSTANCE.get();
+    private final ObjectMapper objectMapper = Mapper.INSTANCE.get();
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -45,13 +51,14 @@ public class TaskCompletedJsonSerializingTest extends AbstractTestHelper {
     @Test
     public void shouldParseJson() throws IOException {
         final TaskCompletedEvent taskCompletedEvent = taskCompletedEvent(id, LocalDateTime.parse(dateString));
-        assertThat(this.jacksonTester.parse(jsonString)).isEqualTo(taskCompletedEvent);
+        ObjectContent<TaskCompletedEvent> taskCompletedEventObjectContent = this.jacksonTester.parse(jsonString);
+        assertThat(taskCompletedEventObjectContent.getObject()).isEqualTo(taskCompletedEvent);
     }
 
     @Test
-    public void shouldMarshalObjectToJson() throws IOException {
+    public void shouldMarshalObjectToJson() throws IOException, JSONException {
         final TaskCompletedEvent taskCompletedEvent = taskCompletedEvent(id, LocalDateTime.parse(dateString));
-        assertThat(this.jacksonTester.write(taskCompletedEvent)).isEqualTo(jsonString);
+        JsonContent<TaskCompletedEvent> taskCompletedEventJsonContent = this.jacksonTester.write(taskCompletedEvent);
+        JSONAssert.assertEquals(taskCompletedEventJsonContent.getJson(), jsonString, JSONCompareMode.STRICT);
     }
-
 }

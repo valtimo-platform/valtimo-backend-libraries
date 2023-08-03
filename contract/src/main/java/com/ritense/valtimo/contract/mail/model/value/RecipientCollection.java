@@ -19,13 +19,11 @@ package com.ritense.valtimo.contract.mail.model.value;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.valtimo.contract.basictype.Value;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RecipientCollection extends Value<Collection<Recipient>> {
 
@@ -45,15 +43,15 @@ public class RecipientCollection extends Value<Collection<Recipient>> {
     }
 
     public Collection<Recipient> filterTo() {
-        return filterType(Recipient.Type.To);
+        return filterType(Recipient.Type.TO);
     }
 
     public Collection<Recipient> filterCc() {
-        return filterType(Recipient.Type.Cc);
+        return filterType(Recipient.Type.CC);
     }
 
     public Collection<Recipient> filterBcc() {
-        return filterType(Recipient.Type.Bcc);
+        return filterType(Recipient.Type.BCC);
     }
 
     @Override

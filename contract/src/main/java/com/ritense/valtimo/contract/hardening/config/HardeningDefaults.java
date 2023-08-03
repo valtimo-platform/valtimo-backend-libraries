@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class HardeningDefaults {
 
-    interface Hardening {
-        Set<String> allowStacktraceOnIps = Set.of("127.0.0.1", "0:0:0:0:0:0:0:1");
+    public static final class Hardening {
+        static Set<String> allowStacktraceOnIps = Set.of("127.0.0.1", "0:0:0:0:0:0:0:1");
     }
 }

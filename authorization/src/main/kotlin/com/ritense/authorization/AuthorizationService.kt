@@ -23,6 +23,8 @@ interface AuthorizationService {
         request: EntityAuthorizationRequest<T>
     )
 
+    fun <T : Any> getAuthorizedRoles(request: EntityAuthorizationRequest<T>): Set<Role>
+
     fun <T : Any> getAuthorizationSpecification(
         request: AuthorizationRequest<T>,
         permissions: List<Permission>? = null

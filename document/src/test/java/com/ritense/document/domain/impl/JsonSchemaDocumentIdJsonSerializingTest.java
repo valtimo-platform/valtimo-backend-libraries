@@ -19,7 +19,12 @@ package com.ritense.document.domain.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonContent;
+import org.springframework.boot.test.json.ObjectContent;
+
 import java.io.IOException;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,24 +35,24 @@ public class JsonSchemaDocumentIdJsonSerializingTest {
     private static final String JSON_STRING_VALUE = "\"4bd8f762-0f83-42a6-8640-741b3f848752\"";
 
     private JacksonTester<JsonSchemaDocumentId> jacksonTester;
-    private ObjectMapper objectMapper;
 
     @BeforeEach
     public void setUp() {
-        objectMapper = new ObjectMapper().findAndRegisterModules();
+        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
         JacksonTester.initFields(this, objectMapper);
     }
 
     @Test
     public void shouldParseJson() throws IOException {
         var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(UUID_STRING));
-        assertThat(jacksonTester.parse(JSON_STRING_VALUE)).isEqualTo(documentId);
+        ObjectContent<JsonSchemaDocumentId> jsonSchemaDocumentIdObjectContent = jacksonTester.parse(JSON_STRING_VALUE);
+        assertThat(jsonSchemaDocumentIdObjectContent.getObject()).isEqualTo(documentId);
     }
 
     @Test
     public void shouldMarshalObjectToJson() throws IOException {
         final JsonSchemaDocumentId documentId = JsonSchemaDocumentId.existingId(UUID.fromString(UUID_STRING));
-        assertThat(jacksonTester.write(documentId)).isEqualToJson(JSON_STRING_VALUE);
+        JsonContent<JsonSchemaDocumentId> jsonSchemaDocumentIdJsonContent = jacksonTester.write(documentId);
+        JSONAssert.assertEquals(jsonSchemaDocumentIdJsonContent.getJson(), JSON_STRING_VALUE, JSONCompareMode.STRICT);
     }
-
 }
