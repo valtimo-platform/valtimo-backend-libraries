@@ -36,6 +36,12 @@
             <column name="created_on" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_by" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_on" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 
@@ -43,6 +49,9 @@
         <createTable tableName="dashboard_widget_configuration">
             <column name="key" type="VARCHAR(256)">
                 <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="title" type="VARCHAR(256)">
+                <constraints nullable="false"/>
             </column>
             <column name="title" type="VARCHAR(256)">
                 <constraints nullable="false"/>
@@ -73,5 +82,17 @@
                                  referencedColumnNames="key"/>
     </changeSet>
 
+    <changeSet id="4" author="Ritense">
+        <addColumn tableName="dashboard_widget_configuration">
+            <column name="display_type_properties" type="${jsonType}">
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <addNotNullConstraint tableName="dashboard_widget_configuration"
+                              columnName="display_type_properties"
+                              defaultNullValue="{}"/>
+    </changeSet>
 
 </databaseChangeLog>

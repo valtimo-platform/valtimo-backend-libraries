@@ -22,17 +22,15 @@ import com.ritense.dashboard.domain.WidgetConfiguration
 data class WidgetConfigurationResponseDto(
     val key: String,
     val title: String,
-    val dataSourceKey: String,
     val displayType: String,
-    val dataSourceProperties: ObjectNode
+    val displayTypeProperties: ObjectNode
 ) {
     companion object {
         fun of(widget: WidgetConfiguration) = WidgetConfigurationResponseDto(
             key = widget.key,
             title = widget.title,
-            dataSourceKey = widget.dataSourceKey,
             displayType = widget.displayType,
-            dataSourceProperties = widget.dataSourceProperties
+            displayTypeProperties = widget.displayTypeProperties
         )
     }
 }

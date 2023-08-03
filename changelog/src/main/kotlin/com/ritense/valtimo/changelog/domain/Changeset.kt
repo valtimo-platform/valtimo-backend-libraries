@@ -36,10 +36,10 @@ data class Changeset(
     @Column(name = "filename", nullable = false, updatable = false)
     val filename: String,
 
-    @Column(name = "dateexecuted", nullable = false, updatable = false)
+    @Column(name = "date_executed", nullable = false, updatable = false)
     val dateExecuted: Instant,
 
-    @Column(name = "orderexecuted", nullable = false, updatable = false, unique = true)
+    @Column(name = "order_executed", nullable = false, updatable = false, unique = true)
     val orderExecuted: Int,
 
     @Column(name = "md5sum", nullable = false, updatable = false, unique = true)
