@@ -18,8 +18,8 @@ package com.ritense.document.dashboard
 
 import com.ritense.valtimo.contract.repository.ExpressionOperator
 
-data class QueryCondition(
+data class QueryCondition<T: Comparable<T>>(
     val queryPath: String,
     val queryOperator: ExpressionOperator,
-    val queryValue: String
+    val queryValue: T
 )
