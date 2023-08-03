@@ -25,19 +25,13 @@ import com.ritense.authorization.permission.PermissionCondition
 data class PermissionDto(
     val resourceType: Class<*>,
     val action: String,
-    val conditionContainer: ConditionContainerDto?,
+    val conditions: List<PermissionCondition> = emptyList(),
     val roleKey: String
 ) {
     fun toPermission(roleRepository: RoleRepository) = Permission(
         resourceType = resourceType,
         action = Action<Any>(action),
-        conditionContainer = (conditionContainer ?: ConditionContainerDto()).toConditionContainer(),
+        conditionContainer = ConditionContainer(conditions = conditions),
         role = roleRepository.findByKey(roleKey)!!
     )
-}
-
-data class ConditionContainerDto(
-    val conditions: List<PermissionCondition> = emptyList()
-) {
-    fun toConditionContainer() = ConditionContainer(conditions = conditions)
 }
