@@ -16,6 +16,7 @@
 
 package com.ritense.document.repository.impl;
 
+import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.*;
 import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
 import com.ritense.document.repository.DocumentRepository;
@@ -27,10 +28,17 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
 public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSchemaDocument> {
+
+    @Query(" SELECT doc FROM JsonSchemaDocument doc WHERE doc.tenantId = :tenantId")
+    Optional<JsonSchemaDocument> findByIdAndTenantId(
+        Document.Id documentId,
+        String tenantId
+    );
 
     Page<JsonSchemaDocument> findAllByDocumentDefinitionIdName(Pageable pageable, String definitionName);
 
@@ -51,8 +59,7 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
     Long countByDocumentDefinitionIdNameAndAssigneeId(String definitionName, String assigneeId);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query("" +
-        " INSERT INTO JsonSchemaDocument doc ( doc.id " +
+    @Query(" INSERT INTO JsonSchemaDocument doc ( doc.id " +
         " ,      doc.content " +
         " ,      doc.documentDefinitionId " +
         " ,      doc.createdOn " +
@@ -88,8 +95,7 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
     );
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query("" +
-        " UPDATE JsonSchemaDocument doc " +
+    @Query(" UPDATE JsonSchemaDocument doc " +
         " SET    doc.content = :content " +
         " ,      doc.documentDefinitionId = :documentDefinitionId " +
         " ,      doc.modifiedOn = :modifiedOn " +

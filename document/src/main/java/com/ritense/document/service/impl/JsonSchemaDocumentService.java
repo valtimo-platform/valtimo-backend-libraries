@@ -74,10 +74,24 @@ public class JsonSchemaDocumentService implements DocumentService {
         return documentRepository.findById(documentId);
     }
 
+    public Optional<JsonSchemaDocument> findBy(Document.Id documentId, String tenantId) {
+        return documentRepository.findByIdAndTenantId(documentId, tenantId);
+    }
+
     @Override
     public JsonSchemaDocument get(String documentId) {
         var documentOptional = findBy(
             JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+        );
+        return documentOptional.orElseThrow(
+            () -> new DocumentNotFoundException("Document not found with id " + documentId)
+        );
+    }
+
+    public JsonSchemaDocument get(String documentId, String tenantId) {
+        var documentOptional = findBy(
+            JsonSchemaDocumentId.existingId(UUID.fromString(documentId)),
+            tenantId
         );
         return documentOptional.orElseThrow(
             () -> new DocumentNotFoundException("Document not found with id " + documentId)

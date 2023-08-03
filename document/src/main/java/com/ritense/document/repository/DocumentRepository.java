@@ -25,10 +25,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 
 @NoRepositoryBean
 public interface DocumentRepository<T extends Document> extends JpaRepository<T, Document.Id> {
+
+    Optional<T> findByIdAndTenantId(
+        Document.Id documentId,
+        String tenantId
+    );
 
     Page<T> findAllByDocumentDefinitionIdName(
         Pageable pageable,
