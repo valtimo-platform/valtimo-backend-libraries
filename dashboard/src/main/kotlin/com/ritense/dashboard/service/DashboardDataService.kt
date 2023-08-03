@@ -35,7 +35,6 @@ class DashboardDataService(
 
     /**
      * This will get all widget data for the given dashboard key
-     * // TODO: Test caching
      */
     fun getWidgetDataForDashboard(dashboardKey: String): List<DashboardWidgetDataResultDto> {
         return widgetConfigurationRepository.findAllByDashboardKey(dashboardKey)
@@ -47,8 +46,6 @@ class DashboardDataService(
 
     /**
      * This can be used to get a single result by widget configuration key
-     * // TODO: Test functionality
-     * // TODO: Test caching
      */
     @Cacheable(value = [CACHE_NAME], key = "#key")
     fun getWidgetDataByConfigKey(key: String): DashboardWidgetDataResultDto {
@@ -58,9 +55,8 @@ class DashboardDataService(
 
     /**
      * This can be used to get a single result by widget configuration instance
-     * // TODO: Test caching
      */
-    @Cacheable(value = [CACHE_NAME], key = "#config.key")
+//    @Cacheable(value = [CACHE_NAME], key = "#config.key")
     fun getWidgetDataByConfig(
         config: WidgetConfiguration
     ): DashboardWidgetDataResultDto {
@@ -89,6 +85,6 @@ class DashboardDataService(
         applicationContext.getBean(this::class.java)
 
     companion object {
-        private const val CACHE_NAME = "widgetDataResults"
+        private const val CACHE_NAME = "dashboard.widgetData"
     }
 }
