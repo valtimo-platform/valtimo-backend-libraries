@@ -15,7 +15,7 @@
  */
 
 dockerCompose {
-    projectName = "dashboard"
+    projectName = "changelog"
     isRequiredBy(integrationTesting)
     isRequiredBy(securityTesting)
     useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
@@ -23,30 +23,27 @@ dockerCompose {
 
 dependencies {
 
-    implementation(project(":contract"))
-    implementation(project(":changelog"))
+    implementation project(":contract")
 
-    implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-    implementation "org.springframework.boot:spring-boot-starter-security"
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
-    implementation "io.github.classgraph:classgraph:${classgraphVersion}"
+
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
     testImplementation project(":core")
     testImplementation project(":resource:local-resource")
     testImplementation project(":test-utils-common")
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
-    testImplementation "org.springframework.security:spring-security-test"
 
+    testImplementation "io.kotest:kotest-assertions-core:${kotestVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation "org.mockito:mockito-inline"
 
     jar {
         enabled = true
         manifest {
-            attributes("Implementation-Title": "Dashboard spring boot starter")
+            attributes("Implementation-Title": "Changelog spring boot starter")
             attributes("Implementation-Version": projectVersion)
         }
     }
