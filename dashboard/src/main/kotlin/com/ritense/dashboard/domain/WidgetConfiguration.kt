@@ -57,5 +57,15 @@ data class WidgetConfiguration(
 
     @Column(name = "sort_order", nullable = false)
     val order: Int
-
-)
+) {
+    override fun toString(): String {
+        return "WidgetConfiguration(" +
+            "key='$key', " +
+            "title='$title', " +
+            "dataSourceKey='$dataSourceKey', " +
+            "dataSourceProperties=$dataSourceProperties, " +
+            "displayTypeProperties=$displayTypeProperties, " +
+            "displayType='$displayType', " +
+            "order=$order)"
+    }
+}
