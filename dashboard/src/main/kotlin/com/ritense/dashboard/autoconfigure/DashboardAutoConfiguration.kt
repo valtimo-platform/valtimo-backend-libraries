@@ -22,6 +22,7 @@ import com.ritense.dashboard.deployment.DashboardDeployer
 import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.security.config.DashboardHttpSecurityConfigurer
+import com.ritense.dashboard.service.DashboardDataService
 import com.ritense.dashboard.service.DashboardService
 import com.ritense.dashboard.web.rest.AdminDashboardResource
 import com.ritense.dashboard.web.rest.DashboardResource
@@ -38,6 +39,7 @@ import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import javax.sql.DataSource
+import org.springframework.context.ApplicationContext
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.dashboard.repository"])
@@ -62,16 +64,34 @@ class DashboardAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DashboardService::class)
     fun dashboardService(
+        applicationContext: ApplicationContext,
         dashboardRepository: DashboardRepository,
         widgetConfigurationRepository: WidgetConfigurationRepository,
         userManagementService: UserManagementService,
         widgetDataSourceResolver: WidgetDataSourceResolver,
     ): DashboardService {
         return DashboardService(
+            applicationContext,
             dashboardRepository,
             widgetConfigurationRepository,
             userManagementService,
             widgetDataSourceResolver
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DashboardDataService::class)
+    fun dashboardDataService(
+        applicationContext: ApplicationContext,
+        widgetDataSourceResolver: WidgetDataSourceResolver,
+        widgetConfigurationRepository: WidgetConfigurationRepository,
+        objectMapper: ObjectMapper
+    ): DashboardDataService {
+        return DashboardDataService(
+            applicationContext,
+            widgetDataSourceResolver,
+            widgetConfigurationRepository,
+            objectMapper
         )
     }
 
@@ -86,9 +106,10 @@ class DashboardAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DashboardResource::class)
     fun dashboardResource(
-        dashboardService: DashboardService
+        dashboardService: DashboardService,
+        dashboardDataService: DashboardDataService
     ): DashboardResource {
-        return DashboardResource(dashboardService)
+        return DashboardResource(dashboardService, dashboardDataService)
     }
 
     @Bean

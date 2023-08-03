@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource
+package com.ritense.gzac.dashboard
 
-data class WidgetDataSourceDto(
-    val key: String,
-    val title: String,
-    val dataFeatures: Set<String>
-)
+import com.ritense.dashboard.datasource.WidgetDataSource
+import com.ritense.dashboard.datasource.dto.HasNumberValue
+import com.ritense.dashboard.datasource.dto.HasTotal
+import org.springframework.stereotype.Component
+
+
+@Component
+class TestWidgetDataSource {
+
+    @WidgetDataSource(key = "test", title = "Test")
+    fun testDataSource(testDataSourceProperties: TestDataSourceProperties): TestDataResult {
+        return TestDataResult(testDataSourceProperties.value, testDataSourceProperties.total)
+    }
+}

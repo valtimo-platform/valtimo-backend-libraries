@@ -16,7 +16,9 @@
 
 package com.ritense.dashboard.datasource.dto
 
-data class DashboardWidgetListItemDto(
-    val value: Long,
-    val label: String,
-)
+import com.ritense.dashboard.datasource.WidgetDataFeature
+
+@WidgetDataFeature("label")
+interface HasLabel {
+    val label: String
+}

@@ -16,8 +16,12 @@
 
 package com.ritense.dashboard.datasource
 
-data class WidgetDataSourceDto(
-    val key: String,
-    val title: String,
-    val dataFeatures: Set<String>
+import java.lang.annotation.Inherited
+
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+@Inherited
+@Repeatable
+annotation class WidgetDataFeature(
+    val value: String,
 )

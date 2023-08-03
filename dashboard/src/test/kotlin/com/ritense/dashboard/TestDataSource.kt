@@ -16,31 +16,34 @@
 
 package com.ritense.dashboard
 
-import com.ritense.dashboard.domain.DefaultDisplayTypes
 import com.ritense.dashboard.datasource.WidgetDataSource
-import com.ritense.dashboard.datasource.dto.DashboardWidgetListDto
-import com.ritense.dashboard.datasource.dto.DashboardWidgetSingleDto
+import mu.KLogger
+import mu.KotlinLogging
 
 class TestDataSource {
 
     @WidgetDataSource(
         key = "test-key-multi",
-        title = "Test title multi",
-        displayTypes = [DefaultDisplayTypes.NUMBER]
+        title = "Test title multi"
     )
-    fun testDashboardWidgetListDto(): DashboardWidgetListDto {
-        return DashboardWidgetListDto(emptyList(), 0)
+    fun testDashboardWidgetListDto(): TestWidgetNumbersResult {
+        return TestWidgetNumbersResult(emptyList(), 0)
     }
 
     @WidgetDataSource(
         key = "test-key-single",
         title = "Test title single",
-        displayTypes = [DefaultDisplayTypes.NUMBER, "custom"]
     )
-    fun dashboardWidgetSingleDto() = DashboardWidgetSingleDto(1, 0)
+    fun dashboardWidgetSingleDto(testDataSourceProperties: TestDataSourceProperties): TestWidgetNumberResult {
+        logger.info { "dashboardWidgetSingleDto($testDataSourceProperties)" }
+        return TestWidgetNumberResult(1, 0)
+    }
 
     fun testNonAnnotatedMethod(): String {
         return "test"
     }
 
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
+    }
 }

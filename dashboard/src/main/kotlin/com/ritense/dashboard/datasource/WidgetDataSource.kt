@@ -20,6 +20,5 @@ package com.ritense.dashboard.datasource
 @Retention(AnnotationRetention.RUNTIME)
 annotation class WidgetDataSource(
     val key: String,
-    val title: String,
-    val displayTypes: Array<String>
+    val title: String
 )

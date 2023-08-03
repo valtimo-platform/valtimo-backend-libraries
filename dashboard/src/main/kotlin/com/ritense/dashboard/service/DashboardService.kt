@@ -17,7 +17,6 @@
 package com.ritense.dashboard.service
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.dashboard.datasource.WidgetDataSource
 import com.ritense.dashboard.datasource.WidgetDataSourceDto
 import com.ritense.dashboard.datasource.WidgetDataSourceResolver
 import com.ritense.dashboard.domain.Dashboard
@@ -27,11 +26,16 @@ import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import org.springframework.transaction.annotation.Transactional
+import java.util.SortedSet
 import kotlin.jvm.optionals.getOrElse
+import mu.KLogger
+import mu.KotlinLogging
+import org.springframework.context.ApplicationContext
+import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class DashboardService(
+    private val applicationContext: ApplicationContext,
     private val dashboardRepository: DashboardRepository,
     private val widgetConfigurationRepository: WidgetConfigurationRepository,
     private val userManagementService: UserManagementService,
@@ -77,6 +81,17 @@ class DashboardService(
 
         dashboardRepository.deleteAll()
         return dashboardRepository.saveAll(dashboards)
+    }
+
+    fun updateDashboard(dashboardUpdateRequestDto: DashboardUpdateRequestDto): Dashboard {
+        val dashboard = dashboardRepository.findById(dashboardUpdateRequestDto.key)
+            .getOrElse { throw RuntimeException("Failed to update dashboard. Dashboard with key '${dashboardUpdateRequestDto.key}' doesn't exist.") }
+            .copy(
+                title = dashboardUpdateRequestDto.title,
+                description = dashboardUpdateRequestDto.description
+            )
+
+        return dashboardRepository.save(dashboard)
     }
 
     fun deleteDashboard(dashboardKey: String) {
@@ -152,10 +167,33 @@ class DashboardService(
     }
 
     fun getWidgetDataSources(): List<WidgetDataSourceDto> {
-        return widgetDataSourceResolver.widgetDataSourceMap.values.map {
-            val annotation = it.getAnnotation(WidgetDataSource::class.java)
-            WidgetDataSourceDto(annotation.key, annotation.title, annotation.displayTypes.toSet())
-        }.sortedBy { it.title }
+        return widgetDataSourceResolver.dataSourceMethodMap.entries
+            .filter { (_, method) ->
+                val beanExists = applicationContext.getBeanNamesForType(method.declaringClass).isNotEmpty()
+                if(!beanExists) {
+                    logger.warn { "DataSource of type ${method.declaringClass} is not listed as a Spring Bean!" }
+                }
+
+                beanExists
+            }
+            .map { (datasource, method) ->
+                val dataFeatures = getDataFeaturesForClass(method.returnType)
+
+                WidgetDataSourceDto(datasource.key, datasource.title, dataFeatures)
+            }.sortedBy { it.title }
+    }
+
+    private fun getDataFeaturesForClass(returnType: Class<*>): SortedSet<String> {
+        // This should be a lot easier if this Kotlin issue was fixed: https://youtrack.jetbrains.com/issue/KT-22265/Support-for-inherited-annotations
+        // The workaround gets all classes annotated with WidgetDataFeature and adds the feature when the class is assignable from the returnType
+        val dataFeatures = widgetDataSourceResolver.dataFeatureClassMap
+            .filter {
+                it.key.isAssignableFrom(returnType)
+            }
+            .flatMap { entry -> entry.value }
+            .map { type -> type.value }
+            .toSortedSet()
+        return dataFeatures
     }
 
     private fun updateDashboardOrder() {
@@ -195,5 +233,9 @@ class DashboardService(
             .lowercase()
             .replace("(^[^a-z]+)|([^0-9a-z]+\$)".toRegex(), "") // trim start and end
             .replace("[^0-9a-z]+".toRegex(), "_") // replace all non-alphanumeric characters with '_'
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

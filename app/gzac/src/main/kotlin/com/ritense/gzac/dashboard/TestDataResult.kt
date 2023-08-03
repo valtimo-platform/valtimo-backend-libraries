@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource
+package com.ritense.gzac.dashboard
 
-data class WidgetDataSourceDto(
-    val key: String,
-    val title: String,
-    val dataFeatures: Set<String>
-)
+import com.ritense.dashboard.datasource.dto.HasNumberValue
+import com.ritense.dashboard.datasource.dto.HasTotal
+
+data class TestDataResult(
+    override val value: Long,
+    override val total: Long
+) : HasNumberValue, HasTotal

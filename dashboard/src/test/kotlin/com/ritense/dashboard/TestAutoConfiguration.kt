@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource.dto
+package com.ritense.dashboard
 
-data class DashboardWidgetListDto(
-    val values: List<DashboardWidgetListItemDto>,
-    val total: Long,
-)
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+
+@TestConfiguration
+class TestAutoConfiguration {
+    @Bean
+    fun testDataSource() = TestDataSource()
+}
