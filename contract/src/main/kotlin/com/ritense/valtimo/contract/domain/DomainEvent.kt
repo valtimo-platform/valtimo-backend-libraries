@@ -16,5 +16,4 @@
 
 package com.ritense.valtimo.contract.domain
 
-interface DomainEvent {
-}
+interface DomainEvent

@@ -165,6 +165,11 @@ public class HistoricDocument implements Document {
     }
 
     @Override
+    public String tenantId() {
+        return null;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

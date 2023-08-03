@@ -22,7 +22,6 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +31,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -61,7 +59,8 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
             content,
             USERNAME,
             documentSequenceGeneratorService,
-            null
+            null,
+            TENANT_ID
         );
         document = result.resultingDocument().orElseThrow();
         documentRepository.save(document);
@@ -86,9 +85,9 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var postContent = "{ \"assigneeId\": \"" + user.getId() + "\"}";
 
         mockMvc.perform(
-            post("/api/v1/document/{documentId}/assign", document.id().getId().toString())
-                .content(postContent)
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                post("/api/v1/document/{documentId}/assign", document.id().getId().toString())
+                    .content(postContent)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
 

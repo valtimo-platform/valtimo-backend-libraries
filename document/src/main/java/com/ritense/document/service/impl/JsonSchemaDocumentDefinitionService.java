@@ -17,22 +17,10 @@
 package com.ritense.document.service.impl;
 
 import com.jayway.jsonpath.InvalidPathException;
-import com.jayway.jsonpath.internal.path.ArrayPathToken;
-import com.jayway.jsonpath.internal.path.CompiledPath;
-import com.jayway.jsonpath.internal.path.FunctionPathToken;
-import com.jayway.jsonpath.internal.path.PathCompiler;
-import com.jayway.jsonpath.internal.path.PathToken;
-import com.jayway.jsonpath.internal.path.PredicatePathToken;
-import com.jayway.jsonpath.internal.path.RootPathToken;
-import com.jayway.jsonpath.internal.path.ScanPathToken;
-import com.jayway.jsonpath.internal.path.WildcardPathToken;
+import com.jayway.jsonpath.internal.path.*;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.EveritSchemaAllowsPropertyKt;
-import com.ritense.document.domain.impl.JsonSchema;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRoleId;
+import com.ritense.document.domain.impl.*;
 import com.ritense.document.exception.DocumentDefinitionDeploymentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
@@ -76,7 +64,11 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
     private final DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository;
 
-    public JsonSchemaDocumentDefinitionService(ResourceLoader resourceLoader, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository) {
+    public JsonSchemaDocumentDefinitionService(
+        ResourceLoader resourceLoader,
+        DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
+        DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository
+    ) {
         this.resourceLoader = resourceLoader;
         this.documentDefinitionRepository = documentDefinitionRepository;
         this.documentDefinitionRoleRepository = documentDefinitionRoleRepository;
@@ -221,7 +213,6 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         documentDefinitionRepository.deleteByIdName(documentDefinitionName);
     }
 
-
     @Override
     public boolean currentUserCanAccessDocumentDefinition(String documentDefinitionName) {
         return currentUserCanAccessDocumentDefinition(false, documentDefinitionName);
@@ -234,7 +225,6 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
             || getDocumentDefinitionRoles(documentDefinitionName).stream().anyMatch(roles::contains);
     }
 
-
     @Override
     public Set<String> getDocumentDefinitionRoles(String documentDefinitionName) {
         return documentDefinitionRoleRepository.findAllByIdDocumentDefinitionName(documentDefinitionName)
@@ -245,10 +235,14 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public void putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles) {
-        List<JsonSchemaDocumentDefinitionRole> documentDefinitionRoles = roles.stream().map(it -> new JsonSchemaDocumentDefinitionRole(new JsonSchemaDocumentDefinitionRoleId(
-            documentDefinitionName,
-            it
-        ))).toList();
+        List<JsonSchemaDocumentDefinitionRole> documentDefinitionRoles = roles.stream().map(
+            it -> new JsonSchemaDocumentDefinitionRole(
+                new JsonSchemaDocumentDefinitionRoleId(
+                    documentDefinitionName,
+                    it
+                )
+            )
+        ).toList();
         documentDefinitionRoleRepository.deleteByIdDocumentDefinitionName(documentDefinitionName);
         documentDefinitionRoleRepository.saveAll(documentDefinitionRoles);
     }

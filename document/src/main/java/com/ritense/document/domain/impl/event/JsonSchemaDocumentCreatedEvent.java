@@ -26,12 +26,16 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
 import com.ritense.valtimo.contract.audit.view.AuditView;
+import com.ritense.valtimo.contract.domain.DomainEvent;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
-public class JsonSchemaDocumentCreatedEvent extends AuditMetaData implements DocumentCreatedEvent, AuditEvent {
+public class JsonSchemaDocumentCreatedEvent extends AuditMetaData
+    implements DocumentCreatedEvent, AuditEvent, DomainEvent {
 
     private final JsonSchemaDocumentId documentId;
     private final JsonSchemaDocumentDefinitionId definitionId;
@@ -39,13 +43,13 @@ public class JsonSchemaDocumentCreatedEvent extends AuditMetaData implements Doc
 
     @JsonCreator
     public JsonSchemaDocumentCreatedEvent(
-        UUID id,
-        String origin,
-        LocalDateTime occurredOn,
-        String user,
-        JsonSchemaDocumentId documentId,
-        JsonSchemaDocumentDefinitionId definitionId,
-        JsonSchemaDocumentVersion version
+        final UUID id,
+        final String origin,
+        final LocalDateTime occurredOn,
+        final String user,
+        final JsonSchemaDocumentId documentId,
+        final JsonSchemaDocumentDefinitionId definitionId,
+        final JsonSchemaDocumentVersion version
     ) {
         super(id, origin, occurredOn, user);
         assertArgumentNotNull(documentId, "documentId is required");

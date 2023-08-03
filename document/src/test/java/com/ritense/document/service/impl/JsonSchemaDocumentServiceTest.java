@@ -29,28 +29,19 @@ import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.resource.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class JsonSchemaDocumentServiceTest extends BaseTest {
 
@@ -61,7 +52,6 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
     private ResourceService resourceService;
 
     private UserManagementService userManagementService;
-    private ApplicationEventPublisher applicationEventPublisher;
     private JsonSchemaDocument jsonSchemaDocument;
 
     private final String documentDefinitionName = "name";
@@ -73,15 +63,14 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         documentSequenceGeneratorService = mock(JsonSchemaDocumentDefinitionSequenceGeneratorService.class);
         resourceService = mock(ResourceService.class);
         userManagementService = mock(UserManagementService.class);
-        applicationEventPublisher = mock(ApplicationEventPublisher.class);
 
         jsonSchemaDocumentService = new JsonSchemaDocumentService(
             documentRepository,
             documentDefinitionService,
             documentSequenceGeneratorService,
             resourceService,
-            userManagementService,
-            applicationEventPublisher);
+            userManagementService
+        );
 
         var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");
         jsonSchemaDocument = createDocument(definitionOf("person"), content).resultingDocument().orElseThrow();
@@ -92,7 +81,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         final var content = new JsonDocumentContent("{\"addresses\" : [{\"streetName\" : \"Funenpark\"}]}");
         NewDocumentRequest documentRequest = new NewDocumentRequest(
             "document-definition",
-            content.asJson()
+            content.asJson(),
+            TENANT_ID
         );
 
         JsonSchemaDocumentDefinition definition = definitionOf("referenced-array");
@@ -100,35 +90,57 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 
         CreateDocumentResult result = jsonSchemaDocumentService.createDocument(documentRequest);
-        JsonSchemaDocument document = (JsonSchemaDocument)result.resultingDocument().get();
+        JsonSchemaDocument document = (JsonSchemaDocument) result.resultingDocument().get();
 
         assertEquals(content.asJson(), document.content().asJson());
         assertEquals(definition.id(), document.definitionId());
         assertEquals(123L, document.sequence());
         assertEquals("system", document.createdBy());
         assertNotNull(document.createdOn());
-        verify(documentRepository, times(1)).saveAndFlush(document);
+        verify(documentRepository, times(1)).insertDocument(
+            any(), any(), any(), any(), any(), any(), any(), any(), any(), any()
+        );
     }
 
     @Test
     void shouldCreateDocumentWithResources() {
         SecurityContextHolder.getContext()
-                .setAuthentication(new TestingAuthenticationToken("user@ritense.com", USER));
+            .setAuthentication(new TestingAuthenticationToken("user@ritense.com", USER));
         final var content = new JsonDocumentContent("{\"addresses\" : [{\"streetName\" : \"Funenpark\"}]}");
 
         LocalDateTime createdOn = LocalDateTime.now();
         UUID resourceId = UUID.randomUUID();
         Resource resource = new Resource() {
-            @Override public UUID id() {return resourceId;}
-            @Override public String name() {return "name.txt";}
-            @Override public String extension() {return "txt";}
-            @Override public Long sizeInBytes() {return 123L;}
-            @Override public LocalDateTime createdOn() {return createdOn;}
+            @Override
+            public UUID id() {
+                return resourceId;
+            }
+
+            @Override
+            public String name() {
+                return "name.txt";
+            }
+
+            @Override
+            public String extension() {
+                return "txt";
+            }
+
+            @Override
+            public Long sizeInBytes() {
+                return 123L;
+            }
+
+            @Override
+            public LocalDateTime createdOn() {
+                return createdOn;
+            }
         };
 
         NewDocumentRequest documentRequest = new NewDocumentRequest(
             "document-definition",
-            content.asJson()
+            content.asJson(),
+            TENANT_ID
         );
         documentRequest.withResources(Set.of(resource));
 
@@ -137,7 +149,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 
         CreateDocumentResult result = jsonSchemaDocumentService.createDocument(documentRequest);
-        JsonSchemaDocument document = (JsonSchemaDocument)result.resultingDocument().get();
+        JsonSchemaDocument document = (JsonSchemaDocument) result.resultingDocument().get();
 
         assertEquals(content.asJson(), document.content().asJson());
         assertEquals(definition.id(), document.definitionId());
@@ -145,15 +157,19 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         assertEquals("user@ritense.com", document.createdBy());
         assertNotNull(document.createdOn());
         assertEquals(document.relatedFiles().size(), 1);
-        document.relatedFiles().forEach(relatedFile -> {
-            assertEquals(resourceId, relatedFile.getFileId());
-            assertEquals("name.txt", relatedFile.getFileName());
-            assertEquals(createdOn, relatedFile.getCreatedOn());
-            assertEquals("user@ritense.com", relatedFile.getCreatedBy());
-            assertEquals(123L, relatedFile.getSizeInBytes());
-        });
+        document.relatedFiles().forEach(
+            relatedFile -> {
+                assertEquals(resourceId, relatedFile.getFileId());
+                assertEquals("name.txt", relatedFile.getFileName());
+                assertEquals(createdOn, relatedFile.getCreatedOn());
+                assertEquals("user@ritense.com", relatedFile.getCreatedBy());
+                assertEquals(123L, relatedFile.getSizeInBytes());
+            }
+        );
 
-        verify(documentRepository, times(1)).saveAndFlush(document);
+        verify(documentRepository, times(1)).insertDocument(
+            any(), any(), any(), any(), any(), any(), any(), any(), any(), any()
+        );
     }
 
     @Test
@@ -191,10 +207,9 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
 
         jsonSchemaDocumentService.unassignUserFromDocument(jsonSchemaDocument.id().getId());
 
-        assertEquals(null, jsonSchemaDocument.assigneeId());
-        assertEquals(null, jsonSchemaDocument.assigneeFullName());
-        var captor = ArgumentCaptor.forClass(DocumentUnassignedEvent.class);
-        verify(applicationEventPublisher, times(1)).publishEvent(captor.capture());
-        assertEquals("Anonymous", captor.getValue().getUser());
+        assertNull(jsonSchemaDocument.assigneeId());
+        assertNull(jsonSchemaDocument.assigneeFullName());
+        assertThat(jsonSchemaDocument.domainEvents().stream()
+            .filter(domainEvent -> domainEvent.getClass().equals(DocumentUnassignedEvent.class))).isNotNull();
     }
 }

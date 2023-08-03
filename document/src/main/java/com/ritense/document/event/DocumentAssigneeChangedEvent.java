@@ -23,24 +23,29 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
 import com.ritense.valtimo.contract.audit.view.AuditView;
+import com.ritense.valtimo.contract.domain.DomainEvent;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class DocumentAssigneeChangedEvent extends AuditMetaData
-    implements AuditEvent {
+    implements AuditEvent, DomainEvent {
 
     private String assigneeName;
     private UUID documentId;
 
     @JsonCreator
-    public DocumentAssigneeChangedEvent(UUID id,
-                                        String origin,
-                                        LocalDateTime occurredOn,
-                                        String user,
-                                        UUID documentId,
-                                        String assigneeName) {
+    public DocumentAssigneeChangedEvent(
+        UUID id,
+        String origin,
+        LocalDateTime occurredOn,
+        String user,
+        UUID documentId,
+        String assigneeName
+    ) {
         super(id, origin, occurredOn, user);
         assertArgumentNotNull(documentId, "documentId is required");
         assertArgumentNotNull(assigneeName, "assignee name is required");
@@ -65,12 +70,6 @@ public class DocumentAssigneeChangedEvent extends AuditMetaData
     public String getAssigneeName() {
         return assigneeName;
     }
-
-    public void setAssigneeName(String assigneeName) {
-        this.assigneeName = assigneeName;
-    }
-
-
 
     @Override
     public boolean equals(Object o) {

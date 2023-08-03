@@ -81,7 +81,8 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
             content,
             USERNAME,
             documentSequenceGeneratorService,
-            null
+            null,
+            TENANT_ID
         );
         document = result.resultingDocument().orElseThrow();
 

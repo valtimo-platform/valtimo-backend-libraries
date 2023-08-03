@@ -17,10 +17,15 @@
 package com.ritense.document.repository;
 
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.*;
+import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @NoRepositoryBean
 public interface DocumentRepository<T extends Document> extends JpaRepository<T, Document.Id> {
@@ -39,4 +44,30 @@ public interface DocumentRepository<T extends Document> extends JpaRepository<T,
     );
 
     Long countByDocumentDefinitionIdNameAndAssigneeId(String definitionName, String assigneeId);
+
+    T insertDocument(
+        JsonSchemaDocumentId jsonSchemaDocumentId,
+        JsonDocumentContent content,
+        JsonSchemaDocumentDefinitionId documentDefinitionId,
+        LocalDateTime createdOn,
+        String createdBy,
+        String assigneeId,
+        String assigneeFullName,
+        Set<JsonSchemaDocumentRelation> documentRelations,
+        Set<JsonSchemaRelatedFile> relatedFiles,
+        String tenantId
+    );
+
+    T updateDocument(
+        JsonSchemaDocumentId jsonSchemaDocumentId,
+        JsonDocumentContent content,
+        JsonSchemaDocumentDefinitionId documentDefinitionId,
+        LocalDateTime modifiedOn,
+        String assigneeId,
+        String assigneeFullName,
+        Set<JsonSchemaDocumentRelation> documentRelations,
+        Set<JsonSchemaRelatedFile> relatedFiles,
+        String tenantId
+    );
+
 }

@@ -79,7 +79,8 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             content,
             USERNAME,
             documentSequenceGeneratorService,
-            null
+            null,
+            TENANT_ID
         );
         document = result.resultingDocument().orElseThrow();
         document.setAssignee("test-assignee-id", "John Doe");

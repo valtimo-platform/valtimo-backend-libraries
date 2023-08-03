@@ -45,18 +45,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-import static com.ritense.document.domain.search.DatabaseSearchType.BETWEEN;
-import static com.ritense.document.domain.search.DatabaseSearchType.EQUAL;
-import static com.ritense.document.domain.search.DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO;
-import static com.ritense.document.domain.search.DatabaseSearchType.IN;
-import static com.ritense.document.domain.search.DatabaseSearchType.LESS_THAN_OR_EQUAL_TO;
-import static com.ritense.document.domain.search.DatabaseSearchType.LIKE;
+import static com.ritense.document.domain.search.DatabaseSearchType.*;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @Tag("integration")
@@ -77,7 +70,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         originalDocument = documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
-                content.asJson()
+                content.asJson(),
+                TENANT_ID
             )
         );
 
@@ -86,7 +80,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
-                content2.asJson()
+                content2.asJson(),
+                TENANT_ID
             )
         );
 
@@ -96,7 +91,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         documentService.createDocument(
             new NewDocumentRequest(
                 definitionHouseV2.id().name(),
-                new JsonDocumentContent("{\"street\": \"Kalverstraat\",\"place\": \"Amsterdam\"}").asJson()
+                new JsonDocumentContent("{\"street\": \"Kalverstraat\",\"place\": \"Amsterdam\"}").asJson(),
+                TENANT_ID
             )
         );
 
@@ -1086,7 +1082,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         return documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
-                documentContent.asJson()
+                documentContent.asJson(),
+                TENANT_ID
             )
         );
     }
