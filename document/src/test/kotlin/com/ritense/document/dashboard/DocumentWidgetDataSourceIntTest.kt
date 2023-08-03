@@ -5,12 +5,15 @@ import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.result.CreateDocumentResult
+import com.ritense.valtimo.contract.Constants
 import com.ritense.valtimo.contract.repository.ExpressionOperator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class DocumentWidgetDataSourceIntTest @Autowired constructor(
     private val documentWidgetDataSource: DocumentWidgetDataSource
 ): BaseIntegrationTest() {
@@ -50,9 +53,19 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
             documentDefinitionName,
             listOf(
                 QueryCondition(
-                    "$.street", //TODO: This is a JSONPath where it should be a JSON Pointer
+                    "case:createdBy",
+                    ExpressionOperator.EQUAL_TO,
+                    Constants.SYSTEM_ACCOUNT
+                ),
+                QueryCondition(
+                    "doc:street",
                     ExpressionOperator.EQUAL_TO,
                     street
+                ),
+                QueryCondition(
+                    "housenumber",
+                    ExpressionOperator.EQUAL_TO,
+                    1
                 )
             )
         )
@@ -61,7 +74,7 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
     }
 
     private fun createDocument(documentDefinition: JsonSchemaDocumentDefinition, street: String = "Funenpark"): CreateDocumentResult? {
-        val content = JsonDocumentContent("""{"street": "$street"}""")
+        val content = JsonDocumentContent("""{"street": "$street", "housenumber": 1}""")
         return documentService.createDocument(
             NewDocumentRequest(
                 documentDefinition.id().name(),

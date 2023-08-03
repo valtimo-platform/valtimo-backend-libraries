@@ -16,12 +16,12 @@
 
 package com.ritense.document.dashboard
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.ritense.valtimo.contract.repository.ExpressionOperator
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 
-data class QueryCondition<T: Comparable<T>>(
-    val queryPath: String,
-    val queryOperator: ExpressionOperator,
-    @JsonDeserialize(using = ComparableDeserializer::class)
-    val queryValue: T
-)
+class ComparableDeserializer : StdDeserializer<Comparable<*>>(Comparable::class.java) {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Comparable<*> {
+        return ctxt.readValue(p, Any::class.java) as Comparable<*>
+    }
+}

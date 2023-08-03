@@ -17,15 +17,11 @@
 package com.ritense.document.dashboard
 
 import com.ritense.document.domain.impl.JsonSchemaDocument
-import com.ritense.document.domain.search.AdvancedSearchRequest.OtherFilter
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.Companion.byDocumentDefinitionIdName
-import com.ritense.document.service.impl.JsonSchemaDocumentSearchService
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.Expression
-import javax.persistence.criteria.Path
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
@@ -37,13 +33,13 @@ class DocumentWidgetDataSource(
     @WidgetDataSource("case-count", "Case count")
     fun getCaseCount(caseCountDataSourceProperties: DocumentCountDataSourceProperties): DocumentCountDataResult {
         val spec = byDocumentDefinitionIdName(caseCountDataSourceProperties.documentDefinition)
-//            .and { root, _, criteriaBuilder ->
-//                criteriaBuilder.and(
-//                    *caseCountDataSourceProperties.queryConditions.map {
-//                        createConditionPredicate(root, it, criteriaBuilder)
-//                    }.toTypedArray()
-//                )
-//            }
+            .and { root, _, criteriaBuilder ->
+                criteriaBuilder.and(
+                    *caseCountDataSourceProperties.queryConditions.map {
+                        createConditionPredicate(root, it, criteriaBuilder)
+                    }.toTypedArray()
+                )
+            }
 
         val count = documentRepository.count(spec)
         return DocumentCountDataResult(count)
@@ -54,53 +50,32 @@ class DocumentWidgetDataSource(
         it: QueryCondition<T>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
-        //TODO: handle doc: and case: prefixes
-        val path = createDatabaseObjectPath("content.content", root)
+        val valueClass = it.queryValue::class.java as Class<T>
+        //Prefix defaults to doc: when no prefix is given
+        val pathPrefix = "${it.queryPath.substringBefore(":", "doc")}:"
+        val expression =  when (pathPrefix){
+            CASE_PREFIX -> {
+                root.get<Any>(it.queryPath.substringAfter(CASE_PREFIX)).`as`(valueClass)
+            }
+            else -> {
+                queryDialectHelper.getJsonValueExpression(
+                    criteriaBuilder,
+                    root.get<Any>("content").get<Any>("content"),
+                    "$." + it.queryPath.substringAfter(DOC_PREFIX),
+                    valueClass
+                )
+            }
+        }
+
         return it.queryOperator.toPredicate(
             criteriaBuilder,
-            queryDialectHelper.getJsonValueExpression(
-                criteriaBuilder, path, it.queryPath,
-                it.queryValue::class.java as Class<T>
-            )
-            /** TODO: I don't know about this type */
-            ,
+            expression,
             it.queryValue
         )
     }
 
-    private fun <T> createDatabaseObjectPath(field: String, root: Root<T>): Path<Any>? {
-        var path: Path<Any>? = null
-        field.split('.').forEach {
-            path = if (path == null) {
-                root.get(it)
-            } else {
-                path!!.get(it)
-            }
-        }
-
-        return path
+    companion object {
+        private const val DOC_PREFIX =  "doc:"
+        private const val CASE_PREFIX =  "case:"
     }
-//
-//    private fun <T : Comparable<T>?> getValueExpressionForDocPrefix(
-//        cb: CriteriaBuilder,
-//        documentRoot: Root<JsonSchemaDocument>,
-//        path: String
-//    ): Expression<T>? {
-//        val jsonPath = "$." + path.substring(JsonSchemaDocumentSearchService.DOC_PREFIX.length)
-//        return queryDialectHelper.getJsonValueExpression(
-//            cb,
-//            documentRoot.get<Any>(JsonSchemaDocumentSearchService.CONTENT)
-//                .get<Any>(JsonSchemaDocumentSearchService.CONTENT),
-//            jsonPath,
-//            searchCriteria.getDataType()
-//        )
-//    }
-
-//    private fun <T : Comparable<T>?> getValueExpressionForCasePrefix(
-//        documentRoot: Root<JsonSchemaDocument>,
-//        searchCriteria: OtherFilter
-//    ): Expression<T>? {
-//        val documentColumnName = searchCriteria.path.substring(JsonSchemaDocumentSearchService.CASE_PREFIX.length)
-//        return documentRoot.get<Any>(documentColumnName).`as`(searchCriteria.getDataType())
-//    }
 }
