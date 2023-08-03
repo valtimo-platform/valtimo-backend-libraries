@@ -28,7 +28,7 @@ class TaakObject(
     @JsonProperty("verwerker_taak_id")
     val verwerkerTaakId: String,
     @JsonProperty("verzonden_data")
-    val verzondenData: Map<String, Any> = mapOf()
+    val verzondenData: Map<String, Any?> = mapOf()
 )
 
 class TaakIdentificatie(

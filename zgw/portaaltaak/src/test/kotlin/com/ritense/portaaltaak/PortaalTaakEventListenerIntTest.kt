@@ -66,6 +66,7 @@ import java.net.URI
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 @Transactional
 internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
@@ -137,6 +138,14 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
                     {
                         "key": "doc:/name",
                         "value": "/name"
+                    },
+                    {
+                        "key": "doc:/lastname",
+                        "value": "/not-existing-var"
+                    },
+                    {
+                        "key": "doc:/fake-key",
+                        "value": "/nullValue"
                     }
                 ],
                 "receiver": "${TaakReceiver.OTHER.key}",
@@ -187,6 +196,8 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
         val mapOfValuesToUpdate = mapCaptor.firstValue
         assertEquals(1, mapOfValuesToUpdate.size)
         assertEquals("Luis", mapOfValuesToUpdate["doc:/name"])
+        assertNull(mapOfValuesToUpdate["doc:/lastname"])
+        assertNull(mapOfValuesToUpdate["doc:/fake-key"])
 
         // assert second call to camundaProcessService.startProcess() where handling process is started
         assertEquals("process-completed-portaaltaak-mock", processDefinitionKeyCaptor.secondValue)
@@ -382,6 +393,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
                 "documenten" to listOf(URI.create("/some-document"), URI.create("/some-document-array")),
                 "name" to "Luis",
                 "phone" to "999999999",
+                "nullValue" to null,
                 "some-document" to "http://documenten-api.com/api/v1/documenten/393ba68f-0bd6-43d7-9c1c-cb33d4d2aa6e",
                 "some-document-array" to arrayOf(
                     "http://documenten-api.com/api/v1/documenten/205107b1-261f-4042-925a-e300cdc6d2ab",

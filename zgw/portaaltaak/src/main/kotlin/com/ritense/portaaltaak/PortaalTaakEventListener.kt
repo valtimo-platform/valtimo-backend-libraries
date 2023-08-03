@@ -34,6 +34,7 @@ import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valueresolver.ValueResolverService
+import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.delegate.VariableScope
@@ -118,7 +119,7 @@ class PortaalTaakEventListener(
         task: Task,
         receiveData: List<DataBindingConfig>
     ) {
-        if (!taakObject.verzondenData.isNullOrEmpty()) {
+        if (taakObject.verzondenData.isNotEmpty()) {
             val processInstanceId = CamundaProcessInstanceId(task.processInstanceId)
             val variableScope = getVariableScope(task)
             val taakObjectData = objectMapper.valueToTree<JsonNode>(taakObject.verzondenData)
@@ -133,13 +134,21 @@ class PortaalTaakEventListener(
      * @return mapOf(doc:/streetName to "Funenpark")
      */
     private fun getResolvedValues(receiveData: List<DataBindingConfig>, data: JsonNode): Map<String, Any> {
-        return receiveData.associateBy({ it.key }, { getValue(data, it.value) })
+        return receiveData
+            .associateBy({ it.key }, { getValue(data, it.value) })
+            .mapNotNull { (key, value) -> value?.let { key to it } }
+            .toMap()
     }
 
-    private fun getValue(data: JsonNode, path: String): Any {
+    private fun getValue(data: JsonNode, path: String): Any? {
         val valueNode = data.at(JsonPointer.valueOf(path))
         if (valueNode.isMissingNode) {
-            throw RuntimeException("Failed to find path '$path' in data: \n${data.toPrettyString()}")
+            logger.debug { "Failed to find path '$path' in data: \n${data.toPrettyString()}" }
+            return null
+        }
+        if (valueNode.isNull) {
+            logger.debug { "Null value found for path '$path' in data: \n${data.toPrettyString()}" }
+            return null
         }
         return objectMapper.treeToValue(valueNode, Object::class.java)
     }
@@ -233,5 +242,7 @@ class PortaalTaakEventListener(
                 "Portaaltaak meta data was empty!"
             )
     }
-
+    companion object {
+        val logger = KotlinLogging.logger {}
+    }
 }
