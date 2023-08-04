@@ -16,9 +16,7 @@
 
 package com.ritense.gzac.dashboard
 
-import com.ritense.dashboard.datasource.WidgetDataSource
-import com.ritense.dashboard.datasource.dto.HasNumberValue
-import com.ritense.dashboard.datasource.dto.HasTotal
+import com.ritense.valtimo.contract.dashboard.WidgetDataSource
 import org.springframework.stereotype.Component
 
 

@@ -16,6 +16,8 @@
 
 package com.ritense.dashboard.datasource
 
+import com.ritense.valtimo.contract.dashboard.feature.WidgetDataFeature
+import com.ritense.valtimo.contract.dashboard.WidgetDataSource
 import java.lang.reflect.Method
 import mu.KLogger
 import mu.KotlinLogging

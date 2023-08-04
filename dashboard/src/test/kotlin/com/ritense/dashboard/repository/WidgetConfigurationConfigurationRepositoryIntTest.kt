@@ -59,7 +59,7 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
             )
         )
 
-        val widgets = widgetConfigurationRepository.findAll()
+        val widgets = widgetConfigurationRepository.findAllByDashboardKey("mine")
 
         assertThat(widgets).hasSize(1)
         assertThat(widgets[0].dashboard).isEqualTo(dashboard)

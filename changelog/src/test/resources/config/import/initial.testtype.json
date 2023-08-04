@@ -1,0 +1,4 @@
+{
+    "changesetId": "initial-testtype",
+    "testContent": ["a", "b", "c"]
+}

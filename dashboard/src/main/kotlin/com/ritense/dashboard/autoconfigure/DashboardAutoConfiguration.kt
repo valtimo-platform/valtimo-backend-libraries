@@ -18,6 +18,7 @@ package com.ritense.dashboard.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.dashboard.datasource.WidgetDataSourceResolver
+import com.ritense.dashboard.deployment.DashboardDeployer
 import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.security.config.DashboardHttpSecurityConfigurer
@@ -25,8 +26,10 @@ import com.ritense.dashboard.service.DashboardDataService
 import com.ritense.dashboard.service.DashboardService
 import com.ritense.dashboard.web.rest.AdminDashboardResource
 import com.ritense.dashboard.web.rest.DashboardResource
+import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -36,11 +39,13 @@ import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import javax.sql.DataSource
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.ApplicationContext
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.dashboard.repository"])
 @EntityScan("com.ritense.dashboard.domain")
+@EnableCaching
 class DashboardAutoConfiguration {
 
     @Order(HIGHEST_PRECEDENCE + 29)
@@ -115,4 +120,19 @@ class DashboardAutoConfiguration {
         return WidgetDataSourceResolver()
     }
 
+    @Bean
+    @ConditionalOnMissingBean(DashboardDeployer::class)
+    fun dashboardDeployer(
+        objectMapper: ObjectMapper,
+        dashboardRepository: DashboardRepository,
+        changelogService: ChangelogService,
+        @Value("\${valtimo.changelog.dashboard.clear-tables:false}") clearTables: Boolean
+    ): DashboardDeployer {
+        return DashboardDeployer(
+            objectMapper,
+            dashboardRepository,
+            changelogService,
+            clearTables
+        )
+    }
 }

@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource.dto
+package com.ritense.valtimo.contract.dashboard.feature
 
-import com.ritense.dashboard.datasource.WidgetDataFeature
+import java.lang.annotation.Inherited
 
-@WidgetDataFeature("numbers")
-interface HasNumberValues<T> where T : HasNumberValue, T : HasLabel {
-    val values: List<T>
-}
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+@Inherited
+@Repeatable
+annotation class WidgetDataFeature(
+    val value: String,
+)

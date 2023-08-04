@@ -198,6 +198,25 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should update single dashboard`() {
+        val dashboard1 = dashboardService.createDashboard("First dashboard", "Test description")
+        val dashboard2 = dashboardService.createDashboard("Second dashboard", "Test description")
+        val updateRequest = DashboardUpdateRequestDto.of(dashboard1.copy(title = "Third dashboard"))
+
+        mockMvc.perform(
+            put("/api/management/v1/dashboard/{dashboardKey}", dashboard1.key)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(jacksonObjectMapper().writeValueAsString(updateRequest))
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.key").value("first_dashboard"))
+            .andExpect(jsonPath("$.title").value("Third dashboard"))
+
+        assertThat(dashboardRepository.existsById(dashboard2.key)).isTrue
+    }
+
+    @Test
     fun `should get widget configurations`() {
         val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
         widgetConfigurationRepository.save(
@@ -348,11 +367,11 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         mockMvc.perform(get("/api/management/v1/dashboard/widget-data-sources"))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$[0].key").value("test-key-multi"))
-            .andExpect(jsonPath("$[0].title").value("Test title multi"))
-            .andExpect(jsonPath("$[0].dataFeatures").value(contains("numbers", "total")))
-            .andExpect(jsonPath("$[1].key").value("test-key-single"))
-            .andExpect(jsonPath("$[1].title").value("Test title single"))
-            .andExpect(jsonPath("$[1].dataFeatures").value(contains("number", "total")))
+            .andExpect(jsonPath("$[0].key").value("number-data"))
+            .andExpect(jsonPath("$[0].title").value("Number data"))
+            .andExpect(jsonPath("$[0].dataFeatures").value(contains("number", "total")))
+            .andExpect(jsonPath("$[1].key").value("numbers-data"))
+            .andExpect(jsonPath("$[1].title").value("Numbers data"))
+            .andExpect(jsonPath("$[1].dataFeatures").value(contains("numbers", "total")))
     }
 }

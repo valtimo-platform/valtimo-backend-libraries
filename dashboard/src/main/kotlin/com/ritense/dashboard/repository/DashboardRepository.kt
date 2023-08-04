@@ -28,4 +28,8 @@ interface DashboardRepository : JpaRepository<Dashboard, String> {
     fun findByTitleAndDescription(title: String, description: String): Dashboard
 
     fun findByTitle(title: String): List<Dashboard>
+
+    fun findByKey(key: String): Dashboard?
+
+    fun findByOrder(order: Int): Dashboard?
 }
