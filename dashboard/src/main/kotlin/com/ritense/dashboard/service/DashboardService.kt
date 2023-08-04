@@ -162,7 +162,12 @@ class DashboardService(
     }
 
     fun deleteWidgetConfiguration(dashboardKey: String, widgetConfigurationKey: String) {
-        widgetConfigurationRepository.deleteByDashboardKeyAndKey(dashboardKey, widgetConfigurationKey)
+        val dashboard = dashboardRepository.findByKey(dashboardKey)
+            ?: throw RuntimeException("No dashboard configuration found with key '$dashboardKey'")
+        val newWidgetList = dashboard.widgetConfigurations.toMutableList()
+        newWidgetList.removeIf { it.key == widgetConfigurationKey }
+        val updatedDashBoard = dashboard.copy(widgetConfigurations = newWidgetList)
+        dashboardRepository.save(updatedDashBoard)
         updateWidgetConfigurationOrder(dashboardKey)
     }
 
