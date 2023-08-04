@@ -18,8 +18,10 @@ package com.ritense.dashboard.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.dashboard.datasource.WidgetDataSourceResolver
+import com.ritense.dashboard.domain.WidgetConfiguration
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.web.rest.dto.DashboardWidgetDataResultDto
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.context.ApplicationContext
 import org.springframework.transaction.annotation.Transactional
 
@@ -31,26 +33,58 @@ class DashboardDataService(
     private val objectMapper: ObjectMapper
 ) {
 
+    /**
+     * This will get all widget data for the given dashboard key
+     */
     fun getWidgetDataForDashboard(dashboardKey: String): List<DashboardWidgetDataResultDto> {
-        val dataSourceMap = widgetDataSourceResolver.dataSourceMethodMap
-            .mapKeys { it.key.key }
-
         return widgetConfigurationRepository.findAllByDashboardKey(dashboardKey)
             .sortedBy { it.order }
-            .associateWith { dataSourceMap[it.dataSourceKey]?: throw RuntimeException("Could not find data source for ${it.dataSourceKey}") }
-            .map { (config, method) ->
-                val arguments = when (method.parameterCount) {
-                    0 -> {
-                        emptyArray<Any>()
-                    }
-                    else -> {
-                        arrayOf(objectMapper.treeToValue(config.dataSourceProperties, method.parameterTypes.single()))
-                    }
-                }
-                val datasourceBean = applicationContext.getBean(method.declaringClass)
-                val dataResult = method.invoke(datasourceBean, *arguments)
-
-                DashboardWidgetDataResultDto(config.key, dataResult)
+            .map { config ->
+                self().getWidgetDataByConfig(config)
             }
+    }
+
+    /**
+     * This can be used to get a single result by widget configuration key
+     */
+    @Cacheable(value = [CACHE_NAME], key = "#key")
+    fun getWidgetDataByConfigKey(key: String): DashboardWidgetDataResultDto {
+        val config = widgetConfigurationRepository.getReferenceById(key)
+        return self().getWidgetDataByConfig(config)
+    }
+
+    /**
+     * This can be used to get a single result by widget configuration instance
+     */
+//    @Cacheable(value = [CACHE_NAME], key = "#config.key")
+    fun getWidgetDataByConfig(
+        config: WidgetConfiguration
+    ): DashboardWidgetDataResultDto {
+        val method = widgetDataSourceResolver.dataSourceMethodMap.toList()
+            .single { (ds, _) -> ds.key == config.dataSourceKey }.second
+
+        val arguments = when (method.parameterCount) {
+            0 -> {
+                emptyArray<Any>()
+            }
+
+            else -> {
+                arrayOf(objectMapper.treeToValue(config.dataSourceProperties, method.parameterTypes.single()))
+            }
+        }
+        val datasourceBean = applicationContext.getBean(method.declaringClass)
+        val dataResult = method.invoke(datasourceBean, *arguments)
+
+        return DashboardWidgetDataResultDto(config.key, dataResult)
+    }
+
+    /**
+     * This is a workaround to make caching (AOP) work internal calls
+     */
+    private fun self(): DashboardDataService =
+        applicationContext.getBean(this::class.java)
+
+    companion object {
+        private const val CACHE_NAME = "dashboard.widgetData"
     }
 }

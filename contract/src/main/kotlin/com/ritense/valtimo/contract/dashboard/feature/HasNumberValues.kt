@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.gzac.dashboard
+package com.ritense.valtimo.contract.dashboard.feature
 
-import com.ritense.valtimo.contract.dashboard.WidgetDataSource
-import org.springframework.stereotype.Component
-
-
-@Component
-class TestWidgetDataSource {
-
-    @WidgetDataSource(key = "test", title = "Test")
-    fun testDataSource(testDataSourceProperties: TestDataSourceProperties): TestDataResult {
-        return TestDataResult(testDataSourceProperties.value, testDataSourceProperties.total)
-    }
+@WidgetDataFeature("numbers")
+interface HasNumberValues<T> where T : HasNumberValue, T : HasLabel {
+    val values: List<T>
 }
