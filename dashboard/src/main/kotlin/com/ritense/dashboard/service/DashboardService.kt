@@ -101,7 +101,7 @@ class DashboardService(
 
     @Transactional(readOnly = true)
     fun getWidgetConfigurations(dashboardKey: String): List<WidgetConfiguration> {
-        return widgetConfigurationRepository.findAllByDashboardKey(dashboardKey)
+        return widgetConfigurationRepository.findAllByDashboardKeyOrderByOrder(dashboardKey)
     }
 
     fun createWidgetConfiguration(
