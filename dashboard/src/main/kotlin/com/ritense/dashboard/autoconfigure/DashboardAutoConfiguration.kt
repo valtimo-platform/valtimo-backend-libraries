@@ -39,11 +39,13 @@ import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import javax.sql.DataSource
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.ApplicationContext
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.dashboard.repository"])
 @EntityScan("com.ritense.dashboard.domain")
+@EnableCaching
 class DashboardAutoConfiguration {
 
     @Order(HIGHEST_PRECEDENCE + 29)

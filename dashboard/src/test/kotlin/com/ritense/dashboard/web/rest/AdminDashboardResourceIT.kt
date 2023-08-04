@@ -367,11 +367,11 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         mockMvc.perform(get("/api/management/v1/dashboard/widget-data-sources"))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$[0].key").value("test-key-multi"))
-            .andExpect(jsonPath("$[0].title").value("Test title multi"))
-            .andExpect(jsonPath("$[0].dataFeatures").value(contains("numbers", "total")))
-            .andExpect(jsonPath("$[1].key").value("test-key-single"))
-            .andExpect(jsonPath("$[1].title").value("Test title single"))
-            .andExpect(jsonPath("$[1].dataFeatures").value(contains("number", "total")))
+            .andExpect(jsonPath("$[0].key").value("number-data"))
+            .andExpect(jsonPath("$[0].title").value("Number data"))
+            .andExpect(jsonPath("$[0].dataFeatures").value(contains("number", "total")))
+            .andExpect(jsonPath("$[1].key").value("numbers-data"))
+            .andExpect(jsonPath("$[1].title").value("Numbers data"))
+            .andExpect(jsonPath("$[1].dataFeatures").value(contains("numbers", "total")))
     }
 }

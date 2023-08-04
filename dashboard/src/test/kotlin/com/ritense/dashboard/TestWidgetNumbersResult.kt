@@ -16,8 +16,8 @@
 
 package com.ritense.dashboard
 
-import com.ritense.dashboard.datasource.dto.HasNumberValues
-import com.ritense.dashboard.datasource.dto.HasTotal
+import com.ritense.valtimo.contract.dashboard.feature.HasNumberValues
+import com.ritense.valtimo.contract.dashboard.feature.HasTotal
 
 data class TestWidgetNumbersResult(
     override val values: List<TestLabeledNumberValue>,
