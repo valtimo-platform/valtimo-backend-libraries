@@ -21,6 +21,7 @@ import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
 import com.ritense.objectmanagement.service.ObjectManagementInfoProviderImpl
 import com.ritense.objectmanagement.service.ObjectManagementService
+import com.ritense.objectmanagement.service.ObjectsService
 import com.ritense.objectmanagement.web.rest.ObjectManagementResource
 import com.ritense.plugin.service.PluginService
 import com.ritense.search.service.SearchFieldV2Service
@@ -45,13 +46,15 @@ class ObjectManagementAutoConfiguration {
         objectManagementRepository: ObjectManagementRepository,
         pluginService: PluginService,
         searchFieldV2Service: SearchFieldV2Service,
-        searchListColumnService: SearchListColumnService
+        searchListColumnService: SearchListColumnService,
+        objectsService: ObjectsService
     ): ObjectManagementService {
         return ObjectManagementService(
             objectManagementRepository,
             pluginService,
             searchFieldV2Service,
-            searchListColumnService
+            searchListColumnService,
+            objectsService
         )
     }
 
