@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource.dto
+package com.ritense.valtimo.contract.dashboard.feature
 
-data class DashboardWidgetListDto(
-    val values: List<DashboardWidgetListItemDto>,
-    val total: Long,
-)
+@WidgetDataFeature("numbers")
+interface HasNumberValues<T> where T : HasNumberValue, T : HasLabel {
+    val values: List<T>
+}

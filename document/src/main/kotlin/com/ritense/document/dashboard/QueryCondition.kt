@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource.dto
+package com.ritense.document.dashboard
 
-import com.ritense.dashboard.datasource.WidgetDataFeature
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.ritense.valtimo.contract.repository.ExpressionOperator
 
-@WidgetDataFeature("total")
-interface HasTotal {
-    val total: Long
-}
+data class QueryCondition<T: Comparable<T>>(
+    val queryPath: String,
+    val queryOperator: ExpressionOperator,
+    @JsonDeserialize(using = ComparableDeserializer::class)
+    val queryValue: T
+)

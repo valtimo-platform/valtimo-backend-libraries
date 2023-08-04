@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource
+package com.ritense.valtimo.contract.dashboard.feature
 
-@Target(AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class WidgetDataSource(
-    val key: String,
-    val title: String
-)
+@WidgetDataFeature("number")
+interface HasNumberValue {
+    val value: Long
+}

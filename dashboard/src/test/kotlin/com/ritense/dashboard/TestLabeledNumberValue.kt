@@ -16,8 +16,8 @@
 
 package com.ritense.dashboard
 
-import com.ritense.dashboard.datasource.dto.HasLabel
-import com.ritense.dashboard.datasource.dto.HasNumberValue
+import com.ritense.valtimo.contract.dashboard.feature.HasLabel
+import com.ritense.valtimo.contract.dashboard.feature.HasNumberValue
 
 class TestLabeledNumberValue(
     override val value: Long,

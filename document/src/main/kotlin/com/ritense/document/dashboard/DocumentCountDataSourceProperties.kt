@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource
+package com.ritense.document.dashboard
 
-import java.lang.annotation.Inherited
-
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-@Inherited
-@Repeatable
-annotation class WidgetDataFeature(
-    val value: String,
+data class DocumentCountDataSourceProperties(
+    val documentDefinition: String,
+    val queryConditions: List<QueryCondition<*>> = listOf()
 )

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource.dto
+package com.ritense.document.dashboard
 
-import com.ritense.dashboard.datasource.WidgetDataFeature
+import com.ritense.valtimo.contract.dashboard.feature.HasNumberValue
+import com.ritense.valtimo.contract.dashboard.feature.HasTotal
 
-@WidgetDataFeature("label")
-interface HasLabel {
-    val label: String
-}
+class DocumentCountDataResult(
+    override val value: Long
+):HasNumberValue

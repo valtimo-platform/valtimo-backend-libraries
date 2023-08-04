@@ -16,8 +16,9 @@
 
 package com.ritense.gzac.dashboard
 
-import com.ritense.dashboard.datasource.dto.HasNumberValue
-import com.ritense.dashboard.datasource.dto.HasTotal
+import com.ritense.valtimo.contract.dashboard.feature.HasNumberValue
+import com.ritense.valtimo.contract.dashboard.feature.HasTotal
+
 
 data class TestDataResult(
     override val value: Long,

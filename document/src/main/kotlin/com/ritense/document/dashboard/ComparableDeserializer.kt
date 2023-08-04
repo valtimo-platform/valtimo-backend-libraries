@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource.dto
+package com.ritense.document.dashboard
 
-data class DashboardWidgetSingleDto(
-    val value: Long,
-    val total: Long,
-)
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+
+class ComparableDeserializer : StdDeserializer<Comparable<*>>(Comparable::class.java) {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Comparable<*> {
+        return ctxt.readValue(p, Any::class.java) as Comparable<*>
+    }
+}

@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource.dto
+package com.ritense.valtimo.contract.dashboard.feature
 
-import com.ritense.dashboard.datasource.WidgetDataFeature
-
-@WidgetDataFeature("numbers")
-interface HasNumberValues<T> where T : HasNumberValue, T : HasLabel {
-    val values: List<T>
+@WidgetDataFeature("total")
+interface HasTotal {
+    val total: Long
 }
