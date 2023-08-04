@@ -81,13 +81,14 @@ class DocumentDelegateService(
             .orElseThrow()
     }
 
-    fun findValueByJsonPointerOrDefault(jsonPointer: String?, execution: DelegateExecution, defaultValue: Any?): Any? {
+    private fun findOptionalValueByJsonPointer(jsonPointer: String?, execution: DelegateExecution): Optional<Any> {
         val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(execution.processBusinessKey))
         logger.debug("Retrieving value for key {} from documentId {}", jsonPointer, execution.processBusinessKey)
-        return AuthorizationContext.runWithoutAuthorization { documentService.findBy(jsonSchemaDocumentId)
+        return AuthorizationContext.runWithoutAuthorization {
+            documentService.findBy(jsonSchemaDocumentId)
+        }.flatMap { jsonSchemaDocument ->
+            jsonSchemaDocument.content().getValueBy(JsonPointer.valueOf(jsonPointer))
         }
-            .flatMap { jsonSchemaDocument -> jsonSchemaDocument.content().getValueBy(JsonPointer.valueOf(jsonPointer))
-            }
             .map(::transform)
             .orElse(defaultValue)
     }
