@@ -29,10 +29,16 @@ public class DocumentRelatedFileSubmittedEventListenerImpl implements DocumentRe
 
     private final DocumentService documentService;
     private final ResourceService resourceService;
+    private final TenantResolver tenantResolver;
 
-    public DocumentRelatedFileSubmittedEventListenerImpl(DocumentService documentService, ResourceService resourceService) {
+    public DocumentRelatedFileSubmittedEventListenerImpl(
+        DocumentService documentService,
+        ResourceService resourceService,
+        TenantResolver tenantResolver
+    ) {
         this.documentService = documentService;
         this.resourceService = resourceService;
+        this.tenantResolver = tenantResolver;
     }
 
     @Override
@@ -41,7 +47,7 @@ public class DocumentRelatedFileSubmittedEventListenerImpl implements DocumentRe
         documentService.assignRelatedFile(
             JsonSchemaDocumentId.existingId(event.getDocumentId()),
             JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin()),
-            new TenantResolver().getTenantId()
+            tenantResolver.getTenantId()
         );
     }
 }

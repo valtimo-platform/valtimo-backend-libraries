@@ -138,18 +138,27 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(RelatedJsonSchemaDocumentAvailableEventListenerImpl.class)
     public RelatedJsonSchemaDocumentAvailableEventListenerImpl relatedDocumentAvailableEventListener(
-        final DocumentService documentService
+        final DocumentService documentService,
+        final TenantResolver tenantResolver
     ) {
-        return new RelatedJsonSchemaDocumentAvailableEventListenerImpl(documentService);
+        return new RelatedJsonSchemaDocumentAvailableEventListenerImpl(
+            documentService,
+            tenantResolver
+        );
     }
 
     @Bean
     @ConditionalOnMissingBean(DocumentRelatedFileSubmittedEventListenerImpl.class)
     public DocumentRelatedFileSubmittedEventListenerImpl documentRelatedFileSubmittedEventListener(
         final DocumentService documentService,
-        final ResourceService resourceService
+        final ResourceService resourceService,
+        final TenantResolver tenantResolver
     ) {
-        return new DocumentRelatedFileSubmittedEventListenerImpl(documentService, resourceService);
+        return new DocumentRelatedFileSubmittedEventListenerImpl(
+            documentService,
+            resourceService,
+            tenantResolver
+        );
     }
 
     //API

@@ -29,9 +29,14 @@ import java.util.UUID;
 public class RelatedJsonSchemaDocumentAvailableEventListenerImpl implements RelatedDocumentAvailableEventListener {
 
     private final DocumentService documentService;
+    private final TenantResolver tenantResolver;
 
-    public RelatedJsonSchemaDocumentAvailableEventListenerImpl(final DocumentService documentService) {
+    public RelatedJsonSchemaDocumentAvailableEventListenerImpl(
+        final DocumentService documentService,
+        final TenantResolver tenantResolver
+    ) {
         this.documentService = documentService;
+        this.tenantResolver = tenantResolver;
     }
 
     public void handle(NextDocumentRelationAvailableEvent event) {
@@ -40,7 +45,7 @@ public class RelatedJsonSchemaDocumentAvailableEventListenerImpl implements Rela
         documentService.assignDocumentRelation(
             documentId,
             documentRelation,
-            new TenantResolver().getTenantId()
+            tenantResolver.getTenantId()
         );
     }
 
