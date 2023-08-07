@@ -27,8 +27,6 @@ import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificat
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import java.util.UUID
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
-import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult
@@ -81,7 +79,7 @@ class CorrelationServiceImpl(
         val correlationResultProcessInstance = runWithoutAuthorization {
             camundaRuntimeService.findProcessInstanceById(result.execution.processInstanceId)!!
         }
-        val processInstanceId = correlationResultProcessInstance.get().processInstanceId
+        val processInstanceId = correlationResultProcessInstance.processInstanceId
         val processName = runWithoutAuthorization {
             camundaRepositoryService.findProcessDefinitionById(correlationResultProcessInstance.processDefinitionId)!!.name
         }
@@ -90,7 +88,7 @@ class CorrelationServiceImpl(
             associateDocumentToProcess(
                 processInstanceId,
                 processName,
-                correlationResultProcessInstance.get().businessKey)
+                correlationResultProcessInstance.businessKey)
         }
 
         return result
@@ -115,7 +113,7 @@ class CorrelationServiceImpl(
                 associateDocumentToProcess(
                     processInstanceId,
                     processName,
-                    runningProcessInstance.get().businessKey)
+                    runningProcessInstance.businessKey)
             }
         }
 

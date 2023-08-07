@@ -17,7 +17,6 @@
 package com.ritense.dashboard.service
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.dashboard.datasource.WidgetDataSource
 import com.ritense.dashboard.datasource.WidgetDataSourceDto
 import com.ritense.dashboard.datasource.WidgetDataSourceResolver
 import com.ritense.dashboard.domain.Dashboard
