@@ -29,7 +29,9 @@ import com.ritense.dashboard.web.rest.dto.WidgetConfigurationCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import org.assertj.core.api.Assertions.assertThat
+import org.hamcrest.Matchers.contains
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
@@ -90,6 +92,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
                 displayType = "gauge",
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
                 order = 1
             )
         )
@@ -116,6 +119,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
                 displayType = "gauge",
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
                 order = 1
             )
         )
@@ -180,6 +184,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().createObjectNode(),
                 displayType = "gauge",
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
                 order = 1
             )
         )
@@ -194,6 +199,25 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should update single dashboard`() {
+        val dashboard1 = dashboardService.createDashboard("First dashboard", "Test description")
+        val dashboard2 = dashboardService.createDashboard("Second dashboard", "Test description")
+        val updateRequest = DashboardUpdateRequestDto.of(dashboard1.copy(title = "Third dashboard"))
+
+        mockMvc.perform(
+            put("/api/management/v1/dashboard/{dashboardKey}", dashboard1.key)
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(jacksonObjectMapper().writeValueAsString(updateRequest))
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.key").value("first_dashboard"))
+            .andExpect(jsonPath("$.title").value("Third dashboard"))
+
+        assertThat(dashboardRepository.existsById(dashboard2.key)).isTrue
+    }
+
+    @Test
     fun `should get widget configurations`() {
         val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
         widgetConfigurationRepository.save(
@@ -204,6 +228,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
                 displayType = "gauge",
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
                 order = 1
             )
         )
@@ -218,6 +243,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$[0].dataSourceKey").value("doorlooptijd"))
             .andExpect(jsonPath("$[0].dataSourceProperties.threshold").value(50))
             .andExpect(jsonPath("$[0].displayType").value("gauge"))
+            .andExpect(jsonPath("$[0].displayTypeProperties.useKpi").value(true))
     }
 
     @Test
@@ -227,7 +253,8 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             title = "Doorlooptijd",
             dataSourceKey = "doorlooptijd",
             dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
-            displayType = "gauge"
+            displayType = "gauge",
+            displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
         )
 
         mockMvc.perform(
@@ -241,6 +268,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$.dataSourceKey").value("doorlooptijd"))
             .andExpect(jsonPath("$.dataSourceProperties.threshold").value(50))
             .andExpect(jsonPath("$.displayType").value("gauge"))
+            .andExpect(jsonPath("$.displayTypeProperties.useKpi").value(true))
     }
 
     @Test
@@ -254,7 +282,8 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
                 displayType = "gauge",
-                order = 0
+                order = 0,
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
             )
         )
         val widgetConfigurations = listOf(
@@ -263,7 +292,8 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 title = "Doorlooptijd",
                 dataSourceKey = "doorlooptijd2",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 500 }""") as ObjectNode,
-                displayType = "donut"
+                displayType = "donut",
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": false }""") as ObjectNode,
             )
         )
 
@@ -279,6 +309,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$[0].dataSourceKey").value("doorlooptijd2"))
             .andExpect(jsonPath("$[0].dataSourceProperties.threshold").value(500))
             .andExpect(jsonPath("$[0].displayType").value("donut"))
+            .andExpect(jsonPath("$[0].displayTypeProperties.useKpi").value(false))
     }
 
     @Test
@@ -292,7 +323,8 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
                 displayType = "gauge",
-                order = 1
+                order = 1,
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
             )
         )
 
@@ -305,6 +337,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             .andExpect(jsonPath("$.dataSourceKey").value("doorlooptijd"))
             .andExpect(jsonPath("$.dataSourceProperties.threshold").value(50))
             .andExpect(jsonPath("$.displayType").value("gauge"))
+            .andExpect(jsonPath("$.displayTypeProperties.useKpi").value(true))
     }
 
     @Test
@@ -318,7 +351,8 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 dataSourceKey = "doorlooptijd",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
                 displayType = "gauge",
-                order = 1
+                order = 1,
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
             )
         )
 
@@ -327,6 +361,9 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         )
             .andDo(print())
             .andExpect(status().isNoContent)
+
+        val widgets = widgetConfigurationRepository.findAllByDashboardKey("doorlooptijd")
+        assertEquals(0, widgets.size)
     }
 
     @Test
@@ -334,11 +371,11 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         mockMvc.perform(get("/api/management/v1/dashboard/widget-data-sources"))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$[0].key").value("test-key-multi"))
-            .andExpect(jsonPath("$[0].title").value("Test title multi"))
-            .andExpect(jsonPath("$[0].type").value("multi"))
-            .andExpect(jsonPath("$[1].key").value("test-key-single"))
-            .andExpect(jsonPath("$[1].title").value("Test title single"))
-            .andExpect(jsonPath("$[1].type").value("single"))
+            .andExpect(jsonPath("$[0].key").value("number-data"))
+            .andExpect(jsonPath("$[0].title").value("Number data"))
+            .andExpect(jsonPath("$[0].dataFeatures").value(contains("number", "total")))
+            .andExpect(jsonPath("$[1].key").value("numbers-data"))
+            .andExpect(jsonPath("$[1].title").value("Numbers data"))
+            .andExpect(jsonPath("$[1].dataFeatures").value(contains("numbers", "total")))
     }
 }
