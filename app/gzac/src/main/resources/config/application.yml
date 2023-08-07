@@ -244,4 +244,5 @@ external:
                 caseKey: bezwaar
                 processDefinitionKey: bezwaar
 
+valtimo.changelog.dashboard.clear-tables: true
 valtimo.pbac.clear-tables: true

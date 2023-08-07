@@ -23,5 +23,6 @@ data class WidgetConfigurationUpdateRequestDto(
     val title: String,
     val dataSourceKey: String,
     val displayType: String,
-    val dataSourceProperties: ObjectNode
+    val dataSourceProperties: ObjectNode,
+    val displayTypeProperties: ObjectNode
 )
