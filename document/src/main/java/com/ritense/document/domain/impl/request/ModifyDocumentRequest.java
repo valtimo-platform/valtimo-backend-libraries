@@ -40,6 +40,9 @@ public class ModifyDocumentRequest {
     @JsonIgnore
     private JsonPatch jsonPatch;
 
+    @JsonIgnore
+    private String tenantId;
+
     @JsonCreator
     public ModifyDocumentRequest(
         @JsonProperty(value = "documentId", required = true) @NotNull String documentId,
@@ -51,12 +54,12 @@ public class ModifyDocumentRequest {
         this.versionBasedOn = versionBasedOn;
     }
 
-    public static ModifyDocumentRequest create(Document document, JsonNode jsonNode) {
+    public static ModifyDocumentRequest create(Document document, JsonNode jsonNode, String tenantId) {
         return new ModifyDocumentRequest(
             document.id().toString(),
             jsonNode,
             document.version().toString()
-        );
+        ).withTenantId(tenantId);
     }
 
     public String documentId() {
@@ -71,8 +74,17 @@ public class ModifyDocumentRequest {
         return versionBasedOn;
     }
 
+    public String tenantId() {
+        return tenantId;
+    }
+
     public ModifyDocumentRequest withJsonPatch(JsonPatch jsonPatch) {
         this.jsonPatch = jsonPatch;
+        return this;
+    }
+
+    public ModifyDocumentRequest withTenantId(String tenantId) {
+        this.tenantId = tenantId;
         return this;
     }
 

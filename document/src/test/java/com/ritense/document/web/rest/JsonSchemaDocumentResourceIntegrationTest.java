@@ -22,6 +22,7 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
+import com.ritense.tenancy.TenantResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,9 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private TenantResolver tenantResolver;
+
+    @Autowired
     private DocumentRepository documentRepository;
 
     @BeforeEach
@@ -70,7 +74,11 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
             Set.of(USER)
         );
 
-        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService, documentDefinitionService);
+        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(
+            documentService,
+            documentDefinitionService,
+            tenantResolver
+        );
         mockMvc = MockMvcBuilders
             .standaloneSetup(jsonSchemaDocumentResource)
             .build();

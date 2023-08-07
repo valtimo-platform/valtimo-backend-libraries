@@ -37,6 +37,7 @@ public class NewDocumentRequest {
 
     private Set<Resource> resources = Collections.emptySet();
 
+    @JsonProperty
     private final String tenantId;
 
     @JsonCreator

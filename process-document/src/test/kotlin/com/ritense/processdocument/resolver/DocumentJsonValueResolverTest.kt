@@ -28,10 +28,12 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -51,20 +53,28 @@ internal class DocumentJsonValueResolverTest {
     private lateinit var variableScope: DelegateTaskFake
     private lateinit var documentInstanceId: String
     private lateinit var document: Document
+    private lateinit var tenantResolver: TenantResolver
 
     @BeforeEach
     internal fun setUp() {
         processDocumentService = mock()
         documentService = mock()
         documentDefinitionService = mock()
-        documentValueResolver = DocumentJsonValueResolverFactory(processDocumentService, documentService, documentDefinitionService)
+        tenantResolver = mock()
+        whenever(tenantResolver.getTenantId()).thenReturn("1")
+        documentValueResolver = DocumentJsonValueResolverFactory(
+            processDocumentService,
+            documentService,
+            documentDefinitionService,
+            tenantResolver
+        )
 
         processInstanceId = UUID.randomUUID().toString()
         variableScope = DelegateTaskFake()
         documentInstanceId = UUID.randomUUID().toString()
         document = mock()
         whenever(processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)).thenReturn(document)
-        whenever(documentService.get(documentInstanceId)).thenReturn(document)
+        whenever(documentService.get(documentInstanceId, "1")).thenReturn(document)
     }
 
     @Test
@@ -349,7 +359,7 @@ internal class DocumentJsonValueResolverTest {
         )
 
         val captor = argumentCaptor<JsonNode>()
-        verify(documentService).modifyDocument(eq(document), captor.capture())
+        verify(documentService).modifyDocument(eq(document), captor.capture(), any())
         assertThat(captor.firstValue).contains(TextNode.valueOf("John"))
     }
 
@@ -364,7 +374,7 @@ internal class DocumentJsonValueResolverTest {
         )
 
         val captor = argumentCaptor<JsonNode>()
-        verify(documentService).modifyDocument(eq(document), captor.capture())
+        verify(documentService).modifyDocument(eq(document), captor.capture(), any())
         assertThat(captor.firstValue).contains(TextNode.valueOf("John"))
     }
 
@@ -379,7 +389,7 @@ internal class DocumentJsonValueResolverTest {
         )
 
         val captor = argumentCaptor<JsonNode>()
-        verify(documentService).modifyDocument(eq(document), captor.capture())
+        verify(documentService).modifyDocument(eq(document), captor.capture(), any())
         assertThat(captor.firstValue).contains(BooleanNode.TRUE)
     }
 
@@ -394,7 +404,7 @@ internal class DocumentJsonValueResolverTest {
         )
 
         val captor = argumentCaptor<JsonNode>()
-        verify(documentService).modifyDocument(eq(document), captor.capture())
+        verify(documentService).modifyDocument(eq(document), captor.capture(), any())
         assertThat(captor.firstValue).contains(IntNode.valueOf(18))
     }
 
@@ -409,7 +419,7 @@ internal class DocumentJsonValueResolverTest {
         )
 
         val captor = argumentCaptor<JsonNode>()
-        verify(documentService).modifyDocument(eq(document), captor.capture())
+        verify(documentService).modifyDocument(eq(document), captor.capture(), any())
         assertThat(captor.firstValue.at("/a/0/b/0/c/0/firstname")).isEqualTo(TextNode.valueOf("John"))
     }
 
@@ -424,7 +434,7 @@ internal class DocumentJsonValueResolverTest {
         )
 
         val captor = argumentCaptor<JsonNode>()
-        verify(documentService).modifyDocument(eq(document), captor.capture())
+        verify(documentService).modifyDocument(eq(document), captor.capture(), any())
         assertThat(captor.firstValue.at("/myList/0")).isEqualTo(TextNode.valueOf("John"))
         assertThat(captor.firstValue.at("/myList/1")).isEqualTo(MissingNode.getInstance())
     }
@@ -440,7 +450,7 @@ internal class DocumentJsonValueResolverTest {
         )
 
         val captor = argumentCaptor<JsonNode>()
-        verify(documentService).modifyDocument(eq(document), captor.capture())
+        verify(documentService).modifyDocument(eq(document), captor.capture(), any())
         assertThat(captor.firstValue.at("/myList/0")).isEqualTo(TextNode.valueOf("Peter"))
         assertThat(captor.firstValue.at("/myList/1")).isEqualTo(TextNode.valueOf("John"))
     }
@@ -456,7 +466,7 @@ internal class DocumentJsonValueResolverTest {
         )
 
         val captor = argumentCaptor<JsonNode>()
-        verify(documentService).modifyDocument(eq(document), captor.capture())
+        verify(documentService).modifyDocument(eq(document), captor.capture(), any())
         val objectNode = jacksonObjectMapper().readTree("{\"field\":\"My field\",\"list\":[\"My item 1\",\"My item 2\"]}")
         assertThat(captor.firstValue.at("/myList/0")).isEqualTo(objectNode)
     }

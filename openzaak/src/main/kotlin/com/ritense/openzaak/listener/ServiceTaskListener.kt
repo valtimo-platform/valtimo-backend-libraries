@@ -22,6 +22,7 @@ import com.ritense.openzaak.domain.mapping.impl.Operation
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -32,11 +33,13 @@ open class ServiceTaskListener(
     documentService: DocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
     private val zaakService: ZaakService,
-    repositoryService: RepositoryService
+    repositoryService: RepositoryService,
+    tenantResolver: TenantResolver
 ) : BaseServiceTaskListener(
     zaakTypeLinkService,
     documentService,
-    repositoryService
+    repositoryService,
+    tenantResolver
 ) {
 
     @Transactional

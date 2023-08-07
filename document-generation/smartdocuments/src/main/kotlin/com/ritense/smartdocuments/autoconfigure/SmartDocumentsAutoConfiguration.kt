@@ -27,6 +27,7 @@ import com.ritense.smartdocuments.connector.SmartDocumentsConnector
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.service.CamundaSmartDocumentGenerator
 import com.ritense.smartdocuments.service.SmartDocumentGenerator
+import com.ritense.tenancy.TenantResolver
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -45,11 +46,13 @@ class SmartDocumentsAutoConfiguration {
         smartDocumentGenerator: SmartDocumentGenerator,
         processDocumentAssociationService: ProcessDocumentAssociationService,
         documentService: DocumentService,
+        tenantResolver: TenantResolver
     ): CamundaSmartDocumentGenerator {
         return CamundaSmartDocumentGenerator(
             smartDocumentGenerator,
             processDocumentAssociationService,
             documentService,
+            tenantResolver
         )
     }
 
@@ -60,12 +63,14 @@ class SmartDocumentsAutoConfiguration {
         documentService: DocumentService,
         resourceService: ResourceService,
         applicationEventPublisher: ApplicationEventPublisher,
+        tenantResolver: TenantResolver
     ): SmartDocumentGenerator {
         return SmartDocumentGenerator(
             connectorService,
             documentService,
             resourceService,
             applicationEventPublisher,
+            tenantResolver
         )
     }
 

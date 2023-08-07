@@ -38,6 +38,7 @@ import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartPro
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.request.Request
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
@@ -58,7 +59,8 @@ data class FormIoSubmission(
     val processDocumentService: ProcessDocumentService,
     val taskService: CamundaTaskService,
     val submissionTransformerService: SubmissionTransformerService<FormIoFormDefinition>,
-    val applicationEventPublisher: ApplicationEventPublisher
+    val applicationEventPublisher: ApplicationEventPublisher,
+    val tenantResolver: TenantResolver
 ) : Submission {
 
     private val logger = KotlinLogging.logger {}
@@ -169,7 +171,9 @@ data class FormIoSubmission(
     }
 
     companion object RequestFactory {
+
         fun makeRequest(submission: FormIoSubmission): Request {
+            var tenantId = submission.tenantResolver.getTenantId()
             if (submission.formAssociation is StartEventFormAssociation) {
                 if (submission.processDocumentDefinition.canInitializeDocument()) {
                     val documentDefinitionId = submission.processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId()
@@ -177,7 +181,8 @@ data class FormIoSubmission(
                         submission.processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(),
                         NewDocumentRequest(
                             documentDefinitionId.name(),
-                            submission.documentContent
+                            submission.documentContent,
+                            tenantId
                         )
                     ).withProcessVars(submission.formDefinedProcessVariables)
                 } else {
@@ -187,7 +192,7 @@ data class FormIoSubmission(
                             submission.document?.id().toString(),
                             submission.documentContent,
                             submission.document?.version().toString()
-                        ).withJsonPatch(submission.preJsonPatch)
+                        ).withJsonPatch(submission.preJsonPatch).withTenantId(tenantId)
                     ).withProcessVars(submission.formDefinedProcessVariables)
                 }
             } else if (submission.formAssociation is UserTaskFormAssociation) {

@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @Tag("integration")
@@ -62,7 +63,7 @@ class DocumentStatisticServiceIntTest extends BaseIntegrationTest {
     void shouldReturnUnassignedDocumentCount() {
         var document1 = createDocument(definition, "{}");
         createDocument(definition, "{}");
-        documentService.assignUserToDocument(document1.id().getId(), USER_ID);
+        documentService.assignUserToDocument(document1.id().getId(), USER_ID, "1");
 
         var unassignedDocumentCountDtos = documentStatisticService.getUnassignedDocumentCountDtos();
 

@@ -23,10 +23,12 @@ import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentSnapshotService;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -70,7 +72,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     @Transactional
     @Override
     public void makeSnapshot(Document.Id documentId, LocalDateTime createdOn, String createdBy) {
-        var document = documentService.findBy(documentId)
+        var document = documentService.findBy(documentId, new TenantResolver().getTenantId())
             .orElseThrow(() -> new DocumentNotFoundException("Document not found with id " + documentId));
 
         var documentDefinition = documentDefinitionService.findBy(document.definitionId())

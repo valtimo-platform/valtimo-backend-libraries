@@ -198,7 +198,7 @@ public abstract class BaseTest {
 
     protected JsonSchemaDocument createDocument(JsonDocumentContent content) {
         return JsonSchemaDocument
-            .create(definition(), content, USERNAME, documentSequenceGeneratorService, null)
+            .create(definition(), content, USERNAME, documentSequenceGeneratorService, null, "1")
             .resultingDocument()
             .orElseThrow();
     }

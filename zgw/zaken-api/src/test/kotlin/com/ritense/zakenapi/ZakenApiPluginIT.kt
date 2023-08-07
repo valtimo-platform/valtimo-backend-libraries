@@ -118,7 +118,11 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
     @Test
     fun `should link document to zaak`() {
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            Mapper.INSTANCE.get().createObjectNode(),
+            "1"
+        )
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // Make a record in the database about a document that is matched to the open zaak
@@ -151,12 +155,16 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         assertNotNull(response.resultingDocument())
         assertTrue(response.resultingDocument().isPresent)
         val processDocumentId = response.resultingDocument().get().id().id
-        assertNotNull(documentService.get(processDocumentId.toString()))
+        assertNotNull(documentService.get(processDocumentId.toString(), "1"))
     }
 
     @Test
     fun `should link uploaded document to zaak`() {
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            Mapper.INSTANCE.get().createObjectNode(),
+            "1"
+        )
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // Make a record in1 the database about a document that is matched to the open zaak
@@ -189,7 +197,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         assertNotNull(response.resultingDocument())
         assertTrue(response.resultingDocument().isPresent)
         val processDocumentId = response.resultingDocument().get().id().id
-        assertNotNull(documentService.get(processDocumentId.toString()))
+        assertNotNull(documentService.get(processDocumentId.toString(),"1"))
     }
 
     private fun setupMockZakenApiServer() {

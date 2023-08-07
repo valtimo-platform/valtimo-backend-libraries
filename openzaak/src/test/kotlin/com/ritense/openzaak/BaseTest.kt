@@ -29,6 +29,7 @@ import com.ritense.openzaak.service.impl.OpenZaakConfigService
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
@@ -65,10 +66,15 @@ abstract class BaseTest {
     @Mock
     lateinit var documentService: DocumentService
 
+    @Mock
+    lateinit var tenantResolver: TenantResolver
+
     lateinit var document: JsonSchemaDocument
 
     fun baseSetUp() {
         MockitoAnnotations.openMocks(this)
+
+        whenever(tenantResolver.getTenantId()).thenReturn("1")
 
         whenever(documentSequenceGeneratorService.next(any())).thenReturn(1)
 
@@ -76,7 +82,7 @@ abstract class BaseTest {
         document = documentOptional.orElseThrow()
 
         whenever(openZaakConfigService.getOpenZaakConfig()).thenReturn(openzaakConfig())
-        whenever(documentService.findBy(any())).thenReturn(documentOptional)
+        whenever(documentService.findBy(any(), any())).thenReturn(documentOptional)
     }
 
     fun openzaakConfig(): OpenZaakConfig {
@@ -94,7 +100,8 @@ abstract class BaseTest {
             JsonDocumentContent("{\"name\": \"whatever\" }"),
             "USERNAME",
             documentSequenceGeneratorService,
-            null
+            null,
+            "1"
         ).resultingDocument()
     }
 

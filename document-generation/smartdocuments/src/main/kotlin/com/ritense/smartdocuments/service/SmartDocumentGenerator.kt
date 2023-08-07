@@ -25,6 +25,7 @@ import com.ritense.resource.service.ResourceService
 import com.ritense.resource.service.request.ByteArrayMultipartFile
 import com.ritense.smartdocuments.connector.SmartDocumentsConnector
 import com.ritense.smartdocuments.domain.DocumentFormatOption
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.utils.RequestHelper
@@ -38,6 +39,7 @@ class SmartDocumentGenerator(
     private val documentService: DocumentService,
     private val resourceService: ResourceService,
     private val applicationEventPublisher: ApplicationEventPublisher,
+    private val tenantResolver: TenantResolver
 ) {
 
     fun generateAndStoreDocument(
@@ -48,8 +50,8 @@ class SmartDocumentGenerator(
         format: DocumentFormatOption
     ) {
         val generatedDocument = generateDocument(documentId, templateGroup, templateId, templateData, format)
-
-        val document = documentService.findBy(documentId)
+        val tenantId = tenantResolver.getTenantId()
+        val document = documentService.findBy(documentId, tenantId)
             .orElseThrow { NullPointerException("Document $documentId needed for generation of document not found") }
 
         val resource = resourceService.store(
@@ -63,7 +65,7 @@ class SmartDocumentGenerator(
         )
 
         val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin())
-        documentService.assignRelatedFile(documentId, relatedFile)
+        documentService.assignRelatedFile(documentId, relatedFile, tenantId)
     }
 
     private fun generateDocument(

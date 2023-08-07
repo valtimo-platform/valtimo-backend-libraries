@@ -22,6 +22,7 @@ import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.dto.NoteCreateRequestDto
 import com.ritense.note.web.rest.dto.NoteResponseDto
 import com.ritense.note.web.rest.dto.NoteUpdateRequestDto
+import com.ritense.tenancy.TenantResolver
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -44,6 +45,7 @@ import java.util.UUID
 class NoteResource(
     private val noteService: NoteService,
     private val documentService: DocumentService,
+    private val tenantResolver: TenantResolver
 ) {
     @GetMapping("/v1/document/{documentId}/note")
     fun getNotes(
@@ -59,7 +61,7 @@ class NoteResource(
 
         val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(documentId)
 
-        if (!documentService.currentUserCanAccessDocument(jsonSchemaDocumentId)) {
+        if (!documentService.currentUserCanAccessDocument(jsonSchemaDocumentId, tenantResolver.getTenantId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
 
@@ -74,7 +76,7 @@ class NoteResource(
 
         val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(documentId)
 
-        if (!documentService.currentUserCanAccessDocument(jsonSchemaDocumentId)) {
+        if (!documentService.currentUserCanAccessDocument(jsonSchemaDocumentId, tenantResolver.getTenantId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
         val note = noteService.createNote(

@@ -23,7 +23,6 @@ internal class OpenZaakTokenGeneratorServiceTest {
         .setSigningKey(Keys.hmacShaKeyFor(SECRET_KEY.toByteArray(Charset.forName("UTF-8"))))
         .build()
 
-
     @Test
     fun `Should generate async (Valtimo) token`() {
         val jwt = openZaakTokenGeneratorService.generateToken(SECRET_KEY, CLIENT_ID)

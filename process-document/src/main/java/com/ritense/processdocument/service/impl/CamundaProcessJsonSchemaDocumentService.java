@@ -25,30 +25,13 @@ import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
-import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
-import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
-import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
-import com.ritense.processdocument.domain.impl.request.NewDocumentForRunningProcessRequest;
-import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest;
+import com.ritense.processdocument.domain.impl.request.*;
 import com.ritense.processdocument.domain.request.Request;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
-import com.ritense.processdocument.service.impl.result.ModifyDocumentAndCompleteTaskResultFailed;
-import com.ritense.processdocument.service.impl.result.ModifyDocumentAndCompleteTaskResultSucceeded;
-import com.ritense.processdocument.service.impl.result.ModifyDocumentAndStartProcessResultFailed;
-import com.ritense.processdocument.service.impl.result.ModifyDocumentAndStartProcessResultSucceeded;
-import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultFailed;
-import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultSucceeded;
-import com.ritense.processdocument.service.impl.result.NewDocumentForRunningProcessResultFailed;
-import com.ritense.processdocument.service.impl.result.NewDocumentForRunningProcessResultSucceeded;
-import com.ritense.processdocument.service.impl.result.StartProcessForDocumentResultFailed;
-import com.ritense.processdocument.service.impl.result.StartProcessForDocumentResultSucceeded;
-import com.ritense.processdocument.service.result.DocumentFunctionResult;
-import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskResult;
-import com.ritense.processdocument.service.result.ModifyDocumentAndStartProcessResult;
-import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
-import com.ritense.processdocument.service.result.NewDocumentForRunningProcessResult;
-import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
+import com.ritense.processdocument.service.impl.result.*;
+import com.ritense.processdocument.service.result.*;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
@@ -74,12 +57,20 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     private final CamundaTaskService camundaTaskService;
     private final CamundaProcessService camundaProcessService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
+    private final TenantResolver tenantResolver;
 
-    public CamundaProcessJsonSchemaDocumentService(DocumentService documentService, CamundaTaskService camundaTaskService, CamundaProcessService camundaProcessService, ProcessDocumentAssociationService processDocumentAssociationService) {
+    public CamundaProcessJsonSchemaDocumentService(
+        DocumentService documentService,
+        CamundaTaskService camundaTaskService,
+        CamundaProcessService camundaProcessService,
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        TenantResolver tenantResolver
+    ) {
         this.documentService = documentService;
         this.camundaTaskService = camundaTaskService;
         this.camundaProcessService = camundaProcessService;
         this.processDocumentAssociationService = processDocumentAssociationService;
+        this.tenantResolver = tenantResolver;
     }
 
     @Override
@@ -234,12 +225,15 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         } catch (RuntimeException ex) {
             return new ModifyDocumentAndStartProcessResultFailed(parseAndLogException(ex));
         }
-   }
+    }
 
     public StartProcessForDocumentResult startProcessForDocument(StartProcessForDocumentRequest request) {
         try {
             //Part 1 find document
-            Optional<? extends Document> optionalDocument = documentService.findBy(request.getDocumentId());
+            Optional<? extends Document> optionalDocument = documentService.findBy(
+                request.getDocumentId(),
+                tenantResolver.getTenantId()
+            );
 
             if (optionalDocument.isEmpty()) {
                 return new StartProcessForDocumentResultFailed(new OperationError.FromString("Document could not be found"));
@@ -283,7 +277,10 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     }
 
     public Document getDocument(ProcessInstanceId processInstanceId, VariableScope variableScope) {
-        return documentService.get(getDocumentId(processInstanceId, variableScope).toString());
+        return documentService.get(
+            getDocumentId(processInstanceId, variableScope).toString(),
+            tenantResolver.getTenantId()
+        );
     }
 
     @Override

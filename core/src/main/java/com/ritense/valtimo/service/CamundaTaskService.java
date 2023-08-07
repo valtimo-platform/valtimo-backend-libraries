@@ -298,7 +298,7 @@ public class CamundaTaskService {
 
         // Tenancy filter
         if (valtimoProperties.getApp().getEnableTenancy()) {
-            parameters.put("tenantId", TenantResolver.getTenantId());
+            parameters.put("tenantId", new TenantResolver().getTenantId());
         }
 
         return parameters;

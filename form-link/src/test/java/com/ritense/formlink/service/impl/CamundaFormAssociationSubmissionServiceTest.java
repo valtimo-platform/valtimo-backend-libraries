@@ -32,6 +32,7 @@ import com.ritense.formlink.service.result.FormSubmissionResult;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.processdocument.service.impl.result.ModifyDocumentAndCompleteTaskResultSucceeded;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,6 +63,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
     private CamundaTaskService camundaTaskService;
     private SubmissionTransformerService submissionTransformerService;
     private ApplicationEventPublisher applicationEventPublisher;
+    private TenantResolver tenantResolver;
 
     @BeforeEach
     public void beforeEach() {
@@ -73,6 +75,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
         camundaTaskService = mock(CamundaTaskService.class);
         submissionTransformerService = mock(FormIoJsonPatchSubmissionTransformerService.class);
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
+        tenantResolver = mock(TenantResolver.class);
 
         formAssociationSubmissionService = new CamundaFormAssociationSubmissionService(
             formDefinitionService,
@@ -82,7 +85,8 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
             processDocumentService,
             camundaTaskService,
             submissionTransformerService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            tenantResolver
         );
     }
 
@@ -122,7 +126,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
 
         final var jsonDocumentContent = JsonDocumentContent.build(formData);
         final Optional<JsonSchemaDocument> document = Optional.of(createDocument(jsonDocumentContent));
-        when(documentService.findBy(any())).thenReturn(document);
+        when(documentService.findBy(any(), any())).thenReturn(document);
         when(processDocumentService.dispatch(any())).thenReturn(new ModifyDocumentAndCompleteTaskResultSucceeded(document.orElseThrow()));
 
         //When
@@ -149,7 +153,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
         formDefinition = formDefinitionOf("user-task");
         when(formDefinitionService.getFormDefinitionById(any())).thenReturn(Optional.of(formDefinition));
 
-        when(documentService.findBy(any())).thenReturn(Optional.empty());
+        when(documentService.findBy(any(), any())).thenReturn(Optional.empty());
 
         //When
         final var documentNotFoundException = formAssociationSubmissionService
@@ -181,7 +185,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
 
         final var jsonDocumentContent = JsonDocumentContent.build(formData);
         final Optional<JsonSchemaDocument> document = Optional.of(createDocument(jsonDocumentContent));
-        when(documentService.findBy(any())).thenReturn(document);
+        when(documentService.findBy(any(), any())).thenReturn(document);
 
         //When
         final var documentNotFoundException = formAssociationSubmissionService
@@ -213,7 +217,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
 
         final var jsonDocumentContent = JsonDocumentContent.build(formData);
         final Optional<JsonSchemaDocument> document = Optional.of(createDocument(jsonDocumentContent));
-        when(documentService.findBy(any())).thenReturn(document);
+        when(documentService.findBy(any(), any())).thenReturn(document);
 
         //When
         final var documentNotFoundException = formAssociationSubmissionService

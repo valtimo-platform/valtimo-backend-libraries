@@ -101,7 +101,7 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
             )
         )
         val jsonContent = Mapper.INSTANCE.get().readTree("{\"voornaam\": \"Peter\"}")
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, jsonContent)
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, jsonContent, "1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("age" to 38))
 

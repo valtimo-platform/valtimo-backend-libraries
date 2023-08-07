@@ -32,6 +32,7 @@ import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
 import com.ritense.openzaak.service.impl.model.zaak.Resultaat
 import com.ritense.openzaak.service.impl.model.zaak.Status
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
+import com.ritense.tenancy.TenantResolver
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.web.client.RestTemplate
@@ -46,7 +47,8 @@ class ZaakService(
     private val openZaakTokenGeneratorService: OpenZaakTokenGeneratorService,
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val documentService: DocumentService,
-    private val zaakInstanceLinkService: ZaakInstanceLinkService
+    private val zaakInstanceLinkService: ZaakInstanceLinkService,
+    private val tenantResolver: TenantResolver
 ) : ZaakService {
 
     override fun createZaakWithLink(delegateExecution: DelegateExecution) {
@@ -55,7 +57,7 @@ class ZaakService(
     }
 
     override fun createZaakWithLink(documentId: Document.Id): Zaak {
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = documentService.findBy(documentId, tenantResolver.getTenantId()).orElseThrow()
         val openZaakConfig = openZaakConfigService.getOpenZaakConfig()!!
         val zaakTypeLink = zaakTypeLinkService.findBy(document.definitionId().name())
         val zaakInstance = createZaak(

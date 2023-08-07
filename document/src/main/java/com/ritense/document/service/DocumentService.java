@@ -28,11 +28,7 @@ import com.ritense.valtimo.contract.authentication.NamedUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public interface DocumentService {
 
@@ -40,35 +36,35 @@ public interface DocumentService {
 
     Page<? extends Document> getAllByDocumentDefinitionName(Pageable pageable, String definitionName);
 
-    Optional<? extends Document> findBy(Document.Id documentId);
+    Optional<? extends Document> findBy(Document.Id documentId, String tenantId);
 
-    Document get(String documentId);
+    Document get(String documentId, String tenantId);
 
     CreateDocumentResult createDocument(NewDocumentRequest newDocumentRequest);
 
-    void modifyDocument(Document document, JsonNode jsonNode);
+    void modifyDocument(Document document, JsonNode jsonNode, String tenantId);
 
     ModifyDocumentResult modifyDocument(ModifyDocumentRequest modifyDocumentRequest);
 
-    void assignDocumentRelation(Document.Id documentId, DocumentRelation documentRelation);
+    void assignDocumentRelation(Document.Id documentId, DocumentRelation documentRelation, String tenantId);
 
-    void assignRelatedFile(Document.Id documentId, RelatedFile relatedFile);
+    void assignRelatedFile(Document.Id documentId, RelatedFile relatedFile, String tenantId);
 
-    void assignResource(Document.Id documentId, UUID resourceId);
+    void assignResource(Document.Id documentId, UUID resourceId, String tenantId);
 
-    void assignResource(Document.Id documentId, UUID resourceId, Map<String, Object> metadata);
+    void assignResource(Document.Id documentId, UUID resourceId, Map<String, Object> metadata, String tenantId);
 
-    void removeRelatedFile(Document.Id documentId, UUID fileId);
+    void removeRelatedFile(Document.Id documentId, UUID fileId, String tenantId);
 
     void removeDocuments(String documentDefinitionName);
 
-    boolean currentUserCanAccessDocument(Document.Id documentId);
+    boolean currentUserCanAccessDocument(Document.Id documentId, String tenantId);
 
-    void assignUserToDocument(UUID documentId, String assigneeId);
+    void assignUserToDocument(UUID documentId, String assigneeId, String tenantId);
 
-    void unassignUserFromDocument(UUID documentId);
+    void unassignUserFromDocument(UUID documentId, String tenantId);
 
-    Set<String> getDocumentRoles(Document.Id documentId);
+    Set<String> getDocumentRoles(Document.Id documentId, String tenantId);
 
-    List<NamedUser> getCandidateUsers(Document.Id documentId);
+    List<NamedUser> getCandidateUsers(Document.Id documentId, String tenantId);
 }

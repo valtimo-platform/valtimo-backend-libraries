@@ -44,6 +44,7 @@ class ObjectsApiConnector(
     var payload: MutableMap<String, JsonNode> = mutableMapOf()
     lateinit var rawPayload: JsonNode
     var typeVersion: String = ""
+    var tenantId: String? = null
 
     /**
      * Overrides typeVersion in objectTypeConfig.
@@ -60,8 +61,16 @@ class ObjectsApiConnector(
         return this
     }
 
+    fun tenantId(tenantId: String): ObjectsApiConnector {
+        this.tenantId = tenantId
+        return this
+    }
+
     fun put(documentId: String, key: String, pathToValue: String): ObjectsApiConnector {
-        val document = documentService.findBy(JsonSchemaDocumentId.existingId(UUID.fromString(documentId))).orElseThrow()
+        val document = documentService.findBy(
+            JsonSchemaDocumentId.existingId(UUID.fromString(documentId)),
+            tenantId!!
+        ).orElseThrow()
         this.payload[key] = document.content().getValueBy(JsonPointer.valueOf(pathToValue)).orElseThrow()
         return this
     }

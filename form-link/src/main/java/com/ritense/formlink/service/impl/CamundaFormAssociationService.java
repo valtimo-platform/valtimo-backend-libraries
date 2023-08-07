@@ -26,11 +26,7 @@ import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.formlink.domain.FormAssociation;
-import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
-import com.ritense.formlink.domain.impl.formassociation.FormAssociationFactory;
-import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
-import com.ritense.formlink.domain.impl.formassociation.Mapper;
-import com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation;
+import com.ritense.formlink.domain.impl.formassociation.*;
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import com.ritense.formlink.domain.request.CreateFormAssociationRequest;
 import com.ritense.formlink.domain.request.FormLinkRequest;
@@ -39,6 +35,7 @@ import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.form.DataResolvingContext;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.contract.json.JsonPointerHelper;
@@ -46,12 +43,7 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -69,6 +61,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
     private final TaskService taskService;
     private final SubmissionTransformerService submissionTransformerService;
     private final List<FormFieldDataResolver> formFieldDataResolvers;
+    private final TenantResolver tenantResolver;
 
     public CamundaFormAssociationService(
         FormDefinitionService formDefinitionService,
@@ -78,7 +71,8 @@ public class CamundaFormAssociationService implements FormAssociationService {
         CamundaProcessService camundaProcessService,
         TaskService taskService,
         SubmissionTransformerService submissionTransformerService,
-        List<FormFieldDataResolver> formFieldDataResolvers
+        List<FormFieldDataResolver> formFieldDataResolvers,
+        TenantResolver tenantResolver
     ) {
         this.formDefinitionService = formDefinitionService;
         this.processFormAssociationRepository = processFormAssociationRepository;
@@ -88,6 +82,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         this.taskService = taskService;
         this.submissionTransformerService = submissionTransformerService;
         this.formFieldDataResolvers = formFieldDataResolvers;
+        this.tenantResolver = tenantResolver;
     }
 
     @Override
@@ -324,7 +319,10 @@ public class CamundaFormAssociationService implements FormAssociationService {
         Optional<String> taskInstanceId
     ) {
         //Metadata
-        final JsonSchemaDocument document = (JsonSchemaDocument) documentService.findBy(documentId).orElseThrow();
+        final JsonSchemaDocument document = (JsonSchemaDocument) documentService.findBy(
+            documentId,
+            tenantResolver.getTenantId()
+        ).orElseThrow();
         final ObjectNode extendedDocumentContent = (ObjectNode) document.content().asJson();
         extendedDocumentContent.set("metadata", buildMetaDataObject(document));
 

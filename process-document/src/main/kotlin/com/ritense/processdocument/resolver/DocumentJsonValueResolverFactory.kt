@@ -31,6 +31,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valueresolver.ValueResolverFactory
@@ -47,6 +48,7 @@ class DocumentJsonValueResolverFactory(
     private val processDocumentService: ProcessDocumentService,
     private val documentService: DocumentService,
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
+    private val tenantResolver: TenantResolver
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
@@ -75,7 +77,7 @@ class DocumentJsonValueResolverFactory(
     }
 
     override fun createResolver(documentInstanceId: String): Function<String, Any?> {
-        return createResolver(documentService.get(documentInstanceId))
+        return createResolver(documentService.get(documentInstanceId, tenantResolver.getTenantId()))
     }
 
     override fun handleValues(
@@ -96,7 +98,7 @@ class DocumentJsonValueResolverFactory(
         JsonPatchService.apply(jsonPatchBuilder.build(), documentContent)
 
         try {
-            documentService.modifyDocument(document, documentContent)
+            documentService.modifyDocument(document, documentContent, tenantResolver.getTenantId())
         } catch (exception: ModifyDocumentException) {
             throw RuntimeException(
                 "Failed to handle values for processInstance '$processInstanceId'. Values: ${values}.",
@@ -156,7 +158,7 @@ class DocumentJsonValueResolverFactory(
     private fun resolveForJsonPath(document: Document, jsonPathPostfix: String): Any? {
         return try {
             JsonPath.read<Any?>(document.content().asJson().toString(), "$.$jsonPathPostfix")
-        } catch (ignore: PathNotFoundException){
+        } catch (ignore: PathNotFoundException) {
             null
         }
     }

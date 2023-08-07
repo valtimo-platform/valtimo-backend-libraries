@@ -203,13 +203,15 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
     @Test
     void shouldUnassignUserFromDocument() {
         jsonSchemaDocument.setAssignee("my-id", "John Doe");
-        when(documentRepository.findById(jsonSchemaDocument.id())).thenReturn(Optional.of(jsonSchemaDocument));
+        when(documentRepository.findByIdAndTenantId(jsonSchemaDocument.id(), "1"))
+            .thenReturn(Optional.of(jsonSchemaDocument));
 
-        jsonSchemaDocumentService.unassignUserFromDocument(jsonSchemaDocument.id().getId());
+        jsonSchemaDocumentService.unassignUserFromDocument(jsonSchemaDocument.id().getId(), "1");
 
         assertNull(jsonSchemaDocument.assigneeId());
         assertNull(jsonSchemaDocument.assigneeFullName());
         assertThat(jsonSchemaDocument.domainEvents().stream()
-            .filter(domainEvent -> domainEvent.getClass().equals(DocumentUnassignedEvent.class))).isNotNull();
+            .filter(domainEvent -> domainEvent.getClass().equals(DocumentUnassignedEvent.class))
+        ).isNotNull();
     }
 }

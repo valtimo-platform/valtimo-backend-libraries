@@ -22,9 +22,10 @@ import com.ritense.openzaak.service.ZaakStatusService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.StatusType
+import com.ritense.tenancy.TenantResolver
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import java.net.URI
 import org.springframework.web.client.RestTemplate
+import java.net.URI
 
 class ZaakStatusService(
     private val restTemplate: RestTemplate,
@@ -32,7 +33,8 @@ class ZaakStatusService(
     private val tokenGeneratorService: OpenZaakTokenGeneratorService,
     private val documentService: DocumentService,
     private val zaakTypeLinkService: ZaakTypeLinkService,
-    private val zaakInstanceLinkService: ZaakInstanceLinkService
+    private val zaakInstanceLinkService: ZaakInstanceLinkService,
+    private val tenantResolver: TenantResolver
 ) : ZaakStatusService {
 
     override fun getStatusTypes(zaaktype: URI): ResultWrapper<StatusType> {
@@ -56,7 +58,7 @@ class ZaakStatusService(
     }
 
     override fun setStatus(documentId: Document.Id, status: String) {
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = documentService.findBy(documentId, tenantResolver.getTenantId()).orElseThrow()
         val zaakTypeLink = zaakTypeLinkService.findBy(document.definitionId().name())
         val zaakInstanceUrl = zaakInstanceLinkService.getByDocumentId(documentId.id).zaakInstanceUrl
         val statusUri = getStatusTypeByOmschrijving(zaakTypeLink.zaakTypeUrl, status).url!!

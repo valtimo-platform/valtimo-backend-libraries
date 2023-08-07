@@ -70,24 +70,11 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    public Optional<JsonSchemaDocument> findBy(Document.Id documentId) {
-        return documentRepository.findById(documentId);
-    }
-
     public Optional<JsonSchemaDocument> findBy(Document.Id documentId, String tenantId) {
         return documentRepository.findByIdAndTenantId(documentId, tenantId);
     }
 
     @Override
-    public JsonSchemaDocument get(String documentId) {
-        var documentOptional = findBy(
-            JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
-        );
-        return documentOptional.orElseThrow(
-            () -> new DocumentNotFoundException("Document not found with id " + documentId)
-        );
-    }
-
     public JsonSchemaDocument get(String documentId, String tenantId) {
         var documentOptional = findBy(
             JsonSchemaDocumentId.existingId(UUID.fromString(documentId)),
@@ -155,9 +142,10 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Transactional
     public void modifyDocument(
         final Document document,
-        final JsonNode jsonNode
+        final JsonNode jsonNode,
+        final String tenantId
     ) {
-        final var documentRequest = ModifyDocumentRequest.create(document, jsonNode);
+        final var documentRequest = ModifyDocumentRequest.create(document, jsonNode, tenantId);
         final var modifyResult = modifyDocument(documentRequest);
         if (!modifyResult.errors().isEmpty()) {
             throw new ModifyDocumentException(modifyResult.errors());
@@ -171,7 +159,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     ) {
         final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(request.documentId()));
         final var version = JsonSchemaDocumentVersion.from(request.versionBasedOn());
-        final var document = findBy(documentId)
+        final var document = findBy(documentId, request.tenantId())
             .orElseThrow(() -> new DocumentNotFoundException("Document not found with id " + request.documentId()));
 
         final var modifiedContent = JsonDocumentContent.build(
@@ -206,7 +194,8 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Transactional
     public void assignDocumentRelation(
         Document.Id documentId,
-        DocumentRelation documentRelation
+        DocumentRelation documentRelation,
+        String tenantId
     ) {
         final JsonSchemaDocumentRelation jsonSchemaDocumentRelation = JsonSchemaDocumentRelation.from(
             new DocumentRelationRequest(
@@ -214,7 +203,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 documentRelation.relationType()
             )
         );
-        findBy(documentId)
+        findBy(documentId, tenantId)
             .ifPresent(
                 document -> {
                     document.addRelatedDocument(jsonSchemaDocumentRelation);
@@ -237,9 +226,10 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Transactional
     public void assignRelatedFile(
         final Document.Id documentId,
-        final RelatedFile relatedFile
+        final RelatedFile relatedFile,
+        final String tenantId
     ) {
-        final JsonSchemaDocument document = getDocumentBy(documentId);
+        final JsonSchemaDocument document = getDocumentBy(documentId, tenantId);
         document.addRelatedFile(JsonSchemaRelatedFile.from(relatedFile));
         documentRepository.updateDocument(
             document.id(),
@@ -256,14 +246,19 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     @Transactional
-    public void assignResource(Document.Id documentId, UUID resourceId) {
-        assignResource(documentId, resourceId, null);
+    public void assignResource(Document.Id documentId, UUID resourceId, String tenantId) {
+        assignResource(documentId, resourceId, null, tenantId);
     }
 
     @Override
     @Transactional
-    public void assignResource(Document.Id documentId, UUID resourceId, Map<String, Object> metadata) {
-        final JsonSchemaDocument document = getDocumentBy(documentId);
+    public void assignResource(
+        final Document.Id documentId,
+        final UUID resourceId,
+        final Map<String, Object> metadata,
+        final String tenantId
+    ) {
+        final JsonSchemaDocument document = getDocumentBy(documentId, tenantId);
         final Resource resource = resourceService.getResource(resourceId);
         document.addRelatedFile(
             JsonSchemaRelatedFile.from(resource)
@@ -285,8 +280,8 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     @Transactional
-    public void removeRelatedFile(Document.Id documentId, UUID fileId) {
-        final JsonSchemaDocument document = getDocumentBy(documentId);
+    public void removeRelatedFile(Document.Id documentId, UUID fileId, String tenantId) {
+        final JsonSchemaDocument document = getDocumentBy(documentId, tenantId);
         document.removeRelatedFileBy(fileId);
         documentRepository.updateDocument(
             document.id(),
@@ -301,8 +296,8 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
     }
 
-    public JsonSchemaDocument getDocumentBy(Document.Id documentId) {
-        return findBy(documentId)
+    public JsonSchemaDocument getDocumentBy(Document.Id documentId, String tenantId) {
+        return findBy(documentId, tenantId)
             .orElseThrow(() -> new DocumentNotFoundException("Unable to find document with ID " + documentId));
     }
 
@@ -318,8 +313,8 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    public boolean currentUserCanAccessDocument(Document.Id documentId) {
-        return findBy(documentId)
+    public boolean currentUserCanAccessDocument(Document.Id documentId, String tenantId) {
+        return findBy(documentId, tenantId)
             .map(document -> documentDefinitionService.currentUserCanAccessDocumentDefinition(
                     document.definitionId().name()
                 )
@@ -327,8 +322,8 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    public void assignUserToDocument(UUID documentId, String assigneeId) {
-        final JsonSchemaDocument document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId));
+    public void assignUserToDocument(UUID documentId, String assigneeId, String tenantId) {
+        final JsonSchemaDocument document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId), tenantId);
 
         var assignee = userManagementService.findById(assigneeId);
         if (assignee == null) {
@@ -351,8 +346,8 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    public void unassignUserFromDocument(UUID documentId) {
-        final JsonSchemaDocument document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId));
+    public void unassignUserFromDocument(UUID documentId, String tenantId) {
+        final JsonSchemaDocument document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId), tenantId);
         document.unassign();
         documentRepository.updateDocument(
             document.id(),
@@ -368,14 +363,14 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    public Set<String> getDocumentRoles(Document.Id documentId) {
-        var document = get(documentId.toString());
+    public Set<String> getDocumentRoles(Document.Id documentId, String tenantId) {
+        var document = get(documentId.toString(), tenantId);
         return documentDefinitionService.getDocumentDefinitionRoles(document.definitionId().name());
     }
 
     @Override
-    public List<NamedUser> getCandidateUsers(Document.Id documentId) {
-        return userManagementService.findNamedUserByRoles(getDocumentRoles(documentId));
+    public List<NamedUser> getCandidateUsers(Document.Id documentId, String tenantId) {
+        return userManagementService.findNamedUserByRoles(getDocumentRoles(documentId, tenantId));
     }
 
 }

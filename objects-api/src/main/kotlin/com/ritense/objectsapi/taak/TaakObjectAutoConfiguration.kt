@@ -24,6 +24,7 @@ import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
@@ -50,6 +51,7 @@ class TaakObjectAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         zaakService: ZaakService,
         openZaakService: OpenZaakService,
+        tenantResolver: TenantResolver
     ): TaakObjectListener {
         return TaakObjectListener(
             openNotificatieService,
@@ -61,6 +63,7 @@ class TaakObjectAutoConfiguration {
             processDocumentService,
             zaakService,
             openZaakService,
+            tenantResolver
         )
     }
 

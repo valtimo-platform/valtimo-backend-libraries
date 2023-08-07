@@ -106,7 +106,8 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
         final JsonNode jsonContent = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
         var newDocumentRequest = new NewDocumentRequest(
             DOCUMENT_DEFINITION_NAME,
-            jsonContent
+            jsonContent,
+            "1"
         );
         var request = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest);
 
@@ -164,7 +165,8 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
         final JsonNode jsonContent = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
         var newDocumentRequest = new NewDocumentRequest(
             DOCUMENT_DEFINITION_NAME,
-            jsonContent
+            jsonContent,
+            "1"
         );
         var request = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest);
 

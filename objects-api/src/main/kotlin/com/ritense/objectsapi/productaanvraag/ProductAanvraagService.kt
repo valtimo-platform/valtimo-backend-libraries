@@ -27,6 +27,7 @@ import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.OpenZaakResource
+import com.ritense.tenancy.TenantResolver
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import mu.KotlinLogging
 import java.net.URI
@@ -38,7 +39,8 @@ class ProductAanvraagService(
     private val zaakRolService: ZaakRolService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
     private val burgerService: BurgerService?,
-    private val bedrijfService: BedrijfService?
+    private val bedrijfService: BedrijfService?,
+    private val tenantResolver: TenantResolver
 ) {
 
     fun createDossier(
@@ -57,7 +59,11 @@ class ProductAanvraagService(
         typeMapping: ProductAanvraagTypeMapping,
         openZaakResources: Set<OpenZaakResource>
     ): Document {
-        val newDocumentRequest = NewDocumentRequest(typeMapping.caseDefinitionKey, productAanvraag.data)
+        val newDocumentRequest = NewDocumentRequest(
+            typeMapping.caseDefinitionKey,
+            productAanvraag.data,
+            tenantResolver.getTenantId()
+        )
             .withResources(openZaakResources)
 
         val documentResult = documentService.createDocument(newDocumentRequest)

@@ -55,6 +55,7 @@ import com.ritense.openzaak.web.rest.impl.ZaakTypeLinkResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.config.BeanDefinition
@@ -115,7 +116,8 @@ class OpenZaakAutoConfiguration {
         tokenGeneratorService: OpenZaakTokenGeneratorService,
         zaakTypeLinkService: ZaakTypeLinkService,
         documentService: DocumentService,
-        zaakInstanceLinkService: ZaakInstanceLinkService
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        tenantResolver: TenantResolver
     ): ZaakService {
         return ZaakService(
             restTemplate,
@@ -123,7 +125,8 @@ class OpenZaakAutoConfiguration {
             tokenGeneratorService,
             zaakTypeLinkService,
             documentService,
-            zaakInstanceLinkService
+            zaakInstanceLinkService,
+            tenantResolver
         )
     }
 
@@ -145,7 +148,8 @@ class OpenZaakAutoConfiguration {
         tokenGeneratorService: OpenZaakTokenGeneratorService,
         documentService: DocumentService,
         zaakTypeLinkService: com.ritense.openzaak.service.ZaakTypeLinkService,
-        zaakInstanceLinkService: ZaakInstanceLinkService
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        tenantResolver: TenantResolver
     ): ZaakStatusService {
         return ZaakStatusService(
             restTemplate,
@@ -153,7 +157,8 @@ class OpenZaakAutoConfiguration {
             tokenGeneratorService,
             documentService,
             zaakTypeLinkService,
-            zaakInstanceLinkService
+            zaakInstanceLinkService,
+            tenantResolver
         )
     }
 
@@ -211,9 +216,17 @@ class OpenZaakAutoConfiguration {
         documentService: DocumentService,
         zaakInstanceLinkService: ZaakInstanceLinkService,
         zaakService: ZaakService,
-        repositoryService: RepositoryService
+        repositoryService: RepositoryService,
+        tenantResolver: TenantResolver
     ): ServiceTaskListener {
-        return ServiceTaskListener(zaakTypeLinkService, documentService, zaakInstanceLinkService, zaakService, repositoryService)
+        return ServiceTaskListener(
+            zaakTypeLinkService,
+            documentService,
+            zaakInstanceLinkService,
+            zaakService,
+            repositoryService,
+            tenantResolver
+        )
     }
 
     @Bean

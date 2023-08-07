@@ -27,6 +27,7 @@ import com.ritense.openzaak.listener.BaseServiceTaskListener
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.service.OpenZaakService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -42,10 +43,12 @@ open class BesluitServiceTaskListener(
     private val connectorService: ConnectorService,
     private val openZaakService: OpenZaakService,
     private val besluitDocumentRequired: Boolean,
+    private val tenantResolver: TenantResolver
 ) : BaseServiceTaskListener(
     zaakTypeLinkService,
     documentService,
-    repositoryService
+    repositoryService,
+    tenantResolver
 ) {
 
     @Transactional

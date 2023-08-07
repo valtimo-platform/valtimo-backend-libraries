@@ -99,7 +99,8 @@ class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
             PROCESS_DEFINITION_KEY,
             new NewDocumentRequest(
                 "house",
-                content.asJson()
+                content.asJson(),
+                "1"
             )
         ));
 

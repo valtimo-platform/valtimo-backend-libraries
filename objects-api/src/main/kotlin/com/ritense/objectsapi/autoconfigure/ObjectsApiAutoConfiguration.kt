@@ -27,6 +27,7 @@ import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.objectsapi.web.rest.impl.ObjectSyncConfigResource
+import com.ritense.tenancy.TenantResolver
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -77,13 +78,15 @@ class ObjectsApiAutoConfiguration {
         objectSyncService: ObjectSyncService,
         connectorService: ConnectorService,
         connectorFluentBuilder: ConnectorFluentBuilder,
-        documentService: DocumentService
+        documentService: DocumentService,
+        tenantResolver: TenantResolver
     ): DocumentEventListener {
         return DocumentEventListener(
             objectSyncService,
             connectorService,
             connectorFluentBuilder,
-            documentService
+            documentService,
+            tenantResolver
         )
     }
 

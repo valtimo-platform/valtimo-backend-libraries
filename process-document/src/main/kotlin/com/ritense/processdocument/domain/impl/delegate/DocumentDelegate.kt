@@ -19,6 +19,7 @@ package com.ritense.processdocument.domain.impl.delegate
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -27,6 +28,7 @@ class DocumentDelegate(
     val processDocumentService: ProcessDocumentService,
     val userManagementService: UserManagementService,
     val documentService: DocumentService,
+    val tenantResolver: TenantResolver
 ) {
 
     fun setAssignee(execution: DelegateExecution, userEmail: String?) {
@@ -37,13 +39,13 @@ class DocumentDelegate(
         val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
         val user = userManagementService.findByEmail(userEmail)
             .orElseThrow { IllegalArgumentException("No user found with email: $userEmail") }
-        documentService.assignUserToDocument(documentId.id, user.id)
+        documentService.assignUserToDocument(documentId.id, user.id, tenantResolver.getTenantId())
     }
 
     fun unassign(execution: DelegateExecution) {
         logger.debug("Unassigning user from document {}", execution.processBusinessKey)
         val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
-        documentService.unassignUserFromDocument(documentId.id)
+        documentService.unassignUserFromDocument(documentId.id, tenantResolver.getTenantId())
     }
 
     companion object {

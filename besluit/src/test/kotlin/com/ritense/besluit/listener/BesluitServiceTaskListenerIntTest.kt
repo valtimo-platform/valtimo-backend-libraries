@@ -107,7 +107,8 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
     private fun startCreateBesluitProcess(content: String): Document {
         val newDocumentRequest = NewDocumentRequest(
             "testschema",
-            Mapper.get().readTree(content)
+            Mapper.get().readTree(content),
+            "1"
         )
         return processDocumentService.newDocumentAndStartProcess(
             NewDocumentAndStartProcessRequest(

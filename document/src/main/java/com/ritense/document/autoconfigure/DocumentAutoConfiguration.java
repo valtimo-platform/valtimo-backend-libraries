@@ -37,6 +37,7 @@ import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
@@ -170,9 +171,10 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentResource.class)
     public JsonSchemaDocumentResource documentResource(
         DocumentService documentService,
-        DocumentDefinitionService documentDefinitionService
+        DocumentDefinitionService documentDefinitionService,
+        TenantResolver tenantResolver
     ) {
-        return new JsonSchemaDocumentResource(documentService, documentDefinitionService);
+        return new JsonSchemaDocumentResource(documentService, documentDefinitionService, tenantResolver);
     }
 
     @Bean

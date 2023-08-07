@@ -91,7 +91,7 @@ internal class FormFlowProcessLinkTaskProviderIntTest: BaseIntegrationTest() {
         processDocumentService.newDocumentAndStartProcess(
             NewDocumentAndStartProcessRequest("one-task-process",
                 NewDocumentRequest("testing",
-                    Mapper.INSTANCE.get().readTree("{}"))
+                    Mapper.INSTANCE.get().readTree("{}"), "1")
             )
         )
 
@@ -130,7 +130,7 @@ internal class FormFlowProcessLinkTaskProviderIntTest: BaseIntegrationTest() {
         val result = processDocumentService.newDocumentAndStartProcess(
             NewDocumentAndStartProcessRequest("one-task-process",
                 NewDocumentRequest("testing",
-                    Mapper.INSTANCE.get().readTree("{}"))
+                    Mapper.INSTANCE.get().readTree("{}"), "1")
             )
         )
 

@@ -1013,7 +1013,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
         var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
 
-        documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+        documentService.assignUserToDocument(document2.id().getId(), USER_ID, "1");
 
         var searchRequest = new AdvancedSearchRequest()
             .assigneeFilter(AssigneeFilter.OPEN);
@@ -1037,7 +1037,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
         var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
 
-        documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+        documentService.assignUserToDocument(document2.id().getId(), USER_ID, "1");
 
         var searchRequest = new AdvancedSearchRequest()
             .assigneeFilter(AssigneeFilter.MINE);
@@ -1060,7 +1060,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
         var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
 
-        documentService.assignUserToDocument(document2.id().getId(), USER_ID);
+        documentService.assignUserToDocument(document2.id().getId(), USER_ID, "1");
 
         var searchRequest = new AdvancedSearchRequest()
             .assigneeFilter(AssigneeFilter.ALL);

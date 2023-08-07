@@ -20,6 +20,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.tenancy.TenantResolver
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -56,11 +57,13 @@ class UploadProcessAutoConfiguration {
         documentService: DocumentService,
         processDocumentService: ProcessDocumentService,
         documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+        tenantResolver: TenantResolver
     ): UploadProcessService {
         return UploadProcessService(
             documentService,
             processDocumentService,
             documentDefinitionProcessLinkService,
+            tenantResolver
         )
     }
 
@@ -78,4 +81,5 @@ class UploadProcessAutoConfiguration {
     fun uploadProcessResourceHttpSecurityConfigurer(): UploadProcessResourceHttpSecurityConfigurer {
         return UploadProcessResourceHttpSecurityConfigurer()
     }
+
 }

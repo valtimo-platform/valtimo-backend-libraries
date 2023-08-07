@@ -21,16 +21,18 @@ import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import java.util.UUID
 
 class UploadProcessService(
     private val documentService: DocumentService,
     private val processDocumentService: ProcessDocumentService,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+    private val tenantResolver: TenantResolver
 ) {
 
     fun startUploadResourceProcess(caseId: String, resourceId: String) {
-        val caseDefinitionName = documentService.get(caseId).definitionId().name()
+        val caseDefinitionName = documentService.get(caseId, tenantResolver.getTenantId()).definitionId().name()
         val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, DOCUMENT_UPLOAD)
         if (!link.isPresent) {
             throw IllegalStateException("No upload-process linked to case: $caseDefinitionName")

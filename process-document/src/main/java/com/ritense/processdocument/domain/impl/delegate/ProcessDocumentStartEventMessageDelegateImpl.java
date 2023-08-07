@@ -27,11 +27,13 @@ import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.delegate.ProcessDocumentStartEventMessageDelegate;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.json.JsonPointerHelper;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class ProcessDocumentStartEventMessageDelegateImpl implements ProcessDocumentStartEventMessageDelegate {
@@ -44,11 +46,18 @@ public class ProcessDocumentStartEventMessageDelegateImpl implements ProcessDocu
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final DocumentService documentService;
     private final RuntimeService runtimeService;
+    private final TenantResolver tenantResolver;
 
-    public ProcessDocumentStartEventMessageDelegateImpl(ProcessDocumentAssociationService processDocumentAssociationService, DocumentService documentService, RuntimeService runtimeService) {
+    public ProcessDocumentStartEventMessageDelegateImpl(
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        DocumentService documentService,
+        RuntimeService runtimeService,
+        TenantResolver tenantResolver
+    ) {
         this.processDocumentAssociationService = processDocumentAssociationService;
         this.documentService = documentService;
         this.runtimeService = runtimeService;
+        this.tenantResolver = tenantResolver;
     }
 
     public void deliver(DelegateExecution execution, String message) {
@@ -61,7 +70,9 @@ public class ProcessDocumentStartEventMessageDelegateImpl implements ProcessDocu
 
         final var processInstanceId = ProcessInstanceId.fromExecution(execution, CamundaProcessInstanceId.class);
         processDocumentAssociationService.findProcessDocumentInstance(processInstanceId)
-            .flatMap(processDocumentInstance -> documentService.findBy(processDocumentInstance.processDocumentInstanceId().documentId()))
+            .flatMap(processDocumentInstance -> documentService.findBy(
+                processDocumentInstance.processDocumentInstanceId().documentId(), tenantResolver.getTenantId())
+            )
             .ifPresent(document -> {
                 final JsonNode payload = getPayload(execution, document);
                 runtimeService.createMessageCorrelation(message)

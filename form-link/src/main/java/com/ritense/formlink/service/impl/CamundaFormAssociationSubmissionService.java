@@ -35,6 +35,7 @@ import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.slf4j.Logger;
@@ -55,6 +56,7 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
     private final CamundaTaskService camundaTaskService;
     private final SubmissionTransformerService submissionTransformerService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final TenantResolver tenantResolver;
 
     public CamundaFormAssociationSubmissionService(
         FormDefinitionService formDefinitionService,
@@ -64,7 +66,8 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
         ProcessDocumentService processDocumentService,
         CamundaTaskService camundaTaskService,
         SubmissionTransformerService submissionTransformerService,
-        ApplicationEventPublisher applicationEventPublisher
+        ApplicationEventPublisher applicationEventPublisher,
+        TenantResolver tenantResolver
     ) {
         this.formDefinitionService = formDefinitionService;
         this.documentService = documentService;
@@ -74,6 +77,7 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
         this.camundaTaskService = camundaTaskService;
         this.submissionTransformerService = submissionTransformerService;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.tenantResolver = tenantResolver;
     }
 
     @Override
@@ -97,7 +101,8 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
             JsonSchemaDocument document = null;
             if (documentId != null) {
                 document = (JsonSchemaDocument) documentService.findBy(
-                    JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+                    JsonSchemaDocumentId.existingId(UUID.fromString(documentId)),
+                    tenantResolver.getTenantId()
                 ).orElseThrow(() -> new DocumentNotFoundException(String.format("Unable to find a Document for document ID '%s'", documentId)));
             }
 
@@ -132,7 +137,8 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                 processDocumentService,
                 camundaTaskService,
                 submissionTransformerService,
-                applicationEventPublisher
+                applicationEventPublisher,
+                tenantResolver
             );
             return submission.apply();
         } catch (DocumentNotFoundException | ProcessDefinitionNotFoundException notFoundException) {

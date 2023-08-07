@@ -30,9 +30,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
+
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Set;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -98,7 +100,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
 
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = USER)
-    public void shouldCreateSnapshotWhenModifyingDocument() throws InterruptedException {
+    public void shouldCreateSnapshotWhenModifyingDocument() {
         final var request = new ModifyDocumentRequest(
             document.id().toString(),
             new JsonDocumentContent("{\"street\": \"Kanaalkade\"}").asJson(),

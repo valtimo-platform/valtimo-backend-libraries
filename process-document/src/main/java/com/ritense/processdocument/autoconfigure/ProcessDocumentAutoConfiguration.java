@@ -43,6 +43,7 @@ import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocument
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.processdocument.service.impl.DocumentDefinitionProcessLinkServiceImpl;
 import com.ritense.processdocument.web.rest.ProcessDocumentResource;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
@@ -70,13 +71,15 @@ public class ProcessDocumentAutoConfiguration {
         DocumentService documentService,
         CamundaTaskService camundaTaskService,
         CamundaProcessService camundaProcessService,
-        ProcessDocumentAssociationService processDocumentAssociationService
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        TenantResolver tenantResolver
     ) {
         return new CamundaProcessJsonSchemaDocumentService(
             documentService,
             camundaTaskService,
             camundaProcessService,
-            processDocumentAssociationService
+            processDocumentAssociationService,
+            tenantResolver
         );
     }
 
@@ -103,9 +106,10 @@ public class ProcessDocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentVariableDelegate.class)
     public DocumentVariableDelegateImpl documentVariableDelegate(
-        DocumentService documentService
+        DocumentService documentService,
+        TenantResolver tenantResolver
     ) {
-        return new DocumentVariableDelegateImpl(documentService);
+        return new DocumentVariableDelegateImpl(documentService, tenantResolver);
     }
 
     @Bean
@@ -113,12 +117,14 @@ public class ProcessDocumentAutoConfiguration {
     public ProcessDocumentStartEventMessageDelegateImpl processDocumentStartEventMessageDelegate(
         ProcessDocumentAssociationService processDocumentAssociationService,
         DocumentService documentService,
-        RuntimeService runtimeService
+        RuntimeService runtimeService,
+        TenantResolver tenantResolver
     ) {
         return new ProcessDocumentStartEventMessageDelegateImpl(
             processDocumentAssociationService,
             documentService,
-            runtimeService
+            runtimeService,
+            tenantResolver
         );
     }
 
@@ -135,9 +141,15 @@ public class ProcessDocumentAutoConfiguration {
     public StartEventListenerImpl startEventListener(
         ProcessDocumentService processDocumentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        ApplicationEventPublisher applicationEventPublisher
+        ApplicationEventPublisher applicationEventPublisher,
+        TenantResolver tenantResolver
     ) {
-        return new StartEventListenerImpl(processDocumentService, processDocumentAssociationService, applicationEventPublisher);
+        return new StartEventListenerImpl(
+            processDocumentService,
+            processDocumentAssociationService,
+            applicationEventPublisher,
+            tenantResolver
+        );
     }
 
     @Bean
@@ -165,16 +177,16 @@ public class ProcessDocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ProcessDocumentDeploymentService.class)
     public ProcessDocumentDeploymentService processDocumentDeploymentService(
-            ResourceLoader resourceLoader,
-            ProcessDocumentAssociationService processDocumentAssociationService,
-            ContextService contextService,
-            DocumentDefinitionService documentDefinitionService
+        ResourceLoader resourceLoader,
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        ContextService contextService,
+        DocumentDefinitionService documentDefinitionService
     ) {
         return new CamundaProcessJsonSchemaDocumentDeploymentService(
-                resourceLoader,
-                processDocumentAssociationService,
-                contextService,
-                documentDefinitionService
+            resourceLoader,
+            processDocumentAssociationService,
+            contextService,
+            documentDefinitionService
         );
     }
 
@@ -183,18 +195,25 @@ public class ProcessDocumentAutoConfiguration {
     public ValueResolverFactory documentJsonValueResolver(
         ProcessDocumentService processDocumentService,
         DocumentService documentService,
-        JsonSchemaDocumentDefinitionService documentDefinitionService
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        TenantResolver tenantResolver
     ) {
-        return new DocumentJsonValueResolverFactory(processDocumentService, documentService, documentDefinitionService);
+        return new DocumentJsonValueResolverFactory(
+            processDocumentService,
+            documentService,
+            documentDefinitionService,
+            tenantResolver
+        );
     }
 
     @Bean
     @ConditionalOnMissingBean(DocumentTableValueResolver.class)
     public ValueResolverFactory documentTableValueResolver(
         ProcessDocumentService processDocumentService,
-        DocumentService documentService
+        DocumentService documentService,
+        TenantResolver tenantResolver
     ) {
-        return new DocumentTableValueResolver(processDocumentService, documentService);
+        return new DocumentTableValueResolver(processDocumentService, documentService, tenantResolver);
     }
 
     @Bean
@@ -202,9 +221,11 @@ public class ProcessDocumentAutoConfiguration {
     public DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService(
         DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository,
         RepositoryService repositoryService
-    )  {
-        return new DocumentDefinitionProcessLinkServiceImpl(documentDefinitionProcessLinkRepository, repositoryService);
+    ) {
+        return new DocumentDefinitionProcessLinkServiceImpl(
+            documentDefinitionProcessLinkRepository,
+            repositoryService
+        );
     }
-
 
 }
