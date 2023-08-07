@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.domain
+package com.ritense.document.dashboard
 
-class DefaultDisplayTypes {
-    companion object {
-        const val NUMBER = "number"
-    }
-}
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.ritense.valtimo.contract.repository.ExpressionOperator
+
+data class QueryCondition<T: Comparable<T>>(
+    val queryPath: String,
+    val queryOperator: ExpressionOperator,
+    @JsonDeserialize(using = ComparableDeserializer::class)
+    val queryValue: T
+)

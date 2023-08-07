@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource
+package com.ritense.gzac.dashboard
 
-@Target(AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class WidgetDataSource(
-    val key: String,
-    val title: String,
-    val displayTypes: Array<String>
-)
+import com.ritense.valtimo.contract.dashboard.WidgetDataSource
+import org.springframework.stereotype.Component
+
+
+@Component
+class TestWidgetDataSource {
+
+    @WidgetDataSource(key = "test", title = "Test")
+    fun testDataSource(testDataSourceProperties: TestDataSourceProperties): TestDataResult {
+        return TestDataResult(testDataSourceProperties.value, testDataSourceProperties.total)
+    }
+}

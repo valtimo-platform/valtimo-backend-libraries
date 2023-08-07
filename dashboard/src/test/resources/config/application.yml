@@ -39,3 +39,5 @@ spring:
 spring-actuator:
     username: test
     password: test
+
+valtimo.changelog.dashboard.clear-tables: true

@@ -16,31 +16,38 @@
 
 package com.ritense.dashboard
 
-import com.ritense.dashboard.domain.DefaultDisplayTypes
-import com.ritense.dashboard.datasource.WidgetDataSource
-import com.ritense.dashboard.datasource.dto.DashboardWidgetListDto
-import com.ritense.dashboard.datasource.dto.DashboardWidgetSingleDto
+import com.ritense.valtimo.contract.dashboard.WidgetDataSource
+import mu.KLogger
+import mu.KotlinLogging
 
 class TestDataSource {
 
     @WidgetDataSource(
-        key = "test-key-multi",
-        title = "Test title multi",
-        displayTypes = [DefaultDisplayTypes.NUMBER]
+        key = NUMBERS_DATA_KEY,
+        title = NUMBERS_DATA_TITLE
     )
-    fun testDashboardWidgetListDto(): DashboardWidgetListDto {
-        return DashboardWidgetListDto(emptyList(), 0)
+    fun numbersData(): TestWidgetNumbersResult {
+        return TestWidgetNumbersResult(emptyList(), 0)
     }
 
     @WidgetDataSource(
-        key = "test-key-single",
-        title = "Test title single",
-        displayTypes = [DefaultDisplayTypes.NUMBER, "custom"]
+        key = NUMBER_DATA_KEY,
+        title = NUMBER_DATA_TITLE,
     )
-    fun dashboardWidgetSingleDto() = DashboardWidgetSingleDto(1, 0)
+    fun numberData(testDataSourceProperties: TestDataSourceProperties): TestWidgetNumberResult {
+        logger.info { "numberData($testDataSourceProperties)" }
+        return TestWidgetNumberResult(1, 0)
+    }
 
     fun testNonAnnotatedMethod(): String {
         return "test"
     }
 
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
+        const val NUMBER_DATA_KEY = "number-data"
+        const val NUMBER_DATA_TITLE = "Number data"
+        const val NUMBERS_DATA_KEY = "numbers-data"
+        const val NUMBERS_DATA_TITLE = "Numbers data"
+    }
 }
