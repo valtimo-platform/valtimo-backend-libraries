@@ -16,16 +16,22 @@
 
 package com.ritense.authorization.deployment
 
+import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.Action
 import com.ritense.authorization.RoleRepository
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionCondition
+import com.ritense.authorization.permission.PermissionView
 
 data class PermissionDto(
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val resourceType: Class<*>,
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val action: String,
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val conditions: List<PermissionCondition> = emptyList(),
+    @field:JsonView(PermissionView.PermissionManagement::class)
     val roleKey: String
 ) {
     fun toPermission(roleRepository: RoleRepository) = Permission(

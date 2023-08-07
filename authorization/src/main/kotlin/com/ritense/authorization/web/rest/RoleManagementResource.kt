@@ -101,7 +101,7 @@ class RoleManagementResource(
         @PathVariable roleKey: String,
         @RequestBody rolePermissions: List<UpdateRolePermissionRequest>
     )
-        : ResponseEntity<List<Permission>> {
+        : ResponseEntity<List<PermissionDto>> {
         val role = roleRepository.findByKey(roleKey)!!
         permissionRepository.deleteByRoleKeyIn(listOf(roleKey))
         val permissions = permissionRepository
@@ -110,7 +110,7 @@ class RoleManagementResource(
                     AuthorizationSupportedHelper.checkSupported(it.resourceType)
                     it.toPermission(role)
                 }
-            )
+            ).map { PermissionDto(it.resourceType, it.action.key, it.conditionContainer.conditions, it.role.key) }
         return ResponseEntity.ok(permissions)
     }
 }
