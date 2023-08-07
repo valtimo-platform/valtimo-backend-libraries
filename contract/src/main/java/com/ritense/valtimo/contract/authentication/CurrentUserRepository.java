@@ -29,5 +29,4 @@ public interface CurrentUserRepository {
     void updateProfile(String currentUserLogin, Profile profile);
 
     boolean supports(Class<? extends Authentication> authentication);
-
 }

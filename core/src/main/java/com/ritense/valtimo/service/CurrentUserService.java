@@ -23,7 +23,7 @@ import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.springframework.security.core.Authentication;
 import java.util.Collection;
 
-public class CurrentUserService implements com.ritense.valtimo.contract.authentication.CurrentUserService {
+public class CurrentUserService {
 
     private final Collection<CurrentUserRepository> currentUserRepositories;
 
@@ -60,18 +60,15 @@ public class CurrentUserService implements com.ritense.valtimo.contract.authenti
         return currentUserRepository.getCurrentUser(currentUserLogin);
     }
 
-    @Override
     public void changePassword(String newPassword) throws IllegalStateException, IllegalAccessException {
         CurrentUserRepository currentUserRepository = findCurrentUserRepository();
         String currentUserLogin = SecurityUtils.getCurrentUserLogin();
         currentUserRepository.changePassword(currentUserLogin, newPassword);
     }
 
-    @Override
     public void updateProfile(Profile profile) throws IllegalAccessException {
         CurrentUserRepository currentUserRepository = findCurrentUserRepository();
         String currentUserLogin = SecurityUtils.getCurrentUserLogin();
         currentUserRepository.updateProfile(currentUserLogin, profile);
     }
-
 }
