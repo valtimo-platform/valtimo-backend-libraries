@@ -32,6 +32,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.time.LocalDateTime
 import java.util.UUID
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 class DocumentDelegateService(
     private val processDocumentService: ProcessDocumentService,
@@ -56,9 +57,9 @@ class DocumentDelegateService(
         return getDocumentById(execution).createdBy()
     }
 
-    fun getDocumentModifiedOn(execution: DelegateExecution): Optional<LocalDateTime>? {
+    fun getDocumentModifiedOn(execution: DelegateExecution): LocalDateTime? {
         logger.debug("Get modified on of document {}", execution.processBusinessKey)
-        return getDocumentById(execution).modifiedOn()
+        return getDocumentById(execution).modifiedOn().getOrNull()
     }
 
     fun getDocumentAssigneeId(execution: DelegateExecution): String? {
@@ -76,9 +77,12 @@ class DocumentDelegateService(
         return jsonSchemaDocumentService.getDocumentBy(documentId)
     }
 
-    open fun findValueByJsonPointer(jsonPointer: String?, execution: DelegateExecution?): Any? {
-        return Optional.ofNullable(findValueByJsonPointerOrDefault(jsonPointer, execution!!, null))
-            .orElseThrow()
+    fun findValueByJsonPointer(jsonPointer: String?, execution: DelegateExecution?): Any {
+        return findOptionalValueByJsonPointer(jsonPointer, execution!!).orElseThrow()
+    }
+
+    fun findValueByJsonPointerOrDefault(jsonPointer: String?, execution: DelegateExecution, defaultValue: Any): Any {
+        return findOptionalValueByJsonPointer(jsonPointer, execution).orElse(defaultValue)
     }
 
     private fun findOptionalValueByJsonPointer(jsonPointer: String?, execution: DelegateExecution): Optional<Any> {
@@ -90,7 +94,6 @@ class DocumentDelegateService(
             jsonSchemaDocument.content().getValueBy(JsonPointer.valueOf(jsonPointer))
         }
             .map(::transform)
-            .orElse(defaultValue)
     }
 
     private fun transform(jsonNode: JsonNode): Any? {
