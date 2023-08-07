@@ -52,4 +52,13 @@ class ValtimoHealthAggregatorTest {
 
         Assertions.assertEquals(Status.OUT_OF_SERVICE, aggregator.getAggregateStatus(statusSet))
     }
+
+    @Test
+    fun `should return unknown when an unknown status is used`(){
+        val statusSet = HashSet<Status>()
+        statusSet.add(Status.UP)
+        statusSet.add(Status("NOT_EXISTING"))
+
+        Assertions.assertEquals(Status.UNKNOWN, aggregator.getAggregateStatus(statusSet))
+    }
 }
