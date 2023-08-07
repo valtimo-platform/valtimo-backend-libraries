@@ -16,7 +16,11 @@
 
 package com.ritense.dashboard.web.rest
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.dashboard.domain.Dashboard
+import com.ritense.dashboard.domain.WidgetConfiguration
+import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.dashboard.web.rest.dto.DashboardCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationCreateRequestDto
@@ -24,6 +28,7 @@ import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.web.rest.SecuritySpecificEndpointIntegrationTest
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
@@ -35,6 +40,9 @@ import org.springframework.http.HttpStatus.OK
 import org.springframework.security.test.context.support.WithMockUser
 
 class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegrationTest() {
+
+    @Autowired
+    lateinit var dashboardRepository: DashboardRepository
 
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
@@ -159,7 +167,28 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `should have access to delete widget configuration method with role_admin`() {
-        assertHttpStatus(DELETE, "/api/management/v1/dashboard/1/widget-configuration/1", NO_CONTENT)
+        val widgets = mutableListOf<WidgetConfiguration>()
+        val dashboard = Dashboard(
+            "some-key",
+            "title",
+            "description",
+            widgetConfigurations = widgets,
+            1
+        )
+        val widget = WidgetConfiguration(
+            "some-key",
+            "title",
+            dashboard,
+            "dataSourceKey",
+            jacksonObjectMapper().readTree("""{}""") as ObjectNode,
+            jacksonObjectMapper().readTree("""{}""") as ObjectNode,
+            "displayType",
+            1
+        )
+        widgets.add(widget)
+        dashboardRepository.save(dashboard)
+
+        assertHttpStatus(DELETE, "/api/management/v1/dashboard/some-key/widget-configuration/some-key", NO_CONTENT)
     }
 
     @Test
