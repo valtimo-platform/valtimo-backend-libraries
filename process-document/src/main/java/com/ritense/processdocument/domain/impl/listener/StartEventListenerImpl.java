@@ -89,7 +89,9 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
                             documentDefinitionId.name(),
                             jsonData,
                             tenantResolver.getTenantId()
-                        ).withDocumentRelation(new DocumentRelationRequest(UUID.fromString(sourceDocumentId.toString()), documentRelationType));
+                        ).withDocumentRelation(
+                            new DocumentRelationRequest(UUID.fromString(sourceDocumentId.toString()), documentRelationType)
+                        );
 
                         final var request = new NewDocumentForRunningProcessRequest(
                             processDefinitionKey.toString(),

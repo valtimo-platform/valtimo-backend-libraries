@@ -209,7 +209,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         assertEquals("bsn", processVariableMap["initiatorType"])
         assertEquals(bsn, processVariableMap["initiatorValue"])
 
-        val documentInstance = documentService.get(processList[0].businessKey)
+        val documentInstance = documentService.get(processList[0].businessKey, "1")
         assertEquals(
             "John Doe",
             documentInstance.content().getValueBy(JsonPointer.valueOf("/fullname")).get().textValue()

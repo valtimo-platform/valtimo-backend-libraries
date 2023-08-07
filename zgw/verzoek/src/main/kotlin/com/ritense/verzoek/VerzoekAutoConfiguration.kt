@@ -22,6 +22,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -45,14 +46,16 @@ class VerzoekAutoConfiguration {
         objectManagementService: ObjectManagementService,
         documentService: DocumentService,
         zaaktypeUrlProvider: ZaaktypeUrlProvider,
-        processDocumentService: ProcessDocumentService
+        processDocumentService: ProcessDocumentService,
+        tenantResolver: TenantResolver
     ): VerzoekPluginEventListener {
         return VerzoekPluginEventListener(
             pluginService,
             objectManagementService,
             documentService,
             zaaktypeUrlProvider,
-            processDocumentService
+            processDocumentService,
+            tenantResolver
         )
     }
 }

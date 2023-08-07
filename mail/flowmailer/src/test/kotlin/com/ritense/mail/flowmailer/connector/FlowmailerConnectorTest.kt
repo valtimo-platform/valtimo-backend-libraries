@@ -22,16 +22,18 @@ import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
 import com.ritense.resource.service.ResourceService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
-import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class FlowmailerConnectorTest : BaseTest() {
     lateinit var flowmailerConnectorProperties: FlowmailerConnectorProperties
@@ -39,6 +41,7 @@ class FlowmailerConnectorTest : BaseTest() {
     lateinit var flowmailerConnector: FlowmailerConnector
     lateinit var documentService: DocumentService
     lateinit var resourceService: ResourceService
+    lateinit var tenantResolver: TenantResolver
 
     @BeforeEach
     fun setup() {
@@ -49,14 +52,17 @@ class FlowmailerConnectorTest : BaseTest() {
             accountId = "accountId"
         )
         flowmailerConnectorProperties = FlowmailerConnectorProperties(flowmailerProperties)
-        flowmailerMailDispatcher = mock(FlowmailerMailDispatcher::class.java)
-        documentService = mock(DocumentService::class.java)
-        resourceService = mock(ResourceService::class.java)
+        flowmailerMailDispatcher = mock()
+        documentService = mock()
+        resourceService = mock()
+        tenantResolver = mock()
+        whenever(tenantResolver.getTenantId()).thenReturn("1")
         flowmailerConnector = FlowmailerConnector(
             flowmailerConnectorProperties = flowmailerConnectorProperties,
             mailDispatcher = flowmailerMailDispatcher,
             documentService = documentService,
-            resourceService = resourceService
+            resourceService = resourceService,
+            tenantResolver = tenantResolver
         )
     }
 
@@ -96,7 +102,7 @@ class FlowmailerConnectorTest : BaseTest() {
         rootNode.replace("members", arrayNode)
 
         val documentOptional = documentOptional(rootNode.toPrettyString())
-        `when`(documentService.findBy(any())).thenReturn(documentOptional)
+        `when`(documentService.findBy(any(), any())).thenReturn(documentOptional)
 
         flowmailerConnector.sender("a@a.com")
         flowmailerConnector.subject("aSubject")
