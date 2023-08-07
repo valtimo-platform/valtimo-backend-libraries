@@ -25,6 +25,7 @@ import static org.springframework.http.HttpMethod.GET;
 public class FormHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     public FormHttpSecurityConfigurer() {
+        //Default constructor
     }
 
     @Override
