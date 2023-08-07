@@ -31,6 +31,7 @@ import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.contains
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
@@ -360,6 +361,9 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         )
             .andDo(print())
             .andExpect(status().isNoContent)
+
+        val widgets = widgetConfigurationRepository.findAllByDashboardKey("doorlooptijd")
+        assertEquals(0, widgets.size)
     }
 
     @Test
