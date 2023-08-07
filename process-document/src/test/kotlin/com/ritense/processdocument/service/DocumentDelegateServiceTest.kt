@@ -16,7 +16,6 @@
 
 package com.ritense.processdocument.service
 
-import com.ritense.document.domain.DocumentVersion
 import com.ritense.document.domain.impl.*
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
@@ -48,7 +47,7 @@ internal class DocumentDelegateServiceTest : BaseTest() {
     private val NO = false
 
     private val documentId = "11111111-1111-1111-1111-111111111111"
-    val processInstanceId = "00000000-0000-0000-0000-000000000000"
+    private val processInstanceId = "00000000-0000-0000-0000-000000000000"
 
     @BeforeEach
     fun setup() {
@@ -133,15 +132,4 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         ).resultingDocument().get()
     }
 
-    fun initialCode() {
-        val documentId = "11111111-1111-1111-1111-111111111111"
-        val processInstanceId = "00000000-0000-0000-0000-000000000000"
-
-        val documentMock = mock<JsonSchemaDocument>()
-        val delegateExecutionFake = DelegateExecutionFake("id")
-            .withProcessInstanceId(processInstanceId)
-
-        val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
-
-    }
 }
