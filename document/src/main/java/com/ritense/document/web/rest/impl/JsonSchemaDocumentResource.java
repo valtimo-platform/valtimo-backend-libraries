@@ -63,8 +63,9 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     @Override
     @GetMapping(value = "/v1/document/{id}")
     public ResponseEntity<? extends Document> getDocument(@PathVariable(name = "id") UUID id) {
-        return documentService.findBy(JsonSchemaDocumentId.existingId(id), tenantResolver.getTenantId())
-            .filter(it -> hasAccessToDefinitionName(it.definitionId().name()))
+        return documentService.findBy(
+                JsonSchemaDocumentId.existingId(id), tenantResolver.getTenantId()
+            ).filter(it -> hasAccessToDefinitionName(it.definitionId().name()))
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
@@ -74,6 +75,8 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     public ResponseEntity<CreateDocumentResult> createNewDocument(
         @RequestBody @Valid NewDocumentRequest request
     ) {
+        var tenantId = tenantResolver.getTenantId();
+        request.withTenantId(tenantId);
         if (!hasAccessToDefinitionName(request.documentDefinitionName())) {
             return ResponseEntity.badRequest().build();
         }
@@ -86,10 +89,10 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         @RequestBody @Valid ModifyDocumentRequest request
     ) {
         var tenantId = tenantResolver.getTenantId();
+        request.withTenantId(tenantId);
         if (!hasAccessToDocumentId(request.documentId(), tenantId)) {
             return ResponseEntity.badRequest().build();
         }
-        request.withTenantId(tenantId);
         return applyResult(documentService.modifyDocument(request));
     }
 

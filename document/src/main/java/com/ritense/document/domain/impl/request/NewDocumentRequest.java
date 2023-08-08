@@ -37,18 +37,15 @@ public class NewDocumentRequest {
 
     private Set<Resource> resources = Collections.emptySet();
 
-    @JsonProperty
-    private final String tenantId;
+    private String tenantId;
 
     @JsonCreator
     public NewDocumentRequest(
         @JsonProperty(value = "definition", required = true) @NotNull String documentDefinitionName,
-        @JsonProperty(value = "content", required = true) @NotNull JsonNode content,
-        @JsonProperty(value = "tenantId", required = true) @NotNull String tenantId
+        @JsonProperty(value = "content", required = true) @NotNull JsonNode content
     ) {
         this.documentDefinitionName = documentDefinitionName;
         this.content = content;
-        this.tenantId = tenantId;
     }
 
     public String documentDefinitionName() {
@@ -80,4 +77,10 @@ public class NewDocumentRequest {
     public Set<Resource> getResources() {
         return this.resources;
     }
+
+    public NewDocumentRequest withTenantId(String tenantId) {
+        this.tenantId = tenantId;
+        return this;
+    }
+
 }
