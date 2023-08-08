@@ -338,6 +338,9 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     }
 
     @Deprecated(since = "10.6.0", forRemoval = true)
+    /**
+     * The alternative after deprecation will be the DocumentDelegateService.
+     */
     public Document getDocument(DelegateExecution execution) {
         denyAuthorization();
         return getDocument(ProcessInstanceId.fromExecution(execution, CamundaProcessInstanceId.class), execution);

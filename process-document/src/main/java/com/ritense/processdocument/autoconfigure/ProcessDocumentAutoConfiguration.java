@@ -36,7 +36,10 @@ import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepositor
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
 import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory;
 import com.ritense.processdocument.resolver.DocumentTableValueResolver;
-import com.ritense.processdocument.service.*;
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
+import com.ritense.processdocument.service.ProcessDocumentAssociationService;
+import com.ritense.processdocument.service.ProcessDocumentDeploymentService;
+import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentDeploymentService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
@@ -108,8 +111,11 @@ public class ProcessDocumentAutoConfiguration {
 
     @Bean
     @ProcessBean
-    @ConditionalOnMissingBean(DocumentDelegateService.class)
+    @ConditionalOnMissingBean(DocumentVariableDelegate.class)
     @Deprecated(since = "11.0.0", forRemoval = true)
+    /**
+     * The alternative after deprecation will be the DocumentDelegateService.
+     */
     public DocumentVariableDelegateImpl documentVariableDelegate(
         DocumentService documentService
     ) {

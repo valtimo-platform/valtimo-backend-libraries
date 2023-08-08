@@ -16,7 +16,10 @@
 
 package com.ritense.processdocument.service
 
-import com.ritense.document.domain.impl.*
+import com.ritense.document.domain.impl.JsonDocumentContent
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
+import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.BaseTest
@@ -78,21 +81,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val modifiedOn = LocalDateTime.now()
 
         whenever(documentMock.modifiedOn()).thenReturn(Optional.of(modifiedOn))
-        whenever(
-            processDocumentService.getDocumentId(
-                CamundaProcessInstanceId(processInstanceId),
-                delegateExecutionFake
-            )
-        )
-            .thenReturn(jsonSchemaDocumentId)
-
-        whenever(jsonSchemaDocumentService.getDocumentBy(jsonSchemaDocumentId))
-            .thenReturn(documentMock)
+        prepareDocument(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
 
         val modifiedOnResult = documentDelegateService.getDocumentModifiedOn(delegateExecutionFake)
 
         assertEquals(modifiedOnResult, modifiedOn)
-        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
     }
 
     @Test
@@ -101,21 +95,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val assigneeId = "1234"
 
         whenever(documentMock.assigneeId()).thenReturn(assigneeId)
-        whenever(
-            processDocumentService.getDocumentId(
-                CamundaProcessInstanceId(processInstanceId),
-                delegateExecutionFake
-            )
-        )
-            .thenReturn(jsonSchemaDocumentId)
-
-        whenever(jsonSchemaDocumentService.getDocumentBy(jsonSchemaDocumentId))
-            .thenReturn(documentMock)
+        prepareDocument(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
 
         val assigneeIdResult = documentDelegateService.getDocumentAssigneeId(delegateExecutionFake)
 
         assertEquals(assigneeIdResult, assigneeId)
-        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
     }
 
     @Test
@@ -124,21 +109,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val createdBy = "Pietersen"
 
         whenever(documentMock.createdBy()).thenReturn(createdBy)
-        whenever(
-            processDocumentService.getDocumentId(
-                CamundaProcessInstanceId(processInstanceId),
-                delegateExecutionFake
-            )
-        )
-            .thenReturn(jsonSchemaDocumentId)
-
-        whenever(jsonSchemaDocumentService.getDocumentBy(jsonSchemaDocumentId))
-            .thenReturn(documentMock)
+        prepareDocument(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
 
         val createdByResult = documentDelegateService.getDocumentCreatedBy(delegateExecutionFake)
 
         assertEquals(createdByResult, createdBy)
-        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
     }
 
     @Test
@@ -147,21 +123,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val assigneeFullname = "Jan Jansen"
 
         whenever(documentMock.assigneeFullName()).thenReturn(assigneeFullname)
-        whenever(
-            processDocumentService.getDocumentId(
-                CamundaProcessInstanceId(processInstanceId),
-                delegateExecutionFake
-            )
-        )
-            .thenReturn(jsonSchemaDocumentId)
-
-        whenever(jsonSchemaDocumentService.getDocumentBy(jsonSchemaDocumentId))
-            .thenReturn(documentMock)
+        prepareDocument(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
 
         val assigneFullNameResult = documentDelegateService.getDocumentAssigneeFullName(delegateExecutionFake)
 
         assertEquals(assigneFullNameResult, assigneeFullname)
-        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
     }
 
     @Test
@@ -170,21 +137,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         var version = documentMock.version();
 
         whenever(documentMock.version()).thenReturn(version)
-        whenever(
-            processDocumentService.getDocumentId(
-                CamundaProcessInstanceId(processInstanceId),
-                delegateExecutionFake
-            )
-        )
-            .thenReturn(jsonSchemaDocumentId)
-
-        whenever(jsonSchemaDocumentService.getDocumentBy(jsonSchemaDocumentId))
-            .thenReturn(documentMock)
+        prepareDocument(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
 
         val versionResult = documentDelegateService.getDocumentVersion(delegateExecutionFake)
 
         assertEquals(versionResult, version)
-        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
     }
 
     @Test
@@ -193,27 +151,29 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val createdOn = LocalDateTime.now()
 
         whenever(documentMock.createdOn()).thenReturn(createdOn)
-        whenever(
-            processDocumentService.getDocumentId(
-                CamundaProcessInstanceId(processInstanceId),
-                delegateExecutionFake
-            )
-        )
-            .thenReturn(jsonSchemaDocumentId)
-
-        whenever(jsonSchemaDocumentService.getDocumentBy(jsonSchemaDocumentId))
-            .thenReturn(documentMock)
+        prepareDocument(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
 
         val createdOnResult = documentDelegateService.getDocumentCreatedOn(delegateExecutionFake)
 
         assertEquals(createdOnResult, createdOn)
-        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
     }
 
     @Test
     fun `get document by id`() {
         val delegateExecutionFake = DelegateExecutionFake("id").withProcessInstanceId(processInstanceId)
 
+        prepareDocument(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
+
+        val resultDocument = documentDelegateService.getDocumentById(delegateExecutionFake)
+
+        assertEquals(documentMock, resultDocument)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
+    }
+
+    private fun prepareDocument(processDocumentService: ProcessDocumentService,
+                                delegateExecutionFake: DelegateExecutionFake,
+                                jsonSchemaDocumentService: JsonSchemaDocumentService) {
         whenever(
             processDocumentService.getDocumentId(
                 CamundaProcessInstanceId(processInstanceId),
@@ -224,11 +184,6 @@ internal class DocumentDelegateServiceTest : BaseTest() {
 
         whenever(jsonSchemaDocumentService.getDocumentBy(jsonSchemaDocumentId))
             .thenReturn(documentMock)
-
-        val resultDocument = documentDelegateService.getDocumentById(delegateExecutionFake)
-
-        assertEquals(documentMock, resultDocument)
-        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
     }
 
     private fun verifyTest(processDocumentService: ProcessDocumentService,
