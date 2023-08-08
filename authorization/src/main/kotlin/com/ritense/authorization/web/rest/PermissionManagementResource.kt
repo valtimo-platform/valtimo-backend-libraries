@@ -18,6 +18,7 @@ package com.ritense.authorization.web.rest
 
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.PermissionRepository
+import com.ritense.authorization.deployment.PermissionDto
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.web.rest.request.SearchPermissionsRequest
@@ -32,9 +33,10 @@ class PermissionManagementResource(
     val permissionRepository: PermissionRepository
 ) {
     @PostMapping("/v1/permissions/search")
-    @JsonView(PermissionView.PermissionManagement::class)
-    fun searchPermissions(@RequestBody searchRequest: SearchPermissionsRequest): ResponseEntity<List<Permission>> {
-        val rolePermissions = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(searchRequest.roles)
+    fun searchPermissions(@RequestBody searchRequest: SearchPermissionsRequest): ResponseEntity<List<PermissionDto>> {
+        val rolePermissions = permissionRepository
+            .findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(searchRequest.roles)
+            .map { PermissionDto(it.resourceType, it.action.key, it.conditionContainer.conditions, it.role.key) }
         return ResponseEntity.ok(rolePermissions)
     }
 

@@ -21,6 +21,7 @@ import com.ritense.authorization.AuthorizationSupportedHelper
 import com.ritense.authorization.PermissionRepository
 import com.ritense.authorization.Role
 import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.deployment.PermissionDto
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.web.rest.request.DeleteRolesRequest
@@ -87,8 +88,9 @@ class RoleManagementResource(
     @GetMapping("/v1/roles/{roleKey}/permissions")
     @JsonView(PermissionView.RoleManagement::class)
     fun getRolePermissions(@PathVariable roleKey: String)
-        : ResponseEntity<List<Permission>> {
+        : ResponseEntity<List<PermissionDto>> {
         val rolePermissions = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf(roleKey))
+            .map { PermissionDto(it.resourceType, it.action.key, it.conditionContainer.conditions, it.role.key) }
         return ResponseEntity.ok(rolePermissions)
     }
 
@@ -99,7 +101,7 @@ class RoleManagementResource(
         @PathVariable roleKey: String,
         @RequestBody rolePermissions: List<UpdateRolePermissionRequest>
     )
-        : ResponseEntity<List<Permission>> {
+        : ResponseEntity<List<PermissionDto>> {
         val role = roleRepository.findByKey(roleKey)!!
         permissionRepository.deleteByRoleKeyIn(listOf(roleKey))
         val permissions = permissionRepository
@@ -108,7 +110,7 @@ class RoleManagementResource(
                     AuthorizationSupportedHelper.checkSupported(it.resourceType)
                     it.toPermission(role)
                 }
-            )
+            ).map { PermissionDto(it.resourceType, it.action.key, it.conditionContainer.conditions, it.role.key) }
         return ResponseEntity.ok(permissions)
     }
 }
