@@ -30,6 +30,7 @@ import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import com.ritense.valtimo.config.CustomDateTimeProvider;
 import com.ritense.valtimo.config.ValtimoApplicationReadyEventListener;
 import com.ritense.valtimo.contract.authentication.AuthorizedUserRepository;
+import com.ritense.valtimo.contract.authentication.AuthorizedUsersService;
 import com.ritense.valtimo.contract.authentication.CurrentUserRepository;
 import com.ritense.valtimo.contract.authentication.CurrentUserService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -43,7 +44,7 @@ import com.ritense.valtimo.repository.UserSettingsRepository;
 import com.ritense.valtimo.security.permission.Permission;
 import com.ritense.valtimo.security.permission.TaskAccessPermission;
 import com.ritense.valtimo.security.permission.ValtimoPermissionEvaluator;
-import com.ritense.valtimo.service.AuthorizedUsersService;
+import com.ritense.valtimo.service.AuthorizedUsersServiceImpl;
 import com.ritense.valtimo.service.BpmnModelService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
@@ -139,7 +140,7 @@ public class ValtimoAutoConfiguration {
     public AuthorizedUsersService authorizedUsersService(
         final Collection<AuthorizedUserRepository> authorizedUserRepositories
     ) {
-        return new AuthorizedUsersService(authorizedUserRepositories);
+        return new AuthorizedUsersServiceImpl(authorizedUserRepositories);
     }
 
     @Bean
