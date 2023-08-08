@@ -135,9 +135,8 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
 
         val newDocumentRequest = NewDocumentRequest(
             DOCUMENT_DEFINITION_KEY,
-            Mapper.INSTANCE.get().createObjectNode(),
-            "1"
-        )
+            Mapper.INSTANCE.get().createObjectNode()
+        ).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("localDocumentVariableName" to documentId))
 
@@ -192,9 +191,8 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
 
         val newDocumentRequest = NewDocumentRequest(
             DOCUMENT_DEFINITION_KEY,
-            Mapper.INSTANCE.get().createObjectNode(),
-            "1"
-        )
+            Mapper.INSTANCE.get().createObjectNode()
+        ).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("localDocumentVariableName" to documentId))
 
@@ -211,9 +209,8 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
 
         val newDocumentRequest = NewDocumentRequest(
             DOCUMENT_DEFINITION_KEY,
-            Mapper.INSTANCE.get().createObjectNode(),
-            "1"
-        )
+            Mapper.INSTANCE.get().createObjectNode()
+        ).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("documentUrl" to documentUrl))
 
@@ -254,8 +251,10 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
                 val response = when (path) {
                     "/enkelvoudiginformatieobjecten"
                     -> handleDocumentRequest()
+
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID"
                     -> handleDocumentRequest()
+
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID/download"
                     -> handleDocumentDownloadRequest()
 

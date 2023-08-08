@@ -82,9 +82,8 @@ class ResourceSubmittedToDocumentEventListenerIT : BaseIntegrationTest() {
         val documentId = documentService.createDocument(
             NewDocumentRequest(
                 DOCUMENT_DEFINITION_KEY,
-                Mapper.INSTANCE.get().createObjectNode(),
-                "1"
-            )
+                Mapper.INSTANCE.get().createObjectNode()
+            ).withTenantId("1")
         ).resultingDocument().get().id!!.id
         val resourceId = temporaryResourceStorageService.store(
             "My file data".byteInputStream(),

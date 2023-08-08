@@ -288,9 +288,8 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     private fun startPortaalTaakProcess(content: String): Task {
         val newDocumentRequest = NewDocumentRequest(
             DOCUMENT_DEFINITION_KEY,
-            Mapper.INSTANCE.get().readTree(content),
-            "1"
-        )
+            Mapper.INSTANCE.get().readTree(content)
+        ).withTenantId( "1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
         val processResult = procesDocumentService.newDocumentAndStartProcess(request)
         return taskService
