@@ -112,10 +112,6 @@ public class ProcessDocumentAutoConfiguration {
     @Bean
     @ProcessBean
     @ConditionalOnMissingBean(DocumentVariableDelegate.class)
-    @Deprecated(since = "11.0.0", forRemoval = true)
-    /**
-     * @deprecated Replaced by {@link com.ritense.processdocument.service.DocumentDelegateService }
-     */
     public DocumentVariableDelegateImpl documentVariableDelegate(
         DocumentService documentService
     ) {

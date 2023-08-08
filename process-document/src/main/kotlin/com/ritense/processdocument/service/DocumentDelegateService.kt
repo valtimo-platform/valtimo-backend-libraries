@@ -44,35 +44,35 @@ class DocumentDelegateService(
 
     fun getDocumentVersion(execution: DelegateExecution): DocumentVersion? {
         logger.debug("Get version of document {}", execution.processBusinessKey)
-        return getDocumentById(execution).version()
+        return getDocument(execution).version()
     }
 
     fun getDocumentCreatedOn(execution: DelegateExecution): LocalDateTime? {
         logger.debug("Get created on date of document {}", execution.processBusinessKey)
-        return getDocumentById(execution).createdOn()
+        return getDocument(execution).createdOn()
     }
 
     fun getDocumentCreatedBy(execution: DelegateExecution): String? {
         logger.debug("Get created by of document {}", execution.processBusinessKey)
-        return getDocumentById(execution).createdBy()
+        return getDocument(execution).createdBy()
     }
 
     fun getDocumentModifiedOn(execution: DelegateExecution): LocalDateTime? {
         logger.debug("Get modified on of document {}", execution.processBusinessKey)
-        return getDocumentById(execution).modifiedOn().getOrNull()
+        return getDocument(execution).modifiedOn().getOrNull()
     }
 
     fun getDocumentAssigneeId(execution: DelegateExecution): String? {
         logger.debug("Get assigneeId of document {}", execution.processBusinessKey)
-        return getDocumentById(execution).assigneeId()
+        return getDocument(execution).assigneeId()
     }
 
     fun getDocumentAssigneeFullName(execution: DelegateExecution): String? {
         logger.debug("Get assignee full name of document {}", execution.processBusinessKey)
-        return getDocumentById(execution).assigneeFullName()
+        return getDocument(execution).assigneeFullName()
     }
 
-    fun getDocumentById(execution: DelegateExecution): Document {
+    fun getDocument(execution: DelegateExecution): Document {
         val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
         return jsonSchemaDocumentService.getDocumentBy(documentId)
     }

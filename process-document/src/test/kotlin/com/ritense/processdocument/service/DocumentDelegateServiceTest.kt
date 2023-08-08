@@ -48,15 +48,17 @@ internal class DocumentDelegateServiceTest : BaseTest() {
     lateinit var definition: JsonSchemaDocumentDefinition
     private lateinit var delegateExecutionFake: DelegateExecution
 
-    private val STREET_NAME = "street"
-    private val HOUSE_NUMBER = "3"
-    private val NO = false
-
     private val documentId = "11111111-1111-1111-1111-111111111111"
     private val processInstanceId = "00000000-0000-0000-0000-000000000000"
 
     private val documentMock = mock<JsonSchemaDocument>()
     private val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+
+    companion object {
+        private const val STREET_NAME = "street"
+        private const val HOUSE_NUMBER = "3"
+        private const val NO = false
+    }
 
     @BeforeEach
     fun setup() {
@@ -134,7 +136,7 @@ internal class DocumentDelegateServiceTest : BaseTest() {
     @Test
     fun `get version from document`() {
         val delegateExecutionFake = DelegateExecutionFake("id").withProcessInstanceId(processInstanceId)
-        var version = documentMock.version();
+        val version = documentMock.version();
 
         whenever(documentMock.version()).thenReturn(version)
         prepareDocument(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
@@ -160,12 +162,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
     }
 
     @Test
-    fun `get document by id`() {
+    fun `get document by execution`() {
         val delegateExecutionFake = DelegateExecutionFake("id").withProcessInstanceId(processInstanceId)
 
         prepareDocument(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
 
-        val resultDocument = documentDelegateService.getDocumentById(delegateExecutionFake)
+        val resultDocument = documentDelegateService.getDocument(delegateExecutionFake)
 
         assertEquals(documentMock, resultDocument)
         verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)
@@ -240,5 +242,4 @@ internal class DocumentDelegateServiceTest : BaseTest() {
             null
         ).resultingDocument().get()
     }
-
 }
