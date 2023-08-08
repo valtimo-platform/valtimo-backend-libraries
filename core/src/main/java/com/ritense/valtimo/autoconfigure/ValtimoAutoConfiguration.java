@@ -144,8 +144,8 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(CurrentUserServiceImpl.class)
-    public CurrentUserServiceImpl currentUserService(
+    @ConditionalOnMissingBean(CurrentUserService.class)
+    public CurrentUserService currentUserService(
         final Collection<CurrentUserRepository> currentUserRepositories
     ) {
         return new CurrentUserServiceImpl(currentUserRepositories);
