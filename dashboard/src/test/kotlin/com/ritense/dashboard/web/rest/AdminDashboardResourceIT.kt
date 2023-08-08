@@ -265,7 +265,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
         createWidgetConfiguration(dashboard)
 
-        val udpateRequest = SingleWidgetConfigurationUpdateRequestDto(
+        val updateRequest = SingleWidgetConfigurationUpdateRequestDto(
                 title = "Doorlooptijd",
                 dataSourceKey = "doorlooptijd2",
                 dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 500 }""") as ObjectNode,
@@ -276,7 +276,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         mockMvc.perform(
             put("/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}", "test_dashboard", "doorlooptijd")
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(udpateRequest))
+                .content(jacksonObjectMapper().writeValueAsString(updateRequest))
         )
             .andDo(print())
             .andExpect(status().isOk)
