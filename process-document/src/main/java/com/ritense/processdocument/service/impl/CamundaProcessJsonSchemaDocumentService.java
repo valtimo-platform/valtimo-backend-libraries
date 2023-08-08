@@ -149,7 +149,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             if (!processDocumentInstanceResult.hasResult()) {
                 return new ModifyDocumentAndCompleteTaskResultFailed(processDocumentInstanceResult.errors());
             }
-
+            request.modifyDocumentRequest().withTenantId(tenantResolver.getTenantId());
             final var modifyDocumentResult = documentService.modifyDocument(modifyDocumentRequest);
             if (modifyDocumentResult.resultingDocument().isEmpty()) {
                 return new ModifyDocumentAndCompleteTaskResultFailed(modifyDocumentResult.errors());
@@ -202,6 +202,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
     ) {
         try {
             //Part 1 Modify document
+            request.modifyDocumentRequest().withTenantId(tenantResolver.getTenantId());
             final var modifyDocumentResult = documentService.modifyDocument(request.modifyDocumentRequest());
 
             if (modifyDocumentResult.resultingDocument().isEmpty()) {
