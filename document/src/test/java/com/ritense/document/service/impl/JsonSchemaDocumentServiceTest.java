@@ -81,9 +81,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         final var content = new JsonDocumentContent("{\"addresses\" : [{\"streetName\" : \"Funenpark\"}]}");
         NewDocumentRequest documentRequest = new NewDocumentRequest(
             "document-definition",
-            content.asJson(),
-            TENANT_ID
-        );
+            content.asJson()
+        ).withTenantId(TENANT_ID);
 
         JsonSchemaDocumentDefinition definition = definitionOf("referenced-array");
         when(documentDefinitionService.findLatestByName(eq("document-definition"))).thenReturn(Optional.of(definition));
@@ -139,9 +138,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
 
         NewDocumentRequest documentRequest = new NewDocumentRequest(
             "document-definition",
-            content.asJson(),
-            TENANT_ID
-        );
+            content.asJson()
+        ).withTenantId(TENANT_ID);
         documentRequest.withResources(Set.of(resource));
 
         JsonSchemaDocumentDefinition definition = definitionOf("referenced-array");

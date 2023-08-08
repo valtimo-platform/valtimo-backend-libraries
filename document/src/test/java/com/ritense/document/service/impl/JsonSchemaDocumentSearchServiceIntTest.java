@@ -70,9 +70,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         originalDocument = documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
-                content.asJson(),
-                TENANT_ID
-            )
+                content.asJson()
+            ).withTenantId(TENANT_ID)
         );
 
         var content2 = new JsonDocumentContent("{\"street\": \"Kalverstraat\"}");
@@ -80,9 +79,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
-                content2.asJson(),
-                TENANT_ID
-            )
+                content2.asJson()
+            ).withTenantId(TENANT_ID)
         );
 
         JsonSchemaDocumentDefinition definitionHouseV2 = definitionOf("house", 2, "noautodeploy/house_v2.schema.json");
@@ -91,9 +89,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         documentService.createDocument(
             new NewDocumentRequest(
                 definitionHouseV2.id().name(),
-                new JsonDocumentContent("{\"street\": \"Kalverstraat\",\"place\": \"Amsterdam\"}").asJson(),
-                TENANT_ID
-            )
+                new JsonDocumentContent("{\"street\": \"Kalverstraat\",\"place\": \"Amsterdam\"}").asJson()
+            ).withTenantId(TENANT_ID)
         );
 
         var user = new ValtimoUserBuilder().username(USERNAME).email(USERNAME).id(USER_ID).build();
@@ -1082,9 +1079,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         return documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
-                documentContent.asJson(),
-                TENANT_ID
-            )
+                documentContent.asJson()
+            ).withTenantId(TENANT_ID)
         );
     }
 }

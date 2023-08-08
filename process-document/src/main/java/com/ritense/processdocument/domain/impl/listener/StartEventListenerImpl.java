@@ -87,11 +87,10 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
 
                         var newDocumentRequest = new NewDocumentRequest(
                             documentDefinitionId.name(),
-                            jsonData,
-                            tenantResolver.getTenantId()
+                            jsonData
                         ).withDocumentRelation(
                             new DocumentRelationRequest(UUID.fromString(sourceDocumentId.toString()), documentRelationType)
-                        );
+                        ).withTenantId(tenantResolver.getTenantId());
 
                         final var request = new NewDocumentForRunningProcessRequest(
                             processDefinitionKey.toString(),
@@ -100,7 +99,8 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
                         );
                         final var result = processDocumentService.newDocumentForRunningProcess(request);
 
-                        result.resultingDocument().ifPresentOrElse(document -> applicationEventPublisher.publishEvent(
+                        result.resultingDocument().ifPresentOrElse(
+                            document -> applicationEventPublisher.publishEvent(
                                 new NextJsonSchemaDocumentRelationAvailableEvent(
                                     sourceDocumentId.toString(),
                                     document.id().toString()

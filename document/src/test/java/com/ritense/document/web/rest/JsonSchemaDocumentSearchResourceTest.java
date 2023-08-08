@@ -28,6 +28,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentSearchService;
 import com.ritense.document.service.impl.SearchCriteria;
 import com.ritense.document.service.impl.SearchRequest;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.utils.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,23 +36,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.util.Arrays;
 import java.util.List;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class JsonSchemaDocumentSearchResourceTest extends BaseTest {
 
@@ -62,14 +60,18 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
     private Page<? extends Document> documentPage;
     private JsonSchemaDocument document;
     private static final String USERNAME = "test@test.com";
+    private TenantResolver tenantResolver;
 
     @BeforeEach
     public void beforeAll() {
         documentSequenceGeneratorService = mock(DocumentSequenceGeneratorService.class);
         when(documentSequenceGeneratorService.next(any())).thenReturn(1L);
 
+        tenantResolver = mock(TenantResolver.class);
+        when(tenantResolver.getTenantId()).thenReturn("1");
+
         documentSearchService = mock(JsonSchemaDocumentSearchService.class);
-        documentSearchResource = new JsonSchemaDocumentSearchResource(documentSearchService);
+        documentSearchResource = new JsonSchemaDocumentSearchResource(documentSearchService, tenantResolver);
         mockMvc = MockMvcBuilders
             .standaloneSetup(documentSearchResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -105,11 +107,11 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
         searchRequest.setOtherFilters(values);
 
         mockMvc.perform(
-            post("/api/v1/document-search", "definition")
-                .accept(APPLICATION_JSON_VALUE)
-                .contentType(APPLICATION_JSON_VALUE)
-                .content(TestUtil.convertObjectToJsonBytes(searchRequest))
-        )
+                post("/api/v1/document-search", "definition")
+                    .accept(APPLICATION_JSON_VALUE)
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .content(TestUtil.convertObjectToJsonBytes(searchRequest))
+            )
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_VALUE))
@@ -118,14 +120,15 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
 
     @Test
     void shouldReturnPagedRecordPageWithoutSearchParams() throws Exception {
-        when(documentSearchService.search(any(), any())).thenReturn(new PageImpl(List.of(document), Pageable.unpaged(), 1));
+        when(documentSearchService.search(any(), any()))
+            .thenReturn(new PageImpl(List.of(document), Pageable.unpaged(), 1));
 
         mockMvc.perform(
-            post("/api/v1/document-search", "definition")
-                .accept(APPLICATION_JSON_VALUE)
-                .contentType(APPLICATION_JSON_VALUE)
-                .content("{}")
-        )
+                post("/api/v1/document-search", "definition")
+                    .accept(APPLICATION_JSON_VALUE)
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .content("{}")
+            )
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_VALUE))
@@ -146,10 +149,10 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
         var jsonRequest = Mapper.INSTANCE.get().writeValueAsString(request);
 
         mockMvc.perform(
-            post("/api/v1/document-definition/name/search")
-                .accept(APPLICATION_JSON_VALUE)
-                .contentType(APPLICATION_JSON_VALUE)
-                .content(jsonRequest))
+                post("/api/v1/document-definition/name/search")
+                    .accept(APPLICATION_JSON_VALUE)
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .content(jsonRequest))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isNotEmpty())

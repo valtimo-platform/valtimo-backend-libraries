@@ -32,7 +32,7 @@ public class NewDocumentRequestTest {
         final JsonNode jsonData = objectMapper.readTree("{\"key\":123,\"somethingelse\":\"henk\",\"nested\":{\"henk\":\"jan\"}}");
         final String definitionName = "some-name";
 
-        var newDocRequest = new NewDocumentRequest(definitionName, jsonData, TENANT_ID);
+        var newDocRequest = new NewDocumentRequest(definitionName, jsonData).withTenantId(TENANT_ID);
 
         assertThat(jsonData).isEqualTo(newDocRequest.content());
         assertThat(definitionName).isEqualTo(newDocRequest.documentDefinitionName());

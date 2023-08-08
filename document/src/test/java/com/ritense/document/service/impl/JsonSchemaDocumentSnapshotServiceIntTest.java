@@ -129,9 +129,8 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
         return documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
-                new JsonDocumentContent(content).asJson(),
-                TENANT_ID
-            )
+                new JsonDocumentContent(content).asJson()
+            ).withTenantId(TENANT_ID)
         ).resultingDocument().orElseThrow();
     }
 
