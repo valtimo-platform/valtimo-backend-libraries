@@ -30,9 +30,4 @@ class TenantResolver {
         return tenantId
     }
 
-/*    companion object {
-        @JvmField
-        val INSTANCE = TenantResolver()
-    }*/
-
 }
