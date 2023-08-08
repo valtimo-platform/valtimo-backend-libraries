@@ -48,6 +48,7 @@ import com.ritense.valtimo.service.BpmnModelService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
+import com.ritense.valtimo.service.CurrentUserServiceImpl;
 import com.ritense.valtimo.service.ProcessPropertyService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
 import com.ritense.valtimo.service.UserSettingsService;
@@ -142,11 +143,11 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(com.ritense.valtimo.service.CurrentUserService.class)
-    public com.ritense.valtimo.service.CurrentUserService currentUserService(
+    @ConditionalOnMissingBean(CurrentUserServiceImpl.class)
+    public CurrentUserServiceImpl currentUserService(
         final Collection<CurrentUserRepository> currentUserRepositories
     ) {
-        return new com.ritense.valtimo.service.CurrentUserService(currentUserRepositories);
+        return new CurrentUserServiceImpl(currentUserRepositories);
     }
 
     @Bean
