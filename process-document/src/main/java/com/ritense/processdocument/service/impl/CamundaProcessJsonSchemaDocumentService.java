@@ -339,7 +339,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
 
     @Deprecated(since = "10.6.0", forRemoval = true)
     /**
-     * The alternative after deprecation will be the DocumentDelegateService.
+     * @deprecated Replaced by {@link com.ritense.processdocument.service.DocumentDelegateService#getDocumentById(DelegateExecution)}  }
      */
     public Document getDocument(DelegateExecution execution) {
         denyAuthorization();
