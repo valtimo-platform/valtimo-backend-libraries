@@ -17,17 +17,18 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.contract.authentication.CurrentUserRepository;
+import com.ritense.valtimo.contract.authentication.CurrentUserService;
 import com.ritense.valtimo.contract.authentication.model.Profile;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.springframework.security.core.Authentication;
 import java.util.Collection;
 
-public class CurrentUserService implements com.ritense.valtimo.contract.authentication.CurrentUserService {
+public class CurrentUserServiceImpl implements CurrentUserService {
 
     private final Collection<CurrentUserRepository> currentUserRepositories;
 
-    public CurrentUserService(Collection<CurrentUserRepository> currentUserRepositories) {
+    public CurrentUserServiceImpl(Collection<CurrentUserRepository> currentUserRepositories) {
         this.currentUserRepositories = currentUserRepositories;
     }
 

@@ -19,9 +19,9 @@ package com.ritense.smartdocuments
 import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
 import com.ritense.resource.service.ResourceService
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
+import com.ritense.valtimo.contract.authentication.CurrentUserService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
-import com.ritense.valtimo.service.CurrentUserService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
