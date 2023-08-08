@@ -21,7 +21,7 @@ import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.springframework.security.core.Authentication;
 import java.util.Collection;
 
-public class AuthorizedUsersService {
+public class AuthorizedUsersService implements com.ritense.valtimo.contract.authentication.AuthorizedUsersService {
 
     private final Collection<AuthorizedUserRepository> authorizedUserRepositories;
 
@@ -52,6 +52,7 @@ public class AuthorizedUsersService {
         throw new IllegalStateException("No authorized user repository implementation found supporting : " + authentication.getClass());
     }
 
+    @Override
     public boolean isRoleInUse(String name) throws IllegalAccessException {
         AuthorizedUserRepository authorizedUserRepository = findAuthorizedUserRepository();
         return authorizedUserRepository.isRoleInUse(name);
