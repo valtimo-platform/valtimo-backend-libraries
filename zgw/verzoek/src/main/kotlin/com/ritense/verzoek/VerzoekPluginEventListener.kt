@@ -140,9 +140,8 @@ class VerzoekPluginEventListener(
         return documentService.createDocument(
             NewDocumentRequest(
                 verzoekTypeProperties.caseDefinitionName,
-                getDocumentContent(verzoekTypeProperties, verzoekObjectData),
-                tenantResolver.getTenantId()
-            )
+                getDocumentContent(verzoekTypeProperties, verzoekObjectData)
+            ).withTenantId(tenantResolver.getTenantId())
         ).also { result ->
             if (result.errors().size > 0) {
                 throw NotificatiesNotificationEventException(

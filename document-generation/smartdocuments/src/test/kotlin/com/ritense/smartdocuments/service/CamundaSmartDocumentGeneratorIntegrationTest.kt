@@ -71,7 +71,7 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
             ProcessDocumentDefinitionRequest(PROCESS_DEFINITION_KEY, DOCUMENT_DEFINITION_KEY, true, true)
         )
         val jsonContent = Mapper.INSTANCE.get().readTree("{\"lastname\": \"Klaveren\"}")
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, jsonContent, "1")
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, jsonContent).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("age" to 38))
 
@@ -117,7 +117,7 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
                 ]
             }
         """.trimIndent())
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, jsonContent, "1")
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, jsonContent).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(DOCUMENT_GENERATION_ARRAY, newDocumentRequest)
 
         // when

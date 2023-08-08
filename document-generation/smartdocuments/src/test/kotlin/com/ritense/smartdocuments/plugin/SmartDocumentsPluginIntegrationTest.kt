@@ -128,7 +128,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
     fun `should generate document`() {
         // given
         val documentContent = Mapper.INSTANCE.get().readTree("{\"lastname\": \"Klaveren\"}")
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, documentContent, "1")
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, documentContent).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("age" to 138))
 
@@ -154,9 +154,8 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         // given
         val newDocumentRequest = NewDocumentRequest(
             DOCUMENT_DEFINITION_KEY,
-            Mapper.INSTANCE.get().createObjectNode(),
-            "1"
-        )
+            Mapper.INSTANCE.get().createObjectNode()
+        ).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when
@@ -200,9 +199,8 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         )
         val newDocumentRequest = NewDocumentRequest(
             DOCUMENT_DEFINITION_KEY,
-            Mapper.INSTANCE.get().createObjectNode(),
-            "1"
-        )
+            Mapper.INSTANCE.get().createObjectNode()
+        ).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("my-template-name-variable" to "my-custom-template-name"))
 
@@ -231,9 +229,8 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         )
         val newDocumentRequest = NewDocumentRequest(
             DOCUMENT_DEFINITION_KEY,
-            Mapper.INSTANCE.get().createObjectNode(),
-            "1"
-        )
+            Mapper.INSTANCE.get().createObjectNode()
+        ).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when
