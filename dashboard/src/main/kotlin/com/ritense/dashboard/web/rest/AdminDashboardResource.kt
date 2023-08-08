@@ -22,6 +22,7 @@ import com.ritense.dashboard.web.rest.dto.AdminWidgetConfigurationResponseDto
 import com.ritense.dashboard.web.rest.dto.DashboardCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.DashboardResponseDto
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
+import com.ritense.dashboard.web.rest.dto.SingleWidgetConfigurationUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -128,6 +129,17 @@ class AdminDashboardResource(
         val widgetResponseDtos = dashboardService.updateWidgetConfigurations(dashboardKey, widgetUpdateRequestDtos)
             .map { AdminWidgetConfigurationResponseDto.of(it) }
         return ResponseEntity.ok(widgetResponseDtos)
+    }
+
+    @PutMapping("/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}")
+    fun editWidgetConfiguration(
+        @PathVariable(name = "dashboardKey") dashboardKey: String,
+        @PathVariable(name = "widgetKey") widgetKey: String,
+        @RequestBody widgetUpdateRequestDto: SingleWidgetConfigurationUpdateRequestDto
+    ): ResponseEntity<AdminWidgetConfigurationResponseDto> {
+        val widgetResponseDto = dashboardService.updateWidgetConfiguration(dashboardKey, widgetKey, widgetUpdateRequestDto)
+            .let { AdminWidgetConfigurationResponseDto.of(it) }
+        return ResponseEntity.ok(widgetResponseDto)
     }
 
     @GetMapping("/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}")
