@@ -1,5 +1,7 @@
 package com.ritense.document.dashboard
 
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.BaseIntegrationTest
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
@@ -32,7 +34,7 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
         assertThat(result.value).isGreaterThanOrEqualTo(expectedCount.toLong())
 
         //There might be remnants of other tests (should not be), so were checking against the documentService as well.
-        val allByName = documentService.getAllByDocumentDefinitionName(Pageable.unpaged(), documentDefinitionName)
+        val allByName = runWithoutAuthorization { documentService.getAllByDocumentDefinitionName(Pageable.unpaged(), documentDefinitionName) }
         assertThat(result.value).isEqualTo(allByName.totalElements)
     }
 
@@ -75,11 +77,13 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
 
     private fun createDocument(documentDefinition: JsonSchemaDocumentDefinition, street: String = "Funenpark"): CreateDocumentResult? {
         val content = JsonDocumentContent("""{"street": "$street", "housenumber": 1}""")
-        return documentService.createDocument(
-            NewDocumentRequest(
-                documentDefinition.id().name(),
-                content.asJson()
+        return runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    documentDefinition.id().name(),
+                    content.asJson()
+                )
             )
-        )
+        }
     }
 }
