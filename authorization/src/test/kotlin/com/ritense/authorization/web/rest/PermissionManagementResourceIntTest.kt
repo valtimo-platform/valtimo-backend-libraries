@@ -59,12 +59,12 @@ class PermissionManagementResourceIntTest : BaseIntegrationTest() {
             .andDo(print())
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$[0].resourceType", equalTo("com.ritense.authorization.testimpl.TestDocument")))
-            .andExpect(jsonPath("$[0].action.key", equalTo("view")))
-            .andExpect(jsonPath("$[0].conditionContainer.conditions[0].type", equalTo("field")))
-            .andExpect(jsonPath("$[0].conditionContainer.conditions[0].field", equalTo("document.name")))
-            .andExpect(jsonPath("$[0].conditionContainer.conditions[0].operator", equalTo("==")))
-            .andExpect(jsonPath("$[0].conditionContainer.conditions[0].value", equalTo("loan")))
-            .andExpect(jsonPath("$[0].role.key", equalTo("ROLE_USER")))
+            .andExpect(jsonPath("$[0].action", equalTo("view")))
+            .andExpect(jsonPath("$[0].conditions[0].type", equalTo("field")))
+            .andExpect(jsonPath("$[0].conditions[0].field", equalTo("document.name")))
+            .andExpect(jsonPath("$[0].conditions[0].operator", equalTo("==")))
+            .andExpect(jsonPath("$[0].conditions[0].value", equalTo("loan")))
+            .andExpect(jsonPath("$[0].roleKey", equalTo("ROLE_USER")))
     }
 
 }

@@ -116,7 +116,7 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `should have access to create widget configuration method with role_admin`() {
         val properties = jacksonObjectMapper().createObjectNode()
-        val content = WidgetConfigurationCreateRequestDto("key", "dataSourceKey", "displayType", properties)
+        val content = WidgetConfigurationCreateRequestDto("key", "dataSourceKey", "displayType", properties, properties)
         assertHttpStatus(POST, "/api/management/v1/dashboard/1/widget-configuration", content, INTERNAL_SERVER_ERROR)
     }
 
@@ -124,7 +124,7 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @WithMockUser(authorities = [AuthoritiesConstants.USER])
     fun `should not access to create widget configuration method without role_admin`() {
         val properties = jacksonObjectMapper().createObjectNode()
-        val content = WidgetConfigurationCreateRequestDto("title", "dataSourceKey", "displayType", properties)
+        val content = WidgetConfigurationCreateRequestDto("title", "dataSourceKey", "displayType", properties, properties)
         assertHttpStatus(POST, "/api/management/v1/dashboard/1/widget-configuration", content, FORBIDDEN)
     }
 
@@ -132,7 +132,7 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `should have access to update widget configuration method with role_admin`() {
         val properties = jacksonObjectMapper().createObjectNode()
-        val content = WidgetConfigurationUpdateRequestDto("key", "title", "dataSourceKey", "displayType", properties)
+        val content = WidgetConfigurationUpdateRequestDto("key", "title", "dataSourceKey", "displayType", properties, properties)
         assertHttpStatus(PUT, "/api/management/v1/dashboard/1/widget-configuration", listOf(content), INTERNAL_SERVER_ERROR)
     }
 
@@ -140,7 +140,7 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @WithMockUser(authorities = [AuthoritiesConstants.USER])
     fun `should not access to update widget configuration method without role_admin`() {
         val properties = jacksonObjectMapper().createObjectNode()
-        val content = WidgetConfigurationUpdateRequestDto("key", "title", "dataSourceKey", "displayType", properties)
+        val content = WidgetConfigurationUpdateRequestDto("key", "title", "dataSourceKey", "displayType", properties, properties)
         assertHttpStatus(PUT, "/api/management/v1/dashboard/1/widget-configuration", listOf(content), FORBIDDEN)
     }
 

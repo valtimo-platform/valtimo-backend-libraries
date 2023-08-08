@@ -10,58 +10,52 @@
             "resourceType": "com.ritense.note.domain.Note",
             "action": "view_list",
             "roleKey": "ROLE_USER",
-            "conditionContainer": {
-                "conditions": [
-                    {
-                        "type": "field",
-                        "field": "createdByUserId",
-                        "operator": "==",
-                        "value": "${currentUserId}"
-                    }
-                ]
-            }
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "createdByUserId",
+                    "operator": "==",
+                    "value": "${currentUserId}"
+                }
+            ]
         },
         {
             "resourceType": "com.ritense.note.domain.Note",
             "action": "view",
             "roleKey": "ROLE_USER",
-            "conditionContainer": {
-                "conditions": [
-                    {
-                        "type": "field",
-                        "field": "createdByUserId",
-                        "operator": "==",
-                        "value": "${currentUserId}"
-                    }
-                ]
-            }
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "createdByUserId",
+                    "operator": "==",
+                    "value": "${currentUserId}"
+                }
+            ]
         },
         {
             "resourceType": "com.ritense.note.domain.Note",
             "action": "view",
             "roleKey": "ROLE_USER",
-            "conditionContainer": {
-                "conditions": [
-                    {
-                        "type": "container",
-                        "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
-                        "conditions": [
-                            {
-                                "type": "field",
-                                "field": "documentDefinitionId.name",
-                                "operator": "==",
-                                "value": "leningen"
-                            },
-                            {
-                                "type": "field",
-                                "field": "assigneeId",
-                                "operator": "==",
-                                "value": "${currentUserId}"
-                            }
-                        ]
-                    }
-                ]
-            }
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "documentDefinitionId.name",
+                            "operator": "==",
+                            "value": "leningen"
+                        },
+                        {
+                            "type": "field",
+                            "field": "assigneeId",
+                            "operator": "==",
+                            "value": "${currentUserId}"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "resourceType": "com.ritense.note.domain.Note",
@@ -72,31 +66,27 @@
             "resourceType": "com.ritense.note.domain.Note",
             "action": "modify",
             "roleKey": "ROLE_USER",
-            "conditionContainer": {
-                "conditions": [
-                    {
-                        "type": "field",
-                        "field": "createdByUserId",
-                        "operator": "==",
-                        "value": "${currentUserId}"
-                    }
-                ]
-            }
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "createdByUserId",
+                    "operator": "==",
+                    "value": "${currentUserId}"
+                }
+            ]
         },
         {
             "resourceType": "com.ritense.note.domain.Note",
             "action": "delete",
             "roleKey": "ROLE_USER",
-            "conditionContainer": {
-                "conditions": [
-                    {
-                        "type": "field",
-                        "field": "createdByUserId",
-                        "operator": "==",
-                        "value": "${currentUserId}"
-                    }
-                ]
-            }
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "createdByUserId",
+                    "operator": "==",
+                    "value": "${currentUserId}"
+                }
+            ]
         }
     ]
 }

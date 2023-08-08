@@ -223,8 +223,8 @@ class RoleManagementResourceIntTest : BaseIntegrationTest() {
                     listOf(
                         UpdateRolePermissionRequest(
                             oldRolePermissions[0].resourceType,
-                            oldRolePermissions[0].action,
-                            oldRolePermissions[0].conditionContainer
+                            oldRolePermissions[0].action.key,
+                            oldRolePermissions[0].conditionContainer.conditions
                         )
                     )
                 )
@@ -261,8 +261,8 @@ class RoleManagementResourceIntTest : BaseIntegrationTest() {
                     listOf(
                         UpdateRolePermissionRequest(
                             oldRolePermissions[0].resourceType,
-                            oldRolePermissions[0].action,
-                            oldRolePermissions[0].conditionContainer
+                            oldRolePermissions[0].action.key,
+                            oldRolePermissions[0].conditionContainer.conditions
                         )
                     )
                 )

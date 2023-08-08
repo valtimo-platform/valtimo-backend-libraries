@@ -37,6 +37,18 @@ abstract class AnnotatedClassResolver {
             .map { it.loadClassAndGetMethod() }
     }
 
+    inline fun <reified T : Annotation> findClassesWithAnnotation(): List<Class<*>> {
+        return ClassGraph()
+            .rejectPackages(*REJECT_PACKAGES)
+            .enableClassInfo()
+            .enableMethodInfo()
+            .enableAnnotationInfo()
+            .scan(1)
+            .getClassesWithAnnotation(T::class.java)
+            .filter { canLoadClass<T>(it) }
+            .loadClasses()
+    }
+
     inline fun <reified T> canLoadClass(classInfo: ClassInfo): Boolean {
         return try {
             classInfo.loadClass()

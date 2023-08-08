@@ -28,10 +28,10 @@
             <column name="filename" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="dateexecuted" type="timestamp">
+            <column name="date_executed" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="orderexecuted" type="${intType}">
+            <column name="order_executed" type="${intType}">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="md5sum" type="VARCHAR(35)">

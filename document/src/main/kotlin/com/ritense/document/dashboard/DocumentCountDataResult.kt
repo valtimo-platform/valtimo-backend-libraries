@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource.dto
+package com.ritense.document.dashboard
 
-data class DashboardWidgetSingleDto(
-    val value: Long,
-    val total: Long,
-)
+import com.ritense.valtimo.contract.dashboard.feature.HasNumberValue
+import com.ritense.valtimo.contract.dashboard.feature.HasTotal
+
+class DocumentCountDataResult(
+    override val value: Long
+):HasNumberValue

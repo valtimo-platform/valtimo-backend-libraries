@@ -32,12 +32,14 @@ class DashboardHttpSecurityConfigurer : HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/dashboard").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/dashboard/{dashboardKey}/data").hasAuthority(USER)
 
                 .antMatchers(GET, "/api/management/v1/dashboard").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/management/v1/dashboard").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/management/v1/dashboard").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/management/v1/dashboard/{dashboard-key}").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/management/v1/dashboard/{dashboard-key}").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration").hasAuthority(ADMIN)
