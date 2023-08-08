@@ -37,13 +37,13 @@ import java.util.Optional
 
 internal class DocumentDelegateServiceTest : BaseTest() {
 
-    lateinit var processDocumentService: ProcessDocumentService
-    lateinit var documentService: DocumentService
-    lateinit var jsonSchemaDocumentService: JsonSchemaDocumentService
-    lateinit var documentDelegateService: DocumentDelegateService
+    private lateinit var processDocumentService: ProcessDocumentService
+    private lateinit var documentService: DocumentService
+    private lateinit var jsonSchemaDocumentService: JsonSchemaDocumentService
+    private lateinit var documentDelegateService: DocumentDelegateService
 
     lateinit var definition: JsonSchemaDocumentDefinition
-    lateinit var delegateExecutionFake: DelegateExecution
+    private lateinit var delegateExecutionFake: DelegateExecution
 
     private val STREET_NAME = "street"
     private val HOUSE_NUMBER = "3"
@@ -51,6 +51,9 @@ internal class DocumentDelegateServiceTest : BaseTest() {
 
     private val documentId = "11111111-1111-1111-1111-111111111111"
     private val processInstanceId = "00000000-0000-0000-0000-000000000000"
+
+    private val documentMock = mock<JsonSchemaDocument>()
+    private val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
 
     @BeforeEach
     fun setup() {
@@ -71,11 +74,7 @@ internal class DocumentDelegateServiceTest : BaseTest() {
 
     @Test
     fun `get modifiedOn from document`() {
-        val documentMock = mock<JsonSchemaDocument>()
-        val delegateExecutionFake = DelegateExecutionFake("id")
-            .withProcessInstanceId(processInstanceId)
-
-        val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+        val delegateExecutionFake = DelegateExecutionFake("id").withProcessInstanceId(processInstanceId)
         val modifiedOn = LocalDateTime.now()
 
         whenever(documentMock.modifiedOn()).thenReturn(Optional.of(modifiedOn))
@@ -93,17 +92,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val modifiedOnResult = documentDelegateService.getDocumentModifiedOn(delegateExecutionFake)
 
         assertEquals(modifiedOnResult, modifiedOn)
-
-        verify(processDocumentService).getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
-        verify(jsonSchemaDocumentService).getDocumentBy(jsonSchemaDocumentId)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
     }
 
     @Test
     fun `get assigneeId from document`() {
-        val documentMock = mock<JsonSchemaDocument>()
-        val delegateExecutionFake = DelegateExecutionFake("id")
-            .withProcessInstanceId(processInstanceId)
-        val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+        val delegateExecutionFake = DelegateExecutionFake("id").withProcessInstanceId(processInstanceId)
         val assigneeId = "1234"
 
         whenever(documentMock.assigneeId()).thenReturn(assigneeId)
@@ -121,17 +115,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val assigneeIdResult = documentDelegateService.getDocumentAssigneeId(delegateExecutionFake)
 
         assertEquals(assigneeIdResult, assigneeId)
-
-        verify(processDocumentService).getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
-        verify(jsonSchemaDocumentService).getDocumentBy(jsonSchemaDocumentId)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
     }
 
     @Test
     fun `get createdBy from document`() {
-        val documentMock = mock<JsonSchemaDocument>()
-        val delegateExecutionFake = DelegateExecutionFake("id")
-            .withProcessInstanceId(processInstanceId)
-        val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+        val delegateExecutionFake = DelegateExecutionFake("id").withProcessInstanceId(processInstanceId)
         val createdBy = "Pietersen"
 
         whenever(documentMock.createdBy()).thenReturn(createdBy)
@@ -149,17 +138,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val createdByResult = documentDelegateService.getDocumentCreatedBy(delegateExecutionFake)
 
         assertEquals(createdByResult, createdBy)
-
-        verify(processDocumentService).getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
-        verify(jsonSchemaDocumentService).getDocumentBy(jsonSchemaDocumentId)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
     }
 
     @Test
     fun `get fullname assignee from document`() {
-        val documentMock = mock<JsonSchemaDocument>()
-        val delegateExecutionFake = DelegateExecutionFake("id")
-            .withProcessInstanceId(processInstanceId)
-        val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+        val delegateExecutionFake = DelegateExecutionFake("id").withProcessInstanceId(processInstanceId)
         val assigneeFullname = "Jan Jansen"
 
         whenever(documentMock.assigneeFullName()).thenReturn(assigneeFullname)
@@ -177,17 +161,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val assigneFullNameResult = documentDelegateService.getDocumentAssigneeFullName(delegateExecutionFake)
 
         assertEquals(assigneFullNameResult, assigneeFullname)
-
-        verify(processDocumentService).getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
-        verify(jsonSchemaDocumentService).getDocumentBy(jsonSchemaDocumentId)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
     }
 
     @Test
     fun `get version from document`() {
-        val documentMock = mock<JsonSchemaDocument>()
-        val delegateExecutionFake = DelegateExecutionFake("id")
-            .withProcessInstanceId(processInstanceId)
-        val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+        val delegateExecutionFake = DelegateExecutionFake("id").withProcessInstanceId(processInstanceId)
         var version = documentMock.version();
 
         whenever(documentMock.version()).thenReturn(version)
@@ -205,17 +184,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val versionResult = documentDelegateService.getDocumentVersion(delegateExecutionFake)
 
         assertEquals(versionResult, version)
-
-        verify(processDocumentService).getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
-        verify(jsonSchemaDocumentService).getDocumentBy(jsonSchemaDocumentId)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
     }
 
     @Test
     fun `get createdOn from document`() {
-        val documentMock = mock<JsonSchemaDocument>()
-        val delegateExecutionFake = DelegateExecutionFake("id")
-            .withProcessInstanceId(processInstanceId)
-        val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+        val delegateExecutionFake = DelegateExecutionFake("id").withProcessInstanceId(processInstanceId)
         val createdOn = LocalDateTime.now()
 
         whenever(documentMock.createdOn()).thenReturn(createdOn)
@@ -233,18 +207,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val createdOnResult = documentDelegateService.getDocumentCreatedOn(delegateExecutionFake)
 
         assertEquals(createdOnResult, createdOn)
-
-        verify(processDocumentService).getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
-        verify(jsonSchemaDocumentService).getDocumentBy(jsonSchemaDocumentId)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
     }
 
     @Test
     fun `get document by id`() {
-        val documentMock = mock<JsonSchemaDocument>()
-        val delegateExecutionFake = DelegateExecutionFake("id")
-            .withProcessInstanceId(processInstanceId)
-
-        val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+        val delegateExecutionFake = DelegateExecutionFake("id").withProcessInstanceId(processInstanceId)
 
         whenever(
             processDocumentService.getDocumentId(
@@ -260,7 +228,12 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         val resultDocument = documentDelegateService.getDocumentById(delegateExecutionFake)
 
         assertEquals(documentMock, resultDocument)
+        verifyTest(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService,)
+    }
 
+    private fun verifyTest(processDocumentService: ProcessDocumentService,
+                           delegateExecutionFake: DelegateExecutionFake,
+                           jsonSchemaDocumentService: JsonSchemaDocumentService) {
         verify(processDocumentService).getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
         verify(jsonSchemaDocumentService).getDocumentBy(jsonSchemaDocumentId)
     }
