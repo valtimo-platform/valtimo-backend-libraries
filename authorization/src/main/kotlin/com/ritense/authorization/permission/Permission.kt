@@ -42,21 +42,17 @@ data class Permission(
     @Column(name = "id")
     val id: UUID = UUID.randomUUID(),
 
-    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     @Column(name = "resource_type")
     val resourceType: Class<*>,
 
-    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     @Column(name = "action")
     @Embedded
     val action: Action<*>,
 
-    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "conditions", columnDefinition = "json")
     val conditionContainer: ConditionContainer,
 
-    @field:JsonView(PermissionView.PermissionManagement::class)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     val role: Role,

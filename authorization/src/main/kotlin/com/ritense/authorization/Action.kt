@@ -23,7 +23,6 @@ import javax.persistence.Embeddable
 
 @Embeddable
 data class Action<T>(
-    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     @Column(name = "action")
     val key: String
 ) {

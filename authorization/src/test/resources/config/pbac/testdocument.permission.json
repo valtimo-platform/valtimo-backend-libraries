@@ -5,31 +5,27 @@
             "resourceType": "com.ritense.authorization.testimpl.TestDocument",
             "action": "view",
             "roleKey": "ROLE_USER",
-            "conditionContainer": {
-                "conditions": [
-                    {
-                        "type": "field",
-                        "field": "document.name",
-                        "operator": "==",
-                        "value": "loan"
-                    }
-                ]
-            }
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "document.name",
+                    "operator": "==",
+                    "value": "loan"
+                }
+            ]
         },
         {
             "resourceType": "com.ritense.authorization.testimpl.TestDocument",
             "action": "view",
             "roleKey": "TO_REMOVE_ROLE_2",
-            "conditionContainer": {
-                "conditions": [
-                    {
-                        "type": "field",
-                        "field": "document.name",
-                        "operator": "==",
-                        "value": "loan"
-                    }
-                ]
-            }
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "document.name",
+                    "operator": "==",
+                    "value": "loan"
+                }
+            ]
         }
     ]
 }
