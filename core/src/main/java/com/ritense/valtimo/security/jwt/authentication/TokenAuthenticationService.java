@@ -53,7 +53,7 @@ public class TokenAuthenticationService {
 
     public boolean validateToken(final String jwt) {
         try {
-            jwtSignedParser().parse(jwt);
+            jwtSignedParser().parseClaimsJws(jwt);
             return true;
         } catch (SecurityException e) {
             logger.warn("Invalid JWT signature: " + e.getMessage());

@@ -30,6 +30,7 @@ import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import com.ritense.valtimo.config.CustomDateTimeProvider;
 import com.ritense.valtimo.config.ValtimoApplicationReadyEventListener;
 import com.ritense.valtimo.contract.authentication.AuthorizedUserRepository;
+import com.ritense.valtimo.contract.authentication.AuthorizedUsersService;
 import com.ritense.valtimo.contract.authentication.CurrentUserRepository;
 import com.ritense.valtimo.contract.authentication.CurrentUserService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -43,11 +44,12 @@ import com.ritense.valtimo.repository.UserSettingsRepository;
 import com.ritense.valtimo.security.permission.Permission;
 import com.ritense.valtimo.security.permission.TaskAccessPermission;
 import com.ritense.valtimo.security.permission.ValtimoPermissionEvaluator;
-import com.ritense.valtimo.service.AuthorizedUsersService;
+import com.ritense.valtimo.service.AuthorizedUsersServiceImpl;
 import com.ritense.valtimo.service.BpmnModelService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
+import com.ritense.valtimo.service.CurrentUserServiceImpl;
 import com.ritense.valtimo.service.ProcessPropertyService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
 import com.ritense.valtimo.service.UserSettingsService;
@@ -77,7 +79,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
 import javax.persistence.EntityManager;
 import java.util.Collection;
 import java.util.HashMap;
@@ -139,15 +140,15 @@ public class ValtimoAutoConfiguration {
     public AuthorizedUsersService authorizedUsersService(
         final Collection<AuthorizedUserRepository> authorizedUserRepositories
     ) {
-        return new AuthorizedUsersService(authorizedUserRepositories);
+        return new AuthorizedUsersServiceImpl(authorizedUserRepositories);
     }
 
     @Bean
-    @ConditionalOnMissingBean(com.ritense.valtimo.service.CurrentUserService.class)
-    public com.ritense.valtimo.service.CurrentUserService currentUserService(
+    @ConditionalOnMissingBean(CurrentUserService.class)
+    public CurrentUserService currentUserService(
         final Collection<CurrentUserRepository> currentUserRepositories
     ) {
-        return new com.ritense.valtimo.service.CurrentUserService(currentUserRepositories);
+        return new CurrentUserServiceImpl(currentUserRepositories);
     }
 
     @Bean

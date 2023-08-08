@@ -18,10 +18,9 @@ package com.ritense.valtimo.accessandentitlement.service;
 
 import com.ritense.valtimo.accessandentitlement.domain.Authority;
 import com.ritense.valtimo.accessandentitlement.domain.AuthorityRequest;
-import com.ritense.valtimo.accessandentitlement.domain.Money;
 import com.ritense.valtimo.accessandentitlement.repository.AuthorityRepository;
 import com.ritense.valtimo.accessandentitlement.service.impl.AuthorityServiceImpl;
-import com.ritense.valtimo.service.AuthorizedUsersService;
+import com.ritense.valtimo.contract.authentication.AuthorizedUsersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Optional;

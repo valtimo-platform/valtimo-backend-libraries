@@ -23,7 +23,8 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.context.repository.ContextRepository;
 import com.ritense.valtimo.context.repository.UserContextRepository;
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
-import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
+import com.ritense.valtimo.contract.authentication.CurrentUserService;
+import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.exception.ValtimoRuntimeException;
 import com.ritense.valtimo.domain.contexts.Context;
 import com.ritense.valtimo.domain.contexts.UserContext;
@@ -33,12 +34,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
 
@@ -61,43 +60,43 @@ public class ContextService {
     }
 
     public void setContextOfCurrentUser(Long contextId) throws IllegalAccessException {
-        ValtimoUser valtimoUser = currentUserService.getCurrentUser();
-        Context context = contextRepository.findFirstByRolesInAndId(valtimoUser.getRoles(), contextId);
+        ManageableUser manageableUser = currentUserService.getCurrentUser();
+        Context context = contextRepository.findFirstByRolesInAndId(manageableUser.getRoles(), contextId);
         if (context == null) {
             throw new ValtimoRuntimeException("Cannot set context", null, "apiError", "Cannot set context");
         }
 
-        UserContext userContext = userContextRepository.findByUserId(valtimoUser.getId());
+        UserContext userContext = userContextRepository.findByUserId(manageableUser.getId());
         if (userContext != null) {
             userContextRepository.delete(userContext);
         }
-        userContext = new UserContext(context.getId(), valtimoUser.getId());
+        userContext = new UserContext(context.getId(), manageableUser.getId());
         userContextRepository.save(userContext);
     }
 
     public Context getContextOfCurrentUser() throws IllegalAccessException, ValtimoRuntimeException {
-        ValtimoUser valtimoUser = currentUserService.getCurrentUser();
-        UserContext userContext = userContextRepository.findByUserId(valtimoUser.getId());
+        ManageableUser manageableUser = currentUserService.getCurrentUser();
+        UserContext userContext = userContextRepository.findByUserId(manageableUser.getId());
         if (userContext == null) {
-            return resetUserContext(valtimoUser);
+            return resetUserContext(manageableUser);
         }
-        Context context = contextRepository.findFirstByRolesInAndId(valtimoUser.getRoles(), userContext.getContextId());
+        Context context = contextRepository.findFirstByRolesInAndId(manageableUser.getRoles(), userContext.getContextId());
         if (context == null) {
-            return resetUserContext(valtimoUser);
+            return resetUserContext(manageableUser);
         }
         return context;
     }
 
-    private Context resetUserContext(ValtimoUser valtimoUser) {
+    private Context resetUserContext(ManageableUser manageableUser) {
         //Step 1 try to find context with non-default roles ROLE_USER/ROLE_ADMIN
-        List<String> nonDefaultRoles = getNonDefaultUserRoles(valtimoUser);
+        List<String> nonDefaultRoles = getNonDefaultUserRoles(manageableUser);
         Context context = null;
         if (!nonDefaultRoles.isEmpty()) {
             context = contextRepository.findFirstByRolesIn(nonDefaultRoles);
         }
         // Step 2: When context is null after non-default query use all roles found.
         if (context == null) {
-            context = contextRepository.findFirstByRolesIn(valtimoUser.getRoles());
+            context = contextRepository.findFirstByRolesIn(manageableUser.getRoles());
         }
         if (context == null) {
             throw new ValtimoRuntimeException(
@@ -105,19 +104,19 @@ public class ContextService {
                 "Cannot set default context, no context found"
             );
         }
-        UserContext userContext = new UserContext(context.getId(), valtimoUser.getId());
+        UserContext userContext = new UserContext(context.getId(), manageableUser.getId());
         try {
             userContextRepository.save(userContext);
         } catch (DataIntegrityViolationException exception) {
             // We know there is a race condition here, but it is not worth it to lock.
-            logger.debug("User context for context {} and user {} already exists", context.getId(), valtimoUser.getId());
+            logger.debug("User context for context {} and user {} already exists", context.getId(), manageableUser.getId());
         }
         return context;
     }
 
-    private List<String> getNonDefaultUserRoles(ValtimoUser valtimoUser) {
+    private List<String> getNonDefaultUserRoles(ManageableUser manageableUser) {
         List<String> nonDefaultRoles = new ArrayList<>();
-        for (String role : valtimoUser.getRoles()) {
+        for (String role : manageableUser.getRoles()) {
             if (!role.equals(AuthoritiesConstants.ADMIN) && !role.equals(AuthoritiesConstants.USER)) {
                 nonDefaultRoles.add(role);
             }
@@ -127,8 +126,8 @@ public class ContextService {
 
     @Transactional(readOnly = true)
     public List<Context> findContextsMatchingRoles() throws IllegalAccessException {
-        ValtimoUser valtimoUser = currentUserService.getCurrentUser();
-        return contextRepository.findDistinctByRolesIn(valtimoUser.getRoles());
+        ManageableUser manageableUser = currentUserService.getCurrentUser();
+        return contextRepository.findDistinctByRolesIn(manageableUser.getRoles());
     }
 
     @Transactional(readOnly = true)

@@ -22,6 +22,8 @@ import com.ritense.formlink.domain.impl.formassociation.FormAssociations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.boot.test.json.JsonContent;
+import org.springframework.boot.test.json.ObjectContent;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -33,25 +35,27 @@ public class CamundaProcessFormAssociationJsonSerializingTest extends BaseTest {
     private static final String UUID_STRING_ID = "4bd8f762-0f83-42a6-8640-741b3f848752";
     private static final String UUID_STRING_FORM_ASSOCIATION_ID = "e407d9a3-5611-48d8-bb91-1f45af5a9967";
     private static final String UUID_STRING_FORM_ID = "4bd8f762-0f83-42a6-8640-741b3f848754";
-    private static final String JSON_STRING_VALUE = "[{\n" +
-        "\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\",\n" +
-        "\t\"id\": \"e407d9a3-5611-48d8-bb91-1f45af5a9967\",\n" +
-        "\t\"formLink\": {\n" +
-        "\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink\",\n" +
-        "\t\t\"id\": \"user-task-id\",\n" +
-        "\t\t\"formId\": \"4bd8f762-0f83-42a6-8640-741b3f848754\"\n" +
-        "\t}\n" +
-        "}]";
-    private static final String JSON_WITH_IS_PUBLIC_STRING_VALUE = "[{\n" +
-        "\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation\",\n" +
-        "\t\"id\": \"e407d9a3-5611-48d8-bb91-1f45af5a9967\",\n" +
-        "\t\"formLink\": {\n" +
-        "\t\t\"className\": \"com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink\",\n" +
-        "\t\t\"id\": \"user-task-id\",\n" +
-        "\t\t\"isPublic\": \"false\",\n" +
-        "\t\t\"formId\": \"4bd8f762-0f83-42a6-8640-741b3f848754\"\n" +
-        "\t}\n" +
-        "}]";
+    private static final String JSON_STRING_VALUE = """
+        [{
+            "className": "com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation",
+            "id": "e407d9a3-5611-48d8-bb91-1f45af5a9967",
+            "formLink": {
+                "className": "com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink",
+                "id": "user-task-id",
+                "formId": "4bd8f762-0f83-42a6-8640-741b3f848754"
+            }
+        }]""";
+    private static final String JSON_WITH_IS_PUBLIC_STRING_VALUE = """
+        [{
+            "className": "com.ritense.formlink.domain.impl.formassociation.UserTaskFormAssociation",
+            "id": "e407d9a3-5611-48d8-bb91-1f45af5a9967",
+            "formLink": {
+                "className": "com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink",
+                "id": "user-task-id",
+                "isPublic": "false",
+                "formId": "4bd8f762-0f83-42a6-8640-741b3f848754"
+            }
+        }]""";
 
     private JacksonTester<FormAssociations> jacksonTester;
     private ObjectMapper objectMapper;
@@ -69,7 +73,8 @@ public class CamundaProcessFormAssociationJsonSerializingTest extends BaseTest {
             UUID.fromString(UUID_STRING_FORM_ASSOCIATION_ID),
             UUID.fromString(UUID_STRING_FORM_ID)
         );
-        assertThat(jacksonTester.parse(JSON_STRING_VALUE)).isEqualTo(camundaProcessFormAssociation.getFormAssociations());
+        ObjectContent<FormAssociations> formAssociationsObjectContent = jacksonTester.parse(JSON_STRING_VALUE);
+        assertThat(formAssociationsObjectContent.getObject()).isEqualTo(camundaProcessFormAssociation.getFormAssociations());
     }
 
     @Test
@@ -80,7 +85,8 @@ public class CamundaProcessFormAssociationJsonSerializingTest extends BaseTest {
             UUID.fromString(UUID_STRING_FORM_ID)
         );
 
-        assertThat(jacksonTester.parse(JSON_WITH_IS_PUBLIC_STRING_VALUE)).isEqualTo(camundaProcessFormAssociation.getFormAssociations());
+        ObjectContent<FormAssociations> formAssociationsObjectContent = jacksonTester.parse(JSON_WITH_IS_PUBLIC_STRING_VALUE);
+        assertThat(formAssociationsObjectContent.getObject()).isEqualTo(camundaProcessFormAssociation.getFormAssociations());
     }
 
     @Test
@@ -90,6 +96,7 @@ public class CamundaProcessFormAssociationJsonSerializingTest extends BaseTest {
             UUID.fromString(UUID_STRING_FORM_ASSOCIATION_ID),
             UUID.fromString(UUID_STRING_FORM_ID)
         );
-        assertThat(jacksonTester.write(camundaProcessFormAssociation.getFormAssociations())).isEqualToJson(JSON_STRING_VALUE);
+        JsonContent<FormAssociations> formAssociationsJsonContent = jacksonTester.write(camundaProcessFormAssociation.getFormAssociations());
+        assertThat(formAssociationsJsonContent).isEqualToJson(JSON_STRING_VALUE);
     }
 }
