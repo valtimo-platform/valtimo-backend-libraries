@@ -41,7 +41,7 @@ class CamundaTaskSpecificationFactory(
         )
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
-        return CamundaTask::class.java == context.resourceType
+    override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+        return CamundaTask::class.java == request.resourceType
     }
 }

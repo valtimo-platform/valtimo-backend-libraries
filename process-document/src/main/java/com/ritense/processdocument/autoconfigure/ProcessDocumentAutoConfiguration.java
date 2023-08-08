@@ -46,6 +46,7 @@ import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocument
 import com.ritense.processdocument.service.impl.DocumentDefinitionProcessLinkServiceImpl;
 import com.ritense.processdocument.web.rest.ProcessDocumentResource;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.contract.annotation.ProcessBean;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
@@ -109,6 +110,7 @@ public class ProcessDocumentAutoConfiguration {
     }
 
     @Bean
+    @ProcessBean
     @ConditionalOnMissingBean(DocumentVariableDelegate.class)
     public DocumentVariableDelegateImpl documentVariableDelegate(
         DocumentService documentService

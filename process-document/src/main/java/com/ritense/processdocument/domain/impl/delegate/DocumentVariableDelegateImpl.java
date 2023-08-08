@@ -31,6 +31,10 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * @deprecated Replaced by {@link com.ritense.processdocument.service.DocumentDelegateService }
+ */
+@Deprecated(since = "11.0.0", forRemoval = true)
 public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
 
     private static final Logger logger = LoggerFactory.getLogger(DocumentVariableDelegateImpl.class);

@@ -19,6 +19,10 @@ package com.ritense.processdocument.domain.delegate;
 import org.apache.commons.lang3.NotImplementedException;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 
+/**
+ * @deprecated Replaced by {@link com.ritense.processdocument.service.DocumentDelegateService }
+ */
+@Deprecated(since = "11.0.0", forRemoval = true)
 public interface DocumentVariableDelegate {
 
     Object findValueByJsonPointer(final String jsonPointer, final DelegateExecution execution);
