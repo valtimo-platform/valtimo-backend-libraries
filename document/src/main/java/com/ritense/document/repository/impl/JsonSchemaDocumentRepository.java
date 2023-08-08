@@ -69,7 +69,7 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
         " ,      doc.documentRelations " +
         " ,      doc.relatedFiles" +
         " ,      doc.tenantId )" +
-        " VALUES ( :id " +
+        " VALUES ( " +
         " ,      :id" +
         " ,      :content" +
         " ,      :documentDefinitionId" +
