@@ -99,9 +99,8 @@ class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
             PROCESS_DEFINITION_KEY,
             new NewDocumentRequest(
                 "house",
-                content.asJson(),
-                "1"
-            )
+                content.asJson()
+            ).withTenantId("1")
         ));
 
         List<Task> list = taskService.createTaskQuery().list();

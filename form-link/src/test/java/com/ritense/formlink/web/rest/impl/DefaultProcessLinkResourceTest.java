@@ -18,18 +18,14 @@ package com.ritense.formlink.web.rest.impl;
 
 import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.service.ProcessLinkService;
-import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.mockito.Mockito.*;
 
 class DefaultProcessLinkResourceTest {
     private ProcessLinkService service = mock(ProcessLinkService.class);

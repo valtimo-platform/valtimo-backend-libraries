@@ -159,9 +159,8 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
                 "one-task-process",
                 NewDocumentRequest(
                     "profile",
-                    Mapper.INSTANCE.get().readTree("{}"),
-                    "1"
-                )
+                    Mapper.INSTANCE.get().readTree("{}")
+                ).withTenantId("1")
             )
         )
     }

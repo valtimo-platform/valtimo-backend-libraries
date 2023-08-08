@@ -83,9 +83,8 @@ class CorrelationServiceIntTest : BaseIntegrationTest() {
         variables["variable"] = "start-event-test"
         document = documentService.createDocument(
             NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson),
-                "1"
-            )
+                "house", objectMapper.readTree(documentJson)
+            ).withTenantId(  "1")
         ).resultingDocument().orElseThrow()
         val processInstance = runtimeService.startProcessInstanceByKey(
             "start-correlation-test-id",
@@ -125,16 +124,14 @@ class CorrelationServiceIntTest : BaseIntegrationTest() {
 
         document = documentService.createDocument(
             NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson),
-                "1"
-            )
+                "house", objectMapper.readTree(documentJson)
+            ).withTenantId(  "1")
         ).resultingDocument().orElseThrow()
         variables["businessKey"] = document.id()
         val documentTwo = documentService.createDocument(
             NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson),
-                "1"
-            )
+                "house", objectMapper.readTree(documentJson)
+            ).withTenantId( "1")
         ).resultingDocument().orElseThrow()
         runtimeService.startProcessInstanceByKey(
             "intermediate-catch-event-sample-one-id",
@@ -195,9 +192,8 @@ class CorrelationServiceIntTest : BaseIntegrationTest() {
         variables["variable"] = "process-definition-start-event-test"
         document = documentService.createDocument(
             NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson),
-                "1"
-            )
+                "house", objectMapper.readTree(documentJson)
+            ).withTenantId( "1")
         ).resultingDocument().orElseThrow()
         val processInstance = runtimeService.startProcessInstanceByKey(
             "start-correlation-test-id",
@@ -236,9 +232,8 @@ class CorrelationServiceIntTest : BaseIntegrationTest() {
         variables["variable"] = "intermediate-catch-event-test-with-business-key"
         document = documentService.createDocument(
             NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson),
-                "1"
-            )
+                "house", objectMapper.readTree(documentJson)
+            ).withTenantId( "1")
         ).resultingDocument().orElseThrow()
         variables["businessKey"] = document.id()
         runtimeService.startProcessInstanceByKey(

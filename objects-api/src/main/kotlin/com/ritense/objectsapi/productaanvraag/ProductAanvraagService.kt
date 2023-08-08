@@ -61,9 +61,8 @@ class ProductAanvraagService(
     ): Document {
         val newDocumentRequest = NewDocumentRequest(
             typeMapping.caseDefinitionKey,
-            productAanvraag.data,
-            tenantResolver.getTenantId()
-        )
+            productAanvraag.data
+        ).withTenantId(tenantResolver.getTenantId())
             .withResources(openZaakResources)
 
         val documentResult = documentService.createDocument(newDocumentRequest)

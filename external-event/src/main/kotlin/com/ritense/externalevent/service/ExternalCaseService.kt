@@ -59,8 +59,7 @@ class ExternalCaseService(
         val newDocumentRequest = NewDocumentRequest(
             portalMapping.caseKey,
             createExternalCaseMessage.submission,
-            tenantResolver.getTenantId()
-        )
+        ).withTenantId(tenantResolver.getTenantId())
         val newDocumentAndStartProcessRequest = NewDocumentAndStartProcessRequest(
             portalMapping.processDefinitionKey,
             newDocumentRequest

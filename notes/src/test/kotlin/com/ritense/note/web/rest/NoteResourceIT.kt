@@ -30,7 +30,6 @@ import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.dto.NoteCreateRequestDto
 import com.ritense.note.web.rest.dto.NoteUpdateRequestDto
 import com.ritense.tenancy.TenantResolver
-import com.ritense.valtimo.config.CustomTenantIdProvider
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
@@ -91,9 +90,8 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         documentId = documentService.createDocument(
             NewDocumentRequest(
                 PROFILE_DOCUMENT_DEFINITION_NAME,
-                Mapper.INSTANCE.get().createObjectNode(),
-                tenantResolver.getTenantId()
-            )
+                Mapper.INSTANCE.get().createObjectNode()
+            ).withTenantId(tenantResolver.getTenantId())
         ).resultingDocument().get().id()!!.id
         documentDefinitionService.putDocumentDefinitionRoles(PROFILE_DOCUMENT_DEFINITION_NAME, setOf(USER))
         whenever(userManagementService.currentUser)

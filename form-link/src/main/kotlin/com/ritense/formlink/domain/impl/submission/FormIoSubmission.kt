@@ -173,7 +173,7 @@ data class FormIoSubmission(
     companion object RequestFactory {
 
         fun makeRequest(submission: FormIoSubmission): Request {
-            var tenantId = submission.tenantResolver.getTenantId()
+            val tenantId = submission.tenantResolver.getTenantId()
             if (submission.formAssociation is StartEventFormAssociation) {
                 if (submission.processDocumentDefinition.canInitializeDocument()) {
                     val documentDefinitionId = submission.processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId()
@@ -181,9 +181,8 @@ data class FormIoSubmission(
                         submission.processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(),
                         NewDocumentRequest(
                             documentDefinitionId.name(),
-                            submission.documentContent,
-                            tenantId
-                        )
+                            submission.documentContent
+                        ).withTenantId(tenantId)
                     ).withProcessVars(submission.formDefinedProcessVariables)
                 } else {
                     return ModifyDocumentAndStartProcessRequest(
