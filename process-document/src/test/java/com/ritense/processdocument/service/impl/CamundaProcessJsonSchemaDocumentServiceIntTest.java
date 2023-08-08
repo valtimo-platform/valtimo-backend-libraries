@@ -47,9 +47,8 @@ class CamundaProcessJsonSchemaDocumentServiceIntTest extends BaseIntegrationTest
             PROCESS_DEFINITION_KEY,
             new NewDocumentRequest(
                 DOCUMENT_DEFINITION_NAME,
-                Mapper.INSTANCE.get().readTree("{}"),
-                "1"
-            )
+                Mapper.INSTANCE.get().readTree("{}")
+            ).withTenantId("1")
         );
 
         var result = camundaProcessJsonSchemaDocumentService.newDocumentAndStartProcess(startRequest);

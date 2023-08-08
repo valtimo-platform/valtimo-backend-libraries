@@ -25,19 +25,8 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.processdocument.BaseTest;
-import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
-import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
-import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
-import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstance;
-import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
-import com.ritense.processdocument.domain.impl.DocumentDefinitionProcess;
-import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessLinkResponse;
-import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
-import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
-import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
-import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
-import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
+import com.ritense.processdocument.domain.impl.*;
+import com.ritense.processdocument.domain.impl.request.*;
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
@@ -65,18 +54,11 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -224,9 +206,8 @@ class ProcessDocumentResourceTest extends BaseTest {
         final JsonNode jsonContent = objectMapper.readTree("{\"street\": \"Funenparks\"}");
         var newDocumentRequest = new NewDocumentRequest(
             "house",
-            jsonContent,
-            "1"
-        );
+            jsonContent
+        ).withTenantId("1");
         var request = new NewDocumentAndStartProcessRequest("some-key", newDocumentRequest);
 
         mockMvc.perform(

@@ -31,7 +31,6 @@ import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskR
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import org.camunda.bpm.engine.RuntimeService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -39,6 +38,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.List;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -106,9 +106,8 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
         final JsonNode jsonContent = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
         var newDocumentRequest = new NewDocumentRequest(
             DOCUMENT_DEFINITION_NAME,
-            jsonContent,
-            "1"
-        );
+            jsonContent
+        ).withTenantId("1");
         var request = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest);
 
         final NewDocumentAndStartProcessResult newDocumentAndStartProcessResult = camundaProcessJsonSchemaDocumentService
@@ -165,9 +164,8 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
         final JsonNode jsonContent = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
         var newDocumentRequest = new NewDocumentRequest(
             DOCUMENT_DEFINITION_NAME,
-            jsonContent,
-            "1"
-        );
+            jsonContent
+        ).withTenantId("1");
         var request = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest);
 
         final NewDocumentAndStartProcessResult newDocumentAndStartProcessResult = camundaProcessJsonSchemaDocumentService
