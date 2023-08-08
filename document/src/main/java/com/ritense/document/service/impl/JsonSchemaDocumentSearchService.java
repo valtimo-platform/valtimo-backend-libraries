@@ -19,12 +19,7 @@ package com.ritense.document.service.impl;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.searchfield.SearchField;
-import com.ritense.document.domain.search.AdvancedSearchRequest;
-import com.ritense.document.domain.search.AssigneeFilter;
-import com.ritense.document.domain.search.SearchOperator;
-import com.ritense.document.domain.search.SearchRequestMapper;
-import com.ritense.document.domain.search.SearchRequestValidator;
-import com.ritense.document.domain.search.SearchWithConfigRequest;
+import com.ritense.document.domain.search.*;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -41,21 +36,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
+import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,9 +47,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.*;
 
 @Transactional
 public class JsonSchemaDocumentSearchService implements DocumentSearchService {
@@ -82,6 +63,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private static final String ASSIGNEE_ID = "assigneeId";
     private static final String DOC_PREFIX = "doc:";
     private static final String CASE_PREFIX = "case:";
+    private static final String TENANT_ID = "tenantId";
 
     private final EntityManager entityManager;
     private final QueryDialectHelper queryDialectHelper;
@@ -112,7 +94,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     @Override
-    public Page<JsonSchemaDocument> search(String documentDefinitionName, SearchWithConfigRequest searchWithConfigRequest, Pageable pageable) {
+    public Page<JsonSchemaDocument> search(
+        final String documentDefinitionName,
+        final SearchWithConfigRequest searchWithConfigRequest,
+        final Pageable pageable
+    ) {
         var searchFieldMap = searchFieldService.getSearchFields(documentDefinitionName).stream()
             .collect(toMap(SearchField::getKey, searchField -> searchField));
 
@@ -126,7 +112,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     @Override
-    public Page<JsonSchemaDocument> search(String documentDefinitionName, AdvancedSearchRequest advancedSearchRequest, Pageable pageable) {
+    public Page<JsonSchemaDocument> search(
+        String documentDefinitionName,
+        AdvancedSearchRequest advancedSearchRequest,
+        Pageable pageable
+    ) {
         SearchRequestValidator.validate(advancedSearchRequest);
         return search(
             (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, advancedSearchRequest, cb, query, documentRoot),
@@ -142,7 +132,10 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         );
     }
 
-    private Page<JsonSchemaDocument> search(QueryWhereBuilder queryWhereBuilder, Pageable pageable) {
+    private Page<JsonSchemaDocument> search(
+        QueryWhereBuilder queryWhereBuilder,
+        Pageable pageable
+    ) {
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaQuery<JsonSchemaDocument> query = cb.createQuery(JsonSchemaDocument.class);
         final Root<JsonSchemaDocument> selectRoot = query.from(JsonSchemaDocument.class);
@@ -167,7 +160,13 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         return new PageImpl<>(typedQuery.getResultList(), pageable, entityManager.createQuery(countQuery).getSingleResult());
     }
 
-    private void buildQueryWhere(SearchRequest searchRequest, CriteriaBuilder cb, CriteriaQuery<?> query, Root<JsonSchemaDocument> documentRoot, boolean withAuthorization) {
+    private void buildQueryWhere(
+        SearchRequest searchRequest,
+        CriteriaBuilder cb,
+        CriteriaQuery<?> query,
+        Root<JsonSchemaDocument> documentRoot,
+        boolean withAuthorization
+    ) {
         final List<Predicate> predicates = new ArrayList<>();
 
         addNonJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
@@ -175,7 +174,6 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         if (withAuthorization) {
             addUserRolePredicate(query, documentRoot, predicates);
         }
-
         query.where(predicates.toArray(new Predicate[0]));
     }
 
@@ -184,30 +182,43 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         AdvancedSearchRequest searchRequest,
         CriteriaBuilder cb,
         CriteriaQuery<?> query,
-        Root<JsonSchemaDocument> documentRoot
+        Root<JsonSchemaDocument> root
     ) {
         final List<Predicate> predicates = new ArrayList<>();
 
         if (!StringUtils.isEmpty(documentDefinitionName)) {
-            predicates.add(cb.equal(documentRoot.get(DOCUMENT_DEFINITION_ID).get(NAME), documentDefinitionName));
+            predicates.add(cb.equal(root.get(DOCUMENT_DEFINITION_ID).get(NAME), documentDefinitionName));
         }
 
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
-            addUserRolePredicate(query, documentRoot, predicates);
+            addUserRolePredicate(query, root, predicates);
         }
 
         if (searchRequest.getAssigneeFilter() != null && searchRequest.getAssigneeFilter() != AssigneeFilter.ALL) {
-            predicates.add(getAssigneeFilterPredicate(cb, documentRoot, searchRequest.getAssigneeFilter()));
+            predicates.add(getAssigneeFilterPredicate(cb, root, searchRequest.getAssigneeFilter()));
         }
 
         if (searchRequest.getOtherFilters() != null && !searchRequest.getOtherFilters().isEmpty()) {
-            predicates.add(getOtherFilersPredicate(cb, documentRoot, searchRequest));
+            predicates.add(getOtherFilersPredicate(cb, root, searchRequest));
+        }
+
+        // Mandatory tenantId filter
+        if (searchRequest.getTenantId() != null && !searchRequest.getTenantId().isEmpty()) {
+            predicates.add(cb.equal(root.get(TENANT_ID), searchRequest.getTenantId()));
+        } else {
+            throw new IllegalArgumentException(
+                "missing tenantId: tenantId is a mandatory filter when searching cases"
+            );
         }
         query.where(predicates.toArray(new Predicate[0]));
     }
 
-    private void addNonJsonFieldPredicates(CriteriaBuilder cb, Root<JsonSchemaDocument> root,
-                                           SearchRequest searchRequest, List<Predicate> predicates) {
+    private void addNonJsonFieldPredicates(
+        CriteriaBuilder cb,
+        Root<JsonSchemaDocument> root,
+        SearchRequest searchRequest,
+        List<Predicate> predicates
+    ) {
 
         if (!StringUtils.isEmpty(searchRequest.getDocumentDefinitionName())) {
             predicates.add(cb.equal(root.get(DOCUMENT_DEFINITION_ID).get(NAME),
@@ -225,10 +236,21 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         if (!StringUtils.isEmpty(searchRequest.getGlobalSearchFilter())) {
             predicates.add(findJsonValue(cb, root, searchRequest.getGlobalSearchFilter()));
         }
+
+        // Mandatory tenantId filter
+        if (searchRequest.getTenantId() != null && !searchRequest.getTenantId().isEmpty()) {
+            predicates.add(cb.equal(root.get(TENANT_ID), searchRequest.getTenantId()));
+        } else {
+            throw new IllegalArgumentException("tenantId is a mandatory filter when searching cases");
+        }
     }
 
-    private void addJsonFieldPredicates(CriteriaBuilder cb, Root<JsonSchemaDocument> root,
-                                        SearchRequest searchRequest, List<Predicate> predicates) {
+    private void addJsonFieldPredicates(
+        CriteriaBuilder cb,
+        Root<JsonSchemaDocument> root,
+        SearchRequest searchRequest,
+        List<Predicate> predicates
+    ) {
 
         if (searchRequest.getOtherFilters() != null && !searchRequest.getOtherFilters().isEmpty()) {
             Map<String, List<SearchCriteria>> criteriaPerPath = searchRequest.getOtherFilters()
@@ -246,18 +268,22 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                             pathEntry.getValue().stream()
                                 .map(currentCriteria -> findJsonPathValue(cb, root, currentCriteria.getPath(),
                                     currentCriteria.getValue()))
-                                .collect(toList())
+                                .toList()
                                 .toArray(Predicate[]::new)
                         ));
                     }
                 })
-                .collect(toList());
+                .toList();
 
             predicates.add(cb.and(criteriaPredicates.toArray(Predicate[]::new)));
         }
     }
 
-    private Predicate getAssigneeFilterPredicate(CriteriaBuilder cb, Root<JsonSchemaDocument> documentRoot, AssigneeFilter assigneeFilter) {
+    private Predicate getAssigneeFilterPredicate(
+        CriteriaBuilder cb,
+        Root<JsonSchemaDocument> documentRoot,
+        AssigneeFilter assigneeFilter
+    ) {
         var caseAssigneeIdColumn = documentRoot.get(ASSIGNEE_ID);
         var userId = userManagementService.getCurrentUser().getId();
 
@@ -280,7 +306,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     ) {
         var jsonPredicates = searchRequest.getOtherFilters().stream()
             .map(currentCriteria -> buildQueryForSearchCriteria(cb, root, currentCriteria))
-            .collect(toList())
+            .toList()
             .toArray(Predicate[]::new);
 
         if (searchRequest.getSearchOperator() == SearchOperator.AND) {
@@ -290,9 +316,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         }
     }
 
-    private void addUserRolePredicate(CriteriaQuery<?> query,
-                                      Root<JsonSchemaDocument> documentRoot,
-                                      List<Predicate> predicates) {
+    private void addUserRolePredicate(
+        CriteriaQuery<?> query,
+        Root<JsonSchemaDocument> documentRoot,
+        List<Predicate> predicates
+    ) {
         List<String> roles = SecurityUtils.getCurrentUserRoles();
 
         Subquery<String> sub = query.subquery(String.class);

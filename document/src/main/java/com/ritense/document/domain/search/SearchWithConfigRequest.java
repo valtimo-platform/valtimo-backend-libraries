@@ -27,6 +27,7 @@ public class SearchWithConfigRequest {
     private SearchOperator searchOperator = SearchOperator.AND;
     private AssigneeFilter assigneeFilter = AssigneeFilter.ALL;
     private List<SearchWithConfigFilter> otherFilters = List.of();
+    private String tenantId;
 
     public SearchWithConfigRequest() {
     }
@@ -61,6 +62,14 @@ public class SearchWithConfigRequest {
 
     public void setOtherFilters(List<SearchWithConfigFilter> otherFilters) {
         this.otherFilters = otherFilters;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
     }
 
     public static class SearchWithConfigFilter {
