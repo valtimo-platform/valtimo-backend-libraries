@@ -20,7 +20,7 @@ import com.ritense.valtimo.accessandentitlement.domain.Authority;
 import com.ritense.valtimo.accessandentitlement.domain.AuthorityRequest;
 import com.ritense.valtimo.accessandentitlement.repository.AuthorityRepository;
 import com.ritense.valtimo.accessandentitlement.service.AuthorityService;
-import com.ritense.valtimo.service.AuthorizedUsersService;
+import com.ritense.valtimo.contract.authentication.AuthorizedUsersService;
 import com.ritense.valtimo.web.rest.error.EntityException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

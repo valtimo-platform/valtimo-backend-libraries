@@ -18,14 +18,16 @@ package com.ritense.processdocument.autoconfigure
 
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.service.DocumentService
+import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.camunda.authorization.CamundaTaskDocumentMapper
 import com.ritense.processdocument.domain.impl.delegate.DocumentDelegate
 import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
-import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.DocumentDelegateService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.processdocument.service.CorrelationService
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
@@ -45,20 +47,35 @@ import org.springframework.context.annotation.Lazy
 @Configuration
 class ProcessDocumentsAutoConfiguration {
 
+    @ProcessBean
     @Bean
     @ConditionalOnMissingBean(DocumentDelegate::class)
     fun documentDelegate(
         processDocumentService: ProcessDocumentService,
         userManagementService: UserManagementService,
-        documentService: DocumentService,
+        documentService: DocumentService
     ): DocumentDelegate {
         return DocumentDelegate(
             processDocumentService,
             userManagementService,
-            documentService,
+            documentService
         )
     }
 
+    @ProcessBean
+    @Bean
+    @ConditionalOnMissingBean(DocumentDelegateService::class)
+    fun documentDelegateService(
+        processDocumentService: ProcessDocumentService,
+        documentService: DocumentService,
+        jsonSchemaDocumentService: JsonSchemaDocumentService
+    ): DocumentDelegateService {
+        return DocumentDelegateService(
+            processDocumentService,
+            documentService,
+            jsonSchemaDocumentService
+        )
+    }
     @ProcessBean
     @Bean
     @ConditionalOnMissingBean(CorrelationService::class)

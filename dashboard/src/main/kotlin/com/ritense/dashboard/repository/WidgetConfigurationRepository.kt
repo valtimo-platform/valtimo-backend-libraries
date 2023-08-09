@@ -31,7 +31,7 @@ interface WidgetConfigurationRepository : JpaRepository<WidgetConfiguration, Str
     fun findAllByDashboardKeyOrderByOrder(dashboardKey: String): List<WidgetConfiguration>
 
     @Modifying
-    fun deleteByDashboardKeyAndKey(dashboardKey: String, widgetConfigurationKey: String)
+    fun deleteByDashboardKey(dashboardKey: String)
 
     fun existsByDashboardKeyAndKey(dashboardKey: String, key: String): Boolean
 }

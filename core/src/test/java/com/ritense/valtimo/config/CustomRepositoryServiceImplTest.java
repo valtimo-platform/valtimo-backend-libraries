@@ -39,7 +39,7 @@ class CustomRepositoryServiceImplTest {
     private CustomRepositoryServiceImpl customRepositoryServiceImpl;
     private ApplicationEventPublisher applicationEventPublisher;
     private CommandExecutor commandExecutor;
-    private final String PROCESS_DEFINITION_KEY = "e6025d07-555b-11e9-9747-acde48001122";
+    private static final String PROCESS_DEFINITION_KEY = "e6025d07-555b-11e9-9747-acde48001122";
 
     @BeforeEach
     void setUp() {

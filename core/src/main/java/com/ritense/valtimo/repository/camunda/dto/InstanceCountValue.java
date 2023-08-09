@@ -24,6 +24,7 @@ public class InstanceCountValue {
     private long count;
 
     public InstanceCountValue() {
+        //Default value for this constructor
     }
 
     public Date getDate() {

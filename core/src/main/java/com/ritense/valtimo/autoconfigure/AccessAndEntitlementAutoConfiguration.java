@@ -21,7 +21,7 @@ import com.ritense.valtimo.accessandentitlement.repository.AuthorityRepository;
 import com.ritense.valtimo.accessandentitlement.service.AuthorityService;
 import com.ritense.valtimo.accessandentitlement.service.impl.AuthorityServiceImpl;
 import com.ritense.valtimo.accessandentitlement.web.rest.AuthorityResource;
-import com.ritense.valtimo.service.AuthorizedUsersService;
+import com.ritense.valtimo.contract.authentication.AuthorizedUsersService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;

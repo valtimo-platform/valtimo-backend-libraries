@@ -20,17 +20,18 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.Role
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.PermissionCondition
 
 data class UpdateRolePermissionRequest(
     val resourceType: Class<*>,
-    val action: Action<*>,
-    val conditionContainer: ConditionContainer,
+    val action: String,
+    val conditions: List<PermissionCondition> = emptyList(),
 ) {
     fun toPermission(role: Role): Permission {
         return Permission(
             resourceType = resourceType,
-            action = action,
-            conditionContainer = conditionContainer,
+            action = Action<Any>(action),
+            conditionContainer = ConditionContainer(conditions),
             role = role
         )
     }

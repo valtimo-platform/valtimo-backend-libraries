@@ -480,18 +480,16 @@ class PluginService(
         pluginDefinition.properties.forEach { pluginProperty ->
             val propertyNode = properties[pluginProperty.fieldName]
 
-            if (propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull ||
-                (propertyNode is TextNode && propertyNode.textValue() == "")
-            ) {
-                if (pluginProperty.required) {
-                    errors.add(PluginPropertyRequiredException(pluginProperty.fieldName, pluginDefinition.title))
-                }
+            val propertyIsNull = propertyNode == null || propertyNode.isMissingNode || propertyNode.isNull
+            val propertyIsEmpty = propertyNode is TextNode && propertyNode.textValue() == ""
+            if ((propertyIsNull || propertyIsEmpty) && pluginProperty.required) {
+                errors.add(PluginPropertyRequiredException(pluginProperty.fieldName, pluginDefinition.title))
             } else {
                 try {
                     val propertyClass = Class.forName(pluginProperty.fieldType)
-                    if (propertyClass.isAnnotationPresent(Plugin::class.java)
-                        || propertyClass.isAnnotationPresent(PluginCategory::class.java)
-                    ) {
+                    val propertyClassIsPlugin = propertyClass.isAnnotationPresent(Plugin::class.java)
+                    val propertyClassIsPluginCategory = propertyClass.isAnnotationPresent(PluginCategory::class.java)
+                    if (propertyClassIsPlugin || propertyClassIsPluginCategory) {
                         val propertyConfigurationId =
                             PluginConfigurationId.existingId(UUID.fromString(propertyNode.textValue()))
                         val propertyConfiguration = pluginConfigurationRepository.findById(propertyConfigurationId)

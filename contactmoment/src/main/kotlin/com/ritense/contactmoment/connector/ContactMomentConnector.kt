@@ -23,12 +23,12 @@ import com.ritense.contactmoment.client.ContactMomentClient
 import com.ritense.contactmoment.domain.ContactMoment
 import com.ritense.contactmoment.domain.Kanaal
 import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
+import com.ritense.valtimo.contract.authentication.CurrentUserService
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.service.CurrentUserService
-import kotlinx.coroutines.runBlocking
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.runBlocking
 
 @ConnectorType(name = "ContactMoment")
 class ContactMomentConnector(

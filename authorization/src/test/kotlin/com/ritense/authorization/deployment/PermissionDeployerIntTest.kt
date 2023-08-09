@@ -47,7 +47,7 @@ internal class PermissionDeployerIntTest : BaseIntegrationTest() {
         assertThat(changeset.get().filename).endsWith("/testdocument.permission.json")
         assertThat(changeset.get().dateExecuted).isBetween(Instant.parse("2023-06-13T00:00:00Z"), Instant.now())
         assertThat(changeset.get().orderExecuted).isBetween(0, 1000)
-        assertThat(changeset.get().md5sum).isEqualTo("e7016d7924f399170a357d870d10832b")
+        assertThat(changeset.get().md5sum).isEqualTo("b524bfc65d24e1d3b4ff79d2cd846275")
     }
 
     @Test

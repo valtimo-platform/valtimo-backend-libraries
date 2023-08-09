@@ -49,10 +49,12 @@ public class GzacApplication {
         DefaultProfileUtil.addDefaultProfile(app);
         Environment environment = app.run(args).getEnvironment();
         logger.info(
-            "\n----------------------------------------------------------\n\t" +
-                "Application '{}' is running! Access URLs:\n\t" +
-                "Local: \t\thttp://127.0.0.1:{}\n\t" +
-                "External: \thttp://{}:{}\n----------------------------------------------------------",
+            """
+                ----------------------------------------------------------
+                \tApplication '{}' is running! Access URLs:
+                \tLocal: \t\thttp://127.0.0.1:{}
+                \tExternal: \thttp://{}:{}
+                ----------------------------------------------------------""",
             environment.getProperty("spring.application.name"),
             environment.getProperty("server.port"),
             InetAddress.getLocalHost().getHostAddress(),

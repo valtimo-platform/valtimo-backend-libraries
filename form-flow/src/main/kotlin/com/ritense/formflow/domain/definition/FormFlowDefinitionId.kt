@@ -57,7 +57,7 @@ data class FormFlowDefinitionId(
         }
 
         fun nextVersion(id: FormFlowDefinitionId): FormFlowDefinitionId {
-            return FormFlowDefinitionId(id.key, id.version!! + 1).newIdentity()
+            return FormFlowDefinitionId(id.key, id.version + 1).newIdentity()
         }
 
         fun existingId(id: FormFlowDefinitionId): FormFlowDefinitionId {

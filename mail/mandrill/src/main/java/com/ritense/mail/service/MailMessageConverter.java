@@ -48,15 +48,17 @@ public class MailMessageConverter {
             rawMailMessage.attachments
         );
 
-        if (rawMailMessage.mailBody.textBody.isPresent()) {
+        boolean textBodyIsPresent = rawMailMessage.mailBody.textBody != null && rawMailMessage.mailBody.textBody.isPresent();
+        if (textBodyIsPresent) {
             mandrillMessageWithContent.setText(rawMailMessage.mailBody.textBody.get());
         }
 
-        if (rawMailMessage.mailBody.htmlBody.isPresent()) {
+        boolean mailBodyIsPresent = rawMailMessage.mailBody.htmlBody != null && rawMailMessage.mailBody.htmlBody.isPresent();
+        if (mailBodyIsPresent) {
             mandrillMessageWithContent.setHtml(rawMailMessage.mailBody.htmlBody.get());
         }
 
-        if (!rawMailMessage.mailBody.textBody.isPresent() && !rawMailMessage.mailBody.htmlBody.isPresent()) {
+        if (!textBodyIsPresent && !mailBodyIsPresent) {
             throw new IllegalArgumentException("Cannot convert RawMailMessage into MandrillMessage: rawMailMessage not contain a text or html body");
         }
 
@@ -88,15 +90,15 @@ public class MailMessageConverter {
     }
 
     private MandrillMessage.Recipient.Type convert(Recipient.Type type) {
-        if (type == Recipient.Type.To) {
+        if (type == Recipient.Type.TO) {
             return MandrillMessage.Recipient.Type.TO;
         }
 
-        if (type == Recipient.Type.Cc) {
+        if (type == Recipient.Type.CC) {
             return MandrillMessage.Recipient.Type.CC;
         }
 
-        if (type == Recipient.Type.Bcc) {
+        if (type == Recipient.Type.BCC) {
             return MandrillMessage.Recipient.Type.BCC;
         }
         String message = String.format("Cannot convert Recipient.Type value '%s' to MandrillMessage.Recipient.Type. No mapping exists", type);

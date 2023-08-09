@@ -17,15 +17,16 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.contract.authentication.AuthorizedUserRepository;
+import com.ritense.valtimo.contract.authentication.AuthorizedUsersService;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.springframework.security.core.Authentication;
 import java.util.Collection;
 
-public class AuthorizedUsersService implements com.ritense.valtimo.contract.authentication.AuthorizedUsersService {
+public class AuthorizedUsersServiceImpl implements AuthorizedUsersService {
 
     private final Collection<AuthorizedUserRepository> authorizedUserRepositories;
 
-    public AuthorizedUsersService(Collection<AuthorizedUserRepository> authorizedUserRepositories) {
+    public AuthorizedUsersServiceImpl(Collection<AuthorizedUserRepository> authorizedUserRepositories) {
         this.authorizedUserRepositories = authorizedUserRepositories;
     }
 

@@ -42,7 +42,7 @@ class OpenZaakService(
 ): ResourceService {
 
     override fun store(key: String, multipartFile: MultipartFile): Resource {
-        TODO("Not yet implemented")
+        TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
     override fun store(key: String, multipartFile: MultipartFile, fileStatus: FileStatus): Resource {
@@ -93,11 +93,11 @@ class OpenZaakService(
     }
 
     override fun store(key: String, fileUploadRequest: FileUploadRequest): Resource {
-        TODO("Not yet implemented")
+        TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
     override fun store(key: String, fileUploadRequest: FileUploadRequest, fileStatus: FileStatus): Resource {
-        TODO("Not yet implemented")
+        TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
     override fun getResourceUrl(id: UUID): ObjectUrlDTO {
@@ -117,7 +117,7 @@ class OpenZaakService(
     }
 
     override fun getResourceUrl(fileName: String): URL {
-        TODO("Not yet implemented")
+        TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
     override fun getResourceContent(id: UUID): ObjectContentDTO {
@@ -137,15 +137,15 @@ class OpenZaakService(
     }
 
     override fun removeResource(id: UUID) {
-        TODO("Not yet implemented")
+        TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
     override fun removeResource(key: String) {
-        TODO("Not yet implemented")
+        TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
     override fun registerResource(resourceDTO: ResourceDTO): ResourceDTO {
-        TODO("Not yet implemented")
+        TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
     override fun getResource(id: UUID): OpenZaakResource {
@@ -153,15 +153,15 @@ class OpenZaakService(
     }
 
     override fun getResourceByKey(fileName: String): Resource {
-        TODO("Not yet implemented")
+        TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
     override fun activate(id: UUID) {
-        TODO("Not yet implemented")
+        TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
     override fun pending(id: UUID) {
-        TODO("Not yet implemented")
+        TODO(NOT_YET_IMPLEMENTED_MSG)
     }
 
     fun getResourceByInformatieObjectUrl(url: URI): OpenZaakResource {
@@ -171,5 +171,9 @@ class OpenZaakService(
     private fun getDownloadUrl(resource: OpenZaakResource): URL {
         val currentRequestUrl = URL(request.requestURL.toString())
         return URL(currentRequestUrl, "/api/v1/resource/${resource.resourceId.id}/download")
+    }
+
+    companion object {
+        private const val NOT_YET_IMPLEMENTED_MSG = "Not yet implemented"
     }
 }

@@ -24,12 +24,14 @@ dockerCompose {
 dependencies {
 
     implementation(project(":contract"))
+    implementation(project(":changelog"))
 
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "io.github.classgraph:classgraph:${classgraphVersion}"
 
     testImplementation project(":core")
     testImplementation project(":resource:local-resource")
@@ -39,6 +41,7 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
 
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation "org.mockito:mockito-inline"
 
     jar {
         enabled = true

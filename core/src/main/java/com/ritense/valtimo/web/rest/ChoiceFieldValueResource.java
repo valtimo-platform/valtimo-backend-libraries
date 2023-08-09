@@ -16,10 +16,10 @@
 
 package com.ritense.valtimo.web.rest;
 
-import com.ritense.valtimo.choicefield.repository.ChoiceFieldRepository;
-import com.ritense.valtimo.domain.choicefield.ChoiceField;
 import com.ritense.valtimo.domain.choicefield.ChoiceFieldValue;
 import com.ritense.valtimo.service.ChoiceFieldValueService;
+import com.ritense.valtimo.web.rest.dto.ChoiceFieldValueCreateRequestDTO;
+import com.ritense.valtimo.web.rest.dto.ChoiceFieldValueUpdateRequestDTO;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import com.ritense.valtimo.web.rest.util.PaginationUtil;
 import org.slf4j.Logger;
@@ -51,46 +51,35 @@ public class ChoiceFieldValueResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ChoiceFieldValueResource.class);
     private final ChoiceFieldValueService choiceFieldValueService;
-    private final ChoiceFieldRepository choiceFieldRepository;
+    private final static String CHOICE_FIELD_VALUE = "choiceFieldValue";
 
-    public ChoiceFieldValueResource(ChoiceFieldValueService choiceFieldValueService, ChoiceFieldRepository choiceFieldRepository) {
+    public ChoiceFieldValueResource(
+        ChoiceFieldValueService choiceFieldValueService
+    ) {
         this.choiceFieldValueService = choiceFieldValueService;
-        this.choiceFieldRepository = choiceFieldRepository;
     }
 
     @PostMapping("/v1/choice-field-values")
     public ResponseEntity<ChoiceFieldValue> createChoiceFieldValue(
-        @Valid @RequestBody ChoiceFieldValue choiceFieldValue,
+        @Valid @RequestBody ChoiceFieldValueCreateRequestDTO requestDTO,
         @RequestParam("choice_field_name") String choiceFieldName
     ) throws URISyntaxException {
-        logger.debug("REST request to save ChoiceFieldValue : {}", choiceFieldValue);
-        if (choiceFieldValue.getId() != null) {
-            return ResponseEntity.badRequest().headers(
-                HeaderUtil.createFailureAlert("choiceFieldValue", "idexists", "A new choiceFieldValue cannot already have an ID")
-            ).body(null);
-        }
-        ChoiceField choiceField = choiceFieldRepository.findByKeyName(choiceFieldName);
-        choiceFieldValue.setChoiceField(choiceField);
-        ChoiceFieldValue result = choiceFieldValueService.save(choiceFieldValue);
+        logger.debug("REST request to create ChoiceFieldValue : {}", requestDTO);
+        ChoiceFieldValue result = choiceFieldValueService.create(requestDTO, choiceFieldName);
         return ResponseEntity.created(new URI("/api/v1/choice-field-values/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert("choiceFieldValue", result.getName()))
+            .headers(HeaderUtil.createEntityCreationAlert(CHOICE_FIELD_VALUE, result.getName()))
             .body(result);
     }
 
     @PutMapping("/v1/choice-field-values")
     public ResponseEntity<ChoiceFieldValue> updateChoiceFieldValue(
-        @Valid @RequestBody ChoiceFieldValue choiceFieldValue,
+        @Valid @RequestBody ChoiceFieldValueUpdateRequestDTO requestDTO,
         @RequestParam("choice_field_name") String choiceFieldName
-    ) throws URISyntaxException {
-        logger.debug("REST request to update ChoiceFieldValue : {}", choiceFieldValue);
-        if (choiceFieldValue.getId() == null) {
-            return createChoiceFieldValue(choiceFieldValue, choiceFieldName);
-        }
-        ChoiceField choiceField = choiceFieldRepository.findByKeyName(choiceFieldName);
-        choiceFieldValue.setChoiceField(choiceField);
-        ChoiceFieldValue result = choiceFieldValueService.save(choiceFieldValue);
+    ) {
+        logger.debug("REST request to update ChoiceFieldValue : {}", requestDTO);
+        ChoiceFieldValue result = choiceFieldValueService.update(requestDTO, choiceFieldName);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert("choiceFieldValue", choiceFieldValue.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(CHOICE_FIELD_VALUE, result.getId().toString()))
             .body(result);
     }
 
@@ -114,7 +103,7 @@ public class ChoiceFieldValueResource {
     public ResponseEntity<Void> deleteChoiceFieldValue(@PathVariable Long id) {
         logger.debug("REST request to delete ChoiceFieldValue : {}", id);
         choiceFieldValueService.delete(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert("choiceFieldValue", id.toString())).build();
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(CHOICE_FIELD_VALUE, id.toString())).build();
     }
 
     @GetMapping("/v1/choice-field-values/choice-field/{choicefield_name}/value/{value}")

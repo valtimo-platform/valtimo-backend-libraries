@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 
+@Deprecated(since = "10.7.0")
 public class FormIoFormFileResource implements FormFileResource {
 
     private final ResourceService resourceService;

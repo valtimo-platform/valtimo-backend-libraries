@@ -19,5 +19,6 @@ package com.ritense.valtimo.web.rest.dto;
 public class HeatmapTaskCountDTO extends HeatmapTaskDTO {
 
     public HeatmapTaskCountDTO() {
+        //Default constructor
     }
 }

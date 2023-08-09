@@ -89,7 +89,7 @@ internal class MessageResourceIT: BaseContactMomentIntegrationTest() {
         val recipient = sentMessage.recipients.get().first()
         assertThat(recipient.email.get(), equalTo("user@example.org"))
         assertThat(recipient.name.get(), equalTo("user@example.org"))
-        assertThat(recipient.type, equalTo(Recipient.Type.To))
+        assertThat(recipient.type, equalTo(Recipient.Type.TO))
 
         assertThat(sentMessage.templateIdentifier.get(), equalTo("test-template"))
         assertThat(sentMessage.subject.get(), equalTo("some-subject"))
