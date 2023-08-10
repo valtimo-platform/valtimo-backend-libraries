@@ -22,7 +22,8 @@ import javax.security.auth.Subject
 
 class TenantAuthenticationToken(
     private val delegate: Authentication,
-    override val tenantId: String
+    override val tenantId: String,
+    val fullName: String
 ) : Authentication, TenantAware {
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority>? {

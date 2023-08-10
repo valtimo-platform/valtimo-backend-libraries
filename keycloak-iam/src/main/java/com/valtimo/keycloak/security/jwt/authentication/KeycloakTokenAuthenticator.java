@@ -35,9 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.TENANT_KEY;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.*;
 import static java.util.Objects.requireNonNull;
 
 public class KeycloakTokenAuthenticator extends TokenAuthenticator {
@@ -95,7 +93,7 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
             final Authentication authentication = new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
             if (valtimoProperties.getApp().getEnableTenancy()) {
                 logger.debug("Creating tenant authentication token");
-                return new TenantAuthenticationToken(authentication, getTenantId(claims));
+                return new TenantAuthenticationToken(authentication, getTenantId(claims), getName(claims));
             }
             return authentication;
         }
@@ -107,6 +105,13 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
             return claims.get(TENANT_KEY, String.class);
         }
         throw new IllegalStateException("Missing tenant key in claims");
+    }
+
+    private String getName(Claims claims) {
+        if (claims.containsKey(NAME_KEY)) {
+            return claims.get(NAME_KEY, String.class);
+        }
+        throw new IllegalStateException("Missing name key in claims");
     }
 
     private String getEmail(Claims claims) {
