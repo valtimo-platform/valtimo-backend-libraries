@@ -51,7 +51,7 @@ public interface DocumentRepository<T extends Document> extends JpaRepository<T,
 
     Long countByDocumentDefinitionIdNameAndAssigneeId(String definitionName, String assigneeId);
 
-    T insertDocument(
+    void insert(
         JsonSchemaDocumentId jsonSchemaDocumentId,
         JsonDocumentContent content,
         JsonSchemaDocumentDefinitionId documentDefinitionId,
@@ -64,7 +64,7 @@ public interface DocumentRepository<T extends Document> extends JpaRepository<T,
         String tenantId
     );
 
-    T updateDocument(
+    void update(
         JsonSchemaDocumentId jsonSchemaDocumentId,
         JsonDocumentContent content,
         JsonSchemaDocumentDefinitionId documentDefinitionId,

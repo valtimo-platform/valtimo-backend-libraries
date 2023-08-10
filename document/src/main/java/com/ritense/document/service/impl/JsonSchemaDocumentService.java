@@ -121,7 +121,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                     .map(JsonSchemaRelatedFile::from)
                     .map(relatedFile -> relatedFile.withCreatedBy(SecurityUtils.getCurrentUserLogin()))
                     .forEach(document::addRelatedFile);
-                documentRepository.insertDocument(
+                documentRepository.insert(
                     document.id(),
                     document.content(),
                     document.definitionId(),
@@ -175,7 +175,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
 
         result.resultingDocument().ifPresent(updatedDocument ->
-            documentRepository.updateDocument(
+            documentRepository.update(
                 updatedDocument.id(),
                 updatedDocument.content(),
                 updatedDocument.definitionId(),
@@ -207,7 +207,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             .ifPresent(
                 document -> {
                     document.addRelatedDocument(jsonSchemaDocumentRelation);
-                    documentRepository.updateDocument(
+                    documentRepository.update(
                         document.id(),
                         document.content(),
                         document.definitionId(),
@@ -231,7 +231,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     ) {
         final JsonSchemaDocument document = getDocumentBy(documentId, tenantId);
         document.addRelatedFile(JsonSchemaRelatedFile.from(relatedFile));
-        documentRepository.updateDocument(
+        documentRepository.update(
             document.id(),
             document.content(),
             document.definitionId(),
@@ -265,7 +265,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 .withCreatedBy(SecurityUtils.getCurrentUserLogin()),
             metadata
         );
-        documentRepository.updateDocument(
+        documentRepository.update(
             document.id(),
             document.content(),
             document.definitionId(),
@@ -283,7 +283,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     public void removeRelatedFile(Document.Id documentId, UUID fileId, String tenantId) {
         final JsonSchemaDocument document = getDocumentBy(documentId, tenantId);
         document.removeRelatedFileBy(fileId);
-        documentRepository.updateDocument(
+        documentRepository.update(
             document.id(),
             document.content(),
             document.definitionId(),
@@ -332,7 +332,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         }
 
         document.setAssignee(assigneeId, assignee.getFullName());
-        documentRepository.updateDocument(
+        documentRepository.update(
             document.id(),
             document.content(),
             document.definitionId(),
@@ -349,7 +349,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     public void unassignUserFromDocument(UUID documentId, String tenantId) {
         final JsonSchemaDocument document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId), tenantId);
         document.unassign();
-        documentRepository.updateDocument(
+        documentRepository.update(
             document.id(),
             document.content(),
             document.definitionId(),

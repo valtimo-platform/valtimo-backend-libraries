@@ -96,7 +96,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         assertEquals(123L, document.sequence());
         assertEquals("system", document.createdBy());
         assertNotNull(document.createdOn());
-        verify(documentRepository, times(1)).insertDocument(
+        verify(documentRepository, times(1)).insert(
             any(), any(), any(), any(), any(), any(), any(), any(), any(), any()
         );
     }
@@ -165,7 +165,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             }
         );
 
-        verify(documentRepository, times(1)).insertDocument(
+        verify(documentRepository, times(1)).insert(
             any(), any(), any(), any(), any(), any(), any(), any(), any(), any()
         );
     }

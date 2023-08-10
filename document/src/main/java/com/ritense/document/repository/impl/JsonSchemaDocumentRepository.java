@@ -61,27 +61,27 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
     @Query(
         nativeQuery = true,
         value = " **INSERT INTO JsonSchemaDocument doc ( doc.id " +
-        " ,      doc.content " +
-        " ,      doc.documentDefinitionId " +
-        " ,      doc.createdOn " +
-        " ,      doc.createdBy " +
-        " ,      doc.assigneeId " +
-        " ,      doc.assigneeFullName " +
-        " ,      doc.documentRelations " +
-        " ,      doc.relatedFiles" +
-        " ,      doc.tenantId )" +
-        " SELECT :id" +
-        " ,      :content" +
-        " ,      :documentDefinitionId" +
-        " ,      :createdOn" +
-        " ,      :createdBy" +
-        " ,      :assigneeId" +
-        " ,      :assigneeFullName" +
-        " ,      :documentRelations" +
-        " ,      :relatedFiles" +
-        " ,      :tenantId **"
+            " ,      doc.content " +
+            " ,      doc.documentDefinitionId " +
+            " ,      doc.createdOn " +
+            " ,      doc.createdBy " +
+            " ,      doc.assigneeId " +
+            " ,      doc.assigneeFullName " +
+            " ,      doc.documentRelations " +
+            " ,      doc.relatedFiles" +
+            " ,      doc.tenantId )" +
+            " SELECT :id" +
+            " ,      :content" +
+            " ,      :documentDefinitionId" +
+            " ,      :createdOn" +
+            " ,      :createdBy" +
+            " ,      :assigneeId" +
+            " ,      :assigneeFullName" +
+            " ,      :documentRelations" +
+            " ,      :relatedFiles" +
+            " ,      :tenantId **"
     )
-    JsonSchemaDocument insertDocument(
+    void insert(
         @Param("id") JsonSchemaDocumentId jsonSchemaDocumentId,
         @Param("content") JsonDocumentContent content,
         @Param("documentDefinitionId") JsonSchemaDocumentDefinitionId documentDefinitionId,
@@ -106,7 +106,7 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
         " WHERE  doc.id = :id " +
         " AND    doc.tenantId = :tenantId"
     )
-    JsonSchemaDocument updateDocument(
+    void update(
         @Param("id") JsonSchemaDocumentId jsonSchemaDocumentId,
         @Param("content") JsonDocumentContent content,
         @Param("documentDefinitionId") JsonSchemaDocumentDefinitionId documentDefinitionId,
@@ -117,4 +117,5 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
         @Param("relatedFiles") Set<JsonSchemaRelatedFile> relatedFiles,
         @Param("tenantId") String tenantId
     );
+
 }
