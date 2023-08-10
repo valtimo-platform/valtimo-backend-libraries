@@ -17,19 +17,15 @@
 package com.ritense.document.repository.impl;
 
 import com.ritense.document.domain.Document;
-import com.ritense.document.domain.impl.*;
-import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.repository.DocumentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSchemaDocument> {
@@ -56,66 +52,5 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
     );
 
     Long countByDocumentDefinitionIdNameAndAssigneeId(String definitionName, String assigneeId);
-
-    @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query(
-        nativeQuery = true,
-        value = " **INSERT INTO JsonSchemaDocument doc ( doc.id " +
-            " ,      doc.content " +
-            " ,      doc.documentDefinitionId " +
-            " ,      doc.createdOn " +
-            " ,      doc.createdBy " +
-            " ,      doc.assigneeId " +
-            " ,      doc.assigneeFullName " +
-            " ,      doc.documentRelations " +
-            " ,      doc.relatedFiles" +
-            " ,      doc.tenantId )" +
-            " SELECT :id" +
-            " ,      :content" +
-            " ,      :documentDefinitionId" +
-            " ,      :createdOn" +
-            " ,      :createdBy" +
-            " ,      :assigneeId" +
-            " ,      :assigneeFullName" +
-            " ,      :documentRelations" +
-            " ,      :relatedFiles" +
-            " ,      :tenantId **"
-    )
-    void insert(
-        @Param("id") JsonSchemaDocumentId jsonSchemaDocumentId,
-        @Param("content") JsonDocumentContent content,
-        @Param("documentDefinitionId") JsonSchemaDocumentDefinitionId documentDefinitionId,
-        @Param("createdOn") LocalDateTime createdOn,
-        @Param("createdBy") String createdBy,
-        @Param("assigneeId") String assigneeId,
-        @Param("assigneeFullName") String assigneeFullName,
-        @Param("documentRelations") Set<JsonSchemaDocumentRelation> documentRelations,
-        @Param("relatedFiles") Set<JsonSchemaRelatedFile> relatedFiles,
-        @Param("tenantId") String tenantId
-    );
-
-    @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query(" UPDATE JsonSchemaDocument doc " +
-        " SET    doc.content = :content " +
-        " ,      doc.documentDefinitionId = :documentDefinitionId " +
-        " ,      doc.modifiedOn = :modifiedOn " +
-        " ,      doc.assigneeId = :assigneeId " +
-        " ,      doc.assigneeFullName = :assigneeFullName " +
-        " ,      doc.documentRelations = :documentRelations " +
-        " ,      doc.relatedFiles = :relatedFiles " +
-        " WHERE  doc.id = :id " +
-        " AND    doc.tenantId = :tenantId"
-    )
-    void update(
-        @Param("id") JsonSchemaDocumentId jsonSchemaDocumentId,
-        @Param("content") JsonDocumentContent content,
-        @Param("documentDefinitionId") JsonSchemaDocumentDefinitionId documentDefinitionId,
-        @Param("modifiedOn") LocalDateTime modifiedOn,
-        @Param("assigneeId") String assigneeId,
-        @Param("assigneeFullName") String assigneeFullName,
-        @Param("documentRelations") Set<JsonSchemaDocumentRelation> documentRelations,
-        @Param("relatedFiles") Set<JsonSchemaRelatedFile> relatedFiles,
-        @Param("tenantId") String tenantId
-    );
 
 }
