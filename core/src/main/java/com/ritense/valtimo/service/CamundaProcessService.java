@@ -19,7 +19,7 @@ package com.ritense.valtimo.service;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.authorization.EntityAuthorizationRequest;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;

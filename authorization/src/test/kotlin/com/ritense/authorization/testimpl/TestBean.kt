@@ -18,8 +18,8 @@ package com.ritense.authorization.testimpl
 
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.EntityAuthorizationRequest
-import com.ritense.authorization.RunWithoutAuthorization
+import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.authorization.annotation.RunWithoutAuthorization
 import org.springframework.stereotype.Component
 
 @Component

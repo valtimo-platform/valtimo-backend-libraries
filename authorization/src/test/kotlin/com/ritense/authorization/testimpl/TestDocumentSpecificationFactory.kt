@@ -16,9 +16,9 @@
 
 package com.ritense.authorization.testimpl
 
-import com.ritense.authorization.AuthorizationRequest
-import com.ritense.authorization.AuthorizationSpecification
-import com.ritense.authorization.AuthorizationSpecificationFactory
+import com.ritense.authorization.request.AuthorizationRequest
+import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
 
 class TestDocumentSpecificationFactory : AuthorizationSpecificationFactory<TestDocument> {

@@ -20,7 +20,7 @@ import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.service.AuditSearchService;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.authorization.EntityAuthorizationRequest;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;

@@ -18,18 +18,19 @@ package com.ritense.authorization.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.BaseIntegrationTest
-import com.ritense.authorization.PermissionRepository
-import com.ritense.authorization.Role
-import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.permission.PermissionRepository
+import com.ritense.authorization.role.Role
+import com.ritense.authorization.role.RoleRepository
 import com.ritense.authorization.permission.ConditionContainer
-import com.ritense.authorization.permission.ContainerPermissionCondition
-import com.ritense.authorization.permission.FieldPermissionCondition
+import com.ritense.authorization.permission.condition.ContainerPermissionCondition
+import com.ritense.authorization.permission.condition.FieldPermissionCondition
 import com.ritense.authorization.permission.Permission
-import com.ritense.authorization.permission.PermissionConditionOperator
+import com.ritense.authorization.permission.condition.PermissionConditionOperator
+import com.ritense.authorization.testimpl.RelatedTestEntity
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityActionProvider
-import com.ritense.authorization.web.rest.request.PermissionAvailableRequest
-import com.ritense.authorization.web.rest.request.PermissionContext
+import com.ritense.authorization.web.request.PermissionAvailableRequest
+import com.ritense.authorization.web.request.PermissionContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -245,7 +246,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
                 TestEntityActionProvider.view,
                 ConditionContainer(listOf(
                     ContainerPermissionCondition(
-                        com.ritense.authorization.testimpl.RelatedTestEntity::class.java,
+                        RelatedTestEntity::class.java,
                         listOf(
                             FieldPermissionCondition(
                                 "property",
@@ -297,7 +298,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
                 TestEntityActionProvider.view,
                 ConditionContainer(listOf(
                     ContainerPermissionCondition(
-                        com.ritense.authorization.testimpl.RelatedTestEntity::class.java,
+                        RelatedTestEntity::class.java,
                         listOf(
                             FieldPermissionCondition(
                                 "property",

@@ -16,8 +16,6 @@
 
 package com.ritense.document.service.impl;
 
-import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.AuthorizationSpecification;
 import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;

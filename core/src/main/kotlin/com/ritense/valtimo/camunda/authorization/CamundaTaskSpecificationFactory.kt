@@ -16,9 +16,9 @@
 
 package com.ritense.valtimo.camunda.authorization
 
-import com.ritense.authorization.AuthorizationRequest
-import com.ritense.authorization.AuthorizationSpecification
-import com.ritense.authorization.AuthorizationSpecificationFactory
+import com.ritense.authorization.request.AuthorizationRequest
+import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -30,8 +30,8 @@ class CamundaTaskSpecificationFactory(
 ) : AuthorizationSpecificationFactory<CamundaTask> {
 
     override fun create(
-        request: AuthorizationRequest<CamundaTask>,
-        permissions: List<Permission>
+            request: AuthorizationRequest<CamundaTask>,
+            permissions: List<Permission>
     ): AuthorizationSpecification<CamundaTask> {
         return CamundaTaskSpecification(
             request,

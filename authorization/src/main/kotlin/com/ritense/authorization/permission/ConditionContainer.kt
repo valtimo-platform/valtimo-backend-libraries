@@ -17,6 +17,7 @@
 package com.ritense.authorization.permission
 
 import com.fasterxml.jackson.annotation.JsonView
+import com.ritense.authorization.permission.condition.PermissionCondition
 
 data class ConditionContainer(
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])

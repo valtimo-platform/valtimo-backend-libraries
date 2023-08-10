@@ -15,8 +15,8 @@
  */
 package com.ritense.document.service
 
-import com.ritense.authorization.AuthorizationRequest
-import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.request.AuthorizationRequest
+import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.searchfield.SearchField
 import com.ritense.valtimo.contract.database.QueryDialectHelper

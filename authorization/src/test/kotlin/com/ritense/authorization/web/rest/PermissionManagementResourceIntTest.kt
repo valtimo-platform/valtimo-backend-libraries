@@ -17,7 +17,7 @@
 package com.ritense.authorization.web.rest
 
 import com.ritense.authorization.BaseIntegrationTest
-import com.ritense.authorization.web.rest.request.SearchPermissionsRequest
+import com.ritense.authorization.web.request.SearchPermissionsRequest
 import com.ritense.valtimo.contract.utils.TestUtil.convertObjectToJsonBytes
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.BeforeEach

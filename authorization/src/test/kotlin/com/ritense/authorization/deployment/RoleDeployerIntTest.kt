@@ -17,8 +17,7 @@
 package com.ritense.authorization.deployment
 
 import com.ritense.authorization.BaseIntegrationTest
-import com.ritense.authorization.Role
-import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.role.RoleRepository
 import com.ritense.valtimo.changelog.repository.ChangesetRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

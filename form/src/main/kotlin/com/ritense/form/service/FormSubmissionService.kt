@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.EntityAuthorizationRequest
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest

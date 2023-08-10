@@ -18,8 +18,8 @@ package com.ritense.authorization.deployment
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.authorization.Role
-import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.role.Role
+import com.ritense.authorization.role.RoleRepository
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService

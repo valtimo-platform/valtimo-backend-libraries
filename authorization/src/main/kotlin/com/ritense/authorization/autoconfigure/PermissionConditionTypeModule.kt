@@ -18,9 +18,9 @@ package com.ritense.authorization.autoconfigure
 
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.ritense.authorization.permission.ContainerPermissionCondition
-import com.ritense.authorization.permission.ExpressionPermissionCondition
-import com.ritense.authorization.permission.FieldPermissionCondition
+import com.ritense.authorization.permission.condition.ContainerPermissionCondition
+import com.ritense.authorization.permission.condition.ExpressionPermissionCondition
+import com.ritense.authorization.permission.condition.FieldPermissionCondition
 
 class PermissionConditionTypeModule: SimpleModule() {
 

@@ -17,7 +17,7 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.authorization.AuthorizationSpecification;
+import com.ritense.authorization.specification.AuthorizationSpecification;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.contract.authentication.UserManagementService;

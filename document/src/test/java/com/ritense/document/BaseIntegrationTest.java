@@ -17,9 +17,9 @@
 package com.ritense.document;
 
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.PermissionRepository;
-import com.ritense.authorization.Role;
-import com.ritense.authorization.RoleRepository;
+import com.ritense.authorization.permission.PermissionRepository;
+import com.ritense.authorization.role.Role;
+import com.ritense.authorization.role.RoleRepository;
 import com.ritense.authorization.permission.ConditionContainer;
 import com.ritense.authorization.permission.Permission;
 import com.ritense.document.domain.Document;
