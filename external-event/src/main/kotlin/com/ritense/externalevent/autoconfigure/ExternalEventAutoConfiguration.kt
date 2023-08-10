@@ -35,6 +35,8 @@ import com.ritense.valtimo.contract.mail.MailSender
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
@@ -46,6 +48,7 @@ import java.util.function.Consumer
 import java.util.function.Supplier
 
 @Configuration
+@EnableConfigurationProperties(value = [MappedCasesConfig::class])
 class ExternalEventAutoConfiguration {
 
     @Bean

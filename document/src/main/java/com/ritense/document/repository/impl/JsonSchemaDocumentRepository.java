@@ -34,7 +34,6 @@ import java.util.Set;
 @Repository
 public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSchemaDocument> {
 
-    @Query(" SELECT doc FROM JsonSchemaDocument doc WHERE doc.tenantId = :tenantId")
     Optional<JsonSchemaDocument> findByIdAndTenantId(
         Document.Id documentId,
         String tenantId
@@ -59,7 +58,9 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
     Long countByDocumentDefinitionIdNameAndAssigneeId(String definitionName, String assigneeId);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query(" INSERT INTO JsonSchemaDocument doc ( doc.id " +
+    @Query(
+        nativeQuery = true,
+        value = " **INSERT INTO JsonSchemaDocument doc ( doc.id " +
         " ,      doc.content " +
         " ,      doc.documentDefinitionId " +
         " ,      doc.createdOn " +
@@ -69,8 +70,7 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
         " ,      doc.documentRelations " +
         " ,      doc.relatedFiles" +
         " ,      doc.tenantId )" +
-        " VALUES ( " +
-        " ,      :id" +
+        " SELECT :id" +
         " ,      :content" +
         " ,      :documentDefinitionId" +
         " ,      :createdOn" +
@@ -79,7 +79,7 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
         " ,      :assigneeFullName" +
         " ,      :documentRelations" +
         " ,      :relatedFiles" +
-        " ,      :tenantId) "
+        " ,      :tenantId **"
     )
     JsonSchemaDocument insertDocument(
         @Param("id") JsonSchemaDocumentId jsonSchemaDocumentId,
