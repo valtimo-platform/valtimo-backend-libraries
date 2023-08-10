@@ -17,15 +17,14 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.PermissionRepository;
-import com.ritense.authorization.RoleRepository;
+import com.ritense.authorization.permission.PermissionRepository;
+import com.ritense.authorization.role.RoleRepository;
 import com.ritense.authorization.permission.ConditionContainer;
 import com.ritense.authorization.permission.Permission;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;

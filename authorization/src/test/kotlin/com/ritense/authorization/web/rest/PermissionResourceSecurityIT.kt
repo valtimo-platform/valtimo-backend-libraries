@@ -16,15 +16,15 @@
 
 package com.ritense.authorization.web.rest
 
-import com.ritense.authorization.PermissionRepository
-import com.ritense.authorization.Role
-import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.permission.PermissionRepository
+import com.ritense.authorization.role.Role
+import com.ritense.authorization.role.RoleRepository
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityActionProvider
-import com.ritense.authorization.web.rest.request.PermissionAvailableRequest
-import com.ritense.authorization.web.rest.request.PermissionContext
+import com.ritense.authorization.web.request.PermissionAvailableRequest
+import com.ritense.authorization.web.request.PermissionContext
 import com.ritense.valtimo.contract.utils.TestUtil
 import com.ritense.valtimo.web.rest.SecuritySpecificEndpointIntegrationTest
 import org.junit.jupiter.api.Test

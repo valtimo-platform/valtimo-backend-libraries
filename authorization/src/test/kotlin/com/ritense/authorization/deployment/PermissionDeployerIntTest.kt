@@ -19,9 +19,9 @@ package com.ritense.authorization.deployment
 import com.ritense.authorization.Action
 import com.ritense.authorization.Action.Companion.VIEW
 import com.ritense.authorization.BaseIntegrationTest
-import com.ritense.authorization.PermissionRepository
-import com.ritense.authorization.permission.FieldPermissionCondition
-import com.ritense.authorization.permission.PermissionConditionOperator
+import com.ritense.authorization.permission.PermissionRepository
+import com.ritense.authorization.permission.condition.FieldPermissionCondition
+import com.ritense.authorization.permission.condition.PermissionConditionOperator
 import com.ritense.authorization.testimpl.TestDocument
 import com.ritense.valtimo.changelog.repository.ChangesetRepository
 import org.assertj.core.api.Assertions.assertThat

@@ -18,6 +18,9 @@ package com.ritense.authorization
 
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.authorization.role.Role
+import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.testimpl.TestAuthorizationSpecification
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityActionProvider

@@ -16,12 +16,12 @@
 
 package com.ritense
 
-import com.ritense.authorization.AuthorizationRequest
+import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.AuthorizationSpecification
-import com.ritense.authorization.EntityAuthorizationRequest
+import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.permission.Permission
-import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
+import com.ritense.authorization.specification.impl.NoopAuthorizationSpecificationFactory
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService

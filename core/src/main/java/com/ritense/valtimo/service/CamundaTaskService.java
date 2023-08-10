@@ -18,10 +18,10 @@ package com.ritense.valtimo.service;
 
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.authorization.AuthorizationSpecification;
-import com.ritense.authorization.DelegateUserEntityAuthorizationRequest;
-import com.ritense.authorization.EntityAuthorizationRequest;
-import com.ritense.authorization.Role;
+import com.ritense.authorization.specification.AuthorizationSpecification;
+import com.ritense.authorization.request.DelegateUserEntityAuthorizationRequest;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
+import com.ritense.authorization.role.Role;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
 import com.ritense.valtimo.camunda.domain.CamundaTask;

@@ -17,12 +17,12 @@
 package com.ritense.authorization.web.rest
 
 import com.ritense.authorization.BaseIntegrationTest
-import com.ritense.authorization.PermissionRepository
-import com.ritense.authorization.RoleRepository
-import com.ritense.authorization.web.rest.request.DeleteRolesRequest
-import com.ritense.authorization.web.rest.request.SaveRoleRequest
-import com.ritense.authorization.web.rest.request.UpdateRolePermissionRequest
-import com.ritense.authorization.web.rest.request.UpdateRoleRequest
+import com.ritense.authorization.permission.PermissionRepository
+import com.ritense.authorization.role.RoleRepository
+import com.ritense.authorization.web.request.DeleteRolesRequest
+import com.ritense.authorization.web.request.SaveRoleRequest
+import com.ritense.authorization.web.request.UpdateRolePermissionRequest
+import com.ritense.authorization.web.request.UpdateRoleRequest
 import com.ritense.valtimo.contract.utils.TestUtil
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach

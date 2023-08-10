@@ -16,9 +16,8 @@
 
 package com.ritense.authorization.permission
 
-import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.Action
-import com.ritense.authorization.Role
+import com.ritense.authorization.role.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import org.hibernate.annotations.Type
 import java.util.UUID

@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.camunda.authorization
 
-import com.ritense.authorization.AuthorizationRequest
-import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.request.AuthorizationRequest
+import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -28,10 +28,10 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class CamundaTaskSpecification(
-    authRequest: AuthorizationRequest<CamundaTask>,
-    permissions: List<Permission>,
-    private val taskService: CamundaTaskService,
-    private val queryDialectHelper: QueryDialectHelper
+        authRequest: AuthorizationRequest<CamundaTask>,
+        permissions: List<Permission>,
+        private val taskService: CamundaTaskService,
+        private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<CamundaTask>(authRequest, permissions) {
     override fun toPredicate(
         root: Root<CamundaTask>,

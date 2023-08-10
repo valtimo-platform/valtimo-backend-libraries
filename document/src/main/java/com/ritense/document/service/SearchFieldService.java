@@ -18,7 +18,7 @@ package com.ritense.document.service;
 
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.authorization.EntityAuthorizationRequest;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;

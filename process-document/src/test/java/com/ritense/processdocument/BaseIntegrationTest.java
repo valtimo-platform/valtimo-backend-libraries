@@ -17,10 +17,10 @@
 package com.ritense.processdocument;
 
 import com.ritense.audit.service.impl.AuditServiceImpl;
-import com.ritense.authorization.AuthorizationRequest;
+import com.ritense.authorization.request.AuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.authorization.EntityAuthorizationRequest;
-import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
+import com.ritense.authorization.specification.impl.NoopAuthorizationSpecificationFactory;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.resource.service.ResourceService;

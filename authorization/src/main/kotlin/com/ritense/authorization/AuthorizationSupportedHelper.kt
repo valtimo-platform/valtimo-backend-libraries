@@ -16,6 +16,7 @@
 
 package com.ritense.authorization
 
+import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.core.ResolvableType

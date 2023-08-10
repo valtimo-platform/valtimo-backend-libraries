@@ -16,8 +16,8 @@
 
 package com.ritense.note.repository
 
-import com.ritense.authorization.AuthorizationRequest
-import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.request.AuthorizationRequest
+import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.note.domain.Note
 import com.ritense.note.service.NoteService
@@ -29,10 +29,10 @@ import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class NoteSpecification(
-    authRequest: AuthorizationRequest<Note>,
-    permissions: List<Permission>,
-    private val noteService: NoteService,
-    private val queryDialectHelper: QueryDialectHelper
+        authRequest: AuthorizationRequest<Note>,
+        permissions: List<Permission>,
+        private val noteService: NoteService,
+        private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<Note>(authRequest, permissions) {
     override fun toPredicate(
         root: Root<Note>,

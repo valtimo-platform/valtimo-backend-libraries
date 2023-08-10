@@ -16,7 +16,7 @@
 
 package com.ritense.document.autoconfiguration
 
-import com.ritense.authorization.AuthorizationSpecificationFactory
+import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.document.JsonSchemaDocumentSpecificationFactory
 import com.ritense.document.SearchFieldSpecificationFactory
 import com.ritense.document.domain.impl.JsonSchemaDocument

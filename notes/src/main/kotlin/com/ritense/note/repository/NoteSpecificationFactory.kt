@@ -16,9 +16,9 @@
 
 package com.ritense.note.repository
 
-import com.ritense.authorization.AuthorizationRequest
-import com.ritense.authorization.AuthorizationSpecification
-import com.ritense.authorization.AuthorizationSpecificationFactory
+import com.ritense.authorization.request.AuthorizationRequest
+import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
 import com.ritense.note.domain.Note
 import com.ritense.note.service.NoteService
@@ -30,8 +30,8 @@ class NoteSpecificationFactory(
 ) : AuthorizationSpecificationFactory<Note> {
 
     override fun create(
-        request: AuthorizationRequest<Note>,
-        permissions: List<Permission>
+            request: AuthorizationRequest<Note>,
+            permissions: List<Permission>
     ): AuthorizationSpecification<Note> {
         return NoteSpecification(
             request,

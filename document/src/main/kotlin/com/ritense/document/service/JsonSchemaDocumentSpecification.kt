@@ -15,9 +15,8 @@
  */
 package com.ritense.document.service
 
-import com.ritense.authorization.AuthorizationRequest
-import com.ritense.authorization.EntityAuthorizationRequest
-import com.ritense.authorization.AuthorizationSpecification
+import com.ritense.authorization.request.AuthorizationRequest
+import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.impl.JsonSchemaDocumentService

@@ -16,7 +16,7 @@
 
 package com.ritense.authorization.web.rest
 
-import com.ritense.authorization.web.rest.request.SearchPermissionsRequest
+import com.ritense.authorization.web.request.SearchPermissionsRequest
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.contract.utils.TestUtil.convertObjectToJsonBytes
 import com.ritense.valtimo.web.rest.SecuritySpecificEndpointIntegrationTest

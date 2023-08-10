@@ -16,9 +16,9 @@
 
 package com.ritense.document
 
-import com.ritense.authorization.AuthorizationRequest
-import com.ritense.authorization.AuthorizationSpecification
-import com.ritense.authorization.AuthorizationSpecificationFactory
+import com.ritense.authorization.request.AuthorizationRequest
+import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.service.JsonSchemaDocumentSpecification
@@ -31,8 +31,8 @@ class JsonSchemaDocumentSpecificationFactory(
 ) : AuthorizationSpecificationFactory<JsonSchemaDocument> {
 
     override fun create(
-        context: AuthorizationRequest<JsonSchemaDocument>,
-        permissions: List<Permission>
+            context: AuthorizationRequest<JsonSchemaDocument>,
+            permissions: List<Permission>
     ): AuthorizationSpecification<JsonSchemaDocument> {
         return JsonSchemaDocumentSpecification(
             context,

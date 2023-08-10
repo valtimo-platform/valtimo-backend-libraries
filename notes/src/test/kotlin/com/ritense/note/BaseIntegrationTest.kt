@@ -16,13 +16,13 @@
 
 package com.ritense.note
 
-import com.ritense.authorization.PermissionRepository
-import com.ritense.authorization.Role
-import com.ritense.authorization.RoleRepository
+import com.ritense.authorization.permission.PermissionRepository
+import com.ritense.authorization.role.Role
+import com.ritense.authorization.role.RoleRepository
 import com.ritense.authorization.permission.ConditionContainer
-import com.ritense.authorization.permission.FieldPermissionCondition
+import com.ritense.authorization.permission.condition.FieldPermissionCondition
 import com.ritense.authorization.permission.Permission
-import com.ritense.authorization.permission.PermissionConditionOperator
+import com.ritense.authorization.permission.condition.PermissionConditionOperator
 import com.ritense.note.domain.Note
 import com.ritense.note.service.NoteActionProvider.Companion.CREATE
 import com.ritense.note.service.NoteActionProvider.Companion.DELETE

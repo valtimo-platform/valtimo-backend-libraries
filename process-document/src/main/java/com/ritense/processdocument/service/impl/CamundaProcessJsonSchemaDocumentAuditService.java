@@ -19,7 +19,7 @@ package com.ritense.processdocument.service.impl;
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.service.AuditService;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.EntityAuthorizationRequest;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;

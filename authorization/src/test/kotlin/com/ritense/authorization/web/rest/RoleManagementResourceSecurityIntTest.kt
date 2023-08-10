@@ -16,12 +16,11 @@
 
 package com.ritense.authorization.web.rest
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ritense.authorization.PermissionRepository
-import com.ritense.authorization.web.rest.request.DeleteRolesRequest
-import com.ritense.authorization.web.rest.request.SaveRoleRequest
-import com.ritense.authorization.web.rest.request.UpdateRolePermissionRequest
-import com.ritense.authorization.web.rest.request.UpdateRoleRequest
+import com.ritense.authorization.permission.PermissionRepository
+import com.ritense.authorization.web.request.DeleteRolesRequest
+import com.ritense.authorization.web.request.SaveRoleRequest
+import com.ritense.authorization.web.request.UpdateRolePermissionRequest
+import com.ritense.authorization.web.request.UpdateRoleRequest
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.contract.utils.TestUtil
 import com.ritense.valtimo.web.rest.SecuritySpecificEndpointIntegrationTest

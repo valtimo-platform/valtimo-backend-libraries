@@ -18,10 +18,15 @@ package com.ritense.authorization
 
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
-import com.ritense.authorization.specification.DenyAuthorizationSpecification
-import com.ritense.authorization.specification.DenyAuthorizationSpecificationFactory
-import com.ritense.authorization.specification.NoopAuthorizationSpecification
-import com.ritense.authorization.specification.NoopAuthorizationSpecificationFactory
+import com.ritense.authorization.permission.PermissionRepository
+import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.authorization.role.Role
+import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.authorization.specification.AuthorizationSpecificationFactory
+import com.ritense.authorization.specification.impl.DenyAuthorizationSpecification
+import com.ritense.authorization.specification.impl.DenyAuthorizationSpecificationFactory
+import com.ritense.authorization.specification.impl.NoopAuthorizationSpecification
+import com.ritense.authorization.specification.impl.NoopAuthorizationSpecificationFactory
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach

@@ -16,7 +16,7 @@
 
 package com.ritense.document.service.impl;
 
-import com.ritense.authorization.EntityAuthorizationRequest;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.searchfield.SearchField;
@@ -60,7 +60,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
+
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
