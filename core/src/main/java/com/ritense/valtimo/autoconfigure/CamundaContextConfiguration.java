@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConditionalOnProperty(prefix = "valtimo.camunda", name = "bean-whitelisting", havingValue = "true")
+@ConditionalOnProperty(prefix = "valtimo.camunda", name = "bean-whitelisting", havingValue = "true", matchIfMissing = true)
 public class CamundaContextConfiguration {
 
     @Bean
