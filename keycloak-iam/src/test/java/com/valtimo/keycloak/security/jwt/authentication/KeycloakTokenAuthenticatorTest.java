@@ -40,9 +40,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.TENANT_KEY;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.*;
 import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.REALM_ACCESS;
 import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.RESOURCE_ACCESS;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
@@ -150,6 +148,7 @@ public class KeycloakTokenAuthenticatorTest {
     private Claims defaultKeycloakClaimWith(Claims role) {
         final Claims claims = new DefaultClaims();
         claims.put(REALM_ACCESS, role);
+        claims.put(NAME_KEY, "John Doe");
         claims.put(EMAIL_KEY, "test@test.com");
         claims.put(TENANT_KEY, "1");
         return claims;
