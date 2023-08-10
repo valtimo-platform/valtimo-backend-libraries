@@ -16,16 +16,18 @@
 
 package com.ritense.processdocument.service.impl.result;
 
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
 import com.ritense.processdocument.service.result.TransactionalResult;
 import com.ritense.valtimo.contract.result.OperationError;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 public class StartProcessForDocumentResultFailed implements StartProcessForDocumentResult, TransactionalResult {
 

@@ -19,7 +19,9 @@ package com.ritense.processdocument.domain;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+
 import java.lang.reflect.InvocationTargetException;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public interface ProcessDefinitionKey {

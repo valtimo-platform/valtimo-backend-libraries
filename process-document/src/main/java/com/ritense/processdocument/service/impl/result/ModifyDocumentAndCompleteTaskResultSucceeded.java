@@ -19,9 +19,11 @@ package com.ritense.processdocument.service.impl.result;
 import com.ritense.document.domain.Document;
 import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskResult;
 import com.ritense.valtimo.contract.result.OperationError;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class ModifyDocumentAndCompleteTaskResultSucceeded implements ModifyDocumentAndCompleteTaskResult {

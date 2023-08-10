@@ -20,9 +20,11 @@ import com.ritense.document.domain.Document;
 import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.valtimo.contract.result.OperationError;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class NewDocumentAndStartProcessResultSucceeded implements NewDocumentAndStartProcessResult {
