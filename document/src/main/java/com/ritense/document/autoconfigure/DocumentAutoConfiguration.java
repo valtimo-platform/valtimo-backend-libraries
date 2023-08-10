@@ -54,7 +54,7 @@ import java.util.Optional;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.document.repository")
-@EntityScan({"com.ritense.document.domain", "com.ritense.tenancy.jpa"})
+@EntityScan(basePackages = "com.ritense.document.domain")
 public class DocumentAutoConfiguration {
 
     @Bean

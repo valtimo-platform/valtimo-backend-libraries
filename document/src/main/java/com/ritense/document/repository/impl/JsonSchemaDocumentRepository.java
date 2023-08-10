@@ -18,6 +18,8 @@ package com.ritense.document.repository.impl;
 
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.repository.CustomDocumentInsert;
+import com.ritense.document.repository.CustomDocumentUpdate;
 import com.ritense.document.repository.DocumentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +30,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSchemaDocument> {
+public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSchemaDocument>
+    , CustomDocumentInsert, CustomDocumentUpdate {
 
     Optional<JsonSchemaDocument> findByIdAndTenantId(
         Document.Id documentId,
