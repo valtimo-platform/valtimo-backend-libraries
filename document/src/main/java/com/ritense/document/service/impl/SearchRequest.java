@@ -78,6 +78,11 @@ public class SearchRequest {
         this.tenantId = tenantId;
     }
 
+    public SearchRequest withTenantId(String tenantId) {
+        this.tenantId = tenantId;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

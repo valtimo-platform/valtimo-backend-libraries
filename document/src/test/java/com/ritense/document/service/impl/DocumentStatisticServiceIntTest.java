@@ -17,6 +17,7 @@
 package com.ritense.document.service.impl;
 
 import com.ritense.document.BaseIntegrationTest;
+import com.ritense.document.WithMockTenantUser;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
@@ -25,7 +26,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import javax.transaction.Transactional;
 import java.util.Set;
@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @Tag("integration")
@@ -59,7 +58,7 @@ class DocumentStatisticServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldReturnUnassignedDocumentCount() {
         var document1 = createDocument(definition, "{}");
         createDocument(definition, "{}");
@@ -69,7 +68,7 @@ class DocumentStatisticServiceIntTest extends BaseIntegrationTest {
 
         assertThat(documentService.getAllByDocumentDefinitionName(Pageable.unpaged(), "house").getTotalElements()).isEqualTo(2);
         assertThat(unassignedDocumentCountDtos).hasSizeGreaterThanOrEqualTo(1);
-        var unassignedHouseCountDto = unassignedDocumentCountDtos.stream().filter(dto->dto.getDocumentDefinitionName().equals("house")).collect(Collectors.toList()).get(0);
+        var unassignedHouseCountDto = unassignedDocumentCountDtos.stream().filter(dto -> dto.getDocumentDefinitionName().equals("house")).collect(Collectors.toList()).get(0);
         assertThat(unassignedHouseCountDto.getDocumentDefinitionName()).isEqualTo("house");
         assertThat(unassignedHouseCountDto.getOpenDocumentCount()).isEqualTo(1);
     }

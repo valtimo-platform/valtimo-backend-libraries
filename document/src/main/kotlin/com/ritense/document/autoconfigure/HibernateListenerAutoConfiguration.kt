@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class HibernateListenerAutoConfiguration {
 
-    @Bean
+   /* @Bean
     fun hibernateConfig(
         hibernateEventListenerIntegrator: HibernateEventListenerIntegrator
     ) = HibernateConfig(hibernateEventListenerIntegrator)
@@ -39,6 +39,6 @@ class HibernateListenerAutoConfiguration {
     @Bean
     fun hibernateEventListenerIntegrator(
         persistedEventListener: PersistedEventListener
-    ) = HibernateEventListenerIntegrator(persistedEventListener)
+    ) = HibernateEventListenerIntegrator(persistedEventListener)*/
 
 }

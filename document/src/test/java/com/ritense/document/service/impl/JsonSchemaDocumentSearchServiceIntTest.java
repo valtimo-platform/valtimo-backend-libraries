@@ -18,15 +18,18 @@ package com.ritense.document.service.impl;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.ritense.document.BaseIntegrationTest;
+import com.ritense.document.WithMockTenantUser;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
 import com.ritense.document.domain.search.AssigneeFilter;
 import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.service.result.CreateDocumentResult;
+import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -36,7 +39,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import javax.transaction.Transactional;
 import javax.validation.ValidationException;
@@ -45,11 +47,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-import static com.ritense.document.domain.search.DatabaseSearchType.*;
+import static com.ritense.document.domain.search.DatabaseSearchType.BETWEEN;
+import static com.ritense.document.domain.search.DatabaseSearchType.EQUAL;
+import static com.ritense.document.domain.search.DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO;
+import static com.ritense.document.domain.search.DatabaseSearchType.IN;
+import static com.ritense.document.domain.search.DatabaseSearchType.LESS_THAN_OR_EQUAL_TO;
+import static com.ritense.document.domain.search.DatabaseSearchType.LIKE;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @Tag("integration")
@@ -57,7 +66,6 @@ import static org.mockito.Mockito.when;
 class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     private static final String USER_ID = "a28994a3-31f9-4327-92a4-210c479d3055";
-    private static final String USERNAME = "john@ritense.com";
     private JsonSchemaDocumentDefinition definition;
     private CreateDocumentResult originalDocument;
 
@@ -99,11 +107,11 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldNotFindSearchMatch() {
         final List<SearchCriteria> searchCriteriaList = List.of(new SearchCriteria("$.street", "random"));
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -117,11 +125,11 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldFindSearchMatch() {
         final List<SearchCriteria> searchCriteriaList = List.of(new SearchCriteria("$.street", "park"));
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -135,10 +143,11 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockTenantUser
     void searchWithoutAuthorizationShouldFindSearchMatch() {
         final List<SearchCriteria> searchCriteriaList = List.of(new SearchCriteria("$.street", "park"));
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -152,14 +161,14 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldFindMultipleSearchMatches() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "park"),
             new SearchCriteria("$.street", "straat")
         );
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -173,13 +182,13 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldFindCaseInsensitive() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "funenpark")
         );
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -193,13 +202,13 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldSearchThroughAllDocumentDefinitionVersions() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.place", "Amsterdam")
         );
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -213,14 +222,14 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldFindDocumentByMultipleCriteria() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "Kalver"),
             new SearchCriteria("$.place", "Amster")
         );
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -234,14 +243,14 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldNotFindDocumentIfNotAllCriteriaMatch() {
         final List<SearchCriteria> searchCriteriaList = List.of(
             new SearchCriteria("$.street", "Kalver"),
             new SearchCriteria("$.place", "random")
         );
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -255,10 +264,10 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldFindDocumentByGlobalSearchFilter() {
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setGlobalSearchFilter("park");
 
@@ -272,9 +281,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldFindDocumentBySequence() {
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setSequence(originalDocument.resultingDocument().get().sequence());
 
@@ -288,9 +297,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldFindDocumentByCreatedBy() {
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setCreatedBy(USERNAME);
 
@@ -304,7 +313,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldReturnPageableData() {
 
         createDocument("{\"street\": \"Czaar Peterstraat\", \"number\": 7}");
@@ -314,7 +323,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             new SearchCriteria("$.street", "Czaar Peterstraat")
         );
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -329,7 +338,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldReturnFullPages() {
 
         createDocument("{\"street\": \"Czaar Peterstraat 1\"}");
@@ -341,7 +350,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             new SearchCriteria("$.street", "Czaar Peterstraat")
         );
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -358,7 +367,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldOrderAllDocumentsByContentProperty() {
 
         createDocument("{\"street\": \"Alexanderkade\"}");
@@ -369,7 +378,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             new SearchCriteria("$.street", "kade")
         );
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -386,7 +395,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldOrderAllDocumentsDescendingByContentProperty() {
 
         createDocument("{\"street\": \"Alexanderkade\"}");
@@ -397,7 +406,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             new SearchCriteria("$.street", "kade")
         );
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -414,7 +423,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldOrderAllDocumentsByMultipleProperties() {
 
         createDocument("{\"street\": \"Alexanderkade\", \"number\": 7}");
@@ -426,7 +435,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             new SearchCriteria("$.street", "kade")
         );
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -447,7 +456,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldOrderAllDocumentsByOtherField() {
 
         CreateDocumentResult documentOne = createDocument("{\"street\": \"Alexanderkade\"}");
@@ -457,7 +466,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             new SearchCriteria("$.street", "kade")
         );
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -472,7 +481,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldOrderAllDocumentsWithoutCapitals() {
 
         CreateDocumentResult documentOne = createDocument("{\"street\": \"abc\",\"place\": \"test\"}");
@@ -482,7 +491,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             new SearchCriteria("$.place", "test")
         );
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = new SearchRequest().withTenantId(TENANT_ID);
         searchRequest.setDocumentDefinitionName(definition.id().name());
         searchRequest.setOtherFilters(searchCriteriaList);
 
@@ -497,19 +506,26 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void searchShouldOrderAllDocumentsBasedOnAssigneeFullName() {
+        var user1 = new ValtimoUserBuilder().id(USER_ID).firstName("Beth").lastName("Xander").build();
+        when(userManagementService.findById("1111")).thenReturn(user1);
+        var user2 = new ValtimoUserBuilder().id(USER_ID).firstName("Anna").lastName("Yablon").build();
+        when(userManagementService.findById("2222")).thenReturn(user2);
+        var user3 = new ValtimoUserBuilder().id(USER_ID).firstName("Beth").lastName("Zabala").build();
+        when(userManagementService.findById("33")).thenReturn(user3);
+
         documentRepository.deleteAllInBatch();
         var documentOne = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
         var documentTwo = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
         var documentThree = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
-        documentOne.setAssignee("1111", "Beth Xander");
-        documentTwo.setAssignee("2222", "Anna Yablon");
-        documentThree.setAssignee("33", "Beth Zabala");
-        documentRepository.saveAll(List.of(documentOne, documentTwo, documentThree));
+
+        documentService.assignUserToDocument(documentOne.id().getId(), "1111", TENANT_ID);
+        documentService.assignUserToDocument(documentTwo.id().getId(), "2222", TENANT_ID);
+        documentService.assignUserToDocument(documentThree.id().getId(), "33", TENANT_ID);
 
         final Page<? extends Document> page = documentSearchService.search(
-            new SearchRequest(),
+            new SearchRequest().withTenantId(TENANT_ID),
             PageRequest.of(0, 10, Sort.by(Direction.DESC, "assigneeFullName"))
         );
 
@@ -521,16 +537,15 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         assertThat(content.get(2).assigneeFullName()).isEqualTo("Anna Yablon");
     }
 
-
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestAndLikeText() {
         documentRepository.deleteAllInBatch();
 
         createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
         createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue("kade")
                 .searchType(LIKE)
@@ -546,7 +561,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestAndLikeTextInListOfMultipleValues() {
         documentRepository.deleteAllInBatch();
 
@@ -554,7 +569,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
         createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue("kade")
                 .addValue("park")
@@ -571,7 +586,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestAndTextInListOfMultipleValues() {
         documentRepository.deleteAllInBatch();
 
@@ -579,7 +594,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
         createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue("Funenpark")
                 .addValue("Alexanderkade")
@@ -598,7 +613,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestAndBetweenRangedValues() {
         documentRepository.deleteAllInBatch();
 
@@ -606,7 +621,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"housenumber\": 2}").resultingDocument().get();
         createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .rangeFrom(1)
                 .rangeTo(2)
@@ -629,7 +644,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestAndFromRangedValue() {
         documentRepository.deleteAllInBatch();
 
@@ -637,7 +652,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"housenumber\": 2}").resultingDocument().get();
         createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .rangeFrom(2)
                 .searchType(GREATER_THAN_OR_EQUAL_TO)
@@ -659,7 +674,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestAndToRangedValue() {
         documentRepository.deleteAllInBatch();
 
@@ -667,7 +682,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"housenumber\": 2}").resultingDocument().get();
         createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .rangeTo(1)
                 .searchType(LESS_THAN_OR_EQUAL_TO)
@@ -687,7 +702,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldFailOnFromSearchWithoutRangeFrom() {
         documentRepository.deleteAllInBatch();
 
@@ -695,7 +710,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"housenumber\": 2}").resultingDocument().get();
         createDocument("{\"housenumber\": 3}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .rangeTo(2)
                 .searchType(GREATER_THAN_OR_EQUAL_TO)
@@ -709,7 +724,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestAndRangedDateValues() {
         documentRepository.deleteAllInBatch();
 
@@ -717,7 +732,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"movedAtDate\": \"2022-02-01\"}").resultingDocument().get();
         createDocument("{\"movedAtDate\": \"2022-03-01\"}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .rangeFrom(LocalDate.parse("2022-01-01"))
                 .rangeTo(LocalDate.parse("2022-02-01"))
@@ -740,7 +755,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestAndFromDateTimeValues() {
         documentRepository.deleteAllInBatch();
 
@@ -748,7 +763,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"movedAtDateTime\": \"2022-01-01T12:10:00\"}").resultingDocument().get();
         createDocument("{\"movedAtDateTime\": \"2022-01-01T12:20:00\"}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .rangeFrom(LocalDateTime.parse("2022-01-01T12:10:00"))
                 .searchType(GREATER_THAN_OR_EQUAL_TO)
@@ -772,32 +787,33 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "example@ritense.com", authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestAndCreatedBy() {
         documentRepository.deleteAllInBatch();
 
         createDocument("{}");
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
-                .addValue("example@ritense.com")
+                .addValue(USERNAME)
                 .searchType(EQUAL)
                 .path("case:createdBy"));
 
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            Pageable.unpaged());
+            Pageable.unpaged()
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(1);
 
         var content = result.getContent();
-        assertEquals("example@ritense.com", content.get(0).createdBy());
+        assertEquals(USERNAME, content.get(0).createdBy());
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestAndOrderBySequence() {
         documentRepository.deleteAllInBatch();
 
@@ -807,7 +823,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         var result = documentSearchService.search(
             definition.id().name(),
-            new AdvancedSearchRequest(),
+            new AdvancedSearchRequest().withTenantId(TENANT_ID),
             PageRequest.of(0, 10, Sort.by(Direction.DESC, "case:sequence")));
 
         assertThat(result).isNotNull();
@@ -820,13 +836,13 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchForCreatedOnCasePropertyWithLocalDateClass() {
         documentRepository.deleteAllInBatch();
 
         var document = createDocument("{}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue(document.createdOn().toLocalDate())
                 .searchType(EQUAL)
@@ -843,18 +859,19 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchForBooleanTrueProperty() {
         documentRepository.deleteAllInBatch();
 
         createDocument("{\"loan-approved\": true}").resultingDocument().get();
         createDocument("{\"loan-approved\": false}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue(true)
                 .searchType(EQUAL)
-                .path("doc:\"loan-approved\""));
+                .path("doc:\"loan-approved\"")
+            );
 
         var result = documentSearchService.search(
             definition.id().name(),
@@ -869,14 +886,14 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchForBooleanFalseProperty() {
         documentRepository.deleteAllInBatch();
 
         createDocument("{\"loan-approved\": true}").resultingDocument().get();
         createDocument("{\"loan-approved\": false}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue(false)
                 .searchType(EQUAL)
@@ -895,14 +912,14 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchForIntegerProperty() {
         documentRepository.deleteAllInBatch();
 
         createDocument("{\"size\": 5}").resultingDocument().get();
         createDocument("{\"size\": 6}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue(5)
                 .searchType(EQUAL)
@@ -919,7 +936,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestWithMultipleFieldsUsingAnd() {
         documentRepository.deleteAllInBatch();
 
@@ -928,7 +945,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
 
         // relying on default SearchOperator being AND
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue("Funenpark")
                 .searchType(EQUAL)
@@ -948,7 +965,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestWithMultipleFieldsUsingOr() {
         documentRepository.deleteAllInBatch();
 
@@ -956,7 +973,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
         createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .searchOperator(SearchOperator.OR)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue("Funenpark")
@@ -977,7 +994,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchWithSearchRequestWithIn() {
         documentRepository.deleteAllInBatch();
 
@@ -985,7 +1002,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         createDocument("{\"street\": \"Wallstreet\"}").resultingDocument().get();
         createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
                 .addValue("Funenpark")
                 .addValue("Czaar Peterstraat")
@@ -1002,7 +1019,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchForOpenCases() {
         documentRepository.deleteAllInBatch();
 
@@ -1012,7 +1029,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         documentService.assignUserToDocument(document2.id().getId(), USER_ID, "1");
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .assigneeFilter(AssigneeFilter.OPEN);
 
         var result = documentSearchService.search(
@@ -1026,7 +1043,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchForMyCases() {
         documentRepository.deleteAllInBatch();
 
@@ -1036,7 +1053,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         documentService.assignUserToDocument(document2.id().getId(), USER_ID, "1");
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .assigneeFilter(AssigneeFilter.MINE);
 
         var result = documentSearchService.search(
@@ -1049,7 +1066,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USERNAME, authorities = USER)
+    @WithMockTenantUser
     void shouldSearchForAll() {
         documentRepository.deleteAllInBatch();
 
@@ -1059,7 +1076,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         documentService.assignUserToDocument(document2.id().getId(), USER_ID, "1");
 
-        var searchRequest = new AdvancedSearchRequest()
+        var searchRequest = new AdvancedSearchRequest().withTenantId(TENANT_ID)
             .assigneeFilter(AssigneeFilter.ALL);
 
         var result = documentSearchService.search(
@@ -1080,6 +1097,17 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             new NewDocumentRequest(
                 definition.id().name(),
                 documentContent.asJson()
+            ).withTenantId(TENANT_ID)
+        );
+    }
+
+    private ModifyDocumentResult modifyDocument(String content, String version) {
+        var documentContent = new JsonDocumentContent(content);
+        return documentService.modifyDocument(
+            new ModifyDocumentRequest(
+                definition.id().toString(),
+                documentContent.asJson(),
+                version
             ).withTenantId(TENANT_ID)
         );
     }

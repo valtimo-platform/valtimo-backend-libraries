@@ -16,32 +16,38 @@
 
 package com.ritense.document.repository.impl;
 
-import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.repository.CustomDocumentInsert;
 import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 
 import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
+@Transactional
 public class CustomDocumentInsertImpl extends AbstractDbUtil implements CustomDocumentInsert {
 
     private EntityManager entityManager;
 
     public CustomDocumentInsertImpl(
         EntityManager entityManager,
-        @Value("${valtimo.database:mysql}") String dbType
+        @Value("${valtimo.database:mysql}") String dbType,
+        ApplicationEventPublisher applicationEventPublisher
     ) {
         this.entityManager = entityManager;
         this.dbType = dbType;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    public void insertForTenant(Document document, String tenantId) {
+    public void insertForTenant(JsonSchemaDocument document, String tenantId) {
         var insertQuery = entityManager.createNativeQuery(" " +
             " INSERT INTO   json_schema_document " +
             " (             json_schema_document_id " +
             " ,             json_document_content " +
             " ,             document_definition_name " +
             " ,             document_definition_version " +
+            " ,             sequence" +
             " ,             created_on " +
             " ,             created_by " +
             " ,             assignee_id " +
@@ -53,6 +59,7 @@ public class CustomDocumentInsertImpl extends AbstractDbUtil implements CustomDo
             " ,             :content" +
             " ,             :documentDefinitionName" +
             " ,             :documentDefinitionVersion" +
+            " ,             :sequence" +
             " ,             :createdOn" +
             " ,             :createdBy" +
             " ,             :assigneeId" +
@@ -63,9 +70,10 @@ public class CustomDocumentInsertImpl extends AbstractDbUtil implements CustomDo
         ).unwrap(NativeQuery.class);
 
         insertQuery.setParameter("id", document.id().getId());
-        insertQuery.setParameter("content", document.content(), getJsonType());
+        insertQuery.setParameter("content", document.content().asJson(), getJsonType());
         insertQuery.setParameter("documentDefinitionName", document.definitionId().name());
         insertQuery.setParameter("documentDefinitionVersion", document.definitionId().version());
+        insertQuery.setParameter("sequence", document.sequence());
         insertQuery.setParameter("createdOn", document.createdOn());
         insertQuery.setParameter("createdBy", document.createdBy());
         insertQuery.setParameter("assigneeId", document.assigneeId());
@@ -73,7 +81,9 @@ public class CustomDocumentInsertImpl extends AbstractDbUtil implements CustomDo
         insertQuery.setParameter("documentRelations", document.relations(), getJsonType());
         insertQuery.setParameter("relatedFiles", document.relatedFiles(), getJsonType());
         insertQuery.setParameter("tenantId", document.tenantId());
-        insertQuery.executeUpdate();
+        final var result = insertQuery.executeUpdate();
+        assert result == 1;
+        publishEvents(document);
     }
 
 }

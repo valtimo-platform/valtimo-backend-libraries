@@ -79,13 +79,20 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     @Transactional
     @Override
     public void makeSnapshot(Document.Id documentId, LocalDateTime createdOn, String createdBy) {
-        var document = documentService.findBy(documentId, tenantResolver.getTenantId())
-            .orElseThrow(() -> new DocumentNotFoundException("Document not found with id " + documentId));
+        var document = documentService.getDocumentBy(documentId, tenantResolver.getTenantId());
+            //.orElseThrow(() -> new DocumentNotFoundException("Document not found with id " + documentId));
 
         var documentDefinition = documentDefinitionService.findBy(document.definitionId())
             .orElseThrow();
 
-        documentSnapshotRepository.saveAndFlush(new JsonSchemaDocumentSnapshot(document, createdOn, createdBy, documentDefinition));
+        documentSnapshotRepository.saveAndFlush(
+            new JsonSchemaDocumentSnapshot(
+                document,
+                createdOn,
+                createdBy,
+                documentDefinition
+            )
+        );
     }
 
     @Transactional

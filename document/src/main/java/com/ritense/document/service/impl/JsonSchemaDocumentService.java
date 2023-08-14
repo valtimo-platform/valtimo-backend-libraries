@@ -19,7 +19,12 @@ package com.ritense.document.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.RelatedFile;
-import com.ritense.document.domain.impl.*;
+import com.ritense.document.domain.impl.JsonDocumentContent;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.JsonSchemaDocumentId;
+import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
+import com.ritense.document.domain.impl.JsonSchemaRelatedFile;
 import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
 import com.ritense.document.domain.impl.request.DocumentRelationRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
@@ -41,9 +46,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class JsonSchemaDocumentService implements DocumentService {
 
@@ -71,6 +82,8 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public Optional<JsonSchemaDocument> findBy(Document.Id documentId, String tenantId) {
+        assertArgumentNotNull(documentId, "documentId is required");
+        assertArgumentNotEmpty(tenantId, "tenantId is required");
         return documentRepository.findByIdAndTenantId(documentId, tenantId);
     }
 
@@ -254,6 +267,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     public JsonSchemaDocument getDocumentBy(Document.Id documentId, String tenantId) {
+        assertArgumentNotEmpty(tenantId, "tenantId is required");
         return findBy(documentId, tenantId)
             .orElseThrow(() -> new DocumentNotFoundException("Unable to find document with ID " + documentId));
     }
@@ -291,7 +305,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         document.setAssignee(assigneeId, assignee.getFullName());
         documentRepository.updateByTenant(
             document,
-            document.tenantId()
+            tenantId
         );
     }
 

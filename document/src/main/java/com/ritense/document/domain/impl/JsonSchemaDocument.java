@@ -36,20 +36,36 @@ import com.ritense.document.service.result.error.DocumentOperationError;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileAddedEvent;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEvent;
-import com.ritense.valtimo.contract.domain.AbstractAggregateRoot;
+import com.ritense.valtimo.contract.domain.AggregateRoot;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.ritense.valtimo.contract.utils.AssertionConcern.*;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 
 @Entity
 @Table(
@@ -61,7 +77,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.*;
         @Index(name = "sequence_index", columnList = "sequence")
     }
 )
-public class JsonSchemaDocument extends AbstractAggregateRoot
+public class JsonSchemaDocument extends AggregateRoot
     implements Document, Persistable<JsonSchemaDocumentId> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocument.class);
@@ -103,7 +119,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot
     @Column(name = "related_files", columnDefinition = "json")
     private Set<JsonSchemaRelatedFile> relatedFiles = new HashSet<>();
 
-    @Column(name = "tenantId", columnDefinition = "varchar(255)", updatable = false)
+    @Column(name = "tenant_id", columnDefinition = "varchar(255)", updatable = false)
     private String tenantId;
 
     private JsonSchemaDocument(
@@ -298,8 +314,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot
         relatedFiles.forEach(file -> removeRelatedFileBy(file.getFileId()));
     }
 
-    public void setAssignee(String id, String fullName) {
-        this.assigneeId = id;
+    public void setAssignee(String assigneeId, String fullName) {
+        this.assigneeId = assigneeId;
         this.assigneeFullName = fullName;
         this.modifiedOn = LocalDateTime.now();
         this.registerEvent(

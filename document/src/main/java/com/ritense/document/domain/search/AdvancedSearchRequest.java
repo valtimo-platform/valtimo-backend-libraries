@@ -78,6 +78,11 @@ public class AdvancedSearchRequest {
         this.tenantId = tenantId;
     }
 
+    public AdvancedSearchRequest withTenantId(String tenantId) {
+        this.tenantId = tenantId;
+        return this;
+    }
+
     public static class OtherFilter {
 
         private String path;

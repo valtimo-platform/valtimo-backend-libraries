@@ -24,7 +24,11 @@ import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
-import com.ritense.document.service.*;
+import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.DocumentSearchService;
+import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.DocumentSnapshotService;
+import com.ritense.document.service.SearchFieldService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -108,4 +112,5 @@ public abstract class BaseIntegrationTest extends BaseTest {
             ).withTenantId(TENANT_ID)
         ).resultingDocument().orElseThrow();
     }
+
 }

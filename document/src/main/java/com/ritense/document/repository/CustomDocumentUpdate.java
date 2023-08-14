@@ -16,10 +16,10 @@
 
 package com.ritense.document.repository;
 
-import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 
 public interface CustomDocumentUpdate {
 
-    void updateByTenant(Document document, String tenantId);
+    void updateByTenant(JsonSchemaDocument document, String tenantId);
 
 }

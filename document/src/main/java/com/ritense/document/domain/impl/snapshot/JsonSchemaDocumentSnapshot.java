@@ -20,12 +20,12 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import org.springframework.data.domain.Persistable;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -45,9 +45,6 @@ public class JsonSchemaDocumentSnapshot implements DocumentSnapshot, Persistable
     @Embedded
     private HistoricDocument document;
 
-    @Transient
-    private transient boolean isNew = false;
-
     public JsonSchemaDocumentSnapshot(
         JsonSchemaDocument document,
         LocalDateTime createdOn,
@@ -58,7 +55,6 @@ public class JsonSchemaDocumentSnapshot implements DocumentSnapshot, Persistable
         this.createdOn = createdOn;
         this.createdBy = createdBy;
         this.document = new HistoricDocument(document, documentDefinition);
-        this.isNew = true;
     }
 
     private JsonSchemaDocumentSnapshot() {
@@ -91,7 +87,7 @@ public class JsonSchemaDocumentSnapshot implements DocumentSnapshot, Persistable
 
     @Override
     public boolean isNew() {
-        return isNew;
+        return id.isNew();
     }
 
 }

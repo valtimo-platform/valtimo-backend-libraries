@@ -16,10 +16,10 @@
 
 package com.ritense.document.repository;
 
-import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 
 public interface CustomDocumentInsert {
 
-    void insertForTenant(Document document, String tenantId);
+    void insertForTenant(JsonSchemaDocument document, String tenantId);
 
 }

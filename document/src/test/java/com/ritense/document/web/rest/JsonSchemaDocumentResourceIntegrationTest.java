@@ -17,7 +17,7 @@
 package com.ritense.document.web.rest;
 
 import com.ritense.document.BaseIntegrationTest;
-import com.ritense.document.domain.Document;
+import com.ritense.document.WithMockTenantUser;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.repository.DocumentRepository;
@@ -27,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -43,9 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Transactional
 class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
-    private static final String USER_EMAIL = "user@valtimo.nl";
-
-    private Document document;
+    private JsonSchemaDocument document;
     private JsonSchemaDocumentResource jsonSchemaDocumentResource;
     private MockMvc mockMvc;
 
@@ -67,7 +67,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
             TENANT_ID
         );
         document = result.resultingDocument().orElseThrow();
-        documentRepository.save(document);
+        documentRepository.insertForTenant(document, TENANT_ID);
 
         documentDefinitionService.putDocumentDefinitionRoles(
             document.definitionId().name(),
@@ -85,7 +85,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USER_EMAIL, authorities = {USER})
+    @WithMockTenantUser
     void shouldAssignUserToCase() throws Exception {
         var user = mockUser("John", "Doe");
         when(userManagementService.findById(user.getId())).thenReturn(user);
@@ -100,7 +100,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
             .andExpect(status().isOk());
 
         // Assert that the assignee is saved in the document
-        var result = documentRepository.findById(document.id());
+        var result = documentRepository.findByIdAndTenantId(document.id(), TENANT_ID);
 
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof JsonSchemaDocument);
@@ -113,7 +113,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USER_EMAIL, authorities = {USER})
+    @WithMockTenantUser
     void shouldNotAssignInvalidUserId() throws Exception {
         var user = mockUser("John", "Doe");
         when(userManagementService.findById(user.getId())).thenReturn(null);
@@ -129,7 +129,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = USER_EMAIL, authorities = {USER})
+    @WithMockTenantUser
     void shouldUnassignUserFromCase() throws Exception {
         var user = mockUser("John", "Doe");
         when(userManagementService.findById(user.getId())).thenReturn(user);
@@ -141,7 +141,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
             .andExpect(status().isOk());
 
         // Assert that the assignee is saved in the document
-        var result = documentRepository.findById(document.id());
+        var result = documentRepository.findByIdAndTenantId(document.id(), TENANT_ID);
 
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof JsonSchemaDocument);
@@ -150,4 +150,5 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         assertNull(savedDocument.assigneeId());
         assertNull(savedDocument.assigneeFullName());
     }
+
 }
