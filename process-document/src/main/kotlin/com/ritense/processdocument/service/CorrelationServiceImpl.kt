@@ -93,6 +93,7 @@ class CorrelationServiceImpl(
 
         return result
     }
+
     override fun sendCatchEventMessageToAll(message: String, businessKey: String): List<MessageCorrelationResult> {
         return sendCatchEventMessageToAll(message, businessKey, null)
     }
