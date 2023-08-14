@@ -21,6 +21,7 @@ import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+
 import java.io.InputStream;
 
 public class MetaJsonSchemaV7Draft {

@@ -19,6 +19,7 @@ package com.ritense.document.domain.snapshot;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.ritense.document.domain.Document;
+
 import java.time.LocalDateTime;
 
 public interface DocumentSnapshot {

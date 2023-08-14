@@ -30,11 +30,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.*;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.*;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.DATE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.DATETIME;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TIME;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTIPLE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTI_SELECT_DROPDOWN;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.RANGE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE_SELECT_DROPDOWN;
 import static com.ritense.document.domain.search.AssigneeFilter.MINE;
 import static com.ritense.document.domain.search.AssigneeFilter.OPEN;
-import static java.time.format.DateTimeFormatter.*;
+import static java.time.format.DateTimeFormatter.ISO_INSTANT;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE;
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
 
 public class SearchRequestValidator {
 

@@ -19,7 +19,9 @@ package com.ritense.document.domain.diff;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.flipkart.zjsonpatch.DiffFlags;
 import com.flipkart.zjsonpatch.JsonDiff;
+
 import java.util.EnumSet;
+
 import static com.ritense.document.domain.diff.JsonDifferenceFlag.defaultDiffFlags;
 
 public interface JsonDifferenceService {

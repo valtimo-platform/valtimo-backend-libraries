@@ -17,11 +17,12 @@
 package com.ritense.document.domain.impl.listener;
 
 import com.ritense.document.service.DocumentDefinitionService;
-import javax.transaction.Transactional;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+
+import javax.transaction.Transactional;
 
 public class ApplicationReadyEventListenerImpl {
 

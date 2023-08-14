@@ -17,10 +17,22 @@
 package com.ritense.document.service.impl;
 
 import com.jayway.jsonpath.InvalidPathException;
-import com.jayway.jsonpath.internal.path.*;
+import com.jayway.jsonpath.internal.path.ArrayPathToken;
+import com.jayway.jsonpath.internal.path.CompiledPath;
+import com.jayway.jsonpath.internal.path.FunctionPathToken;
+import com.jayway.jsonpath.internal.path.PathCompiler;
+import com.jayway.jsonpath.internal.path.PathToken;
+import com.jayway.jsonpath.internal.path.PredicatePathToken;
+import com.jayway.jsonpath.internal.path.RootPathToken;
+import com.jayway.jsonpath.internal.path.ScanPathToken;
+import com.jayway.jsonpath.internal.path.WildcardPathToken;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.EveritSchemaAllowsPropertyKt;
-import com.ritense.document.domain.impl.*;
+import com.ritense.document.domain.impl.JsonSchema;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRoleId;
 import com.ritense.document.exception.DocumentDefinitionDeploymentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;

@@ -18,6 +18,7 @@ package com.ritense.document.service.result;
 
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.valtimo.contract.result.OperationError;
+
 import java.util.List;
 
 public class DeployDocumentDefinitionResultFailed implements DeployDocumentDefinitionResult {

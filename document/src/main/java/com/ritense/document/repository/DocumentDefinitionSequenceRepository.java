@@ -20,6 +20,7 @@ import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.sequence.DocumentDefinitionSequenceRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+
 import java.util.Optional;
 
 @NoRepositoryBean
