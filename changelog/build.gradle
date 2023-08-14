@@ -31,7 +31,9 @@ dependencies {
 
     implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
-    testImplementation project(":core")
+    testImplementation (project(":core")) {
+        exclude(group: "com.ritense.valtimo", module: "changelog")
+    }
     testImplementation project(":resource:local-resource")
     testImplementation project(":test-utils-common")
 

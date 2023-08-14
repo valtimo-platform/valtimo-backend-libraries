@@ -98,21 +98,21 @@ public class ValtimoAutoConfiguration {
         return new BpmnModelService(repositoryService);
     }
 
-//    @Bean
-//    @ConditionalOnMissingBean(ValtimoPermissionEvaluator.class)
-//    public ValtimoPermissionEvaluator valtimoPermissionEvaluator(
-//        final TaskAccessPermission taskAccessPermission
-//    ) {
-//        final HashMap<String, Permission> permissionMap = new HashMap<>();
-//        permissionMap.put("taskAccess", taskAccessPermission);
-//        return new ValtimoPermissionEvaluator(permissionMap);
-//    }
-//
-//    @Bean
-//    @ConditionalOnMissingBean(TaskAccessPermission.class)
-//    public TaskAccessPermission taskAccessPermission(final CamundaTaskService taskService) {
-//        return new TaskAccessPermission(taskService);
-//    }
+    @Bean
+    @ConditionalOnMissingBean(ValtimoPermissionEvaluator.class)
+    public ValtimoPermissionEvaluator valtimoPermissionEvaluator(
+        final TaskAccessPermission taskAccessPermission
+    ) {
+        final HashMap<String, Permission> permissionMap = new HashMap<>();
+        permissionMap.put("taskAccess", taskAccessPermission);
+        return new ValtimoPermissionEvaluator(permissionMap);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(TaskAccessPermission.class)
+    public TaskAccessPermission taskAccessPermission(final CamundaTaskService taskService) {
+        return new TaskAccessPermission(taskService);
+    }
 
     @Bean
     @ConditionalOnMissingBean(ProcessApplicationStartedEventListener.class)

@@ -27,16 +27,16 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class ValtimoMethodSecurityAutoConfiguration extends GlobalMethodSecurityConfiguration {
 
-//    private final ValtimoPermissionEvaluator valtimoPermissionEvaluator;
-//
-//    public ValtimoMethodSecurityAutoConfiguration(ValtimoPermissionEvaluator valtimoPermissionEvaluator) {
-//        this.valtimoPermissionEvaluator = valtimoPermissionEvaluator;
-//    }
+    private final ValtimoPermissionEvaluator valtimoPermissionEvaluator;
+
+    public ValtimoMethodSecurityAutoConfiguration(ValtimoPermissionEvaluator valtimoPermissionEvaluator) {
+        this.valtimoPermissionEvaluator = valtimoPermissionEvaluator;
+    }
 
     @Override
     protected MethodSecurityExpressionHandler createExpressionHandler() {
         final DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-//        expressionHandler.setPermissionEvaluator(valtimoPermissionEvaluator);
+        expressionHandler.setPermissionEvaluator(valtimoPermissionEvaluator);
         return expressionHandler;
     }
 
