@@ -31,6 +31,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSnapshotService;
 import com.ritense.document.web.rest.DocumentSnapshotResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSnapshotResource;
+import com.ritense.tenancy.TenantResolver;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -49,9 +50,15 @@ public class DocumentSnapshotAutoConfiguration {
     public DocumentSnapshotService documentSnapshotService(
         final DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository,
         final JsonSchemaDocumentService documentService,
-        final JsonSchemaDocumentDefinitionService documentDefinitionService
+        final JsonSchemaDocumentDefinitionService documentDefinitionService,
+        final TenantResolver tenantResolver
     ) {
-        return new JsonSchemaDocumentSnapshotService(documentSnapshotRepository, documentService, documentDefinitionService);
+        return new JsonSchemaDocumentSnapshotService(
+            documentSnapshotRepository,
+            documentService,
+            documentDefinitionService,
+            tenantResolver
+        );
     }
 
     @Bean
@@ -93,7 +100,7 @@ public class DocumentSnapshotAutoConfiguration {
         DocumentSnapshotRepository<JsonSchemaDocumentSnapshot>,
         JsonSchemaDocumentSnapshot,
         DocumentSnapshot.Id
-    > postgresJsonSchemaDocumentSnapshotRepository() {
+        > postgresJsonSchemaDocumentSnapshotRepository() {
         return new JpaRepositoryFactoryBean<>(PostgresJsonSchemaDocumentSnapshotRepository.class);
     }
 
@@ -103,7 +110,7 @@ public class DocumentSnapshotAutoConfiguration {
         DocumentSnapshotRepository<JsonSchemaDocumentSnapshot>,
         JsonSchemaDocumentSnapshot,
         DocumentSnapshot.Id
-    > mysqlJsonSchemaDocumentSnapshotRepository() {
+        > mysqlJsonSchemaDocumentSnapshotRepository() {
         return new JpaRepositoryFactoryBean<>(MysqlJsonSchemaDocumentSnapshotRepository.class);
     }
 }

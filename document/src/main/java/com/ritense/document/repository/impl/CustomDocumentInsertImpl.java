@@ -18,33 +18,37 @@ package com.ritense.document.repository.impl;
 
 import com.ritense.document.domain.Document;
 import com.ritense.document.repository.CustomDocumentInsert;
-import com.vladmihalcea.hibernate.type.json.JsonStringType;
 import org.hibernate.query.NativeQuery;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.EntityManager;
 
-public class CustomDocumentInsertImpl implements CustomDocumentInsert {
+public class CustomDocumentInsertImpl extends AbstractDbUtil implements CustomDocumentInsert {
 
     private EntityManager entityManager;
 
-    public CustomDocumentInsertImpl(EntityManager entityManager) {
+    public CustomDocumentInsertImpl(
+        EntityManager entityManager,
+        @Value("${valtimo.database:mysql}") String dbType
+    ) {
         this.entityManager = entityManager;
+        this.dbType = dbType;
     }
 
     public void insertForTenant(Document document, String tenantId) {
         var insertQuery = entityManager.createNativeQuery(" " +
-            " INSERT INTO   json_schema_document doc " +
-            " (             doc.json_schema_document_id " +
-            " ,             doc.json_document_content " +
-            " ,             doc.document_definition_name " +
-            " ,             doc.document_definition_version " +
-            " ,             doc.created_on " +
-            " ,             doc.created_by " +
-            " ,             doc.assignee_id " +
-            " ,             doc.assignee_full_name " +
-            " ,             doc.document_relations " +
-            " ,             doc.related_files" +
-            " ,             doc.tenant_id )" +
+            " INSERT INTO   json_schema_document " +
+            " (             json_schema_document_id " +
+            " ,             json_document_content " +
+            " ,             document_definition_name " +
+            " ,             document_definition_version " +
+            " ,             created_on " +
+            " ,             created_by " +
+            " ,             assignee_id " +
+            " ,             assignee_full_name " +
+            " ,             document_relations " +
+            " ,             related_files" +
+            " ,             tenant_id )" +
             " VALUES (      :id" +
             " ,             :content" +
             " ,             :documentDefinitionName" +
@@ -55,18 +59,19 @@ public class CustomDocumentInsertImpl implements CustomDocumentInsert {
             " ,             :assigneeFullName" +
             " ,             :documentRelations" +
             " ,             :relatedFiles" +
-            " ,             :tenantId "
-            ).unwrap(NativeQuery.class);
+            " ,             :tenantId ) "
+        ).unwrap(NativeQuery.class);
+
         insertQuery.setParameter("id", document.id().getId());
-        insertQuery.setParameter("content", document.content().asJson(), JsonStringType.INSTANCE);
+        insertQuery.setParameter("content", document.content(), getJsonType());
         insertQuery.setParameter("documentDefinitionName", document.definitionId().name());
         insertQuery.setParameter("documentDefinitionVersion", document.definitionId().version());
         insertQuery.setParameter("createdOn", document.createdOn());
         insertQuery.setParameter("createdBy", document.createdBy());
         insertQuery.setParameter("assigneeId", document.assigneeId());
         insertQuery.setParameter("assigneeFullName", document.assigneeFullName());
-        insertQuery.setParameter("documentRelations", document.relations(), JsonStringType.INSTANCE);
-        insertQuery.setParameter("relatedFiles", document.relatedFiles(), JsonStringType.INSTANCE);
+        insertQuery.setParameter("documentRelations", document.relations(), getJsonType());
+        insertQuery.setParameter("relatedFiles", document.relatedFiles(), getJsonType());
         insertQuery.setParameter("tenantId", document.tenantId());
         insertQuery.executeUpdate();
     }

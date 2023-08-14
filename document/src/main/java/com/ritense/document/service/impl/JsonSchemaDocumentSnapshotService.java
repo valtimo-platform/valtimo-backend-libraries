@@ -38,11 +38,18 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     private final DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
     private final JsonSchemaDocumentService documentService;
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
+    private final TenantResolver tenantResolver;
 
-    public JsonSchemaDocumentSnapshotService(DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository, JsonSchemaDocumentService documentService, JsonSchemaDocumentDefinitionService documentDefinitionService) {
+    public JsonSchemaDocumentSnapshotService(
+        DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository,
+        JsonSchemaDocumentService documentService,
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        TenantResolver tenantResolver
+    ) {
         this.documentSnapshotRepository = documentSnapshotRepository;
         this.documentService = documentService;
         this.documentDefinitionService = documentDefinitionService;
+        this.tenantResolver = tenantResolver;
     }
 
     @Override
@@ -72,7 +79,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     @Transactional
     @Override
     public void makeSnapshot(Document.Id documentId, LocalDateTime createdOn, String createdBy) {
-        var document = documentService.findBy(documentId, new TenantResolver().getTenantId())
+        var document = documentService.findBy(documentId, tenantResolver.getTenantId())
             .orElseThrow(() -> new DocumentNotFoundException("Document not found with id " + documentId));
 
         var documentDefinition = documentDefinitionService.findBy(document.definitionId())

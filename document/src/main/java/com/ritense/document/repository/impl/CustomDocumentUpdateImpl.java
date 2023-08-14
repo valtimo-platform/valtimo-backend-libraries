@@ -34,22 +34,22 @@ public class CustomDocumentUpdateImpl implements CustomDocumentUpdate {
     @Override
     public void updateByTenant(Document document, String tenantId) {
         var updateQuery = entityManager.createNativeQuery(" " +
-            " UPDATE JsonSchemaDocument doc " +
-            " SET    doc.content = :content " +
-            " ,      doc.document_definition_name = :documentDefinitionName " +
-            " ,      doc.document_definition_version = :documentDefinitionVersion " +
-            " ,      doc.modifiedOn = :modifiedOn " +
-            " ,      doc.assigneeId = :assigneeId " +
-            " ,      doc.assigneeFullName = :assigneeFullName " +
-            " ,      doc.documentRelations = :documentRelations " +
-            " ,      doc.relatedFiles = :relatedFiles " +
-            " WHERE  doc.id = :id " +
-            " AND    doc.tenantId = :tenantId"
+            " UPDATE json_schema_document " +
+            " SET    content = :content " +
+            " ,      document_definition_name = :documentDefinitionName " +
+            " ,      document_definition_version = :documentDefinitionVersion " +
+            " ,      modifiedOn = :modifiedOn " +
+            " ,      assigneeId = :assigneeId " +
+            " ,      assigneeFullName = :assigneeFullName " +
+            " ,      documentRelations = :documentRelations " +
+            " ,      relatedFiles = :relatedFiles " +
+            " WHERE  id = :id " +
+            " AND    tenantId = :tenantId"
         ).unwrap(NativeQuery.class);
-        updateQuery.setParameter("content", document.content().asJson(), JsonStringType.INSTANCE);
+        updateQuery.setParameter("content", document.content(), JsonStringType.INSTANCE);
         updateQuery.setParameter("documentDefinitionName", document.definitionId().name());
         updateQuery.setParameter("documentDefinitionVersion", document.definitionId().version());
-        updateQuery.setParameter("modifiedOn", document.modifiedOn());
+        updateQuery.setParameter("modifiedOn", document.modifiedOn().orElseThrow());
         updateQuery.setParameter("assigneeId", document.assigneeId());
         updateQuery.setParameter("assigneeFullName", document.assigneeFullName());
         updateQuery.setParameter("documentRelations", document.relations(), JsonStringType.INSTANCE);
