@@ -19,6 +19,7 @@ package com.ritense.valtimo
 import mu.KotlinLogging
 import org.camunda.bpm.engine.impl.cfg.AbstractProcessEnginePlugin
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
+import org.springframework.context.annotation.Lazy
 
 class CamundaBeansPlugin(
     private val processBeans: Map<Any, Any>
