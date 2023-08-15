@@ -33,17 +33,21 @@ class PersistedEventListener(
                     "onFlushEntity: Processing aggregate root (${entity.javaClass.simpleName}) " +
                         "events (count=${entity.domainEvents().size}) "
                 }
-                entity.domainEvents().forEach { domainEvent ->
+                // Hibernate also flushes for queries, so we need to prevent double publishing.
+                val events = entity.domainEvents().toList()
+                entity.clearDomainEvents()
+                events.forEach { domainEvent ->
                     applicationEventPublisher.publishEvent(domainEvent)
                 }.also {
                     logger.debug {
                         "Published events (count=${entity.domainEvents().size}) "
                     }
-                    entity.clearDomainEvents()
                 }
             }
         }
     }
+
+
 
     companion object {
         val logger = KotlinLogging.logger {}

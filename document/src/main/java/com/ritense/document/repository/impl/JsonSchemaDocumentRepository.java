@@ -30,8 +30,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSchemaDocument>
-    , CustomDocumentInsert, CustomDocumentUpdate {
+public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSchemaDocument>,
+    CustomDocumentInsert,
+    CustomDocumentUpdate {
 
     Optional<JsonSchemaDocument> findByIdAndTenantId(
         Document.Id documentId,

@@ -20,6 +20,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 
 public interface CustomDocumentInsert {
 
-    void insertForTenant(JsonSchemaDocument document, String tenantId);
+    void insert(JsonSchemaDocument document);
 
 }

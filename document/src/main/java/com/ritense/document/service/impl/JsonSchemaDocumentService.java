@@ -134,10 +134,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                     .map(JsonSchemaRelatedFile::from)
                     .map(relatedFile -> relatedFile.withCreatedBy(SecurityUtils.getCurrentUserLogin()))
                     .forEach(document::addRelatedFile);
-                documentRepository.insertForTenant(
-                    document,
-                    newDocumentRequest.tenantId()
-                );
+                documentRepository.insert(document);
             }
         );
         return result;

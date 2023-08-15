@@ -21,7 +21,6 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
-import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.resource.service.ResourceService;
@@ -96,7 +95,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         assertEquals(123L, document.sequence());
         assertEquals("system", document.createdBy());
         assertNotNull(document.createdOn());
-        verify(documentRepository, times(1)).insertForTenant(any(), any());
+        verify(documentRepository, times(1)).insert(any(), any());
     }
 
     @Test
@@ -162,7 +161,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
                 assertEquals(123L, relatedFile.getSizeInBytes());
             }
         );
-        verify(documentRepository, times(1)).insertForTenant(any(), any());
+        verify(documentRepository, times(1)).insert(any(), any());
     }
 
     @Test
