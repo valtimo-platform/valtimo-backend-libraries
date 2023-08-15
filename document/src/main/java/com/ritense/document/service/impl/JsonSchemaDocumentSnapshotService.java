@@ -94,7 +94,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
             documentId,
             fromDateTime,
             toDateTime,
-            roles,
+//            roles,
             pageable
         );
     }

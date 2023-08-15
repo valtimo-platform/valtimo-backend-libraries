@@ -36,7 +36,7 @@ public interface PostgresJsonSchemaDocumentSnapshotRepository extends DocumentSn
     @Query("" +
         "SELECT  distinct ds " +
         "FROM    JsonSchemaDocumentSnapshot ds " +
-        "INNER JOIN JsonSchemaDocumentDefinitionRole ddRole ON ddRole.id.documentDefinitionName = ds.document.documentDefinitionId.name AND ddRole.id.role in :roles " +
+//        "INNER JOIN JsonSchemaDocumentDefinitionRole ddRole ON ddRole.id.documentDefinitionName = ds.document.documentDefinitionId.name AND ddRole.id.role in :roles " +
         "WHERE   (:definitionName IS NULL OR ds.document.documentDefinitionId.name = :definitionName) " +
         "AND     (:documentId IS NULL OR ds.document.id = :documentId) " +
         "AND     (cast(:fromDateTime as timestamp) IS NULL OR ds.createdOn >= :fromDateTime) " +
@@ -46,7 +46,7 @@ public interface PostgresJsonSchemaDocumentSnapshotRepository extends DocumentSn
         @Param("documentId") JsonSchemaDocumentId documentId,
         @Param("fromDateTime") LocalDateTime fromDateTime,
         @Param("toDateTime") LocalDateTime toDateTime,
-        @Param("roles") List<String> roles,
+//        @Param("roles") List<String> roles,
         Pageable pageable
     );
 

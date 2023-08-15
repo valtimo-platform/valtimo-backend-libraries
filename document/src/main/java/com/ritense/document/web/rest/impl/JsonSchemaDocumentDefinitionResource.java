@@ -55,7 +55,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(boolean filteredOnRole, Pageable pageable) {
+    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(Pageable pageable) {
         // this keeps the API backwards compatible with old jpa entity columns in the sort
         PageRequest pageRequest = PageRequest.of(
             pageable.getPageNumber(),
@@ -69,7 +69,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
             )
         );
 
-        return ok(documentDefinitionService.findForUser(filteredOnRole, pageRequest));
+        return ok(documentDefinitionService.findAll(pageRequest));
     }
 
     private String mapSortProperty(String property) {
@@ -90,10 +90,6 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
 
     @Override
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(String name) {
-        if (!documentDefinitionService.currentUserCanAccessDocumentDefinition(true, name)) {
-            ResponseEntity.notFound();
-        }
-
         return ResponseEntity.of(documentDefinitionService.findLatestByName(name));
     }
 
@@ -110,19 +106,6 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     @Override
     public ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(String name) {
         return applyResult(undeployDocumentDefinitionService.undeploy(name));
-    }
-
-    @Override
-    public ResponseEntity<Set<String>> getDocumentDefinitionRoles(String documentDefinitionName) {
-        return ResponseEntity.ok()
-            .body(documentDefinitionService.getDocumentDefinitionRoles(documentDefinitionName));
-    }
-
-    @Override
-    public ResponseEntity<Void> putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles) {
-        documentDefinitionService.putDocumentDefinitionRoles(documentDefinitionName, roles);
-
-        return ResponseEntity.ok().build();
     }
 
     <T extends DeployDocumentDefinitionResult> ResponseEntity<T> applyResult(T result) {

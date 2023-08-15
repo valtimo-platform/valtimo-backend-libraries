@@ -16,24 +16,32 @@
 
 package com.ritense.document.service.impl;
 
+import com.ritense.authorization.permission.ConditionContainer;
+import com.ritense.authorization.permission.Permission;
+import com.ritense.authorization.permission.condition.FieldPermissionCondition;
+import com.ritense.authorization.permission.condition.PermissionConditionOperator;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.service.result.DeployDocumentDefinitionResult;
+import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Tag("integration")
 @Transactional
@@ -43,13 +51,14 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
     private ResourceLoader resourceLoader;
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     public void shouldDeployFromString() {
-        DeployDocumentDefinitionResult result = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"testing.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n");
+        final var result = documentDefinitionService.deploy("""
+                {
+                    "$id": "testing.schema",
+                    "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """);
 
         assertThat(result.documentDefinition()).isNotNull();
         assertThat(result.errors()).isEmpty();
@@ -60,10 +69,10 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     public void shouldDeployResourceAsReadOnly() throws IOException {
 
-        var resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+        final var resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:config/document/definition/noautodeploy/giraffe.schema.json");
 
         documentDefinitionService.deploy(resource.getInputStream());
@@ -74,44 +83,49 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     public void shouldNotDeployASchemaThatChangedReadOnlyFlag() throws IOException {
 
-        var resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+        final var resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:config/document/definition/noautodeploy/rhino.schema.json");
 
         documentDefinitionService.deploy(resource.getInputStream());
 
-        DeployDocumentDefinitionResult result = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"rhino.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n");
+        final var result = documentDefinitionService.deploy("""
+                {
+                    "$id": "rhino.schema",
+                    "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """);
 
         final var documentDefinition = (JsonSchemaDocumentDefinition) documentDefinitionService
             .findLatestByName("rhino").orElseThrow();
         assertThat(documentDefinition.isReadOnly()).isTrue();
 
         assertThat(result.documentDefinition()).isNull();
-        assertThat(result.errors().get(0).asString()).isEqualTo("This schema cannot be updated, because its readonly in previous versions");
+        assertThat(result.errors().get(0).asString()).isEqualTo(
+            "This schema cannot be updated, because its readonly in previous versions");
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     public void shouldDeployNextVersionWhenDifferentSchema() {
 
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"clown.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n");
+        documentDefinitionService.deploy("""
+                {
+                    "$id": "clown.schema",
+                    "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """);
 
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"clown.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n"  +
-            "    \"title\": \"Clown\"" +
-            "}\n");
+        documentDefinitionService
+            .deploy("""
+                    {
+                        "$id": "clown.schema",
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "title": "Clown"
+                    }
+                """);
 
         final var documentDefinition = (JsonSchemaDocumentDefinition) documentDefinitionService
             .findLatestByName("clown").orElseThrow();
@@ -120,9 +134,35 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
+    public void shouldListLatestVersions() {
+        var v1 = documentDefinitionService.deploy("""
+                {
+                    "$id": "clown.schema",
+                    "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """).documentDefinition();
+
+        var v2 = documentDefinitionService
+            .deploy("""
+                    {
+                        "$id": "clown.schema",
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "title": "Clown"
+                    }
+                """).documentDefinition();
+
+        final var documentDefinitions = (List<DocumentDefinition>) documentDefinitionService.findAll(Pageable.unpaged()).toList();
+        assertThat(documentDefinitions).isNotEqualTo(List.of());
+        assertThat(documentDefinitions).doesNotContain(v1);
+        assertThat(documentDefinitions).contains(v2);
+
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     public void shouldNotDeployNextVersionWhenSchemaAlreadyExists() throws IOException {
-        var resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+        final var resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:config/document/definition/house.schema.json");
 
         documentDefinitionService.deploy(resource.getInputStream());
@@ -133,71 +173,64 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
-    public void shouldGetForRolesOnly() throws IllegalAccessException {
-        DocumentDefinition expectedDefinition = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"roles1.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n").documentDefinition();
+    @WithMockUser(username = USERNAME, authorities = USER)
+    public void shouldGetForRolesOnly() {
+        final var expectedDefinition = runWithoutAuthorization(() -> documentDefinitionService.deploy("""
+                {
+                    "$id": "roles1.schema",
+                    "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """)).documentDefinition();
 
         //Unused documentDefinition
-        DocumentDefinition unexpectedDefinition = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"roles2.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n").documentDefinition();
+        final var unexpectedDefinition = runWithoutAuthorization(() -> documentDefinitionService.deploy("""
+                {
+                    "$id": "roles2.schema",
+                    "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """)).documentDefinition();
 
-        documentDefinitionService.putDocumentDefinitionRoles(expectedDefinition.id().name(), Set.of(USER));
+        permissionRepository.save(new Permission(
+            UUID.randomUUID(),
+            JsonSchemaDocumentDefinition.class,
+            JsonSchemaDocumentDefinitionActionProvider.VIEW_LIST,
+            new ConditionContainer(List.of(
+                new FieldPermissionCondition<>(
+                    "id.name",
+                    PermissionConditionOperator.EQUAL_TO,
+                    "roles1"
+                )
+            )),
+            roleRepository.findByKey(USER)
+        ));
 
-        boolean filteredForRole = false;
-        List<DocumentDefinition> all = (List<DocumentDefinition>)documentDefinitionService.findForUser(filteredForRole, Pageable.unpaged()).getContent();
+        final var all = (List<DocumentDefinition>) documentDefinitionService.findAll(Pageable.unpaged()).getContent();
         assertThat(all).contains(expectedDefinition);
         assertThat(all).doesNotContain(unexpectedDefinition);
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = ADMIN)
-    public void shouldGetAllForAdmin() throws IllegalAccessException {
-        DocumentDefinition documentDefinition1 = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"roles1.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n").documentDefinition();
+    @WithMockUser(username = USERNAME, authorities = ADMIN)
+    public void shouldGetAllForAdmin() {
+        final var documentDefinition1 = runWithoutAuthorization(() -> documentDefinitionService.deploy("""
+                {
+                    "$id": "roles1.schema",
+                    "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """)).documentDefinition();
 
-        DocumentDefinition documentDefinition2 = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"roles2.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n").documentDefinition();
+        final var documentDefinition2 = runWithoutAuthorization(() -> documentDefinitionService.deploy("""
+                {
+                    "$id": "roles2.schema",
+                    "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """)).documentDefinition();
 
-        boolean filteredForRole = false;
-        List<DocumentDefinition> all = (List<DocumentDefinition>)documentDefinitionService.findForUser(filteredForRole, Pageable.unpaged()).getContent();
+        assertThatThrownBy(() -> documentDefinitionService.findAllForAdmin(Pageable.unpaged()))
+            .isExactlyInstanceOf(AccessDeniedException.class);
+
+        final var all = (List<DocumentDefinition>) runWithoutAuthorization(() -> documentDefinitionService.findAllForAdmin(Pageable.unpaged())).toList();
         assertThat(all).hasSizeGreaterThanOrEqualTo(2);
         assertThat(all).contains(documentDefinition1, documentDefinition2);
     }
-
-    @Test
-    @WithMockUser(username = "john@ritense.com", authorities = ADMIN)
-    public void shouldNotGetAllForAdmin() throws IllegalAccessException {
-        DocumentDefinition documentDefinition1 = documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"roles1.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n").documentDefinition();
-
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"$id\": \"roles2.schema\",\n" +
-            "    \"$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n").documentDefinition();
-
-        documentDefinitionService.putDocumentDefinitionRoles(documentDefinition1.id().name(), Set.of(ADMIN));
-
-        boolean filteredForRole = true;
-        List<DocumentDefinition> all = (List<DocumentDefinition>)documentDefinitionService.findForUser(filteredForRole, Pageable.unpaged()).getContent();
-        assertThat(all).hasSize(1);
-        assertThat(all).containsOnly(documentDefinition1);
-    }
-
 }

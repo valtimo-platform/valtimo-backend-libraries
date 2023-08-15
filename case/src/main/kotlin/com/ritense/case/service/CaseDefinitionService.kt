@@ -16,6 +16,8 @@
 
 package com.ritense.case.service
 
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
@@ -94,7 +96,10 @@ class CaseDefinitionService(
 
     @Throws(UnknownDocumentDefinitionException::class)
     private fun checkIfDocumentDefinitionExists(caseDefinitionName: String) {
-        documentDefinitionService.findIdByName(caseDefinitionName)
+        //TODO: Fix PBAC
+        runWithoutAuthorization {
+            documentDefinitionService.findIdByName(caseDefinitionName)
+        }
     }
 
     @Throws(UnknownDocumentDefinitionException::class)

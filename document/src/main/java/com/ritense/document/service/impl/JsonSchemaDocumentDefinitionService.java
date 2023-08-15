@@ -26,24 +26,23 @@ import com.jayway.jsonpath.internal.path.PredicatePathToken;
 import com.jayway.jsonpath.internal.path.RootPathToken;
 import com.jayway.jsonpath.internal.path.ScanPathToken;
 import com.jayway.jsonpath.internal.path.WildcardPathToken;
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.EveritSchemaAllowsPropertyKt;
 import com.ritense.document.domain.impl.JsonSchema;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRoleId;
 import com.ritense.document.exception.DocumentDefinitionDeploymentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
-import com.ritense.document.repository.DocumentDefinitionRoleRepository;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.JsonSchemaDocumentDefinitionSpecification;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.service.result.error.DocumentDefinitionError;
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
-import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -51,9 +50,10 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
-
 import javax.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,9 +61,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.CREATE;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.DELETE;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.MODIFY;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.VIEW_LIST;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Transactional
@@ -74,27 +76,45 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     private final ResourceLoader resourceLoader;
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
-    private final DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository;
+    private final AuthorizationService authorizationService;
 
-    public JsonSchemaDocumentDefinitionService(ResourceLoader resourceLoader, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository) {
+    public JsonSchemaDocumentDefinitionService(
+        ResourceLoader resourceLoader,
+        DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
+        AuthorizationService authorizationService
+    ) {
         this.resourceLoader = resourceLoader;
         this.documentDefinitionRepository = documentDefinitionRepository;
-        this.documentDefinitionRoleRepository = documentDefinitionRoleRepository;
+        this.authorizationService = authorizationService;
     }
 
     @Override
     public Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable) {
-        return documentDefinitionRepository.findAll(pageable);
+        Specification<JsonSchemaDocumentDefinition> spec = authorizationService
+            .getAuthorizationSpecification(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW_LIST,
+                    null
+                ),
+                null
+            ).and(
+                JsonSchemaDocumentDefinitionSpecification.byLatestVersion()
+            );
+        return documentDefinitionRepository.findAll(spec, pageable);
     }
 
     @Override
-    public Page<JsonSchemaDocumentDefinition> findForUser(boolean filteredOnRole, Pageable pageable) {
-        List<String> roles = SecurityUtils.getCurrentUserRoles();
-        if (!filteredOnRole && roles.contains(AuthoritiesConstants.ADMIN)) {
-            return documentDefinitionRepository.findAll(pageable);
-        } else {
-            return documentDefinitionRepository.findAllForRoles(roles, pageable);
-        }
+    public Page<JsonSchemaDocumentDefinition> findAllForAdmin(Pageable pageable) {
+        authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    Action.deny(),
+                    null
+                ));
+
+        var spec = JsonSchemaDocumentDefinitionSpecification.byLatestVersion();
+        return documentDefinitionRepository.findAll(spec, pageable);
     }
 
     @Override
@@ -106,31 +126,60 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public Optional<JsonSchemaDocumentDefinition> findBy(DocumentDefinition.Id id) {
-        return documentDefinitionRepository.findById(id);
+        Optional<JsonSchemaDocumentDefinition> optionalDefinition = documentDefinitionRepository.findById(id);
+        optionalDefinition.ifPresent(definition -> {
+            authorizationService
+                .requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocumentDefinition.class,
+                        VIEW,
+                        definition
+                    )
+                );
+        });
+        return optionalDefinition;
     }
 
     @Override
     public Optional<JsonSchemaDocumentDefinition> findLatestByName(String documentDefinitionName) {
-        return documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(documentDefinitionName);
+        Optional<JsonSchemaDocumentDefinition> optionalDefinition = documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(
+            documentDefinitionName);
+
+        optionalDefinition.ifPresent(definition -> {
+            authorizationService
+                .requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocumentDefinition.class,
+                        VIEW,
+                        definition
+                    )
+                );
+        });
+
+        return optionalDefinition;
     }
 
     @Override
     public void deployAll() {
+        //Authorization check is delegated to the store() method
         deployAll(true, false);
     }
 
     @Override
     public void deploy(InputStream inputStream) throws IOException {
+        //Authorization check is delegated to the store() method
         deploy(inputStream, true, false);
     }
 
     @Override
     public DeployDocumentDefinitionResult deploy(String schema) {
+        //Authorization check is delegated to the store() method
         return deploy(schema, false, false);
     }
 
     @Override
     public void deployAll(boolean readOnly, boolean force) {
+        //Authorization check is delegated to the store() method
         logger.info("Deploy all schema's");
         try {
             final Resource[] resources = loadResources();
@@ -146,15 +195,19 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public void deploy(InputStream inputStream, boolean readOnly, boolean force) throws IOException {
+        //Authorization check is delegated to the store() method
         var jsonSchema = JsonSchema.fromString(StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8));
         deploy(jsonSchema, readOnly, force);
     }
 
     @Override
     public DeployDocumentDefinitionResult deploy(String schema, boolean readOnly, boolean force) {
+        //Authorization check is delegated to the store() method
         try {
             var jsonSchema = JsonSchema.fromString(schema);
             return deploy(jsonSchema, readOnly, force);
+        } catch (AccessDeniedException accessDeniedException) {
+            throw accessDeniedException;
         } catch (Exception ex) {
             DocumentDefinitionError error = ex::getMessage;
             return new DeployDocumentDefinitionResultFailed(List.of(error));
@@ -162,11 +215,12 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     private DeployDocumentDefinitionResult deploy(JsonSchema jsonSchema, boolean readOnly, boolean force) {
+        //Authorization check is delegated to the store() method
         try {
             var documentDefinitionName = jsonSchema.getSchema().getId().replace(".schema", "");
             var existingDefinition = findLatestByName(documentDefinitionName);
-            var documentDefinitionId = JsonSchemaDocumentDefinitionId.newId(documentDefinitionName);
 
+            final JsonSchemaDocumentDefinitionId documentDefinitionId;
             if (existingDefinition.isPresent()) {
                 var existingDocumentDefinition = existingDefinition.get();
 
@@ -185,6 +239,8 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                     documentDefinitionId = JsonSchemaDocumentDefinitionId.nextVersion(existingDocumentDefinition.id());
                     logger.info("Schema changed. Deploying next version - {} - {} ", documentDefinitionId, jsonSchema.getSchema().getId());
                 }
+            } else {
+                documentDefinitionId = JsonSchemaDocumentDefinitionId.newId(documentDefinitionName);
             }
 
             var documentDefinition = new JsonSchemaDocumentDefinition(documentDefinitionId, jsonSchema);
@@ -196,6 +252,8 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
             store(documentDefinition);
             logger.info("Deployed schema - {} - {} ", documentDefinitionId, jsonSchema.getSchema().getId());
             return new DeployDocumentDefinitionResultSucceeded(documentDefinition);
+        } catch (AccessDeniedException accessDeniedException) {
+            throw accessDeniedException;
         } catch (Exception ex) {
             DocumentDefinitionError error = ex::getMessage;
             logger.warn(ex.getMessage());
@@ -205,52 +263,61 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public void store(JsonSchemaDocumentDefinition documentDefinition) {
-        assertArgumentNotNull(documentDefinition, "documentDefinition is required");
-        documentDefinitionRepository.findById(documentDefinition.id())
-            .ifPresentOrElse(
+        assertArgumentNotNull(documentDefinition,   "documentDefinition is required");
+
+        Optional<JsonSchemaDocumentDefinition> optionalDefinition = documentDefinitionRepository.findById(documentDefinition.id());
+        // So much TODO:, I've got so much TODO:
+        // - get the latest definition instead of the versioned one?
+        // - check if new version is incremental?
+        // - clean up this optional structure
+        optionalDefinition.ifPresentOrElse(
                 existingDocumentDefinition -> {
                     if (!existingDocumentDefinition.equals(documentDefinition)) {
                         throw new UnsupportedOperationException("Schema already deployed, will cannot redeploy");
                     }
-                }, () -> documentDefinitionRepository.saveAndFlush(documentDefinition)
+                }, () -> {
+                    JsonSchemaDocumentDefinitionId latestDefinitionId = documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(
+                        documentDefinition.id().name()).map(JsonSchemaDocumentDefinition::getId).orElse(null);
+                    authorizationService.requirePermission(
+                            new EntityAuthorizationRequest<>(
+                                JsonSchemaDocumentDefinition.class,
+                                latestDefinitionId == null ? CREATE : MODIFY,
+                                documentDefinition
+                            )
+                    );
+
+                    documentDefinitionRepository.saveAndFlush(documentDefinition);
+                }
             );
     }
 
     @Override
     public void removeDocumentDefinition(String documentDefinitionName) {
+        findLatestByName(documentDefinitionName).ifPresent(documentDefinition -> {
+            authorizationService
+                .requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocumentDefinition.class,
+                        DELETE,
+                        documentDefinition
+                    )
+                );
+        });
+
         documentDefinitionRepository.deleteByIdName(documentDefinitionName);
     }
 
 
     @Override
     public boolean currentUserCanAccessDocumentDefinition(String documentDefinitionName) {
-        return currentUserCanAccessDocumentDefinition(false, documentDefinitionName);
-    }
-
-    @Override
-    public boolean currentUserCanAccessDocumentDefinition(boolean allowPrivilegedRoles, String documentDefinitionName) {
-        List<String> roles = SecurityUtils.getCurrentUserRoles();
-        return (allowPrivilegedRoles && roles.contains(AuthoritiesConstants.ADMIN))
-            || getDocumentDefinitionRoles(documentDefinitionName).stream().anyMatch(roles::contains);
-    }
-
-
-    @Override
-    public Set<String> getDocumentDefinitionRoles(String documentDefinitionName) {
-        return documentDefinitionRoleRepository.findAllByIdDocumentDefinitionName(documentDefinitionName)
-            .stream()
-            .map(role -> role.id().role())
-            .collect(Collectors.toSet());
-    }
-
-    @Override
-    public void putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles) {
-        List<JsonSchemaDocumentDefinitionRole> documentDefinitionRoles = roles.stream().map(it -> new JsonSchemaDocumentDefinitionRole(new JsonSchemaDocumentDefinitionRoleId(
-            documentDefinitionName,
-            it
-        ))).toList();
-        documentDefinitionRoleRepository.deleteByIdDocumentDefinitionName(documentDefinitionName);
-        documentDefinitionRoleRepository.saveAll(documentDefinitionRoles);
+        return findLatestByName(documentDefinitionName)
+            .map(documentDefinition -> authorizationService.hasPermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW,
+                    documentDefinition
+                )
+            )).orElse(false);
     }
 
     @Override

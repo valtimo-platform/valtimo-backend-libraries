@@ -19,13 +19,11 @@ package com.ritense.document.autoconfigure;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
 import com.ritense.document.domain.impl.listener.DocumentRelatedFileSubmittedEventListenerImpl;
 import com.ritense.document.domain.impl.listener.RelatedJsonSchemaDocumentAvailableEventListenerImpl;
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
 import com.ritense.document.repository.DocumentDefinitionRepository;
-import com.ritense.document.repository.DocumentDefinitionRoleRepository;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentDefinitionService;
@@ -93,12 +91,12 @@ public class DocumentAutoConfiguration {
     public JsonSchemaDocumentDefinitionService documentDefinitionService(
         final ResourceLoader resourceLoader,
         final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
-        final DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository
+        final AuthorizationService authorizationService
     ) {
         return new JsonSchemaDocumentDefinitionService(
             resourceLoader,
             documentDefinitionRepository,
-            documentDefinitionRoleRepository
+            authorizationService
         );
     }
 
@@ -115,12 +113,14 @@ public class DocumentAutoConfiguration {
     public UndeployJsonSchemaDocumentDefinitionService undeployDocumentDefinitionService(
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
         final DocumentService documentService,
-        final ApplicationEventPublisher applicationEventPublisher
+        final ApplicationEventPublisher applicationEventPublisher,
+        final AuthorizationService authorizationService
     ) {
         return new UndeployJsonSchemaDocumentDefinitionService(
             documentDefinitionService,
             documentService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            authorizationService
         );
     }
 

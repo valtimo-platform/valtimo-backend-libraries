@@ -16,6 +16,8 @@
 
 package com.ritense.case.service.validations
 
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
@@ -66,7 +68,10 @@ open class ValidationUtils(
     @Throws(InvalidListColumnException::class)
     internal fun existsDocumentDefinition(documentDefinitionName: String) {
         try {
-            documentDefinitionService.findIdByName(documentDefinitionName)
+            //TODO: Fix pbac
+            runWithoutAuthorization {
+                documentDefinitionService.findIdByName(documentDefinitionName)
+            }
         } catch (ex: UnknownDocumentDefinitionException) {
             throw UnknownCaseDefinitionException(ex.message)
         }

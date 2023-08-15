@@ -33,7 +33,7 @@ public interface DocumentSnapshotRepository<T extends DocumentSnapshot> extends 
         JsonSchemaDocumentId documentId,
         LocalDateTime fromDateTime,
         LocalDateTime toDateTime,
-        List<String> roles,
+//        List<String> roles,
         Pageable pageable
     );
 

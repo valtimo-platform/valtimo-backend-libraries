@@ -17,9 +17,11 @@
 package com.ritense.document.autoconfiguration
 
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
+import com.ritense.document.JsonSchemaDocumentDefinitionSpecificationFactory
 import com.ritense.document.JsonSchemaDocumentSpecificationFactory
 import com.ritense.document.SearchFieldSpecificationFactory
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.searchfield.SearchField
 import com.ritense.document.listener.DocumentEventListener
 import com.ritense.document.service.impl.JsonSchemaDocumentService
@@ -31,11 +33,29 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 
 @Configuration
-class DocumentEventAutoConfiguration {
+class DocumentAuthorizationAutoConfiguration {
+    @Bean
+    @ConditionalOnMissingBean(JsonSchemaDocumentSpecificationFactory::class)
+    fun jsonSchemaDocumentSpecificationFactory(
+        @Lazy documentService: JsonSchemaDocumentService,
+        queryDialectHelper: QueryDialectHelper
+    ): AuthorizationSpecificationFactory<JsonSchemaDocument> {
+        return JsonSchemaDocumentSpecificationFactory(documentService, queryDialectHelper)
+    }
 
     @Bean
-    @ConditionalOnMissingBean(DocumentEventListener::class)
-    fun documentCreatedEventListener(sseSubscritionService: SseSubscriptionService): DocumentEventListener {
-        return DocumentEventListener(sseSubscritionService)
+    @ConditionalOnMissingBean(JsonSchemaDocumentDefinitionSpecificationFactory::class)
+    fun jsonSchemaDocumentDefinitionSpecificationFactory(
+        queryDialectHelper: QueryDialectHelper
+    ): AuthorizationSpecificationFactory<JsonSchemaDocumentDefinition> {
+        return JsonSchemaDocumentDefinitionSpecificationFactory(queryDialectHelper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SearchFieldSpecificationFactory::class)
+    fun searchFieldSpecificationFactory(
+        queryDialectHelper: QueryDialectHelper
+    ): AuthorizationSpecificationFactory<SearchField> {
+        return SearchFieldSpecificationFactory(queryDialectHelper)
     }
 }

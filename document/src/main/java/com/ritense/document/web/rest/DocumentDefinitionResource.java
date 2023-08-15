@@ -49,7 +49,6 @@ public interface DocumentDefinitionResource {
 
     @GetMapping("/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
-        @RequestParam(name = "filteredOnRole", defaultValue = "true") boolean filteredOnRole,
         @PageableDefault(sort = {"document_definition_name"}, direction = ASC) Pageable pageable
     );
 
@@ -66,10 +65,4 @@ public interface DocumentDefinitionResource {
 
     @DeleteMapping("/document-definition/{name}")
     ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(@PathVariable String name);
-
-    @GetMapping("/document-definition/{documentDefinitionName}/roles")
-    ResponseEntity<Set<String>> getDocumentDefinitionRoles(@PathVariable String documentDefinitionName);
-
-    @PutMapping("/document-definition/{documentDefinitionName}/roles")
-    ResponseEntity<Void> putDocumentDefinitionRoles(@PathVariable String documentDefinitionName, @RequestBody Set<String> roles);
 }

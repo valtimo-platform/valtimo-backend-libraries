@@ -48,10 +48,6 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
     @BeforeEach
     fun beforeEach() {
         definition = definition()
-        documentDefinitionService.putDocumentDefinitionRoles(
-            definition.id().name(),
-            setOf(USER, AuthoritiesConstants.DEVELOPER)
-        )
         val content = JsonDocumentContent("{\"street\": \"Funenpark\"}")
         originalDocument = runWithoutAuthorization {
             documentService.createDocument(
