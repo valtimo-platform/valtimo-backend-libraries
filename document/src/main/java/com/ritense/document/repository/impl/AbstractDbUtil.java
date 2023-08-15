@@ -46,9 +46,7 @@ public abstract class AbstractDbUtil {
                 "events (count=${entity.domainEvents().size}) "
         );
         document.domainEvents().forEach(
-            domainEvent -> {
-                applicationEventPublisher.publishEvent(domainEvent);
-            }
+            domainEvent -> applicationEventPublisher.publishEvent(domainEvent)
         );
         document.clearDomainEvents();
     }
