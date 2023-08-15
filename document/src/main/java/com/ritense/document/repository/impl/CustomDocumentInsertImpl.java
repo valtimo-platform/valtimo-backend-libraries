@@ -20,6 +20,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.repository.CustomDocumentInsert;
 import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -31,10 +32,12 @@ public class CustomDocumentInsertImpl extends AbstractDbUtil implements CustomDo
 
     public CustomDocumentInsertImpl(
         EntityManager entityManager,
-        @Value("${valtimo.database:mysql}") String dbType
+        @Value("${valtimo.database:mysql}") String dbType,
+        ApplicationEventPublisher applicationEventPublisher
     ) {
         this.entityManager = entityManager;
         this.dbType = dbType;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     public void insert(JsonSchemaDocument document) {
@@ -80,6 +83,7 @@ public class CustomDocumentInsertImpl extends AbstractDbUtil implements CustomDo
         insertQuery.setParameter("tenantId", document.tenantId());
         final var result = insertQuery.executeUpdate();
         assert result == 1;
+        publishEvents(document);
     }
 
 }

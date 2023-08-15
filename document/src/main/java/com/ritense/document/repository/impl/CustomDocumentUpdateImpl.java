@@ -67,6 +67,7 @@ public class CustomDocumentUpdateImpl extends AbstractDbUtil implements CustomDo
         updateQuery.setParameter("tenantId", document.tenantId());
         final var result = updateQuery.executeUpdate();
         assert result == 1;
+        publishEvents(document);
     }
 
 }
