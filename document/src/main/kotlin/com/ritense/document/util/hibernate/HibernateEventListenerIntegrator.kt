@@ -24,7 +24,7 @@ import org.hibernate.integrator.spi.Integrator
 import org.hibernate.service.spi.SessionFactoryServiceRegistry
 
 class HibernateEventListenerIntegrator(
-    private val persistedEventListener: List<PersistedEventListener>
+    private val persistedEventListeners: List<PersistedEventListener>
 ) : Integrator {
 
     override fun integrate(
@@ -33,7 +33,7 @@ class HibernateEventListenerIntegrator(
         serviceRegistry: SessionFactoryServiceRegistry
     ) {
         val eventListenerRegistry = serviceRegistry.getService(EventListenerRegistry::class.java)
-        persistedEventListener.forEach {
+        persistedEventListeners.forEach {
             eventListenerRegistry.appendListeners(EventType.FLUSH_ENTITY, it)
         }
     }

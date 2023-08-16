@@ -43,7 +43,7 @@ class HibernateListenerAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(HibernateEventListenerIntegrator::class)
     fun hibernateEventListenerIntegrator(
-        persistedEventListener: List<PersistedEventListener>
-    ) = HibernateEventListenerIntegrator(persistedEventListener)
+        persistedEventListeners: List<PersistedEventListener>
+    ) = HibernateEventListenerIntegrator(persistedEventListeners)
 
 }
