@@ -20,11 +20,12 @@ import org.hibernate.jpa.boot.spi.IntegratorProvider
 import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer
 
 class HibernateConfig(
-    private val integrator: HibernateEventListenerIntegrator
+    private val hibernateEventListenerIntegrator: HibernateEventListenerIntegrator
 ) : HibernatePropertiesCustomizer {
 
     override fun customize(hibernateProperties: MutableMap<String, Any>) {
-        hibernateProperties["hibernate.integrator_provider"] = IntegratorProvider { listOf(integrator) }
+        hibernateProperties["hibernate.integrator_provider"] =
+            IntegratorProvider { listOf(hibernateEventListenerIntegrator) }
     }
 
 }
