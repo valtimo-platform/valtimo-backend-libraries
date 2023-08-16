@@ -75,6 +75,7 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
 
     @Test
     fun `should count by documentDefinitionName and null criteria`() {
+        documentRepository.deleteAll()
         val definition = definition()
 
         val street = "Sesame Street"
