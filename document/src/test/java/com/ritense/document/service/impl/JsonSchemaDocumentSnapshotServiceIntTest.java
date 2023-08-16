@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Pageable;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -40,7 +39,6 @@ import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.U
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")
-@Transactional
 public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTest {
 
     private JsonSchemaDocumentDefinition definition;
@@ -80,7 +78,6 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     @Test
     @WithMockTenantUser
     public void shouldCreateSnapshotWhenCreatingDocument() {
-
         final var document = (JsonSchemaDocument) createDocument("{}");
         final var page = documentSnapshotService.getDocumentSnapshots(
             null,
