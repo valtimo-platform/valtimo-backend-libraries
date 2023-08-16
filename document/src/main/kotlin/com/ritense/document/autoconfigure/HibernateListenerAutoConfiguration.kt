@@ -19,6 +19,7 @@ package com.ritense.document.autoconfigure
 import com.ritense.document.util.hibernate.HibernateConfig
 import com.ritense.document.util.hibernate.HibernateEventListenerIntegrator
 import com.ritense.document.util.hibernate.PersistedEventListener
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Configuration
 class HibernateListenerAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(HibernateConfig::class)
     fun hibernateConfig(
         hibernateEventListenerIntegrator: HibernateEventListenerIntegrator
     ) = HibernateConfig(hibernateEventListenerIntegrator)
