@@ -18,56 +18,21 @@ package com.ritense.document.repository.impl;
 
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.repository.CustomDocumentUpdate;
-import org.hibernate.query.NativeQuery;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 
-@Transactional
-public class CustomDocumentUpdateImpl extends AbstractDbUtil implements CustomDocumentUpdate {
+public class CustomDocumentUpdateImpl implements CustomDocumentUpdate {
 
     private EntityManager entityManager;
 
-    public CustomDocumentUpdateImpl(
-        EntityManager entityManager,
-        @Value("${valtimo.database:mysql}") String dbType,
-        ApplicationEventPublisher applicationEventPublisher
-    ) {
+    public CustomDocumentUpdateImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.dbType = dbType;
-        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
-    public void updateByTenant(JsonSchemaDocument document, String tenantId) {
-        var updateQuery = entityManager.createNativeQuery(" " +
-            " UPDATE json_schema_document " +
-            " SET    json_document_content = :content " +
-            " ,      document_definition_name = :documentDefinitionName " +
-            " ,      document_definition_version = :documentDefinitionVersion " +
-            " ,      modified_on = :modifiedOn " +
-            " ,      assignee_id = :assigneeId " +
-            " ,      assignee_full_name = :assigneeFullName " +
-            " ,      document_relations = :documentRelations " +
-            " ,      related_files = :relatedFiles " +
-            " WHERE  json_schema_document_id = :id " +
-            " AND    tenant_id = :tenantId"
-        ).unwrap(NativeQuery.class);
-        updateQuery.setParameter("content", document.content().asJson(), getJsonType());
-        updateQuery.setParameter("documentDefinitionName", document.definitionId().name());
-        updateQuery.setParameter("documentDefinitionVersion", document.definitionId().version());
-        updateQuery.setParameter("modifiedOn", document.modifiedOn().orElseThrow());
-        updateQuery.setParameter("assigneeId", document.assigneeId());
-        updateQuery.setParameter("assigneeFullName", document.assigneeFullName());
-        updateQuery.setParameter("documentRelations", document.relations(), getJsonType());
-        updateQuery.setParameter("relatedFiles", document.relatedFiles(), getJsonType());
-        updateQuery.setParameter("id", document.id().getId());
-        updateQuery.setParameter("tenantId", document.tenantId());
-        final var result = updateQuery.executeUpdate();
-        assert result == 1;
-        publishEvents(document);
+    public void update(JsonSchemaDocument document) {
+        entityManager.merge(document);
+        entityManager.flush();
     }
 
 }

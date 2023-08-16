@@ -4,4 +4,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.document.autoconfigure.DocumentSecurityAutoConfiguration, \
   com.ritense.document.autoconfigure.DocumentLiquibaseAutoConfiguration, \
   com.ritense.document.autoconfigure.DocumentRetryAutoConfiguration, \
-  com.ritense.document.autoconfigure.SearchFieldAutoConfiguration
+  com.ritense.document.autoconfigure.SearchFieldAutoConfiguration, \
+  com.ritense.document.autoconfigure.HibernateListenerAutoConfiguration

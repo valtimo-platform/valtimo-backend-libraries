@@ -38,7 +38,6 @@ import com.ritense.document.service.DocumentService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +133,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                     .map(JsonSchemaRelatedFile::from)
                     .map(relatedFile -> relatedFile.withCreatedBy(SecurityUtils.getCurrentUserLogin()))
                     .forEach(document::addRelatedFile);
-                documentRepository.insert(document);
+                documentRepository.saveAndFlush(document);
             }
         );
         return result;
@@ -175,13 +174,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             documentDefinition,
             version
         );
-
-        result.resultingDocument().ifPresent(updatedDocument ->
-            documentRepository.updateByTenant(
-                updatedDocument,
-                updatedDocument.tenantId()
-            )
-        );
+        result.resultingDocument().ifPresent(documentRepository::saveAndFlush);
         return result;
     }
 
@@ -202,10 +195,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             .ifPresent(
                 document -> {
                     document.addRelatedDocument(jsonSchemaDocumentRelation);
-                    documentRepository.updateByTenant(
-                        document,
-                        document.tenantId()
-                    );
+                    documentRepository.saveAndFlush(document);
                 }
             );
     }
@@ -217,12 +207,9 @@ public class JsonSchemaDocumentService implements DocumentService {
         final RelatedFile relatedFile,
         final String tenantId
     ) {
-        final JsonSchemaDocument document = getDocumentBy(documentId, tenantId);
+        final var document = getDocumentBy(documentId, tenantId);
         document.addRelatedFile(JsonSchemaRelatedFile.from(relatedFile));
-        documentRepository.updateByTenant(
-            document,
-            document.tenantId()
-        );
+        documentRepository.saveAndFlush(document);
     }
 
     @Override
@@ -239,17 +226,14 @@ public class JsonSchemaDocumentService implements DocumentService {
         final Map<String, Object> metadata,
         final String tenantId
     ) {
-        final JsonSchemaDocument document = getDocumentBy(documentId, tenantId);
-        final Resource resource = resourceService.getResource(resourceId);
+        final var document = getDocumentBy(documentId, tenantId);
+        final var resource = resourceService.getResource(resourceId);
         document.addRelatedFile(
             JsonSchemaRelatedFile.from(resource)
                 .withCreatedBy(SecurityUtils.getCurrentUserLogin()),
             metadata
         );
-        documentRepository.updateByTenant(
-            document,
-            document.tenantId()
-        );
+        documentRepository.saveAndFlush(document);
     }
 
     @Override
@@ -257,10 +241,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     public void removeRelatedFile(Document.Id documentId, UUID fileId, String tenantId) {
         final JsonSchemaDocument document = getDocumentBy(documentId, tenantId);
         document.removeRelatedFileBy(fileId);
-        documentRepository.updateByTenant(
-            document,
-            document.tenantId()
-        );
+        documentRepository.saveAndFlush(document);
     }
 
     public JsonSchemaDocument getDocumentBy(Document.Id documentId, String tenantId) {
@@ -291,29 +272,21 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public void assignUserToDocument(UUID documentId, String assigneeId, String tenantId) {
-        final JsonSchemaDocument document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId), tenantId);
-
+        final var document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId), tenantId);
         var assignee = userManagementService.findById(assigneeId);
         if (assignee == null) {
             logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
             throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
         }
-
         document.setAssignee(assigneeId, assignee.getFullName());
-        documentRepository.updateByTenant(
-            document,
-            tenantId
-        );
+        documentRepository.saveAndFlush(document);
     }
 
     @Override
     public void unassignUserFromDocument(UUID documentId, String tenantId) {
-        final JsonSchemaDocument document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId), tenantId);
+        final var document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId), tenantId);
         document.unassign();
-        documentRepository.updateByTenant(
-            document,
-            document.tenantId()
-        );
+        documentRepository.saveAndFlush(document);
     }
 
     @Override

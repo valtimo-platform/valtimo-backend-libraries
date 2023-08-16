@@ -109,7 +109,8 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
             document.version().toString()
         ).withTenantId(TENANT_ID);
 
-        final var modifiedDocument = (JsonSchemaDocument) documentService.modifyDocument(request).resultingDocument().orElseThrow();
+        final var modifiedDocument = (JsonSchemaDocument) documentService.modifyDocument(request)
+            .resultingDocument().orElseThrow();
         final var page = documentSnapshotService.getDocumentSnapshots(
             null,
             modifiedDocument.id(),

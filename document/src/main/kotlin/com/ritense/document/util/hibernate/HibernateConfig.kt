@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.document.repository.impl;
+package com.ritense.document.util.hibernate
 
-import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.repository.CustomDocumentInsert;
+import org.hibernate.jpa.boot.spi.IntegratorProvider
+import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer
 
-import javax.persistence.EntityManager;
+class HibernateConfig(
+    private val integrator: HibernateEventListenerIntegrator
+) : HibernatePropertiesCustomizer {
 
-public class CustomDocumentInsertImpl implements CustomDocumentInsert {
-
-    private EntityManager entityManager;
-
-    public CustomDocumentInsertImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
-    public void insert(JsonSchemaDocument document) {
-        entityManager.persist(document);
-        entityManager.flush();
+    override fun customize(hibernateProperties: MutableMap<String, Any>) {
+        hibernateProperties["hibernate.integrator_provider"] = IntegratorProvider { listOf(integrator) }
     }
 
 }

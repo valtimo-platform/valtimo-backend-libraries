@@ -26,9 +26,7 @@ import java.util.Optional;
 
 @NoRepositoryBean
 public interface DocumentRepository<T extends Document>
-    extends JpaRepository<T, Document.Id>, CustomDocumentInsert, CustomDocumentUpdate
-//    , CustomDocumentFind
-{
+    extends JpaRepository<T, Document.Id>, CustomDocumentInsert, CustomDocumentUpdate {
 
     Optional<T> findByIdAndTenantId(
         Document.Id documentId,

@@ -20,6 +20,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 
 public interface CustomDocumentUpdate {
 
-    void updateByTenant(JsonSchemaDocument document, String tenantId);
+    void update(JsonSchemaDocument document);
 
 }

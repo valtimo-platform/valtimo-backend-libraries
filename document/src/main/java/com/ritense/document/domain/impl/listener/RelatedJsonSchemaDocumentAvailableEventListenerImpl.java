@@ -42,10 +42,11 @@ public class RelatedJsonSchemaDocumentAvailableEventListenerImpl implements Rela
     public void handle(NextDocumentRelationAvailableEvent event) {
         final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(event.previousDocumentId()));
         final var documentRelation = documentRelation(event);
+        final var tenantId = tenantResolver.getTenantId();
         documentService.assignDocumentRelation(
             documentId,
             documentRelation,
-            tenantResolver.getTenantId()
+            tenantId
         );
     }
 

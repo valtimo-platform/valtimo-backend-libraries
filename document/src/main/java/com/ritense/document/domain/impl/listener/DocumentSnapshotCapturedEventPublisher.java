@@ -33,7 +33,6 @@ public class DocumentSnapshotCapturedEventPublisher {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    // TODO this is event is bogus mis use and should either be command or removed.
     @EventListener(JsonSchemaDocumentCreatedEvent.class)
     public void handleDocumentCreatedEvent(JsonSchemaDocumentCreatedEvent event) {
         logger.debug("{} - handle - jsonSchemaDocumentCreatedEvent - {}", Thread.currentThread().getName(), event.documentId());

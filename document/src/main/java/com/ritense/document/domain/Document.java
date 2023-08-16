@@ -74,7 +74,6 @@ public interface Document {
 
     }
 
-    @JsonProperty
     String tenantId();
 
 }
