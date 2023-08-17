@@ -19,6 +19,7 @@ package com.ritense.case.web.rest
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.search.SearchWithConfigRequest
+import com.ritense.tenancy.TenantResolver
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
@@ -32,7 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Controller
 @RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class CaseInstanceResource(
-    private val service: CaseInstanceService
+    private val service: CaseInstanceService,
+    private val tenantResolver: TenantResolver
 ) {
 
     @PostMapping(value = ["/v1/case/{caseDefinitionName}/search"])
@@ -41,6 +43,8 @@ class CaseInstanceResource(
         @RequestBody searchRequest: SearchWithConfigRequest,
         pageable: Pageable
     ): ResponseEntity<Page<CaseListRowDto>> {
+        val tenantId = tenantResolver.getTenantId()
+        searchRequest.tenantId = tenantId
         val result = service.search(caseDefinitionName, searchRequest, pageable)
         return ResponseEntity.ok(result)
     }
