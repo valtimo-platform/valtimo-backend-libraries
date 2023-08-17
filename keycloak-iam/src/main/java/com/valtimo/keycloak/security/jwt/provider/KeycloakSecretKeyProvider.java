@@ -33,10 +33,10 @@ import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuth
 public class KeycloakSecretKeyProvider implements SecretKeyProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(KeycloakSecretKeyProvider.class);
-    private final String secret;
+    private final String oauthPublicKey;
 
-    public KeycloakSecretKeyProvider(String secret) {
-        this.secret = secret;
+    public KeycloakSecretKeyProvider(String oauthPublicKey) {
+        this.oauthPublicKey = oauthPublicKey;
     }
 
     @Override
@@ -47,15 +47,15 @@ public class KeycloakSecretKeyProvider implements SecretKeyProvider {
     @Override
     public Key getKey(SignatureAlgorithm algorithm) {
         try {
-            return getPublicKey(algorithm, getSecret());
+            return getPublicKey(algorithm, getOauthPublicKey());
         } catch (GeneralSecurityException e) {
             logger.error("Error resolving signing key", e);
         }
         return null;
     }
 
-    private byte[] getSecret() {
-        return Base64.decodeBase64(secret);
+    private byte[] getOauthPublicKey() {
+        return Base64.decodeBase64(oauthPublicKey);
     }
 
     private RSAPublicKey getPublicKey(SignatureAlgorithm algorithm, byte[] key) throws GeneralSecurityException {
