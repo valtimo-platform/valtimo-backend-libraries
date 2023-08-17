@@ -1,8 +1,10 @@
 package com.ritense.valtimo.milestones.web.rest.dto;
 
+import javax.validation.constraints.NotNull;
+
 public class MilestoneSetSaveDTO {
     private Long id;
-    private String title;
+    @NotNull private String title;
 
     public MilestoneSetSaveDTO() {
         //Default constructor
