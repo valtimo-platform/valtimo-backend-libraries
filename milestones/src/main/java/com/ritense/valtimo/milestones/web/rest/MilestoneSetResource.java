@@ -19,6 +19,7 @@ package com.ritense.valtimo.milestones.web.rest;
 import com.ritense.valtimo.milestones.domain.MilestoneSet;
 import com.ritense.valtimo.milestones.repository.MilestoneSetRepository;
 import com.ritense.valtimo.milestones.service.MilestoneSetService;
+import com.ritense.valtimo.milestones.web.rest.dto.MilestoneSetSaveDTO;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,15 +71,12 @@ public class MilestoneSetResource {
     }
 
     @PostMapping("/v1/milestone-sets")
-    public ResponseEntity<MilestoneSet> saveMilestoneSet(@Valid @RequestBody MilestoneSet milestoneSet) {
-        logger.debug("REST request to save Milestone set : {}", milestoneSet);
+    public ResponseEntity<MilestoneSet> saveMilestoneSet(@Valid @RequestBody MilestoneSetSaveDTO dto) {
+        logger.debug("REST request to save Milestone set : {}", dto);
 
-        boolean newMilestoneSet = false;
-        if (milestoneSet.getId() == null) {
-            newMilestoneSet = true;
-        }
+        boolean newMilestoneSet = dto.getId() == null;
 
-        MilestoneSet savedMilestoneSet = milestoneSetService.saveMilestoneSet(milestoneSet);
+        MilestoneSet savedMilestoneSet = milestoneSetService.saveMilestoneSet(dto);
 
         if (newMilestoneSet && savedMilestoneSet.getId() != null) {
             return ResponseEntity.ok()
