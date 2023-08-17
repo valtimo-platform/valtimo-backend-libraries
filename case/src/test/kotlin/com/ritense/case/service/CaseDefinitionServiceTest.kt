@@ -16,6 +16,7 @@
 
 package com.ritense.case.service
 
+import com.ritense.authorization.AuthorizationService
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
@@ -67,6 +68,7 @@ class CaseDefinitionServiceTest {
             caseDefinitionListColumnRepository,
             documentDefinitionService,
             valueResolverService,
+            mock()
         )
     }
 

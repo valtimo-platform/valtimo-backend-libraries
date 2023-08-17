@@ -27,13 +27,12 @@ import javax.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
-import java.util.Set;
 
 public interface DocumentDefinitionService {
 
     Page<? extends DocumentDefinition> findAll(Pageable pageable);
 
-    Page<? extends DocumentDefinition> findAllForAdmin(Pageable pageable);
+    Page<? extends DocumentDefinition> findAllForManagement(Pageable pageable);
 
     JsonSchemaDocumentDefinitionId findIdByName(String name);
 

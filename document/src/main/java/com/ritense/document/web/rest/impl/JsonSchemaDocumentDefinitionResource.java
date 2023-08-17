@@ -16,6 +16,7 @@
 
 package com.ritense.document.web.rest.impl;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.service.DocumentDefinitionService;
@@ -33,9 +34,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static org.springframework.http.ResponseEntity.ok;
 
 public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionResource {
@@ -56,8 +57,21 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
 
     @Override
     public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(Pageable pageable) {
-        // this keeps the API backwards compatible with old jpa entity columns in the sort
-        PageRequest pageRequest = PageRequest.of(
+        return ok(documentDefinitionService.findAll(fixPageable(pageable)));
+    }
+
+    @Override
+    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(Pageable pageable) {
+        return ok(runWithoutAuthorization(() -> documentDefinitionService.findAllForManagement(fixPageable(pageable))));
+    }
+
+    /**
+     * This keeps the API backwards compatible with old jpa entity columns in the sort
+     * @param pageable
+     * @return
+     */
+    private Pageable fixPageable(Pageable pageable) {
+        return PageRequest.of(
             pageable.getPageNumber(),
             pageable.getPageSize(),
             Sort.by(
@@ -68,8 +82,6 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
                     ).collect(Collectors.toList())
             )
         );
-
-        return ok(documentDefinitionService.findAll(pageRequest));
     }
 
     private String mapSortProperty(String property) {

@@ -63,38 +63,4 @@ class JsonSchemaDocumentDefinitionSpecification(
     override fun identifierToEntity(identifier: String): JsonSchemaDocumentDefinition {
         TODO("Not yet implemented")
     }
-
-    companion object {
-        @JvmStatic
-        fun byIdName(name: String): Specification<JsonSchemaDocumentDefinition> {
-            return Specification { root: Root<JsonSchemaDocumentDefinition>,
-                                   _: CriteriaQuery<*>,
-                                   criteriaBuilder: CriteriaBuilder ->
-                criteriaBuilder.equal(root.get<Any>(ID).get<String>(NAME), name)
-            }
-        }
-
-        @JvmStatic
-        fun byLatestVersion(): Specification<JsonSchemaDocumentDefinition> {
-            return Specification { root: Root<JsonSchemaDocumentDefinition>,
-                                   query: CriteriaQuery<*>,
-                                   cb: CriteriaBuilder ->
-
-                val sub = query.subquery(Long::class.java)
-                val subRoot = sub.from(JsonSchemaDocumentDefinition::class.java)
-                sub.select(cb.max(subRoot.get<Any>(ID).get(VERSION)))
-                sub.where(
-                    cb.and(
-                        cb.equal(subRoot.get<Any>(ID).get<String>(NAME), root.get<Any>(ID).get<String>(NAME)),
-                    )
-                )
-
-                cb.equal(root.get<Any>(ID).get<Long>(VERSION), sub)
-            }
-        }
-
-        private const val ID: String = "id"
-        private const val VERSION: String = "version"
-        private const val NAME: String = "name"
-    }
 }

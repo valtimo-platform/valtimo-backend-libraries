@@ -16,8 +16,6 @@
 
 package com.ritense.case.service.validations
 
-import com.ritense.authorization.AuthorizationContext
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.domain.CaseListColumn
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
@@ -36,7 +34,7 @@ open class ValidationUtils(
 ) {
 
     @Throws(InvalidListColumnException::class)
-    internal fun existsListColumn(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
+    internal fun assertListColumnExists(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
         if (caseDefinitionListColumnRepository.existsByIdCaseDefinitionNameAndIdKey(
                 caseDefinitionName,
                 caseListColumnDto.key
@@ -66,12 +64,9 @@ open class ValidationUtils(
     }
 
     @Throws(InvalidListColumnException::class)
-    internal fun existsDocumentDefinition(documentDefinitionName: String) {
+    internal fun assertDocumentDefinitionExists(documentDefinitionName: String) {
         try {
-            //TODO: Fix pbac
-            runWithoutAuthorization {
-                documentDefinitionService.findIdByName(documentDefinitionName)
-            }
+            documentDefinitionService.findIdByName(documentDefinitionName)
         } catch (ex: UnknownDocumentDefinitionException) {
             throw UnknownCaseDefinitionException(ex.message)
         }

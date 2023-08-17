@@ -35,7 +35,6 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
@@ -226,10 +225,10 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
                 }
             """)).documentDefinition();
 
-        assertThatThrownBy(() -> documentDefinitionService.findAllForAdmin(Pageable.unpaged()))
+        assertThatThrownBy(() -> documentDefinitionService.findAllForManagement(Pageable.unpaged()))
             .isExactlyInstanceOf(AccessDeniedException.class);
 
-        final var all = (List<DocumentDefinition>) runWithoutAuthorization(() -> documentDefinitionService.findAllForAdmin(Pageable.unpaged())).toList();
+        final var all = (List<DocumentDefinition>) runWithoutAuthorization(() -> documentDefinitionService.findAllForManagement(Pageable.unpaged())).toList();
         assertThat(all).hasSizeGreaterThanOrEqualTo(2);
         assertThat(all).contains(documentDefinition1, documentDefinition2);
     }

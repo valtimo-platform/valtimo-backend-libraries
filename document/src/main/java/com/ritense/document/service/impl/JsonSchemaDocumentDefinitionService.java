@@ -37,8 +37,8 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.exception.DocumentDefinitionDeploymentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
+import com.ritense.document.repository.impl.specification.JsonSchemaDocumentDefinitionSpecificationHelper;
 import com.ritense.document.service.DocumentDefinitionService;
-import com.ritense.document.service.JsonSchemaDocumentDefinitionSpecification;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
@@ -50,7 +50,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
@@ -90,7 +89,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable) {
-        Specification<JsonSchemaDocumentDefinition> spec = authorizationService
+        final var spec = authorizationService
             .getAuthorizationSpecification(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocumentDefinition.class,
@@ -99,13 +98,13 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                 ),
                 null
             ).and(
-                JsonSchemaDocumentDefinitionSpecification.byLatestVersion()
+                JsonSchemaDocumentDefinitionSpecificationHelper.byLatestVersion()
             );
         return documentDefinitionRepository.findAll(spec, pageable);
     }
 
     @Override
-    public Page<JsonSchemaDocumentDefinition> findAllForAdmin(Pageable pageable) {
+    public Page<JsonSchemaDocumentDefinition> findAllForManagement(Pageable pageable) {
         authorizationService.requirePermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocumentDefinition.class,
@@ -113,7 +112,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                     null
                 ));
 
-        var spec = JsonSchemaDocumentDefinitionSpecification.byLatestVersion();
+        final var spec = JsonSchemaDocumentDefinitionSpecificationHelper.byLatestVersion();
         return documentDefinitionRepository.findAll(spec, pageable);
     }
 
@@ -126,8 +125,9 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public Optional<JsonSchemaDocumentDefinition> findBy(DocumentDefinition.Id id) {
-        Optional<JsonSchemaDocumentDefinition> optionalDefinition = documentDefinitionRepository.findById(id);
-        optionalDefinition.ifPresent(definition -> {
+        final var definition = documentDefinitionRepository.findById(id).orElse(null);
+
+        if(definition != null) {
             authorizationService
                 .requirePermission(
                     new EntityAuthorizationRequest<>(
@@ -136,16 +136,18 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                         definition
                     )
                 );
-        });
-        return optionalDefinition;
+        }
+
+        return Optional.ofNullable(definition);
     }
 
     @Override
     public Optional<JsonSchemaDocumentDefinition> findLatestByName(String documentDefinitionName) {
-        Optional<JsonSchemaDocumentDefinition> optionalDefinition = documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(
-            documentDefinitionName);
+        final var definition = documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(
+            documentDefinitionName
+        ).orElse(null);
 
-        optionalDefinition.ifPresent(definition -> {
+        if(definition != null) {
             authorizationService
                 .requirePermission(
                     new EntityAuthorizationRequest<>(
@@ -154,9 +156,9 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                         definition
                     )
                 );
-        });
+        }
 
-        return optionalDefinition;
+        return Optional.ofNullable(definition);
     }
 
     @Override
@@ -182,8 +184,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         //Authorization check is delegated to the store() method
         logger.info("Deploy all schema's");
         try {
-            final Resource[] resources = loadResources();
-            for (Resource resource : resources) {
+            for (var resource : loadResources()) {
                 if (resource.getFilename() != null) {
                     deploy(resource.getInputStream(), readOnly, force);
                 }
@@ -217,8 +218,8 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     private DeployDocumentDefinitionResult deploy(JsonSchema jsonSchema, boolean readOnly, boolean force) {
         //Authorization check is delegated to the store() method
         try {
-            var documentDefinitionName = jsonSchema.getSchema().getId().replace(".schema", "");
-            var existingDefinition = findLatestByName(documentDefinitionName);
+            final var documentDefinitionName = jsonSchema.getSchema().getId().replace(".schema", "");
+            final var existingDefinition = findLatestByName(documentDefinitionName);
 
             final JsonSchemaDocumentDefinitionId documentDefinitionId;
             if (existingDefinition.isPresent()) {
@@ -265,30 +266,25 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     public void store(JsonSchemaDocumentDefinition documentDefinition) {
         assertArgumentNotNull(documentDefinition,   "documentDefinition is required");
 
-        Optional<JsonSchemaDocumentDefinition> optionalDefinition = documentDefinitionRepository.findById(documentDefinition.id());
-        // So much TODO:, I've got so much TODO:
-        // - get the latest definition instead of the versioned one?
-        // - check if new version is incremental?
-        // - clean up this optional structure
-        optionalDefinition.ifPresentOrElse(
-                existingDocumentDefinition -> {
-                    if (!existingDocumentDefinition.equals(documentDefinition)) {
-                        throw new UnsupportedOperationException("Schema already deployed, will cannot redeploy");
-                    }
-                }, () -> {
-                    JsonSchemaDocumentDefinitionId latestDefinitionId = documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(
-                        documentDefinition.id().name()).map(JsonSchemaDocumentDefinition::getId).orElse(null);
-                    authorizationService.requirePermission(
-                            new EntityAuthorizationRequest<>(
-                                JsonSchemaDocumentDefinition.class,
-                                latestDefinitionId == null ? CREATE : MODIFY,
-                                documentDefinition
-                            )
-                    );
+        final var existingDocumentDefinition = documentDefinitionRepository.findById(documentDefinition.id()).orElse(null);
+        if (existingDocumentDefinition!=null) {
+            if (!existingDocumentDefinition.equals(documentDefinition)) {
+                throw new UnsupportedOperationException("Schema already deployed, will cannot redeploy");
+            }
+        } else {
+            JsonSchemaDocumentDefinitionId latestDefinitionId = documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(
+                documentDefinition.id().name()).map(JsonSchemaDocumentDefinition::getId).orElse(null);
 
-                    documentDefinitionRepository.saveAndFlush(documentDefinition);
-                }
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    latestDefinitionId == null ? CREATE : MODIFY,
+                    documentDefinition
+                )
             );
+
+            documentDefinitionRepository.saveAndFlush(documentDefinition);
+        }
     }
 
     @Override
