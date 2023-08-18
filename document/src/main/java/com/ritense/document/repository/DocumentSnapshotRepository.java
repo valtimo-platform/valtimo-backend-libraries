@@ -16,26 +16,15 @@
 
 package com.ritense.document.repository;
 
-import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @NoRepositoryBean
-public interface DocumentSnapshotRepository<T extends DocumentSnapshot> extends JpaRepository<T, DocumentSnapshot.Id> {
-
-    Page<T> getDocumentSnapshots(
-        String definitionName,
-        JsonSchemaDocumentId documentId,
-        LocalDateTime fromDateTime,
-        LocalDateTime toDateTime,
-//        List<String> roles,
-        Pageable pageable
-    );
+public interface DocumentSnapshotRepository<T extends DocumentSnapshot> extends
+    JpaRepository<T, DocumentSnapshot.Id>,
+    JpaSpecificationExecutor<T> {
 
     void deleteAllByDefinitionName(String definitionName);
 }

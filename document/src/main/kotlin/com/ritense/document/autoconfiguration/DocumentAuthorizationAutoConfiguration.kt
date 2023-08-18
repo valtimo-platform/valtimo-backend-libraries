@@ -16,17 +16,12 @@
 
 package com.ritense.document.autoconfiguration
 
-import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.document.JsonSchemaDocumentDefinitionSpecificationFactory
+import com.ritense.document.JsonSchemaDocumentSnapshotSpecificationFactory
 import com.ritense.document.JsonSchemaDocumentSpecificationFactory
 import com.ritense.document.SearchFieldSpecificationFactory
-import com.ritense.document.domain.impl.JsonSchemaDocument
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
-import com.ritense.document.domain.impl.searchfield.SearchField
-import com.ritense.document.listener.DocumentEventListener
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -39,23 +34,23 @@ class DocumentAuthorizationAutoConfiguration {
     fun jsonSchemaDocumentSpecificationFactory(
         @Lazy documentService: JsonSchemaDocumentService,
         queryDialectHelper: QueryDialectHelper
-    ): AuthorizationSpecificationFactory<JsonSchemaDocument> {
-        return JsonSchemaDocumentSpecificationFactory(documentService, queryDialectHelper)
-    }
+    ) = JsonSchemaDocumentSpecificationFactory(documentService, queryDialectHelper)
 
     @Bean
     @ConditionalOnMissingBean(JsonSchemaDocumentDefinitionSpecificationFactory::class)
     fun jsonSchemaDocumentDefinitionSpecificationFactory(
         queryDialectHelper: QueryDialectHelper
-    ): AuthorizationSpecificationFactory<JsonSchemaDocumentDefinition> {
-        return JsonSchemaDocumentDefinitionSpecificationFactory(queryDialectHelper)
-    }
+    ) = JsonSchemaDocumentDefinitionSpecificationFactory(queryDialectHelper)
+
+    @Bean
+    @ConditionalOnMissingBean(JsonSchemaDocumentSnapshotSpecificationFactory::class)
+    fun jsonSchemaDocumentSnapshotSpecificationFactory(
+        queryDialectHelper: QueryDialectHelper
+    ) = JsonSchemaDocumentSnapshotSpecificationFactory(queryDialectHelper)
 
     @Bean
     @ConditionalOnMissingBean(SearchFieldSpecificationFactory::class)
     fun searchFieldSpecificationFactory(
         queryDialectHelper: QueryDialectHelper
-    ): AuthorizationSpecificationFactory<SearchField> {
-        return SearchFieldSpecificationFactory(queryDialectHelper)
-    }
+    ) = SearchFieldSpecificationFactory(queryDialectHelper)
 }

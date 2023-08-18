@@ -20,23 +20,22 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.document.domain.Document;
-import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentSnapshotService;
-import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
-
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSnapshotSpecificationHelper.bySearch;
+import static com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider.VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider.VIEW_LIST;
 
 public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotService {
 
@@ -54,47 +53,47 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
 
     @Override
     public Optional<JsonSchemaDocumentSnapshot> findById(DocumentSnapshot.Id id) {
-        Optional<JsonSchemaDocumentSnapshot> optionalSnapshot = documentSnapshotRepository.findById(id);
-        optionalSnapshot.ifPresent(snapshot -> {
-            JsonSchemaDocument document = documentService.getDocumentBy(snapshot.document().id());
+        final var snapshot = documentSnapshotRepository.findById(id).orElse(null);
+        if(snapshot != null) {
             authorizationService
                 .requirePermission(
                     new EntityAuthorizationRequest<>(
-                        JsonSchemaDocument.class,
+                        JsonSchemaDocumentSnapshot.class,
                         VIEW,
-                        document
+                        snapshot
                     )
                 );
-        });
-        return optionalSnapshot;
+        }
+
+        return Optional.ofNullable(snapshot);
     }
 
     @Override
     public Page<JsonSchemaDocumentSnapshot> getDocumentSnapshots(
-        String definitionName,
-        JsonSchemaDocumentId documentId,
-        LocalDateTime fromDateTime,
-        LocalDateTime toDateTime,
+        @Nullable String definitionName,
+        @Nullable JsonSchemaDocumentId documentId,
+        @Nullable LocalDateTime fromDateTime,
+        @Nullable LocalDateTime toDateTime,
         Pageable pageable
     ) {
-        // TODO: DocumentId can be null. Should instead use the toPredicate method
-        JsonSchemaDocument document = documentService.getDocumentBy(documentId);
-        authorizationService
-            .requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocument.class,
-                    VIEW,
-                    document
-                )
-            );
 
-        List<String> roles = SecurityUtils.getCurrentUserRoles();
-        return documentSnapshotRepository.getDocumentSnapshots(
-            definitionName,
-            documentId,
-            fromDateTime,
-            toDateTime,
-//            roles,
+        var spec = (Specification<JsonSchemaDocumentSnapshot>) authorizationService.getAuthorizationSpecification(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentSnapshot.class,
+                VIEW_LIST,
+                null
+            ), null
+        ).and(
+            bySearch(
+                definitionName,
+                documentId,
+                fromDateTime,
+                toDateTime
+            )
+        );
+
+        return documentSnapshotRepository.findAll(
+            spec,
             pageable
         );
     }

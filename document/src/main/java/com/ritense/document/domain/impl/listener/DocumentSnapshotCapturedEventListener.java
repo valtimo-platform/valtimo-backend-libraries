@@ -22,6 +22,7 @@ import com.ritense.document.service.DocumentSnapshotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 
 public class DocumentSnapshotCapturedEventListener {
 
@@ -35,7 +36,7 @@ public class DocumentSnapshotCapturedEventListener {
     @EventListener(JsonSchemaDocumentSnapshotCapturedEvent.class)
     public void handleDocumentCreatedEvent(JsonSchemaDocumentSnapshotCapturedEvent event) {
         logger.debug("{} - handle - JsonSchemaDocumentSnapshotEvent - {}", Thread.currentThread().getName(), event.documentId());
-        AuthorizationContext.runWithoutAuthorization(
+        runWithoutAuthorization(
             () -> {
                 documentSnapshotService
                     .makeSnapshot(

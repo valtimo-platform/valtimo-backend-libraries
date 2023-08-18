@@ -38,6 +38,7 @@ import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider;
+import com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider;
 import com.ritense.document.service.SearchFieldActionProvider;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.resource.service.ResourceService;
@@ -242,6 +243,13 @@ public abstract class BaseIntegrationTest extends BaseTest {
                 UUID.randomUUID(),
                 JsonSchemaDocumentDefinition.class,
                 JsonSchemaDocumentDefinitionActionProvider.DELETE,
+                new ConditionContainer(Collections.emptyList()),
+                role
+            ),
+            new Permission(
+                UUID.randomUUID(),
+                JsonSchemaDocumentSnapshot.class,
+                JsonSchemaDocumentSnapshotActionProvider.VIEW_LIST,
                 new ConditionContainer(Collections.emptyList()),
                 role
             )
