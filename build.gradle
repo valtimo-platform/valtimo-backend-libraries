@@ -148,6 +148,10 @@ subprojects { subproject ->
             }
         }
 
+        dockerCompose {
+            useDockerComposeV2 = false
+        }
+
         tasks.withType(KotlinCompile).configureEach {
             kotlinOptions {
                 jvmTarget = JavaVersion.VERSION_17
