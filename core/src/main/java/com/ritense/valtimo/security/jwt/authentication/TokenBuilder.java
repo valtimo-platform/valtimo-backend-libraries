@@ -38,7 +38,7 @@ public class TokenBuilder {
         final List<SecretKeyProvider> secretKeyProviders,
         final SecretKeyResolver secretKeyResolver
     ) {
-        this.tokenValidityInMilliSeconds = 1000 * valtimoProperties.getJwt().getTokenValidityInSeconds();
+        this.tokenValidityInMilliSeconds = 1000 * valtimoProperties.getOauth().getTokenValidityInSeconds();
         this.secretKeyProviders = secretKeyProviders;
         this.secretKeyResolver = secretKeyResolver;
     }
