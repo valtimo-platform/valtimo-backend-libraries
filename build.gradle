@@ -69,6 +69,10 @@ sonarqube {
     }
 }
 
+dockerCompose {
+    useDockerComposeV2 = false
+}
+
 configurations {
     testImplementation {
         // Globally exclude JUnit4, will not be on the testCompileClasspath thus
