@@ -28,7 +28,7 @@ test {
 
 tasks.register("integrationTesting", Test) {
     group = 'verification'
-    ignoreFailures = true
+    ignoreFailures = false
     useJUnitPlatform {
         includeTags "integration"
         excludeTags "security"
@@ -42,7 +42,7 @@ tasks.register("integrationTesting", Test) {
 
 tasks.register("securityTesting", Test) {
     group = 'verification'
-    ignoreFailures = true
+    ignoreFailures = false
     useJUnitPlatform {
         includeTags "security"
         excludeTags "integration"
