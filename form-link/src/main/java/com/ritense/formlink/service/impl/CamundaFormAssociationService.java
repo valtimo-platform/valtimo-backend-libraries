@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
@@ -346,7 +347,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         final ObjectNode extendedDocumentContent = (ObjectNode) document.content().asJson();
         extendedDocumentContent.set("metadata", buildMetaDataObject(document));
 
-        if (taskInstanceId.isEmpty()) {
+        if (taskInstanceId.isEmpty() && !formDefinition.getName().endsWith(".summary")) {
             prefillProcessVariables(formDefinition, document);
         }
         prefillDataResolverFields(formDefinition, document, extendedDocumentContent);
@@ -362,11 +363,11 @@ public class CamundaFormAssociationService implements FormAssociationService {
         final Map<String, Object> processInstanceVariables = new HashMap<>();
         AuthorizationContext.runWithoutAuthorization( () -> processDocumentAssociationService.findProcessDocumentInstances(document.id()))
             .forEach(processDocumentInstance -> processInstanceVariables.putAll(
-                AuthorizationContext.runWithoutAuthorization(() ->
-                    runtimeService.getVariables(
-                        processDocumentInstance.processDocumentInstanceId().processInstanceId().toString(),
-                        processVarsNames
-                    ))
+                    AuthorizationContext.runWithoutAuthorization(() ->
+                        runtimeService.getVariables(
+                            processDocumentInstance.processDocumentInstanceId().processInstanceId().toString(),
+                            processVarsNames
+                        ))
                 )
             );
         if (!processInstanceVariables.isEmpty()) {

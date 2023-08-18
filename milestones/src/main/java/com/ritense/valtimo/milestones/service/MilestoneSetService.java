@@ -21,6 +21,7 @@ import com.ritense.valtimo.milestones.domain.MilestoneSet;
 import com.ritense.valtimo.milestones.repository.MilestoneRepository;
 import com.ritense.valtimo.milestones.repository.MilestoneSetRepository;
 import com.ritense.valtimo.milestones.service.exception.IllegalMilestoneSetDeletionException;
+import com.ritense.valtimo.milestones.web.rest.dto.MilestoneSetSaveDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
@@ -37,8 +38,15 @@ public class MilestoneSetService {
         this.milestoneRepository = milestoneRepository;
     }
 
-    public MilestoneSet saveMilestoneSet(MilestoneSet milestoneSet) {
-        logger.debug("Service request to save milestone set {}", milestoneSet.getTitle());
+    public MilestoneSet saveMilestoneSet(MilestoneSetSaveDTO dto) {
+        logger.debug("Service request to save milestone set {}", dto.getTitle());
+        MilestoneSet milestoneSet;
+        if(dto.getId() != null) {
+            milestoneSet = milestoneSetRepository.findById(dto.getId()).orElseThrow();
+        } else {
+            milestoneSet = new MilestoneSet();
+        }
+        milestoneSet.setTitle(dto.getTitle());
         return milestoneSetRepository.save(milestoneSet);
     }
 
