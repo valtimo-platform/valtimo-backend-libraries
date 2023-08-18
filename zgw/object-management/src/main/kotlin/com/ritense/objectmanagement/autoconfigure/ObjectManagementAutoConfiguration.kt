@@ -19,9 +19,9 @@ package com.ritense.objectmanagement.autoconfigure
 import com.ritense.objectmanagement.autodeployment.ObjectManagementDefinitionDeploymentService
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
+import com.ritense.objectmanagement.service.ObjectManagementFacade
 import com.ritense.objectmanagement.service.ObjectManagementInfoProviderImpl
 import com.ritense.objectmanagement.service.ObjectManagementService
-import com.ritense.objectmanagement.service.ObjectsService
 import com.ritense.objectmanagement.web.rest.ObjectManagementResource
 import com.ritense.plugin.service.PluginService
 import com.ritense.search.service.SearchFieldV2Service
@@ -41,20 +41,32 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 class ObjectManagementAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(ObjectManagementFacade::class)
+    fun objectManagementFacade(
+        objectManagementRepository: ObjectManagementRepository,
+        pluginService: PluginService
+    ): ObjectManagementFacade {
+        return ObjectManagementFacade(
+            objectManagementRepository,
+            pluginService
+        )
+    }
+
+    @Bean
     @ConditionalOnMissingBean(ObjectManagementService::class)
     fun objectManagementService(
         objectManagementRepository: ObjectManagementRepository,
         pluginService: PluginService,
         searchFieldV2Service: SearchFieldV2Service,
         searchListColumnService: SearchListColumnService,
-        objectsService: ObjectsService
+        objectManagementFacade: ObjectManagementFacade
     ): ObjectManagementService {
         return ObjectManagementService(
             objectManagementRepository,
             pluginService,
             searchFieldV2Service,
             searchListColumnService,
-            objectsService
+            objectManagementFacade
         )
     }
 

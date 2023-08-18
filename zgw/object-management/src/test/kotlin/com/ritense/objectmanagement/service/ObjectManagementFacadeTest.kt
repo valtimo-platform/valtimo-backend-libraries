@@ -12,7 +12,6 @@ import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.service.PluginService
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -27,11 +26,11 @@ import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 
-internal class ObjectsServiceTest {
+internal class ObjectManagementFacadeTest {
     val objectManagementRepository = mock<ObjectManagementRepository>()
     val pluginService = mock<PluginService>()
 
-    val objectsService = ObjectsService(objectManagementRepository, pluginService)
+    val objectManagementFacade = ObjectManagementFacade(objectManagementRepository, pluginService)
 
     lateinit var objectTypeId: String
     lateinit var objectManagementTitle: String
@@ -45,11 +44,6 @@ internal class ObjectsServiceTest {
         objectManagementTitle = "myTitle"
         objectenApiPluginConfigurationId = UUID.randomUUID()
         objecttypenApiPluginConfigurationId = UUID.randomUUID()
-    }
-
-    @AfterEach
-    fun cleanup() {
-        objectsService.clearCache()
     }
 
     @Test
@@ -66,7 +60,7 @@ internal class ObjectsServiceTest {
         val expectedResult = createObjectWrapper(url = expectedUrl, uuid = objectUuid)
         whenever(objectenApiPlugin.getObject(expectedUrl)).thenReturn(expectedResult)
 
-        val result = objectsService.getObjectByUuid(objectName, objectUuid)
+        val result = objectManagementFacade.getObjectByUuid(objectName, objectUuid)
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
@@ -95,7 +89,7 @@ internal class ObjectsServiceTest {
         whenever(objectenApiPlugin.getObject(expectedUrl1)).thenReturn(expectedResult1)
         whenever(objectenApiPlugin.getObject(expectedUrl2)).thenReturn(expectedResult2)
 
-        val result = objectsService.getObjectsByUuids(objectName, listOf(objectUuid1, objectUuid2))
+        val result = objectManagementFacade.getObjectsByUuids(objectName, listOf(objectUuid1, objectUuid2))
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
@@ -120,7 +114,7 @@ internal class ObjectsServiceTest {
         val expectedResult = createObjectWrapper(url = objectUri, uuid = UUID.randomUUID())
         whenever(objectenApiPlugin.getObject(objectUri)).thenReturn(expectedResult)
 
-        val result = objectsService.getObjectByUri(objectName, objectUri)
+        val result = objectManagementFacade.getObjectByUri(objectName, objectUri)
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
@@ -146,7 +140,7 @@ internal class ObjectsServiceTest {
         whenever(objectenApiPlugin.getObject(objectUri1)).thenReturn(expectedResult1)
         whenever(objectenApiPlugin.getObject(objectUri2)).thenReturn(expectedResult2)
 
-        val result = objectsService.getObjectsByUris(objectName, listOf(objectUri1, objectUri2))
+        val result = objectManagementFacade.getObjectsByUris(objectName, listOf(objectUri1, objectUri2))
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
@@ -182,7 +176,7 @@ internal class ObjectsServiceTest {
             pageable = expectedPageRequest)
         ).thenReturn(expectedObjectsList)
 
-        val result = objectsService.getObjectsPaged(objectName, searchString, pageNumber, pageSize)
+        val result = objectManagementFacade.getObjectsPaged(objectName, searchString, pageNumber, pageSize)
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
@@ -223,7 +217,7 @@ internal class ObjectsServiceTest {
             pageable = expectedPageRequest)
         ).thenReturn(expectedObjectsList)
 
-        val result = objectsService.getObjectsPaged(objectName, searchString, pageNumber, pageSize)
+        val result = objectManagementFacade.getObjectsPaged(objectName, searchString, pageNumber, pageSize)
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
@@ -260,7 +254,7 @@ internal class ObjectsServiceTest {
             pageable = expectedPageRequest)
         ).thenReturn(expectedObjectsList)
 
-        val result = objectsService.getObjectsUnpaged(objectName, searchString)
+        val result = objectManagementFacade.getObjectsUnpaged(objectName, searchString)
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
@@ -302,7 +296,7 @@ internal class ObjectsServiceTest {
             pageable = expectedPageRequest)
         ).thenReturn(expectedObjectsList)
 
-        val result = objectsService.getObjectsUnpaged(objectName, searchString)
+        val result = objectManagementFacade.getObjectsUnpaged(objectName, searchString)
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)
@@ -341,7 +335,7 @@ internal class ObjectsServiceTest {
 
         val expectedObjectRequest = ObjectRequest(expectedUrl, objectRecord)
 
-        objectsService.createObject(objectName, data)
+        objectManagementFacade.createObject(objectName, data)
 
         verify(objectManagementRepository).findByTitle(objectName)
         verify(pluginService).createInstance<ObjectenApiPlugin>(objectenApiPluginConfigurationId)

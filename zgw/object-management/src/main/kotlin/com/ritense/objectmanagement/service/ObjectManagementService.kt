@@ -64,7 +64,7 @@ class ObjectManagementService(
     private val pluginService: PluginService,
     private val searchFieldV2Service: SearchFieldV2Service,
     private val searchListColumnService: SearchListColumnService,
-    private val objectsService: ObjectsService
+    private val objectManagementFacade: ObjectManagementFacade
 ) {
 
     @Transactional
@@ -77,7 +77,6 @@ class ObjectManagementService(
                 )
             }
             val result = objectManagementRepository.save(objectManagement)
-            objectsService.clearCache()
             return result
         }
 
@@ -89,7 +88,6 @@ class ObjectManagementService(
             } else {
                 objectManagementRepository.save(objectManagement)
             }
-            objectsService.clearCache()
             return result
         }
 
@@ -102,7 +100,6 @@ class ObjectManagementService(
     @Transactional
     fun deleteById(id: UUID) {
         objectManagementRepository.deleteById(id)
-        objectsService.clearCache()
     }
 
     fun getObjects(id: UUID, pageable: Pageable): PageImpl<ObjectsListRowDto> {

@@ -15,28 +15,34 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.net.URI
-import java.time.Instant
 import java.time.LocalDate
 import java.util.UUID
 
 @Service
-class ObjectsService(
+class ObjectManagementFacade(
     private val objectManagementRepository: ObjectManagementRepository,
     private val pluginService: PluginService
 ) {
     val logger = KotlinLogging.logger {}
 
-    private val accessObjects: MutableMap<String, ObjectsApiAccessObject> = mutableMapOf()
-    private val accessObjectTimeToLiveInSeconds = 300L
-
-    // This function will clear the cache of Objects API access objects.
-    // It should be called whenever a change to an ObjectManagement record is saved.
-    fun clearCache() {
-        accessObjects.clear()
-    }
-
     fun getObjectByUuid(objectName: String, uuid: UUID): ObjectWrapper {
         val accessObject = getAccessObject(objectName)
+
+        return findObjectByUuid(accessObject = accessObject, uuid = uuid)
+    }
+
+    fun getObjectsByUuids(objectName: String, uuids: List<UUID>): ObjectsList {
+        val accessObject = getAccessObject(objectName)
+        val objects = mutableListOf<ObjectWrapper>()
+
+        uuids.forEach(){
+            objects.add(findObjectByUuid(accessObject = accessObject, uuid = it))
+        }
+
+        return ObjectsList(count = objects.size, results = objects)
+    }
+
+    private fun findObjectByUuid(accessObject: ObjectManagementAccessObject, uuid: UUID): ObjectWrapper {
         val objectUrl = URI.create("${accessObject.objectenApiPlugin.url}objects/$uuid")
 
         logger.trace { "Getting object $objectUrl" }
@@ -44,32 +50,27 @@ class ObjectsService(
         return accessObject.objectenApiPlugin.getObject(objectUrl)
     }
 
-    fun getObjectsByUuids(objectName: String, uuids: List<UUID>): ObjectsList {
-        val objects = mutableListOf<ObjectWrapper>()
-
-        uuids.forEach(){
-            objects.add(getObjectByUuid(objectName, it))
-        }
-
-        return ObjectsList(count = objects.size, results = objects)
-    }
-
     fun getObjectByUri(objectName: String, objectUrl: URI): ObjectWrapper {
         val accessObject = getAccessObject(objectName)
 
-        logger.trace { "Getting object $objectUrl" }
-
-        return accessObject.objectenApiPlugin.getObject(objectUrl)
+        return findObjectByUri(accessObject = accessObject, objectUrl = objectUrl)
     }
 
     fun getObjectsByUris(objectName: String, objectUrls: List<URI>): ObjectsList {
+        val accessObject = getAccessObject(objectName)
         val objects = mutableListOf<ObjectWrapper>()
 
         objectUrls.forEach(){
-            objects.add(getObjectByUri(objectName, it))
+            objects.add(findObjectByUri(accessObject = accessObject, objectUrl = it))
         }
 
         return ObjectsList(count = objects.size, results = objects)
+    }
+
+    private fun findObjectByUri(accessObject: ObjectManagementAccessObject, objectUrl: URI): ObjectWrapper {
+        logger.trace { "Getting object $objectUrl" }
+
+        return accessObject.objectenApiPlugin.getObject(objectUrl)
     }
 
     fun getObjectsPaged(
@@ -80,6 +81,58 @@ class ObjectsService(
     ): ObjectsList {
         val accessObject = getAccessObject(objectName)
 
+        return findObjectsPaged(
+            accessObject = accessObject,
+            objectName = objectName,
+            searchString = searchString,
+            pageNumber = pageNumber,
+            pageSize = pageSize
+        )
+    }
+
+    // Please use this function with caution, as it could result in poor application performance.
+    // It is advised to use getObjectsPaged() instead, where possible.
+    fun getObjectsUnpaged(
+        objectName: String,
+        searchString: String?
+    ): ObjectsList {
+        val accessObject = getAccessObject(objectName)
+
+        var pageNumber = 0
+        var totalResults = ObjectsList(
+            results = listOf(),
+            count = 0
+        )
+
+        do {
+            val iterationResult = findObjectsPaged(
+                accessObject = accessObject,
+                objectName = objectName,
+                searchString = searchString,
+                pageNumber = pageNumber,
+                pageSize = 500
+            )
+
+            var combinedResults = totalResults.results
+            combinedResults += iterationResult.results
+            totalResults = ObjectsList(
+                results = combinedResults,
+                count = combinedResults.size
+            )
+
+            pageNumber++
+        } while (iterationResult.next != null)
+
+        return totalResults
+    }
+
+    private fun findObjectsPaged(
+        accessObject: ObjectManagementAccessObject,
+        objectName: String,
+        searchString: String?,
+        pageNumber: Int,
+        pageSize: Int
+    ): ObjectsList {
         return if (!searchString.isNullOrBlank()) {
             logger.trace { "Getting object page for object type $objectName with search string $searchString" }
 
@@ -99,34 +152,6 @@ class ObjectsService(
                 PageRequest.of(pageNumber, pageSize)
             )
         }
-    }
-
-    // Please use this function with caution, as it could result in poor application performance.
-    // It is advised to use getObjectsPaged() instead, where possible.
-    fun getObjectsUnpaged(
-        objectName: String,
-        searchString: String?
-    ): ObjectsList {
-        var pageNumber = 0
-        var totalResults = ObjectsList(
-            results = listOf(),
-            count = 0
-        )
-
-        do {
-            val iterationResult = getObjectsPaged(objectName, searchString, pageNumber, 500)
-
-            var combinedResults = totalResults.results
-            combinedResults += iterationResult.results
-            totalResults = ObjectsList(
-                results = combinedResults,
-                count = combinedResults.size
-            )
-
-            pageNumber++
-        } while (iterationResult.next != null)
-
-        return totalResults
     }
 
     fun createObject(
@@ -155,19 +180,7 @@ class ObjectsService(
         }
     }
 
-    private fun getAccessObject(objectName: String): ObjectsApiAccessObject {
-        if (!accessObjects.containsKey(objectName) || isAccessObjectTimeToLiveExpired(objectName)) {
-            initializeAccessObject(objectName)
-        }
-
-        return accessObjects.getValue(objectName)
-    }
-
-    private fun isAccessObjectTimeToLiveExpired(objectName: String): Boolean {
-        return accessObjects.getValue(objectName).createdTime < Instant.now().minusSeconds(accessObjectTimeToLiveInSeconds)
-    }
-
-    private fun initializeAccessObject(objectName: String) {
+    private fun getAccessObject(objectName: String): ObjectManagementAccessObject {
         val objectManagement = objectManagementRepository.findByTitle(objectName)
             ?: throw NoSuchElementException("Object type $objectName is not found in Object Management.")
         val objectenApiPlugin =
@@ -175,20 +188,16 @@ class ObjectsService(
         val objectTypenApiPlugin =
             pluginService.createInstance<ObjecttypenApiPlugin>(objectManagement.objecttypenApiPluginConfigurationId)
 
-        val accessObject = ObjectsApiAccessObject(
+        return ObjectManagementAccessObject(
             objectManagement,
             objectenApiPlugin,
-            objectTypenApiPlugin,
-            Instant.now()
+            objectTypenApiPlugin
         )
-
-        accessObjects.put(objectName, accessObject)
     }
 
-    private data class ObjectsApiAccessObject(
+    private data class ObjectManagementAccessObject(
         val objectManagement: ObjectManagement,
         val objectenApiPlugin: ObjectenApiPlugin,
-        val objectTypenApiPlugin: ObjecttypenApiPlugin,
-        val createdTime: Instant
+        val objectTypenApiPlugin: ObjecttypenApiPlugin
     )
 }
