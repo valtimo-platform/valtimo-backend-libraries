@@ -63,8 +63,7 @@ class ObjectManagementService(
     private val objectManagementRepository: ObjectManagementRepository,
     private val pluginService: PluginService,
     private val searchFieldV2Service: SearchFieldV2Service,
-    private val searchListColumnService: SearchListColumnService,
-    private val objectManagementFacade: ObjectManagementFacade
+    private val searchListColumnService: SearchListColumnService
 ) {
 
     @Transactional

@@ -58,15 +58,13 @@ class ObjectManagementAutoConfiguration {
         objectManagementRepository: ObjectManagementRepository,
         pluginService: PluginService,
         searchFieldV2Service: SearchFieldV2Service,
-        searchListColumnService: SearchListColumnService,
-        objectManagementFacade: ObjectManagementFacade
+        searchListColumnService: SearchListColumnService
     ): ObjectManagementService {
         return ObjectManagementService(
             objectManagementRepository,
             pluginService,
             searchFieldV2Service,
-            searchListColumnService,
-            objectManagementFacade
+            searchListColumnService
         )
     }
 
