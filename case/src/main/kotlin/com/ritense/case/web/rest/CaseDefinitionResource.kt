@@ -16,6 +16,7 @@
 
 package com.ritense.case.web.rest
 
+import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseListColumnDto
@@ -53,6 +54,7 @@ class CaseDefinitionResource(
     }
 
     @PatchMapping("/v1/case/{caseDefinitionName}/settings")
+    @RunWithoutAuthorization
     fun updateCaseSettings(
         @RequestBody caseSettingsDto: CaseSettingsDto,
         @PathVariable caseDefinitionName: String
@@ -74,6 +76,7 @@ class CaseDefinitionResource(
     }
 
     @PostMapping("/v1/case/{caseDefinitionName}/list-column")
+    @RunWithoutAuthorization
     fun createCaseListColumn(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDto: CaseListColumnDto
@@ -83,6 +86,7 @@ class CaseDefinitionResource(
     }
 
     @PutMapping("/v1/case/{caseDefinitionName}/list-column")
+    @RunWithoutAuthorization
     fun updateListColumn(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDtoList: List<CaseListColumnDto>
@@ -92,6 +96,7 @@ class CaseDefinitionResource(
     }
 
     @DeleteMapping("/v1/case/{caseDefinitionName}/list-column/{columnKey}")
+    @RunWithoutAuthorization
     fun deleteListColumn(
         @PathVariable caseDefinitionName: String,
         @PathVariable columnKey: String
