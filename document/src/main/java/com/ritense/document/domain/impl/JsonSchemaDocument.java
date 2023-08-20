@@ -118,8 +118,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Column(name = "related_files", columnDefinition = "json")
     private Set<JsonSchemaRelatedFile> relatedFiles = new HashSet<>();
 
-/*    @Column(name = "tenant_id", columnDefinition = "varchar(255)", updatable = false)
-    private String tenantId;*/
+    @Column(name = "tenant_id", columnDefinition = "varchar(255)", updatable = false)
+    private String tenantId;
 
     private JsonSchemaDocument(
         final JsonSchemaDocumentId id,
@@ -144,7 +144,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         this.createdOn = LocalDateTime.now();
         this.createdBy = createdBy;
         this.sequence = sequence;
-       // this.tenantId = tenantId;
+        this.tenantId = tenantId;
 
         addRelatedDocument(documentRelation);
 
@@ -415,11 +415,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
 
     @Override
     @JsonIgnore
-    /*public String tenantId() {
-        return tenantId;
-    }*/
     public String tenantId() {
-        return "1";
+        return tenantId;
     }
 
     @Override
