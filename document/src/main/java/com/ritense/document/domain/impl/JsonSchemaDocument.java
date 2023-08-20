@@ -36,11 +36,11 @@ import com.ritense.document.service.result.error.DocumentOperationError;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileAddedEvent;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEvent;
-import com.ritense.valtimo.contract.domain.AbstractAggregateRoot;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.Column;
@@ -76,7 +76,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
         @Index(name = "sequence_index", columnList = "sequence")
     }
 )
-public class JsonSchemaDocument extends AbstractAggregateRoot
+public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument>
     implements Document, Persistable<JsonSchemaDocumentId> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocument.class);
@@ -118,8 +118,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot
     @Column(name = "related_files", columnDefinition = "json")
     private Set<JsonSchemaRelatedFile> relatedFiles = new HashSet<>();
 
-    @Column(name = "tenant_id", columnDefinition = "varchar(255)", updatable = false)
-    private String tenantId;
+/*    @Column(name = "tenant_id", columnDefinition = "varchar(255)", updatable = false)
+    private String tenantId;*/
 
     private JsonSchemaDocument(
         final JsonSchemaDocumentId id,
@@ -144,7 +144,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot
         this.createdOn = LocalDateTime.now();
         this.createdBy = createdBy;
         this.sequence = sequence;
-        this.tenantId = tenantId;
+       // this.tenantId = tenantId;
 
         addRelatedDocument(documentRelation);
 
@@ -415,8 +415,11 @@ public class JsonSchemaDocument extends AbstractAggregateRoot
 
     @Override
     @JsonIgnore
-    public String tenantId() {
+    /*public String tenantId() {
         return tenantId;
+    }*/
+    public String tenantId() {
+        return "1";
     }
 
     @Override

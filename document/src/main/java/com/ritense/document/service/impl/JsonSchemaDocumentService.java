@@ -33,7 +33,7 @@ import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
-import com.ritense.document.repository.DocumentRepository;
+import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.NamedUser;
@@ -59,14 +59,14 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentService.class);
 
-    private final DocumentRepository documentRepository;
+    private final JsonSchemaDocumentRepository documentRepository;
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
     private final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService;
     private final UserManagementService userManagementService;
     private final ResourceService resourceService;
 
     public JsonSchemaDocumentService(
-        final DocumentRepository documentRepository,
+        final JsonSchemaDocumentRepository documentRepository,
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
         final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
         final ResourceService resourceService,
