@@ -35,13 +35,22 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class JsonSchemaDocumentServiceTest extends BaseTest {
 
@@ -96,7 +105,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         assertEquals(123L, document.sequence());
         assertEquals("system", document.createdBy());
         assertNotNull(document.createdOn());
-        verify(documentRepository, times(1)).insert(eq(document));
+        verify(documentRepository, times(1)).saveAndFlush(eq(document));
     }
 
     @Test
@@ -162,7 +171,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
                 assertEquals(123L, relatedFile.getSizeInBytes());
             }
         );
-        verify(documentRepository, times(1)).insert(eq(document));
+        verify(documentRepository, times(1)).saveAndFlush(eq(document));
     }
 
     @Test

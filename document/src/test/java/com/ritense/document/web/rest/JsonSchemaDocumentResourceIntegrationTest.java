@@ -67,7 +67,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
             TENANT_ID
         );
         document = result.resultingDocument().orElseThrow();
-        documentRepository.insert(document);
+        documentRepository.saveAndFlush(document);
 
         documentDefinitionService.putDocumentDefinitionRoles(
             document.definitionId().name(),
