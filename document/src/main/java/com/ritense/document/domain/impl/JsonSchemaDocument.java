@@ -36,11 +36,11 @@ import com.ritense.document.service.result.error.DocumentOperationError;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileAddedEvent;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEvent;
+import com.ritense.valtimo.contract.domain.AbstractAggregateRoot;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.Column;
@@ -76,7 +76,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
         @Index(name = "sequence_index", columnList = "sequence")
     }
 )
-public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument>
+public class JsonSchemaDocument extends AbstractAggregateRoot
     implements Document, Persistable<JsonSchemaDocumentId> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocument.class);
