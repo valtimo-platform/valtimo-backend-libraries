@@ -20,6 +20,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.search.SearchWithConfigRequest
+import com.ritense.tenancy.TenantResolver
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -27,24 +28,26 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 
 class CaseInstanceResourceTest {
     lateinit var mockMvc: MockMvc
     lateinit var resource: CaseInstanceResource
     lateinit var service: CaseInstanceService
+    lateinit var tenantResolver: TenantResolver
 
     @BeforeEach
     fun setUp() {
         service = mock()
-        resource = CaseInstanceResource(service)
+        tenantResolver = mock()
+        resource = CaseInstanceResource(service, tenantResolver)
         mockMvc = MockMvcBuilders.standaloneSetup(resource)
             .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
             .build()
