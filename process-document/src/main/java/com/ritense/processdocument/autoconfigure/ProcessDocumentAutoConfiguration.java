@@ -49,7 +49,6 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.annotation.ProcessBean;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import com.ritense.valtimo.service.ContextService;
 import com.ritense.valueresolver.ValueResolverFactory;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
@@ -177,13 +176,11 @@ public class ProcessDocumentAutoConfiguration {
     public ProcessDocumentDeploymentService processDocumentDeploymentService(
             ResourceLoader resourceLoader,
             ProcessDocumentAssociationService processDocumentAssociationService,
-            ContextService contextService,
             DocumentDefinitionService documentDefinitionService
     ) {
         return new CamundaProcessJsonSchemaDocumentDeploymentService(
                 resourceLoader,
                 processDocumentAssociationService,
-                contextService,
                 documentDefinitionService
         );
     }
