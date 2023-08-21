@@ -21,7 +21,6 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
-import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.resource.service.ResourceService;
@@ -42,7 +41,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -212,8 +210,5 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
 
         assertNull(jsonSchemaDocument.assigneeId());
         assertNull(jsonSchemaDocument.assigneeFullName());
-        assertThat(jsonSchemaDocument.domainEvents().stream()
-            .filter(domainEvent -> domainEvent.getClass().equals(DocumentUnassignedEvent.class))
-        ).isNotNull();
     }
 }
