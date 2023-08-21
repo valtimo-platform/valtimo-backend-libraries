@@ -23,13 +23,21 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.ApplicationContext
 import java.lang.reflect.Method
 
+/**
+ *  The AnnotatedClassResolver can scan for classes and methods with a specific annotation.
+ *  It will only scan for classes that are inside whitelisted packages. Whitelisted packages include:
+ *  - com.ritense.*
+ *  - The package of the class that has the `@SpringBootApplication` annotation
+ *  - Packages that are defined by property: `valtimo.annotation-scan.accepted-packages`
+ *
+ */
 abstract class AnnotatedClassResolver(
     val context: ApplicationContext
 ) {
 
     inline fun <reified T : Annotation> findMethodsWithAnnotation(): List<Method> {
         return ClassGraph()
-            .acceptPackages(*getAcceptPackages(context))
+            .acceptPackages(*getAcceptPackages())
             .enableClassInfo()
             .enableMethodInfo()
             .enableAnnotationInfo()
@@ -43,7 +51,7 @@ abstract class AnnotatedClassResolver(
 
     inline fun <reified T : Annotation> findClassesWithAnnotation(): Map<Class<*>, T> {
         return ClassGraph()
-            .acceptPackages(*getAcceptPackages(context))
+            .acceptPackages(*getAcceptPackages())
             .enableClassInfo()
             .enableMethodInfo()
             .enableAnnotationInfo()
@@ -66,12 +74,16 @@ abstract class AnnotatedClassResolver(
         }
     }
 
-    fun getAcceptPackages(context: ApplicationContext): Array<String> {
+    fun getAcceptPackages(): Array<String> {
         val springBootApplicationPackages = context.getBeansWithAnnotation(SpringBootApplication::class.java).values
             .map { it.javaClass.packageName }
             .toTypedArray()
 
-        val acceptedPackagesProperty = context.environment.getProperty("valtimo.annotation-scan.accepted-packages", Array<String>::class.java, emptyArray<String>())
+        val acceptedPackagesProperty = context.environment.getProperty(
+            "valtimo.annotation-scan.accepted-packages",
+            Array<String>::class.java,
+            emptyArray<String>()
+        )
 
         return springBootApplicationPackages + acceptedPackagesProperty + "com.ritense"
     }

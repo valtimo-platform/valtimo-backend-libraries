@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+dockerCompose {
+    projectName = "contract"
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
+    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
+
 dependencies {
     api "org.apache.commons:commons-lang3:${commonsLangVersion}"
     api "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
@@ -48,6 +55,7 @@ dependencies {
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "io.github.classgraph:classgraph:${classgraphVersion}"
 
+    testImplementation project(":test-utils-common")
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
