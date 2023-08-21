@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
 public interface FormAssociationResource {
@@ -43,6 +44,7 @@ public interface FormAssociationResource {
     ResponseEntity<FormSubmissionResult> handleSubmission(
         String processDefinitionKey,
         String formLinkId,
+        Optional<String> documentDefinitionName,
         Optional<String> documentId,
         Optional<String> taskInstanceId,
         JsonNode submission
