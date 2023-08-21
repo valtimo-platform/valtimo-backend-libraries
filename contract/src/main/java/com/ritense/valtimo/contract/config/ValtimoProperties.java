@@ -27,7 +27,7 @@ public class ValtimoProperties {
 
     private final Mandrill mandrill;
 
-    private final JWT jwt;
+    private final Oauth oauth;
 
     private final Portal portal;
 
@@ -36,13 +36,13 @@ public class ValtimoProperties {
     public ValtimoProperties(
         App app,
         Mandrill mandrill,
-        JWT jwt,
+        Oauth oauth,
         Portal portal,
         Process process
     ) {
         this.app = app != null ? app : new App();
         this.mandrill = mandrill != null ? mandrill : new Mandrill();
-        this.jwt = jwt != null ? jwt : new JWT();
+        this.oauth = oauth != null ? oauth : new Oauth();
         this.portal = portal != null ? portal : new Portal();
         this.process = process != null ? process : new Process();
     }
@@ -55,8 +55,8 @@ public class ValtimoProperties {
         return mandrill;
     }
 
-    public JWT getJwt() {
-        return jwt;
+    public Oauth getOauth() {
+        return oauth;
     }
 
     public Portal getPortal() {
@@ -141,16 +141,16 @@ public class ValtimoProperties {
         }
     }
 
-    public static class JWT {
-        private String secret;
+    public static class Oauth {
+        private String publicKey;
         private long tokenValidityInSeconds = 180000;
 
-        public String getSecret() {
-            return secret;
+        public String getPublicKey() {
+            return publicKey;
         }
 
-        public void setSecret(String secret) {
-            this.secret = secret;
+        public void setPublicKey(String publicKey) {
+            this.publicKey = publicKey;
         }
 
         public long getTokenValidityInSeconds() {

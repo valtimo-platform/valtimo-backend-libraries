@@ -46,11 +46,11 @@ public class KeycloakAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(KeycloakSecretKeyProvider.class)
-    @ConditionalOnProperty("valtimo.jwt.secret")
+    @ConditionalOnProperty("valtimo.oauth.public-key")
     public KeycloakSecretKeyProvider keycloakSecretKeyProvider(
-        @Value("${valtimo.jwt.secret}") final String secret
+        @Value("${valtimo.oauth.public-key}") final String oauthPublicKey
     ) {
-        return new KeycloakSecretKeyProvider(secret);
+        return new KeycloakSecretKeyProvider(oauthPublicKey);
     }
 
     @Bean
