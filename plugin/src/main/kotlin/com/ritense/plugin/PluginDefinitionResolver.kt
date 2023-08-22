@@ -17,9 +17,13 @@
 package com.ritense.plugin
 
 import com.ritense.plugin.annotation.Plugin
+import com.ritense.valtimo.contract.annotation.AnnotatedClassResolver
+import org.springframework.context.ApplicationContext
 
-class PluginDefinitionResolver: AnnotatedClassResolver() {
+class PluginDefinitionResolver(
+    context: ApplicationContext
+): AnnotatedClassResolver(context) {
     internal fun findPluginClasses() : Map<Class<*>, Plugin> {
-        return findAnnotatedClasses()
+        return findClassesWithAnnotation()
     }
 }
