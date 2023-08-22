@@ -31,8 +31,6 @@ import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.formflow.FormFlowFormLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowProcessLinkActivityHandler
-import com.ritense.tenancy.TenantResolver
-import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.FormLinkNewProcessFormFlowProviderImpl
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow

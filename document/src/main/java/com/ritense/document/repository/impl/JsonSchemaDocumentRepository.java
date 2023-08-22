@@ -25,17 +25,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
 
 @Repository
 public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSchemaDocument>,
     JpaSpecificationExecutor<JsonSchemaDocument> {
-
-    Optional<JsonSchemaDocument> findByIdAndTenantId(
-        Document.Id documentId,
-        String tenantId
-    );
 
     Optional<JsonSchemaDocument> findByIdAndTenantId(
         Document.Id documentId,
