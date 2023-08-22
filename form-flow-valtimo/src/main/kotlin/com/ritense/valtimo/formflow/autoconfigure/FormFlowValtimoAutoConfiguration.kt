@@ -34,7 +34,7 @@ import com.ritense.valtimo.formflow.FormFlowProcessLinkActivityHandler
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.FormLinkNewProcessFormFlowProviderImpl
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
-import com.ritense.valtimo.formflow.handler.FormFlowStepTypeAngularComponentHandler
+import com.ritense.valtimo.formflow.handler.FormFlowStepTypeCustomComponentHandler
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper
 import com.ritense.valtimo.formflow.repository.FormFlowProcessLinkRepository
@@ -140,9 +140,9 @@ class FormFlowValtimoAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(FormFlowStepTypeAngularComponentHandler::class)
-    fun formFlowStepTypeAngularComponentHandler(): FormFlowStepTypeAngularComponentHandler {
-        return FormFlowStepTypeAngularComponentHandler()
+    @ConditionalOnMissingBean(FormFlowStepTypeCustomComponentHandler::class)
+    fun formFlowStepTypeCustomComponentHandler(): FormFlowStepTypeCustomComponentHandler {
+        return FormFlowStepTypeCustomComponentHandler()
     }
 
     @Bean
