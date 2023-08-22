@@ -16,45 +16,18 @@
 
 package com.ritense.tenancy.authentication;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
-import javax.security.auth.Subject
 
 class TenantAuthenticationToken(
-    private val delegate: Authentication,
-    override val tenantId: String
-) : Authentication, TenantAware {
-
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority>? {
-        return delegate.authorities
-    }
-
-    override fun getCredentials(): Any {
-        return delegate.credentials
-    }
-
-    override fun getDetails(): Any {
-        return delegate.details
-    }
-
-    override fun getPrincipal(): Any {
-        return delegate.principal
-    }
-
-    override fun isAuthenticated(): Boolean {
-        return delegate.isAuthenticated
-    }
-
-    override fun setAuthenticated(isAuthenticated: Boolean) {
-        delegate.isAuthenticated = isAuthenticated
-    }
-
-    override fun getName(): String {
-        return delegate.name
-    }
-
-    override fun implies(subject: Subject): Boolean {
-        return delegate.implies(subject)
-    }
-
-}
+    principal: Any,
+    credentials: Any,
+    authorities: List<GrantedAuthority>,
+    override val tenantId: String,
+    val fullName: String
+) : UsernamePasswordAuthenticationToken(
+    principal,
+    credentials,
+    authorities
+), Authentication, TenantAware

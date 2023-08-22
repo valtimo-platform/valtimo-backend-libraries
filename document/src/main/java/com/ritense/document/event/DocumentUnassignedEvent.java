@@ -22,20 +22,25 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
 import com.ritense.valtimo.contract.audit.view.AuditView;
+import com.ritense.valtimo.contract.domain.DomainEvent;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
-public class DocumentUnassignedEvent extends AuditMetaData implements AuditEvent {
+public class DocumentUnassignedEvent extends AuditMetaData implements AuditEvent, DomainEvent {
 
     private UUID documentId;
 
     @JsonCreator
-    public DocumentUnassignedEvent(UUID id,
-                                   String origin,
-                                   LocalDateTime occurredOn,
-                                   String user,
-                                   UUID documentId) {
+    public DocumentUnassignedEvent(
+        UUID id,
+        String origin,
+        LocalDateTime occurredOn,
+        String user,
+        UUID documentId
+    ) {
         super(id, origin, occurredOn, user);
         assertArgumentNotNull(documentId, "documentId is required");
         this.documentId = documentId;

@@ -19,6 +19,7 @@ package com.ritense.document.domain.impl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.valtimo.contract.resource.Resource;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 

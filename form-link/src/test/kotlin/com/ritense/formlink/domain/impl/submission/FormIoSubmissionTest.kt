@@ -34,6 +34,7 @@ import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.result.DocumentFunctionResult
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.service.CamundaTaskService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -83,6 +84,9 @@ class FormIoSubmissionTest : BaseTest() {
     @Mock
     lateinit var documentSequenceGeneratorService: DocumentSequenceGeneratorService
 
+    @Mock
+    lateinit var tenantResolver: TenantResolver
+
     @BeforeEach
     fun init() {
         MockitoAnnotations.openMocks(this)
@@ -116,7 +120,8 @@ class FormIoSubmissionTest : BaseTest() {
             processDocumentService,
             taskService,
             submissionTransformerService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            tenantResolver
         )
 
         val result = formIoSubmission.apply()
@@ -138,7 +143,8 @@ class FormIoSubmissionTest : BaseTest() {
             processDocumentService,
             taskService,
             submissionTransformerService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            tenantResolver
         )
 
         val result = formIoSubmission.apply()
@@ -162,7 +168,8 @@ class FormIoSubmissionTest : BaseTest() {
             processDocumentService,
             taskService,
             submissionTransformerService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            tenantResolver
         )
 
         val result = formIoSubmission.apply()
@@ -187,7 +194,8 @@ class FormIoSubmissionTest : BaseTest() {
             processDocumentService,
             taskService,
             submissionTransformerService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            tenantResolver
         )
 
         val result = formIoSubmission.apply()
@@ -212,7 +220,8 @@ class FormIoSubmissionTest : BaseTest() {
             processDocumentService,
             taskService,
             submissionTransformerService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            tenantResolver
         )
 
         val result = formIoSubmission.apply()
@@ -251,7 +260,8 @@ class FormIoSubmissionTest : BaseTest() {
             JsonDocumentContent("{\"name\": \"whatever\" }"),
             "USERNAME",
             documentSequenceGeneratorService,
-            null
+            null,
+            "1"
         ).resultingDocument()
     }
 

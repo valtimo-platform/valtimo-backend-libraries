@@ -24,6 +24,7 @@ import com.ritense.klant.service.BurgerService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -69,7 +70,8 @@ class ProductAanvraagAutoConfiguration {
         zaakRolService: ZaakRolService,
         zaakInstanceLinkService: ZaakInstanceLinkService,
         burgerService: BurgerService?,
-        bedrijfService: BedrijfService?
+        bedrijfService: BedrijfService?,
+        tenantResolver: TenantResolver
     ): ProductAanvraagService {
         return ProductAanvraagService(
             processDocumentService,
@@ -78,7 +80,8 @@ class ProductAanvraagAutoConfiguration {
             zaakRolService,
             zaakInstanceLinkService,
             burgerService,
-            bedrijfService
+            bedrijfService,
+            tenantResolver
         )
     }
 }

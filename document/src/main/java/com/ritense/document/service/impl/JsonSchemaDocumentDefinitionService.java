@@ -76,7 +76,11 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
     private final DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository;
 
-    public JsonSchemaDocumentDefinitionService(ResourceLoader resourceLoader, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository) {
+    public JsonSchemaDocumentDefinitionService(
+        ResourceLoader resourceLoader,
+        DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
+        DocumentDefinitionRoleRepository<JsonSchemaDocumentDefinitionRole> documentDefinitionRoleRepository
+    ) {
         this.resourceLoader = resourceLoader;
         this.documentDefinitionRepository = documentDefinitionRepository;
         this.documentDefinitionRoleRepository = documentDefinitionRoleRepository;
@@ -221,7 +225,6 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         documentDefinitionRepository.deleteByIdName(documentDefinitionName);
     }
 
-
     @Override
     public boolean currentUserCanAccessDocumentDefinition(String documentDefinitionName) {
         return currentUserCanAccessDocumentDefinition(false, documentDefinitionName);
@@ -234,7 +237,6 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
             || getDocumentDefinitionRoles(documentDefinitionName).stream().anyMatch(roles::contains);
     }
 
-
     @Override
     public Set<String> getDocumentDefinitionRoles(String documentDefinitionName) {
         return documentDefinitionRoleRepository.findAllByIdDocumentDefinitionName(documentDefinitionName)
@@ -245,10 +247,14 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public void putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles) {
-        List<JsonSchemaDocumentDefinitionRole> documentDefinitionRoles = roles.stream().map(it -> new JsonSchemaDocumentDefinitionRole(new JsonSchemaDocumentDefinitionRoleId(
-            documentDefinitionName,
-            it
-        ))).toList();
+        List<JsonSchemaDocumentDefinitionRole> documentDefinitionRoles = roles.stream().map(
+            it -> new JsonSchemaDocumentDefinitionRole(
+                new JsonSchemaDocumentDefinitionRoleId(
+                    documentDefinitionName,
+                    it
+                )
+            )
+        ).toList();
         documentDefinitionRoleRepository.deleteByIdDocumentDefinitionName(documentDefinitionName);
         documentDefinitionRoleRepository.saveAll(documentDefinitionRoles);
     }

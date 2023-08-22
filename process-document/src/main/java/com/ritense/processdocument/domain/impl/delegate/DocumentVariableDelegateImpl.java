@@ -23,10 +23,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.json.Mapper;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,9 +37,14 @@ public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
     private static final Logger logger = LoggerFactory.getLogger(DocumentVariableDelegateImpl.class);
     private static final ObjectMapper mapper = Mapper.INSTANCE.get();
     private final DocumentService documentService;
+    private final TenantResolver tenantResolver;
 
-    public DocumentVariableDelegateImpl(DocumentService documentService) {
+    public DocumentVariableDelegateImpl(
+        final DocumentService documentService,
+        final TenantResolver tenantResolver
+    ) {
         this.documentService = documentService;
+        this.tenantResolver = tenantResolver;
     }
 
     @Override
@@ -51,17 +58,17 @@ public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
         final var jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(execution.getProcessBusinessKey()));
         logger.debug("Retrieving value for key {} from documentId {}", jsonPointer, execution.getProcessBusinessKey());
         return documentService
-            .findBy(jsonSchemaDocumentId)
+            .findBy(jsonSchemaDocumentId, tenantResolver.getTenantId())
             .flatMap(jsonSchemaDocument -> jsonSchemaDocument.content().getValueBy(JsonPointer.valueOf(jsonPointer)))
             .map(this::transform)
             .orElse(defaultValue);
     }
 
     private Object transform(JsonNode jsonNode) {
-        if(jsonNode.isNumber()) {
+        if (jsonNode.isNumber()) {
             // Removing this would result in a breaking change, as 3.0 will become an int when using treeToValue
             return jsonNode.asDouble();
-        } else if(jsonNode.isValueNode() || jsonNode.isContainerNode()) {
+        } else if (jsonNode.isValueNode() || jsonNode.isContainerNode()) {
             try {
                 return mapper.treeToValue(jsonNode, Object.class);
             } catch (JsonProcessingException e) {

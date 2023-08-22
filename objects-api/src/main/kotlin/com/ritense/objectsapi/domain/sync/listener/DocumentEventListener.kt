@@ -26,6 +26,7 @@ import com.ritense.objectsapi.domain.request.Comparator
 import com.ritense.objectsapi.domain.request.ObjectSearchParameter
 import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objectsapi.service.ObjectsApiConnector
+import com.ritense.tenancy.TenantResolver
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
@@ -36,7 +37,8 @@ open class DocumentEventListener(
     val objectSyncService: ObjectSyncService,
     val connectorService: ConnectorService,
     val connectorFluentBuilder: ConnectorFluentBuilder,
-    val documentService: DocumentService
+    val documentService: DocumentService,
+    val tenantResolver: TenantResolver
 ) {
 
     @TransactionalEventListener(
@@ -55,7 +57,7 @@ open class DocumentEventListener(
                         .builder()
                         .withConnector(connectorInstance.name) as ObjectsApiConnector
 
-                    val document = documentService.findBy(event.documentId()).orElseThrow()
+                    val document = documentService.findBy(event.documentId(), tenantResolver.getTenantId()).orElseThrow()
                     val content = document.content().asJson() as ObjectNode
                     content.put("caseId", event.documentId().id.toString())
                     objectsApiConnector.payload(content)
@@ -71,7 +73,7 @@ open class DocumentEventListener(
     )
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     open fun handleDocumentModifiedEvent(event: JsonSchemaDocumentModifiedEvent) {
-        val document = documentService.findBy(event.documentId()).orElseThrow()
+        val document = documentService.findBy(event.documentId(), tenantResolver.getTenantId()).orElseThrow()
         val objectSyncConfig = objectSyncService.getObjectSyncConfig(document.definitionId().name())
         objectSyncConfig.content.forEach {
             when {

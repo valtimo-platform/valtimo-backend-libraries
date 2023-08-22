@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.document.domain.Document;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.valtimo.contract.result.OperationError;
+
 import java.util.List;
 import java.util.Optional;
 

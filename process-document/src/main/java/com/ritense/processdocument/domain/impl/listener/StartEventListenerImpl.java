@@ -30,6 +30,7 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentForRunningProc
 import com.ritense.processdocument.domain.listener.StartEventListener;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
+import com.ritense.tenancy.TenantResolver;
 import org.camunda.bpm.engine.ActivityTypes;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
@@ -39,8 +40,10 @@ import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListene
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+
 import java.io.IOException;
 import java.util.UUID;
+
 import static com.ritense.processdocument.domain.impl.delegate.ProcessDocumentStartEventMessageDelegateImpl.PAYLOAD;
 import static com.ritense.processdocument.domain.impl.delegate.ProcessDocumentStartEventMessageDelegateImpl.RELATION_TYPE;
 import static com.ritense.processdocument.domain.impl.delegate.ProcessDocumentStartEventMessageDelegateImpl.SOURCE_PROCESS_INSTANCE_ID;
@@ -52,11 +55,18 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
     private final ProcessDocumentService processDocumentService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final TenantResolver tenantResolver;
 
-    public StartEventListenerImpl(ProcessDocumentService processDocumentService, ProcessDocumentAssociationService processDocumentAssociationService, ApplicationEventPublisher applicationEventPublisher) {
+    public StartEventListenerImpl(
+        final ProcessDocumentService processDocumentService,
+        final ProcessDocumentAssociationService processDocumentAssociationService,
+        final ApplicationEventPublisher applicationEventPublisher,
+        final TenantResolver tenantResolver
+    ) {
         this.processDocumentService = processDocumentService;
         this.processDocumentAssociationService = processDocumentAssociationService;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.tenantResolver = tenantResolver;
     }
 
     @Override
@@ -80,7 +90,9 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
                         var newDocumentRequest = new NewDocumentRequest(
                             documentDefinitionId.name(),
                             jsonData
-                        ).withDocumentRelation(new DocumentRelationRequest(UUID.fromString(sourceDocumentId.toString()), documentRelationType));
+                        ).withDocumentRelation(
+                            new DocumentRelationRequest(UUID.fromString(sourceDocumentId.toString()), documentRelationType)
+                        ).withTenantId(tenantResolver.getTenantId());
 
                         final var request = new NewDocumentForRunningProcessRequest(
                             processDefinitionKey.toString(),
@@ -89,11 +101,12 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
                         );
                         final var result = processDocumentService.newDocumentForRunningProcess(request);
 
-                        result.resultingDocument().ifPresentOrElse(document -> applicationEventPublisher.publishEvent(
-                            new NextJsonSchemaDocumentRelationAvailableEvent(
-                                sourceDocumentId.toString(),
-                                document.id().toString()
-                            )
+                        result.resultingDocument().ifPresentOrElse(
+                            document -> applicationEventPublisher.publishEvent(
+                                new NextJsonSchemaDocumentRelationAvailableEvent(
+                                    sourceDocumentId.toString(),
+                                    document.id().toString()
+                                )
                             ), () -> {
                                 throw new RuntimeException(String.format(
                                     "Unable to create new document %s for process %s",

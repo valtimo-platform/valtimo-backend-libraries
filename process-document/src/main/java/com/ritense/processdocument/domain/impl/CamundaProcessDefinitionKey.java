@@ -17,9 +17,11 @@
 package com.ritense.processdocument.domain.impl;
 
 import com.ritense.processdocument.domain.ProcessDefinitionKey;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 

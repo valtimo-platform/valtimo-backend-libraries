@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.tenancy.autoconfigure.TenantAwareListenerAutoConfiguration
+  com.ritense.tenancy.autoconfigure.TenancyAutoConfiguration

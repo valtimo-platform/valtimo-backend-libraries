@@ -109,7 +109,8 @@ public abstract class BaseIntegrationTest extends BaseTest {
             new NewDocumentRequest(
                 documentDefinition.id().name(),
                 new JsonDocumentContent(content).asJson()
-            )
+            ).withTenantId(TENANT_ID)
         ).resultingDocument().orElseThrow();
     }
+
 }

@@ -20,6 +20,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
@@ -38,16 +39,20 @@ internal class DocumentDelegateTest {
     lateinit var userManagementService: UserManagementService
     lateinit var documentService: DocumentService
     lateinit var documentDelegate: DocumentDelegate
+    lateinit var tenantResolver: TenantResolver
 
     @BeforeEach
     fun beforeEach() {
         processDocumentService = mock()
         userManagementService = mock()
         documentService = mock()
+        tenantResolver = mock()
+        whenever(tenantResolver.getTenantId()).thenReturn("1")
         documentDelegate = DocumentDelegate(
             processDocumentService,
             userManagementService,
             documentService,
+            tenantResolver
         )
     }
 
@@ -66,7 +71,9 @@ internal class DocumentDelegateTest {
 
         documentDelegate.setAssignee(delegateExecutionFake, "john@example.com")
 
-        verify(documentService, times(1)).assignUserToDocument(UUID.fromString(documentId), "anId")
+        verify(documentService, times(1)).assignUserToDocument(
+            UUID.fromString(documentId), "anId", "1"
+        )
     }
 
     @Test
@@ -82,6 +89,8 @@ internal class DocumentDelegateTest {
 
         documentDelegate.unassign(delegateExecutionFake)
 
-        verify(documentService, times(1)).unassignUserFromDocument(UUID.fromString(documentId))
+        verify(documentService, times(1)).unassignUserFromDocument(
+            UUID.fromString(documentId), "1"
+         )
     }
 }

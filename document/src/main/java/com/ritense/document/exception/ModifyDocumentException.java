@@ -17,6 +17,7 @@
 package com.ritense.document.exception;
 
 import com.ritense.document.service.result.error.DocumentOperationError;
+
 import java.util.List;
 
 public class ModifyDocumentException extends RuntimeException {

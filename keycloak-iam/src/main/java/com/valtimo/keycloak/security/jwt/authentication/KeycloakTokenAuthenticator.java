@@ -24,18 +24,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.NAME_KEY;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.TENANT_KEY;
 import static java.util.Objects.requireNonNull;
@@ -87,15 +86,15 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
         final List<String> roles = getRoles(claims);
 
         if (email != null && !roles.isEmpty()) {
-            final Set<? extends GrantedAuthority> authorities = roles.stream()
+            final var authorities = roles.stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.toUpperCase()))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
             final User principal = new User(email, "", authorities);
             final Authentication authentication = new UsernamePasswordAuthenticationToken(principal, jwt, authorities);
             if (valtimoProperties.getApp().getEnableTenancy()) {
                 logger.debug("Creating tenant authentication token");
-                return new TenantAuthenticationToken(authentication, getTenantId(claims));
+                return new TenantAuthenticationToken(principal, jwt, authorities, getTenantId(claims), getName(claims));
             }
             return authentication;
         }
@@ -107,6 +106,13 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
             return claims.get(TENANT_KEY, String.class);
         }
         throw new IllegalStateException("Missing tenant key in claims");
+    }
+
+    private String getName(Claims claims) {
+        if (claims.containsKey(NAME_KEY)) {
+            return claims.get(NAME_KEY, String.class);
+        }
+        throw new IllegalStateException("Missing name key in claims");
     }
 
     private String getEmail(Claims claims) {

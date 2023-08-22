@@ -100,7 +100,7 @@ class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
             new NewDocumentRequest(
                 "house",
                 content.asJson()
-            )
+            ).withTenantId("1")
         ));
 
         List<Task> list = taskService.createTaskQuery().list();

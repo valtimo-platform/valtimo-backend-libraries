@@ -21,6 +21,7 @@ import com.ritense.note.repository.NoteRepository
 import com.ritense.note.security.config.NoteHttpSecurityConfigurer
 import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.NoteResource
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -54,10 +55,12 @@ class NoteAutoConfiguration {
     fun noteResource(
         noteService: NoteService,
         documentService: DocumentService,
+        tenantResolver: TenantResolver
     ): NoteResource {
         return NoteResource(
             noteService,
             documentService,
+            tenantResolver
         )
     }
 

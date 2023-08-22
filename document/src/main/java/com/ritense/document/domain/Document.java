@@ -74,4 +74,6 @@ public interface Document {
 
     }
 
+    String tenantId();
+
 }

@@ -18,7 +18,9 @@ package com.ritense.processdocument.domain;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
+
 import java.lang.reflect.InvocationTargetException;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public interface ProcessInstanceId {
@@ -33,8 +35,10 @@ public interface ProcessInstanceId {
         try {
             final String id = execution.getProcessInstanceId();
             target = targetClass.getConstructor(String.class).newInstance(id);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IllegalArgumentException("Cannot create instance of ProcessInstanceId class" + targetClass.toString());
+        } catch (
+            InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException ex
+        ) {
+            throw new IllegalArgumentException("Cannot create instance of ProcessInstanceId class" + targetClass);
         }
         return target;
     }

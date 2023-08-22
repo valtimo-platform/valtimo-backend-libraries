@@ -12,6 +12,7 @@ import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult
+import com.ritense.tenancy.TenantResolver
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.junit.jupiter.api.BeforeEach
@@ -35,6 +36,7 @@ internal class ProductAanvraagServiceTest {
     val zaakInstanceLinkService = mock<ZaakInstanceLinkService>()
     val burgerService = mock<BurgerService>()
     val bedrijfService = mock<BedrijfService>()
+    val tenantResolver = mock<TenantResolver>()
 
     val service = ProductAanvraagService(
         processDocumentService,
@@ -43,7 +45,8 @@ internal class ProductAanvraagServiceTest {
         zaakRolService,
         zaakInstanceLinkService,
         burgerService,
-        bedrijfService
+        bedrijfService,
+        tenantResolver
     )
 
     @BeforeEach
@@ -73,7 +76,7 @@ internal class ProductAanvraagServiceTest {
     fun `createDossier should create klant when klantservice was injected`() {
 
         service.createDossier(
-            getProductAanvraag(bsn="123"),
+            getProductAanvraag(bsn = "123"),
             getProductAanvraagTypeMapping(),
             URI("http://some.rol.url")
         )
@@ -90,11 +93,12 @@ internal class ProductAanvraagServiceTest {
             zaakRolService,
             zaakInstanceLinkService,
             null,
-            null
+            null,
+            tenantResolver
         )
 
         service.createDossier(
-            getProductAanvraag(bsn="!23"),
+            getProductAanvraag(bsn = "!23"),
             getProductAanvraagTypeMapping(),
             URI("http://some.rol.url")
         )

@@ -22,6 +22,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.smartdocuments.domain.DocumentFormatOption
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.json.Mapper
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
@@ -30,6 +31,7 @@ class CamundaSmartDocumentGenerator(
     private val smartDocumentGenerator: SmartDocumentGenerator,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val documentService: DocumentService,
+    private val tenantResolver: TenantResolver
 ) {
 
     fun generate(execution: DelegateExecution, templateGroup: String, templateId: String, format: DocumentFormatOption) {
@@ -43,11 +45,11 @@ class CamundaSmartDocumentGenerator(
         val processDocumentInstance = processDocumentAssociationService.findProcessDocumentInstance(processInstanceId)
         return if (processDocumentInstance.isPresent) {
             val jsonSchemaDocumentId = processDocumentInstance.get().processDocumentInstanceId().documentId()
-            documentService.findBy(jsonSchemaDocumentId).orElseThrow()
+            documentService.findBy(jsonSchemaDocumentId, tenantResolver.getTenantId()).orElseThrow()
         } else {
             // In case a process has no token wait state ProcessDocumentInstance is not yet created,
             // therefore out business-key is our last chance which is populated with the documentId also.
-            documentService.get(delegateExecution.businessKey)
+            documentService.get(delegateExecution.businessKey, tenantResolver.getTenantId())
         }
     }
 

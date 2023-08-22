@@ -19,6 +19,7 @@ package com.ritense.document.domain.search;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.exception.SearchConfigRequestException;
+import com.ritense.document.service.impl.SearchRequest;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 
 import javax.validation.ValidationException;
@@ -68,8 +69,19 @@ public class SearchRequestValidator {
         ISO_LOCAL_TIME
     );
 
+    public static void validate(SearchRequest searchRequest) {
+        validateTenantFilter(searchRequest);
+    }
+
+    private static void validateTenantFilter(SearchRequest searchRequest) {
+        if (searchRequest.getTenantId() == null) {
+            throw new ValidationException("TenantId is a mandatory filter");
+        }
+    }
+
     public static void validate(SearchWithConfigRequest searchRequest) {
         validateAssigneeFilter(searchRequest.getAssigneeFilter());
+        validateTenantFilter(searchRequest);
         if (searchRequest.getOtherFilters() != null) {
             if (searchRequest.getSearchOperator() == null) {
                 throw new ValidationException("SearchOperator not present");
@@ -78,8 +90,15 @@ public class SearchRequestValidator {
         }
     }
 
+    private static void validateTenantFilter(SearchWithConfigRequest searchRequest) {
+        if (searchRequest.getTenantId() == null) {
+            throw new ValidationException("TenantId is a mandatory filter");
+        }
+    }
+
     public static void validate(AdvancedSearchRequest searchRequest) {
         validateAssigneeFilter(searchRequest.getAssigneeFilter());
+        validateTenantFilter(searchRequest);
         if (searchRequest.getOtherFilters() != null) {
             if (searchRequest.getSearchOperator() == null) {
                 throw new ValidationException("SearchOperator not present");
@@ -94,6 +113,12 @@ public class SearchRequestValidator {
             if (userId == null) {
                 throw new ValidationException("Failed to search for " + assigneeFilter + ". Reason: User is not logged in.");
             }
+        }
+    }
+
+    private static void validateTenantFilter(AdvancedSearchRequest searchRequest) {
+        if (searchRequest.getTenantId() == null) {
+            throw new ValidationException("TenantId is a mandatory filter");
         }
     }
 
@@ -210,7 +235,10 @@ public class SearchRequestValidator {
         }
     }
 
-    private static void validateDataType(SearchWithConfigRequest.SearchWithConfigFilter searchFilter, SearchField searchField) {
+    private static void validateDataType(
+        SearchWithConfigRequest.SearchWithConfigFilter searchFilter,
+        SearchField searchField
+    ) {
         var allValues = new ArrayList<>();
         if (searchFilter.getValues() != null) {
             allValues.addAll(searchFilter.getValues());
@@ -267,13 +295,11 @@ public class SearchRequestValidator {
         }
     }
 
-
     private static void validateDataType(SearchField searchField, List<?> allValues, Class<?>... types) {
         if (Arrays.stream(types).noneMatch(type -> hasType(allValues, type))) {
             throw new SearchConfigRequestException(searchField, searchField.getDataType().toString(), "values '" + Arrays.toString(allValues.toArray()) + "' was not of type " + Arrays.toString(types));
         }
     }
-
 
     private static boolean hasType(List<?> allValues, Class<?> type) {
         return allValues.stream().allMatch(type::isInstance);

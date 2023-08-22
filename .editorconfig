@@ -9,6 +9,7 @@ root = true
 # Change these settings to your own preference
 indent_style = space
 indent_size = 4
+ij_java_use_single_class_imports = true
 
 # We recommend you to keep these unchanged
 end_of_line = lf

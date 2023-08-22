@@ -33,9 +33,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import java.util.UUID
 
 @Transactional
 class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
@@ -81,7 +81,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
         document = documentService.createDocument(
             NewDocumentRequest(
                 "house", objectMapper.readTree(documentJson)
-            )
+            ).withTenantId("1")
         ).resultingDocument().orElseThrow()
         val processInstance = runtimeService.startProcessInstanceByKey(
             "parent-process",
@@ -104,13 +104,13 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
         assertNotNull(associatedProcessDocuments.firstOrNull { it.processName().equals("child process") })
         assertEquals(
             document.id(), associatedProcessDocuments.first {
-                it.processName().equals("parent process")
-            }.id!!.documentId()
+            it.processName().equals("parent process")
+        }.id!!.documentId()
         )
         assertEquals(
             document.id(), associatedProcessDocuments.first {
-                it.processName().equals("child process")
-            }.id!!.documentId()
+            it.processName().equals("child process")
+        }.id!!.documentId()
         )
     }
 
@@ -120,7 +120,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
         document = documentService.createDocument(
             NewDocumentRequest(
                 "house", objectMapper.readTree(documentJson)
-            )
+            ).withTenantId("1")
         ).resultingDocument().orElseThrow()
         val exception = assertThrows<ProcessEngineException> {
             runtimeService.startProcessInstanceByKey(

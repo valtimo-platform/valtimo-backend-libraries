@@ -78,7 +78,7 @@ public abstract class BaseTest {
     }
 
     protected JsonSchemaDocument.CreateDocumentResultImpl createDocument(JsonSchemaDocumentDefinition definition, JsonDocumentContent content) {
-        return JsonSchemaDocument.create(definition, content, USERNAME, documentSequenceGeneratorService, null);
+        return JsonSchemaDocument.create(definition, content, USERNAME, documentSequenceGeneratorService, null, "1");
     }
 
     public URI path(String name) {

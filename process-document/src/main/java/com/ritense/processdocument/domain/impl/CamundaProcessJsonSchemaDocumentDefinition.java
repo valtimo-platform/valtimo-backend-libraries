@@ -20,11 +20,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import org.hibernate.annotations.Formula;
 import org.springframework.data.domain.Persistable;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Objects;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Entity

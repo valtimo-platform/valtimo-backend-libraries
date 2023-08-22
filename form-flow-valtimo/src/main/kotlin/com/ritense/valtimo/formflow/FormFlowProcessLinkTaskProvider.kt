@@ -28,6 +28,7 @@ import com.ritense.formlink.domain.ProcessLinkTaskProvider
 import com.ritense.formlink.domain.TaskOpenResult
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
 import com.ritense.formlink.service.FormAssociationService
+import com.ritense.tenancy.TenantResolver
 import org.apache.logging.log4j.util.Strings
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
@@ -39,7 +40,8 @@ class FormFlowProcessLinkTaskProvider(
     private val documentService: DocumentService,
     private val repositoryService: RepositoryService,
     private val runtimeService: RuntimeService,
-): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
+    private val tenantResolver: TenantResolver
+) : ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
 
     override fun supports(formLink: FormLink?): Boolean {
         return formLink is BpmnElementFormFlowIdLink
@@ -82,7 +84,7 @@ class FormFlowProcessLinkTaskProvider(
     private fun getFormFlowDefinition(formFlowId: String): FormFlowDefinition {
         val formFlowIdAsArray = formFlowId.split(":")
         if (formFlowIdAsArray.size != 2) {
-            throw IllegalArgumentException("Invalid Format found for formFlowId '${Strings.join(formFlowIdAsArray, ':' )}'. Form flow id must have format key:version")
+            throw IllegalArgumentException("Invalid Format found for formFlowId '${Strings.join(formFlowIdAsArray, ':')}'. Form flow id must have format key:version")
         }
         return if (formFlowIdAsArray[1] == "latest") {
             formFlowService.findLatestDefinitionByKey(formFlowIdAsArray[0])!!
@@ -105,7 +107,7 @@ class FormFlowProcessLinkTaskProvider(
         )
 
         try {
-            val document = documentService[processInstance.businessKey]
+            val document = documentService.get(processInstance.businessKey, tenantResolver.getTenantId())
             if (document != null) {
                 additionalProperties["documentId"] = processInstance.businessKey
             }

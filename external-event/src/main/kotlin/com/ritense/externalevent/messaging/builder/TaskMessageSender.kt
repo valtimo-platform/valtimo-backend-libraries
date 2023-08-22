@@ -51,13 +51,19 @@ data class TaskMessageSender(
     var firstName: String? = null,
     var lastName: String? = null,
     var languageKey: String = "nl",
-    var document: JsonSchemaDocument? = null
+    var document: JsonSchemaDocument? = null,
+    var tenantId: String? = null
 ) {
+
+    fun tenantId(tenantId: String): TaskMessageSender {
+        this.tenantId = tenantId
+        return this
+    }
 
     fun task(delegateTask: DelegateTask): TaskMessageSender {
         this.delegateTask = delegateTask
         val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(delegateTask.execution!!.processBusinessKey!!))
-        document = documentService.getDocumentBy(jsonSchemaDocumentId)
+        document = documentService.getDocumentBy(jsonSchemaDocumentId, tenantId)
         return this
     }
 
@@ -186,7 +192,7 @@ data class TaskMessageSender(
             } else if (languageKey == "en") {
                 return String.format("%sen/public-task?id=%s", baseUrl, taskId)
             } else {
-               throw IllegalStateException("Invalid language chosen")
+                throw IllegalStateException("Invalid language chosen")
             }
         }
     }

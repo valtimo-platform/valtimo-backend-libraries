@@ -19,6 +19,7 @@ package com.ritense.document.repository;
 import com.ritense.document.domain.DocumentDefinitionRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+
 import java.util.Set;
 
 @NoRepositoryBean

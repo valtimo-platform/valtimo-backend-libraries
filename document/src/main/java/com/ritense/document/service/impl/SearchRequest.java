@@ -25,6 +25,7 @@ public class SearchRequest {
     private String globalSearchFilter;
     private Long sequence;
     private List<SearchCriteria> otherFilters;
+    private String tenantId;
 
     public SearchRequest() {
     }
@@ -49,6 +50,10 @@ public class SearchRequest {
         return this.otherFilters;
     }
 
+    public String getTenantId() {
+        return tenantId;
+    }
+
     public void setDocumentDefinitionName(String documentDefinitionName) {
         this.documentDefinitionName = documentDefinitionName;
     }
@@ -67,6 +72,15 @@ public class SearchRequest {
 
     public void setOtherFilters(List<SearchCriteria> otherFilters) {
         this.otherFilters = otherFilters;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public SearchRequest withTenantId(String tenantId) {
+        this.tenantId = tenantId;
+        return this;
     }
 
     @Override

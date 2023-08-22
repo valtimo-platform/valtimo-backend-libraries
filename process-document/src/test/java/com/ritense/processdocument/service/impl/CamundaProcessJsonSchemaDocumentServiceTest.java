@@ -26,12 +26,14 @@ import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.impl.result.StartProcessForDocumentResultFailed;
 import com.ritense.processdocument.service.impl.result.StartProcessForDocumentResultSucceeded;
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -42,10 +44,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class CamundaProcessJsonSchemaDocumentServiceTest {
 
@@ -53,17 +52,24 @@ class CamundaProcessJsonSchemaDocumentServiceTest {
     private final CamundaTaskService camundaTaskService = mock(CamundaTaskService.class);
     private final CamundaProcessService camundaProcessService = mock(CamundaProcessService.class);
     private final ProcessDocumentAssociationService processDocumentAssociationService = mock(ProcessDocumentAssociationService.class);
+    private final TenantResolver tenantResolver = mock(TenantResolver.class);
 
     private final ProcessDocumentService processDocumentService = new CamundaProcessJsonSchemaDocumentService(
         documentService,
         camundaTaskService,
         camundaProcessService,
-        processDocumentAssociationService
+        processDocumentAssociationService,
+        tenantResolver
     );
+
+    @BeforeEach
+    void setUp() {
+        when(tenantResolver.getTenantId()).thenReturn("1");
+    }
 
     @Test
     void startProcessForDocument_shouldReturnErrorWhenDocumentNotFound() {
-        when(documentService.findBy(any())).thenReturn(Optional.empty());
+        when(documentService.findBy(any(), any())).thenReturn(Optional.empty());
 
         JsonSchemaDocumentId id = JsonSchemaDocumentId.existingId(UUID.randomUUID());
 
@@ -81,7 +87,7 @@ class CamundaProcessJsonSchemaDocumentServiceTest {
 
     @Test
     void startProcessForDocument_shouldReturnErrorWhenRuntimeExceptionOccurred() {
-        when(documentService.findBy(any())).thenThrow(new RuntimeException("error"));
+        when(documentService.findBy(any(), any())).thenThrow(new RuntimeException("error"));
 
         JsonSchemaDocumentId id = JsonSchemaDocumentId.existingId(UUID.randomUUID());
 
@@ -114,7 +120,7 @@ class CamundaProcessJsonSchemaDocumentServiceTest {
         ProcessDefinition processDefinition = mock(ProcessDefinition.class);
         when(processDefinition.getName()).thenReturn("test-name");
 
-        doReturn(Optional.of(document)).when(documentService).findBy(id);
+        doReturn(Optional.of(document)).when(documentService).findBy(id, "1");
         doReturn(processDocumentDefinitionResult).when(processDocumentAssociationService).getProcessDocumentDefinitionResult(any());
         when(processDocumentDefinitionResult.hasResult()).thenReturn(true);
         when(document.definitionId()).thenReturn(documentDefinitionId);

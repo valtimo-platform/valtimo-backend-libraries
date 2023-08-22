@@ -24,6 +24,7 @@ import com.ritense.processdocument.service.CorrelationServiceImpl
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaProcessService
@@ -42,11 +43,13 @@ class ProcessDocumentsAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         userManagementService: UserManagementService,
         documentService: DocumentService,
+        tenantResolver: TenantResolver
     ): DocumentDelegate {
         return DocumentDelegate(
-            processDocumentService,
-            userManagementService,
-            documentService,
+            processDocumentService = processDocumentService,
+            userManagementService = userManagementService,
+            documentService = documentService,
+            tenantResolver = tenantResolver
         )
     }
 
@@ -58,14 +61,16 @@ class ProcessDocumentsAutoConfiguration {
         documentService: DocumentService,
         processDocumentAssociationService: ProcessDocumentAssociationService,
         camundaProcessService: CamundaProcessService,
-        repositoryService: RepositoryService
+        repositoryService: RepositoryService,
+        tenantResolver: TenantResolver
     ): CorrelationService {
         return CorrelationServiceImpl(
             runtimeService = runtimeService,
             documentService = documentService,
             camundaProcessService = camundaProcessService,
-            repositoryService= repositoryService,
-            associationService = processDocumentAssociationService
+            repositoryService = repositoryService,
+            associationService = processDocumentAssociationService,
+            tenantResolver = tenantResolver
         )
     }
 
@@ -75,12 +80,14 @@ class ProcessDocumentsAutoConfiguration {
     fun processDocumentsService(
         documentService: DocumentService,
         processDocumentAssociationService: ProcessDocumentAssociationService,
-        camundaProcessService: CamundaProcessService
+        camundaProcessService: CamundaProcessService,
+        tenantResolver: TenantResolver
     ): ProcessDocumentsService {
         return ProcessDocumentsService(
-            documentService,
-            camundaProcessService,
-            processDocumentAssociationService
+            documentService = documentService,
+            camundaProcessService = camundaProcessService,
+            associationService = processDocumentAssociationService,
+            tenantResolver = tenantResolver
         )
     }
 }

@@ -17,6 +17,7 @@
 package com.ritense.document.service.impl;
 
 import com.ritense.document.BaseIntegrationTest;
+import com.ritense.document.WithMockTenantUser;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -29,10 +30,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.test.context.support.WithMockUser;
+
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Set;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,7 +60,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockTenantUser
     public void shouldGetDocumentSnapshots() {
         final var page = documentSnapshotService.getDocumentSnapshots(
             definition.id().name(),
@@ -74,9 +76,8 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockTenantUser
     public void shouldCreateSnapshotWhenCreatingDocument() {
-
         final var document = (JsonSchemaDocument) createDocument("{}");
         final var page = documentSnapshotService.getDocumentSnapshots(
             null,
@@ -91,21 +92,22 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
         assertThat(page.getTotalPages()).isEqualTo(1);
         assertThat(page.getContent().get(0).id()).isNotNull();
         assertThat(page.getContent().get(0).snapshotCreatedOn()).isBetween(LocalDateTime.now().minusHours(1), LocalDateTime.now().plusHours(1));
-        assertThat(page.getContent().get(0).snapshotCreatedBy()).isEqualTo("john@ritense.com");
+        assertThat(page.getContent().get(0).snapshotCreatedBy()).isEqualTo(USERNAME);
         assertThat(page.getContent().get(0).document().id().toString()).hasToString(document.id().toString());
         assertThat(page.getContent().get(0).document().content().asJson().toString()).hasToString(document.content().asJson().toString());
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
-    public void shouldCreateSnapshotWhenModifyingDocument() throws InterruptedException {
+    @WithMockTenantUser
+    public void shouldCreateSnapshotWhenModifyingDocument() {
         final var request = new ModifyDocumentRequest(
             document.id().toString(),
             new JsonDocumentContent("{\"street\": \"Kanaalkade\"}").asJson(),
             document.version().toString()
-        );
+        ).withTenantId(TENANT_ID);
 
-        final var modifiedDocument = (JsonSchemaDocument) documentService.modifyDocument(request).resultingDocument().orElseThrow();
+        final var modifiedDocument = (JsonSchemaDocument) documentService.modifyDocument(request)
+            .resultingDocument().orElseThrow();
         final var page = documentSnapshotService.getDocumentSnapshots(
             null,
             modifiedDocument.id(),
@@ -124,12 +126,13 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     }
 
     private Document createDocument(String content) {
-        return documentService.createDocument(
+        var result = documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
                 new JsonDocumentContent(content).asJson()
-            )
-        ).resultingDocument().orElseThrow();
+            ).withTenantId(TENANT_ID)
+        );
+        return result.resultingDocument().orElseThrow();
     }
 
 }

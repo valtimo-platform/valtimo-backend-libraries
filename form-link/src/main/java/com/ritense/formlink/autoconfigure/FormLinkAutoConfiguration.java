@@ -42,6 +42,7 @@ import com.ritense.formlink.web.rest.impl.DefaultProcessLinkResource;
 import com.ritense.formlink.web.rest.impl.interceptor.PublicAccessRateLimitInterceptor;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
@@ -69,7 +70,8 @@ public class FormLinkAutoConfiguration {
         CamundaProcessService camundaProcessService,
         TaskService taskService,
         SubmissionTransformerService<FormIoFormDefinition> submissionTransformerService,
-        List<FormFieldDataResolver> formFieldDataResolvers
+        List<FormFieldDataResolver> formFieldDataResolvers,
+        TenantResolver tenantResolver
     ) {
         return new CamundaFormAssociationService(
             formDefinitionService,
@@ -79,7 +81,8 @@ public class FormLinkAutoConfiguration {
             camundaProcessService,
             taskService,
             submissionTransformerService,
-            formFieldDataResolvers
+            formFieldDataResolvers,
+            tenantResolver
         );
     }
 
@@ -93,7 +96,8 @@ public class FormLinkAutoConfiguration {
         ProcessDocumentService processDocumentService,
         CamundaTaskService camundaTaskService,
         SubmissionTransformerService<FormIoFormDefinition> submissionTransformerService,
-        ApplicationEventPublisher applicationEventPublisher
+        ApplicationEventPublisher applicationEventPublisher,
+        TenantResolver tenantResolver
     ) {
         return new CamundaFormAssociationSubmissionService(
             formDefinitionService,
@@ -103,7 +107,8 @@ public class FormLinkAutoConfiguration {
             processDocumentService,
             camundaTaskService,
             submissionTransformerService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            tenantResolver
         );
     }
 

@@ -20,14 +20,15 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.service.CamundaProcessService
 import java.util.UUID
-
 
 class ProcessDocumentsService(
     private val documentService: DocumentService,
     private val camundaProcessService: CamundaProcessService,
-    private val associationService: ProcessDocumentAssociationService
+    private val associationService: ProcessDocumentAssociationService,
+    private val tenantResolver: TenantResolver
 ) {
 
     fun startProcessByProcessDefinitionKey(processDefinitionKey: String, businessKey: String) {
@@ -52,13 +53,17 @@ class ProcessDocumentsService(
         processName: String?,
         businessKey: String
     ) {
-        documentService.findBy(JsonSchemaDocumentId.existingId(UUID.fromString(businessKey)))
-            .ifPresentOrElse({ document: Document ->
+        documentService.findBy(
+            JsonSchemaDocumentId.existingId(UUID.fromString(businessKey)),
+            tenantResolver.getTenantId()
+        ).ifPresentOrElse(
+            { document: Document ->
                 associationService.createProcessDocumentInstance(
                     processInstanceId,
                     UUID.fromString(document.id().toString()),
                     processName
                 )
-            }) { throw DocumentNotFoundException("No Document found with id $businessKey") }
+            }
+        ) { throw DocumentNotFoundException("No Document found with id $businessKey") }
     }
 }

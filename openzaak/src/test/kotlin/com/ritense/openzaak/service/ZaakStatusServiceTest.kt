@@ -46,7 +46,8 @@ class ZaakStatusServiceTest : BaseTest() {
             openZaakTokenGeneratorService,
             documentService,
             zaakTypeLinkService,
-            zaakInstanceLinkService
+            zaakInstanceLinkService,
+            tenantResolver
         )
     }
 

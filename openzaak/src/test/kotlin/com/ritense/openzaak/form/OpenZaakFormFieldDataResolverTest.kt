@@ -80,7 +80,8 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
             openZaakTokenGeneratorService,
             zaakTypeLinkService,
             documentService,
-            zaakInstanceLinkService
+            zaakInstanceLinkService,
+            tenantResolver
         )
         openZaakFormFieldDataResolver = OpenZaakFormFieldDataResolver(zaakService, zaakInstanceLinkService)
     }

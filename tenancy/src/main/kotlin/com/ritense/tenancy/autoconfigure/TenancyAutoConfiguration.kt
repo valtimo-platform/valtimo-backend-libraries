@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package com.ritense.tenancy.autoconfigure
 
-import com.ritense.tenancy.jpa.TenantAwareListener
+import com.ritense.tenancy.TenantResolver
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class TenantAwareListenerAutoConfiguration {
+class TenancyAutoConfiguration {
 
     @Bean
-    fun tenantAwareListener() = TenantAwareListener()
+    fun tenantResolver() = TenantResolver()
 
 }

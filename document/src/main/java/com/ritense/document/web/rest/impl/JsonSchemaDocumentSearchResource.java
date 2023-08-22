@@ -22,6 +22,7 @@ import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.impl.SearchRequest;
 import com.ritense.document.web.rest.DocumentSearchResource;
+import com.ritense.tenancy.TenantResolver;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -40,9 +41,14 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class JsonSchemaDocumentSearchResource implements DocumentSearchResource {
 
     private final DocumentSearchService documentSearchService;
+    private final TenantResolver tenantResolver;
 
-    public JsonSchemaDocumentSearchResource(DocumentSearchService documentSearchService) {
+    public JsonSchemaDocumentSearchResource(
+        DocumentSearchService documentSearchService,
+        TenantResolver tenantResolver
+    ) {
         this.documentSearchService = documentSearchService;
+        this.tenantResolver = tenantResolver;
     }
 
     @Override
@@ -51,6 +57,9 @@ public class JsonSchemaDocumentSearchResource implements DocumentSearchResource 
         @RequestBody SearchRequest searchRequest,
         @PageableDefault(sort = {"createdOn"}, direction = DESC) Pageable pageable
     ) {
+        var tenantId = tenantResolver.getTenantId();
+        searchRequest.setTenantId(tenantId);
+        SearchRequestValidator.validate(searchRequest);
         return ResponseEntity.ok(
             documentSearchService.search(searchRequest, pageable)
         );
@@ -63,6 +72,8 @@ public class JsonSchemaDocumentSearchResource implements DocumentSearchResource 
         @RequestBody SearchWithConfigRequest searchRequest,
         @PageableDefault(sort = {"createdOn"}, direction = DESC) Pageable pageable
     ) {
+        var tenantId = tenantResolver.getTenantId();
+        searchRequest.setTenantId(tenantId);
         SearchRequestValidator.validate(searchRequest);
         return ResponseEntity.ok(
             documentSearchService.search(documentDefinitionName, searchRequest, pageable)

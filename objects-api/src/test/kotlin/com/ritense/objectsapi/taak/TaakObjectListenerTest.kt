@@ -13,6 +13,7 @@ import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
@@ -38,6 +39,7 @@ internal class TaakObjectListenerTest {
     lateinit var processDocumentService: ProcessDocumentService
     lateinit var zaakService: ZaakService
     lateinit var openZaakService: OpenZaakService
+    lateinit var tenantResolver: TenantResolver
 
     @BeforeEach
     fun setup() {
@@ -50,6 +52,7 @@ internal class TaakObjectListenerTest {
         processDocumentService = mock()
         zaakService = mock()
         openZaakService = mock()
+        tenantResolver = mock()
         listener = TaakObjectListener(
             openNotificatieService,
             camundaTaskService,
@@ -60,6 +63,7 @@ internal class TaakObjectListenerTest {
             processDocumentService,
             zaakService,
             openZaakService,
+            tenantResolver
         )
     }
 

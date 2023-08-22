@@ -22,20 +22,26 @@ import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormLoaderService;
+import com.ritense.tenancy.TenantResolver;
+
 import java.util.Optional;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class FormIoFormLoaderService implements FormLoaderService {
 
     private final DocumentService documentService;
     private final FormDefinitionRepository formDefinitionRepository;
+    private final TenantResolver tenantResolver;
 
     public FormIoFormLoaderService(
         final DocumentService documentService,
-        final FormDefinitionRepository formDefinitionRepository
+        final FormDefinitionRepository formDefinitionRepository,
+        final TenantResolver tenantResolver
     ) {
         this.documentService = documentService;
         this.formDefinitionRepository = formDefinitionRepository;
+        this.tenantResolver = tenantResolver;
     }
 
     @Override
@@ -47,7 +53,7 @@ public class FormIoFormLoaderService implements FormLoaderService {
     @Override
     public Optional<JsonNode> getFormDefinitionByNamePreFilled(final String formDefinitionName, final Document.Id documentId) {
         assertArgumentNotNull(documentId, "documentId is required");
-        return documentService.findBy(documentId)
+        return documentService.findBy(documentId, tenantResolver.getTenantId())
             .flatMap(jsonSchemaDocument -> formDefinitionRepository.findByName(formDefinitionName)
                 .map(formIoFormDefinition -> {
                     formIoFormDefinition.preFill(jsonSchemaDocument.content().asJson());

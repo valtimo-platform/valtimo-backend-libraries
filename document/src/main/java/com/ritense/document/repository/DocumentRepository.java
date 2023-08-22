@@ -22,8 +22,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.util.Optional;
+
 @NoRepositoryBean
-public interface DocumentRepository<T extends Document> extends JpaRepository<T, Document.Id> {
+public interface DocumentRepository<T extends Document>
+    extends JpaRepository<T, Document.Id>
+{
+
+    Optional<T> findByIdAndTenantId(
+        Document.Id documentId,
+        String tenantId
+    );
 
     Page<T> findAllByDocumentDefinitionIdName(
         Pageable pageable,
@@ -39,4 +48,5 @@ public interface DocumentRepository<T extends Document> extends JpaRepository<T,
     );
 
     Long countByDocumentDefinitionIdNameAndAssigneeId(String definitionName, String assigneeId);
+
 }

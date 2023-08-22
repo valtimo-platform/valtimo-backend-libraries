@@ -26,12 +26,14 @@ import com.ritense.formflow.domain.definition.configuration.step.FormStepTypePro
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formlink.service.impl.CamundaFormAssociationService
+import com.ritense.tenancy.TenantResolver
 
 class FormFlowStepTypeFormHandler(
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
     private val camundaFormAssociationService: CamundaFormAssociationService,
     private val documentService: DocumentService,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val tenantResolver: TenantResolver
 ) : FormFlowStepTypeHandler {
 
     override fun getType() = "form"
@@ -67,7 +69,7 @@ class FormFlowStepTypeFormHandler(
             return
         }
 
-        val document = documentService.get(documentId)
+        val document = documentService.get(documentId, tenantResolver.getTenantId())
         val documentContent = document.content().asJson() as ObjectNode
 
         if (taskInstanceId == null) {

@@ -16,7 +16,7 @@
 
 package com.ritense.document.autoconfigure;
 
-import  com.ritense.document.config.DocumentSpringContextHelper;
+import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
@@ -26,7 +26,7 @@ import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSeq
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.repository.DocumentDefinitionRoleRepository;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
-import com.ritense.document.repository.DocumentRepository;
+import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
@@ -49,6 +49,7 @@ import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
@@ -65,26 +66,24 @@ import java.util.Optional;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.document.repository")
-@EntityScan({"com.ritense.document.domain", "com.ritense.tenancy.jpa"})
+@EntityScan(basePackages = "com.ritense.document.domain")
 public class DocumentAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(DocumentService.class)
     public JsonSchemaDocumentService documentService(
-        final DocumentRepository documentRepository,
+        final JsonSchemaDocumentRepository documentRepository,
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
         final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
         final ResourceService resourceService,
-        final UserManagementService userManagementService,
-        final ApplicationEventPublisher applicationEventPublisher
+        final UserManagementService userManagementService
     ) {
         return new JsonSchemaDocumentService(
             documentRepository,
             documentDefinitionService,
             documentSequenceGeneratorService,
             resourceService,
-            userManagementService,
-            applicationEventPublisher
+            userManagementService
         );
     }
 
@@ -151,18 +150,27 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(RelatedJsonSchemaDocumentAvailableEventListenerImpl.class)
     public RelatedJsonSchemaDocumentAvailableEventListenerImpl relatedDocumentAvailableEventListener(
-        final DocumentService documentService
+        final DocumentService documentService,
+        final TenantResolver tenantResolver
     ) {
-        return new RelatedJsonSchemaDocumentAvailableEventListenerImpl(documentService);
+        return new RelatedJsonSchemaDocumentAvailableEventListenerImpl(
+            documentService,
+            tenantResolver
+        );
     }
 
     @Bean
     @ConditionalOnMissingBean(DocumentRelatedFileSubmittedEventListenerImpl.class)
     public DocumentRelatedFileSubmittedEventListenerImpl documentRelatedFileSubmittedEventListener(
         final DocumentService documentService,
-        final ResourceService resourceService
+        final ResourceService resourceService,
+        final TenantResolver tenantResolver
     ) {
-        return new DocumentRelatedFileSubmittedEventListenerImpl(documentService, resourceService);
+        return new DocumentRelatedFileSubmittedEventListenerImpl(
+            documentService,
+            resourceService,
+            tenantResolver
+        );
     }
 
     //API
@@ -184,15 +192,22 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentResource.class)
     public JsonSchemaDocumentResource documentResource(
         DocumentService documentService,
-        DocumentDefinitionService documentDefinitionService
+        DocumentDefinitionService documentDefinitionService,
+        TenantResolver tenantResolver
     ) {
-        return new JsonSchemaDocumentResource(documentService, documentDefinitionService);
+        return new JsonSchemaDocumentResource(documentService, documentDefinitionService, tenantResolver);
     }
 
     @Bean
     @ConditionalOnMissingBean(DocumentSearchResource.class)
-    public JsonSchemaDocumentSearchResource documentSearchResource(DocumentSearchService documentSearchService) {
-        return new JsonSchemaDocumentSearchResource(documentSearchService);
+    public JsonSchemaDocumentSearchResource documentSearchResource(
+        DocumentSearchService documentSearchService,
+        TenantResolver tenantResolver
+    ) {
+        return new JsonSchemaDocumentSearchResource(
+            documentSearchService,
+            tenantResolver
+        );
     }
 
     @Bean

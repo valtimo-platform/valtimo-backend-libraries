@@ -30,6 +30,7 @@ import com.ritense.externalevent.messaging.out.UpdatePortalCaseMessage
 import com.ritense.externalevent.messaging.out.UpdateStatusPortalCaseMessage
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -43,7 +44,8 @@ class ExternalCaseService(
     private val processDocumentService: ProcessDocumentService,
     private val mappedCasesConfig: MappedCasesConfig,
     private val sink: Sinks.Many<ExternalDomainMessage>,
-    private val runtimeService: RuntimeService
+    private val runtimeService: RuntimeService,
+    private val tenantResolver: TenantResolver
 ) {
 
     /**
@@ -54,7 +56,10 @@ class ExternalCaseService(
         val portalMapping = mappedCasesConfig
             .links[createExternalCaseMessage.caseDefinitionId]!!
 
-        val newDocumentRequest = NewDocumentRequest(portalMapping.caseKey, createExternalCaseMessage.submission)
+        val newDocumentRequest = NewDocumentRequest(
+            portalMapping.caseKey,
+            createExternalCaseMessage.submission,
+        ).withTenantId(tenantResolver.getTenantId())
         val newDocumentAndStartProcessRequest = NewDocumentAndStartProcessRequest(
             portalMapping.processDefinitionKey,
             newDocumentRequest
@@ -98,13 +103,13 @@ class ExternalCaseService(
 
     private fun getExternalId(execution: DelegateExecution): String {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(execution.processBusinessKey))
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = documentService.findBy(documentId, tenantResolver.getTenantId()).orElseThrow()
         return document.id().toString()
     }
 
     fun getCaseValue(execution: DelegateExecution, jsonPointer: JsonPointer): JsonNode {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(execution.processBusinessKey))
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = documentService.findBy(documentId, tenantResolver.getTenantId()).orElseThrow()
         return document.content().getValueBy(jsonPointer).orElseThrow()
     }
 

@@ -21,6 +21,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.service.ZaakTypeLinkService
+import com.ritense.tenancy.TenantResolver
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.ExecutionListener
@@ -33,7 +34,8 @@ import java.util.UUID
 open class BaseServiceTaskListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val documentService: DocumentService,
-    private val repositoryService: RepositoryService
+    private val repositoryService: RepositoryService,
+    private val tenantResolver: TenantResolver
 ) : ReactorExecutionListener() {
 
     @Transactional
@@ -41,7 +43,7 @@ open class BaseServiceTaskListener(
         val processBusinessKey = execution.processBusinessKey
         val processDefinitionKey = repositoryService.getProcessDefinition(execution.processDefinitionId).key
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(processBusinessKey))
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = documentService.findBy(documentId, tenantResolver.getTenantId()).orElseThrow()
         val zaakTypeLink = zaakTypeLinkService.get(document.definitionId().name())
         if (zaakTypeLink != null) {
             notify(execution, processDefinitionKey, document, zaakTypeLink)

@@ -27,6 +27,7 @@ import com.ritense.externalevent.messaging.out.DeletePortalTaskMessage
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.camunda.processaudit.DeletePortalTaskEvent
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateTask
@@ -40,7 +41,8 @@ class ExternalTaskService(
     private val documentService: JsonSchemaDocumentService,
     private val processDocumentService: ProcessDocumentService,
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
-    private val sink: Sinks.Many<ExternalDomainMessage>
+    private val sink: Sinks.Many<ExternalDomainMessage>,
+    private val tenantResolver: TenantResolver
 ) {
 
     /**
@@ -49,7 +51,7 @@ class ExternalTaskService(
     fun publishPortalTask(formDefinitionName: String, task: DelegateTask) {
         val formDefinition = formIoFormDefinitionService.getFormDefinitionByName(formDefinitionName).orElseThrow()
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(task.execution.processBusinessKey))
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = documentService.findBy(documentId, tenantResolver.getTenantId()).orElseThrow()
         formDefinition.preFill(document.content().asJson())
 
         sink.tryEmitNext(
@@ -83,7 +85,7 @@ class ExternalTaskService(
 
     fun completeTask(completeTaskMessage: CompleteTaskMessage) {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(completeTaskMessage.externalCaseId))
-        val document = documentService.findBy(documentId).orElseThrow()
+        val document = documentService.findBy(documentId, tenantResolver.getTenantId()).orElseThrow()
 
         val modifyDocumentRequest = ModifyDocumentRequest(
             completeTaskMessage.externalCaseId,

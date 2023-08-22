@@ -17,6 +17,7 @@
 package com.ritense.document.service.result;
 
 import com.ritense.valtimo.contract.result.OperationError;
+
 import java.util.Collections;
 import java.util.List;
 

@@ -87,7 +87,8 @@ abstract class BaseTest {
             JsonDocumentContent(json),
             "USERNAME",
             documentSequenceGeneratorService,
-            null
+            null,
+            "1"
         ).resultingDocument()
     }
 

@@ -23,6 +23,7 @@ import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.domain.ProcessLinkTaskProvider
 import com.ritense.formlink.service.FormAssociationService
 import com.ritense.formlink.service.impl.CamundaFormAssociationService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
@@ -49,6 +50,7 @@ class FormFlowValtimoAutoConfiguration {
         documentService: DocumentService,
         repositoryService: RepositoryService,
         runtimeService: RuntimeService,
+        tenantResolver: TenantResolver
     ): ProcessLinkTaskProvider<FormFlowTaskOpenResultProperties> {
         return FormFlowProcessLinkTaskProvider(
             formFlowService,
@@ -56,6 +58,7 @@ class FormFlowValtimoAutoConfiguration {
             documentService,
             repositoryService,
             runtimeService,
+            tenantResolver
         )
     }
 
@@ -86,13 +89,15 @@ class FormFlowValtimoAutoConfiguration {
         formIoFormDefinitionService: FormIoFormDefinitionService,
         camundaFormAssociationService: CamundaFormAssociationService,
         documentService: DocumentService,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
+        tenantResolver: TenantResolver
     ): FormFlowStepTypeFormHandler {
         return FormFlowStepTypeFormHandler(
             formIoFormDefinitionService,
             camundaFormAssociationService,
             documentService,
-            objectMapper
+            objectMapper,
+            tenantResolver
         )
     }
 
@@ -109,4 +114,5 @@ class FormFlowValtimoAutoConfiguration {
             valueResolverService,
         )
     }
+
 }

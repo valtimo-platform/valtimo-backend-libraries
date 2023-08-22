@@ -28,6 +28,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.catalogi.CatalogiClient
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.resource.service.OpenZaakService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.annotation.Value
@@ -106,6 +107,7 @@ class BesluitAutoConfiguration {
         connectorService: ConnectorService,
         openZaakService: OpenZaakService,
         @Value("\${valtimo.besluitDocumentRequired:false}") besluitDocumentRequired: Boolean,
+        tenantResolver: TenantResolver
     ): BesluitServiceTaskListener {
         return BesluitServiceTaskListener(
             zaakTypeLinkService,
@@ -114,7 +116,8 @@ class BesluitAutoConfiguration {
             repositoryService,
             connectorService,
             openZaakService,
-            besluitDocumentRequired
+            besluitDocumentRequired,
+            tenantResolver
         )
     }
 

@@ -21,21 +21,33 @@ import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
 import com.ritense.document.domain.listener.RelatedDocumentAvailableEventListener;
 import com.ritense.document.domain.relation.DocumentRelationType;
 import com.ritense.document.service.DocumentService;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.processdocument.event.NextDocumentRelationAvailableEvent;
+
 import java.util.UUID;
 
 public class RelatedJsonSchemaDocumentAvailableEventListenerImpl implements RelatedDocumentAvailableEventListener {
 
     private final DocumentService documentService;
+    private final TenantResolver tenantResolver;
 
-    public RelatedJsonSchemaDocumentAvailableEventListenerImpl(final DocumentService documentService) {
+    public RelatedJsonSchemaDocumentAvailableEventListenerImpl(
+        final DocumentService documentService,
+        final TenantResolver tenantResolver
+    ) {
         this.documentService = documentService;
+        this.tenantResolver = tenantResolver;
     }
 
     public void handle(NextDocumentRelationAvailableEvent event) {
         final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(event.previousDocumentId()));
         final var documentRelation = documentRelation(event);
-        documentService.assignDocumentRelation(documentId, documentRelation);
+        final var tenantId = tenantResolver.getTenantId();
+        documentService.assignDocumentRelation(
+            documentId,
+            documentRelation,
+            tenantId
+        );
     }
 
     private JsonSchemaDocumentRelation documentRelation(NextDocumentRelationAvailableEvent event) {

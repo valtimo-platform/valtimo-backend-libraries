@@ -69,6 +69,8 @@ dependencies {
     implementation "com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}"
     implementation "org.springframework.retry:spring-retry:${springRetryVersion}"
 
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"

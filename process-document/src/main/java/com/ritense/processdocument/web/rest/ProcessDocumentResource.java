@@ -127,6 +127,7 @@ public class ProcessDocumentResource {
     public ResponseEntity<NewDocumentAndStartProcessResult> newDocumentAndStartProcess(
         @Valid @RequestBody NewDocumentAndStartProcessRequest request
     ) {
+
         final var result = processDocumentService.newDocumentAndStartProcess(request);
         final var httpStatus = getHttpStatus(result.resultingDocument());
         return ResponseEntity.status(httpStatus).body(result);

@@ -45,7 +45,10 @@ class CamundaProcessJsonSchemaDocumentServiceIntTest extends BaseIntegrationTest
     void shouldNewDocumentAndStartProcessForUnassociatedProcess() throws JsonProcessingException {
         var startRequest = new NewDocumentAndStartProcessRequest(
             PROCESS_DEFINITION_KEY,
-            new NewDocumentRequest(DOCUMENT_DEFINITION_NAME, Mapper.INSTANCE.get().readTree("{}"))
+            new NewDocumentRequest(
+                DOCUMENT_DEFINITION_NAME,
+                Mapper.INSTANCE.get().readTree("{}")
+            ).withTenantId("1")
         );
 
         var result = camundaProcessJsonSchemaDocumentService.newDocumentAndStartProcess(startRequest);

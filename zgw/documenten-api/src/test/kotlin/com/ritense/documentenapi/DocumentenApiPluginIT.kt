@@ -133,7 +133,10 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
             "test".byteInputStream()
         )
 
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            Mapper.INSTANCE.get().createObjectNode()
+        ).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("localDocumentVariableName" to documentId))
 
@@ -186,7 +189,10 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
             mapOf(MetadataType.FILE_NAME.key to "my-document.pdf")
         )
 
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            Mapper.INSTANCE.get().createObjectNode()
+        ).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("localDocumentVariableName" to documentId))
 
@@ -201,7 +207,10 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
         saveProcessLink("download-document", "{}")
         val documentUrl = "${server.url("/")}enkelvoudiginformatieobjecten/$DOCUMENT_ID"
 
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            Mapper.INSTANCE.get().createObjectNode()
+        ).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("documentUrl" to documentUrl))
 
@@ -242,8 +251,10 @@ internal class DocumentenApiPluginIT : BaseIntegrationTest() {
                 val response = when (path) {
                     "/enkelvoudiginformatieobjecten"
                     -> handleDocumentRequest()
+
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID"
                     -> handleDocumentRequest()
+
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID/download"
                     -> handleDocumentDownloadRequest()
 

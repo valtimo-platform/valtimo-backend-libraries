@@ -51,7 +51,7 @@ abstract class AggregateRoot<EventType> {
      * repositories.
      */
     @AfterDomainEventPublication
-    protected fun clearDomainEvents() {
+    fun clearDomainEvents() {
         this.domainEvents.clear()
     }
 

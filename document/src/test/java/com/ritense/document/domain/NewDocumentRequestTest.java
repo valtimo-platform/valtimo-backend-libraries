@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import org.junit.jupiter.api.Test;
+
+import static com.ritense.document.BaseTest.TENANT_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class NewDocumentRequestTest {
@@ -30,7 +32,7 @@ public class NewDocumentRequestTest {
         final JsonNode jsonData = objectMapper.readTree("{\"key\":123,\"somethingelse\":\"henk\",\"nested\":{\"henk\":\"jan\"}}");
         final String definitionName = "some-name";
 
-        var newDocRequest = new NewDocumentRequest(definitionName, jsonData);
+        var newDocRequest = new NewDocumentRequest(definitionName, jsonData).withTenantId(TENANT_ID);
 
         assertThat(jsonData).isEqualTo(newDocRequest.content());
         assertThat(definitionName).isEqualTo(newDocRequest.documentDefinitionName());

@@ -30,78 +30,68 @@ import com.ritense.document.domain.impl.request.DocumentRelationRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.relation.DocumentRelation;
-import com.ritense.document.event.DocumentAssigneeChangedEvent;
-import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
-import com.ritense.document.repository.DocumentRepository;
+import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentService;
 import com.ritense.resource.service.ResourceService;
-import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
-import com.ritense.valtimo.contract.resource.Resource;
-import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class JsonSchemaDocumentService implements DocumentService {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentService.class);
 
-    private final DocumentRepository documentRepository;
+    private final JsonSchemaDocumentRepository documentRepository;
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
     private final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService;
-
     private final UserManagementService userManagementService;
     private final ResourceService resourceService;
 
-    private final ApplicationEventPublisher applicationEventPublisher;
-
     public JsonSchemaDocumentService(
-        DocumentRepository documentRepository,
-        JsonSchemaDocumentDefinitionService documentDefinitionService,
-        JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
-        ResourceService resourceService,
-        UserManagementService userManagementService,
-        ApplicationEventPublisher applicationEventPublisher
+        final JsonSchemaDocumentRepository documentRepository,
+        final JsonSchemaDocumentDefinitionService documentDefinitionService,
+        final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
+        final ResourceService resourceService,
+        final UserManagementService userManagementService
     ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.documentSequenceGeneratorService = documentSequenceGeneratorService;
         this.resourceService = resourceService;
         this.userManagementService = userManagementService;
-        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Override
-    public Optional<JsonSchemaDocument> findBy(Document.Id documentId) {
-        return documentRepository.findById(documentId);
+    public Optional<JsonSchemaDocument> findBy(Document.Id documentId, String tenantId) {
+        assertArgumentNotNull(documentId, "documentId is required");
+        assertArgumentNotEmpty(tenantId, "tenantId is required");
+        return documentRepository.findByIdAndTenantId(documentId, tenantId);
     }
 
     @Override
-    public JsonSchemaDocument get(String documentId) {
+    public JsonSchemaDocument get(String documentId, String tenantId) {
         var documentOptional = findBy(
-            JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+            JsonSchemaDocumentId.existingId(UUID.fromString(documentId)),
+            tenantId
         );
-
         return documentOptional.orElseThrow(
             () -> new DocumentNotFoundException("Document not found with id " + documentId)
         );
@@ -120,7 +110,7 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Override
     @Transactional
     public JsonSchemaDocument.CreateDocumentResultImpl createDocument(
-        NewDocumentRequest newDocumentRequest
+        final NewDocumentRequest newDocumentRequest
     ) {
         final JsonSchemaDocumentDefinition definition = documentDefinitionService
             .findLatestByName(newDocumentRequest.documentDefinitionName())
@@ -133,23 +123,30 @@ public class JsonSchemaDocumentService implements DocumentService {
             content,
             user,
             documentSequenceGeneratorService,
-            JsonSchemaDocumentRelation.from(newDocumentRequest.documentRelation())
+            JsonSchemaDocumentRelation.from(newDocumentRequest.documentRelation()),
+            newDocumentRequest.tenantId()
         );
-        result.resultingDocument().ifPresent(jsonSchemaDocument -> {
-            newDocumentRequest.getResources()
+        result.resultingDocument().ifPresent(
+            document -> {
+                newDocumentRequest.getResources()
                     .stream()
                     .map(JsonSchemaRelatedFile::from)
                     .map(relatedFile -> relatedFile.withCreatedBy(SecurityUtils.getCurrentUserLogin()))
-                    .forEach(jsonSchemaDocument::addRelatedFile);
-            documentRepository.saveAndFlush(jsonSchemaDocument);
-        });
+                    .forEach(document::addRelatedFile);
+                documentRepository.saveAndFlush(document);
+            }
+        );
         return result;
     }
 
     @Override
     @Transactional
-    public void modifyDocument(Document document, JsonNode jsonNode) {
-        final var documentRequest = ModifyDocumentRequest.create(document, jsonNode);
+    public void modifyDocument(
+        final Document document,
+        final JsonNode jsonNode,
+        final String tenantId
+    ) {
+        final var documentRequest = ModifyDocumentRequest.create(document, jsonNode, tenantId);
         final var modifyResult = modifyDocument(documentRequest);
         if (!modifyResult.errors().isEmpty()) {
             throw new ModifyDocumentException(modifyResult.errors());
@@ -157,13 +154,13 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    @Transactional(timeout = 30, rollbackFor = { Exception.class })
+    @Transactional(timeout = 30, rollbackFor = {Exception.class})
     public synchronized JsonSchemaDocument.ModifyDocumentResultImpl modifyDocument(
-        ModifyDocumentRequest request
+        final ModifyDocumentRequest request
     ) {
         final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(request.documentId()));
         final var version = JsonSchemaDocumentVersion.from(request.versionBasedOn());
-        final var document = findBy(documentId)
+        final var document = findBy(documentId, request.tenantId())
             .orElseThrow(() -> new DocumentNotFoundException("Document not found with id " + request.documentId()));
 
         final var modifiedContent = JsonDocumentContent.build(
@@ -177,7 +174,6 @@ public class JsonSchemaDocumentService implements DocumentService {
             documentDefinition,
             version
         );
-
         result.resultingDocument().ifPresent(documentRepository::saveAndFlush);
         return result;
     }
@@ -186,7 +182,8 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Transactional
     public void assignDocumentRelation(
         Document.Id documentId,
-        DocumentRelation documentRelation
+        DocumentRelation documentRelation,
+        String tenantId
     ) {
         final JsonSchemaDocumentRelation jsonSchemaDocumentRelation = JsonSchemaDocumentRelation.from(
             new DocumentRelationRequest(
@@ -194,46 +191,62 @@ public class JsonSchemaDocumentService implements DocumentService {
                 documentRelation.relationType()
             )
         );
-        findBy(documentId)
-            .ifPresent(document -> documentRepository.save(document.addRelatedDocument(jsonSchemaDocumentRelation)));
+        findBy(documentId, tenantId)
+            .ifPresent(
+                document -> {
+                    document.addRelatedDocument(jsonSchemaDocumentRelation);
+                    documentRepository.saveAndFlush(document);
+                }
+            );
     }
 
     @Override
     @Transactional
     public void assignRelatedFile(
         final Document.Id documentId,
-        final RelatedFile relatedFile
+        final RelatedFile relatedFile,
+        final String tenantId
     ) {
-        JsonSchemaDocument document = getDocumentBy(documentId);
+        final var document = getDocumentBy(documentId, tenantId);
         document.addRelatedFile(JsonSchemaRelatedFile.from(relatedFile));
-        documentRepository.save(document);
+        documentRepository.saveAndFlush(document);
     }
 
     @Override
     @Transactional
-    public void assignResource(Document.Id documentId, UUID resourceId) {
-        assignResource(documentId, resourceId, null);
+    public void assignResource(Document.Id documentId, UUID resourceId, String tenantId) {
+        assignResource(documentId, resourceId, null, tenantId);
     }
 
     @Override
     @Transactional
-    public void assignResource(Document.Id documentId, UUID resourceId, Map<String, Object> metadata) {
-        JsonSchemaDocument document = getDocumentBy(documentId);
-        final Resource resource = resourceService.getResource(resourceId);
-        document.addRelatedFile(JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin()), metadata);
-        documentRepository.save(document);
+    public void assignResource(
+        final Document.Id documentId,
+        final UUID resourceId,
+        final Map<String, Object> metadata,
+        final String tenantId
+    ) {
+        final var document = getDocumentBy(documentId, tenantId);
+        final var resource = resourceService.getResource(resourceId);
+        document.addRelatedFile(
+            JsonSchemaRelatedFile.from(resource)
+                .withCreatedBy(SecurityUtils.getCurrentUserLogin()),
+            metadata
+        );
+        documentRepository.saveAndFlush(document);
     }
 
     @Override
     @Transactional
-    public void removeRelatedFile(Document.Id documentId, UUID fileId) {
-        JsonSchemaDocument document = getDocumentBy(documentId);
+    public void removeRelatedFile(Document.Id documentId, UUID fileId, String tenantId) {
+        final JsonSchemaDocument document = getDocumentBy(documentId, tenantId);
         document.removeRelatedFileBy(fileId);
-        documentRepository.save(document);
+        documentRepository.saveAndFlush(document);
     }
 
-    public JsonSchemaDocument getDocumentBy(Document.Id documentId) {
-        return findBy(documentId)
+    public JsonSchemaDocument getDocumentBy(Document.Id documentId, String tenantId) {
+        assertArgumentNotEmpty(tenantId, "tenantId is required");
+        return findBy(documentId, tenantId)
             .orElseThrow(() -> new DocumentNotFoundException("Unable to find document with ID " + documentId));
     }
 
@@ -249,67 +262,42 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    public boolean currentUserCanAccessDocument(Document.Id documentId) {
-        return findBy(documentId).map(document ->
-            documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name())
-        ).orElse(false);
+    public boolean currentUserCanAccessDocument(Document.Id documentId, String tenantId) {
+        return findBy(documentId, tenantId)
+            .map(document -> documentDefinitionService.currentUserCanAccessDocumentDefinition(
+                    document.definitionId().name()
+                )
+            ).orElse(false);
     }
 
     @Override
-    public void assignUserToDocument(UUID documentId, String assigneeId) {
-        JsonSchemaDocument document = getDocumentBy(
-            JsonSchemaDocumentId.existingId(documentId));
-
+    public void assignUserToDocument(UUID documentId, String assigneeId, String tenantId) {
+        final var document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId), tenantId);
         var assignee = userManagementService.findById(assigneeId);
         if (assignee == null) {
             logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
             throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
         }
-
         document.setAssignee(assigneeId, assignee.getFullName());
-        documentRepository.save(document);
-
-        // Publish an event to update the audit log
-        publishDocumentAssigneeChangedEvent(documentId, assignee.getFullName());
+        documentRepository.saveAndFlush(document);
     }
 
     @Override
-    public void unassignUserFromDocument(UUID documentId) {
-        JsonSchemaDocument document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId));
+    public void unassignUserFromDocument(UUID documentId, String tenantId) {
+        final var document = getDocumentBy(JsonSchemaDocumentId.existingId(documentId), tenantId);
         document.unassign();
-        documentRepository.save(document);
-        applicationEventPublisher.publishEvent(
-            new DocumentUnassignedEvent(
-                UUID.randomUUID(),
-                RequestHelper.getOrigin(),
-                LocalDateTime.now(),
-                AuditHelper.getActor(),
-                documentId
-            )
-        );
-    }
-
-    private void publishDocumentAssigneeChangedEvent(UUID documentId, String assigneeFullName) {
-        applicationEventPublisher.publishEvent(
-            new DocumentAssigneeChangedEvent(
-                UUID.randomUUID(),
-                RequestHelper.getOrigin(),
-                LocalDateTime.now(),
-                AuditHelper.getActor(),
-                documentId,
-                assigneeFullName
-            )
-        );
+        documentRepository.saveAndFlush(document);
     }
 
     @Override
-    public Set<String> getDocumentRoles(Document.Id documentId) {
-        var document = get(documentId.toString());
+    public Set<String> getDocumentRoles(Document.Id documentId, String tenantId) {
+        var document = get(documentId.toString(), tenantId);
         return documentDefinitionService.getDocumentDefinitionRoles(document.definitionId().name());
     }
 
     @Override
-    public List<NamedUser> getCandidateUsers(Document.Id documentId) {
-        return userManagementService.findNamedUserByRoles(getDocumentRoles(documentId));
+    public List<NamedUser> getCandidateUsers(Document.Id documentId, String tenantId) {
+        return userManagementService.findNamedUserByRoles(getDocumentRoles(documentId, tenantId));
     }
+
 }

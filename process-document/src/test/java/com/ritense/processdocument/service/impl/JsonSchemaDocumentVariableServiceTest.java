@@ -28,8 +28,10 @@ import com.ritense.document.service.impl.JsonSchemaDocumentVariableService;
 import com.ritense.processdocument.BaseTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,7 +62,7 @@ public class JsonSchemaDocumentVariableServiceTest extends BaseTest {
     @Test
     public void getTextOrReturnEmptyStringShouldReturnText() {
         Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+        when(documentService.findBy(any(JsonSchemaDocumentId.class), any())).thenReturn(jsonSchemaDocument);
 
         String value = documentVariableService.getTextOrReturnEmptyString(jsonSchemaDocument.get(), "/applicant/street");
         assertEquals(NAAM_VAN_DE_STRAAT, value);
@@ -69,7 +71,7 @@ public class JsonSchemaDocumentVariableServiceTest extends BaseTest {
     @Test
     public void getTextOrReturnEmptyStringShouldReturnEmptyString() {
         Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+        when(documentService.findBy(any(JsonSchemaDocumentId.class), any())).thenReturn(jsonSchemaDocument);
 
         String value = documentVariableService.getTextOrReturnEmptyString(jsonSchemaDocument.get(), "/applicant/non-existing");
         assertEquals("", value);
@@ -78,7 +80,7 @@ public class JsonSchemaDocumentVariableServiceTest extends BaseTest {
     @Test
     public void getTextOrThrowShouldReturnText() {
         Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+        when(documentService.findBy(any(JsonSchemaDocumentId.class), any())).thenReturn(jsonSchemaDocument);
 
         String value = documentVariableService.getTextOrThrow(jsonSchemaDocument.get(), "/applicant/street");
         assertEquals(NAAM_VAN_DE_STRAAT, value);
@@ -87,7 +89,7 @@ public class JsonSchemaDocumentVariableServiceTest extends BaseTest {
     @Test
     public void getTextOrThrowShouldThrow() {
         Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+        when(documentService.findBy(any(JsonSchemaDocumentId.class), any())).thenReturn(jsonSchemaDocument);
 
         assertThrows(NoSuchElementException.class, () -> {
             documentVariableService.getTextOrThrow(jsonSchemaDocument.get(), "/applicant/non-existing");
@@ -97,7 +99,7 @@ public class JsonSchemaDocumentVariableServiceTest extends BaseTest {
     @Test
     public void getNodeOrThrowShouldReturnNode() {
         Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+        when(documentService.findBy(any(JsonSchemaDocumentId.class), any())).thenReturn(jsonSchemaDocument);
 
         JsonNode value = documentVariableService.getNodeOrThrow(jsonSchemaDocument.get(), "/applicant/street");
         assertEquals(new TextNode(NAAM_VAN_DE_STRAAT), value);
@@ -106,7 +108,7 @@ public class JsonSchemaDocumentVariableServiceTest extends BaseTest {
     @Test
     public void getNodeOrThrowShouldThrow() {
         Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+        when(documentService.findBy(any(JsonSchemaDocumentId.class), any())).thenReturn(jsonSchemaDocument);
 
         assertThrows(NoSuchElementException.class, () -> {
             documentVariableService.getNodeOrThrow(jsonSchemaDocument.get(), "/applicant/non-existing");
@@ -116,7 +118,7 @@ public class JsonSchemaDocumentVariableServiceTest extends BaseTest {
     @Test
     public void getIntegerOrReturnZeroShouldReturnInteger() {
         Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+        when(documentService.findBy(any(JsonSchemaDocumentId.class), any())).thenReturn(jsonSchemaDocument);
 
         Integer value = documentVariableService.getIntegerOrReturnZero(jsonSchemaDocument.get(), "/applicant/number");
         assertEquals(HOUSE_NUMBER, value);
@@ -125,16 +127,16 @@ public class JsonSchemaDocumentVariableServiceTest extends BaseTest {
     @Test
     public void getIntegerOrReturnZeroShouldReturnZero() {
         Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+        when(documentService.findBy(any(JsonSchemaDocumentId.class), any())).thenReturn(jsonSchemaDocument);
 
         Integer value = documentVariableService.getIntegerOrReturnZero(jsonSchemaDocument.get(), "/applicant/non-existing");
-        assertEquals(Integer.valueOf(0) ,value);
+        assertEquals(Integer.valueOf(0), value);
     }
 
     @Test
     public void getBooleanOrReturnFalseShouldReturnBoolean() {
         Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+        when(documentService.findBy(any(JsonSchemaDocumentId.class), any())).thenReturn(jsonSchemaDocument);
 
         Boolean value = documentVariableService.getBooleanOrReturnFalse(jsonSchemaDocument.get(), "/applicant/prettyHouse");
         assertEquals(Boolean.valueOf(YES), value);
@@ -143,7 +145,7 @@ public class JsonSchemaDocumentVariableServiceTest extends BaseTest {
     @Test
     public void getBooleanOrReturnFalseShouldReturnFalse() {
         Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any(JsonSchemaDocumentId.class))).thenReturn(jsonSchemaDocument);
+        when(documentService.findBy(any(JsonSchemaDocumentId.class), any())).thenReturn(jsonSchemaDocument);
 
         Boolean value = documentVariableService.getBooleanOrReturnFalse(jsonSchemaDocument.get(), "/applicant/non-existing");
         assertEquals(Boolean.FALSE, value);
@@ -158,7 +160,8 @@ public class JsonSchemaDocumentVariableServiceTest extends BaseTest {
             ),
             "USERNAME",
             documentSequenceGeneratorService,
-            null
+            null,
+            "1"
         ).resultingDocument();
     }
 

@@ -32,6 +32,7 @@ import com.ritense.case.web.rest.CaseDefinitionResource
 import com.ritense.case.web.rest.CaseInstanceResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -64,9 +65,10 @@ class CaseAutoConfiguration {
 
     @Bean
     fun caseInstanceResource(
-        service: CaseInstanceService
+        caseInstanceService: CaseInstanceService,
+        tenantResolver: TenantResolver
     ): CaseInstanceResource {
-        return CaseInstanceResource(service)
+        return CaseInstanceResource(caseInstanceService, tenantResolver)
     }
 
     @Bean
@@ -75,7 +77,7 @@ class CaseAutoConfiguration {
         caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
         documentDefinitionService: DocumentDefinitionService,
         valueResolverService: ValueResolverService,
-        ): CaseDefinitionService {
+    ): CaseDefinitionService {
         return CaseDefinitionService(
             repository,
             caseDefinitionListColumnRepository,

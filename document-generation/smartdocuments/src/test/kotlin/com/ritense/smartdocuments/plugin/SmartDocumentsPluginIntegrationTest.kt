@@ -128,7 +128,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
     fun `should generate document`() {
         // given
         val documentContent = Mapper.INSTANCE.get().readTree("{\"lastname\": \"Klaveren\"}")
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, documentContent)
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, documentContent).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("age" to 138))
 
@@ -152,7 +152,10 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
     @Test
     fun `should create temp file when generating document`() {
         // given
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            Mapper.INSTANCE.get().createObjectNode()
+        ).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when
@@ -194,7 +197,10 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
             }
         """.trimIndent()
         )
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            Mapper.INSTANCE.get().createObjectNode()
+        ).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("my-template-name-variable" to "my-custom-template-name"))
 
@@ -221,7 +227,10 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
             }
         """.trimIndent()
         )
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(
+            DOCUMENT_DEFINITION_KEY,
+            Mapper.INSTANCE.get().createObjectNode()
+        ).withTenantId("1")
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when

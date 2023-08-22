@@ -27,6 +27,8 @@ import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormLoaderService;
 import java.io.IOException;
 import java.util.Optional;
+
+import com.ritense.tenancy.TenantResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,14 +43,20 @@ public class FormIoFormLoaderServiceTest extends BaseTest {
     private FormLoaderService formLoaderService;
     private DocumentSequenceGeneratorService documentSequenceGeneratorService;
     private FormDefinitionRepository formDefinitionRepository;
+    private TenantResolver tenantResolver;
 
     @BeforeEach
     public void setUp() {
+        tenantResolver = mock(TenantResolver.class);
         documentService = mock(JsonSchemaDocumentService.class);
         documentSequenceGeneratorService = mock(DocumentSequenceGeneratorService.class);
         formDefinitionRepository = mock(FormDefinitionRepository.class);
         when(documentSequenceGeneratorService.next(any())).thenReturn(1L);
-        formLoaderService = new FormIoFormLoaderService(documentService, formDefinitionRepository);
+        formLoaderService = new FormIoFormLoaderService(
+            documentService,
+            formDefinitionRepository,
+            tenantResolver
+        );
         mockSpringContextHelper();
     }
 
@@ -66,7 +74,7 @@ public class FormIoFormLoaderServiceTest extends BaseTest {
     @Test
     public void shouldGetFormDefinitionPreFilled() throws IOException {
         final Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any())).thenReturn(jsonSchemaDocument);
+        when(documentService.findBy(any(), any())).thenReturn(jsonSchemaDocument);
 
         final String formDefinitionName = "form-example";
 
@@ -84,7 +92,7 @@ public class FormIoFormLoaderServiceTest extends BaseTest {
     @Test
     public void shouldGetFormDefinitionPreFilledWithNestedComponents() throws IOException {
         final Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any())).thenReturn(jsonSchemaDocument);
+        when(documentService.findBy(any(), any())).thenReturn(jsonSchemaDocument);
 
         String formDefinitionId = "form-example-nested-components";
 
@@ -109,7 +117,8 @@ public class FormIoFormLoaderServiceTest extends BaseTest {
             ),
             "USERNAME",
             documentSequenceGeneratorService,
-            null
+            null,
+            "1"
         ).resultingDocument();
     }
 

@@ -19,6 +19,7 @@ package com.ritense.processdocument.service.result;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.valtimo.contract.result.OperationError;
+
 import java.util.List;
 import java.util.Optional;
 

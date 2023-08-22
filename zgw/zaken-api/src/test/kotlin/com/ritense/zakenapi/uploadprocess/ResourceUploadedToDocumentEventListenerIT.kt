@@ -82,8 +82,8 @@ class ResourceUploadedToDocumentEventListenerIT : BaseIntegrationTest() {
         val documentId = documentService.createDocument(
             NewDocumentRequest(
                 DOCUMENT_DEFINITION_KEY,
-                Mapper.INSTANCE.get().createObjectNode()
-            )
+                Mapper.INSTANCE.get().createObjectNode(),
+            ).withTenantId("1")
         ).resultingDocument().get().id!!.id.toString()
         val resourceId = temporaryResourceStorageService.store("My file data".byteInputStream())
 
@@ -101,7 +101,7 @@ class ResourceUploadedToDocumentEventListenerIT : BaseIntegrationTest() {
             NewDocumentRequest(
                 DOCUMENT_DEFINITION_KEY,
                 Mapper.INSTANCE.get().createObjectNode()
-            )
+            ).withTenantId("1")
         ).resultingDocument().get().id!!.id.toString()
         val resourceId = temporaryResourceStorageService.store(
             "My file data".byteInputStream(),

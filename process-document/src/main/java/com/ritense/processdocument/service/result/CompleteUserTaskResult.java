@@ -18,6 +18,7 @@ package com.ritense.processdocument.service.result;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.valtimo.contract.result.OperationError;
+
 import java.util.List;
 
 public interface CompleteUserTaskResult {

@@ -24,6 +24,7 @@ public class AdvancedSearchRequest {
     private SearchOperator searchOperator = SearchOperator.AND;
     private AssigneeFilter assigneeFilter = AssigneeFilter.ALL;
     private List<OtherFilter> otherFilters = List.of();
+    private String tenantId;
 
     public AdvancedSearchRequest() {
         // Jackson needs the empty constructor
@@ -66,6 +67,19 @@ public class AdvancedSearchRequest {
     public AdvancedSearchRequest addOtherFilters(OtherFilter otherFilter) {
         this.otherFilters = new ArrayList<>(otherFilters);
         otherFilters.add(otherFilter);
+        return this;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public AdvancedSearchRequest withTenantId(String tenantId) {
+        this.tenantId = tenantId;
         return this;
     }
 

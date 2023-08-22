@@ -25,13 +25,14 @@ import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent;
 import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.domain.validation.DocumentContentValidationResult;
+import com.ritense.document.event.DocumentAssigneeChangedEvent;
+import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.service.result.error.ConflictedDocumentVersion;
 import com.ritense.document.service.result.error.DocumentOperationError;
-import com.ritense.tenancy.jpa.AbstractTenantAwareAggregateRoot;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileAddedEvent;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEvent;
@@ -39,6 +40,7 @@ import com.ritense.valtimo.contract.utils.RequestHelper;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
 
 import javax.persistence.Column;
@@ -60,6 +62,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 
@@ -73,7 +76,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
         @Index(name = "sequence_index", columnList = "sequence")
     }
 )
-public class JsonSchemaDocument extends AbstractTenantAwareAggregateRoot<JsonSchemaDocument>
+public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument>
     implements Document, Persistable<JsonSchemaDocumentId> {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocument.class);
@@ -115,13 +118,17 @@ public class JsonSchemaDocument extends AbstractTenantAwareAggregateRoot<JsonSch
     @Column(name = "related_files", columnDefinition = "json")
     private Set<JsonSchemaRelatedFile> relatedFiles = new HashSet<>();
 
+    @Column(name = "tenant_id", columnDefinition = "varchar(255)", updatable = false)
+    private String tenantId;
+
     private JsonSchemaDocument(
         final JsonSchemaDocumentId id,
         final JsonDocumentContent content,
         final JsonSchemaDocumentDefinition documentDefinition,
         final String createdBy,
         final Long sequence,
-        final JsonSchemaDocumentRelation documentRelation
+        final JsonSchemaDocumentRelation documentRelation,
+        final String tenantId
     ) {
         assertArgumentNotNull(id, "id is required");
         assertArgumentNotNull(content, "content is required");
@@ -129,6 +136,7 @@ public class JsonSchemaDocument extends AbstractTenantAwareAggregateRoot<JsonSch
         assertArgumentNotNull(createdBy, "createdBy is required");
         assertArgumentNotNull(sequence, "sequence is required");
         assertArgumentTrue(sequence > 0, "Document sequence must be positive");
+        assertArgumentNotEmpty(tenantId, "tenantId is required");
 
         this.id = id;
         this.content = content;
@@ -136,6 +144,7 @@ public class JsonSchemaDocument extends AbstractTenantAwareAggregateRoot<JsonSch
         this.createdOn = LocalDateTime.now();
         this.createdBy = createdBy;
         this.sequence = sequence;
+        this.tenantId = tenantId;
 
         addRelatedDocument(documentRelation);
 
@@ -160,7 +169,8 @@ public class JsonSchemaDocument extends AbstractTenantAwareAggregateRoot<JsonSch
         final JsonDocumentContent content,
         final String createdBy,
         final DocumentSequenceGeneratorService documentSequenceGeneratorService,
-        final JsonSchemaDocumentRelation documentRelation
+        final JsonSchemaDocumentRelation documentRelation,
+        final String tenantId
     ) {
         assertArgumentNotNull(definition, "definition is required");
         assertArgumentNotNull(content, "content is required");
@@ -181,7 +191,8 @@ public class JsonSchemaDocument extends AbstractTenantAwareAggregateRoot<JsonSch
             definition,
             createdBy,
             sequence,
-            documentRelation
+            documentRelation,
+            tenantId
         );
         return new CreateDocumentResultImpl(document);
     }
@@ -302,14 +313,35 @@ public class JsonSchemaDocument extends AbstractTenantAwareAggregateRoot<JsonSch
         relatedFiles.forEach(file -> removeRelatedFileBy(file.getFileId()));
     }
 
-    public void setAssignee(String id, String fullName) {
-        this.assigneeId = id;
+    public void setAssignee(String assigneeId, String fullName) {
+        this.assigneeId = assigneeId;
         this.assigneeFullName = fullName;
+        this.modifiedOn = LocalDateTime.now();
+        this.registerEvent(
+            new DocumentAssigneeChangedEvent(
+                UUID.randomUUID(),
+                RequestHelper.getOrigin(),
+                LocalDateTime.now(),
+                AuditHelper.getActor(),
+                this.id.getId(),
+                assigneeFullName
+            )
+        );
     }
 
     public void unassign() {
         this.assigneeId = null;
         this.assigneeFullName = null;
+        this.modifiedOn = LocalDateTime.now();
+        this.registerEvent(
+            new DocumentUnassignedEvent(
+                UUID.randomUUID(),
+                RequestHelper.getOrigin(),
+                LocalDateTime.now(),
+                AuditHelper.getActor(),
+                this.id.getId()
+            )
+        );
     }
 
     @Override
@@ -379,6 +411,12 @@ public class JsonSchemaDocument extends AbstractTenantAwareAggregateRoot<JsonSch
     @JsonIgnore
     public JsonSchemaDocumentId getId() {
         return id;
+    }
+
+    @Override
+    @JsonIgnore
+    public String tenantId() {
+        return tenantId;
     }
 
     @Override

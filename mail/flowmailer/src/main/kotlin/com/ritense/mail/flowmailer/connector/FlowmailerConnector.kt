@@ -24,6 +24,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.mail.MailDispatcher
 import com.ritense.resource.service.ResourceService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
 import com.ritense.valtimo.contract.mail.model.MailMessageStatus
@@ -61,7 +62,8 @@ class FlowmailerConnector(
     private var flowmailerConnectorProperties: FlowmailerConnectorProperties,
     private val mailDispatcher: MailDispatcher,
     private val documentService: DocumentService,
-    private val resourceService: ResourceService
+    private val resourceService: ResourceService,
+    private val tenantResolver: TenantResolver
 ) : Connector {
 
     private var sender: Sender? = null
@@ -92,8 +94,10 @@ class FlowmailerConnector(
         itemEmailProperty: String
     ): FlowmailerConnector {
         val document = documentService
-            .findBy(JsonSchemaDocumentId.existingId(UUID.fromString(delegateExecution.businessKey)))
-            .orElseThrow()
+            .findBy(
+                JsonSchemaDocumentId.existingId(UUID.fromString(delegateExecution.businessKey)),
+                tenantResolver.getTenantId()
+            ).orElseThrow()
 
         val recipientsArrayNode = document
             .content()
@@ -123,7 +127,8 @@ class FlowmailerConnector(
         pathToValue: String
     ): FlowmailerConnector {
         val document = documentService.findBy(
-            JsonSchemaDocumentId.existingId(UUID.fromString(delegateExecution.businessKey))
+            JsonSchemaDocumentId.existingId(UUID.fromString(delegateExecution.businessKey)),
+            tenantResolver.getTenantId()
         ).orElseThrow()
         val value = document.content().getValueBy(JsonPointer.valueOf(pathToValue)).orElseThrow().asText()
         this.placeholders + Pair(key, value)

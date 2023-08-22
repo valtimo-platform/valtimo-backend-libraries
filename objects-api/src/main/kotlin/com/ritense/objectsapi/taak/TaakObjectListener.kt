@@ -29,6 +29,7 @@ import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
@@ -53,6 +54,7 @@ class TaakObjectListener(
     private val processDocumentService: ProcessDocumentService,
     private val zaakService: ZaakService,
     private val openZaakService: OpenZaakService,
+    private val tenantResolver: TenantResolver
 ) {
 
     @EventListener(OpenNotificationEvent::class)
@@ -141,7 +143,7 @@ class TaakObjectListener(
         val informatieObject = zaakService.getInformatieObject(file)
         val resource = openZaakService.store(informatieObject)
         val relatedFile = JsonSchemaRelatedFile.from(resource).withCreatedBy(informatieObject.auteur)
-        documentService.assignRelatedFile(documentId, relatedFile)
+        documentService.assignRelatedFile(documentId, relatedFile, tenantResolver.getTenantId())
     }
 
     private fun handleTaakObjectData(

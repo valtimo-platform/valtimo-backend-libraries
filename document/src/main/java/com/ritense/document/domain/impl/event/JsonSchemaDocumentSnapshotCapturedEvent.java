@@ -18,6 +18,7 @@ package com.ritense.document.domain.impl.event;
 
 import com.ritense.document.domain.event.DocumentSnapshotCapturedEvent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 

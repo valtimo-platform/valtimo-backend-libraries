@@ -67,6 +67,7 @@ public class SearchRequestMapper {
         advancedSearchRequest.setSearchOperator(searchRequest.getSearchOperator());
         advancedSearchRequest.setAssigneeFilter(searchRequest.getAssigneeFilter());
         advancedSearchRequest.setOtherFilters(otherFilters);
+        advancedSearchRequest.withTenantId(searchRequest.getTenantId());
         return advancedSearchRequest;
     }
 

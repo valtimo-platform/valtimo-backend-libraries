@@ -20,20 +20,23 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.externalevent.config.MappedCasesConfig
 import com.ritense.externalevent.messaging.ExternalDomainMessage
+import com.ritense.externalevent.messaging.builder.CaseMessageSender
+import com.ritense.externalevent.messaging.builder.TaskMessageSender
 import com.ritense.externalevent.messaging.`in`.CompleteTaskMessage
 import com.ritense.externalevent.messaging.`in`.CreateExternalCaseMessage
 import com.ritense.externalevent.messaging.`in`.ExternalIdUpdatedConfirmationMessage
-import com.ritense.externalevent.messaging.builder.CaseMessageSender
-import com.ritense.externalevent.messaging.builder.TaskMessageSender
 import com.ritense.externalevent.service.ExternalCaseService
 import com.ritense.externalevent.service.ExternalTaskService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.config.ValtimoProperties
 import com.ritense.valtimo.contract.mail.MailSender
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
@@ -45,6 +48,7 @@ import java.util.function.Consumer
 import java.util.function.Supplier
 
 @Configuration
+@EnableConfigurationProperties(value = [MappedCasesConfig::class])
 class ExternalEventAutoConfiguration {
 
     @Bean
@@ -131,9 +135,17 @@ class ExternalEventAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         mappedCasesConfig: MappedCasesConfig,
         sink: Sinks.Many<ExternalDomainMessage>,
-        runtimeService: RuntimeService
+        runtimeService: RuntimeService,
+        tenantResolver: TenantResolver
     ): ExternalCaseService {
-        return ExternalCaseService(documentService, processDocumentService, mappedCasesConfig, sink, runtimeService)
+        return ExternalCaseService(
+            documentService,
+            processDocumentService,
+            mappedCasesConfig,
+            sink,
+            runtimeService,
+            tenantResolver
+        )
     }
 
     @Bean
@@ -141,9 +153,16 @@ class ExternalEventAutoConfiguration {
         documentService: JsonSchemaDocumentService,
         processDocumentService: ProcessDocumentService,
         formDefinitionService: FormIoFormDefinitionService,
-        sink: Sinks.Many<ExternalDomainMessage>
+        sink: Sinks.Many<ExternalDomainMessage>,
+        tenantResolver: TenantResolver
     ): ExternalTaskService {
-        return ExternalTaskService(documentService, processDocumentService, formDefinitionService, sink)
+        return ExternalTaskService(
+            documentService,
+            processDocumentService,
+            formDefinitionService,
+            sink,
+            tenantResolver
+        )
     }
 
     companion object {

@@ -17,7 +17,9 @@
 package com.ritense.document.domain.diff;
 
 import com.flipkart.zjsonpatch.DiffFlags;
+
 import java.util.EnumSet;
+
 import static com.flipkart.zjsonpatch.DiffFlags.ADD_ORIGINAL_VALUE_ON_REPLACE;
 import static com.flipkart.zjsonpatch.DiffFlags.OMIT_COPY_OPERATION;
 import static com.flipkart.zjsonpatch.DiffFlags.OMIT_MOVE_OPERATION;

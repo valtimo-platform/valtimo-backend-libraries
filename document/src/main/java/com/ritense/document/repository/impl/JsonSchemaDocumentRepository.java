@@ -16,6 +16,7 @@
 
 package com.ritense.document.repository.impl;
 
+import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.repository.DocumentRepository;
 import org.springframework.data.domain.Page;
@@ -24,8 +25,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSchemaDocument> {
+
+    Optional<JsonSchemaDocument> findByIdAndTenantId(
+        Document.Id documentId,
+        String tenantId
+    );
 
     Page<JsonSchemaDocument> findAllByDocumentDefinitionIdName(Pageable pageable, String definitionName);
 
@@ -44,4 +52,5 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
     );
 
     Long countByDocumentDefinitionIdNameAndAssigneeId(String definitionName, String assigneeId);
+
 }

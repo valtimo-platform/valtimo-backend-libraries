@@ -38,7 +38,7 @@ class  ZaakInstanceLinkService(
     }
 
     fun findById(zaakInstanceLinkId: ZaakInstanceLinkId): ZaakInstanceLink {
-        return when (val zaakInstanceLink = zaakInstanceLinkRepository.getById(zaakInstanceLinkId)) {
+        return when (val zaakInstanceLink = zaakInstanceLinkRepository.getReferenceById(zaakInstanceLinkId)) {
             null -> throw ZaakInstanceLinkNotFoundException("No ZaakInstanceLink found for id ${zaakInstanceLinkId.id}")
             else -> zaakInstanceLink
         }

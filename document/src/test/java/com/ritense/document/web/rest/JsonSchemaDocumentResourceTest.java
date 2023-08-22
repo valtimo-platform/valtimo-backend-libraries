@@ -23,6 +23,7 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
+import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.utils.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,18 +41,11 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class JsonSchemaDocumentResourceTest extends BaseTest {
 
@@ -61,13 +55,16 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
     private Page<JsonSchemaDocument> documentPage;
     private JsonSchemaDocument document;
     private DocumentDefinitionService documentDefinitionService;
+    private TenantResolver tenantResolver;
 
     @BeforeEach
     void setUp() {
+        tenantResolver = mock(TenantResolver.class);
+        when(tenantResolver.getTenantId()).thenReturn(TENANT_ID);
 
         documentService = mock(JsonSchemaDocumentService.class);
         documentDefinitionService = mock(DocumentDefinitionService.class);
-        documentResource = new JsonSchemaDocumentResource(documentService, documentDefinitionService);
+        documentResource = new JsonSchemaDocumentResource(documentService, documentDefinitionService, tenantResolver);
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -79,28 +76,28 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             content,
             USERNAME,
             documentSequenceGeneratorService,
-            null
+            null,
+            TENANT_ID
         );
         document = result.resultingDocument().orElseThrow();
         document.setAssignee("test-assignee-id", "John Doe");
         document.addRelatedFile(relatedFile());
         List<JsonSchemaDocument> documents = List.of(document);
         Pageable unpaged = Pageable.unpaged();
-
         documentPage = new PageImpl<>(documents, unpaged, 1);
     }
 
     @Test
     void shouldReturnOkWithDocument() throws Exception {
-        when(documentService.findBy(any()))
+        when(documentService.findBy(any(), any()))
             .thenReturn(Optional.of(document));
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(true);
 
         mockMvc.perform(get("/api/v1/document/{id}", UUID.randomUUID().toString())
-            .accept(APPLICATION_JSON_VALUE)
-            .contentType(APPLICATION_JSON_VALUE)
-        )
+                .accept(APPLICATION_JSON_VALUE)
+                .contentType(APPLICATION_JSON_VALUE)
+            )
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_VALUE))
@@ -109,7 +106,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
 
     @Test
     void shouldReturnDocumentWithAssignee() throws Exception {
-        when(documentService.findBy(any()))
+        when(documentService.findBy(any(), any()))
             .thenReturn(Optional.of(document));
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(true);
@@ -133,7 +130,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
         final var modifyDocumentResult = new JsonSchemaDocument.ModifyDocumentResultImpl(document);
         when(documentService.modifyDocument(any())).thenReturn(modifyDocumentResult);
-        when(documentService.get(document.id().getId().toString()))
+        when(documentService.get(document.id().getId().toString(), TENANT_ID))
             .thenReturn(document);
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(true);
@@ -145,10 +142,10 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         );
 
         mockMvc.perform(
-            put("/api/v1/document")
-                .contentType(APPLICATION_JSON_VALUE)
-                .content(TestUtil.convertObjectToJsonBytes(modifyRequest))
-        )
+                put("/api/v1/document")
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .content(TestUtil.convertObjectToJsonBytes(modifyRequest))
+            )
             .andDo(print())
             .andExpect(status().isOk())
             .andReturn();
@@ -160,20 +157,20 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
 
-        when(documentService.get(document.id().getId().toString()))
+        when(documentService.get(document.id().getId().toString(), TENANT_ID))
             .thenReturn(document);
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(true);
 
         mockMvc.perform(
-            post("/api/v1/document/{document-id}/resource/{resource-id}", document.id(), UUID.randomUUID())
-                .contentType(APPLICATION_JSON_VALUE)
-        )
+                post("/api/v1/document/{document-id}/resource/{resource-id}", document.id(), UUID.randomUUID())
+                    .contentType(APPLICATION_JSON_VALUE)
+            )
             .andDo(print())
             .andExpect(status().isNoContent())
             .andReturn();
 
-        verify(documentService).assignResource(any(), any());
+        verify(documentService).assignResource(any(), any(), any());
     }
 
     @Test
@@ -182,20 +179,20 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
 
-        when(documentService.get(document.id().getId().toString()))
+        when(documentService.get(document.id().getId().toString(), "1"))
             .thenReturn(document);
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(true);
 
         mockMvc.perform(
-            delete("/api/v1/document/{document-id}/resource/{resource-id}", document.id(), UUID.randomUUID())
-                .contentType(APPLICATION_JSON_VALUE)
-        )
+                delete("/api/v1/document/{document-id}/resource/{resource-id}", document.id(), UUID.randomUUID())
+                    .contentType(APPLICATION_JSON_VALUE)
+            )
             .andDo(print())
             .andExpect(status().isNoContent())
             .andReturn();
 
-        verify(documentService).removeRelatedFile(any(), any());
+        verify(documentService).removeRelatedFile(any(), any(), any());
     }
 
     @Test
@@ -204,9 +201,9 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
 
-        when(documentService.getCandidateUsers(document.id()))
+        when(documentService.getCandidateUsers(document.id(), TENANT_ID))
             .thenReturn(List.of(new NamedUser("1234", "John", "Doe")));
-        when(documentService.get(document.id().toString())).thenReturn(document);
+        when(documentService.get(document.id().toString(), TENANT_ID)).thenReturn(document);
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(true);
 
@@ -224,7 +221,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
 
-        when(documentService.get(document.id().toString())).thenReturn(document);
+        when(documentService.get(document.id().toString(), "1")).thenReturn(document);
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(false);
 
