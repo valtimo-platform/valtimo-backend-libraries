@@ -23,11 +23,12 @@ import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.security.config.ProcessLinkHttpSecurityConfigurer
 import com.ritense.processlink.service.CopyProcessLinkOnProcessDeploymentListener
-import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.processlink.service.ProcessLinkActivityService
+import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.web.rest.ProcessLinkResource
 import com.ritense.processlink.web.rest.ProcessLinkTaskResource
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.TaskService
@@ -82,9 +83,13 @@ class ProcessLinkAutoConfiguration {
     @ConditionalOnMissingBean(ProcessLinkTaskResource::class)
     @ConditionalOnBean(ProcessLinkActivityService::class)
     fun processLinkTaskResource(
-        processLinkActivityService: ProcessLinkActivityService
+        processLinkActivityService: ProcessLinkActivityService,
+        tenantResolver: TenantResolver
     ): ProcessLinkTaskResource {
-        return ProcessLinkTaskResource(processLinkActivityService)
+        return ProcessLinkTaskResource(
+            processLinkActivityService,
+            tenantResolver
+        )
     }
 
     @Bean

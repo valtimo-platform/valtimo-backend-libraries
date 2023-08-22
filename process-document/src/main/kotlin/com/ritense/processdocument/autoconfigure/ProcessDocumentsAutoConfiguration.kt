@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package com.ritense.processdocument.autoconfigure
 
 import com.ritense.case.service.CaseDefinitionService
@@ -112,10 +111,15 @@ class ProcessDocumentsAutoConfiguration {
         taskService: TaskService,
         documentService: DocumentService,
         caseDefinitionService: CaseDefinitionService,
-        userManagementService: UserManagementService
+        userManagementService: UserManagementService,
+        tenantResolver: TenantResolver
     ): CaseAssigneeListener {
         return CaseAssigneeListener(
-            taskService, documentService, caseDefinitionService, userManagementService
+            taskService,
+            documentService,
+            caseDefinitionService,
+            userManagementService,
+            tenantResolver
         )
     }
 }

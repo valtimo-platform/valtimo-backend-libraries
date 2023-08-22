@@ -183,9 +183,9 @@ internal class CatalogiApiPluginTest {
         val statustype = "Registered"
         val statustypeUrl = "https://example.com/statustype/456"
         val zaaktypeUrl = "https://example.com/zaaktype/123"
-        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+        val execution = DelegateExecutionFake().withBusinessKey(documentId).withTenantId("1")
         whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
-        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(documentService.get(documentId, "1")).thenReturn(document)
         whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
         whenever(client.getStatustypen(any(), any(), any())).thenReturn(
             Page(
@@ -210,9 +210,9 @@ internal class CatalogiApiPluginTest {
         val document = mock<Document>()
         val statustype = "Registered"
         val zaaktypeUrl = "https://example.com/zaaktype/123"
-        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+        val execution = DelegateExecutionFake().withBusinessKey(documentId).withTenantId("1")
         whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
-        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(documentService.get(documentId, "1")).thenReturn(document)
         whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
         whenever(client.getStatustypen(any(), any(), any())).thenReturn(
             Page(count = 0, results = listOf())
@@ -235,9 +235,9 @@ internal class CatalogiApiPluginTest {
         val resultaattype = "Registered"
         val resultaattypeUrl = "https://example.com/resultaattype/456"
         val zaaktypeUrl = "https://example.com/zaaktype/123"
-        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+        val execution = DelegateExecutionFake().withBusinessKey(documentId).withTenantId("1")
         whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
-        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(documentService.get(documentId, "1")).thenReturn(document)
         whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
         whenever(client.getResultaattypen(any(), any(), any())).thenReturn(
             Page(
@@ -288,9 +288,9 @@ internal class CatalogiApiPluginTest {
         val besluittype = "Allocated"
         val besluittypeUrl = "https://example.com/besluittype/456"
         val zaaktypeUrl = "https://example.com/zaaktype/123"
-        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+        val execution = DelegateExecutionFake().withBusinessKey(documentId).withTenantId("1")
         whenever(document.definitionId()).thenReturn(JsonSchemaDocumentDefinitionId.newId("myDocDef"))
-        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(documentService.get(documentId, "1")).thenReturn(document)
         whenever(zaaktypeUrlProvider.getZaaktypeUrl("myDocDef")).thenReturn(URI(zaaktypeUrl))
         whenever(client.getBesluittypen(any(), any(), any())).thenReturn(
             Page(
@@ -361,7 +361,7 @@ internal class CatalogiApiPluginTest {
     fun `should get besluit type by url`() {
         val documentId = UUID.randomUUID().toString()
         val besluittype = "http://example.com/besluittype/456"
-        val execution = DelegateExecutionFake().withBusinessKey(documentId)
+        val execution = DelegateExecutionFake().withBusinessKey(documentId).withTenantId("1")
 
         plugin.getBesluittype(execution, besluittype, "myProcessVar")
 

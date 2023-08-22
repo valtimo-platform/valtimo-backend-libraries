@@ -51,11 +51,12 @@ class PrefillFormService(
         formDefinitionId: UUID,
         processInstanceId: String,
         taskInstanceId: String,
+        tenantId: String
     ): FormIoFormDefinition {
         val documentId = camundaProcessService.findProcessInstanceById(processInstanceId)
             .orElseThrow { RuntimeException("Process instance not found by id $processInstanceId") }
             .businessKey
-        val document = documentService.get(documentId.toString())
+        val document = documentService.get(documentId.toString(), tenantId)
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
         prefillFormDefinition(formDefinition, document, taskInstanceId)
@@ -65,11 +66,12 @@ class PrefillFormService(
     fun getPrefilledFormDefinition(
         formDefinitionId: UUID,
         documentId: UUID?,
+        tenantId: String
     ): FormIoFormDefinition {
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
         if (documentId != null) {
-            val document = documentService.get(documentId.toString())
+            val document = documentService.get(documentId.toString(), tenantId)
             prefillFormDefinition(formDefinition, document)
         }
         return formDefinition

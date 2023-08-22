@@ -21,6 +21,7 @@ import com.ritense.document.domain.Document
 import com.ritense.document.event.DocumentAssigneeChangedEvent
 import com.ritense.document.event.DocumentUnassignedEvent
 import com.ritense.document.service.DocumentService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.TaskService
@@ -30,12 +31,13 @@ class CaseAssigneeListener(
     private val taskService: TaskService,
     private val documentService: DocumentService,
     private val caseDefinitionService: CaseDefinitionService,
-    private val userManagementService: UserManagementService
+    private val userManagementService: UserManagementService,
+    private val tenantResolver: TenantResolver
 ) {
 
     @EventListener(DocumentAssigneeChangedEvent::class)
     fun updateAssigneeOnTasks(event: DocumentAssigneeChangedEvent) {
-        val document: Document = documentService.get(event.documentId.toString())
+        val document: Document = documentService.get(event.documentId.toString(), tenantResolver.getTenantId())
         val caseSettings: CaseDefinitionSettings = caseDefinitionService.getCaseSettings(
             document.definitionId().name()
         )
@@ -63,7 +65,7 @@ class CaseAssigneeListener(
     @EventListener(DocumentUnassignedEvent::class)
     fun removeAssigneeFromTasks(event: DocumentUnassignedEvent) {
 
-        val document: Document = documentService.get(event.documentId.toString())
+        val document: Document = documentService.get(event.documentId.toString(), tenantResolver.getTenantId())
         val caseSettings: CaseDefinitionSettings = caseDefinitionService.getCaseSettings(
             document.definitionId().name()
         )

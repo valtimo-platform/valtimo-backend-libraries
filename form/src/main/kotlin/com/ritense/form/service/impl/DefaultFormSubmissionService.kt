@@ -76,10 +76,11 @@ open class DefaultFormSubmissionService(
         formData: JsonNode,
         documentId: String?,
         taskInstanceId: String?,
+        tenantId: String
     ): FormSubmissionResult {
         return try {
             val processLink = processLinkService.getProcessLink(processLinkId, FormProcessLink::class.java)
-            val document = documentId?.let { documentService.get(documentId) }
+            val document = documentId?.let { documentService.get(documentId, tenantId) }
             val processDocumentDefinition = getProcessDocumentDefinition(processLink, document)
             val processVariables = getProcessVariables(taskInstanceId)
             val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()

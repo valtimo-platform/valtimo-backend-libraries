@@ -20,9 +20,8 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.tenancy.TenantResolver
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
@@ -75,7 +74,7 @@ class CorrelationServiceImpl(
         val processInstanceId = correlationResultProcessInstance.get().processInstanceId
         val processName = camundaProcessService.findProcessDefinitionById(correlationResultProcessInstance.get().processDefinitionId).name
         val associationExists = associationExists(processInstanceId)
-        if(!associationExists) {
+        if (!associationExists) {
             associateDocumentToProcess(
                 processInstanceId,
                 processName,
@@ -97,7 +96,7 @@ class CorrelationServiceImpl(
             val processName = camundaProcessService.findProcessDefinitionById(runningProcessInstance.get().processDefinitionId).name
             val correlationStartedNewProcess = MessageCorrelationResultType.ProcessDefinition.equals(correlationResultProcess.resultType)
             val associationExists = associationExists(processInstanceId)
-            if(correlationStartedNewProcess || !associationExists) {
+            if (correlationStartedNewProcess || !associationExists) {
                 associateDocumentToProcess(
                     processInstanceId,
                     processName,

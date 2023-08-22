@@ -28,18 +28,17 @@ import com.ritense.formlink.service.FormLinkNewProcessFormFlowProvider
 import com.ritense.formlink.service.impl.CamundaFormAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkActivityHandler
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.formflow.FormFlowFormLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowProcessLinkActivityHandler
-import com.ritense.tenancy.TenantResolver
-import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.FormLinkNewProcessFormFlowProviderImpl
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
-import com.ritense.valtimo.formflow.service.FormFlowSupportedProcessLinksHandler
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper
 import com.ritense.valtimo.formflow.repository.FormFlowProcessLinkRepository
 import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
+import com.ritense.valtimo.formflow.service.FormFlowSupportedProcessLinksHandler
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
 import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
 import com.ritense.valueresolver.ValueResolverService
@@ -75,8 +74,7 @@ class FormFlowValtimoAutoConfiguration {
             formAssociationService,
             documentService,
             repositoryService,
-            runtimeService,
-            tenantResolver
+            runtimeService
         )
     }
 

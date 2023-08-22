@@ -102,12 +102,12 @@ class DocumentJsonValueResolverFactory(
     }
 
     override fun handleValues(documentId: UUID, values: Map<String, Any>) {
-        val document = documentService.get(documentId.toString())
+        val document = documentService.get(documentId.toString(), tenantResolver.getTenantId())
         val documentContent = document.content().asJson()
         buildJsonPatch(documentContent, values)
 
         try {
-            documentService.modifyDocument(document, documentContent)
+            documentService.modifyDocument(document, documentContent, tenantResolver.getTenantId())
         } catch (exception: ModifyDocumentException) {
             throw RuntimeException(
                 "Failed to handle values for document '$documentId'. Values: ${values}.",

@@ -28,6 +28,7 @@ interface FormSubmissionService {
         formData: JsonNode,
         documentId: String?,
         taskInstanceId: String?,
+        tenantId: String
     ): FormSubmissionResult
 
 }

@@ -32,7 +32,6 @@ dependencies {
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
-    testImplementation project(path: ":core", configuration: 'testOutput')
     testImplementation project(':test-utils-common')
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.mockito:mockito-core"

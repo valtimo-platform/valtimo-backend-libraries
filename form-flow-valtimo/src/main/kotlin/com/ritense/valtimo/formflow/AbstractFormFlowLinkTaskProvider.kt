@@ -23,7 +23,7 @@ import org.camunda.bpm.engine.task.Task
 
 abstract class AbstractFormFlowLinkTaskProvider(
     private val documentService: DocumentService,
-    private val runtimeService: RuntimeService,
+    private val runtimeService: RuntimeService
 ) {
 
     protected fun getAdditionalProperties(task: Task): Map<String, Any> {
@@ -38,7 +38,7 @@ abstract class AbstractFormFlowLinkTaskProvider(
         )
 
         try {
-            val document = documentService[processInstance.businessKey]
+            val document = documentService.get(processInstance.businessKey, processInstance.tenantId)
             if (document != null) {
                 additionalProperties["documentId"] = processInstance.businessKey
             }

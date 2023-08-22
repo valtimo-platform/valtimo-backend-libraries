@@ -18,7 +18,7 @@ package com.ritense.processlink.service
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import org.camunda.bpm.engine.task.Task
-import java.util.*
+import java.util.UUID
 
 interface ProcessLinkActivityHandler<T> {
     fun supports(processLink: ProcessLink): Boolean
@@ -27,5 +27,7 @@ interface ProcessLinkActivityHandler<T> {
         processDefinitionId: String,
         documentId: UUID?,
         documentDefinitionName: String?,
-        processLink: ProcessLink): ProcessLinkActivityResult<T>
+        processLink: ProcessLink,
+        tenantId: String
+    ): ProcessLinkActivityResult<T>
 }

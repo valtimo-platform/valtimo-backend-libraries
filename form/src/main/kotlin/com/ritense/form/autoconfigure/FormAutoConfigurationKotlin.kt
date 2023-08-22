@@ -29,6 +29,7 @@ import com.ritense.form.web.rest.FormResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -56,9 +57,11 @@ class FormAutoConfigurationKotlin {
     @Bean
     @ConditionalOnMissingBean(FormResource::class)
     fun formResource(
-        formSubmissionService: FormSubmissionService
+        formSubmissionService: FormSubmissionService,
+        tenantResolver: TenantResolver
     ) = FormResource(
-        formSubmissionService
+        formSubmissionService,
+        tenantResolver
     )
 
     @Bean

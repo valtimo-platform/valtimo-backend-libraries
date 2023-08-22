@@ -19,6 +19,7 @@ package com.ritense.form.web.rest
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.form.service.FormSubmissionService
 import com.ritense.form.web.rest.dto.FormSubmissionResult
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -34,7 +35,8 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class FormResource(
-    private var formSubmissionService: FormSubmissionService
+    private val formSubmissionService: FormSubmissionService,
+    private val tenantResolver: TenantResolver
 ) {
 
     @PostMapping("/v1/process-link/{processLinkId}/form/submission")
@@ -47,10 +49,11 @@ class FormResource(
     ): ResponseEntity<FormSubmissionResult> =
         applyResult(
             formSubmissionService.handleSubmission(
-                processLinkId,
-                submission,
-                documentId,
-                taskInstanceId,
+                processLinkId = processLinkId,
+                formData = submission,
+                documentId = documentId,
+                taskInstanceId = taskInstanceId,
+                tenantId = tenantResolver.getTenantId()
             )
         )
 

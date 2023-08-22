@@ -28,8 +28,8 @@ import com.ritense.document.service.DocumentSequenceGeneratorService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.domain.FormProcessLink
-import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.service.impl.DefaultFormSubmissionService
+import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.web.rest.dto.FormSubmissionResultFailed
 import com.ritense.form.web.rest.dto.FormSubmissionResultSucceeded
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
@@ -120,7 +120,7 @@ class DefaultFormSubmissionServiceTest {
         whenever(formDefinitionService.getFormDefinitionById(formProcessLink.formDefinitionId))
             .thenReturn(Optional.of(formDefinition))
 
-        whenever(prefillFormService.preSubmissionTransform(any(),any(),any(),any()))
+        whenever(prefillFormService.preSubmissionTransform(any(), any(), any(), any()))
             .thenReturn(JsonPatchBuilder().build())
     }
 
@@ -139,7 +139,8 @@ class DefaultFormSubmissionServiceTest {
             processLinkId = formProcessLink(START_EVENT_START).id,
             formData = formData,
             documentId = null,
-            taskInstanceId = null
+            taskInstanceId = null,
+            tenantId = "1"
         )
 
         //Then
@@ -157,7 +158,7 @@ class DefaultFormSubmissionServiceTest {
         whenever(processDocumentAssociationService.getProcessDocumentDefinition(any(), any()))
             .thenReturn(processDocumentDefinition("aName"))
         val document = createDocument(JsonDocumentContent.build(formData))
-        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(documentService.get(documentId, "1")).thenReturn(document)
         whenever(processDocumentService.dispatch(any()))
             .thenReturn(ModifyDocumentAndCompleteTaskResultSucceeded(document))
 
@@ -166,7 +167,8 @@ class DefaultFormSubmissionServiceTest {
             processLinkId = formProcessLink(START_EVENT_START).id,
             formData = formData,
             documentId = documentId,
-            taskInstanceId = null
+            taskInstanceId = null,
+            tenantId = "1"
         )
 
         //Then
@@ -184,7 +186,7 @@ class DefaultFormSubmissionServiceTest {
         whenever(processDocumentAssociationService.getProcessDocumentDefinition(any(), any()))
             .thenReturn(processDocumentDefinition("aName"))
         val document = createDocument(JsonDocumentContent.build(formData))
-        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(documentService.get(documentId, "1")).thenReturn(document)
         whenever(processDocumentService.dispatch(any()))
             .thenReturn(ModifyDocumentAndCompleteTaskResultSucceeded(document))
 
@@ -193,7 +195,8 @@ class DefaultFormSubmissionServiceTest {
             processLinkId = formProcessLink.id,
             formData = formData,
             documentId = documentId,
-            taskInstanceId = "myTaskInstanceId"
+            taskInstanceId = "myTaskInstanceId",
+            tenantId = "1"
         )
 
         //Then
@@ -213,6 +216,7 @@ class DefaultFormSubmissionServiceTest {
             formData = formData,
             documentId = UUID.randomUUID().toString(),
             taskInstanceId = "myTaskInstanceId",
+            tenantId = "1"
         )
 
         assertThat(formSubmissionResult).isInstanceOf(FormSubmissionResultFailed::class.java)
@@ -223,7 +227,7 @@ class DefaultFormSubmissionServiceTest {
     fun `should not find document`() {
         //Given
         val documentId = UUID.randomUUID().toString()
-        whenever(documentService.get(documentId))
+        whenever(documentService.get(documentId, "1"))
             .thenThrow(DocumentNotFoundException("Document not found with id: $documentId"))
 
         //When
@@ -231,7 +235,8 @@ class DefaultFormSubmissionServiceTest {
             processLinkId = formProcessLink.id,
             formData = formData(),
             documentId = documentId,
-            taskInstanceId = "myTaskInstanceId"
+            taskInstanceId = "myTaskInstanceId",
+            tenantId = "1"
         )
 
         //Then
@@ -247,14 +252,15 @@ class DefaultFormSubmissionServiceTest {
         val documentId: String? = null
         val formData = formData()
         val document = createDocument(JsonDocumentContent.build(formData))
-        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(documentService.get(documentId, "1")).thenReturn(document)
 
         //When
         val documentNotFoundException = defaultFormSubmissionService.handleSubmission(
             processLinkId = formProcessLink.id,
             formData = formData,
             documentId = documentId,
-            taskInstanceId = "myTaskInstanceId"
+            taskInstanceId = "myTaskInstanceId",
+            tenantId = "1"
         )
 
         //Then
@@ -268,14 +274,15 @@ class DefaultFormSubmissionServiceTest {
         val documentId = UUID.randomUUID().toString()
         val formData = formData()
         val document = createDocument(JsonDocumentContent.build(formData))
-        whenever(documentService.get(documentId)).thenReturn(document)
+        whenever(documentService.get(documentId, "1")).thenReturn(document)
 
         //When
         val documentNotFoundException = defaultFormSubmissionService.handleSubmission(
             processLinkId = formProcessLink.id,
             formData = formData,
             documentId = documentId,
-            taskInstanceId = "myTaskInstanceId"
+            taskInstanceId = "myTaskInstanceId",
+            tenantId = "1"
         )
 
         //Then
@@ -329,7 +336,8 @@ class DefaultFormSubmissionServiceTest {
             content,
             USERNAME,
             documentSequenceGeneratorService,
-            null
+            null,
+            "1"
         )
             .resultingDocument()
             .orElseThrow()

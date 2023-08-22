@@ -25,7 +25,6 @@ import com.ritense.formlink.domain.FormAssociation
 import com.ritense.formlink.domain.FormLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
 import com.ritense.formlink.service.FormAssociationService
-import com.ritense.tenancy.TenantResolver
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.task.Task
@@ -49,7 +48,6 @@ internal class FormFlowFormLinkTaskProviderTest {
     private lateinit var documentService: DocumentService
     private lateinit var repositoryService: RepositoryService
     private lateinit var runtimeService: RuntimeService
-    private lateinit var tenantResolver: TenantResolver
     private lateinit var formFlowProcessLinkTaskProvider: FormFlowFormLinkTaskProvider
 
     @BeforeEach
@@ -59,14 +57,12 @@ internal class FormFlowFormLinkTaskProviderTest {
         documentService = mock()
         repositoryService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
         runtimeService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
-        tenantResolver = mock()
         formFlowProcessLinkTaskProvider = FormFlowFormLinkTaskProvider(
             formFlowService,
             formAssociationService,
             documentService,
             repositoryService,
-            runtimeService,
-            tenantResolver
+            runtimeService
         )
     }
 

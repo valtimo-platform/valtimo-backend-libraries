@@ -26,8 +26,6 @@ import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
-import java.util.UUID
-import kotlin.test.assertEquals
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertNull
@@ -37,6 +35,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
+import kotlin.test.assertEquals
 
 
 @Transactional
@@ -112,7 +112,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
 
-        documentService.assignUserToDocument(testDocument.id().id, testUser.id)
+        documentService.assignUserToDocument(testDocument.id().id, testUser.id, "1")
         val processInstance = runtimeService.startProcessInstanceByKey(
             "parent-process",
             testDocument.id().toString()
@@ -141,7 +141,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
 
-        documentService.assignUserToDocument(testDocument.id().id, testUser.id)
+        documentService.assignUserToDocument(testDocument.id().id, testUser.id, "1")
         val processInstance = runtimeService.startProcessInstanceByKey(
             "parent-process",
             testDocument.id().toString()
@@ -162,7 +162,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser, testUser2)
 
-        documentService.assignUserToDocument(testDocument.id().id, testUser.id)
+        documentService.assignUserToDocument(testDocument.id().id, testUser.id, "1")
         val processInstance = runtimeService.startProcessInstanceByKey(
             "parent-process",
             testDocument.id().toString()
@@ -173,7 +173,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
             "parent process"
         )
 
-        documentService.assignUserToDocument(testDocument.id().id, testUser2.id)
+        documentService.assignUserToDocument(testDocument.id().id, testUser2.id, "1")
 
         val updatedTask = taskService.createTaskQuery().taskName("child process user task").singleResult()
 
@@ -186,7 +186,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
 
-        documentService.assignUserToDocument(testDocument.id().id, testUser.id)
+        documentService.assignUserToDocument(testDocument.id().id, testUser.id, "1")
         val processInstance = runtimeService.startProcessInstanceByKey(
             "parent-process",
             testDocument.id().toString()
@@ -197,7 +197,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
             "parent process"
         )
 
-        documentService.unassignUserFromDocument(testDocument.id().id)
+        documentService.unassignUserFromDocument(testDocument.id().id, "1")
 
         val task = taskService.createTaskQuery().taskName("child process user task").singleResult()
 

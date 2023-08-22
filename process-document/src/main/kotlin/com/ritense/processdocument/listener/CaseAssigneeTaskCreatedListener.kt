@@ -22,8 +22,6 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import java.util.UUID
-import kotlin.jvm.optionals.getOrNull
 import mu.KotlinLogging
 import org.camunda.bpm.engine.ActivityTypes
 import org.camunda.bpm.engine.TaskService
@@ -31,6 +29,8 @@ import org.camunda.bpm.engine.delegate.DelegateTask
 import org.camunda.bpm.engine.delegate.TaskListener
 import org.camunda.bpm.extension.reactor.bus.CamundaSelector
 import org.camunda.bpm.extension.reactor.spring.listener.ReactorTaskListener
+import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 
 @CamundaSelector(type = ActivityTypes.TASK_USER_TASK, event = TaskListener.EVENTNAME_CREATE)
 open class CaseAssigneeTaskCreatedListener(
@@ -42,7 +42,7 @@ open class CaseAssigneeTaskCreatedListener(
 
     override fun notify(delegateTask: DelegateTask) {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(delegateTask.execution.businessKey))
-        val document: Document? = documentService.findBy(documentId).getOrNull()
+        val document: Document? = documentService.findBy(documentId, delegateTask.tenantId).getOrNull()
 
         document?.run {
             val caseSettings: CaseDefinitionSettings = caseDefinitionService.getCaseSettings(

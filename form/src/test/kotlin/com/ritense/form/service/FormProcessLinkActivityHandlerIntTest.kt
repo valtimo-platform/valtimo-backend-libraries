@@ -77,6 +77,7 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
             documentId.id,
             "",
             processLink,
+            tenantId = "1"
         )
         assertEquals("form",result.type)
         assertEquals(formDefinition.id?.toString(),result.properties.formDefinitionId.toString())

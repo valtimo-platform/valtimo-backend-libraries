@@ -23,6 +23,7 @@ import com.ritense.processlink.exception.ProcessLinkNotFoundException
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
+import com.ritense.tenancy.TenantResolver
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
@@ -46,13 +47,15 @@ internal class ProcessLinkTaskResourceTest {
     lateinit var processLinkMappers: List<ProcessLinkMapper>
     lateinit var processLinkTaskResource: ProcessLinkTaskResource
     lateinit var objectMapper: ObjectMapper
+    lateinit var tenantResolver: TenantResolver
 
     @BeforeEach
     fun init() {
         objectMapper = jacksonObjectMapper()
         processLinkActivityService = mock()
+        tenantResolver = mock()
         processLinkMappers = listOf(CustomProcessLinkMapper(objectMapper))
-        processLinkTaskResource = ProcessLinkTaskResource(processLinkActivityService)
+        processLinkTaskResource = ProcessLinkTaskResource(processLinkActivityService, tenantResolver)
 
         val mappingJackson2HttpMessageConverter = MappingJackson2HttpMessageConverter()
         mappingJackson2HttpMessageConverter.objectMapper = objectMapper
@@ -62,7 +65,6 @@ internal class ProcessLinkTaskResourceTest {
             .setMessageConverters(mappingJackson2HttpMessageConverter)
             .build()
     }
-
 
     @Test
     fun `should list process links`() {

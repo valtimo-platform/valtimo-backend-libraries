@@ -25,8 +25,6 @@ import com.ritense.formlink.domain.FormLinkTaskProvider
 import com.ritense.formlink.domain.TaskOpenResult
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
 import com.ritense.formlink.service.FormAssociationService
-import com.ritense.tenancy.TenantResolver
-import org.apache.logging.log4j.util.Strings
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.task.Task
@@ -36,10 +34,9 @@ class FormFlowFormLinkTaskProvider(
     private val formAssociationService: FormAssociationService,
     documentService: DocumentService,
     private val repositoryService: RepositoryService,
-    runtimeService: RuntimeService,
-    tenantResolver: TenantResolver
-): AbstractFormFlowLinkTaskProvider(
-    documentService, runtimeService, tenantResolver
+    runtimeService: RuntimeService
+) : AbstractFormFlowLinkTaskProvider(
+    documentService, runtimeService
 ), FormLinkTaskProvider<FormFlowTaskOpenResultProperties> {
 
     override fun supports(formLink: FormLink?): Boolean {

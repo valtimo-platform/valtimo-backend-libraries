@@ -26,17 +26,7 @@ import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
-import com.ritense.smartdocuments.io.SubInputStream
-import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
-import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
-import java.io.InputStream
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
-import java.util.Base64
-import java.util.UUID
-import kotlin.jvm.optionals.getOrNull
 import org.apache.commons.io.FilenameUtils
-import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.codec.ClientCodecConfigurer
@@ -47,12 +37,12 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import org.springframework.web.reactive.function.client.bodyToFlux
 import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
 import java.util.Base64
 import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 
 class SmartDocumentsClient(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
@@ -89,10 +79,10 @@ class SmartDocumentsClient(
         val responseIn = PipedInputStream(responseOut)
         val body = response.body(BodyExtractors.toDataBuffers())
             .doOnError {
-                responseIn.use {  }
+                responseIn.use { }
                 throw toHttpClientErrorException(it)
             }
-            .doFinally { responseOut.use {  } }
+            .doFinally { responseOut.use { } }
 
         DataBufferUtils.write(body, responseOut).subscribe(DataBufferUtils.releaseConsumer())
 
@@ -148,12 +138,12 @@ class SmartDocumentsClient(
         if (e is WebClientResponseException) {
             val message = when (e.statusCode) {
                 HttpStatus.UNAUTHORIZED -> "The request has not been applied because it lacks valid authentication " +
-                        "credentials for the target resource. Response received from server:\n" + e.responseBodyAsString
+                    "credentials for the target resource. Response received from server:\n" + e.responseBodyAsString
 
                 HttpStatus.BAD_REQUEST -> "The server cannot or will not process the request due to something that is " +
-                        "perceived to be a client error (e.g., no valid template specified, user has no privileges for the template," +
-                        " malformed request syntax, invalid request message framing, or deceptive request routing)." +
-                        " Response received from server:\n" + e.responseBodyAsString
+                    "perceived to be a client error (e.g., no valid template specified, user has no privileges for the template," +
+                    " malformed request syntax, invalid request message framing, or deceptive request routing)." +
+                    " Response received from server:\n" + e.responseBodyAsString
 
                 else -> e.responseBodyAsString
             }
@@ -219,7 +209,7 @@ class SmartDocumentsClient(
         jsonParser.close()
         if (!correctOutputFormat && fileName == null && documentDataStart == -1L) {
             throw IllegalStateException("SmartDocuments didn't generate any document. Please check the logs above for a HttpClientErrorException.")
-        }  else if (!correctOutputFormat) {
+        } else if (!correctOutputFormat) {
             throw IllegalStateException("SmartDocuments failed to generate document with format '$outputFormat'. The requested document format is not present in the output of smart documents.")
         } else if (fileName == null) {
             throw IllegalStateException("SmartDocuments response didn't contain field 'filename'")

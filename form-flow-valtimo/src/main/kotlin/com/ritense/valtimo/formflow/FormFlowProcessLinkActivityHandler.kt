@@ -32,9 +32,10 @@ class FormFlowProcessLinkActivityHandler(
     private val formFlowService: FormFlowService,
     private val repositoryService: RepositoryService,
     documentService: DocumentService,
-    runtimeService: RuntimeService,
-): AbstractFormFlowLinkTaskProvider(
-    documentService, runtimeService
+    runtimeService: RuntimeService
+) : AbstractFormFlowLinkTaskProvider(
+    documentService,
+    runtimeService
 ), ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties> {
 
     override fun supports(processLink: ProcessLink): Boolean {
@@ -52,11 +53,14 @@ class FormFlowProcessLinkActivityHandler(
         }
         return ProcessLinkActivityResult(processLink.id, FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(instance.id.id))
     }
+
     override fun getStartEventObject(
         processDefinitionId: String,
         documentId: UUID?,
         documentDefinitionName: String?,
-        processLink: ProcessLink): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
+        processLink: ProcessLink,
+        tenantId: String
+    ): ProcessLinkActivityResult<FormFlowTaskOpenResultProperties> {
         processLink as FormFlowProcessLink
         val formFlowDefinition = formFlowService.findDefinition(processLink.formFlowDefinitionId)!!
         val processDefinition = repositoryService.createProcessDefinitionQuery()
@@ -67,7 +71,7 @@ class FormFlowProcessLinkActivityHandler(
         documentId?.let { additionalProperties["documentId"] = it }
         documentDefinitionName?.let { additionalProperties["documentDefinitionName"] = it }
 
-        return ProcessLinkActivityResult(processLink.id, FORM_FLOW_TASK_TYPE_KEY,FormFlowTaskOpenResultProperties(
+        return ProcessLinkActivityResult(processLink.id, FORM_FLOW_TASK_TYPE_KEY, FormFlowTaskOpenResultProperties(
             formFlowService.save(
                 formFlowDefinition.createInstance(additionalProperties)
             ).id.id)

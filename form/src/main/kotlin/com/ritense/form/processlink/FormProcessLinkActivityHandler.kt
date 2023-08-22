@@ -41,6 +41,7 @@ class FormProcessLinkActivityHandler(
             formDefinitionId = processLink.formDefinitionId,
             processInstanceId = task.processInstanceId,
             taskInstanceId = task.id,
+            tenantId = task.tenantId
         )
         return ProcessLinkActivityResult(
             processLink.id,
@@ -53,10 +54,15 @@ class FormProcessLinkActivityHandler(
         processDefinitionId: String,
         documentId: UUID?,
         documentDefinitionName: String?,
-        processLink: ProcessLink
+        processLink: ProcessLink,
+        tenantId: String
     ): ProcessLinkActivityResult<FormTaskOpenResultProperties> {
         processLink as FormProcessLink
-        val formDefinition = prefillFormService.getPrefilledFormDefinition(processLink.formDefinitionId, documentId)
+        val formDefinition = prefillFormService.getPrefilledFormDefinition(
+            processLink.formDefinitionId,
+            documentId,
+            tenantId
+        )
         return ProcessLinkActivityResult(
             processLink.id,
             FORM_TASK_TYPE_KEY,
