@@ -18,6 +18,7 @@ package com.ritense.form.security.config
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
@@ -26,6 +27,7 @@ class FormHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(POST, "/api/v1/process-link/{processLinkId}/form/submission").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/process-link/form-definition/{formKey}").hasAuthority(USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

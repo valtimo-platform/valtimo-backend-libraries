@@ -17,11 +17,14 @@
 package com.ritense.form.web.rest
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.service.FormSubmissionService
+import com.ritense.form.service.PrefillFormService
 import com.ritense.form.web.rest.dto.FormSubmissionResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -33,7 +36,9 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class FormResource(
-    private var formSubmissionService: FormSubmissionService,
+    private val formSubmissionService: FormSubmissionService,
+    private val prefillFormService: PrefillFormService,
+    private val formDefinitionService: FormDefinitionService,
 ) {
 
     @PostMapping("/v1/process-link/{processLinkId}/form/submission")
@@ -53,6 +58,22 @@ class FormResource(
                 taskInstanceId,
             )
         )
+    }
+
+    @GetMapping("/v1/process-link/form-definition/{formKey}")
+    fun getFormDefinitionByFormKey(
+        @PathVariable formKey: String,
+        @RequestParam(required = false) documentId: UUID?,
+    ): ResponseEntity<JsonNode> {
+        val formDefinition = formDefinitionService.getFormDefinitionByName(formKey).orElse(null)
+
+        return if (formDefinition != null) {
+            ResponseEntity.ok(
+                prefillFormService.getPrefilledFormDefinition(formDefinition.id, documentId).formDefinition
+            )
+        } else {
+            ResponseEntity.notFound().build()
+        }
     }
 
     fun <T : FormSubmissionResult?> applyResult(result: T): ResponseEntity<T> {
