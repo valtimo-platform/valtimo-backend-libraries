@@ -19,18 +19,21 @@ package com.ritense.dashboard.web.rest
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.dashboard.BaseIntegrationTest
+import com.ritense.dashboard.domain.Dashboard
 import com.ritense.dashboard.domain.WidgetConfiguration
 import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.service.DashboardService
 import com.ritense.dashboard.web.rest.dto.DashboardCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
+import com.ritense.dashboard.web.rest.dto.SingleWidgetConfigurationUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationCreateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.contains
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
@@ -83,18 +86,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
     @Test
     fun `should get dashboards`() {
         val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
-        widgetConfigurationRepository.save(
-            WidgetConfiguration(
-                key = "doorlooptijd",
-                title = "Doorlooptijd",
-                dashboard = dashboard,
-                dataSourceKey = "doorlooptijd",
-                dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
-                displayType = "gauge",
-                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
-                order = 1
-            )
-        )
+        createWidgetConfiguration(dashboard)
 
         mockMvc.perform(
             get("/api/management/v1/dashboard")
@@ -110,18 +102,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
     @Test
     fun `should get dashboard by key`() {
         val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
-        widgetConfigurationRepository.save(
-            WidgetConfiguration(
-                key = "doorlooptijd",
-                title = "Doorlooptijd",
-                dashboard = dashboard,
-                dataSourceKey = "doorlooptijd",
-                dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
-                displayType = "gauge",
-                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
-                order = 1
-            )
-        )
+        createWidgetConfiguration(dashboard)
 
         mockMvc.perform(
             get("/api/management/v1/dashboard/{dashboardKey}", "test_dashboard")
@@ -175,18 +156,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
     fun `should delete dashboard`() {
         val dashboard =
             dashboardService.createDashboard("Test dashboard", "Test description")
-        widgetConfigurationRepository.save(
-            WidgetConfiguration(
-                key = "doorlooptijd",
-                title = "Doorlooptijd",
-                dashboard = dashboard,
-                dataSourceKey = "doorlooptijd",
-                dataSourceProperties = jacksonObjectMapper().createObjectNode(),
-                displayType = "gauge",
-                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
-                order = 1
-            )
-        )
+        createWidgetConfiguration(dashboard)
 
         mockMvc.perform(
             delete("/api/management/v1/dashboard/{dashboardId}", dashboard.key)
@@ -219,18 +189,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
     @Test
     fun `should get widget configurations`() {
         val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
-        widgetConfigurationRepository.save(
-            WidgetConfiguration(
-                key = "doorlooptijd",
-                title = "Doorlooptijd",
-                dashboard = dashboard,
-                dataSourceKey = "doorlooptijd",
-                dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
-                displayType = "gauge",
-                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
-                order = 1
-            )
-        )
+        createWidgetConfiguration(dashboard)
 
         mockMvc.perform(
             get("/api/management/v1/dashboard/{dashboardKey}/widget-configuration", "test_dashboard")
@@ -273,18 +232,8 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
     @Test
     fun `should update widget configurations`() {
         val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
-        widgetConfigurationRepository.save(
-            WidgetConfiguration(
-                key = "doorlooptijd",
-                title = "Doorlooptijd",
-                dashboard = dashboard,
-                dataSourceKey = "doorlooptijd",
-                dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
-                displayType = "gauge",
-                order = 0,
-                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
-            )
-        )
+        createWidgetConfiguration(dashboard)
+
         val widgetConfigurations = listOf(
             WidgetConfigurationUpdateRequestDto(
                 key = "doorlooptijd",
@@ -312,20 +261,37 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should update widget configuration`() {
+        val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
+        createWidgetConfiguration(dashboard)
+
+        val updateRequest = SingleWidgetConfigurationUpdateRequestDto(
+                title = "Doorlooptijd",
+                dataSourceKey = "doorlooptijd2",
+                dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 500 }""") as ObjectNode,
+                displayType = "donut",
+                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": false }""") as ObjectNode,
+            )
+
+        mockMvc.perform(
+            put("/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}", "test_dashboard", "doorlooptijd")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(jacksonObjectMapper().writeValueAsString(updateRequest))
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.key").value("doorlooptijd"))
+            .andExpect(jsonPath("$.title").value("Doorlooptijd"))
+            .andExpect(jsonPath("$.dataSourceKey").value("doorlooptijd2"))
+            .andExpect(jsonPath("$.dataSourceProperties.threshold").value(500))
+            .andExpect(jsonPath("$.displayType").value("donut"))
+            .andExpect(jsonPath("$.displayTypeProperties.useKpi").value(false))
+    }
+
+    @Test
     fun `should get widget configuration by id`() {
         val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
-        widgetConfigurationRepository.save(
-            WidgetConfiguration(
-                key = "doorlooptijd",
-                title = "Doorlooptijd",
-                dashboard = dashboard,
-                dataSourceKey = "doorlooptijd",
-                dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
-                displayType = "gauge",
-                order = 1,
-                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
-            )
-        )
+        createWidgetConfiguration(dashboard)
 
         mockMvc.perform(
             get("/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}", "test_dashboard", "doorlooptijd")
@@ -342,24 +308,29 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
     @Test
     fun `should delete widget configuration`() {
         val dashboard = dashboardService.createDashboard("Test dashboard", "Test description")
-        widgetConfigurationRepository.save(
-            WidgetConfiguration(
-                key = "doorlooptijd",
-                title = "Doorlooptijd",
-                dashboard = dashboard,
-                dataSourceKey = "doorlooptijd",
-                dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
-                displayType = "gauge",
-                order = 1,
-                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
-            )
-        )
+        createWidgetConfiguration(dashboard)
 
         mockMvc.perform(
             delete("/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}", "test_dashboard", "doorlooptijd")
         )
             .andDo(print())
             .andExpect(status().isNoContent)
+
+        val widgets = widgetConfigurationRepository.findAllByDashboardKey("doorlooptijd")
+        assertEquals(0, widgets.size)
+    }
+
+    private fun createWidgetConfiguration(dashboard: Dashboard): WidgetConfiguration {
+        return widgetConfigurationRepository.save(WidgetConfiguration(
+            key = "doorlooptijd",
+            title = "Doorlooptijd",
+            dashboard = dashboard,
+            dataSourceKey = "doorlooptijd",
+            dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
+            displayType = "gauge",
+            order = 1,
+            displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
+        ))
     }
 
     @Test

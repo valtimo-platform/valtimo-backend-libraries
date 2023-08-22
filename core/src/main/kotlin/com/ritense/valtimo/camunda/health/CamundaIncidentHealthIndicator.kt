@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.document.dashboard
+package com.ritense.valtimo.camunda.health
 
-data class DocumentCountDataSourceProperties(
-    val documentDefinition: String,
-    val queryConditions: List<QueryCondition<*>>? = listOf()
-)
+import org.camunda.bpm.engine.RuntimeService
+import org.springframework.boot.actuate.health.AbstractHealthIndicator
+import org.springframework.boot.actuate.health.Health
+import org.springframework.boot.actuate.health.Status
+
+class CamundaIncidentHealthIndicator (
+    private val runtimeService: RuntimeService
+) : AbstractHealthIndicator() {
+    override fun doHealthCheck(builder: Health.Builder) {
+        val incidentCount = runtimeService.createIncidentQuery().count()
+        builder.status(if (incidentCount == 0L) Status.UP else Status.UNKNOWN)
+    }
+}
