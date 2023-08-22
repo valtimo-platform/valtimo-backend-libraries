@@ -16,19 +16,19 @@
 
 package com.ritense.valtimo.formflow.handler
 
-import com.ritense.formflow.domain.definition.configuration.step.AngularComponentStepTypeProperties
+import com.ritense.formflow.domain.definition.configuration.step.CustomComponentStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
 
-class FormFlowStepTypeAngularComponentHandler(
+class FormFlowStepTypeCustomComponentHandler(
 ) : FormFlowStepTypeHandler {
 
-    override fun getType() = "angular-component"
+    override fun getType() = "custom-component"
 
-    override fun getTypeProperties(stepInstance: FormFlowStepInstance): AngularComponentTypeProperties {
+    override fun getTypeProperties(stepInstance: FormFlowStepInstance): CustomComponentTypeProperties {
         val stepDefinitionType = stepInstance.definition.type
         assert(stepDefinitionType.name == getType())
-        val angularComponentId = (stepDefinitionType.properties as AngularComponentStepTypeProperties).componentId
-        return AngularComponentTypeProperties(angularComponentId)
+        val angularComponentId = (stepDefinitionType.properties as CustomComponentStepTypeProperties).componentId
+        return CustomComponentTypeProperties(angularComponentId)
     }
 }

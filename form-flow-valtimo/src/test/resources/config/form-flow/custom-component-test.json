@@ -5,7 +5,7 @@
             "key": "step1",
             "nextSteps": [],
             "type": {
-                "name": "angular-component",
+                "name": "custom-component",
                 "properties": {
                     "componentId": "my-component-definition"
                 }

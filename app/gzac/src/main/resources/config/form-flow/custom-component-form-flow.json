@@ -13,7 +13,7 @@
                 }
             ],
             "type": {
-                "name": "angular-component",
+                "name": "custom-component",
                 "properties": {
                     "componentId": "test-component"
                 }
