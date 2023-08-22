@@ -58,6 +58,7 @@ import org.mockito.kotlin.isA
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
 import java.net.URI
@@ -142,12 +143,38 @@ class FormSubmissionServiceTest {
             processLinkId = formProcessLink(START_EVENT_START).id,
             formData = formData,
             documentId = null,
-            taskInstanceId = null
+            taskInstanceId = null,
+            documentDefinitionName = null
         )
 
         //Then
         assertThat(formSubmissionResult).isInstanceOf(FormSubmissionResultSucceeded::class.java)
         assertThat(formSubmissionResult.errors()).isEmpty()
+        verify(applicationEventPublisher, times(0)).publishEvent(isA<ExternalDataSubmittedEvent>())
+        verify(processDocumentService, times(1)).dispatch(isA<NewDocumentAndStartProcessRequest>())
+    }
+
+    @Test
+    fun `should handle submission - new document and start process - no process document association`() {
+        //Given
+        val formData = formData()
+        val document = createDocument(JsonDocumentContent.build(formData))
+        whenever(processDocumentService.dispatch(any()))
+            .thenReturn(ModifyDocumentAndCompleteTaskResultSucceeded(document))
+
+        //When
+        val formSubmissionResult = formSubmissionService.handleSubmission(
+            processLinkId = formProcessLink(START_EVENT_START).id,
+            formData = formData,
+            documentId = null,
+            taskInstanceId = null,
+            documentDefinitionName = "aName"
+        )
+
+        //Then
+        assertThat(formSubmissionResult).isInstanceOf(FormSubmissionResultSucceeded::class.java)
+        assertThat(formSubmissionResult.errors()).isEmpty()
+        verifyNoInteractions(processDocumentAssociationService)
         verify(applicationEventPublisher, times(0)).publishEvent(isA<ExternalDataSubmittedEvent>())
         verify(processDocumentService, times(1)).dispatch(isA<NewDocumentAndStartProcessRequest>())
     }
@@ -169,7 +196,8 @@ class FormSubmissionServiceTest {
             processLinkId = formProcessLink(START_EVENT_START).id,
             formData = formData,
             documentId = documentId,
-            taskInstanceId = null
+            taskInstanceId = null,
+            documentDefinitionName = null
         )
 
         //Then
@@ -196,7 +224,8 @@ class FormSubmissionServiceTest {
             processLinkId = formProcessLink.id,
             formData = formData,
             documentId = documentId,
-            taskInstanceId = "myTaskInstanceId"
+            taskInstanceId = "myTaskInstanceId",
+            documentDefinitionName = null
         )
 
         //Then
@@ -216,6 +245,7 @@ class FormSubmissionServiceTest {
             formData = formData,
             documentId = UUID.randomUUID().toString(),
             taskInstanceId = "myTaskInstanceId",
+            documentDefinitionName = null
         )
 
         assertThat(formSubmissionResult).isInstanceOf(FormSubmissionResultFailed::class.java)
@@ -234,7 +264,8 @@ class FormSubmissionServiceTest {
             processLinkId = formProcessLink.id,
             formData = formData(),
             documentId = documentId,
-            taskInstanceId = "myTaskInstanceId"
+            taskInstanceId = "myTaskInstanceId",
+            documentDefinitionName = null
         )
 
         //Then
@@ -257,7 +288,8 @@ class FormSubmissionServiceTest {
             processLinkId = formProcessLink.id,
             formData = formData,
             documentId = documentId,
-            taskInstanceId = "myTaskInstanceId"
+            taskInstanceId = "myTaskInstanceId",
+            documentDefinitionName = null
         )
 
         //Then
@@ -278,7 +310,8 @@ class FormSubmissionServiceTest {
             processLinkId = formProcessLink.id,
             formData = formData,
             documentId = documentId,
-            taskInstanceId = "myTaskInstanceId"
+            taskInstanceId = "myTaskInstanceId",
+            documentDefinitionName = null
         )
 
         //Then

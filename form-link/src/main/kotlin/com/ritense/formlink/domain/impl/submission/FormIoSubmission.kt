@@ -32,7 +32,6 @@ import com.ritense.formlink.service.SubmissionTransformerService
 import com.ritense.formlink.service.impl.result.FormSubmissionResultFailed
 import com.ritense.formlink.service.impl.result.FormSubmissionResultSucceeded
 import com.ritense.formlink.service.result.FormSubmissionResult
-import com.ritense.processdocument.domain.ProcessDocumentDefinition
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
@@ -52,10 +51,11 @@ import java.util.function.Consumer
 data class FormIoSubmission(
     val formAssociation: FormAssociation,
     val formDefinition: FormIoFormDefinition,
-    val processDocumentDefinition: ProcessDocumentDefinition,
+    val documentDefinitionName: String?,
     val formData: JsonNode,
     var document: JsonSchemaDocument?,
     val taskInstanceId: String?,
+    val processDefinitionKey: String,
     val processDocumentService: ProcessDocumentService,
     val taskService: CamundaTaskService,
     val submissionTransformerService: SubmissionTransformerService<FormIoFormDefinition>,
@@ -96,7 +96,9 @@ data class FormIoSubmission(
                     applicationEventPublisher.publishEvent(
                         ExternalDataSubmittedEvent(
                             externalFormData,
-                            processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId().name(),
+                            document?.definitionId()?.name()
+                                ?: documentDefinitionName
+                                ?: throw IllegalStateException("Either document or documentDefinitionName is required"),
                             submittedDocument.id().id
                         )
                     )
@@ -172,18 +174,17 @@ data class FormIoSubmission(
     companion object RequestFactory {
         fun makeRequest(submission: FormIoSubmission): Request {
             if (submission.formAssociation is StartEventFormAssociation) {
-                if (submission.processDocumentDefinition.canInitializeDocument() && submission.document == null) {
-                    val documentDefinitionId = submission.processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId()
+                if (submission.document == null) {
                     return NewDocumentAndStartProcessRequest(
-                        submission.processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(),
+                        submission.processDefinitionKey,
                         NewDocumentRequest(
-                            documentDefinitionId.name(),
+                            submission.documentDefinitionName,
                             submission.documentContent
                         )
                     ).withProcessVars(submission.formDefinedProcessVariables)
                 } else {
                     return ModifyDocumentAndStartProcessRequest(
-                        submission.processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(),
+                        submission.processDefinitionKey,
                         ModifyDocumentRequest(
                             submission.document?.id().toString(),
                             submission.documentContent,
