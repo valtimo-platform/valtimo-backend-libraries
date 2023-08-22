@@ -169,7 +169,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         val allDocuments = docummentService.getAllByDocumentDefinitionName(Pageable.unpaged(), "profile")
         val latestDocument = allDocuments.content.sortedByDescending { it.createdOn() }.first()
 
-        assertEquals(allDocuments.totalElements, totalDocumentsBefore + 1)
+        assertEquals(allDocuments.totalElements, totalDocumentsBefore+1)
         assertEquals(
             """{"address":{"streetName":"Koningin Wilhelminaplein"}}""",
             latestDocument.content().asJson().toString()
@@ -264,10 +264,10 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     private fun linkFormFlowToStartEvent(): ProcessLink {
         newProcessLinkService.createProcessLink(
             FormFlowProcessLinkCreateRequestDto(
-                processDefinitionId = getProcessDefinitionId(),
-                activityId = "start-event",
-                activityType = ActivityTypeWithEventName.START_EVENT_START,
-                formFlowDefinitionId = "single_step_flow:latest"
+                getProcessDefinitionId(),
+                "start-event",
+                ActivityTypeWithEventName.START_EVENT_START,
+                "single_step_flow:latest"
             )
         )
         return newProcessLinkService.getProcessLinks(

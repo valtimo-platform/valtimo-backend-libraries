@@ -29,6 +29,7 @@ import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
+import java.util.UUID
 
 class FormProcessLinkMapper(
     objectMapper: ObjectMapper,
@@ -75,7 +76,7 @@ class FormProcessLinkMapper(
             throw RuntimeException("Form definition not found with id ${createRequestDto.formDefinitionId}")
         }
         return FormProcessLink(
-            id = createRequestDto.processLinkId,
+            id = UUID.randomUUID(),
             processDefinitionId = createRequestDto.processDefinitionId,
             activityId = createRequestDto.activityId,
             activityType = createRequestDto.activityType,

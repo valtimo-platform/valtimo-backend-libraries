@@ -89,9 +89,9 @@ internal class CopyProcessLinkOnProcessDeploymentListenerIntTest : BaseIntegrati
     private fun createProcessLink(processDefinition: ProcessDefinition) {
         processLinkService.createProcessLink(
             CustomProcessLinkCreateRequestDto(
-                processDefinitionId = processDefinition.id,
-                activityId = SERVICE_TASK_ID,
-                activityType = ActivityTypeWithEventName.SERVICE_TASK_START
+                processDefinition.id,
+                SERVICE_TASK_ID,
+                ActivityTypeWithEventName.SERVICE_TASK_START
             )
         )
     }

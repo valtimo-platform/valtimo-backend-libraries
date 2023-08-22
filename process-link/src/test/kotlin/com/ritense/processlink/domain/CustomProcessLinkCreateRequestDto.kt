@@ -19,11 +19,9 @@ package com.ritense.processlink.domain
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
-import java.util.UUID
 
 @JsonTypeName(PROCESS_LINK_TYPE_TEST)
 data class CustomProcessLinkCreateRequestDto(
-    override val processLinkId: UUID = UUID.randomUUID(),
     override val processDefinitionId: String,
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,

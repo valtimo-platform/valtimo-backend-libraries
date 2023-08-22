@@ -26,7 +26,6 @@ import org.hamcrest.Matchers.instanceOf
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
-import java.util.UUID
 
 
 class CustomProcessLinkCreateRequestDtoTest {
@@ -72,19 +71,12 @@ class CustomProcessLinkCreateRequestDtoTest {
 
     @Test
     fun `should serialize correctly`() {
-        val id = UUID.randomUUID()
-        val value = CustomProcessLinkCreateRequestDto(
-            processLinkId = id,
-            processDefinitionId = "process-definition:1",
-            activityId = "serviceTask1",
-            activityType = ActivityTypeWithEventName.SERVICE_TASK_START,
-            someValue = "test"
-        )
+        val value = CustomProcessLinkCreateRequestDto("process-definition:1","serviceTask1", ActivityTypeWithEventName.SERVICE_TASK_START, "test")
+
         val json = mapper.writeValueAsString(value)
 
         JSONAssert.assertEquals("""
             {
-              "processLinkId": $id,
               "processDefinitionId": "${value.processDefinitionId}",
               "activityId": "${value.activityId}",
               "activityType": "${value.activityType.value}",

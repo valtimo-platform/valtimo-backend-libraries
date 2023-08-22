@@ -24,11 +24,10 @@ import java.util.UUID
 
 @JsonTypeName(PROCESS_LINK_TYPE_FORM)
 data class FormProcessLinkCreateRequestDto(
-    override val processLinkId: UUID = UUID.randomUUID(),
     override val processDefinitionId: String,
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
-    val formDefinitionId: UUID
+    val formDefinitionId: UUID,
 ) : ProcessLinkCreateRequestDto {
     override val processLinkType: String
         get() = PROCESS_LINK_TYPE_FORM

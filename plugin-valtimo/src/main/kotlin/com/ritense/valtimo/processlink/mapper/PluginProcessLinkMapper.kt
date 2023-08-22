@@ -29,6 +29,7 @@ import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
+import java.util.UUID
 
 class PluginProcessLinkMapper(
     objectMapper: ObjectMapper
@@ -73,7 +74,7 @@ class PluginProcessLinkMapper(
     override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink {
         createRequestDto as PluginProcessLinkCreateDto
         return PluginProcessLink(
-            id = createRequestDto.processLinkId,
+            id = UUID.randomUUID(),
             processDefinitionId = createRequestDto.processDefinitionId,
             activityId = createRequestDto.activityId,
             activityType = createRequestDto.activityType,
@@ -98,5 +99,4 @@ class PluginProcessLinkMapper(
             actionProperties = updateRequestDto.actionProperties,
         )
     }
-
 }

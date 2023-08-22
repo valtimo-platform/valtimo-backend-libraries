@@ -29,6 +29,7 @@ import com.ritense.valtimo.formflow.processlink.dto.FormFlowProcessLinkDeployDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkResponseDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkUpdateRequestDto
+import java.util.UUID
 
 class FormFlowProcessLinkMapper(
     objectMapper: ObjectMapper,
@@ -75,7 +76,7 @@ class FormFlowProcessLinkMapper(
             throw RuntimeException("FormFlow definition not found with id ${createRequestDto.formFlowDefinitionId}")
         }
         return FormFlowProcessLink(
-            id = createRequestDto.processLinkId,
+            id = UUID.randomUUID(),
             processDefinitionId = createRequestDto.processDefinitionId,
             activityId = createRequestDto.activityId,
             activityType = createRequestDto.activityType,
