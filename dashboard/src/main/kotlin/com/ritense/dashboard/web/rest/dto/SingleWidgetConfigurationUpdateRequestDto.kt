@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.document.dashboard
+package com.ritense.dashboard.web.rest.dto
 
-data class DocumentCountDataSourceProperties(
-    val documentDefinition: String,
-    val queryConditions: List<QueryCondition<*>>? = listOf()
+import com.fasterxml.jackson.databind.node.ObjectNode
+
+data class SingleWidgetConfigurationUpdateRequestDto(
+    val title: String,
+    val dataSourceKey: String,
+    val displayType: String,
+    val dataSourceProperties: ObjectNode,
+    val displayTypeProperties: ObjectNode
 )
