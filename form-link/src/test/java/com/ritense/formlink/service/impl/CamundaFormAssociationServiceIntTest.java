@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -143,7 +144,7 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
         formAssociationService.createFormAssociation(request);
 
         final var formDefinition = formAssociationService
-            .getStartEventFormDefinition(PROCESS_DEFINITION_KEY).orElseThrow();
+            .getStartEventFormDefinition(PROCESS_DEFINITION_KEY, Optional.empty()).orElseThrow();
 
         assertThat(formDefinition).isNotNull();
         assertThat(formDefinition.get("formAssociation")).isNotNull();

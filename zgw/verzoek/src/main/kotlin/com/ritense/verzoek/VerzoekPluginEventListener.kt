@@ -39,6 +39,7 @@ import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
+import mu.KotlinLogging
 import java.net.URI
 
 class VerzoekPluginEventListener(
@@ -79,16 +80,16 @@ class VerzoekPluginEventListener(
             val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
             val startProcessRequest = StartProcessForDocumentRequest(
                 document.id(), processToStart, mapOf(
-                "RSIN" to this.rsin.toString(),
-                "zaakTypeUrl" to zaakTypeUrl.toString(),
-                "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
-                "rolDescription" to verzoekTypeProperties.initiatorRolDescription,
-                "verzoekObjectUrl" to event.resourceUrl,
-                "initiatorType" to initiatorType,
-                "initiatorValue" to verzoekObjectData.get(initiatorType).textValue(),
-                "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
-                "documentUrls" to getDocumentUrls(verzoekObjectData)
-            )
+                    "RSIN" to this.rsin.toString(),
+                    "zaakTypeUrl" to zaakTypeUrl.toString(),
+                    "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
+                    "rolDescription" to verzoekTypeProperties.initiatorRolDescription,
+                    "verzoekObjectUrl" to event.resourceUrl,
+                    "initiatorType" to initiatorType,
+                    "initiatorValue" to verzoekObjectData.get(initiatorType).textValue(),
+                    "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
+                    "documentUrls" to getDocumentUrls(verzoekObjectData)
+                )
             )
 
             startProcess(startProcessRequest)
@@ -185,8 +186,8 @@ class VerzoekPluginEventListener(
         if (result == null || result.errors().size > 0) {
             throw NotificatiesNotificationEventException(
                 "Could not start process ${startProcessRequest.processDefinitionKey}\n" +
-                    "Reason:\n" +
-                    result.errors().joinToString(separator = "\n - ")
+                        "Reason:\n" +
+                        result.errors().joinToString(separator = "\n - ")
             )
         }
     }

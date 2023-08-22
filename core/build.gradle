@@ -107,9 +107,7 @@ dependencies {
         exclude(module: 'tools')
     }
 
-    implementation("org.liquibase:liquibase-core:${liquibaseVersion}") {
-        exclude(module: "jetty-servlet")
-    }
+    implementation "org.liquibase:liquibase-core"
 
     implementation "io.dropwizard.metrics:metrics-core"
     implementation "io.dropwizard.metrics:metrics-annotation"
@@ -129,7 +127,7 @@ configurations {
 
 task jarTest (type: Jar, dependsOn: testClasses) {
     from sourceSets.test.output
-    classifier = 'test'
+    archiveClassifier = 'test'
 }
 
 artifacts {

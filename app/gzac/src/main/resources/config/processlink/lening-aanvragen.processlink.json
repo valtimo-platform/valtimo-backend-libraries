@@ -1,0 +1,14 @@
+[
+  {
+    "activityId": "start-event",
+    "activityType": "bpmn:StartEvent:start",
+    "processLinkType": "form",
+    "formDefinitionName": "start-form-lening-aanvragen"
+  },
+  {
+    "activityId": "akkoord-op-lening-task",
+    "activityType": "bpmn:UserTask:start",
+    "processLinkType": "form-flow",
+    "formFlowDefinitionId": "lening-aanvragen-form-flow:latest"
+  }
+]

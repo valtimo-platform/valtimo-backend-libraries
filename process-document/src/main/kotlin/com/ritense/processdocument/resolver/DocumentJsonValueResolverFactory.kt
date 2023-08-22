@@ -18,6 +18,7 @@ package com.ritense.processdocument.resolver
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.InvalidPathException
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
@@ -37,6 +38,7 @@ import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.valueresolver.exception.ValueResolverValidationException
 import org.camunda.bpm.engine.delegate.VariableScope
+import java.util.UUID
 import java.util.function.Function
 
 /**
@@ -87,15 +89,7 @@ class DocumentJsonValueResolverFactory(
     ) {
         val document = processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)
         val documentContent = document.content().asJson()
-        val jsonPatchBuilder = JsonPatchBuilder()
-
-        values.forEach {
-            val path = JsonPointer.valueOf(it.key.substringAfter(":"))
-            val valueNode = toValueNode(it.value)
-            jsonPatchBuilder.addJsonNodeValue(documentContent, path, valueNode)
-        }
-
-        JsonPatchService.apply(jsonPatchBuilder.build(), documentContent)
+        buildJsonPatch(documentContent, values)
 
         try {
             documentService.modifyDocument(document, documentContent, tenantResolver.getTenantId())
@@ -105,6 +99,39 @@ class DocumentJsonValueResolverFactory(
                 exception
             )
         }
+    }
+
+    override fun handleValues(documentId: UUID, values: Map<String, Any>) {
+        val document = documentService.get(documentId.toString())
+        val documentContent = document.content().asJson()
+        buildJsonPatch(documentContent, values)
+
+        try {
+            documentService.modifyDocument(document, documentContent)
+        } catch (exception: ModifyDocumentException) {
+            throw RuntimeException(
+                "Failed to handle values for document '$documentId'. Values: ${values}.",
+                exception
+            )
+        }
+    }
+
+    override fun preProcessValuesForNewCase(values: Map<String, Any>): Any {
+        val emptyDocumentContent = jacksonObjectMapper().createObjectNode()
+        buildJsonPatch(emptyDocumentContent, values)
+        return emptyDocumentContent
+   }
+
+    private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any>) {
+        val jsonPatchBuilder = JsonPatchBuilder()
+
+        values.forEach {
+            val path = JsonPointer.valueOf(it.key.substringAfter(":"))
+            val valueNode = toValueNode(it.value)
+            jsonPatchBuilder.addJsonNodeValue(jsonNode, path, valueNode)
+        }
+
+        JsonPatchService.apply(jsonPatchBuilder.build(), jsonNode)
     }
 
     private fun validateJsonPointer(documentDefinition: JsonSchemaDocumentDefinition, jsonPointer: String) {

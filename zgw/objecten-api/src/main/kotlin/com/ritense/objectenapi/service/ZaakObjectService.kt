@@ -40,10 +40,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.util.UriComponentsBuilder
 
 class ZaakObjectService(
-    val zaakUrlProvider: ZaakUrlProvider,
-    val pluginService: PluginService,
-    val formDefinitionService: FormDefinitionService,
-    val objectManagementInfoProvider: ObjectManagementInfoProvider
+    private val zaakUrlProvider: ZaakUrlProvider,
+    private val pluginService: PluginService,
+    private val formDefinitionService: FormDefinitionService,
+    private val objectManagementInfoProvider: ObjectManagementInfoProvider
 ) {
     fun getZaakObjectTypes(documentId: UUID): List<Objecttype> {
         val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)

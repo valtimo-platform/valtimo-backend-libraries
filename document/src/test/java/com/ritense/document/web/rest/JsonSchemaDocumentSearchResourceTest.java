@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -114,7 +115,7 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
             )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("*").isArray());
     }
 
@@ -131,7 +132,7 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
             )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
     }
 

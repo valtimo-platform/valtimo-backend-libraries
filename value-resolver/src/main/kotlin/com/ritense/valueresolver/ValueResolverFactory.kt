@@ -18,6 +18,7 @@ package com.ritense.valueresolver
 
 import com.ritense.valueresolver.exception.ValueResolverValidationException
 import org.camunda.bpm.engine.delegate.VariableScope
+import java.util.UUID
 import java.util.function.Function
 
 /**
@@ -90,4 +91,24 @@ interface ValueResolverFactory {
      * @param values The values to handle. i.e. mapOf(doc:add:/firstname to John)
      */
     fun handleValues(processInstanceId: String, variableScope: VariableScope?, values: Map<String, Any>)
+
+    /**
+     * Handle values for a case where a process is not relevant or present in the current context.
+     *
+     * @param documentId The id of the document these values belong to
+     * @param values The values to handle. i.e. mapOf(doc:add:/firstname to John)
+     */
+    fun handleValues(documentId: UUID, values: Map<String, Any>) {
+        //empty default method for backwards compatibility
+    }
+
+    /**
+     * Processes and tranforms values for use externally. This is used when case or process don't exist yet. For example
+     * wehen creating a new case.
+     *
+     * @param values The values to handle. i.e. mapOf(doc:add:/firstname to John)
+     */
+    fun preProcessValuesForNewCase(values: Map<String, Any>): Any {
+        return values
+    }
 }

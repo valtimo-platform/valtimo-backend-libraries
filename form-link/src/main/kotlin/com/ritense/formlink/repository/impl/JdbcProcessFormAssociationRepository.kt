@@ -37,6 +37,7 @@ import java.sql.ResultSet
 import java.sql.Types
 import java.util.UUID
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.processlink.repository.ProcessLinkRepository"))
 @Transactional
 class JdbcProcessFormAssociationRepository(
     private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate

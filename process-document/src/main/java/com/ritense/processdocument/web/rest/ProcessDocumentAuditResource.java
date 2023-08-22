@@ -31,10 +31,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(value = "/api", produces = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ProcessDocumentAuditResource {
 
     private final ProcessDocumentAuditService processDocumentAuditService;
@@ -43,7 +45,7 @@ public class ProcessDocumentAuditResource {
         this.processDocumentAuditService = processDocumentAuditService;
     }
 
-    @GetMapping(value = "/v1/process-document/instance/document/{documentId}/audit")
+    @GetMapping("/v1/process-document/instance/document/{documentId}/audit")
     @JsonView(AuditView.Public.class)
     public ResponseEntity<Page<AuditRecord>> getAuditLog(
         @PathVariable UUID documentId,

@@ -1,0 +1,141 @@
+[
+    {
+        "id": "b609a0a3-886e-4b3d-ae0d-c01effb311ee",
+        "title": "OpenZaak Authentication",
+        "pluginDefinitionKey": "openzaak",
+        "properties": {
+            "clientId": "valtimo_client",
+            "clientSecret": "e09b8bc5-5831-4618-ab28-41411304309d"
+        }
+    },
+    {
+        "id": "3079d6fe-42e3-4f8f-a9db-52ce2507b7ee",
+        "title": "Zaken API",
+        "pluginDefinitionKey": "zakenapi",
+        "properties": {
+            "url": "http://localhost:8001/zaken/api/v1/",
+            "authenticationPluginConfiguration": "b609a0a3-886e-4b3d-ae0d-c01effb311ee"
+        }
+    },
+    {
+        "id": "857d4312-c420-4a22-979b-625818d97ed5",
+        "title": "Besluiten API",
+        "pluginDefinitionKey": "besluitenapi",
+        "properties": {
+            "url": "http://localhost:8001/besluiten/api/v1/",
+            "rsin": "051845623",
+            "authenticationPluginConfiguration": "b609a0a3-886e-4b3d-ae0d-c01effb311ee"
+        }
+    },
+    {
+        "id": "22c78b91-0b0f-4008-8d8f-c4a84b8e71ec",
+        "title": "Catalogi API",
+        "pluginDefinitionKey": "catalogiapi",
+        "properties": {
+            "url": "http://localhost:8001/catalogi/api/v1/",
+            "authenticationPluginConfiguration": "b609a0a3-886e-4b3d-ae0d-c01effb311ee"
+        }
+    },
+    {
+        "id": "5474fe57-532a-4050-8d89-32e62ca3e895",
+        "title": "Documenten API",
+        "pluginDefinitionKey": "documentenapi",
+        "properties": {
+            "url": "http://localhost:8001/besluiten/api/v1/",
+            "bronorganisatie": "051845623",
+            "authenticationPluginConfiguration": "b609a0a3-886e-4b3d-ae0d-c01effb311ee"
+        }
+    },
+    {
+        "id": "df36cd33-d0dd-429a-a8ad-e16f307ac434",
+        "title": "OpenNotificaties Authentication",
+        "pluginDefinitionKey": "notificatiesapiauthentication",
+        "properties": {
+            "clientId": "valtimo",
+            "clientSecret": "zZ!xRP&$qTn4A9ETa^ZMKepDm^8egjPz"
+        }
+    },
+    {
+        "id": "bb1c601b-b257-497e-bab0-c21d339335d7",
+        "title": "Notificaties API",
+        "pluginDefinitionKey": "notificatiesapi",
+        "properties": {
+            "url": "http://localhost:8002/api/v1/",
+            "callbackUrl": "http://host.docker.internal:8080/api/v1/notificatiesapi/callback",
+            "authenticationPluginConfiguration": "df36cd33-d0dd-429a-a8ad-e16f307ac434"
+        }
+    },
+    {
+        "id": "21a006f9-7833-4cdf-a6b7-1927705dd543",
+        "title": "Objecten API Authentication",
+        "pluginDefinitionKey": "objecttokenauthentication",
+        "properties": {
+            "token": "182c13e2209161852c53cef53a879f7a2f923430"
+        }
+    },
+    {
+        "id": "b6d83348-97e7-4660-bd35-2e5fcc9629b4",
+        "title": "Objecten API",
+        "pluginDefinitionKey": "objectenapi",
+        "properties": {
+            "url": "http://localhost:8010/api/v2/",
+            "authenticationPluginConfiguration": "21a006f9-7833-4cdf-a6b7-1927705dd543"
+        }
+    },
+    {
+        "id": "acb0687a-075e-4435-923b-e6cb01d4d5db",
+        "title": "Objecttypen API Authentication",
+        "pluginDefinitionKey": "objecttokenauthentication",
+        "properties": {
+            "token": "cd63e158f3aca276ef284e3033d020a22899c728"
+        }
+    },
+    {
+        "id": "4021bb75-18c8-4ca5-8658-b9f9c728bba0",
+        "title": "Objecttypen API",
+        "pluginDefinitionKey": "objecttypenapi",
+        "properties": {
+            "url": "http://localhost:8011/api/v1/",
+            "authenticationPluginConfiguration": "acb0687a-075e-4435-923b-e6cb01d4d5db"
+        }
+    },
+    {
+        "id": "b3bfac2b-06bf-4933-8527-af8015335a3d",
+        "title": "SmartDocuments",
+        "pluginDefinitionKey": "smartdocuments",
+        "properties": {
+            "url": "https://example.com/",
+            "username": "test-user",
+            "password": "test-password"
+        }
+    },
+    {
+        "id": "87bea80a-61da-46c1-b5fb-353d90751082",
+        "title": "Verzoek bezwaar",
+        "pluginDefinitionKey": "verzoek",
+        "properties": {
+            "notificatiesApiPluginConfiguration": "bb1c601b-b257-497e-bab0-c21d339335d7",
+            "objectManagementId": "29400564-d25f-491c-abb2-afc42894ac9d",
+            "processToStart": "create-zaakdossier",
+            "rsin": "051845623",
+            "verzoekProperties": [{
+                "type": "bezwaar",
+                "caseDefinitionName": "bezwaar",
+                "processDefinitionKey": "bezwaar",
+                "initiatorRoltypeUrl": "http://localhost:8001/catalogi/api/v1/roltypen/1c359a1b-c38d-47b8-bed5-994db88ead61",
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "full"
+            }]
+        }
+    },
+    {
+        "id": "d65113e0-a9cb-4904-93e1-5e8b1206e625",
+        "title": "Portaaltaak",
+        "pluginDefinitionKey": "portaaltaak",
+        "properties": {
+            "notificatiesApiPluginConfiguration": "bb1c601b-b257-497e-bab0-c21d339335d7",
+            "objectManagementConfigurationId": "16c69c86-0c5d-4d57-b4ac-0add8271a142",
+            "completeTaakProcess": "process-completed-portaaltaak"
+        }
+    }
+]

@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 @Configuration
 public class FormLinkSecurityAutoConfiguration {
 
@@ -42,7 +43,7 @@ public class FormLinkSecurityAutoConfiguration {
     }
 
     @Order(276)
-    @Bean
+    @Bean("formProcessLinkHttpSecurityConfigurer")
     @ConditionalOnMissingBean(ProcessLinkHttpSecurityConfigurer.class)
     public ProcessLinkHttpSecurityConfigurer processLinkHttpSecurityConfigurer() {
         return new ProcessLinkHttpSecurityConfigurer();

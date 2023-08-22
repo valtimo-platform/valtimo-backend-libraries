@@ -25,5 +25,6 @@
 
     <include file="changelog/20230124-add-search-list-column-table.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230131-add-search-field-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230426-migrate-path.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

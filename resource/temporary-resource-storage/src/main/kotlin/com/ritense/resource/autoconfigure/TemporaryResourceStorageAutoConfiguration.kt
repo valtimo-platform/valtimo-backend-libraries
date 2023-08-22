@@ -36,16 +36,24 @@ class TemporaryResourceStorageAutoConfiguration {
     @Qualifier("temporaryResourceStorageService")
     @Bean
     @ConditionalOnMissingBean(TemporaryResourceStorageService::class)
-    fun temporaryResourceStorageService(): TemporaryResourceStorageService {
-        return TemporaryResourceStorageService()
+    fun temporaryResourceStorageService(
+        @Value("\${valtimo.resource.temp.directory:}") valtimoResourceTempDirectory: String,
+    ): TemporaryResourceStorageService {
+        return TemporaryResourceStorageService(
+            valtimoResourceTempDirectory = valtimoResourceTempDirectory,
+        )
     }
 
     @Bean
     @ConditionalOnMissingBean(TemporaryResourceStorageDeletionService::class)
     fun temporaryResourceStorageDeletionService(
-        @Value("\${valtimo.temporaryResourceStorage.retentionInMinutes:60}") retentionInMinutes: Long
+        @Value("\${valtimo.temporaryResourceStorage.retentionInMinutes:60}") retentionInMinutes: Long,
+        temporaryResourceStorageService: TemporaryResourceStorageService,
     ): TemporaryResourceStorageDeletionService {
-        return TemporaryResourceStorageDeletionService(retentionInMinutes)
+        return TemporaryResourceStorageDeletionService(
+            retentionInMinutes,
+            temporaryResourceStorageService,
+        )
     }
 
     @Bean

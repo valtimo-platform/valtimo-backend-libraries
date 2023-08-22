@@ -25,9 +25,10 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
-import java.net.URI
+import com.ritense.valtimo.contract.validation.Url
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import java.net.URI
 
 @Plugin(
     key = "objectenapi",
@@ -35,8 +36,9 @@ import org.springframework.http.HttpStatus
     description = "Connects to the Objecten API"
 )
 class ObjectenApiPlugin(
-    val objectenApiClient: ObjectenApiClient
+    private val objectenApiClient: ObjectenApiClient
 ) {
+    @Url
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
 

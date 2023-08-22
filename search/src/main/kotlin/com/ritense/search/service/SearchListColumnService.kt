@@ -42,23 +42,34 @@ class SearchListColumnService(
                     )
                 }
             }
-            searchListColumnRepository.save(this?.copy(
-                 ownerId = searchListColumn.ownerId,
-                key = searchListColumn.key,
-                title = searchListColumn.title,
-                path = searchListColumn.path,
-                order = searchListColumn.order,
-                displayType = searchListColumn.displayType,
-                sortable = searchListColumn.sortable
-            ))
+            searchListColumnRepository.save(
+                this?.copy(
+                    ownerId = searchListColumn.ownerId,
+                    key = searchListColumn.key,
+                    title = searchListColumn.title,
+                    path = searchListColumn.path,
+                    order = searchListColumn.order,
+                    displayType = searchListColumn.displayType,
+                    sortable = searchListColumn.sortable
+                )
+            )
         }
 
-    fun findByOwnerId(ownerId: String) = searchListColumnRepository.findAllByOwnerId(ownerId)
+    fun findByOwnerId(ownerId: String) = searchListColumnRepository.findAllByOwnerIdOrderByOrder(ownerId)
 
-    fun findByOwnerIdAndKey(ownerId: String, key: String) = searchListColumnRepository.findByOwnerIdAndKey(ownerId, key)
+    fun findByOwnerIdAndKey(ownerId: String, key: String) =
+        searchListColumnRepository.findByOwnerIdAndKeyOrderByOrder(ownerId, key)
 
     fun delete(ownerId: String, key: String) =
         with(findByOwnerIdAndKey(ownerId, key)) {
             this?.let { searchListColumnRepository.delete(it) }
         }
+
+    fun updateList(ownerId: String, searchListColumn: List<SearchListColumn>) {
+        searchListColumnRepository.saveAll(
+            searchListColumn.mapIndexed { index, column ->
+                column.copy(order = index)
+            }
+        )
+    }
 }

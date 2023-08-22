@@ -49,6 +49,7 @@ import org.springframework.context.ApplicationEventPublisher
 import java.util.UUID
 import java.util.function.Consumer
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.service.FormSubmissionService"))
 data class FormIoSubmission(
     val formAssociation: FormAssociation,
     val formDefinition: FormIoFormDefinition,
@@ -175,7 +176,7 @@ data class FormIoSubmission(
         fun makeRequest(submission: FormIoSubmission): Request {
             val tenantId = submission.tenantResolver.getTenantId()
             if (submission.formAssociation is StartEventFormAssociation) {
-                if (submission.processDocumentDefinition.canInitializeDocument()) {
+                if (submission.processDocumentDefinition.canInitializeDocument() && submission.document == null) {
                     val documentDefinitionId = submission.processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId()
                     return NewDocumentAndStartProcessRequest(
                         submission.processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(),

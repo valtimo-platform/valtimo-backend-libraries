@@ -38,6 +38,8 @@ import com.ritense.document.service.DocumentService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.resource.Resource;
+import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,7 +133,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 newDocumentRequest.getResources()
                     .stream()
                     .map(JsonSchemaRelatedFile::from)
-                    .map(relatedFile -> relatedFile.withCreatedBy(SecurityUtils.getCurrentUserLogin()))
+                    .map(relatedFile -> relatedFile.withCreatedBy(user))
                     .forEach(document::addRelatedFile);
                 documentRepository.saveAndFlush(document);
             }
@@ -181,9 +183,9 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Override
     @Transactional
     public void assignDocumentRelation(
-        Document.Id documentId,
-        DocumentRelation documentRelation,
-        String tenantId
+        final Document.Id documentId,
+        final DocumentRelation documentRelation,
+        final String tenantId
     ) {
         final JsonSchemaDocumentRelation jsonSchemaDocumentRelation = JsonSchemaDocumentRelation.from(
             new DocumentRelationRequest(
@@ -214,7 +216,11 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     @Transactional
-    public void assignResource(Document.Id documentId, UUID resourceId, String tenantId) {
+    public void assignResource(
+        final Document.Id documentId,
+        final UUID resourceId,
+        final String tenantId
+    ) {
         assignResource(documentId, resourceId, null, tenantId);
     }
 

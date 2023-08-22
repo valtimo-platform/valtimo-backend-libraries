@@ -34,6 +34,7 @@ dependencies {
     api("com.ritense.valtimo:plugin")
     api("com.ritense.valtimo:plugin-valtimo")
     api("com.ritense.valtimo:process-document")
+    api("com.ritense.valtimo:process-link")
     api("com.ritense.valtimo:temporary-resource-storage")
     api("com.ritense.valtimo:value-resolver")
     api("com.ritense.valtimo:web")
@@ -54,6 +55,7 @@ dependencies {
         api("com.ritense.valtimo:plugin:${projectVersion}!!")
         api("com.ritense.valtimo:plugin-valtimo:${projectVersion}!!")
         api("com.ritense.valtimo:process-document:${projectVersion}!!")
+        api("com.ritense.valtimo:process-link:${projectVersion}!!")
         api("com.ritense.valtimo:temporary-resource-storage:${projectVersion}!!")
         api("com.ritense.valtimo:value-resolver:${projectVersion}!!")
         api("com.ritense.valtimo:web:${projectVersion}!!")
@@ -64,7 +66,7 @@ dependencies {
         api("org.liquibase:liquibase-core:${liquibaseVersion}")
         api("org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}")
 
-        api("org.hibernate:hibernate-core:5.6.14.FINAL")
+        api("org.hibernate:hibernate-core:${hibernateCoreVersion}")
     }
 }
 

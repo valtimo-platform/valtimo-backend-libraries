@@ -16,6 +16,8 @@
 
 package com.ritense.plugin
 
+import com.ritense.plugin.autodeployment.AutoDeploymentTestPlugin
+import com.ritense.plugin.autodeployment.TestAutoDeploymentPluginFactory
 import com.ritense.plugin.service.PluginService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.community.mockito.service.RuntimeServiceFluentMock
@@ -37,6 +39,11 @@ class TestApplication {
         @Bean
         fun testPlugin(pluginService: PluginService): PluginFactory<TestPlugin> {
             return spy(TestPluginFactory("someString", pluginService))
+        }
+
+        @Bean
+        fun testAutoDeploymentPlugin(pluginService: PluginService): PluginFactory<AutoDeploymentTestPlugin> {
+            return spy(TestAutoDeploymentPluginFactory("whoCares",pluginService))
         }
 
         @Bean

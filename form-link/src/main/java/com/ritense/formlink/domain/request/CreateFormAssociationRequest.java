@@ -19,6 +19,7 @@ package com.ritense.formlink.domain.request;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class CreateFormAssociationRequest {
 
     @JsonProperty

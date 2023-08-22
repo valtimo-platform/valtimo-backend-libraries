@@ -23,7 +23,7 @@ import com.ritense.openzaak.service.result.CreateZaakTypeLinkResult
 import com.ritense.openzaak.service.result.ModifyServiceTaskHandlerResult
 import com.ritense.openzaak.service.result.RemoveServiceTaskHandlerResult
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -37,34 +37,34 @@ import java.util.UUID
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface ZaakTypeLinkResource {
 
-    @GetMapping(value = ["/v1/openzaak/link/{documentDefinitionName}"])
+    @GetMapping("/v1/openzaak/link/{documentDefinitionName}")
     fun get(@PathVariable(name = "documentDefinitionName") documentDefinitionName: String): ResponseEntity<ZaakTypeLink?>
 
-    @GetMapping(value = ["/v1/openzaak/link/process/{processDefinitionKey}"])
+    @GetMapping("/v1/openzaak/link/process/{processDefinitionKey}")
     fun getByProcess(@PathVariable(name = "processDefinitionKey") processDefinitionKey: String): ResponseEntity<List<ZaakTypeLink?>>
 
     @PostMapping("/v1/openzaak/link")
     fun create(@Valid @RequestBody request: CreateZaakTypeLinkRequest): ResponseEntity<CreateZaakTypeLinkResult>
 
-    @DeleteMapping(value = ["/v1/openzaak/link/{documentDefinitionName}"])
+    @DeleteMapping("/v1/openzaak/link/{documentDefinitionName}")
     fun remove(@PathVariable(name = "documentDefinitionName") documentDefinitionName: String): ResponseEntity<ZaakTypeLink?>
 
-    @PostMapping(value = ["/v1/openzaak/link/{id}/service-handler"])
+    @PostMapping("/v1/openzaak/link/{id}/service-handler")
     fun createServiceTaskHandler(
         @PathVariable(name = "id") id: UUID,
         @Valid @RequestBody request: ServiceTaskHandlerRequest
     ): ResponseEntity<CreateServiceTaskHandlerResult>
 
-    @PutMapping(value = ["/v1/openzaak/link/{id}/service-handler"])
+    @PutMapping("/v1/openzaak/link/{id}/service-handler")
     fun modifyServiceTaskHandler(
         @PathVariable(name = "id") id: UUID,
         @Valid @RequestBody request: ServiceTaskHandlerRequest
     ): ResponseEntity<ModifyServiceTaskHandlerResult>
 
-    @DeleteMapping(value = ["/v1/openzaak/link/{id}/service-handler/{processDefinitionKey}/{serviceTaskId}"])
+    @DeleteMapping("/v1/openzaak/link/{id}/service-handler/{processDefinitionKey}/{serviceTaskId}")
     fun removeServiceTaskHandler(
         @PathVariable(name = "id") id: UUID,
         @PathVariable(name = "processDefinitionKey") processDefinitionKey: String,

@@ -60,6 +60,19 @@ public interface ProcessDocumentDefinitionRepository extends
     @Query("" +
         "SELECT  pdd " +
         "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
+        "WHERE   pdd.processDocumentDefinitionId.processDefinitionKey.key = :processDefinitionKey " +
+        "AND     pdd.processDocumentDefinitionId.documentDefinitionId.version = ( " +
+        "   SELECT  MAX(dd.id.version) " +
+        "   FROM    JsonSchemaDocumentDefinition dd " +
+        "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +
+        ")")
+    List<CamundaProcessJsonSchemaDocumentDefinition> findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(
+        @Param("processDefinitionKey") String processDefinitionKey
+    );
+
+    @Query("" +
+        "SELECT  pdd " +
+        "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
         "WHERE   pdd.processDocumentDefinitionId.documentDefinitionId.name = :documentDefinitionName"
     )
     Optional<CamundaProcessJsonSchemaDocumentDefinition> findByDocumentDefinitionName(

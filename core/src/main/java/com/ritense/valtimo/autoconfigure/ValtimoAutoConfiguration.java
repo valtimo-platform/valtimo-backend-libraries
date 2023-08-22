@@ -34,6 +34,7 @@ import com.ritense.valtimo.processdefinition.repository.ProcessDefinitionPropert
 import com.ritense.valtimo.repository.CamundaReportingRepository;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
 import com.ritense.valtimo.repository.CamundaTaskRepository;
+import com.ritense.valtimo.repository.UserSettingsRepository;
 import com.ritense.valtimo.security.permission.Permission;
 import com.ritense.valtimo.security.permission.TaskAccessPermission;
 import com.ritense.valtimo.security.permission.ValtimoPermissionEvaluator;
@@ -44,6 +45,7 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
 import com.ritense.valtimo.service.ProcessPropertyService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
+import com.ritense.valtimo.service.UserSettingsService;
 import com.ritense.valtimo.web.rest.AccountResource;
 import com.ritense.valtimo.web.rest.PingResource;
 import com.ritense.valtimo.web.rest.ProcessInstanceResource;
@@ -77,11 +79,11 @@ import java.util.HashMap;
 import java.util.Optional;
 
 @Configuration
-@EnableConfigurationProperties(value = {ValtimoProperties.class})
+@EnableConfigurationProperties(ValtimoProperties.class)
 @EnableJpaAuditing(dateTimeProviderRef = "customDateTimeProvider")
 @EnableCamundaEventBus
-@EnableJpaRepositories(basePackageClasses = ProcessDefinitionPropertiesRepository.class)
-@EntityScan("com.ritense.valtimo.domain.processdefinition")
+@EnableJpaRepositories(basePackageClasses = {ProcessDefinitionPropertiesRepository.class, UserSettingsRepository.class})
+@EntityScan("com.ritense.valtimo.domain.*")
 public class ValtimoAutoConfiguration {
 
     @Bean
@@ -322,9 +324,15 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(UserSettingsService.class)
+    public UserSettingsService userSettingsService(UserSettingsRepository userSettingsRepository){
+        return new UserSettingsService(userSettingsRepository);
+    }
+
+    @Bean
     @ConditionalOnMissingBean(UserResource.class)
-    public UserResource userResource(UserManagementService userManagementService) {
-        return new UserResource(userManagementService);
+    public UserResource userResource(UserManagementService userManagementService, UserSettingsService userSettingsService) {
+        return new UserResource(userManagementService, userSettingsService);
     }
 
     @Bean

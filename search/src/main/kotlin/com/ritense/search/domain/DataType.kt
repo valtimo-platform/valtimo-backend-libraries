@@ -20,7 +20,7 @@ enum class DataType {
     TEXT,
     NUMBER,
     DATE,
-    DATE_TIME,
+    DATETIME,
     TIME,
     BOOLEAN
 }
