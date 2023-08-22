@@ -141,7 +141,7 @@ class FormFlowValtimoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(FormFlowStepTypeAngularComponentHandler::class)
-    fun formFlowStepTypeFormHandler(): FormFlowStepTypeAngularComponentHandler {
+    fun formFlowStepTypeAngularComponentHandler(): FormFlowStepTypeAngularComponentHandler {
         return FormFlowStepTypeAngularComponentHandler()
     }
 
