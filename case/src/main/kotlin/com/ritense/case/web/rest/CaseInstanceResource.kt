@@ -43,8 +43,7 @@ class CaseInstanceResource(
         @RequestBody searchRequest: SearchWithConfigRequest,
         pageable: Pageable
     ): ResponseEntity<Page<CaseListRowDto>> {
-        val tenantId = tenantResolver.getTenantId()
-        searchRequest.tenantId = tenantId
+        searchRequest.tenantId = tenantResolver.getTenantId()
         val result = service.search(caseDefinitionName, searchRequest, pageable)
         return ResponseEntity.ok(result)
     }
