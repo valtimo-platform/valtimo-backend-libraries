@@ -47,28 +47,15 @@ import java.util.UUID
 @Transactional
 @AutoConfigureWebTestClient(timeout = "36000")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() {
-
-    @Autowired
-    lateinit var processDocumentService: ProcessDocumentService
-
-    @Autowired
-    lateinit var pluginService: PluginService
-
-    @Autowired
-    lateinit var smartDocumentsPluginFactory: SmartDocumentsPluginFactory
-
-    @Autowired
-    lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
-
-    @Autowired
-    lateinit var repositoryService: RepositoryService
-
-    @Autowired
-    lateinit var runtimeService: RuntimeService
-
-    @Autowired
-    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+class SmartDocumentsPluginIntegrationTest @Autowired constructor(
+    private val processDocumentService: ProcessDocumentService,
+    private val pluginService: PluginService,
+    private val smartDocumentsPluginFactory: SmartDocumentsPluginFactory,
+    private val pluginProcessLinkRepository: PluginProcessLinkRepository,
+    private val repositoryService: RepositoryService,
+    private val runtimeService: RuntimeService,
+    private val temporaryResourceStorageService: TemporaryResourceStorageService
+): BaseSmartDocumentsIntegrationTest() {
 
     lateinit var smartDocumentsPlugin: SmartDocumentsPlugin
     lateinit var pluginConfiguration: PluginConfiguration

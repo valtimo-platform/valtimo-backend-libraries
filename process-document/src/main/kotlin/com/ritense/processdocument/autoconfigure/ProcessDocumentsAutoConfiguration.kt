@@ -17,8 +17,11 @@
 
 package com.ritense.processdocument.autoconfigure
 
+import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.delegate.DocumentDelegate
+import com.ritense.processdocument.listener.CaseAssigneeListener
+import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
 import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -30,6 +33,7 @@ import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.engine.TaskService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -88,6 +92,30 @@ class ProcessDocumentsAutoConfiguration {
             camundaProcessService = camundaProcessService,
             associationService = processDocumentAssociationService,
             tenantResolver = tenantResolver
+        )
+    }
+
+    @Bean
+    fun caseAssigneeCamundaTaskListener(
+        taskService: TaskService,
+        documentService: DocumentService,
+        caseDefinitionService: CaseDefinitionService,
+        userManagementService: UserManagementService
+    ): CaseAssigneeTaskCreatedListener {
+        return CaseAssigneeTaskCreatedListener(
+            taskService, documentService, caseDefinitionService, userManagementService
+        )
+    }
+
+    @Bean
+    fun caseAssigneeListener(
+        taskService: TaskService,
+        documentService: DocumentService,
+        caseDefinitionService: CaseDefinitionService,
+        userManagementService: UserManagementService
+    ): CaseAssigneeListener {
+        return CaseAssigneeListener(
+            taskService, documentService, caseDefinitionService, userManagementService
         )
     }
 }

@@ -26,12 +26,23 @@ import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
+import com.ritense.smartdocuments.io.SubInputStream
+import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
+import java.io.InputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
+import java.util.Base64
+import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 import org.apache.commons.io.FilenameUtils
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.HttpStatus
 import org.springframework.http.codec.ClientCodecConfigurer
 import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.reactive.function.BodyExtractors
+import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
@@ -67,24 +78,27 @@ class SmartDocumentsClient(
         smartDocumentsRequest: SmartDocumentsRequest,
         outputFormat: DocumentFormatOption,
     ): FileStreamResponse {
-        val responseOut = PipedOutputStream()
-        val responseIn = PipedInputStream(responseOut)
-
-        val bodyFlux = webClient().post()
+        val response = webClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
             .contentType(APPLICATION_JSON_UTF8)
             .bodyValue(fixRequest(smartDocumentsRequest))
-            .retrieve()
-            .bodyToFlux<DataBuffer>()
+            .exchange()
+            .block()
+
+        val responseOut = PipedOutputStream()
+        val responseIn = PipedInputStream(responseOut)
+        val body = response.body(BodyExtractors.toDataBuffers())
             .doOnError {
-                responseIn.close()
+                responseIn.use {  }
                 throw toHttpClientErrorException(it)
             }
-            .doFinally { responseOut.close() }
+            .doFinally { responseOut.use {  } }
 
-        DataBufferUtils.write(bodyFlux, responseOut).subscribe(DataBufferUtils.releaseConsumer())
+        DataBufferUtils.write(body, responseOut).subscribe(DataBufferUtils.releaseConsumer())
+
+        assertHttp200Status(response.statusCode(), response, responseIn)
+
         val responseResourceId = temporaryResourceStorageService.store(responseIn)
-
         val parsedResponse = temporaryResourceStorageService.getResourceContentAsInputStream(responseResourceId)
             .use { parseSmartDocumentsResponse(it, outputFormat) }
 
@@ -96,6 +110,26 @@ class SmartDocumentsClient(
             FilenameUtils.getExtension(parsedResponse.fileName),
             documentDataIn
         )
+    }
+
+    private fun assertHttp200Status(
+        statusCode: HttpStatus,
+        response: ClientResponse,
+        responseIn: PipedInputStream
+    ) {
+        if (!statusCode.is2xxSuccessful) {
+            throw toHttpClientErrorException(
+                WebClientResponseException(
+                    statusCode.value(),
+                    statusCode.reasonPhrase,
+                    response.headers().asHttpHeaders(),
+                    responseIn.use {
+                        it.readAllBytes()
+                    },
+                    response.headers().contentType().map { it.charset }.getOrNull()
+                )
+            )
+        }
     }
 
     private fun fixRequest(smartDocumentsRequest: SmartDocumentsRequest): SmartDocumentsRequest {

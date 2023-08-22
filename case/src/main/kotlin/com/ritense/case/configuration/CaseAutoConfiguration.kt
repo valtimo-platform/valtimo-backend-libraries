@@ -43,8 +43,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.core.io.support.ResourcePatternResolver
-import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 @Configuration
@@ -65,6 +65,7 @@ class CaseAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(name = ["caseInstanceResource"]) // because integration tests fail to initialise in portaaltaak
     fun caseInstanceResource(
         caseInstanceService: CaseInstanceService,
         tenantResolver: TenantResolver
@@ -118,7 +119,7 @@ class CaseAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ResourcePatternResolver::class)
     fun resourcePatternResolver(resourceLoader: ResourceLoader): ResourcePatternResolver {
-        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+        return PathMatchingResourcePatternResolver(resourceLoader)
     }
 
     @Bean

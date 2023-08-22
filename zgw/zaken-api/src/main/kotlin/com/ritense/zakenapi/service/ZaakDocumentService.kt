@@ -23,6 +23,7 @@ import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.RelatedFileDto
 import com.ritense.zakenapi.domain.ZaakInformatieObject
+import com.ritense.zakenapi.domain.ZaakResponse
 import java.net.URI
 import java.util.UUID
 
@@ -67,6 +68,16 @@ class ZaakDocumentService(
             )
         ) { "Could not find ${DocumentenApiPlugin::class.simpleName} configuration for informatieobjectUrl: $informatieobjectUrl" }
 
+    }
+
+    fun getZaakByDocumentId(documentId: UUID): ZaakResponse? {
+        val url = zaakUrlProvider.getZaakUrl(documentId)
+        val plugin = pluginService.createInstance(
+            ZakenApiPlugin::class.java,
+            ZakenApiPlugin.findConfigurationByUrl(url)
+        )
+
+        return plugin?.getZaak(url)
     }
 
 }

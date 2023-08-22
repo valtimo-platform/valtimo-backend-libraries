@@ -39,25 +39,14 @@ import org.springframework.context.ApplicationEventPublisher
 import javax.transaction.Transactional
 
 @Transactional
-class ResourceSubmittedToDocumentEventListenerIT : BaseIntegrationTest() {
-
-    @Autowired
-    lateinit var documentService: JsonSchemaDocumentService
-
-    @Autowired
-    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
-
-    @Autowired
-    lateinit var applicationEventPublisher: ApplicationEventPublisher
-
-    @Autowired
-    lateinit var historyService: HistoryService
-
-    @Autowired
-    lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
-
-    @Autowired
-    lateinit var documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
+class ResourceSubmittedToDocumentEventListenerIT @Autowired constructor(
+    private val documentService: JsonSchemaDocumentService,
+    private val temporaryResourceStorageService: TemporaryResourceStorageService,
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val historyService: HistoryService,
+    private val processDocumentAssociationService: ProcessDocumentAssociationService,
+    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
+): BaseIntegrationTest() {
 
     @BeforeEach
     fun beforeEach() {

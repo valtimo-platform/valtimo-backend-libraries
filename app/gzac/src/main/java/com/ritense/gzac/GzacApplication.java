@@ -19,16 +19,12 @@ package com.ritense.gzac;
 import com.ritense.connector.service.ConnectorService;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.gzac.listener.ApplicationReadyEventListener;
-import com.ritense.objectmanagement.service.ObjectManagementService;
 import com.ritense.objectsapi.service.ObjectSyncService;
 import com.ritense.openzaak.service.InformatieObjectTypeLinkService;
 import com.ritense.openzaak.service.ZaakTypeLinkService;
-import com.ritense.plugin.service.PluginService;
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
-import com.ritense.processlink.service.ProcessLinkService;
 import com.ritense.valtimo.config.DefaultProfileUtil;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
-import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +33,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.ritense.valtimo", "com.ritense.gzac"})
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 @EnableProcessApplication
@@ -71,10 +66,6 @@ public class GzacApplication {
         ZaakTypeLinkService zaakTypeLinkService,
         InformatieObjectTypeLinkService informatieObjectTypeLinkService,
         DocumentDefinitionService documentDefinitionService,
-        PluginService pluginService,
-        ProcessLinkService processLinkService,
-        ObjectManagementService objectManagementService,
-        RepositoryService repositoryService,
         DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService
     ) {
         return new ApplicationReadyEventListener(
@@ -83,10 +74,6 @@ public class GzacApplication {
             zaakTypeLinkService,
             informatieObjectTypeLinkService,
             documentDefinitionService,
-            pluginService,
-            processLinkService,
-            objectManagementService,
-            repositoryService,
             documentDefinitionProcessLinkService
         );
     }

@@ -24,7 +24,6 @@ dockerCompose {
 dependencies {
     implementation project(":contract")
     implementation project(":core")
-    testImplementation project(path: ":core", configuration: 'testOutput')
     implementation project(":web")
 
     api "org.springframework.security:spring-security-core"
@@ -49,6 +48,7 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
+    testImplementation project(":test-utils-common")
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"

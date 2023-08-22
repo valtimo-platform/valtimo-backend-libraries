@@ -17,15 +17,15 @@
 package com.ritense.resource
 
 import org.junit.jupiter.api.Tag
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.context.event.SimpleApplicationEventMulticaster
 
 @SpringBootTest
 @Tag("integration")
 abstract class BaseIntegrationTest {
 
-    @SpyBean
+    @Autowired
     lateinit var applicationEventMulticaster: SimpleApplicationEventMulticaster
 
 }

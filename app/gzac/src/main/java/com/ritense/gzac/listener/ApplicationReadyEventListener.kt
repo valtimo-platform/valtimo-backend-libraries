@@ -23,7 +23,6 @@ import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
-import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagTypeMapping
@@ -40,13 +39,10 @@ import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
-import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
-import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import mu.KotlinLogging
-import org.camunda.bpm.engine.RepositoryService
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
@@ -60,10 +56,6 @@ class ApplicationReadyEventListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
     private val documentDefinitionService: DocumentDefinitionService,
-    private val pluginService: PluginService,
-    private val processLinkService: ProcessLinkService,
-    private val objectManagementService: ObjectManagementService,
-    private val repositoryService: RepositoryService,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {
 
@@ -96,9 +88,7 @@ class ApplicationReadyEventListener(
     }
 
     fun List<ConnectorType>.findId(connectorName: String): UUID {
-        return this
-            .filter { it.name.equals(connectorName) }
-            .first()
+        return this.first { it.name == connectorName }
             .id.id
     }
 
@@ -328,8 +318,8 @@ class ApplicationReadyEventListener(
 
     companion object {
         val logger = KotlinLogging.logger {}
-        val OPENNOTIFICATIES_CONNECTOR_NAME = "OpenNotificaties"
-        val TAAK_OBJECTAPI_CONNECTOR_NAME = "TaakObjects"
-        val PRODUCTAANVRAAG_OBJECTAPI_CONNECTOR_NAME = "ProductAanvraagObjects"
+        const val OPENNOTIFICATIES_CONNECTOR_NAME = "OpenNotificaties"
+        const val TAAK_OBJECTAPI_CONNECTOR_NAME = "TaakObjects"
+        const val PRODUCTAANVRAAG_OBJECTAPI_CONNECTOR_NAME = "ProductAanvraagObjects"
     }
 }

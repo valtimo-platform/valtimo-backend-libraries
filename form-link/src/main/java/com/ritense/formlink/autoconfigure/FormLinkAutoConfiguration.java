@@ -201,7 +201,7 @@ public class FormLinkAutoConfiguration {
     @Bean
     @ConditionalOnBean(FormLinkNewProcessFormFlowProvider.class)
     @ConditionalOnMissingBean(FormLinkFormFlowResource.class)
-    public FormLinkFormFlowResource processLinkFormFlowResource(
+    public FormLinkFormFlowResource formLinkFormFlowResource(
         FormLinkNewProcessFormFlowProvider formLinkNewProcessFormFlowProvider
     ) {
         return new FormLinkFormFlowResource(formLinkNewProcessFormFlowProvider);

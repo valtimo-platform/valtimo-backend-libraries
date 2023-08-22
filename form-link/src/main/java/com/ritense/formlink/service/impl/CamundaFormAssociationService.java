@@ -341,7 +341,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
         final ObjectNode extendedDocumentContent = (ObjectNode) document.content().asJson();
         extendedDocumentContent.set("metadata", buildMetaDataObject(document));
 
-        if (taskInstanceId.isEmpty()) {
+        if (taskInstanceId.isEmpty() && !formDefinition.getName().endsWith(".summary")) {
             prefillProcessVariables(formDefinition, document);
         }
         prefillDataResolverFields(formDefinition, document, extendedDocumentContent);
@@ -354,16 +354,18 @@ public class CamundaFormAssociationService implements FormAssociationService {
     @Deprecated(since = "10.6.0", forRemoval = true)
     public void prefillProcessVariables(FormIoFormDefinition formDefinition, Document document) {
         final List<String> processVarsNames = formDefinition.extractProcessVarNames();
-        final Map<String, Object> processInstanceVariables = new HashMap<>();
-        processDocumentAssociationService.findProcessDocumentInstances(document.id())
-            .forEach(processDocumentInstance -> processInstanceVariables.putAll(
-                camundaProcessService.getProcessInstanceVariables(
-                    processDocumentInstance.processDocumentInstanceId().processInstanceId().toString(),
-                    processVarsNames
-                ))
-            );
-        if (!processInstanceVariables.isEmpty()) {
-            formDefinition.preFillWith(PROCESS_VAR_PREFIX, processInstanceVariables);
+        if (processVarsNames.size() > 0) {
+            final Map<String, Object> processInstanceVariables = new HashMap<>();
+            processDocumentAssociationService.findProcessDocumentInstances(document.id())
+                .forEach(processDocumentInstance -> processInstanceVariables.putAll(
+                    camundaProcessService.getProcessInstanceVariables(
+                        processDocumentInstance.processDocumentInstanceId().processInstanceId().toString(),
+                        processVarsNames
+                    ))
+                );
+            if (!processInstanceVariables.isEmpty()) {
+                formDefinition.preFillWith(PROCESS_VAR_PREFIX, processInstanceVariables);
+            }
         }
     }
 

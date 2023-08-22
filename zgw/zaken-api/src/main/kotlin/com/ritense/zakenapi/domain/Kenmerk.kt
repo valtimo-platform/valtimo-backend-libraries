@@ -18,5 +18,5 @@ package com.ritense.zakenapi.domain
 
 data class Kenmerk(
     val kenmerk: String,
-    val string: String,
+    val bron: String,
 )

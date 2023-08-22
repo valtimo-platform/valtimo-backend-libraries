@@ -24,10 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("tempdir")
-class TemporaryResourceStorageServiceTempDirIntegrationTest : BaseIntegrationTest() {
-
-    @Autowired
-    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+class TemporaryResourceStorageServiceTempDirIntegrationTest @Autowired constructor(
+    private val temporaryResourceStorageService: TemporaryResourceStorageService
+) : BaseIntegrationTest() {
 
     @Test
     fun `should try to store temporary file at location defined in application yml`() {
