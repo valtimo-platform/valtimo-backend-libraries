@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.objectmanagement.service
 
 import com.fasterxml.jackson.databind.JsonNode
@@ -12,19 +28,16 @@ import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.service.PluginService
 import mu.KotlinLogging
 import org.springframework.data.domain.PageRequest
-import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 
-@Service
 class ObjectManagementFacade(
     private val objectManagementRepository: ObjectManagementRepository,
     private val pluginService: PluginService
 ) {
-    val logger = KotlinLogging.logger {}
-
     fun getObjectByUuid(objectName: String, uuid: UUID): ObjectWrapper {
         val accessObject = getAccessObject(objectName)
 
@@ -33,21 +46,9 @@ class ObjectManagementFacade(
 
     fun getObjectsByUuids(objectName: String, uuids: List<UUID>): ObjectsList {
         val accessObject = getAccessObject(objectName)
-        val objects = mutableListOf<ObjectWrapper>()
-
-        uuids.forEach(){
-            objects.add(findObjectByUuid(accessObject = accessObject, uuid = it))
-        }
+        val objects = uuids.map { findObjectByUuid(accessObject = accessObject, uuid = it) }
 
         return ObjectsList(count = objects.size, results = objects)
-    }
-
-    private fun findObjectByUuid(accessObject: ObjectManagementAccessObject, uuid: UUID): ObjectWrapper {
-        val objectUrl = URI.create("${accessObject.objectenApiPlugin.url}objects/$uuid")
-
-        logger.trace { "Getting object $objectUrl" }
-
-        return accessObject.objectenApiPlugin.getObject(objectUrl)
     }
 
     fun getObjectByUri(objectName: String, objectUrl: URI): ObjectWrapper {
@@ -65,12 +66,6 @@ class ObjectManagementFacade(
         }
 
         return ObjectsList(count = objects.size, results = objects)
-    }
-
-    private fun findObjectByUri(accessObject: ObjectManagementAccessObject, objectUrl: URI): ObjectWrapper {
-        logger.trace { "Getting object $objectUrl" }
-
-        return accessObject.objectenApiPlugin.getObject(objectUrl)
     }
 
     fun getObjectsPaged(
@@ -126,34 +121,6 @@ class ObjectManagementFacade(
         return totalResults
     }
 
-    private fun findObjectsPaged(
-        accessObject: ObjectManagementAccessObject,
-        objectName: String,
-        searchString: String?,
-        pageNumber: Int,
-        pageSize: Int
-    ): ObjectsList {
-        return if (!searchString.isNullOrBlank()) {
-            logger.trace { "Getting object page for object type $objectName with search string $searchString" }
-
-            accessObject.objectenApiPlugin.getObjectsByObjectTypeIdWithSearchParams(
-                accessObject.objectTypenApiPlugin.url,
-                accessObject.objectManagement.objecttypeId,
-                searchString,
-                PageRequest.of(pageNumber, pageSize)
-            )
-        } else {
-            logger.trace { "Getting object page for object type $objectName" }
-
-            accessObject.objectenApiPlugin.getObjectsByObjectTypeId(
-                accessObject.objectTypenApiPlugin.url,
-                accessObject.objectenApiPlugin.url,
-                accessObject.objectManagement.objecttypeId,
-                PageRequest.of(pageNumber, pageSize)
-            )
-        }
-    }
-
     fun createObject(
         objectName: String,
         data: JsonNode
@@ -195,9 +162,59 @@ class ObjectManagementFacade(
         )
     }
 
+    private fun findObjectByUuid(accessObject: ObjectManagementAccessObject, uuid: UUID): ObjectWrapper {
+        val objectUrl = UriComponentsBuilder
+            .fromUri(accessObject.objectenApiPlugin.url)
+            .pathSegment("objects")
+            .pathSegment(uuid.toString())
+            .build()
+            .toUri()
+
+        logger.trace { "Getting object $objectUrl" }
+
+        return accessObject.objectenApiPlugin.getObject(objectUrl)
+    }
+
+    private fun findObjectByUri(accessObject: ObjectManagementAccessObject, objectUrl: URI): ObjectWrapper {
+        logger.trace { "Getting object $objectUrl" }
+
+        return accessObject.objectenApiPlugin.getObject(objectUrl)
+    }
+
+    private fun findObjectsPaged(
+        accessObject: ObjectManagementAccessObject,
+        objectName: String,
+        searchString: String?,
+        pageNumber: Int,
+        pageSize: Int
+    ): ObjectsList {
+        return if (!searchString.isNullOrBlank()) {
+            logger.trace { "Getting object page for object type $objectName with search string $searchString" }
+
+            accessObject.objectenApiPlugin.getObjectsByObjectTypeIdWithSearchParams(
+                accessObject.objectTypenApiPlugin.url,
+                accessObject.objectManagement.objecttypeId,
+                searchString,
+                PageRequest.of(pageNumber, pageSize)
+            )
+        } else {
+            logger.trace { "Getting object page for object type $objectName" }
+
+            accessObject.objectenApiPlugin.getObjectsByObjectTypeId(
+                accessObject.objectTypenApiPlugin.url,
+                accessObject.objectenApiPlugin.url,
+                accessObject.objectManagement.objecttypeId,
+                PageRequest.of(pageNumber, pageSize)
+            )
+        }
+    }
+
     private data class ObjectManagementAccessObject(
         val objectManagement: ObjectManagement,
         val objectenApiPlugin: ObjectenApiPlugin,
         val objectTypenApiPlugin: ObjecttypenApiPlugin
     )
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 }
