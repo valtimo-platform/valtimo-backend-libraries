@@ -18,6 +18,6 @@ package com.ritense.valtimo.formflow.handler
 
 import com.ritense.formflow.handler.TypeProperties
 
-class AngularComponentTypeProperties(
+class CustomComponentTypeProperties(
     val id: String
 ) : TypeProperties()
