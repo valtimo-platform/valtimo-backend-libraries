@@ -1,0 +1,15 @@
+{
+    "startStep": "step1",
+    "steps": [
+        {
+            "key": "step1",
+            "nextSteps": [],
+            "type": {
+                "name": "angular-component",
+                "properties": {
+                    "componentId": "my-component-definition"
+                }
+            }
+        }
+    ]
+}
