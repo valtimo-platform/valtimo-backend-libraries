@@ -23,10 +23,8 @@ import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import com.ritense.valtimo.contract.domain.DomainEvent;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class DocumentRelatedFileRemovedEvent extends AuditMetaData implements AuditEvent, DomainEvent {

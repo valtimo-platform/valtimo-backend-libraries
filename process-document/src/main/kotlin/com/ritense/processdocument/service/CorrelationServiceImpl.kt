@@ -20,14 +20,12 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult
-import org.camunda.bpm.engine.runtime.MessageCorrelationResultType
 import org.camunda.bpm.engine.runtime.ProcessInstance
 import java.util.UUID
 

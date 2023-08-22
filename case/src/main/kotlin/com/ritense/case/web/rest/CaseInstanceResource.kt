@@ -19,8 +19,8 @@ package com.ritense.case.web.rest
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.search.SearchWithConfigRequest
-import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.tenancy.TenantResolver
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
@@ -43,8 +43,7 @@ class CaseInstanceResource(
         @RequestBody searchRequest: SearchWithConfigRequest,
         pageable: Pageable
     ): ResponseEntity<Page<CaseListRowDto>> {
-        val tenantId = tenantResolver.getTenantId()
-        searchRequest.tenantId = tenantId
+        searchRequest.tenantId = tenantResolver.getTenantId()
         val result = service.search(caseDefinitionName, searchRequest, pageable)
         return ResponseEntity.ok(result)
     }

@@ -37,6 +37,11 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
         String tenantId
     );
 
+    Optional<JsonSchemaDocument> findByIdAndTenantId(
+        Document.Id documentId,
+        String tenantId
+    );
+
     Page<JsonSchemaDocument> findAllByDocumentDefinitionIdName(Pageable pageable, String definitionName);
 
     @Query(" SELECT  doc " +

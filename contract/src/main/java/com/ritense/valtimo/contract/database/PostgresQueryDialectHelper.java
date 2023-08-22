@@ -23,7 +23,6 @@ import javax.persistence.criteria.Predicate;
 import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PostgresQueryDialectHelper implements QueryDialectHelper {
 

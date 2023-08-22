@@ -31,6 +31,8 @@ import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.formflow.FormFlowFormLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowProcessLinkActivityHandler
+import com.ritense.tenancy.TenantResolver
+import com.ritense.valtimo.formflow.FormFlowProcessLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.FormLinkNewProcessFormFlowProviderImpl
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
@@ -152,7 +154,6 @@ class FormFlowValtimoAutoConfiguration {
         formFlowService: FormFlowService,
         processDocumentService: ProcessDocumentService,
         documentService: DocumentService
-
     ): ValtimoFormFlow {
         return ValtimoFormFlow(
             taskService,
@@ -181,4 +182,5 @@ class FormFlowValtimoAutoConfiguration {
     fun formFlowSupportedProcessLinks(formFlowService: FormFlowService): FormFlowSupportedProcessLinksHandler {
         return FormFlowSupportedProcessLinksHandler(formFlowService)
     }
+
 }

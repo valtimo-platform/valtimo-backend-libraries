@@ -20,7 +20,6 @@ import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCrite
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
