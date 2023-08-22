@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.valtimo.contract
 
-import com.ritense.plugin.annotation.PluginCategory
-import com.ritense.valtimo.contract.annotation.AnnotatedClassResolver
-import org.springframework.context.ApplicationContext
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
-class PluginCategoryResolver(
-    context: ApplicationContext
-): AnnotatedClassResolver(context) {
-    internal fun findPluginCategoryClasses() : Map<Class<*>, PluginCategory> {
-        return findClassesWithAnnotation()
+@SpringBootApplication
+class TestApplication {
+
+    fun main(args: Array<String>) {
+        runApplication<TestApplication>(*args)
     }
 }
