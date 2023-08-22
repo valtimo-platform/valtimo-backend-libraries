@@ -1,0 +1,14 @@
+[
+    {
+        "activityId": "StartEvent_1",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "form",
+        "formDefinitionName": "empty-form"
+    },
+    {
+        "activityId": "use-form-flow",
+        "activityType": "bpmn:UserTask:start",
+        "processLinkType": "form-flow",
+        "formFlowDefinitionId": "angular-component-form-flow:latest"
+    }
+]
