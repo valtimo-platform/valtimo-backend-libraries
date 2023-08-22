@@ -4,7 +4,6 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.valtimo.autoconfigure.HttpSecurityAutoConfiguration, \
   com.ritense.valtimo.autoconfigure.LiquibaseAutoConfiguration,\
   com.ritense.valtimo.autoconfigure.ValtimoAutoConfiguration,\
-  com.ritense.valtimo.autoconfigure.ValtimoMethodSecurityAutoConfiguration, \
   com.ritense.valtimo.autoconfigure.CamundaAutoConfiguration, \
   com.ritense.valtimo.autoconfigure.EmailNotificationSettingsAutoConfiguration, \
   com.ritense.valtimo.autoconfigure.AccessAndEntitlementAutoConfiguration, \
