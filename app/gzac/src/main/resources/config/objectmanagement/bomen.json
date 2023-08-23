@@ -1,0 +1,10 @@
+{
+    "id": "d8257077-ec44-44d3-9d2e-e8c87fa6fd09",
+    "title": "Bomen",
+    "objecttypenApiPluginConfigurationId": "4021bb75-18c8-4ca5-8658-b9f9c728bba0",
+    "objecttypeId": "feeaa795-d212-4fa2-bb38-2c34996e5702",
+    "objectenApiPluginConfigurationId": "b6d83348-97e7-4660-bd35-2e5fcc9629b4",
+    "showInDataMenu": true,
+    "formDefinitionView": "boom.summary",
+    "formDefinitionEdit": "boom.editform"
+}

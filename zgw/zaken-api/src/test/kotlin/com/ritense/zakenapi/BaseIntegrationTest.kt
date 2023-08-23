@@ -16,7 +16,6 @@
 
 package com.ritense.zakenapi
 
-import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.ResourceService
@@ -25,13 +24,14 @@ import com.ritense.valtimo.contract.mail.MailSender
 import com.ritense.zakenapi.service.ZaakDocumentService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest(classes = [TestApplication::class])
-@ExtendWith(value = [SpringExtension::class])
+@ExtendWith(SpringExtension::class)
 @Tag("integration")
 class BaseIntegrationTest {
     @SpyBean
@@ -46,16 +46,13 @@ class BaseIntegrationTest {
     @MockBean
     lateinit var userManagementService: UserManagementService
 
-    @MockBean
+    @Autowired
     lateinit var zaakUrlProvider: ZaakUrlProvider
-
-    @MockBean
-    lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
 
     @MockBean
     lateinit var resourceProvider: ResourceProvider
 
-    @MockBean
+    @Autowired
     lateinit var resourceService: ResourceService
 
     @SpyBean

@@ -52,7 +52,7 @@ import java.util.function.Supplier
 class ExternalEventAutoConfiguration {
 
     @Bean
-    @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     fun caseMessageSender(
         externalCaseService: ExternalCaseService,
         documentService: JsonSchemaDocumentService
@@ -65,7 +65,7 @@ class ExternalEventAutoConfiguration {
     }
 
     @Bean
-    @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     fun taskMessageSender(
         externalTaskService: ExternalTaskService,
         documentService: JsonSchemaDocumentService,

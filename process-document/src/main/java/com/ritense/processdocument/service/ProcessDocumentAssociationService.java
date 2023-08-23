@@ -39,11 +39,16 @@ public interface ProcessDocumentAssociationService {
 
     Optional<? extends ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey);
 
+    ProcessDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey);
+
     List<? extends ProcessDocumentDefinition> findAllProcessDocumentDefinitions(ProcessDefinitionKey processDefinitionKey);
 
     Optional<? extends ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion);
+    ProcessDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion);
 
     List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName);
+
+    List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitionsByProcessDefinitionKey(String processDefinitionKey);
 
     Optional<? extends  ProcessDocumentDefinition> findByDocumentDefinitionName(String documentDefinitionName);
 

@@ -79,6 +79,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(false))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(false))
     }
 
     @Test
@@ -94,9 +95,12 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
 
         val caseDefinitionName = "resource-test-update"
         mockMvc.perform(
-            MockMvcRequestBuilders.patch(
+            MockMvcRequestBuilders
+                .patch(
                 "/api/v1/case/{caseDefinitionName}/settings", caseDefinitionName
-            ).contentType(MediaType.APPLICATION_JSON_VALUE).content("{\"canHaveAssignee\": true}")
+                )
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content("{\"canHaveAssignee\": true, \"autoAssignTasks\": true}")
         ).andExpect(status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
@@ -115,7 +119,11 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
                     "}\n"
         )
-        val settings = CaseDefinitionSettings(caseDefinitionName, true)
+        val settings = CaseDefinitionSettings(
+            caseDefinitionName,
+            canHaveAssignee = true,
+            autoAssignTasks = true
+        )
         caseDefinitionSettingsRepository.save(settings)
         mockMvc.perform(
             MockMvcRequestBuilders.patch(
@@ -126,6 +134,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(true))
         val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
@@ -145,9 +154,12 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     fun `should return not found when updating settings for case that does not exist`() {
         val caseDefinitionName = "some-case-that-does-not-exist"
         mockMvc.perform(
-            MockMvcRequestBuilders.patch(
+            MockMvcRequestBuilders
+                .patch(
                 "/api/v1/case/{caseDefinitionName}/settings", caseDefinitionName
-            ).contentType(MediaType.APPLICATION_JSON_VALUE).content("{\"canHaveAssignee\": true}")
+                )
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content("{\"canHaveAssignee\": true, \"autoAssignTasks\": true}")
         ).andExpect(status().isNotFound)
     }
 
@@ -176,7 +188,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             MockMvcRequestBuilders.post(
                 LIST_COLUMN_PATH, caseDefinitionName
             ).contentType(MediaType.APPLICATION_JSON_VALUE).content(
-                "{\n" + "  \"title\": \"First name\",\n" + "  \"key\": \"first-name\",\n" + "  \"path\": \"doc:firstName\" ,\n" + "  \"displayType\": {\n" + "    \"type\": \"enum\",\n" + "    \"displayTypeParameters\": {\n" + "        \"enum\": {\"key1\":\"Value 1\"},\n" + "        \"date-format\": \"\"\n" + "        }\n" + "    },\n" + "    \"sortable\": true ,\n" + "    \"defaultSort\": \"ASC\"\n" + "}"
+                "{\n" + "  \"title\": \"First name\",\n" + "  \"key\": \"first-name\",\n" + "  \"path\": \"test:firstName\" ,\n" + "  \"displayType\": {\n" + "    \"type\": \"enum\",\n" + "    \"displayTypeParameters\": {\n" + "        \"enum\": {\"key1\":\"Value 1\"},\n" + "        \"date-format\": \"\"\n" + "        }\n" + "    },\n" + "    \"sortable\": true ,\n" + "    \"defaultSort\": \"ASC\"\n" + "}"
             )
         ).andExpect(status().isOk)
     }
@@ -249,7 +261,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                   {
                     "title": "First name",
                     "key": "first-name",
-                    "path": "doc:firstName",
+                    "path": "test:firstName",
                     "displayType": {
                       "type": "enum",
                       "displayTypeParameters": {
@@ -294,7 +306,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                           {
                             "title": "First name",
                             "key": "first-name",
-                            "path": "doc:firstName",
+                            "path": "test:firstName",
                             "displayType": {
                               "type": "enum",
                               "displayTypeParameters": {
@@ -314,7 +326,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                           {
                             "title": "Last name",
                             "key": "last-name",
-                            "path": "doc:lastName",
+                            "path": "test:lastName",
                             "displayType": {
                               "type": "enum",
                               "displayTypeParameters": {
@@ -336,7 +348,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                           {
                             "title": "Last name",
                             "key": "last-name",
-                            "path": "doc:lastName",
+                            "path": "test:lastName",
                             "displayType": {
                               "type": "enum",
                               "displayTypeParameters": {
@@ -351,7 +363,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                           {
                             "title": "First name",
                             "key": "first-name",
-                            "path": "doc:firstName",
+                            "path": "test:firstName",
                             "displayType": {
                               "type": "enum",
                               "displayTypeParameters": {
@@ -402,7 +414,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                           {
                             "title": "First name",
                             "key": "$columnKey",
-                            "path": "doc:firstName",
+                            "path": "test:firstName",
                             "displayType": {
                               "type": "enum",
                               "displayTypeParameters": {
@@ -487,7 +499,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                           {
                             "title": "First name",
                             "key": "first-name",
-                            "path": "doc:firstName",
+                            "path": "test:firstName",
                             "displayType": {
                               "type": "enum",
                               "displayTypeParameters": {
@@ -507,7 +519,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                           {
                             "title": "Last name",
                             "key": "last-name",
-                            "path": "doc:firstName",
+                            "path": "test:firstName",
                             "displayType": {
                               "type": "enum",
                               "displayTypeParameters": {
@@ -534,7 +546,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                   {
                     "title": "First name",
                     "key": "first-name",
-                    "path": "doc:firstName",
+                    "path": "test:firstName",
                     "displayType": {
                       "type": "enum",
                       "displayTypeParameters": {
@@ -550,7 +562,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                   {
                     "title": "Last name",
                     "key": "last-name",
-                    "path": "doc:lastName",
+                    "path": "test:lastName",
                     "displayType": {
                       "type": "enum",
                       "displayTypeParameters": {

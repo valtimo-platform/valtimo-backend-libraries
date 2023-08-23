@@ -51,7 +51,7 @@ class FlowmailerTokenService(
                 httpEntity,
                 getType(OauthTokenResponse::class.java)
             )
-            return response.body.accessToken
+            return response.body!!.accessToken
         } catch (e: HttpStatusCodeException) {
             throw HttpClientErrorException(e.statusCode, "No token received")
         }

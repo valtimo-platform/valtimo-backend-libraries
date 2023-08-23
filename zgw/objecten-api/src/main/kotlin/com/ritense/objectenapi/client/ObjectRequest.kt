@@ -21,5 +21,4 @@ import java.net.URI
 data class ObjectRequest(
     val type: URI,
     val record: ObjectRecord
-) {
-}
+)

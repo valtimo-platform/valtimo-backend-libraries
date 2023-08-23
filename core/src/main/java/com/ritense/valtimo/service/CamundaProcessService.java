@@ -18,17 +18,9 @@ package com.ritense.valtimo.service;
 
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
+import com.ritense.valtimo.exception.ProcessDefinitionNotFoundException;
 import com.ritense.valtimo.exception.ProcessNotUpdatableException;
 import com.ritense.valtimo.service.util.FormUtils;
-import java.io.ByteArrayInputStream;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RepositoryService;
@@ -44,6 +36,16 @@ import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.ByteArrayInputStream;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class CamundaProcessService {
 
@@ -76,6 +78,15 @@ public class CamundaProcessService {
             .createProcessDefinitionQuery()
             .processDefinitionId(processDefinitionId)
             .singleResult();
+    }
+
+    public ProcessDefinition getProcessDefinitionById(String processDefinitionId) {
+        var processDefinition = findProcessDefinitionById(processDefinitionId);
+        if (processDefinition == null) {
+            throw new ProcessDefinitionNotFoundException("with id '" + processDefinitionId + "'.");
+        } else {
+            return processDefinition;
+        }
     }
 
     public boolean processDefinitionExistsByKey(String processDefinitionKey) {

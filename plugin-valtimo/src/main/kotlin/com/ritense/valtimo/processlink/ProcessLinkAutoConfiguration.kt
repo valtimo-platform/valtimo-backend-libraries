@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.ritense.valtimo.processlink
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.processlink.mapper.PluginProcessLinkMapper
+import com.ritense.valtimo.processlink.service.PluginSupportedProcessLinksHandler
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -48,12 +52,28 @@ class ProcessLinkAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(CopyPluginActionsOnProcessDeploymentListener::class)
-    fun copyPluginActionsOnProcessDeploymentListener(
-        pluginProcessLinkRepository: PluginProcessLinkRepository,
-    ): CopyPluginActionsOnProcessDeploymentListener {
-        return CopyPluginActionsOnProcessDeploymentListener(
-            pluginProcessLinkRepository,
+    @ConditionalOnMissingBean(ProcessLinkCallActivityStartListener::class)
+    fun processLinkCallActivityStartListener(
+        pluginProcessLinkRepository: PluginProcessLinkRepository?,
+        pluginService: PluginService?
+    ): ProcessLinkCallActivityStartListener {
+        return ProcessLinkCallActivityStartListener(
+            pluginProcessLinkRepository!!,
+            pluginService!!
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginProcessLinkMapper::class)
+    fun pluginProcessLinkMapper(
+        objectMapper: ObjectMapper
+    ): PluginProcessLinkMapper {
+        return PluginProcessLinkMapper(objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginSupportedProcessLinksHandler::class)
+    fun pluginSupportedProcessLinksHandler(pluginService: PluginService): PluginSupportedProcessLinksHandler {
+        return PluginSupportedProcessLinksHandler(pluginService)
     }
 }

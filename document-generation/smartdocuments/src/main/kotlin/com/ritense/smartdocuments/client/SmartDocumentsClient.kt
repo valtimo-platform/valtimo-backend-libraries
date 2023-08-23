@@ -23,25 +23,26 @@ import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.FileStreamResponse
 import com.ritense.smartdocuments.domain.FilesResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.io.SubInputStream
+import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.text.StringEscapeUtils
-import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.codec.ClientCodecConfigurer
 import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.reactive.function.BodyExtractors
+import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
-import org.springframework.web.reactive.function.client.bodyToFlux
 import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
-import java.io.Writer
 import java.util.Base64
-import java.util.concurrent.Executors
+import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 
 class SmartDocumentsClient(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
@@ -55,8 +56,8 @@ class SmartDocumentsClient(
     ): FilesResponse {
         return webClient().post()
             .uri("/wsxmldeposit/deposit/unattended")
-            .contentType(APPLICATION_JSON)
-            .bodyValue(smartDocumentsRequest)
+            .contentType(APPLICATION_JSON_UTF8)
+            .bodyValue(fixRequest(smartDocumentsRequest))
             .retrieve()
             .bodyToMono(FilesResponse::class.java)
             .doOnError { throw toHttpClientErrorException(it) }
@@ -67,24 +68,27 @@ class SmartDocumentsClient(
         smartDocumentsRequest: SmartDocumentsRequest,
         outputFormat: DocumentFormatOption,
     ): FileStreamResponse {
+        val response = webClient().post()
+            .uri("/wsxmldeposit/deposit/unattended")
+            .contentType(APPLICATION_JSON_UTF8)
+            .bodyValue(fixRequest(smartDocumentsRequest))
+            .exchange()
+            .block()
+
         val responseOut = PipedOutputStream()
         val responseIn = PipedInputStream(responseOut)
-
-        val bodyFlux = webClient().post()
-            .uri("/wsxmldeposit/deposit/unattended")
-            .contentType(APPLICATION_JSON)
-            .bodyValue(smartDocumentsRequest)
-            .retrieve()
-            .bodyToFlux<DataBuffer>()
+        val body = response.body(BodyExtractors.toDataBuffers())
             .doOnError {
-                responseIn.close()
+                responseIn.use { }
                 throw toHttpClientErrorException(it)
             }
-            .doFinally { responseOut.close() }
+            .doFinally { responseOut.use { } }
 
-        DataBufferUtils.write(bodyFlux, responseOut).subscribe(DataBufferUtils.releaseConsumer())
+        DataBufferUtils.write(body, responseOut).subscribe(DataBufferUtils.releaseConsumer())
+
+        assertHttp200Status(response.statusCode(), response, responseIn)
+
         val responseResourceId = temporaryResourceStorageService.store(responseIn)
-
         val parsedResponse = temporaryResourceStorageService.getResourceContentAsInputStream(responseResourceId)
             .use { parseSmartDocumentsResponse(it, outputFormat) }
 
@@ -94,7 +98,39 @@ class SmartDocumentsClient(
         return FileStreamResponse(
             parsedResponse.fileName,
             FilenameUtils.getExtension(parsedResponse.fileName),
-            Base64.getDecoder().wrap(documentDataIn)
+            documentDataIn
+        )
+    }
+
+    private fun assertHttp200Status(
+        statusCode: HttpStatus,
+        response: ClientResponse,
+        responseIn: PipedInputStream
+    ) {
+        if (!statusCode.is2xxSuccessful) {
+            throw toHttpClientErrorException(
+                WebClientResponseException(
+                    statusCode.value(),
+                    statusCode.reasonPhrase,
+                    response.headers().asHttpHeaders(),
+                    responseIn.use {
+                        it.readAllBytes()
+                    },
+                    response.headers().contentType().map { it.charset }.getOrNull()
+                )
+            )
+        }
+    }
+
+    private fun fixRequest(smartDocumentsRequest: SmartDocumentsRequest): SmartDocumentsRequest {
+        // Bugfix: SmartDocuments throws an error when using an existing templateGroup
+        // Note: The templateGroup doesn't have to exist in SmartDocuments for it to generate a document
+        return smartDocumentsRequest.copy(
+            smartDocument = smartDocumentsRequest.smartDocument.copy(
+                selection = smartDocumentsRequest.smartDocument.selection.copy(
+                    templateGroup = UUID.randomUUID().toString()
+                )
+            )
         )
     }
 
@@ -102,12 +138,12 @@ class SmartDocumentsClient(
         if (e is WebClientResponseException) {
             val message = when (e.statusCode) {
                 HttpStatus.UNAUTHORIZED -> "The request has not been applied because it lacks valid authentication " +
-                        "credentials for the target resource. Response received from server:\n" + e.responseBodyAsString
+                    "credentials for the target resource. Response received from server:\n" + e.responseBodyAsString
 
                 HttpStatus.BAD_REQUEST -> "The server cannot or will not process the request due to something that is " +
-                        "perceived to be a client error (e.g., no valid template specified, user has no privileges for the template," +
-                        " malformed request syntax, invalid request message framing, or deceptive request routing)." +
-                        " Response received from server:\n" + e.responseBodyAsString
+                    "perceived to be a client error (e.g., no valid template specified, user has no privileges for the template," +
+                    " malformed request syntax, invalid request message framing, or deceptive request routing)." +
+                    " Response received from server:\n" + e.responseBodyAsString
 
                 else -> e.responseBodyAsString
             }
@@ -162,8 +198,8 @@ class SmartDocumentsClient(
             } else if ("data" == fieldName) {
                 jsonParser.nextToken()
                 documentDataStart = jsonParser.currentLocation.byteOffset
-                jsonParser.nextToken()
-                documentDataEnd = jsonParser.currentLocation.byteOffset - 2
+                jsonParser.finishToken()
+                documentDataEnd = jsonParser.currentLocation.byteOffset - 1
             }
 
             if (correctOutputFormat && fileName != null && documentDataStart != -1L) {
@@ -173,7 +209,7 @@ class SmartDocumentsClient(
         jsonParser.close()
         if (!correctOutputFormat && fileName == null && documentDataStart == -1L) {
             throw IllegalStateException("SmartDocuments didn't generate any document. Please check the logs above for a HttpClientErrorException.")
-        }  else if (!correctOutputFormat) {
+        } else if (!correctOutputFormat) {
             throw IllegalStateException("SmartDocuments failed to generate document with format '$outputFormat'. The requested document format is not present in the output of smart documents.")
         } else if (fileName == null) {
             throw IllegalStateException("SmartDocuments response didn't contain field 'filename'")
@@ -183,27 +219,10 @@ class SmartDocumentsClient(
         return ParsedResponse(fileName, documentDataStart, documentDataEnd)
     }
 
-    private fun toDocumentDataInputStream(inputStream: InputStream, parsedResponse: ParsedResponse): InputStream {
-        val documentDataOut = PipedOutputStream()
-        val documentDataIn = PipedInputStream(documentDataOut)
-        val documentDataOutWriter = documentDataOut.writer()
-        Executors.newSingleThreadExecutor().execute {
-            write(documentDataOutWriter, inputStream, parsedResponse.documentDataStart, parsedResponse.documentDataEnd)
-            documentDataOutWriter.close()
-            inputStream.close()
-        }
-        return documentDataIn
-    }
-
-    private fun write(outputWriter: Writer, inputStream: InputStream, startByteOffset: Long, endByteOffset: Long) {
-        inputStream.skipNBytes(startByteOffset)
-        var bytePointer = startByteOffset
-        while (bytePointer < endByteOffset) {
-            val buffer = inputStream.readNBytes((endByteOffset - bytePointer).toInt().coerceAtMost(1024))
-            outputWriter.write(StringEscapeUtils.unescapeJson(String(buffer)))
-            bytePointer += buffer.size
-        }
-        outputWriter.flush()
+    private fun toDocumentDataInputStream(jsonIn: InputStream, parsedResponse: ParsedResponse): InputStream {
+        val documentDataIn = SubInputStream(jsonIn, parsedResponse.documentDataStart, parsedResponse.documentDataEnd)
+        val unescapedIn = UnicodeUnescapeInputStream(documentDataIn)
+        return Base64.getDecoder().wrap(unescapedIn)
     }
 
     private data class ParsedResponse(

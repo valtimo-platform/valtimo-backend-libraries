@@ -21,21 +21,22 @@ import com.ritense.form.domain.FormDefinition
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.result.FormType
-import java.net.URI
-import java.util.UUID
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
+import java.net.URI
+import java.util.UUID
 
-@RequestMapping(value = ["/api/v1/object"])
+@RequestMapping("/api/v1/object", produces = [APPLICATION_JSON_UTF8_VALUE])
 class ObjectResource(
-    val zaakObjectService: ZaakObjectService
+    private val zaakObjectService: ZaakObjectService
 ) {
 
-    @GetMapping(value = ["/form"])
+    @GetMapping("/form")
     fun getPrefilledObjectFromObjectUrl(
         @RequestParam(name = "objectUrl") objectUrl: URI? = null,
         @RequestParam(name = "objectManagementId") objectManagementId: UUID? = null,

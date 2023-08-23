@@ -17,13 +17,14 @@
 package com.ritense.verzoek.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.ritense.valtimo.contract.validation.Url
 import java.net.URI
 
 data class VerzoekProperties(
     val type: String,
     val caseDefinitionName: String,
     val processDefinitionKey: String,
-    val initiatorRoltypeUrl: URI,
+    @field:Url val initiatorRoltypeUrl: URI,
     val initiatorRolDescription: String,
     val copyStrategy: CopyStrategy,
     val mapping: List<Mapping>?,

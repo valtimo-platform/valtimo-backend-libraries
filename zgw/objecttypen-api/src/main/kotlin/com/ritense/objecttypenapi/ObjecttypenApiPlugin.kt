@@ -16,12 +16,14 @@
 
 package com.ritense.objecttypenapi
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.objecttypenapi.client.ObjecttypenApiClient
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
-import java.net.URI
+import com.ritense.valtimo.contract.validation.Url
 import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
 
 @Plugin(
    key = "objecttypenapi",
@@ -29,10 +31,12 @@ import org.springframework.web.util.UriComponentsBuilder
    description = "Connects to the Objecttypen API"
 )
 class ObjecttypenApiPlugin(
-    val objecttypenApiClient: ObjecttypenApiClient
+    private val objecttypenApiClient: ObjecttypenApiClient
 ) {
+    @Url
     @PluginProperty(key = "url", secret = false)
     lateinit var url: URI
+
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: ObjecttypenApiAuthentication
 
@@ -46,5 +50,12 @@ class ObjecttypenApiPlugin(
             .pathSegment(id)
             .build()
             .toUri()
+    }
+
+    companion object {
+        const val URL_PROPERTY = "url"
+
+        fun findConfigurationByUrl(url: URI) =
+            { properties: JsonNode -> url.toString().startsWith(properties.get(URL_PROPERTY).textValue()) }
     }
 }

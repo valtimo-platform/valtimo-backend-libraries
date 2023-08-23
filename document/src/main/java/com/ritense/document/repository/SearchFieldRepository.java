@@ -30,4 +30,6 @@ public interface SearchFieldRepository extends JpaRepository<SearchField, Search
     Optional<SearchField> findByIdDocumentDefinitionNameAndKey(String documentDefinitionName, String key);
 
     boolean existsByIdDocumentDefinitionName(String documentDefinitionName);
+
+    void deleteAllByIdDocumentDefinitionName(String documentDefinitionName);
 }

@@ -39,13 +39,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 
-internal class TemporaryResourceStorageResourceIT : BaseIntegrationTest() {
-
-    @Autowired
-    lateinit var webApplicationContext: WebApplicationContext
-
-    @Autowired
-    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+internal class TemporaryResourceStorageResourceIT @Autowired constructor(
+    private val webApplicationContext: WebApplicationContext,
+    private val temporaryResourceStorageService: TemporaryResourceStorageService
+) : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
 

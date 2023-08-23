@@ -16,14 +16,15 @@
 
 package com.ritense.resource
 
-import org.mockito.Mockito
-import org.mockito.internal.util.MockUtil
+import org.mockito.kotlin.spy
+import org.springframework.beans.factory.BeanFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.context.event.ApplicationEventMulticaster
+import org.springframework.context.event.SimpleApplicationEventMulticaster
 
 @SpringBootApplication
 class TestApplication {
@@ -37,12 +38,8 @@ class TestApplication {
 
         @Bean
         @Primary
-        fun applicationEventMulticaster(applicationEventMulticaster: ApplicationEventMulticaster): ApplicationEventMulticaster {
-            return if (MockUtil.isMock(applicationEventMulticaster)) {
-                applicationEventMulticaster
-            } else {
-                Mockito.spy(applicationEventMulticaster)
-            }
+        fun applicationEventMulticaster(beanFactory: BeanFactory): ApplicationEventMulticaster {
+            return spy(SimpleApplicationEventMulticaster(beanFactory))
         }
     }
 

@@ -20,12 +20,14 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.camunda.bpm.engine.runtime.MessageCorrelationResult
+import org.camunda.bpm.engine.runtime.MessageCorrelationResultType
 import org.camunda.bpm.engine.runtime.ProcessInstance
 import java.util.UUID
 
@@ -69,11 +71,16 @@ class CorrelationServiceImpl(
     override fun sendCatchEventMessage(message: String, businessKey: String, variables: Map<String, Any>?): MessageCorrelationResult {
         val result = correlate(message, businessKey, variables)
         val correlationResultProcessInstance = camundaProcessService.findProcessInstanceById(result.execution.processInstanceId)
+        val processInstanceId = correlationResultProcessInstance.get().processInstanceId
         val processName = camundaProcessService.findProcessDefinitionById(correlationResultProcessInstance.get().processDefinitionId).name
-        associateDocumentToProcess(
-            correlationResultProcessInstance.get().processInstanceId,
-            processName,
-            correlationResultProcessInstance.get().businessKey)
+        val associationExists = associationExists(processInstanceId)
+        if (!associationExists) {
+            associateDocumentToProcess(
+                processInstanceId,
+                processName,
+                correlationResultProcessInstance.get().businessKey)
+        }
+
         return result
     }
 
@@ -84,12 +91,17 @@ class CorrelationServiceImpl(
     override fun sendCatchEventMessageToAll(message: String, businessKey: String, variables: Map<String, Any>?): List<MessageCorrelationResult> {
         val correlationResultProcessList = correlateAll(message, businessKey, variables)
         correlationResultProcessList.forEach { correlationResultProcess ->
-            val runningProcessInstance = camundaProcessService.findProcessInstanceById(correlationResultProcess.execution.processInstanceId)
+            val processInstanceId = correlationResultProcess.execution.processInstanceId
+            val runningProcessInstance = camundaProcessService.findProcessInstanceById(processInstanceId)
             val processName = camundaProcessService.findProcessDefinitionById(runningProcessInstance.get().processDefinitionId).name
-            associateDocumentToProcess(
-                correlationResultProcess.execution.processInstanceId,
-                processName,
-                runningProcessInstance.get().businessKey)
+            val correlationStartedNewProcess = MessageCorrelationResultType.ProcessDefinition.equals(correlationResultProcess.resultType)
+            val associationExists = associationExists(processInstanceId)
+            if (correlationStartedNewProcess || !associationExists) {
+                associateDocumentToProcess(
+                    processInstanceId,
+                    processName,
+                    runningProcessInstance.get().businessKey)
+            }
         }
         return correlationResultProcessList
     }
@@ -97,6 +109,10 @@ class CorrelationServiceImpl(
     private fun getLatestProcessDefinitionIdByKey(processDefinitionKey: String): ProcessDefinition {
         return camundaProcessService.getProcessDefinition(processDefinitionKey)
             ?: throw RuntimeException("Failed to get process definition with key $processDefinitionKey")
+    }
+
+    private fun associationExists(processInstanceId: String): Boolean {
+        return associationService.findProcessDocumentInstance(CamundaProcessInstanceId(processInstanceId)).isPresent
     }
 
     private fun associateDocumentToProcess(

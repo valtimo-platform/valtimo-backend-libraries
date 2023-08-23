@@ -20,12 +20,12 @@ import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.service.ProcessLinkService;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
-
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class DefaultProcessLinkResourceTest {
     private ProcessLinkService service = mock(ProcessLinkService.class);

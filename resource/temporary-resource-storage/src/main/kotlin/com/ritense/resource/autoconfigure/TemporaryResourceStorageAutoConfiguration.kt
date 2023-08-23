@@ -20,6 +20,7 @@ import com.ritense.resource.security.config.TemporaryResourceStorageHttpSecurity
 import com.ritense.resource.service.TemporaryResourceStorageDeletionService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.resource.web.rest.TemporaryResourceStorageResource
+import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -36,16 +37,26 @@ class TemporaryResourceStorageAutoConfiguration {
     @Qualifier("temporaryResourceStorageService")
     @Bean
     @ConditionalOnMissingBean(TemporaryResourceStorageService::class)
-    fun temporaryResourceStorageService(): TemporaryResourceStorageService {
-        return TemporaryResourceStorageService()
+    fun temporaryResourceStorageService(
+        @Value("\${valtimo.resource.temp.directory:}") valtimoResourceTempDirectory: String,
+        uploadProperties: ValtimoUploadProperties,
+    ): TemporaryResourceStorageService {
+        return TemporaryResourceStorageService(
+            valtimoResourceTempDirectory = valtimoResourceTempDirectory,
+            uploadProperties = uploadProperties
+        )
     }
 
     @Bean
     @ConditionalOnMissingBean(TemporaryResourceStorageDeletionService::class)
     fun temporaryResourceStorageDeletionService(
-        @Value("\${valtimo.temporaryResourceStorage.retentionInMinutes:60}") retentionInMinutes: Long
+        @Value("\${valtimo.temporaryResourceStorage.retentionInMinutes:60}") retentionInMinutes: Long,
+        temporaryResourceStorageService: TemporaryResourceStorageService,
     ): TemporaryResourceStorageDeletionService {
-        return TemporaryResourceStorageDeletionService(retentionInMinutes)
+        return TemporaryResourceStorageDeletionService(
+            retentionInMinutes,
+            temporaryResourceStorageService,
+        )
     }
 
     @Bean

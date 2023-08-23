@@ -29,10 +29,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.io.IOException;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class WebhookResource {
 
     private static final Logger logger = LoggerFactory.getLogger(WebhookResource.class);
@@ -42,7 +45,7 @@ public class WebhookResource {
         this.webhookService = webhookService;
     }
 
-    @GetMapping(value = "/v1/mandrill/webhook")
+    @GetMapping("/v1/mandrill/webhook")
     public ResponseEntity<Void> exists() {
         // Exists for Mandrill's check whether or not the endpoint exists.
         return ResponseEntity.ok().build();
@@ -50,7 +53,7 @@ public class WebhookResource {
 
     @PostMapping(value = "/v1/mandrill/webhook", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Void> mandrillWebhook(
-        @RequestHeader(value = "X-Mandrill-Signature") String authenticationKey,
+        @RequestHeader("X-Mandrill-Signature") String authenticationKey,
         @RequestBody MultiValueMap<String, String> body
     ) throws IOException {
         if (!webhookService.isRequestValid(authenticationKey, body)) {

@@ -19,8 +19,10 @@ package com.ritense.formlink.domain.request;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.formlink.domain.impl.formassociation.FormAssociationType;
+
 import java.util.UUID;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormLinkRequest {
 
     @JsonProperty
@@ -45,10 +47,10 @@ public class FormLinkRequest {
     public FormLinkRequest(
         @JsonProperty(value = "id", required = true) String id,
         @JsonProperty(value = "type", required = true) FormAssociationType type,
-        @JsonProperty(value = "formId") UUID formId,
-        @JsonProperty(value = "formFlowId") String formFlowId,
-        @JsonProperty(value = "customUrl") String customUrl,
-        @JsonProperty(value = "angularStateUrl") String angularStateUrl
+        @JsonProperty("formId") UUID formId,
+        @JsonProperty("formFlowId") String formFlowId,
+        @JsonProperty("customUrl") String customUrl,
+        @JsonProperty("angularStateUrl") String angularStateUrl
     ) {
         this.id = id;
         this.type = type;

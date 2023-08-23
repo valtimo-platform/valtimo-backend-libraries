@@ -33,8 +33,8 @@ import java.time.LocalDate
 import java.util.UUID
 
 class ZaakObjectListener(
-    val pluginService: PluginService,
-    val zaakObjectService: ZaakObjectService,
+    private val pluginService: PluginService,
+    private val zaakObjectService: ZaakObjectService,
 ) {
     @EventListener(ExternalDataSubmittedEvent::class)
     fun handle(event: ExternalDataSubmittedEvent) {
@@ -98,9 +98,7 @@ class ZaakObjectListener(
 
     private fun findObjectenApiPlugin(objectUrl: URI): ObjectenApiPlugin {
         val objectenApiPluginInstance = pluginService
-            .createInstance(ObjectenApiPlugin::class.java) { properties: JsonNode ->
-                objectUrl.toString().startsWith(properties.get("url").textValue())
-            }
+            .createInstance(ObjectenApiPlugin::class.java, ObjectenApiPlugin.findConfigurationByUrl(objectUrl))
 
         requireNotNull(objectenApiPluginInstance) { "No objecten plugin configuration was found for the URL $objectUrl" }
 

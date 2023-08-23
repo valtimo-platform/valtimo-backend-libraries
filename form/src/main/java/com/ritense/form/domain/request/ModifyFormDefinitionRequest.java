@@ -18,6 +18,7 @@ package com.ritense.form.domain.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.UUID;
 
 public class ModifyFormDefinitionRequest {
@@ -34,8 +35,8 @@ public class ModifyFormDefinitionRequest {
     @JsonCreator
     public ModifyFormDefinitionRequest(
         @JsonProperty(value = "id", required = true) UUID id,
-        @JsonProperty(value = "name") String name,
-        @JsonProperty(value = "formDefinition") String formDefinition
+        @JsonProperty("name") String name,
+        @JsonProperty("formDefinition") String formDefinition
     ) {
         this.id = id;
         this.name = name;

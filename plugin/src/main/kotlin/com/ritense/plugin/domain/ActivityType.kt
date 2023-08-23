@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.domain
 
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import org.camunda.bpm.engine.delegate.ExecutionListener
 import org.camunda.bpm.engine.delegate.TaskListener
 import org.camunda.bpm.engine.ActivityTypes.BOUNDARY_CANCEL as CAMUNDA_BOUNDARY_CANCEL
@@ -111,7 +112,7 @@ enum class ActivityType(
 
     SUB_PROCESS("bpmn:" + CAMUNDA_SUB_PROCESS.replaceFirstChar { it.uppercaseChar() }),
     AD_HOC_SUB_PROCESS("bpmn:" + CAMUNDA_SUB_PROCESS_AD_HOC.replaceFirstChar { it.uppercaseChar() }),
-    CALL_ACTIVITY("bpmn:" + CAMUNDA_CALL_ACTIVITY.replaceFirstChar { it.uppercaseChar() }),
+    CALL_ACTIVITY_START("bpmn:" + CAMUNDA_CALL_ACTIVITY.replaceFirstChar { it.uppercaseChar() } + ":" + ExecutionListener.EVENTNAME_START),
     TRANSACTION("bpmn:" + CAMUNDA_TRANSACTION.replaceFirstChar { it.uppercaseChar() }),
 
     BOUNDARY_TIMER("bpmn:" + CAMUNDA_BOUNDARY_TIMER.replaceFirstChar { it.uppercaseChar() }),
@@ -124,6 +125,7 @@ enum class ActivityType(
     BOUNDARY_CONDITIONAL("bpmn:" + CAMUNDA_BOUNDARY_CONDITIONAL.replaceFirstChar { it.uppercaseChar() }),
 
     START_EVENT("bpmn:" + CAMUNDA_START_EVENT.replaceFirstChar { it.uppercaseChar() }),
+    START_EVENT_START("bpmn:" + CAMUNDA_START_EVENT.replaceFirstChar { it.uppercaseChar() } + ":" + ExecutionListener.EVENTNAME_START),
     START_TIMER_EVENT("bpmn:" + CAMUNDA_START_EVENT_TIMER.replaceFirstChar { it.uppercaseChar() }),
     MESSAGE_START_EVENT("bpmn:" + CAMUNDA_START_EVENT_MESSAGE.replaceFirstChar { it.uppercaseChar() }),
     SIGNAL_START_EVENT("bpmn:" + CAMUNDA_START_EVENT_SIGNAL.replaceFirstChar { it.uppercaseChar() }),
@@ -163,6 +165,10 @@ enum class ActivityType(
             return USER_TASK_CREATE
         }
         return this
+    }
+
+    fun toActivityTypeWithEventName(): ActivityTypeWithEventName {
+        return ActivityTypeWithEventName.fromValue(bpmnModelValue)
     }
 
     companion object {

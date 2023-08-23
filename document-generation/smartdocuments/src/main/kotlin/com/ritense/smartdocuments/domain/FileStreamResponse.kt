@@ -22,4 +22,8 @@ data class FileStreamResponse(
     val filename: String,
     val extension: String,
     val documentData: InputStream,
-)
+) : AutoCloseable {
+    override fun close() {
+        documentData.close()
+    }
+}

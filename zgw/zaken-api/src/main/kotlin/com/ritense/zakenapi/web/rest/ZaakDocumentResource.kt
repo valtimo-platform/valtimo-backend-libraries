@@ -17,17 +17,17 @@
 package com.ritense.zakenapi.web.rest
 
 import com.ritense.document.domain.RelatedFile
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.service.ZaakDocumentService
-import com.ritense.zakenapi.domain.RelatedFileDto
-import java.util.UUID
-import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
-@RequestMapping(value = ["/api/v1/zaken-api/document/{documentId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api/v1/zaken-api/document/{documentId}"], produces = [APPLICATION_JSON_UTF8_VALUE])
 class ZaakDocumentResource(
     private val zaakDocumentService: ZaakDocumentService
 ) {
@@ -35,5 +35,10 @@ class ZaakDocumentResource(
     @GetMapping("/files")
     fun getFiles(@PathVariable(name = "documentId") documentId: UUID): List<RelatedFile> {
         return zaakDocumentService.getInformatieObjectenAsRelatedFiles(documentId)
+    }
+
+    @GetMapping("/zaak")
+    fun getZaakMetadata(@PathVariable(name = "documentId") documentId: UUID): ZaakResponse? {
+        return zaakDocumentService.getZaakByDocumentId(documentId)
     }
 }

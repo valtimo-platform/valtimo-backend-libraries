@@ -20,10 +20,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public interface SubmissionTransformerService<T extends FormDefinition> {
 
+    @Deprecated(since = "10.6.0", forRemoval = true)
     void prePreFillTransform(T formDefinition, JsonNode placeholders, JsonNode source);
 
+    @Deprecated(since = "10.6.0", forRemoval = true)
     JsonPatch preSubmissionTransform(T formDefinition, JsonNode submission, JsonNode placeholders, JsonNode source);
 
 }

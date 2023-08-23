@@ -34,6 +34,7 @@ import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGene
 import com.ritense.valtimo.contract.utils.RequestHelper
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.hibernate.validator.constraints.URL
 import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDateTime
 import java.util.UUID
@@ -51,6 +52,7 @@ class SmartDocumentsPlugin(
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) {
 
+    @URL
     @PluginProperty(key = "url", required = true, secret = false)
     private lateinit var url: String
 
@@ -78,7 +80,9 @@ class SmartDocumentsPlugin(
         val resolvedTemplateData = resolveTemplateData(templateData, execution)
         val generatedDocument = generateDocument(templateGroup, templateName, resolvedTemplateData, DocumentFormatOption.valueOf(format))
         publishDossierDocumentGeneratedEvent(document.id(), templateName)
-        val resourceId = saveGeneratedDocumentToTempFile(generatedDocument)
+        val resourceId = generatedDocument.use {
+            saveGeneratedDocumentToTempFile(generatedDocument)
+        }
         execution.setVariable(resultingDocumentProcessVariableName, resourceId)
     }
 

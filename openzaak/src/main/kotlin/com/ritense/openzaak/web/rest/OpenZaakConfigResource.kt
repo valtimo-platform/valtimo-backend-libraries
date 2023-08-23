@@ -17,14 +17,14 @@
 package com.ritense.openzaak.web.rest
 
 import com.ritense.openzaak.domain.connector.OpenZaakConfig
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface OpenZaakConfigResource {
 
     @GetMapping("/v1/openzaak/config")

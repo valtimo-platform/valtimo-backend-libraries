@@ -18,6 +18,7 @@ package com.ritense.valtimo.formflow.common
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.document.service.DocumentService
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.service.FormFlowDeploymentService
@@ -29,17 +30,24 @@ import com.ritense.formlink.service.FormAssociationService
 import com.ritense.formlink.service.ProcessLinkService
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.domain.ProcessLink
+import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.formflow.BaseIntegrationTest
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
+import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import org.camunda.bpm.engine.HistoryService
+import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
@@ -53,7 +61,16 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     lateinit var formAssociationService: FormAssociationService
 
     @Autowired
+    lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
+
+    @Autowired
     lateinit var processLinkService: ProcessLinkService
+
+    @Autowired
+    lateinit var docummentService: DocumentService
+
+    @Autowired
+    lateinit var newProcessLinkService: com.ritense.processlink.service.ProcessLinkService
 
     @Autowired
     lateinit var taskService: TaskService
@@ -69,6 +86,12 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var historyService: HistoryService
+
+    @Autowired
+    lateinit var repositoryService: RepositoryService
+
+    @Autowired
+    lateinit var processLinkActivityHandler: ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties>
 
     @Test
     fun `should completeTask`() {
@@ -123,6 +146,93 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         assertEquals(true, processVariableApproved)
     }
 
+    @Test
+    fun `should start case and save submission in document and process`() {
+        deployFormFlow(onComplete = "\${valtimoFormFlow.startCase(instance.id, {'doc:/address/streetName':'/street', 'pv:approved':'/approval'})}")
+        val processLink = linkFormFlowToStartEvent()
+
+        val startEventResponse = processLinkActivityHandler.getStartEventObject(
+            getProcessDefinitionId(),
+            null,
+            "profile",
+            processLink,
+            "1"
+        )
+        val formFlowInstance = formFlowService
+            .getInstanceById(FormFlowInstanceId.existingId(startEventResponse.properties.formFlowInstanceId))
+
+        // number before complete
+        val totalDocumentsBefore = docummentService.getAllByDocumentDefinitionName(Pageable.unpaged(), "profile").totalElements
+
+        formFlowStepComplete(formFlowInstance, submission = """{"street":"Koningin Wilhelminaplein","approval":true}""")
+
+        //find latest document
+        val allDocuments = docummentService.getAllByDocumentDefinitionName(Pageable.unpaged(), "profile")
+        val latestDocument = allDocuments.content.sortedByDescending { it.createdOn() }.first()
+
+        assertEquals(allDocuments.totalElements, totalDocumentsBefore+1)
+        assertEquals(
+            """{"address":{"streetName":"Koningin Wilhelminaplein"}}""",
+            latestDocument.content().asJson().toString()
+        )
+
+        val processDocumentInstances =
+            processDocumentAssociationService.findProcessDocumentInstances(latestDocument.id())
+
+        assertEquals(1, processDocumentInstances.size)
+
+        val processVariableApproved = historyService.createHistoricVariableInstanceQuery()
+            .processInstanceIdIn(processDocumentInstances[0].processDocumentInstanceId().processInstanceId().toString())
+            .variableName("approved")
+            .singleResult()
+            .value
+        assertEquals(true, processVariableApproved)
+    }
+
+    @Test
+    fun `should process for existing case and save submission in document and process`() {
+        deployFormFlow(onComplete = "\${valtimoFormFlow.startSupportingProcess(instance.id, {'doc:/address/streetName':'/street', 'pv:approved':'/approval'})}")
+        val processLink = linkFormFlowToStartEvent()
+
+        val document = docummentService.createDocument(
+            NewDocumentRequest(
+                "profile",
+                Mapper.INSTANCE.get().readTree("{}")
+            )
+        ).resultingDocument().get()
+
+        val startEventResponse = processLinkActivityHandler.getStartEventObject(
+            getProcessDefinitionId(),
+            document.id().id,
+            null,
+            processLink,
+            "1"
+        )
+        val formFlowInstance = formFlowService
+            .getInstanceById(FormFlowInstanceId.existingId(startEventResponse.properties.formFlowInstanceId))
+
+        formFlowStepComplete(formFlowInstance, submission = """{"street":"Koningin Wilhelminaplein","approval":true}""")
+
+        val updatedDocument = docummentService.get(document.id().toString(), "1")
+
+        assertEquals(
+            """{"address":{"streetName":"Koningin Wilhelminaplein"}}""",
+            updatedDocument.content().asJson().toString()
+        )
+
+        val processDocumentInstances =
+            processDocumentAssociationService.findProcessDocumentInstances(updatedDocument.id())
+
+        assertEquals(1, processDocumentInstances.size)
+
+        val processVariableApproved = historyService.createHistoricVariableInstanceQuery()
+            .processInstanceIdIn(processDocumentInstances[0].processDocumentInstanceId().processInstanceId().toString())
+            .variableName("approved")
+            .singleResult()
+            .value
+        assertEquals(true, processVariableApproved)
+    }
+
     private fun formFlowStepComplete(formFlowInstance: FormFlowInstance, submission: String? = null) {
         formFlowResource.completeStep(
             formFlowInstance.id.id.toString(),
@@ -140,7 +250,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     private fun linkFormFlowToUserTask() {
         formAssociationService.createFormAssociation(
             CreateFormAssociationRequest(
-                "one-task-process",
+                "formflow-one-task-process",
                 FormLinkRequest(
                     "do-something",
                     FormAssociationType.USER_TASK,
@@ -153,10 +263,33 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         )
     }
 
+    private fun linkFormFlowToStartEvent(): ProcessLink {
+        newProcessLinkService.createProcessLink(
+            FormFlowProcessLinkCreateRequestDto(
+                getProcessDefinitionId(),
+                "start-event",
+                ActivityTypeWithEventName.START_EVENT_START,
+                "single_step_flow:latest"
+            )
+        )
+        return newProcessLinkService.getProcessLinks(
+            getProcessDefinitionId(),
+            "start-event"
+        )[0]
+    }
+
+    private fun getProcessDefinitionId(): String {
+        return repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("formflow-one-task-process")
+            .latestVersion()
+            .singleResult()
+            .id
+    }
+
     private fun newDocumentAndStartProcess(): NewDocumentAndStartProcessResult {
         return processDocumentService.newDocumentAndStartProcess(
             NewDocumentAndStartProcessRequest(
-                "one-task-process",
+                "formflow-one-task-process",
                 NewDocumentRequest(
                     "profile",
                     Mapper.INSTANCE.get().readTree("{}")

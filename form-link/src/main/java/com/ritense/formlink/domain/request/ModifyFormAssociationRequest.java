@@ -18,8 +18,10 @@ package com.ritense.formlink.domain.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.UUID;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class ModifyFormAssociationRequest {
 
     @JsonProperty

@@ -37,6 +37,7 @@ class NotificatiesApiAuthenticationPlugin(
 
     @PluginProperty(key = "clientId", secret = false, required = true)
     lateinit var clientId: String
+
     @PluginProperty(key = "clientSecret", secret = true, required = true)
     lateinit var clientSecret: String
 

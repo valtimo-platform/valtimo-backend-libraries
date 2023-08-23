@@ -25,7 +25,7 @@ dependencies {
     implementation project(":contract")
     implementation project(":resource")
     implementation project(":web")
-    implementation project(':tenancy')
+    api project(":tenancy")
 
     testImplementation project(':test-utils-common')
 
@@ -107,9 +107,7 @@ dependencies {
         exclude(module: 'tools')
     }
 
-    implementation("org.liquibase:liquibase-core:${liquibaseVersion}") {
-        exclude(module: "jetty-servlet")
-    }
+    implementation "org.liquibase:liquibase-core"
 
     implementation "io.dropwizard.metrics:metrics-core"
     implementation "io.dropwizard.metrics:metrics-annotation"
@@ -121,19 +119,6 @@ dependencies {
     testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.junit.jupiter:junit-jupiter-engine"
-}
-
-configurations {
-    testOutput.extendsFrom (testCompile)
-}
-
-task jarTest (type: Jar, dependsOn: testClasses) {
-    from sourceSets.test.output
-    classifier = 'test'
-}
-
-artifacts {
-    testOutput jarTest
 }
 
 apply from: "gradle/publishing.gradle"

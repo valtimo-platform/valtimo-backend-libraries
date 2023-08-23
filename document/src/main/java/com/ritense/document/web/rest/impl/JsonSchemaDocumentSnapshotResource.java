@@ -25,7 +25,6 @@ import com.ritense.document.web.rest.DocumentSnapshotResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,8 +35,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResource {
 
     private final DocumentSnapshotService documentSnapshotService;
@@ -49,7 +50,7 @@ public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResou
     }
 
     @Override
-    @GetMapping(value = "/v1/document-snapshot/{id}")
+    @GetMapping("/v1/document-snapshot/{id}")
     public ResponseEntity<? extends DocumentSnapshot> getDocumentSnapshot(@PathVariable(name = "id") UUID snapshotId) {
         return documentSnapshotService.findById(JsonSchemaDocumentSnapshotId.existingId(snapshotId))
             .filter(it -> hasAccessToDefinitionName(it.document().definitionId().name()))
@@ -58,7 +59,7 @@ public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResou
     }
 
     @Override
-    @GetMapping(value = "/v1/document-snapshot")
+    @GetMapping("/v1/document-snapshot")
     public ResponseEntity<Page<? extends DocumentSnapshot>> getDocumentSnapshots(
         @RequestParam(value = "definitionName", required = false) String definitionName,
         @RequestParam(value = "documentId", required = false) UUID documentId,

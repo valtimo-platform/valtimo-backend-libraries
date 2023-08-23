@@ -16,7 +16,6 @@
 
 package com.ritense.case
 
-import com.ritense.resource.service.ResourceService
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
@@ -29,15 +28,12 @@ import org.springframework.core.io.support.ResourcePatternResolver
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
+@ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
 @Tag("integration")
 class BaseIntegrationTest {
 
     @MockBean
     lateinit var userManagementService: UserManagementService
-
-    @MockBean
-    lateinit var resourceService: ResourceService
 
     @MockBean
     lateinit var mailSender: MailSender

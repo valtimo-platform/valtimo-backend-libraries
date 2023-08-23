@@ -34,18 +34,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class JsonSchemaDocumentResourceTest extends BaseTest {
 
@@ -100,7 +106,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
     }
 
@@ -117,7 +123,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty())
             .andExpect(jsonPath("$.assigneeId").value("test-assignee-id"))
             .andExpect(jsonPath("$.assigneeFullName").value("John Doe"));
@@ -221,7 +227,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
 
-        when(documentService.get(document.id().toString(), "1")).thenReturn(document);
+        when(documentService.get(document.id().toString(), TENANT_ID)).thenReturn(document);
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(false);
 

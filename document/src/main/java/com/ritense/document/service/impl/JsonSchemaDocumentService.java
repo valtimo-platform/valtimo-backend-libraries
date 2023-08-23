@@ -44,13 +44,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
@@ -131,7 +129,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 newDocumentRequest.getResources()
                     .stream()
                     .map(JsonSchemaRelatedFile::from)
-                    .map(relatedFile -> relatedFile.withCreatedBy(SecurityUtils.getCurrentUserLogin()))
+                    .map(relatedFile -> relatedFile.withCreatedBy(user))
                     .forEach(document::addRelatedFile);
                 documentRepository.saveAndFlush(document);
             }
@@ -181,9 +179,9 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Override
     @Transactional
     public void assignDocumentRelation(
-        Document.Id documentId,
-        DocumentRelation documentRelation,
-        String tenantId
+        final Document.Id documentId,
+        final DocumentRelation documentRelation,
+        final String tenantId
     ) {
         final JsonSchemaDocumentRelation jsonSchemaDocumentRelation = JsonSchemaDocumentRelation.from(
             new DocumentRelationRequest(
@@ -214,7 +212,11 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     @Transactional
-    public void assignResource(Document.Id documentId, UUID resourceId, String tenantId) {
+    public void assignResource(
+        final Document.Id documentId,
+        final UUID resourceId,
+        final String tenantId
+    ) {
         assignResource(documentId, resourceId, null, tenantId);
     }
 

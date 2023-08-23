@@ -52,7 +52,8 @@ dependencies {
     implementation "org.springdoc:springdoc-openapi-kotlin:${springDocVersion}"
     implementation "org.springdoc:springdoc-openapi-security:${springDocVersion}"
 
-    api "org.zalando:problem-spring-web:${problemSpringWebVersion}"
+    implementation "org.zalando:problem-spring-web:${problemSpringWebVersion}"
+    implementation "org.zalando:jackson-datatype-problem:${jacksonDatatypeProblemVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 }
