@@ -86,8 +86,6 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     public JsonSchemaDocument get(String documentId, String tenantId) {
-        // TODO? if (valtimoProperties.getApp().getEnableTenancy()) {
-
         var documentOptional = findBy(
             JsonSchemaDocumentId.existingId(UUID.fromString(documentId)),
             tenantId
