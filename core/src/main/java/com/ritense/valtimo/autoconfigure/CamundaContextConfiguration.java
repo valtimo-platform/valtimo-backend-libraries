@@ -18,14 +18,15 @@ package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.valtimo.CamundaBeansPlugin;
 import com.ritense.valtimo.contract.annotation.ProcessBean;
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
-@ConditionalOnProperty(prefix = "valtimo.camunda", name = "bean-whitelisting", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "valtimo.camunda", name = "bean-whitelisting", havingValue = "true", matchIfMissing = true)
 public class CamundaContextConfiguration {
 
     @Bean

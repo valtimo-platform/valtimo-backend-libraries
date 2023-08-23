@@ -20,10 +20,10 @@ package com.ritense.valtimo.autoconfiguration
 import com.ritense.valtimo.JobService
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import org.camunda.bpm.engine.ManagementService
-import org.camunda.bpm.engine.ProcessEngine
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 
 @Configuration
 class JobAutoConfiguration {
@@ -31,7 +31,7 @@ class JobAutoConfiguration {
     @Bean
     @ProcessBean
     @ConditionalOnMissingBean(JobService::class)
-    fun jobService(managementService: ManagementService): JobService {
+    fun jobService(@Lazy managementService: ManagementService): JobService {
         return JobService(managementService)
     }
 

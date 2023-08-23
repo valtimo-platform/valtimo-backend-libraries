@@ -16,18 +16,23 @@
 
 package com.ritense.dashboard.datasource
 
+import com.ritense.valtimo.contract.annotation.AnnotatedClassResolver
 import com.ritense.valtimo.contract.dashboard.feature.WidgetDataFeature
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
 import java.lang.reflect.Method
 import mu.KLogger
 import mu.KotlinLogging
+import org.springframework.context.ApplicationContext
 
-class WidgetDataSourceResolver : AnnotatedClassResolver() {
+class WidgetDataSourceResolver(
+    context: ApplicationContext
+) : AnnotatedClassResolver(context) {
 
     val dataSourceMethodMap: Map<WidgetDataSource, Method> = findMethodsWithAnnotation<WidgetDataSource>()
         .associateBy { it.getAnnotation(WidgetDataSource::class.java) }
 
     val dataFeatureClassMap: Map<Class<*>, List<WidgetDataFeature>> = findClassesWithAnnotation<WidgetDataFeature>()
+        .keys
         .associateWith { it.getAnnotationsByType(WidgetDataFeature::class.java).toList() }
 
     init {

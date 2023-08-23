@@ -89,6 +89,7 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
         String formLinkId,
         String documentId,
         String taskInstanceId,
+        String documentDefinitionName,
         JsonNode formData
     ) {
         try {
@@ -121,7 +122,8 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                 document = null;
             }
 
-            final ProcessDocumentDefinition processDocumentDefinition = AuthorizationContext.runWithoutAuthorization( () -> {
+            if (documentDefinitionName == null) {
+                final ProcessDocumentDefinition processDocumentDefinition = AuthorizationContext.runWithoutAuthorization(() -> {
                     if (document == null) {
                         return processDocumentAssociationService
                             .findProcessDocumentDefinition(new CamundaProcessDefinitionKey(processDefinitionKey))
@@ -134,7 +136,7 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                     } else {
                         var documentVersion = document.definitionId().version();
 
-                        return  processDocumentAssociationService
+                        return processDocumentAssociationService
                             .findProcessDocumentDefinition(
                                 new CamundaProcessDefinitionKey(processDefinitionKey), documentVersion)
                             .orElseThrow(() -> new ProcessDefinitionNotFoundException(
@@ -146,14 +148,17 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                             ));
                     }
                 });
+                documentDefinitionName = processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId().name();
+            }
 
             var submission = new FormIoSubmission(
                 formAssociation,
                 formDefinition,
-                processDocumentDefinition,
+                documentDefinitionName,
                 formData,
                 document,
                 taskInstanceId,
+                processDefinitionKey,
                 processDocumentService,
                 camundaTaskService,
                 submissionTransformerService,

@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.security.permission;
+package com.whitelisted
 
-import org.springframework.security.core.Authentication;
+import com.ritense.valtimo.contract.custom.TestAnnotation
 
-/**
- * Check permissions on a domain object. Used in <code>ValtimoPermissionEvaluator</code> for checking
- * custom permissions.
- */
-public interface Permission<T_TARGET> {
+@TestAnnotation
+class WhitelistedClassWithTextAnnotation {
 
-    /**
-     * isAllowed.
-     *
-     * @return true when user is allowed to access the target, false otherwise
-     */
-    boolean isAllowed(Authentication authentication, T_TARGET targetDomainObject);
+    @TestAnnotation
+    fun whitelistedAnnotatedMethod() {
+    }
 
-    String name();
-
+    fun whitelistedNonAnnotatedMethod() {}
 }

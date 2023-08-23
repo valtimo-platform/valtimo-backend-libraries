@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.ritense.valtimo.contract
 
-import com.ritense.plugin.annotation.PluginCategory
-import com.ritense.valtimo.contract.annotation.AnnotatedClassResolver
-import org.springframework.context.ApplicationContext
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
-class PluginCategoryResolver(
-    context: ApplicationContext
-): AnnotatedClassResolver(context) {
-    internal fun findPluginCategoryClasses() : Map<Class<*>, PluginCategory> {
-        return findClassesWithAnnotation()
-    }
-}
+@SpringBootTest
+@ExtendWith(SpringExtension::class)
+@Tag("integration")
+abstract class BaseIntegrationTest

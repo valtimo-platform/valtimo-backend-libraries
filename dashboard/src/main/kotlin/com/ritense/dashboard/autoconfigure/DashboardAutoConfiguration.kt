@@ -116,8 +116,8 @@ class DashboardAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(WidgetDataSourceResolver::class)
-    fun widgetDataSourceResolver(): WidgetDataSourceResolver {
-        return WidgetDataSourceResolver()
+    fun widgetDataSourceResolver(context: ApplicationContext): WidgetDataSourceResolver {
+        return WidgetDataSourceResolver(context)
     }
 
     @Bean
