@@ -25,7 +25,7 @@ dependencies {
     implementation project(":contract")
     implementation project(":resource")
     implementation project(":web")
-    api project(":tenancy")
+    implementation project(":tenancy")
 
     testImplementation project(':test-utils-common')
 
