@@ -106,8 +106,8 @@ class FormFlowInstance(
      *
      * @return The previous step (optional)
      */
-    fun save(incompleteSubmissionData: JSONObject) {
-        getCurrentStep().save(incompleteSubmissionData.toString())
+    fun saveTemporary(incompleteSubmissionData: JSONObject) {
+        getCurrentStep().saveTemporary(incompleteSubmissionData.toString())
     }
 
     fun getCurrentStep(): FormFlowStepInstance {
@@ -146,11 +146,17 @@ class FormFlowInstance(
 
     private fun getSubmissionData() : List<JSONObject> {
         val currentStepOrder = getCurrentStep().order
-        return history.filter {
-            it.order <= currentStepOrder && it.submissionData != null
+        val submissionData = history.filter {
+            it.order < currentStepOrder && it.submissionData != null
         }.map {
             JSONObject(it.submissionData)
+        }.toMutableList()
+
+        getCurrentStep().getCurrentSubmissionData()?.let {
+            submissionData.add(JSONObject(it))
         }
+
+        return submissionData
     }
 
     private fun mergeSubmissionData(source: JSONObject, target: JSONObject) {

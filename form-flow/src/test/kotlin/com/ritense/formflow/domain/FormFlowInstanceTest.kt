@@ -385,12 +385,13 @@ internal class FormFlowInstanceTest : BaseTest() {
         val instance = definition.createInstance(mutableMapOf())
 
         instance.complete(instance.currentFormFlowStepInstanceId!!, JSONObject("""{"woonplaats":{"inUtrecht":true}}"""))
-        instance.save(JSONObject("""{"leeftijd":{"isJongerDanAOW":false}}"""))
+        instance.saveTemporary(JSONObject("""{"leeftijd":{"isJongerDanAOW":false}}"""))
         instance.back()
 
         assertEquals("""{"woonplaats":{"inUtrecht":true}}""", instance.getSubmissionDataContext())
         assertEquals(2, instance.getHistory().size)
         assertEquals("""{"woonplaats":{"inUtrecht":true}}""", instance.getHistory()[0].submissionData)
-        assertEquals("""{"leeftijd":{"isJongerDanAOW":false}}""", instance.getHistory()[1].submissionData)
+        assertEquals(null, instance.getHistory()[1].submissionData)
+        assertEquals("""{"leeftijd":{"isJongerDanAOW":false}}""", instance.getHistory()[1].temporarySubmissionData)
     }
 }
