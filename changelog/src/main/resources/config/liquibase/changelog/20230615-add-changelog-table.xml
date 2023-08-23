@@ -40,4 +40,11 @@
         </createTable>
     </changeSet>
 
+    <changeSet author="Ritense" id="2">
+        <dropUniqueConstraint
+            tableName="valtimo_changelog"
+            constraintName="valtimo_changelog_md5sum_key"
+            uniqueColumns="md5sum"/>
+    </changeSet>
+
 </databaseChangeLog>

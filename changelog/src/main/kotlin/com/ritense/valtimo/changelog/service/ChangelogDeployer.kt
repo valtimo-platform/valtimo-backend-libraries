@@ -46,12 +46,16 @@ class ChangelogDeployer(
     }
 
     fun deploy(changesetDeployer: ChangesetDeployer, filename: String, resourceContent: String) {
-        changesetDeployer.getChangelogDetails(filename, resourceContent).forEach { changesetDetails ->
-            val md5sum = changelogService.computeMd5sum(changesetDetails.valueToChecksum)
-            if (changelogService.isNewValidChangeset(changesetDetails.changesetId, md5sum)) {
-                changesetDetails.deploy()
-                changelogService.saveChangeset(changesetDetails.changesetId, changesetDetails.key, filename, md5sum)
+        try {
+            changesetDeployer.getChangelogDetails(filename, resourceContent).forEach { changesetDetails ->
+                val md5sum = changelogService.computeMd5sum(changesetDetails.valueToChecksum)
+                if (changelogService.isNewValidChangeset(changesetDetails.changesetId, md5sum)) {
+                    changesetDetails.deploy()
+                    changelogService.saveChangeset(changesetDetails.changesetId, changesetDetails.key, filename, md5sum)
+                }
             }
+        } catch (e: Exception) {
+            throw IllegalStateException("Failed to execute changelog: $filename", e)
         }
     }
 
