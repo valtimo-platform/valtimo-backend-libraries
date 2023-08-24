@@ -16,7 +16,7 @@
 
 package com.ritense.zakenapi.domain
 
-data class SetZaakopschortingResponse(
+data class ZaakopschortingResponse(
     val url: String,
     val uuid: String,
     val identificatie: String,

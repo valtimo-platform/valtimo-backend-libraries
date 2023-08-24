@@ -16,10 +16,7 @@
 
 package com.ritense.zakenapi.domain
 
-import java.net.URI
-
 data class SetZaakopschortingRequest(
-    val zaak: URI,
     val verlenging: Verlenging,
     val opschorting: Opschorting,
 )

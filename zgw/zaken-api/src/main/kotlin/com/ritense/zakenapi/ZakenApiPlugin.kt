@@ -273,8 +273,8 @@ class ZakenApiPlugin(
 
     @PluginAction(
         key = "set-zaakopschorting",
-        title = "Set zaak opschorting",
-        description = "Sets a Zaak's opschorting status to true and adds a duration of time to the \"geplande einddatum\"",
+        title = "Set case suspension",
+        description = "Suspends a case, sets the suspend status to true and adds a duration of time to the planned end date",
         activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun setZaakOpschorting(
@@ -288,18 +288,33 @@ class ZakenApiPlugin(
 
         client.setZaakOpschorting(
             authenticationPluginConfiguration,
-            url,
+            zaakUrl,
             SetZaakopschortingRequest(
-                zaak = zaakUrl,
                 verlenging = Verlenging(
                     reden = toelichtingVerlenging,
-                    duur = verlengingsduur
+                    duur = "P$verlengingsduur"+"D"
                 ),
                 opschorting = Opschorting(
                     indicatie = true.toString(),
                     reden = toelichtingOpschorting
                 )
             )
+        )
+    }
+
+    @PluginAction(
+        key = "continue-zaak-after-opschorting",
+        title = "Continue case after suspension",
+        description = "Continues a suspended case, sets the suspend status to false",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun continueZaakAfterOpschorting(execution: DelegateExecution) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+        client.continueZaakAfterOpschorting(
+            authenticationPluginConfiguration,
+            zaakUrl
         )
     }
 
