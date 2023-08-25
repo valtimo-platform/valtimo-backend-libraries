@@ -38,6 +38,7 @@ dependencies {
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
 
+    testImplementation project(':changelog')
     testImplementation project(':core')
     testImplementation project(':resource')
     testImplementation project(':test-utils-common')
@@ -45,6 +46,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {

@@ -16,7 +16,6 @@
 
 package com.ritense.case.web.rest
 
-import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseDefinitionSettings
@@ -24,12 +23,12 @@ import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -39,6 +38,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @Transactional
 class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
@@ -64,6 +65,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(username = "user@ritense.com", authorities = [USER])
     fun `should get case settings with default values`() {
         runWithoutAuthorization {
             documentDefinitionService.deploy(
@@ -155,7 +157,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             MockMvcRequestBuilders.get(
                 "/api/v1/case/{caseDefinitionName}/settings", caseDefinitionName
             )
-        ).andExpect(status().isNotFound)
+        ).andExpect(status().isBadRequest)
     }
 
     @Test
@@ -168,7 +170,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                 )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"canHaveAssignee\": true, \"autoAssignTasks\": true}")
-        ).andExpect(status().isNotFound)
+        ).andExpect(status().isBadRequest)
     }
 
     @Test

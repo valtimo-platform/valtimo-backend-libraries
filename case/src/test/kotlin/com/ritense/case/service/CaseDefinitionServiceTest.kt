@@ -45,6 +45,7 @@ import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Optional
 
 class CaseDefinitionServiceTest {
     lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
@@ -77,6 +78,7 @@ class CaseDefinitionServiceTest {
         val caseDefinitionName = "name"
         val caseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, true)
 
+        whenever(documentDefinitionService.findLatestByName(caseDefinitionName)).thenReturn(Optional.of(mock()))
         whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)).thenReturn(caseDefinitionSettings)
 
         val foundCaseDefinitionSettings = service.getCaseSettings(caseDefinitionName)
@@ -90,14 +92,8 @@ class CaseDefinitionServiceTest {
     fun `should throw exception when getting case settings by id and document definition does not exist `() {
         val caseDefinitionName = "name"
 
-        whenever(documentDefinitionService.findIdByName(any())).thenThrow(
-            UnknownDocumentDefinitionException(
-                caseDefinitionName
-            )
-        )
-
-        assertThrows<UnknownDocumentDefinitionException> {
-            val foundCaseDefinitionSettings = service.getCaseSettings(caseDefinitionName)
+        assertThrows<UnknownCaseDefinitionException> {
+            service.getCaseSettings(caseDefinitionName)
         }
     }
 
@@ -107,6 +103,7 @@ class CaseDefinitionServiceTest {
         val currentCaseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, true)
         val updatedCaseDefinitionSettings = CaseDefinitionSettings(caseDefinitionName, false)
         val caseSettingsDto: CaseSettingsDto = mock()
+        whenever(documentDefinitionService.findLatestByName(caseDefinitionName)).thenReturn(Optional.of(mock()))
         whenever(caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)).thenReturn(currentCaseDefinitionSettings)
         whenever(caseDefinitionSettingsRepository.save(updatedCaseDefinitionSettings)).thenReturn(
             updatedCaseDefinitionSettings
@@ -122,13 +119,9 @@ class CaseDefinitionServiceTest {
     fun `should throw exception when updating case settings and document definition does not exist `() {
         val caseDefinitionName = "name"
         val caseSettingsDto: CaseSettingsDto = mock()
-        whenever(documentDefinitionService.findIdByName(any())).thenThrow(
-            UnknownDocumentDefinitionException(
-                caseDefinitionName
-            )
-        )
-        assertThrows<UnknownDocumentDefinitionException> {
-            val foundCaseDefinitionSettings = service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
+
+        assertThrows<UnknownCaseDefinitionException> {
+            service.updateCaseSettings(caseDefinitionName, caseSettingsDto)
         }
     }
 
