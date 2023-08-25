@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource
+package com.ritense.document.dashboard
 
-@Target(AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class WidgetDataSource(
-    val key: String,
-    val title: String
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.ritense.valtimo.contract.repository.ExpressionOperator
+
+data class QueryCondition<T: Comparable<T>>(
+    val queryPath: String,
+    val queryOperator: ExpressionOperator,
+    @JsonDeserialize(using = ComparableDeserializer::class)
+    val queryValue: T
 )

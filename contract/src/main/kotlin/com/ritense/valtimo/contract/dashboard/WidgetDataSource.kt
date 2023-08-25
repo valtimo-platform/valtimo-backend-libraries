@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.datasource.dto
+package com.ritense.valtimo.contract.dashboard
 
-data class DashboardWidgetListItemDto(
-    val value: Long,
-    val label: String,
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class WidgetDataSource(
+    val key: String,
+    val title: String
 )

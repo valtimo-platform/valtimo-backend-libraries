@@ -48,10 +48,24 @@ data class WidgetConfiguration(
     @Column(name = "data_source_properties", columnDefinition = "JSON")
     val dataSourceProperties: ObjectNode,
 
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "display_type_properties", columnDefinition = "JSON")
+    val displayTypeProperties: ObjectNode,
+
     @Column(name = "display_type", nullable = false)
     val displayType: String,
 
     @Column(name = "sort_order", nullable = false)
     val order: Int
-
-)
+) {
+    override fun toString(): String {
+        return "WidgetConfiguration(" +
+            "key='$key', " +
+            "title='$title', " +
+            "dataSourceKey='$dataSourceKey', " +
+            "dataSourceProperties=$dataSourceProperties, " +
+            "displayTypeProperties=$displayTypeProperties, " +
+            "displayType='$displayType', " +
+            "order=$order)"
+    }
+}

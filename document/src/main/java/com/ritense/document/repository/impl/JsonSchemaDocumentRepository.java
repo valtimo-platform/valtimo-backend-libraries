@@ -20,12 +20,14 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.repository.DocumentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSchemaDocument> {
+public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSchemaDocument>,
+    JpaSpecificationExecutor<JsonSchemaDocument> {
 
     Page<JsonSchemaDocument> findAllByDocumentDefinitionIdName(Pageable pageable, String definitionName);
 

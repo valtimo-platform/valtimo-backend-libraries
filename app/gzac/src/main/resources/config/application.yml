@@ -1,3 +1,12 @@
+management:
+    endpoints:
+        web:
+            base-path: /management
+            exposure:
+                include: ["configprops", "env", "health", "info", "logfile", "loggers", "mappings" ]
+    endpoint:
+        health:
+            show-details: when_authorized
 spring:
     application:
         name: gzac
@@ -243,3 +252,5 @@ external:
             bezwaar:
                 caseKey: bezwaar
                 processDefinitionKey: bezwaar
+
+valtimo.changelog.dashboard.clear-tables: true

@@ -17,7 +17,6 @@
 package com.ritense.dashboard.service
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.dashboard.datasource.WidgetDataSource
 import com.ritense.dashboard.datasource.WidgetDataSourceDto
 import com.ritense.dashboard.datasource.WidgetDataSourceResolver
 import com.ritense.dashboard.domain.Dashboard
@@ -25,13 +24,19 @@ import com.ritense.dashboard.domain.WidgetConfiguration
 import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
+import com.ritense.dashboard.web.rest.dto.SingleWidgetConfigurationUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import org.springframework.transaction.annotation.Transactional
+import java.util.SortedSet
 import kotlin.jvm.optionals.getOrElse
+import mu.KLogger
+import mu.KotlinLogging
+import org.springframework.context.ApplicationContext
+import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class DashboardService(
+    private val applicationContext: ApplicationContext,
     private val dashboardRepository: DashboardRepository,
     private val widgetConfigurationRepository: WidgetConfigurationRepository,
     private val userManagementService: UserManagementService,
@@ -79,6 +84,17 @@ class DashboardService(
         return dashboardRepository.saveAll(dashboards)
     }
 
+    fun updateDashboard(dashboardUpdateRequestDto: DashboardUpdateRequestDto): Dashboard {
+        val dashboard = dashboardRepository.findById(dashboardUpdateRequestDto.key)
+            .getOrElse { throw RuntimeException("Failed to update dashboard. Dashboard with key '${dashboardUpdateRequestDto.key}' doesn't exist.") }
+            .copy(
+                title = dashboardUpdateRequestDto.title,
+                description = dashboardUpdateRequestDto.description
+            )
+
+        return dashboardRepository.save(dashboard)
+    }
+
     fun deleteDashboard(dashboardKey: String) {
         dashboardRepository.deleteById(dashboardKey)
         updateDashboardOrder()
@@ -86,7 +102,7 @@ class DashboardService(
 
     @Transactional(readOnly = true)
     fun getWidgetConfigurations(dashboardKey: String): List<WidgetConfiguration> {
-        return widgetConfigurationRepository.findAllByDashboardKey(dashboardKey)
+        return widgetConfigurationRepository.findAllByDashboardKeyOrderByOrder(dashboardKey)
     }
 
     fun createWidgetConfiguration(
@@ -94,7 +110,8 @@ class DashboardService(
         title: String,
         dataSourceKey: String,
         displayType: String,
-        dataSourceProperties: ObjectNode
+        dataSourceProperties: ObjectNode,
+        displayTypeProperties: ObjectNode
     ): WidgetConfiguration {
         val key = generateWidgetKey(title)
         val order = widgetConfigurationRepository.countAllByDashboardKey(dashboardKey).toInt()
@@ -105,6 +122,7 @@ class DashboardService(
                 dashboard = getDashboard(dashboardKey),
                 dataSourceKey = dataSourceKey,
                 dataSourceProperties = dataSourceProperties,
+                displayTypeProperties = displayTypeProperties,
                 displayType = displayType,
                 order = order,
             )
@@ -129,12 +147,34 @@ class DashboardService(
                 dashboard = dashboard,
                 dataSourceKey = widgetConfigurationUpdateDto.dataSourceKey,
                 dataSourceProperties = widgetConfigurationUpdateDto.dataSourceProperties,
+                displayTypeProperties = widgetConfigurationUpdateDto.displayTypeProperties,
                 displayType = widgetConfigurationUpdateDto.displayType,
                 order = index,
             )
         }
 
         return widgetConfigurationRepository.saveAll(widgetConfigurations)
+    }
+
+    fun updateWidgetConfiguration(
+        dashboardKey: String,
+        widgetKey: String,
+        configUpdateRequest: SingleWidgetConfigurationUpdateRequestDto
+    ): WidgetConfiguration {
+
+        val widgetConfiguration = widgetConfigurationRepository.findByDashboardKeyAndKey(dashboardKey, widgetKey) ?:
+                throw RuntimeException("Failed to update widget configuration. Widget configuration with key '$widgetKey' and dashboard '$dashboardKey' doesn't exist.")
+
+
+        val updatedConfiguration = widgetConfiguration.copy(
+            title = configUpdateRequest.title,
+            dataSourceKey = configUpdateRequest.dataSourceKey,
+            dataSourceProperties = configUpdateRequest.dataSourceProperties,
+            displayTypeProperties = configUpdateRequest.displayTypeProperties,
+            displayType = configUpdateRequest.displayType,
+        )
+
+        return widgetConfigurationRepository.save(updatedConfiguration)
     }
 
     @Transactional(readOnly = true)
@@ -144,20 +184,43 @@ class DashboardService(
     }
 
     fun deleteWidgetConfiguration(dashboardKey: String, widgetConfigurationKey: String) {
-        widgetConfigurationRepository.deleteByDashboardKeyAndKey(dashboardKey, widgetConfigurationKey)
+        val dashboard = dashboardRepository.findByKey(dashboardKey)
+            ?: throw RuntimeException("No dashboard configuration found with key '$dashboardKey'")
+        val newWidgetList = dashboard.widgetConfigurations.toMutableList()
+        newWidgetList.removeIf { it.key == widgetConfigurationKey }
+        val updatedDashBoard = dashboard.copy(widgetConfigurations = newWidgetList)
+        dashboardRepository.save(updatedDashBoard)
         updateWidgetConfigurationOrder(dashboardKey)
     }
 
     fun getWidgetDataSources(): List<WidgetDataSourceDto> {
-        return widgetDataSourceResolver.widgetDataSourceMap.values.map {
-            val type = when (it.genericReturnType.typeName) {
-                "com.ritense.dashboard.datasource.dto.DashboardWidgetListDto" -> "multi"
-                "com.ritense.dashboard.datasource.dto.DashboardWidgetSingleDto" -> "single"
-                else -> it.genericReturnType.typeName.substringAfterLast(".")
+        return widgetDataSourceResolver.dataSourceMethodMap.entries
+            .filter { (_, method) ->
+                val beanExists = applicationContext.getBeanNamesForType(method.declaringClass).isNotEmpty()
+                if(!beanExists) {
+                    logger.warn { "DataSource of type ${method.declaringClass} is not listed as a Spring Bean!" }
+                }
+
+                beanExists
             }
-            val annotation = it.getAnnotation(WidgetDataSource::class.java)
-            WidgetDataSourceDto(annotation.key, annotation.title, type)
-        }.sortedBy { it.title }
+            .map { (datasource, method) ->
+                val dataFeatures = getDataFeaturesForClass(method.returnType)
+
+                WidgetDataSourceDto(datasource.key, datasource.title, dataFeatures)
+            }.sortedBy { it.title }
+    }
+
+    private fun getDataFeaturesForClass(returnType: Class<*>): SortedSet<String> {
+        // This should be a lot easier if this Kotlin issue was fixed: https://youtrack.jetbrains.com/issue/KT-22265/Support-for-inherited-annotations
+        // The workaround gets all classes annotated with WidgetDataFeature and adds the feature when the class is assignable from the returnType
+        val dataFeatures = widgetDataSourceResolver.dataFeatureClassMap
+            .filter {
+                it.key.isAssignableFrom(returnType)
+            }
+            .flatMap { entry -> entry.value }
+            .map { type -> type.value }
+            .toSortedSet()
+        return dataFeatures
     }
 
     private fun updateDashboardOrder() {
@@ -197,5 +260,9 @@ class DashboardService(
             .lowercase()
             .replace("(^[^a-z]+)|([^0-9a-z]+\$)".toRegex(), "") // trim start and end
             .replace("[^0-9a-z]+".toRegex(), "_") // replace all non-alphanumeric characters with '_'
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }
