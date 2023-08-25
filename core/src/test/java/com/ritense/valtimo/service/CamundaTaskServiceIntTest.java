@@ -17,10 +17,10 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.permission.PermissionRepository;
-import com.ritense.authorization.role.RoleRepository;
 import com.ritense.authorization.permission.ConditionContainer;
 import com.ritense.authorization.permission.Permission;
+import com.ritense.authorization.permission.PermissionRepository;
+import com.ritense.authorization.role.RoleRepository;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
@@ -28,18 +28,19 @@ import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.inject.Inject;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,11 +69,6 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     private final String processDefinitionKey = "one-task-process";
     private final String businessKey = "some-id";
-
-    @BeforeEach
-    void setUp() throws IllegalAccessException {
-        addProcessToContext(processDefinitionKey);
-    }
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)

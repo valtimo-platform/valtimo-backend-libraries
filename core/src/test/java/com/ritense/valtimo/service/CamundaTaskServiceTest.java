@@ -88,7 +88,6 @@ class CamundaTaskServiceTest {
             new CamundaTaskService(
                 taskService,
                 formService,
-                null,
                 delegateTaskHelper,
                 camundaTaskRepository,
                 null,
@@ -168,7 +167,6 @@ class CamundaTaskServiceTest {
         //initialize own taskService here because we need to override the complete method
         CamundaTaskService camundaTaskService = spy(new CamundaTaskService(
             taskService,
-            null,
             null,
             delegateTaskHelper,
             camundaTaskRepository,

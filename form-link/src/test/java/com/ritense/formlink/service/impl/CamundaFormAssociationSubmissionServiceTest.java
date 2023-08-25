@@ -30,9 +30,12 @@ import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.formlink.service.impl.result.FormSubmissionResultFailed;
 import com.ritense.formlink.service.impl.result.FormSubmissionResultSucceeded;
 import com.ritense.formlink.service.result.FormSubmissionResult;
+import com.ritense.processdocument.domain.ProcessInstanceId;
+import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.processdocument.service.impl.result.ModifyDocumentAndCompleteTaskResultSucceeded;
+import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultSucceeded;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +51,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
@@ -99,7 +104,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
         formData.put("name", "value");
 
         final FormSubmissionResult formSubmissionResult = formAssociationSubmissionService
-            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, formData);
+            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, null, formData);
 
         assertThat(formSubmissionResult).isInstanceOf(FormSubmissionResultFailed.class);
         assertThat(formSubmissionResult.errors()).isNotEmpty();
@@ -130,7 +135,38 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
 
         //When
         final FormSubmissionResult formSubmissionResult = formAssociationSubmissionService
-            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, formData);
+            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, null, formData);
+
+        //Then
+        assertThat(formSubmissionResult).isInstanceOf(FormSubmissionResultSucceeded.class);
+        assertThat(formSubmissionResult.errors()).isEmpty();
+    }
+
+    @Test
+    public void shouldHandleSubmissionWithoutProcessDocumentDefinitionButWithDocumentDefinitionName() throws IOException {
+        //Given
+        String processDefinitionKey = "myProcessKey";
+        String documentDefinitionName = "myDocumentName";
+        String formLinkId = "myFormLinkId";
+        ObjectNode formData = formData();
+
+        formAssociation = processFormAssociation(UUID.randomUUID(), UUID.randomUUID()).getFormAssociations().iterator().next();
+        when(formAssociationService.getFormAssociationByFormLinkId(any(), any())).thenReturn(Optional.of(formAssociation));
+
+        formDefinition = formDefinitionOf("user-task");
+        when(formDefinitionService.getFormDefinitionById(any())).thenReturn(Optional.of(formDefinition));
+
+        final var jsonDocumentContent = JsonDocumentContent.build(formData);
+        final Optional<JsonSchemaDocument> document = Optional.of(createDocument(jsonDocumentContent));
+        final ProcessInstanceId processInstanceId = mock(ProcessInstanceId.class);
+        when(documentService.findBy(any())).thenReturn(document);
+        when(processDocumentService.dispatch(any())).thenReturn(new NewDocumentAndStartProcessResultSucceeded(document.orElseThrow(), processInstanceId));
+
+        //When
+        final FormSubmissionResult formSubmissionResult = formAssociationSubmissionService
+            .handleSubmission(processDefinitionKey, formLinkId, null, null, documentDefinitionName, formData);
+
+        verifyNoInteractions(processDocumentAssociationService);
 
         //Then
         assertThat(formSubmissionResult).isInstanceOf(FormSubmissionResultSucceeded.class);
@@ -156,7 +192,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
 
         //When
         final var documentNotFoundException = formAssociationSubmissionService
-            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, formData);
+            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, null, formData);
 
         //Then
         assertThat(documentNotFoundException).isNotNull();
@@ -188,7 +224,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
 
         //When
         final var documentNotFoundException = formAssociationSubmissionService
-            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, formData);
+            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, null, formData);
 
         //Then
         assertThat(documentNotFoundException).isNotNull();
@@ -220,7 +256,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
 
         //When
         final var documentNotFoundException = formAssociationSubmissionService
-            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, formData);
+            .handleSubmission(processDefinitionKey, formLinkId, documentId, taskInstanceId, null, formData);
 
         //Then
         assertThat(documentNotFoundException).isNotNull();

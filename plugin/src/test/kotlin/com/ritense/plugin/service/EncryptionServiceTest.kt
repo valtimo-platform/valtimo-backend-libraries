@@ -18,17 +18,19 @@ package com.ritense.plugin.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import javax.crypto.spec.SecretKeySpec
 
 internal class EncryptionServiceTest {
-    val encryptedValue = "tRAgOSv2vlAuxA4+igFVyw=="
+    val oldEncryptedValue = "tRAgOSv2vlAuxA4+igFVyw=="
+    val encryptedValue = "{AES/GCM/NoPadding}G5Mfnj95piqF92nudCfAQSzHi3DbTNm+XZ7+cDAIPrE="
     val value = "test"
     val encryptionKey = "abcdefghijklmnop"
     val service = EncryptionService(encryptionKey)
 
     @Test
-    fun `should encrypt value`() {
-        val result = service.encrypt(value)
-        assertEquals(encryptedValue, result)
+    fun `should decrypt old value`() {
+        val result = service.decrypt(oldEncryptedValue)
+        assertEquals(value, result)
     }
 
     @Test

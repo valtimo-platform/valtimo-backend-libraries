@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.context.repository;
+package com.whitelisted
 
-import com.ritense.valtimo.domain.contexts.Context;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-import java.util.Collection;
-import java.util.List;
+import com.ritense.valtimo.contract.custom.TestAnnotation
 
-@Repository
-public interface ContextRepository extends JpaRepository<Context, Long> {
-    Context findFirstByRolesInAndId(Collection<String> roles, Long contextId);
+@TestAnnotation
+class WhitelistedClassWithTextAnnotation {
 
-    Context findFirstByRolesIn(Collection<String> roles);
+    @TestAnnotation
+    fun whitelistedAnnotatedMethod() {
+    }
 
-    List<Context> findDistinctByRolesIn(Collection<String> roles);
-
-    Context findByName(String name);
+    fun whitelistedNonAnnotatedMethod() {}
 }

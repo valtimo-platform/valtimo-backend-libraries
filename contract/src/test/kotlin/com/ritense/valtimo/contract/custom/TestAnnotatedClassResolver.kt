@@ -14,23 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.security.permission;
+package com.ritense.valtimo.contract.custom
 
-import org.springframework.security.core.Authentication;
+import com.ritense.valtimo.contract.annotation.AnnotatedClassResolver
+import org.springframework.context.ApplicationContext
+import org.springframework.stereotype.Component
 
-/**
- * Check permissions on a domain object. Used in <code>ValtimoPermissionEvaluator</code> for checking
- * custom permissions.
- */
-public interface Permission<T_TARGET> {
-
-    /**
-     * isAllowed.
-     *
-     * @return true when user is allowed to access the target, false otherwise
-     */
-    boolean isAllowed(Authentication authentication, T_TARGET targetDomainObject);
-
-    String name();
-
-}
+@Component
+class TestAnnotatedClassResolver(context: ApplicationContext) : AnnotatedClassResolver(context)

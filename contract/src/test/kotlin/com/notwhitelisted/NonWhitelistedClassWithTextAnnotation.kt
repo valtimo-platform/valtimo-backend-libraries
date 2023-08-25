@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin
+package com.notwhitelisted
 
-import com.ritense.plugin.annotation.PluginCategory
-import com.ritense.valtimo.contract.annotation.AnnotatedClassResolver
-import org.springframework.context.ApplicationContext
+import com.ritense.valtimo.contract.custom.TestAnnotation
 
-class PluginCategoryResolver(
-    context: ApplicationContext
-): AnnotatedClassResolver(context) {
-    internal fun findPluginCategoryClasses() : Map<Class<*>, PluginCategory> {
-        return findClassesWithAnnotation()
+@TestAnnotation
+class NonWhitelistedClassWithTextAnnotation {
+
+    @TestAnnotation
+    fun nonWhitelistedAnnotatedMethod() {
     }
+
+    fun nonWhitelistedNonAnnotatedMethod() {}
 }

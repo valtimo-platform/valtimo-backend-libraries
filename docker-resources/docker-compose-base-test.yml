@@ -52,3 +52,4 @@ services:
 #   url: jdbc:postgresql://localhost:3343/dashboard-test
 #   url: jdbc:postgresql://localhost:3344/authorization
 #   url: jdbc:postgresql://localhost:3345/changelog-test
+#   url: jdbc:postgresql://localhost:3346/contract-test

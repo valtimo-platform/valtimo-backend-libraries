@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.web.rest.dto;
+package com.ritense.valtimo.contract
 
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
-public class UserContextDTO implements Serializable {
+@SpringBootApplication
+class TestApplication {
 
-    @NotNull
-    private Long contextId;
-
-    public UserContextDTO(Long contextId) {
-        this.contextId = contextId;
-    }
-
-    public void setContextId(Long contextId) {
-        this.contextId = contextId;
-    }
-
-    public Long getContextId() {
-        return contextId;
+    fun main(args: Array<String>) {
+        runApplication<TestApplication>(*args)
     }
 }

@@ -41,6 +41,7 @@ import com.ritense.valueresolver.ValueResolverService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
@@ -91,13 +92,13 @@ class PluginAutoConfiguration {
     }
 
     @Bean
-    fun pluginDefinitionResolver(): PluginDefinitionResolver {
-        return PluginDefinitionResolver()
+    fun pluginDefinitionResolver(context: ApplicationContext): PluginDefinitionResolver {
+        return PluginDefinitionResolver(context)
     }
 
     @Bean
-    fun pluginCategoryResolver(): PluginCategoryResolver {
-        return PluginCategoryResolver()
+    fun pluginCategoryResolver(context: ApplicationContext): PluginCategoryResolver {
+        return PluginCategoryResolver(context)
     }
 
     @Order(420)

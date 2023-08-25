@@ -18,10 +18,10 @@ package com.ritense.valtimo.service;
 
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.authorization.specification.AuthorizationSpecification;
 import com.ritense.authorization.request.DelegateUserEntityAuthorizationRequest;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.role.Role;
+import com.ritense.authorization.specification.AuthorizationSpecification;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
@@ -37,8 +37,6 @@ import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import com.ritense.valtimo.domain.contexts.Context;
-import com.ritense.valtimo.domain.contexts.ContextProcess;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
@@ -61,6 +59,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Order;
@@ -72,6 +71,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGN;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGNABLE;
@@ -87,16 +87,15 @@ import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHel
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.EXECUTION;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.ID;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.PROCESS_DEFINITION;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.all;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssignee;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCandidateGroups;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byId;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessDefinitionKeys;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceId;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byUnassigned;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsLast;
-import static java.util.stream.Collectors.toSet;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 public class CamundaTaskService {
@@ -106,7 +105,6 @@ public class CamundaTaskService {
     private static final String NO_USER = null;
     private final TaskService taskService;
     private final FormService formService;
-    private final ContextService contextService;
     private final DelegateTaskHelper delegateTaskHelper;
     private final CamundaTaskRepository camundaTaskRepository;
     private final CamundaIdentityLinkRepository camundaIdentityLinkRepository;
@@ -120,7 +118,6 @@ public class CamundaTaskService {
     public CamundaTaskService(
         TaskService taskService,
         FormService formService,
-        ContextService contextService,
         DelegateTaskHelper delegateTaskHelper,
         CamundaTaskRepository camundaTaskRepository,
         CamundaIdentityLinkRepository camundaIdentityLinkRepository,
@@ -133,7 +130,6 @@ public class CamundaTaskService {
     ) {
         this.taskService = taskService;
         this.formService = formService;
-        this.contextService = contextService;
         this.delegateTaskHelper = delegateTaskHelper;
         this.camundaTaskRepository = camundaTaskRepository;
         this.camundaIdentityLinkRepository = camundaIdentityLinkRepository;
@@ -446,11 +442,7 @@ public class CamundaTaskService {
     private Specification<CamundaTask> buildTaskFilterSpecification(TaskFilter taskFilter) throws IllegalAccessException {
         String currentUserLogin = SecurityUtils.getCurrentUserLogin();
         List<String> userRoles = SecurityUtils.getCurrentUserRoles();
-        Context context = contextService.getContextOfCurrentUser();
-        var processDefinitionKeys = context.getProcesses().stream()
-            .map(ContextProcess::getProcessDefinitionKey)
-            .collect(toSet());
-        var filterSpec = byProcessDefinitionKeys(processDefinitionKeys);
+        var filterSpec = all();
 
         if (taskFilter == TaskFilter.MINE) {
             if (currentUserLogin == null) {

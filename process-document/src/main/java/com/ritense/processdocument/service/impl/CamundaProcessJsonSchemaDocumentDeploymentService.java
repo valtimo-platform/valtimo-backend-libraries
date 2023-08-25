@@ -28,8 +28,6 @@ import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService;
-import com.ritense.valtimo.domain.contexts.ContextProcess;
-import com.ritense.valtimo.service.ContextService;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +36,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
-import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,13 +46,11 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
     private static final Logger logger = LoggerFactory.getLogger(CamundaProcessJsonSchemaDocumentDeploymentService.class);
     private final ResourceLoader resourceLoader;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
-    private final ContextService contextService;
     private final DocumentDefinitionService documentDefinitionService;
 
-    public CamundaProcessJsonSchemaDocumentDeploymentService(ResourceLoader resourceLoader, ProcessDocumentAssociationService processDocumentAssociationService, ContextService contextService, DocumentDefinitionService documentDefinitionService) {
+    public CamundaProcessJsonSchemaDocumentDeploymentService(ResourceLoader resourceLoader, ProcessDocumentAssociationService processDocumentAssociationService, DocumentDefinitionService documentDefinitionService) {
         this.resourceLoader = resourceLoader;
         this.processDocumentAssociationService = processDocumentAssociationService;
-        this.contextService = contextService;
         this.documentDefinitionService = documentDefinitionService;
     }
 
@@ -119,14 +114,6 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
             }
             return null;
         });
-
-        if (item.getProcessIsVisibleInMenu() != null) {
-            contextService.findAll(Pageable.unpaged()).forEach(context -> {
-                context.getProcesses().removeIf(contextProcess -> contextProcess.getProcessDefinitionKey().equals(item.getProcessDefinitionKey()));
-                context.addProcess(new ContextProcess(item.getProcessDefinitionKey(), item.getProcessIsVisibleInMenu()));
-                contextService.save(context);
-            });
-        }
     }
 
     private String getProcessDocumentLinkResourcePath(String documentDefinitionName) {

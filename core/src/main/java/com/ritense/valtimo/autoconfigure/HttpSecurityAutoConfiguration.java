@@ -29,7 +29,6 @@ import com.ritense.valtimo.security.config.CamundaCockpitHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CamundaHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CamundaRestHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ChoiceFieldHttpSecurityConfigurer;
-import com.ritense.valtimo.security.config.ContextHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CsrfHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.DenyAllHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.EmailNotificationSettingsSecurityConfigurer;
@@ -169,13 +168,6 @@ public class HttpSecurityAutoConfiguration {
     @ConditionalOnMissingBean(ProcessInstanceHttpSecurityConfigurer.class)
     public ProcessInstanceHttpSecurityConfigurer processInstanceHttpSecurityConfigurer() {
         return new ProcessInstanceHttpSecurityConfigurer();
-    }
-
-    @Order(370)
-    @Bean
-    @ConditionalOnMissingBean(ContextHttpSecurityConfigurer.class)
-    public ContextHttpSecurityConfigurer contextHttpSecurityConfigurer() {
-        return new ContextHttpSecurityConfigurer();
     }
 
     @Order(380)

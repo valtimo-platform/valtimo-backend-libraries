@@ -39,6 +39,7 @@ class FormResource(
     @PostMapping("/v1/process-link/{processLinkId}/form/submission")
     fun handleSubmission(
         @PathVariable processLinkId: UUID,
+        @RequestParam(required = false) documentDefinitionName: String?,
         @RequestParam(required = false) documentId: String?,
         @RequestParam(required = false) taskInstanceId: String?,
         @RequestBody submission: JsonNode
@@ -47,6 +48,7 @@ class FormResource(
             formSubmissionService.handleSubmission(
                 processLinkId,
                 submission,
+                documentDefinitionName,
                 documentId,
                 taskInstanceId,
             )

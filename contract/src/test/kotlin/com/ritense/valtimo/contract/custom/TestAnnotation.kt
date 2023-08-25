@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.context.repository;
+package com.ritense.valtimo.contract.custom
 
-import com.ritense.valtimo.domain.contexts.UserContext;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public interface UserContextRepository extends JpaRepository<UserContext, Long> {
-    UserContext findByUserId(String userId);
-}
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class TestAnnotation
