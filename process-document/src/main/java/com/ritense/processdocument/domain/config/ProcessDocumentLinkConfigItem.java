@@ -22,7 +22,6 @@ public class ProcessDocumentLinkConfigItem {
     private String processDefinitionKey;
     private Boolean canInitializeDocument;
     private Boolean startableByUser;
-    private Boolean processIsVisibleInMenu;
 
     public ProcessDocumentLinkConfigItem() {
         //Default constructor
@@ -63,14 +62,6 @@ public class ProcessDocumentLinkConfigItem {
         this.startableByUser = startableByUser;
     }
 
-    public Boolean getProcessIsVisibleInMenu() {
-        return processIsVisibleInMenu;
-    }
-
-    public void setProcessIsVisibleInMenu(Boolean processIsVisibleInMenu) {
-        this.processIsVisibleInMenu = processIsVisibleInMenu;
-    }
-
     public boolean equalsProcessDocumentDefinition(ProcessDocumentDefinition processDocumentDefinition) {
         return processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString().equals(getProcessDefinitionKey())
                 && processDocumentDefinition.startableByUser() == isStartableByUser()
@@ -83,7 +74,6 @@ public class ProcessDocumentLinkConfigItem {
                 "processDefinitionKey='" + processDefinitionKey + '\'' +
                 ", canInitializeDocument=" + canInitializeDocument +
                 ", startableByUser=" + startableByUser +
-                ", processIsVisibleInMenu=" + processIsVisibleInMenu +
                 '}';
     }
 }
