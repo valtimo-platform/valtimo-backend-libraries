@@ -74,6 +74,6 @@ internal class ChangelogDeployerIntTest : BaseIntegrationTest() {
         val exception = assertThrows<RuntimeException> {
             changelogDeployer.deploy(testTypeChangesetDeployer, filename, content)
         }
-        assertThat(exception.message).isEqualTo("Computed checksum '990719bf4ba2ec171091f913ccc6164c' doesn't match existing 'c29a5747d698b2f95cdfd5ed6502f19d' for test/config/import/initial.testtype.json")
+        assertThat(exception.cause!!.message).isEqualTo("Computed checksum '990719bf4ba2ec171091f913ccc6164c' doesn't match existing 'c29a5747d698b2f95cdfd5ed6502f19d' for test/config/import/initial.testtype.json")
     }
 }
