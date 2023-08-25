@@ -16,7 +16,7 @@
 
 package com.ritense.zakenapi.domain
 
-data class SetZaakopschortingRequest(
+data class ZaakopschortingRequest(
     val verlenging: Verlenging,
     val opschorting: Opschorting,
 )

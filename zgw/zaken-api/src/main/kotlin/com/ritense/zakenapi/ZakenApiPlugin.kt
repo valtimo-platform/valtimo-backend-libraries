@@ -27,7 +27,6 @@ import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.*
-import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
@@ -289,7 +288,7 @@ class ZakenApiPlugin(
         client.setZaakOpschorting(
             authenticationPluginConfiguration,
             zaakUrl,
-            SetZaakopschortingRequest(
+            ZaakopschortingRequest(
                 verlenging = Verlenging(
                     reden = toelichtingVerlenging,
                     duur = "P$verlengingsduur"+"D"

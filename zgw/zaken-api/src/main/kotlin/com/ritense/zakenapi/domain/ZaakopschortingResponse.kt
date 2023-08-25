@@ -52,15 +52,5 @@ data class ZaakopschortingResponse(
     val archiefactiedatum: String?,
     val resultaat: String?,
     val opdrachtgevendeOrganisatie: String
-) {
-    data class Verlenging(
-        val reden: String,
-        val duur: String
-    )
-
-    data class Opschorting(
-        val indicatie: Boolean,
-        val reden: String
-    )
-}
+)
 

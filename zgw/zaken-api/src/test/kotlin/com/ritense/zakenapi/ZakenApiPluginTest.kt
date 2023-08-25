@@ -534,7 +534,7 @@ internal class ZakenApiPluginTest {
         )
 
         // then
-        val captor = argumentCaptor<SetZaakopschortingRequest>()
+        val captor = argumentCaptor<ZaakopschortingRequest>()
         verify(zakenApiClient).setZaakOpschorting(any(), any(), captor.capture())
 
         val request = captor.firstValue
