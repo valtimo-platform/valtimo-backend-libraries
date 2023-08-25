@@ -125,10 +125,10 @@ class DashboardDeployerIT: BaseIntegrationTest() {
     fun `should fail deployment when dashboards have the same order`() {
         whenever(dashboardDeployer.getPath()).thenReturn("classpath*:**/dashboard-fail-v*.json")
 
-        val exception = assertThrows<DeploymentFailedException> {
+        val exception = assertThrows<IllegalStateException> {
             changelogDeployer.deployAll()
         }
 
-        assertThat(exception.message).isEqualTo("A dashboard with order 1 already exists.")
+        assertThat(exception.cause!!.message).isEqualTo("A dashboard with order 1 already exists.")
     }
 }
