@@ -302,22 +302,6 @@ class ZakenApiPlugin(
         )
     }
 
-    @PluginAction(
-        key = "continue-zaak-after-opschorting",
-        title = "Continue case after suspension",
-        description = "Continues a suspended case, sets the suspend status to false",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
-    )
-    fun continueZaakAfterOpschorting(execution: DelegateExecution) {
-        val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
-
-        client.continueZaakAfterOpschorting(
-            authenticationPluginConfiguration,
-            zaakUrl
-        )
-    }
-
     fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {
         return client.getZaakInformatieObjecten(authenticationPluginConfiguration, url, zaakUrl)
     }

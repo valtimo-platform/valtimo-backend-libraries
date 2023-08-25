@@ -542,36 +542,4 @@ internal class ZakenApiPluginTest {
         assertEquals("testing verlenging", request.verlenging.reden)
         assertEquals("testing opschorting", request.opschorting.reden)
     }
-    @Test
-    fun `should set zaakopschorting to false`() {
-
-        // given
-        val zakenApiClient: ZakenApiClient = mock()
-        val zaakUrlProvider: ZaakUrlProvider = mock()
-        val storageService: TemporaryResourceStorageService = mock()
-        val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
-        val executionMock = mock<DelegateExecution>()
-        val authenticationMock = mock<ZakenApiAuthentication>()
-
-        val documentId = UUID.randomUUID()
-        val zaakUrl = URI("https://example.com/zaken/1234")
-
-        whenever(executionMock.businessKey).thenReturn(documentId.toString())
-        whenever(zaakUrlProvider.getZaakUrl(documentId)).thenReturn(zaakUrl)
-
-        val plugin = ZakenApiPlugin(
-            zakenApiClient,
-            zaakUrlProvider,
-            storageService,
-            zaakInstanceLinkRepository
-        )
-        plugin.url = URI("https://zaken.plugin.url")
-        plugin.authenticationPluginConfiguration = authenticationMock
-
-        // when
-        plugin.continueZaakAfterOpschorting(execution = executionMock)
-
-        // then
-        verify(zakenApiClient, times(1)).continueZaakAfterOpschorting(any(), any())
-    }
 }
