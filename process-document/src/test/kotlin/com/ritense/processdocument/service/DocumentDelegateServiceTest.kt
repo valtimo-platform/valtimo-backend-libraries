@@ -24,6 +24,8 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.BaseTest
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -31,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.LocalDateTime
@@ -43,6 +46,7 @@ internal class DocumentDelegateServiceTest : BaseTest() {
     private lateinit var processDocumentService: ProcessDocumentService
     private lateinit var documentService: DocumentService
     private lateinit var jsonSchemaDocumentService: JsonSchemaDocumentService
+    private lateinit var userManagementService: UserManagementService
     private lateinit var documentDelegateService: DocumentDelegateService
 
     lateinit var definition: JsonSchemaDocumentDefinition
@@ -66,12 +70,15 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         documentSequenceGeneratorService = mock()
         whenever(documentSequenceGeneratorService.next(any())).thenReturn(1L)
         processDocumentService = mock()
+        userManagementService = mock()
         documentService = mock()
+        jsonSchemaDocumentService = mock()
         jsonSchemaDocumentService = mock()
         documentDelegateService = DocumentDelegateService(
             processDocumentService,
             documentService,
-            jsonSchemaDocumentService
+            jsonSchemaDocumentService,
+            userManagementService
         )
         delegateExecutionFake =
             DelegateExecutionFake("id").withProcessBusinessKey("56f29315-c581-4c26-9b70-8bc818e8c86e");
@@ -217,6 +224,40 @@ internal class DocumentDelegateServiceTest : BaseTest() {
         )
 
         assertEquals(defaultValue, value)
+    }
+
+    @Test
+    fun `should assign user to document`() {
+        val documentId = "11111111-1111-1111-1111-111111111111"
+        val processInstanceId = "00000000-0000-0000-0000-000000000000"
+        val delegateExecutionFake = DelegateExecutionFake("id")
+            .withProcessInstanceId(processInstanceId)
+            .withProcessBusinessKey(documentId)
+        whenever(
+            processDocumentService.getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
+        ).thenReturn(JsonSchemaDocumentId.existingId(UUID.fromString(documentId)))
+        whenever(userManagementService.findByEmail("john@example.com"))
+            .thenReturn(Optional.of(ValtimoUserBuilder().id("anId").build()))
+
+        documentDelegateService.setAssignee(delegateExecutionFake, "john@example.com")
+
+        verify(documentService, times(1)).assignUserToDocument(UUID.fromString(documentId), "anId")
+    }
+
+    @Test
+    fun `should unassign user from document`() {
+        val documentId = "11111111-1111-1111-1111-111111111111"
+        val processInstanceId = "00000000-0000-0000-0000-000000000000"
+        val delegateExecutionFake = DelegateExecutionFake("id")
+            .withProcessInstanceId(processInstanceId)
+            .withProcessBusinessKey(documentId)
+        whenever(
+            processDocumentService.getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
+        ).thenReturn(JsonSchemaDocumentId.existingId(UUID.fromString(documentId)))
+
+        documentDelegateService.unassign(delegateExecutionFake)
+
+        verify(documentService, times(1)).unassignUserFromDocument(UUID.fromString(documentId))
     }
 
 
