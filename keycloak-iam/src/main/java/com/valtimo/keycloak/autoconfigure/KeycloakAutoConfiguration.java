@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,10 @@ public class KeycloakAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(KeycloakTokenAuthenticator.class)
-    public KeycloakTokenAuthenticator keycloakTokenAuthenticator() {
-        return new KeycloakTokenAuthenticator();
+    public KeycloakTokenAuthenticator keycloakTokenAuthenticator(
+        @Value("${valtimo.keycloak.client:}") final String keycloakClient
+    ) {
+        return new KeycloakTokenAuthenticator(keycloakClient);
     }
 
     @Bean
@@ -61,16 +63,20 @@ public class KeycloakAutoConfiguration {
     @ConditionalOnMissingBean(KeycloakUserManagementService.class)
     @ConditionalOnWebApplication
     public KeycloakUserManagementService keycloakUserManagementService(
-        final KeycloakService keycloakService
+        final KeycloakService keycloakService,
+        @Value("${valtimo.keycloak.client:}") final String keycloakClientName
     ) {
-        return new KeycloakUserManagementService(keycloakService);
+        return new KeycloakUserManagementService(keycloakService, keycloakClientName);
     }
 
     @Bean
     @ConditionalOnMissingBean(KeycloakService.class)
     @ConditionalOnWebApplication
-    public KeycloakService keycloakService(final KeycloakSpringBootProperties properties) {
-        return new KeycloakService(properties);
+    public KeycloakService keycloakService(
+            final KeycloakSpringBootProperties properties,
+            @Value("${valtimo.keycloak.client:}") final String keycloakClientName
+    ) {
+        return new KeycloakService(properties, keycloakClientName);
     }
 
 }

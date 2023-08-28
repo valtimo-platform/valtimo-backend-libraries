@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package com.ritense.objectsapi.web.rest
 
 import com.ritense.objectsapi.domain.request.HandleNotificationRequest
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -27,10 +27,10 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/notification"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface OpenNotificatieResource {
 
-    @PostMapping
+    @PostMapping("/v1/notification")
     fun handleNotification(
         @RequestBody notification: HandleNotificationRequest,
         @RequestHeader("Authorization") authHeader: String?,

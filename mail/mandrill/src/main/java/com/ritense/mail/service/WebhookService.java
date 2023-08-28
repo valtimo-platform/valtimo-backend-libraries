@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.MultiValueMap;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+
 import static com.ritense.mail.domain.webhook.SyncEventEnum.BLACKLIST;
 
 public class WebhookService {
@@ -70,7 +72,7 @@ public class WebhookService {
             if (node.has("event")) {
                 MandrillMessageEvent messageEvent = objectMapper.treeToValue(node, MandrillMessageEvent.class);
                 events.addMessageEvent(messageEvent);
-            } else if (node.has("type") && node.get("type").asText().equals(BLACKLIST)) {
+            } else if (node.has("type") && node.get("type").asText().equals(BLACKLIST.name())) {
                 MandrillSyncEvent syncEvent = objectMapper.treeToValue(node, MandrillSyncEvent.class);
                 events.addSyncEvent(syncEvent);
             }

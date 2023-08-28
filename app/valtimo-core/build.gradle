@@ -6,22 +6,22 @@ dependencies {
     implementation(project(":keycloak-iam"))
     implementation(project(":web"))
     implementation(project(":audit"))
+    implementation(project(":case"))
     implementation(project(":document"))
     implementation(project(":process-document"))
     implementation(project(":plugin"))
     implementation(project(":form"))
     implementation(project(":form-flow-valtimo"))
-    implementation(project(":form-link"))
     implementation(project(":document-generation:local-document-generation"))
     implementation(project(":resource:local-resource"))
     implementation(project(":mail:local-mail"))
-    implementation(project(":external-event"))
+//    implementation(project(":external-event"))
     implementation(project(":connector"))
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:1"
+    api "javax.inject:javax.inject:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -30,7 +30,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-validation"
 
-    implementation "com.fasterxml.jackson.module:jackson-module-afterburner"
+    implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
     implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
@@ -38,11 +38,18 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+
+    //ShedLock
+    implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}"
+    implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:${shedlockVersion}"
+
+    // Database
+    implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
 }
 
 apply from: "gradle/publishing.gradle"

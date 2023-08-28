@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.formflow.web.rest.result.CompleteStepResult
 import com.ritense.valtimo.formflow.web.rest.result.FormFlowStepResult
 import com.ritense.valtimo.formflow.web.rest.result.GetFormFlowStateResult
 import org.json.JSONObject
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -36,11 +36,11 @@ import org.springframework.web.bind.annotation.RestController
 import javax.transaction.Transactional
 
 @RestController
-@RequestMapping(value = ["/api/form-flow"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class FormFlowResource(
     private val formFlowService: FormFlowService
 ) {
-    @GetMapping("/{formFlowInstanceId}")
+    @GetMapping("/v1/form-flow/{formFlowInstanceId}")
     @Transactional
     fun getFormFlowState(
         @PathVariable(name = "formFlowInstanceId") instanceId: String,
@@ -57,7 +57,7 @@ class FormFlowResource(
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
     }
 
-    @PostMapping("/{formFlowId}/step/{stepInstanceId}")
+    @PostMapping("/v1/form-flow/{formFlowId}/step/{stepInstanceId}")
     @Transactional
     fun completeStep(
         @PathVariable(name = "formFlowId") formFlowId: String,
@@ -66,31 +66,42 @@ class FormFlowResource(
     ): ResponseEntity<CompleteStepResult> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
 
-        val submissionDataJsonObject = if (submissionData == null) {
-            JSONObject()
-        } else {
-            JSONObject(submissionData.toString())
-        }
         val stepInstance = instance.complete(
             FormFlowStepInstanceId.existingId(stepInstanceId),
-            submissionDataJsonObject
+            toJsonObject(submissionData)
         )
         formFlowService.save(instance)
 
         return ResponseEntity.ok(CompleteStepResult(instance.id.id, openStep(stepInstance)))
     }
 
-    @PostMapping("/{formFlowId}/back")
+    @PostMapping("/v1/form-flow/{formFlowId}/back")
     @Transactional
     fun backStep(
-        @PathVariable(name = "formFlowId") formFlowId: String
+        @PathVariable(name = "formFlowId") formFlowId: String,
+        @RequestBody incompleteSubmissionData: JsonNode?
     ): ResponseEntity<GetFormFlowStateResult> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
-
+        if (incompleteSubmissionData != null) {
+            instance.save(toJsonObject(incompleteSubmissionData))
+        }
         val stepInstance = instance.back()
         formFlowService.save(instance)
 
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
+    }
+
+    @PostMapping("/v1/form-flow/{formFlowId}/save")
+    @Transactional
+    fun saveStep(
+        @PathVariable(name = "formFlowId") formFlowId: String,
+        @RequestBody incompleteSubmissionData: JsonNode?
+    ): ResponseEntity<Unit> {
+        val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
+        instance.save(toJsonObject(incompleteSubmissionData))
+        formFlowService.save(instance)
+
+        return ResponseEntity.noContent().build()
     }
 
     private fun openStep(stepInstance: FormFlowStepInstance?): FormFlowStepResult? {
@@ -103,6 +114,14 @@ class FormFlowResource(
             )
         } else {
             null
+        }
+    }
+
+    private fun toJsonObject(jsonNode: JsonNode?): JSONObject {
+        return if (jsonNode == null) {
+            JSONObject()
+        } else {
+            JSONObject(jsonNode.toString())
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ public final class Constants {
     public static final String SPRING_PROFILE_DEVELOPMENT = "dev";
     public static final String SPRING_PROFILE_ACCEPTANCE = "acc";
     public static final String SPRING_PROFILE_PRODUCTION = "prod";
-    public static final String SPRING_PROFILE_NO_SWAGGER = "no-swagger";
     public static final String SPRING_PROFILE_NO_LIQUIBASE = "no-liquibase";
     public static final String SYSTEM_ACCOUNT = "system";
 

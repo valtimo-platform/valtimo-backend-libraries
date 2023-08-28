@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2022 Ritense BV, the Netherlands.
+ *  Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,13 +27,15 @@ class ValtimoFormFlowHttpSecurityConfigurer: HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/form-flow/{formFlowInstanceId}")
+                .antMatchers(HttpMethod.GET, "/api/v1/form-flow/{formFlowInstanceId}")
                 .hasAuthority(USER)
-                .antMatchers(HttpMethod.POST, "/api/form-flow/{formFlowId}/step/{stepInstanceId}")
+                .antMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/step/{stepInstanceId}")
                 .hasAuthority(USER)
-                .antMatchers(HttpMethod.POST, "/api/form-flow/{formFlowId}/back")
+                .antMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/back")
                 .hasAuthority(USER)
-                .antMatchers(HttpMethod.GET, "/api/process-link/form-flow-definition")
+                .antMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/save")
+                .hasAuthority(USER)
+                .antMatchers(HttpMethod.GET, "/api/v1/process-link/form-flow-definition")
                 .hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

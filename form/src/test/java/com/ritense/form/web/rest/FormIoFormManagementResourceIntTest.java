@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -67,7 +68,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "form3"));
 
         mockMvc.perform(
-                get("/api/form-management")
+                get("/api/v1/form-management")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andDo(print())
@@ -81,7 +82,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "bcde"));
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "cdef"));
 
-        mockMvc.perform(get("/api/form-management")
+        mockMvc.perform(get("/api/v1/form-management")
                 .param("searchTerm", "BC"))
             .andExpect(status().isOk())
             .andDo(print())
@@ -93,7 +94,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
     void shouldReturn200WithInvalidSearch() throws Exception {
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "abcd"));
 
-        mockMvc.perform(get("/api/form-management")
+        mockMvc.perform(get("/api/v1/form-management")
                 .param("searchTerm", "e"))
             .andExpect(status().isOk())
             .andDo(print())
@@ -105,7 +106,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
     void shouldReturn200WithFormCreated() throws Exception {
         final var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false);
         mockMvc.perform(
-                post("/api/form-management")
+                post("/api/v1/form-management")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .content(TestUtil.convertObjectToJsonBytes(request))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -120,7 +121,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
     void shouldReturn200WithFormModified() throws Exception {
         final var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false);
         final MvcResult result = mockMvc.perform(
-                post("/api/form-management")
+                post("/api/v1/form-management")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .content(TestUtil.convertObjectToJsonBytes(request))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -133,7 +134,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
         final var newDefinition = "{\"key\":\"someValue\"}";
 
         mockMvc.perform(
-                put("/api/form-management")
+                put("/api/v1/form-management")
                     .content(TestUtil.convertObjectToJsonBytes(
                         new ModifyFormDefinitionRequest(id, DEFAULT_FORM_DEFINITION_NAME, newDefinition)
                     ))
@@ -153,12 +154,33 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
         assertThat(formDefinitionRepository.existsById(savedFormDefinition.getId())).isTrue();
 
         mockMvc.perform(
-                delete("/api/form-management/{formDefinitionId}", savedFormDefinition.getId())
+                delete("/api/v1/form-management/{formDefinitionId}", savedFormDefinition.getId())
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isNoContent());
 
         assertThat(formDefinitionRepository.existsById(savedFormDefinition.getId())).isFalse();
+    }
+
+    @Test
+    void shouldGetFormExistsByName() throws Exception {
+        var name = "abcd";
+        formDefinitionRepository.save(formDefinition(UUID.randomUUID(), name));
+
+        mockMvc.perform(get("/api/v1/form-management/exists/"+name))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andExpect(jsonPath("$").isBoolean())
+            .andExpect(jsonPath("$", is(true)));
+    }
+
+    @Test
+    void shouldNotGetFormExistsByName() throws Exception {
+        mockMvc.perform(get("/api/v1/form-management/exists/does-not-exist"))
+            .andExpect(status().isOk())
+            .andDo(print())
+            .andExpect(jsonPath("$").isBoolean())
+            .andExpect(jsonPath("$", is(false)));
     }
 
 }

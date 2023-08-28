@@ -1,0 +1,23 @@
+{
+    "changesetId": "dashboard-v2",
+    "dashboards": [
+        {
+            "key": "other-dashboard",
+            "title": "Other dashboard",
+            "description": "some other description",
+            "order": 2,
+            "widgetConfigurations": [
+                {
+                    "key": "other-widget",
+                    "title": "Other widget test",
+                    "dataSourceKey": "other-key",
+                    "dataSourceProperties": {},
+                    "displayType": "other-type",
+                    "displayTypeProperties": {
+                        "subtitle": "Some other test"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
@@ -35,7 +36,7 @@ import java.nio.charset.StandardCharsets
 class FormFlowDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val formFlowService: FormFlowService,
-    private val formFlowObjectMapper: FormFlowObjectMapper
+    private val objectMapper: ObjectMapper
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
@@ -48,7 +49,7 @@ class FormFlowDeploymentService(
                 }
             }
         } catch (e: Exception) {
-            throw RuntimeException("Error deploying Form Flow's", e)
+            throw RuntimeException("Error deploying Form Flows", e)
         }
     }
 
@@ -63,7 +64,7 @@ class FormFlowDeploymentService(
     fun deploy(formFlowKey: String, formFlowJson: String) {
         validate(formFlowJson)
 
-        val formFlowDefinitionConfig = formFlowObjectMapper.get().readValue(formFlowJson, FormFlowDefinition::class.java)
+        val formFlowDefinitionConfig = objectMapper.readValue(formFlowJson, FormFlowDefinition::class.java)
 
         validate(formFlowDefinitionConfig)
 
@@ -96,8 +97,9 @@ class FormFlowDeploymentService(
     }
 
     private fun validate(formFlowDefinitionConfig: FormFlowDefinition) {
-        val expressionProcessor = ExpressionProcessorFactoryHolder.getinstance()!!.create()
+        val expressionProcessor = ExpressionProcessorFactoryHolder.getInstance().create()
         formFlowDefinitionConfig.steps.forEach { step ->
+            step.onBack.forEach { expression -> expressionProcessor.validate(expression) }
             step.onOpen.forEach { expression -> expressionProcessor.validate(expression) }
             step.onComplete.forEach { expression -> expressionProcessor.validate(expression) }
         }

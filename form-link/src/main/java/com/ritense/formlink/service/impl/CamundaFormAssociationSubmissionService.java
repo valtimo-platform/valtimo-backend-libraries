@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,13 @@ package com.ritense.formlink.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
+import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.formlink.domain.FormAssociation;
 import com.ritense.formlink.domain.impl.submission.FormIoSubmission;
+import com.ritense.formlink.exception.ProcessDefinitionNotFoundException;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.FormAssociationSubmissionService;
 import com.ritense.formlink.service.SubmissionTransformerService;
@@ -42,6 +44,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import javax.transaction.Transactional;
 import java.util.UUID;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class CamundaFormAssociationSubmissionService implements FormAssociationSubmissionService {
 
     private static final Logger logger = LoggerFactory.getLogger(CamundaFormAssociationSubmissionService.class);
@@ -96,18 +99,28 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
             if (documentId != null) {
                 document = (JsonSchemaDocument) documentService.findBy(
                     JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
-                ).orElseThrow();
+                ).orElseThrow(() -> new DocumentNotFoundException(String.format("Unable to find a Document for document ID '%s'", documentId)));
             }
 
             ProcessDocumentDefinition processDocumentDefinition;
             if (document == null) {
                 processDocumentDefinition = processDocumentAssociationService
                     .findProcessDocumentDefinition(new CamundaProcessDefinitionKey(processDefinitionKey))
-                    .orElseThrow();
+                    .orElseThrow(() -> new ProcessDefinitionNotFoundException(
+                        String.format("Unable to find a ProcessDocumentDefinition for processDefinitionKey '%s'", processDefinitionKey)
+                    ));
             } else {
+                var documentVersion = document.definitionId().version();
+
                 processDocumentDefinition = processDocumentAssociationService
-                    .findProcessDocumentDefinition(new CamundaProcessDefinitionKey(processDefinitionKey), document.definitionId().version())
-                    .orElseThrow();
+                    .findProcessDocumentDefinition(new CamundaProcessDefinitionKey(processDefinitionKey), documentVersion)
+                    .orElseThrow(() -> new ProcessDefinitionNotFoundException(
+                        String.format(
+                            "Unable to find a ProcessDocumentDefinition for processDefinitionKey '%s' and version '%s'",
+                            processDefinitionKey,
+                            documentVersion
+                        )
+                    ));
             }
 
             var submission = new FormIoSubmission(
@@ -123,14 +136,15 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                 applicationEventPublisher
             );
             return submission.apply();
+        } catch (DocumentNotFoundException | ProcessDefinitionNotFoundException notFoundException) {
+            logger.error("ProcessDocumentDefinition could not be found", notFoundException);
+            return new FormSubmissionResultFailed(new OperationError.FromException(notFoundException));
         } catch (RuntimeException ex) {
-            return new FormSubmissionResultFailed(parseAndLogException(ex));
+            final UUID referenceId = UUID.randomUUID();
+            logger.error("Unexpected error occurred - {}", referenceId, ex);
+            return new FormSubmissionResultFailed(
+                new OperationError.FromString("Unexpected error occurred, please contact support - referenceId: " + referenceId)
+            );
         }
-    }
-
-    private OperationError parseAndLogException(Exception ex) {
-        final UUID referenceId = UUID.randomUUID();
-        logger.error("Unexpected error occurred - {}", referenceId, ex);
-        return new OperationError.FromString("Unexpected error occurred, please contact support - referenceId: " + referenceId);
     }
 }

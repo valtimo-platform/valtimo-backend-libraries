@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,21 @@
 
 projectVersion = 1.0
 
+dockerCompose {
+    projectName = "klant"
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
+    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
+
 dependencies {
     implementation project(':contract')
     implementation project(':openzaak')
-    implementation project(':plugin')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:1"
+    api "javax.inject:javax.inject:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -33,7 +39,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-validation"
 
-    implementation "com.fasterxml.jackson.module:jackson-module-afterburner"
+    implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
     implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
@@ -41,7 +47,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
@@ -51,9 +57,9 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
-    implementation "io.jsonwebtoken:jjwt-api:0.11.2"
-    implementation "io.jsonwebtoken:jjwt-impl:0.11.2"
-    implementation "io.jsonwebtoken:jjwt-jackson:0.11.2"
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
 
     testImplementation project(':besluit')
     testImplementation project(':connector')
@@ -63,9 +69,10 @@ dependencies {
     testImplementation project(':openzaak')
     testImplementation project(':process-document')
     testImplementation project(':resource:openzaak-resource')
-    testImplementation "com.squareup.okhttp3:mockwebserver:4.9.1"
-    testImplementation "com.squareup.okhttp3:okhttp:4.9.1"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+    testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
+    testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation project(":test-utils-common")
 
     jar {
         enabled = true

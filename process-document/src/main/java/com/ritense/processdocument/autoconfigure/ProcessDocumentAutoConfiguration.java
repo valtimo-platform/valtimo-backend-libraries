@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.ritense.processdocument.autoconfigure;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
 import com.ritense.processdocument.domain.delegate.ProcessDocumentStartEventMessageDelegate;
 import com.ritense.processdocument.domain.impl.delegate.DocumentVariableDelegateImpl;
@@ -28,20 +29,25 @@ import com.ritense.processdocument.domain.impl.listener.StartEventListenerImpl;
 import com.ritense.processdocument.domain.impl.listener.UndeployDocumentDefinitionEventListener;
 import com.ritense.processdocument.domain.listener.StartEventFromCallActivityListener;
 import com.ritense.processdocument.domain.listener.StartEventListener;
+import com.ritense.processdocument.repository.DocumentDefinitionProcessLinkRepository;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
-import com.ritense.processdocument.resolver.DocumentValueResolverFactory;
+import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory;
+import com.ritense.processdocument.resolver.DocumentTableValueResolver;
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentDeploymentService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
+import com.ritense.processdocument.service.impl.DocumentDefinitionProcessLinkServiceImpl;
 import com.ritense.processdocument.web.rest.ProcessDocumentResource;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
 import com.ritense.valueresolver.ValueResolverFactory;
+import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -62,14 +68,12 @@ public class ProcessDocumentAutoConfiguration {
     @ConditionalOnMissingBean(ProcessDocumentService.class)
     public CamundaProcessJsonSchemaDocumentService processDocumentService(
         DocumentService documentService,
-        DocumentDefinitionService documentDefinitionService,
         CamundaTaskService camundaTaskService,
         CamundaProcessService camundaProcessService,
         ProcessDocumentAssociationService processDocumentAssociationService
     ) {
         return new CamundaProcessJsonSchemaDocumentService(
             documentService,
-            documentDefinitionService,
             camundaTaskService,
             camundaProcessService,
             processDocumentAssociationService
@@ -83,14 +87,16 @@ public class ProcessDocumentAutoConfiguration {
         ProcessDocumentInstanceRepository processDocumentInstanceRepository,
         DocumentDefinitionRepository documentDefinitionRepository,
         DocumentDefinitionService documentDefinitionService,
-        CamundaProcessService camundaProcessService
+        CamundaProcessService camundaProcessService,
+        RuntimeService runtimeService
     ) {
         return new CamundaProcessJsonSchemaDocumentAssociationService(
             processDocumentDefinitionRepository,
             processDocumentInstanceRepository,
             documentDefinitionRepository,
             documentDefinitionService,
-            camundaProcessService
+            camundaProcessService,
+            runtimeService
         );
     }
 
@@ -150,9 +156,10 @@ public class ProcessDocumentAutoConfiguration {
     @ConditionalOnMissingBean(ProcessDocumentResource.class)
     public ProcessDocumentResource processDocumentResource(
         ProcessDocumentService processDocumentService,
-        ProcessDocumentAssociationService processDocumentAssociationService
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService
     ) {
-        return new ProcessDocumentResource(processDocumentService, processDocumentAssociationService);
+        return new ProcessDocumentResource(processDocumentService, processDocumentAssociationService, documentDefinitionProcessLinkService);
     }
 
     @Bean
@@ -172,10 +179,32 @@ public class ProcessDocumentAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(DocumentValueResolverFactory.class)
-    public ValueResolverFactory documentValueResolver(
+    @ConditionalOnMissingBean(DocumentJsonValueResolverFactory.class)
+    public ValueResolverFactory documentJsonValueResolver(
         ProcessDocumentService processDocumentService,
-        DocumentService documentService)  {
-        return new DocumentValueResolverFactory(processDocumentService, documentService);
+        DocumentService documentService,
+        JsonSchemaDocumentDefinitionService documentDefinitionService
+    ) {
+        return new DocumentJsonValueResolverFactory(processDocumentService, documentService, documentDefinitionService);
     }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentTableValueResolver.class)
+    public ValueResolverFactory documentTableValueResolver(
+        ProcessDocumentService processDocumentService,
+        DocumentService documentService
+    ) {
+        return new DocumentTableValueResolver(processDocumentService, documentService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentDefinitionProcessLinkService.class)
+    public DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService(
+        DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository,
+        RepositoryService repositoryService
+    )  {
+        return new DocumentDefinitionProcessLinkServiceImpl(documentDefinitionProcessLinkRepository, repositoryService);
+    }
+
+
 }

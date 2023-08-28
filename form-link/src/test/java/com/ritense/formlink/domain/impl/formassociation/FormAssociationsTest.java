@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ package com.ritense.formlink.domain.impl.formassociation;
 
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import org.junit.jupiter.api.Test;
+
 import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FormAssociationsTest {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,13 @@
 
 package com.ritense.form.web;
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest;
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest;
 import java.util.Set;
 
-public class FormSecuritySmokeIntegrationTest extends CoreSecuritySmokeIntegrationTest {
-
-    @Override
-    protected Set<String> getIgnoredPathPatterns() {
-        final Set<String> ignoredPathPatterns = super.getIgnoredPathPatterns();
-        ignoredPathPatterns.add("/api/form-file");
-        return ignoredPathPatterns;
+public class FormSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTest {
+    public FormSecuritySmokeIntegrationTest() {
+        super("com.ritense.form", Set.of(
+            "GET /api/v1/form-file"
+        ));
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ internal class ConnectorResourceIntTest : BaseIntegrationTest() {
             )
         )
 
-        mockMvc.perform(get("/api/connector/type").accept(APPLICATION_JSON_VALUE))
+        mockMvc.perform(get("/api/v1/connector/type").accept(APPLICATION_JSON_VALUE))
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$.length()").value(2))
@@ -144,7 +144,7 @@ internal class ConnectorResourceIntTest : BaseIntegrationTest() {
             )
         )
 
-        mockMvc.perform(get("/api/connector/instance").accept(APPLICATION_JSON_VALUE))
+        mockMvc.perform(get("/api/v1/connector/instance").accept(APPLICATION_JSON_VALUE))
             .andExpect(status().is2xxSuccessful)
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$.content.length()").value(2))
@@ -171,7 +171,7 @@ internal class ConnectorResourceIntTest : BaseIntegrationTest() {
         )
 
         mockMvc.perform(
-            get("/api/connector/instance")
+            get("/api/v1/connector/instance")
                 .queryParam("typeName", "MyConnectorType")
                 .accept(APPLICATION_JSON_VALUE)
         )
@@ -204,7 +204,7 @@ internal class ConnectorResourceIntTest : BaseIntegrationTest() {
 
         mockMvc.perform(
             post(
-                "/api/connector/instance")
+                "/api/v1/connector/instance")
                 .content(mapper.writeValueAsString(request))
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(APPLICATION_JSON_VALUE)

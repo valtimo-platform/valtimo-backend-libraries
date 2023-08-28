@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,16 @@ import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.web.rest.DocumentResource;
+import com.ritense.valtimo.contract.authentication.NamedUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,12 +41,18 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping(value = "/api/document", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class JsonSchemaDocumentResource implements DocumentResource {
+
+    private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentResource.class);
 
     private final DocumentService documentService;
     private final DocumentDefinitionService documentDefinitionService;
@@ -56,7 +66,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @GetMapping(value = "/{id}")
+    @GetMapping("/v1/document/{id}")
     public ResponseEntity<? extends Document> getDocument(@PathVariable(name = "id") UUID id) {
         return documentService.findBy(JsonSchemaDocumentId.existingId(id))
             .filter(it -> hasAccessToDefinitionName(it.definitionId().name()))
@@ -65,7 +75,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/document", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CreateDocumentResult> createNewDocument(
         @RequestBody @Valid NewDocumentRequest request
     ) {
@@ -76,7 +86,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/v1/document", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ModifyDocumentResult> modifyDocumentContent(
         @RequestBody @Valid ModifyDocumentRequest request
     ) {
@@ -87,7 +97,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @PostMapping(value = "/{document-id}/resource/{resource-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/document/{document-id}/resource/{resource-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> assignResource(
         @PathVariable(name = "document-id") UUID documentId,
         @PathVariable(name = "resource-id") UUID resourceId
@@ -101,7 +111,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
-    @DeleteMapping(value = "/{document-id}/resource/{resource-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/v1/document/{document-id}/resource/{resource-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> removeRelatedFile(
         @PathVariable(name = "document-id") UUID documentId,
         @PathVariable(name = "resource-id") UUID resourceId
@@ -112,6 +122,57 @@ public class JsonSchemaDocumentResource implements DocumentResource {
 
         documentService.removeRelatedFile(JsonSchemaDocumentId.existingId(documentId), resourceId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    @PostMapping("/v1/document/{documentId}/assign")
+    public ResponseEntity<Void> assignHandlerToDocument(
+        @PathVariable(name = "documentId")UUID documentId,
+        @RequestBody @Valid UpdateAssigneeRequest request) {
+        logger.debug(String.format("REST call /api/v1/document/%s/assign", documentId));
+
+        try {
+            if (!hasAccessToDocumentId(documentId)) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            documentService.assignUserToDocument(documentId, request.getAssigneeId());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Failed to assign a user to a document", e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Override
+    @PostMapping("/v1/document/{documentId}/unassign")
+    public ResponseEntity<Void> unassignHandlerFromDocument(@PathVariable(name = "documentId")UUID documentId) {
+        logger.debug(String.format("REST call /api/v1/document/%s/unassign", documentId));
+
+        try {
+            if (!hasAccessToDocumentId(documentId)) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            documentService.unassignUserFromDocument(documentId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Failed to unassign a user to a document", e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Override
+    @GetMapping("/v1/document/{document-id}/candidate-user")
+    public ResponseEntity<List<NamedUser>> getCandidateUsers(
+        @PathVariable(name = "document-id") UUID documentId
+    ) {
+        if (!hasAccessToDocumentId(documentId)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<NamedUser> users = documentService.getCandidateUsers(JsonSchemaDocumentId.existingId(documentId));
+        return ResponseEntity.ok(users);
     }
 
     private boolean hasAccessToDocumentId(UUID documentId) {

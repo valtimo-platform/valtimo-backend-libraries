@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,6 @@
 package com.ritense.mail.repository
 
 import com.ritense.mail.domain.blacklist.BlacklistedEmail
-import java.util.Optional
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface BlacklistRepository : JpaRepository<BlacklistedEmail, String> {
-    @Deprecated("This method will be removed from 10.x",
-        ReplaceWith("findById(email)"))
-    fun findByEmailAddress(email: String): Optional<BlacklistedEmail> {
-        return findById(email)
-    }
-}
+interface BlacklistRepository : JpaRepository<BlacklistedEmail, String>

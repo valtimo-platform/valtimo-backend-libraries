@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,21 @@ import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.Profile;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
+
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.TEXT_PLAIN_UTF8_VALUE;
 
 @ConditionalOnBean(UserManagementService.class)
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class AccountResource {
 
     private final CurrentUserService currentUserService;
@@ -41,19 +44,19 @@ public class AccountResource {
         this.currentUserService = currentUserService;
     }
 
-    @GetMapping(value = "/account")
+    @GetMapping("/v1/account")
     public ResponseEntity<ManageableUser> getAccount() throws IllegalAccessException {
         final ManageableUser currentUser = currentUserService.getCurrentUser();
         return ResponseEntity.ok(currentUser);
     }
 
-    @PostMapping(value = "/account/profile")
+    @PostMapping("/v1/account/profile")
     public ResponseEntity<Void> updateProfile(@Valid @RequestBody Profile profile) throws IllegalAccessException {
         currentUserService.updateProfile(profile);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/account/change_password", produces = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(value = "/v1/account/change_password", produces = TEXT_PLAIN_UTF8_VALUE)
     public ResponseEntity<Void> changePassword(@RequestBody String password) throws IllegalAccessException {
         currentUserService.changePassword(password);
         return ResponseEntity.ok().build();

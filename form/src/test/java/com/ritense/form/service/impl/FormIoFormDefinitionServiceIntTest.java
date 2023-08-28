@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 package com.ritense.form.service.impl;
 
 import com.ritense.form.BaseIntegrationTest;
+import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import javax.transaction.Transactional;
@@ -99,6 +101,20 @@ public class FormIoFormDefinitionServiceIntTest extends BaseIntegrationTest {
 
         assertThat(formDefinitionModified.getName()).isEqualTo(formDefinition.getName());
         assertThat(formDefinitionModified.getFormDefinition()).isEqualTo(formDefinition.getFormDefinition());
+    }
+
+    @Test
+    public void shouldGetFormDefinitionByNameIgnoringCase() {
+        var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", true);
+        var formDefinition = formIoFormDefinitionService.createFormDefinition(request);
+
+        Optional<FormIoFormDefinition> formDefinitionByNameIgnoringCase = formIoFormDefinitionService
+            .getFormDefinitionByNameIgnoringCase(DEFAULT_FORM_DEFINITION_NAME.toUpperCase());
+
+        FormIoFormDefinition formIoFormDefinition = formDefinitionByNameIgnoringCase.get();
+
+        assertThat(formIoFormDefinition.getName()).isEqualTo(formDefinition.getName());
+        assertThat(formIoFormDefinition.getFormDefinition()).isEqualTo(formDefinition.getFormDefinition());
     }
 
 }

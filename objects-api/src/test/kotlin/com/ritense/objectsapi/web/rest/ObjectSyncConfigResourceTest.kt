@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ internal class ObjectSyncConfigResourceTest : BaseTest() {
             )
         )
 
-        mockMvc.perform(get("/api/object/sync/config")
+        mockMvc.perform(get("/api/v1/object/sync/config")
             .param("documentDefinitionName", "aName")
             .accept(APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -97,7 +97,7 @@ internal class ObjectSyncConfigResourceTest : BaseTest() {
             )
         )
 
-        mockMvc.perform(get("/api/object/sync/config/{id}", configId.id.toString())
+        mockMvc.perform(get("/api/v1/object/sync/config/{id}", configId.id.toString())
             .accept(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().is2xxSuccessful)
@@ -128,7 +128,7 @@ internal class ObjectSyncConfigResourceTest : BaseTest() {
 
         mockMvc.perform(
             post(
-                "/api/object/sync/config")
+                "/api/v1/object/sync/config")
                 .content(Mapper.INSTANCE.get().writeValueAsString(request))
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(APPLICATION_JSON_VALUE)

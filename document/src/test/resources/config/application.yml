@@ -1,8 +1,8 @@
 spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3303/document-test
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:3303/document-test
         username: valtimo
         password: password
         hikari:
@@ -11,8 +11,8 @@ spring:
         enabled: true
         change-log: classpath:/config/liquibase/document-master.xml
     jpa:
-        database-platform: org.hibernate.dialect.MySQL57Dialect
-        database: mysql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database: postgresql
         show_sql: true
         open-in-view: false
         properties:
@@ -42,7 +42,17 @@ aws:
         bucketName: bucketName
         bucketRegion: US-EAST
 
+spring-actuator:
+    username: test
+    password: test
+
 valtimo:
+    database: postgres
     versioning.enabled: true
     plugin:
         encryption-secret: "abcdefghijklmnop"
+
+logging:
+    level:
+        org.hibernate.SQL: DEBUG
+        org.hibernate.type: TRACE

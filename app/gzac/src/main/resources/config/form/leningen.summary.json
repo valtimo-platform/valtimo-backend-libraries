@@ -17,7 +17,7 @@
                     "pull": 0,
                     "components": [
                         {
-                            "content": "<strong>Dossier information</strong>",
+                            "content": "<strong>Case information</strong>",
                             "type": "htmlelement"
                         },
                         {

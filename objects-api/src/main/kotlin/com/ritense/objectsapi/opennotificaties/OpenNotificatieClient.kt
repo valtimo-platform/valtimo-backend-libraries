@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ class OpenNotificatieClient(
             .token(generateToken())
     }
 
-    private fun generateToken(): String {
+    fun generateToken(): String {
         val signingKey = Keys.hmacShaKeyFor(openNotificatieProperties.secret.toByteArray(Charsets.UTF_8))
 
         val jwtBuilder = Jwts.builder()

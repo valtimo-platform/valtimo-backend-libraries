@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.http.HttpMethod.DELETE;
@@ -40,43 +42,43 @@ class CamundaFormAssociationManagementSecurityResourceTest extends SecuritySpeci
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void getAllAsAdmin() throws Exception {
-        assertHttpStatus(GET, "/api/form-association-management?processDefinitionKey=1", NOT_FOUND);
+        assertHttpStatus(GET, "/api/v1/form-association-management?processDefinitionKey=1", NOT_FOUND);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void getAllAsUser() throws Exception {
-        assertHttpStatus(GET, "/api/form-association-management?processDefinitionKey=1", FORBIDDEN);
+        assertHttpStatus(GET, "/api/v1/form-association-management?processDefinitionKey=1", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void getFormAssociationByIdAsAdmin() throws Exception {
-        assertHttpStatus(GET, "/api/form-association-management/formAssociationId", BAD_REQUEST);
+        assertHttpStatus(GET, "/api/v1/form-association-management/formAssociationId", BAD_REQUEST);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void getFormAssociationByIdAsUser() throws Exception {
-        assertHttpStatus(GET, "/api/form-association-management/formAssociationId", FORBIDDEN);
+        assertHttpStatus(GET, "/api/v1/form-association-management/formAssociationId", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void getFormAssociationByFormLinkIdAsAdmin() throws Exception {
-        assertHttpStatus(GET, "/api/form-association-management?processDefinitionKey=1&formLinkId=1", NO_CONTENT);
+        assertHttpStatus(GET, "/api/v1/form-association-management?processDefinitionKey=1&formLinkId=1", NO_CONTENT);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void getFormAssociationByFormLinkIdAsUser() throws Exception {
-        assertHttpStatus(GET, "/api/form-association-management?processDefinitionKey=1&formLinkId=1", FORBIDDEN);
+        assertHttpStatus(GET, "/api/v1/form-association-management?processDefinitionKey=1&formLinkId=1", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void createFormAssociationAsAdmin() throws Exception {
-        var request = MockMvcRequestBuilders.request(POST, "/api/form-association-management");
+        var request = MockMvcRequestBuilders.request(POST, "/api/v1/form-association-management");
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
         request.with(r -> {
@@ -89,7 +91,7 @@ class CamundaFormAssociationManagementSecurityResourceTest extends SecuritySpeci
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void createFormAssociationAsUser() throws Exception {
-        var request = MockMvcRequestBuilders.request(POST, "/api/form-association-management");
+        var request = MockMvcRequestBuilders.request(POST, "/api/v1/form-association-management");
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
         request.with(r -> {
@@ -103,7 +105,7 @@ class CamundaFormAssociationManagementSecurityResourceTest extends SecuritySpeci
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void modifyFormAssociationAsAdmin() throws Exception {
-        var request = MockMvcRequestBuilders.request(PUT, "/api/form-association-management");
+        var request = MockMvcRequestBuilders.request(PUT, "/api/v1/form-association-management");
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
         request.with(r -> {
@@ -116,7 +118,7 @@ class CamundaFormAssociationManagementSecurityResourceTest extends SecuritySpeci
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void modifyFormAssociationAsUser() throws Exception {
-        assertHttpStatus(PUT, "/api/form-association-management", FORBIDDEN);
+        assertHttpStatus(PUT, "/api/v1/form-association-management", FORBIDDEN);
     }
 
     @Test
@@ -124,7 +126,7 @@ class CamundaFormAssociationManagementSecurityResourceTest extends SecuritySpeci
     void deleteFormAssociationAsAdmin() throws Exception {
         assertHttpStatus(
             DELETE,
-            "/api/form-association-management/" + UUID.randomUUID().toString() + "/" + UUID.randomUUID().toString(),
+            "/api/v1/form-association-management/" + UUID.randomUUID().toString() + "/" + UUID.randomUUID().toString(),
             NO_CONTENT
         );
     }
@@ -134,7 +136,7 @@ class CamundaFormAssociationManagementSecurityResourceTest extends SecuritySpeci
     void deleteFormAssociationAsUser() throws Exception {
         assertHttpStatus(
             DELETE,
-            "/api/form-association-management/" + UUID.randomUUID().toString() + "/" + UUID.randomUUID().toString(),
+            "/api/v1/form-association-management/" + UUID.randomUUID().toString() + "/" + UUID.randomUUID().toString(),
             FORBIDDEN
         );
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.ritense.openzaak.web.rest
 import com.ritense.openzaak.domain.mapping.impl.InformatieObjectTypeLink
 import com.ritense.openzaak.service.result.CreateInformatieObjectTypeLinkResult
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -31,16 +31,16 @@ import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(value = ["/api/openzaak/informatie-object-type-link"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface InformatieObjectTypeLinkResource {
 
-    @GetMapping(value = ["/{documentDefinitionName}"])
+    @GetMapping("/v1/openzaak/informatie-object-type-link/{documentDefinitionName}")
     fun get(@PathVariable(name = "documentDefinitionName") documentDefinitionName: String): ResponseEntity<InformatieObjectTypeLink?>
 
-    @PostMapping
+    @PostMapping("/v1/openzaak/informatie-object-type-link")
     fun create(@Valid @RequestBody request: CreateInformatieObjectTypeLinkRequest): ResponseEntity<CreateInformatieObjectTypeLinkResult>
 
-    @DeleteMapping(value = ["/{documentDefinitionName}"])
+    @DeleteMapping("/v1/openzaak/informatie-object-type-link/{documentDefinitionName}")
     fun remove(@PathVariable(name = "documentDefinitionName") documentDefinitionName: String): ResponseEntity<InformatieObjectTypeLink?>
 
 }

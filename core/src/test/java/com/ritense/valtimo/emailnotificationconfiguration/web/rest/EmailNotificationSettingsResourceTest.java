@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static com.ritense.valtimo.emailnotificationconfiguration.helper.EmailNotificationSettingsHelper.disabledEmailNotificationSettings;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -67,7 +70,7 @@ class EmailNotificationSettingsResourceTest {
         when(emailNotificationService.getSettingsFor(anyString())).thenReturn(
             Optional.empty()
         );
-        mockMvc.perform(get("/api/email-notification-settings")
+        mockMvc.perform(get("/api/v1/email-notification-settings")
             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isNoContent());
@@ -78,11 +81,11 @@ class EmailNotificationSettingsResourceTest {
         when(emailNotificationService.getSettingsFor(any())).thenReturn(
             disabledEmailNotificationSettings()
         );
-        mockMvc.perform(get("/api/email-notification-settings")
+        mockMvc.perform(get("/api/v1/email-notification-settings")
             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE));
     }
 
     @Test
@@ -92,7 +95,7 @@ class EmailNotificationSettingsResourceTest {
 
         when(emailNotificationService.process(any(), any())).thenReturn(settings);
 
-        mockMvc.perform(put("/api/email-notification-settings")
+        mockMvc.perform(put("/api/v1/email-notification-settings")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(jsonString().getBytes(StandardCharsets.UTF_8)))
             .andDo(print())

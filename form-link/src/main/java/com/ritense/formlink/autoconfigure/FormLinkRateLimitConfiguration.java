@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 @Configuration
 public class FormLinkRateLimitConfiguration implements WebMvcConfigurer {
 
@@ -33,6 +34,6 @@ public class FormLinkRateLimitConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(interceptor)
-            .addPathPatterns("/api/public/**");
+            .addPathPatterns("/api/v1/public/**");
     }
 }

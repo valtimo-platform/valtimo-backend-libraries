@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package com.ritense.processdocument.web;
 
-import com.ritense.valtimo.web.rest.CoreSecuritySmokeIntegrationTest;
+import com.ritense.valtimo.web.rest.SecuritySmokeIntegrationTest;
+import java.util.Set;
 
-public class ProcessDocumentSecuritySmokeIntegrationTest extends CoreSecuritySmokeIntegrationTest {
+public class ProcessDocumentSecuritySmokeIntegrationTest extends SecuritySmokeIntegrationTest {
+    public ProcessDocumentSecuritySmokeIntegrationTest() {
+        super("com.ritense.processdocument", Set.of());
+    }
 }

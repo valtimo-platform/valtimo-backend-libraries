@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ class ProcessDocumentSecurityResourceTest extends SecuritySpecificEndpointIntegr
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void createProcessDocumentDefinitionAsAdmin() throws Exception {
-        var request = MockMvcRequestBuilders.request(POST, "/api/process-document/definition");
+        var request = MockMvcRequestBuilders.request(POST, "/api/v1/process-document/definition");
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
         request.with(r -> {
@@ -54,7 +54,7 @@ class ProcessDocumentSecurityResourceTest extends SecuritySpecificEndpointIntegr
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void createProcessDocumentDefinitionAsUser() throws Exception {
-        var request = MockMvcRequestBuilders.request(POST, "/api/process-document/definition");
+        var request = MockMvcRequestBuilders.request(POST, "/api/v1/process-document/definition");
 
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
@@ -70,7 +70,7 @@ class ProcessDocumentSecurityResourceTest extends SecuritySpecificEndpointIntegr
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void deleteProcessDocumentDefinitionAsAdmin() throws Exception {
-        var request = MockMvcRequestBuilders.request(DELETE, "/api/process-document/definition");
+        var request = MockMvcRequestBuilders.request(DELETE, "/api/v1/process-document/definition");
 
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);
@@ -86,7 +86,7 @@ class ProcessDocumentSecurityResourceTest extends SecuritySpecificEndpointIntegr
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void deleteProcessDocumentDefinitionAsUser() throws Exception {
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(DELETE, "/api/process-document/definition");
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.request(DELETE, "/api/v1/process-document/definition");
 
         request.accept(MediaType.APPLICATION_JSON);
         request.contentType(MediaType.APPLICATION_JSON);

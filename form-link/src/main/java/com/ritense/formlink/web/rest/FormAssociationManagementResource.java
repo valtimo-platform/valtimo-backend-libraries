@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import com.ritense.formlink.domain.FormAssociation;
 import com.ritense.formlink.domain.request.CreateFormAssociationRequest;
 import com.ritense.formlink.domain.request.ModifyFormAssociationRequest;
 import org.springframework.http.ResponseEntity;
+
 import java.util.Collection;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public interface FormAssociationManagementResource {
 
     ResponseEntity<Collection<? extends FormAssociation>> getAll(String processDefinitionKey);

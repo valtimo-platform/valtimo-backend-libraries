@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,11 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.valtimo.contract.json.JsonPointerHelper
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.domain.submission.formfield.FormField"))
 abstract class FormField(
     open val value: JsonNode,
     open val pointer: JsonPointer,
@@ -34,6 +36,10 @@ abstract class FormField(
     abstract fun preProcess()
 
     abstract fun postProcess()
+
+    open fun appendValueToDocument(documentContent: ObjectNode) {
+        JsonPointerHelper.appendJsonPointerTo(documentContent, pointer, value)
+    }
 
     companion object Factory {
         const val PROPERTY_KEY = "key"
@@ -89,7 +95,8 @@ abstract class FormField(
         private fun isUploadComponent(jsonNode: ObjectNode): Boolean {
             return (jsonNode.has("type")
                 && (jsonNode["type"].textValue().equals("file", ignoreCase = true) ||
-                jsonNode["type"].textValue().equals("valtimo-file", ignoreCase = true))
+                jsonNode["type"].textValue().equals("valtimo-file", ignoreCase = true) ||
+                jsonNode["type"].textValue().equals("documenten-api-file", ignoreCase = true))
                 && jsonNode["input"].booleanValue()
                 && jsonNode.has(PROPERTY_KEY))
         }

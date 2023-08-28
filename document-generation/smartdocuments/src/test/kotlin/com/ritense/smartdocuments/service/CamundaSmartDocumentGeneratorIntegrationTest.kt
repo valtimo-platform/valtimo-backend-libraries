@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,6 @@
 
 package com.ritense.smartdocuments.service
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
@@ -31,6 +27,10 @@ import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.valtimo.contract.resource.Resource
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.mock.mockito.SpyBean
@@ -106,7 +106,7 @@ class CamundaSmartDocumentGeneratorIntegrationTest : BaseSmartDocumentsIntegrati
         )
         val jsonContent = Mapper.INSTANCE.get().readTree("""
             {
-                "lastname": "Klaveren", 
+                "lastname": "Klaveren",
                 "names":[
                     {
                         "name": "Peter"

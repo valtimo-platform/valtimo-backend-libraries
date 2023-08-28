@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,9 +71,9 @@ public interface PostgresAuditRecordRepository extends AuditRecordRepository<Aud
         Pageable pageable
     );
 
-    @Query(value=" SELECT      ar " +
-        "    FROM        AuditRecord ar " +
-        "    WHERE       ar.auditEvent ->> ?1 = ?2 ", nativeQuery=true)
+    @Query(value=" SELECT ar.* " +
+        "    FROM        audit_record ar " +
+        "    WHERE       ar.audit_event ->> ?1 = ?2 ", nativeQuery=true)
     Page<AuditRecord> findAuditRecordsByProperty(String key, Object value, Pageable pageable);
 
     @Modifying

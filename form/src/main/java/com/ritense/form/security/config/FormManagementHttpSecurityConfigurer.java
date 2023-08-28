@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,13 @@ public class FormManagementHttpSecurityConfigurer implements HttpSecurityConfigu
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/form-management").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/form-management/{formDefinitionId}").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/form-management/{formDefinitionId}").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/form-management").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/form-management").hasAuthority(ADMIN);
+                .antMatchers(GET, "/api/v1/form-definition").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/form-management").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/form-management/{formDefinitionId}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/form-management/exists/{name}").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/form-management/{formDefinitionId}").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/form-management").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/form-management").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

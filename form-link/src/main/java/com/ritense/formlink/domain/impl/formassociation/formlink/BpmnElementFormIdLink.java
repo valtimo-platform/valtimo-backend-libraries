@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ritense.formlink.domain.FormLink;
+
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BpmnElementFormIdLink extends CamundaBpmnElement implements FormLink {
 

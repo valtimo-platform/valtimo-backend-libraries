@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,11 @@ package com.ritense.formlink.web.rest.impl;
 import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.service.ProcessLinkService;
 import com.ritense.formlink.web.rest.ProcessLinkResource;
-import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 
+import java.util.UUID;
+
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class DefaultProcessLinkResource implements ProcessLinkResource {
     private final ProcessLinkService processLinkService;
 

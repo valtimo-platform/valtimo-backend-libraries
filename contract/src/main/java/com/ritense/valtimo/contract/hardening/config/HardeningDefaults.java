@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,11 @@
 
 package com.ritense.valtimo.contract.hardening.config;
 
-import java.util.Collections;
 import java.util.Set;
 
 public class HardeningDefaults {
 
     interface Hardening {
-        Set<String> allowStacktraceOnIps = Collections.singleton("127.0.0.1");
+        Set<String> allowStacktraceOnIps = Set.of("127.0.0.1", "0:0:0:0:0:0:0:1");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,27 +39,34 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
 
     private static final Logger logger = LoggerFactory.getLogger(KeycloakTokenAuthenticator.class);
     public final static String REALM_ACCESS = "realm_access";
+    public final static String RESOURCE_ACCESS = "resource_access";
+    private final String clientName;
 
-    public KeycloakTokenAuthenticator() {
+    public KeycloakTokenAuthenticator(String keycloakClient) {
+        this.clientName = keycloakClient;
     }
 
     @Override
     public boolean supports(Claims claims) {
         try {
             final String email = getEmail(claims);
+            if (email == null) {
+                logger.info("Support failed: email must be present");
+                return false;
+            }
             if (email.isBlank()) {
-                logger.debug("Support failed: email is blank");
+                logger.info("Support failed: email is blank");
                 return false;
             }
             final List<String> roles = getRoles(claims);
             boolean hasUserRole = roles.contains(USER);
             if (!hasUserRole) {
-                logger.debug("Support failed: missing USER_ROLE");
+                logger.info("Support failed: missing USER_ROLE");
                 return false;
             }
             return true;
         } catch (Exception e) {
-            logger.debug("Support failed with exception", e);
+            logger.info("Support failed with exception", e);
             return false;
         }
     }
@@ -88,7 +96,15 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
 
     private List<String> getRoles(Claims claims) {
         final Map<String, List<String>> realmSettings = claims.get(REALM_ACCESS, Map.class);
-        return realmSettings.get(ROLES_SCOPE);
+        final Map<String, Map<String, List<String>>> resourceSettings = claims.get(RESOURCE_ACCESS, Map.class);
+
+        List<String> roles = new ArrayList<>(realmSettings.get(ROLES_SCOPE));
+
+        if (!clientName.isBlank() && resourceSettings != null && resourceSettings.containsKey(clientName)) {
+            roles.addAll(resourceSettings.get(clientName).get(ROLES_SCOPE));
+        }
+
+        return roles;
     }
 
 }

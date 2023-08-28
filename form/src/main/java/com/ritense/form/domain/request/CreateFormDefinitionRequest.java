@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class CreateFormDefinitionRequest {
     public CreateFormDefinitionRequest(
         @JsonProperty(value = "name", required = true) String name,
         @JsonProperty(value = "formDefinition", required = true) String formDefinition,
-        @JsonProperty(value = "isReadOnly") Boolean isReadOnly
+        @JsonProperty("isReadOnly") Boolean isReadOnly
     ) {
         this.name = name;
         this.formDefinition = formDefinition;

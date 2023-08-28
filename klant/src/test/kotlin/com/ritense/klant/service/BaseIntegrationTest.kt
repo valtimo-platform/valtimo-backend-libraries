@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package com.ritense.klant.service
 
 import com.ritense.klant.client.OpenKlantClientProperties
-import com.ritense.openzaak.service.ZaakInstanceLinkService
-import com.ritense.openzaak.service.ZaakRolService
+import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -26,7 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class])
+@ExtendWith(SpringExtension::class)
 @Tag("integration")
 abstract class BaseIntegrationTest {
 
@@ -34,9 +34,8 @@ abstract class BaseIntegrationTest {
     lateinit var openKlantClientProperties: OpenKlantClientProperties
 
     @MockBean
-    lateinit var zaakRolService: ZaakRolService
+    lateinit var userManagementService: UserManagementService
 
     @MockBean
-    lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
-
+    lateinit var mailSender: MailSender
 }

@@ -1,12 +1,6 @@
 package com.ritense.objectsapi.productaanvraag
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.result.CreateDocumentResult
@@ -15,13 +9,19 @@ import com.ritense.klant.service.BedrijfService
 import com.ritense.klant.service.BurgerService
 import com.ritense.objectsapi.domain.ProductAanvraag
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
-import com.ritense.openzaak.domain.mapping.impl.ZaakInstanceLink
-import com.ritense.openzaak.service.ZaakInstanceLinkService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult
+import com.ritense.zakenapi.domain.ZaakInstanceLink
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.net.URI
 import java.util.Optional
 import java.util.UUID

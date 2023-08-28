@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 
 open class ContactMomentClient(
-    private val contactMomentWebClient: WebClient,
+    private val webclientBuilder: WebClient.Builder,
     private val contactMomentTokenGenerator: ContactMomentTokenGenerator,
 ) {
 
@@ -65,8 +65,8 @@ open class ContactMomentClient(
             contactMomentProperties!!.clientId
         )
 
-        return contactMomentWebClient
-            .mutate()
+        return webclientBuilder
+            .clone()
             .baseUrl(contactMomentProperties!!.url)
             .defaultHeader("Authorization", "Bearer $token")
             .defaultHeader("Accept-Crs", "EPSG:4326")

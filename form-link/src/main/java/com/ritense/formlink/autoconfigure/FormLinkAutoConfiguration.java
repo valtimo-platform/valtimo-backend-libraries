@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,13 @@ import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.formlink.autodeployment.FormLinkDeploymentService;
 import com.ritense.formlink.autodeployment.FormsAutoDeploymentFinishedEventListener;
-import com.ritense.formlink.domain.ProcessLinkTaskProvider;
-import com.ritense.formlink.domain.impl.formassociation.FormProcessLinkTaskProvider;
+import com.ritense.formlink.domain.FormLinkTaskProvider;
+import com.ritense.formlink.domain.impl.formassociation.FormFormLinkTaskProvider;
 import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.formlink.repository.impl.JdbcProcessFormAssociationRepository;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.FormAssociationSubmissionService;
+import com.ritense.formlink.service.FormLinkNewProcessFormFlowProvider;
 import com.ritense.formlink.service.ProcessLinkService;
 import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.formlink.service.impl.CamundaFormAssociationService;
@@ -35,6 +36,7 @@ import com.ritense.formlink.service.impl.DefaultProcessLinkService;
 import com.ritense.formlink.service.impl.FormIoJsonPatchSubmissionTransformerService;
 import com.ritense.formlink.web.rest.FormAssociationManagementResource;
 import com.ritense.formlink.web.rest.FormAssociationResource;
+import com.ritense.formlink.web.rest.FormLinkFormFlowResource;
 import com.ritense.formlink.web.rest.ProcessLinkResource;
 import com.ritense.formlink.web.rest.impl.CamundaFormAssociationManagementResource;
 import com.ritense.formlink.web.rest.impl.CamundaFormAssociationResource;
@@ -47,16 +49,22 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.TaskService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.List;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 @Configuration
+@EnableJpaRepositories(basePackages = "com.ritense.formlink.repository")
+@EntityScan("com.ritense.formlink.domain")
 public class FormLinkAutoConfiguration {
 
     @Bean
@@ -128,7 +136,7 @@ public class FormLinkAutoConfiguration {
         return new CamundaFormAssociationManagementResource(formAssociationService);
     }
 
-    @Bean
+    @Bean("formProcessLinkResource")
     @ConditionalOnMissingBean(ProcessLinkResource.class)
     public ProcessLinkResource defaultProcessLinkResource(
         ProcessLinkService processLinkService
@@ -162,17 +170,17 @@ public class FormLinkAutoConfiguration {
     }
 
     @Bean
-    public ProcessLinkTaskProvider formProcessLinkTaskProvider() {
-        return new FormProcessLinkTaskProvider();
+    public FormLinkTaskProvider formFormLinkTaskProvider() {
+        return new FormFormLinkTaskProvider();
     }
 
-    @Bean
+    @Bean("formProcessLinkService")
     @ConditionalOnMissingBean(ProcessLinkService.class)
     public ProcessLinkService processLinkService(
         RepositoryService repositoryService,
         TaskService taskService,
         FormAssociationService formAssociationService,
-        List<ProcessLinkTaskProvider> processLinkTaskProvide
+        List<FormLinkTaskProvider> processLinkTaskProvide
     ) {
         return new DefaultProcessLinkService(repositoryService, taskService, formAssociationService, processLinkTaskProvide);
     }
@@ -183,6 +191,15 @@ public class FormLinkAutoConfiguration {
         final NamedParameterJdbcTemplate namedParameterJdbcTemplate
     ) {
         return new JdbcProcessFormAssociationRepository(namedParameterJdbcTemplate);
+    }
+
+    @Bean
+    @ConditionalOnBean(FormLinkNewProcessFormFlowProvider.class)
+    @ConditionalOnMissingBean(FormLinkFormFlowResource.class)
+    public FormLinkFormFlowResource formLinkFormFlowResource(
+        FormLinkNewProcessFormFlowProvider formLinkNewProcessFormFlowProvider
+    ) {
+        return new FormLinkFormFlowResource(formLinkNewProcessFormFlowProvider);
     }
 
 }

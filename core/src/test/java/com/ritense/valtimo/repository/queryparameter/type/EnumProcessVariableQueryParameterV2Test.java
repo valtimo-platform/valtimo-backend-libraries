@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@ package com.ritense.valtimo.repository.queryparameter.type;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,7 +42,7 @@ class EnumProcessVariableQueryParameterV2Test {
     @Test
     public void enumProcessVariableQueryParameter() {
         EnumProcessVariableQueryParameterV2 enumProcessVariableQueryParameter = enumProcessVariableQueryParameterV2();
-        assertEquals(NAME, enumProcessVariableQueryParameter.name);
+        assertEquals(NAME, enumProcessVariableQueryParameter.getName());
         assertEquals(enumValues, enumProcessVariableQueryParameter.values);
         assertEquals(enumValues.size(), enumProcessVariableQueryParameter.values.size());
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -80,12 +83,12 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(documentDefinition.id().name()))
             .thenReturn(true);
 
-        mockMvc.perform(get("/api/document-snapshot/{id}", documentSnapshot.id())
+        mockMvc.perform(get("/api/v1/document-snapshot/{id}", documentSnapshot.id())
             .accept(APPLICATION_JSON_VALUE)
             .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
     }
 
@@ -102,7 +105,7 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
             any())
         ).thenReturn(documentSnapshotPage);
 
-        mockMvc.perform(get("/api/document-snapshot/")
+        mockMvc.perform(get("/api/v1/document-snapshot/")
             .param("definitionName", document.definitionId().name())
             .param("documentId", document.id().toString())
             .param("fromDateTime", fromDateTime.toString())
@@ -111,7 +114,7 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
             .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
     }
 

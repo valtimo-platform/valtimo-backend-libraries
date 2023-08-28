@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,11 @@ class SmartDocumentsConnector(
                 )
             )
         )
-        val pdfResponse = filesResponse.file.first { it.outputFormat.equals(format.toString(), ignoreCase = true) }
+        val outputFormat = filesResponse.file.map { it.outputFormat }
+        val pdfResponse = filesResponse.file
+            .firstOrNull { it.outputFormat.equals(format.toString(), ignoreCase = true) }
+            ?: throw NoSuchElementException("Requested document format is '$format' but the available formats are '${outputFormat}'")
+
         return GeneratedSmartDocument(
             pdfResponse.filename,
             FilenameUtils.getExtension(pdfResponse.filename),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
 import com.ritense.valtimo.contract.exception.ValtimoRuntimeException;
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
+import com.ritense.valtimo.contract.upload.MimeTypeDeniedException;
 import com.ritense.valtimo.contract.web.rest.error.ExceptionTranslator;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import org.springframework.dao.ConcurrencyFailureException;
@@ -105,6 +106,11 @@ public class WebModuleExceptionTranslator extends ExceptionTranslator implements
     @ExceptionHandler
     public ResponseEntity<Problem> handleDocumentParserException(DocumentParserException ex, NativeWebRequest request) {
         return create(Status.BAD_REQUEST, ex, request, HeaderUtil.createFailureAlert(ex.getMessage(), "parsingFailure", ex.getMessage()));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Problem> handleMimeTypeDeniedException(MimeTypeDeniedException ex, NativeWebRequest request) {
+        return create(Status.BAD_REQUEST, ex, request, HeaderUtil.createFailureAlert(ex.getMessage(), "mimeTypeDenied", ex.getMessage()));
     }
 
     @ExceptionHandler

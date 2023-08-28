@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,13 @@
 package com.ritense.processdocument.service.impl;
 
 import com.ritense.document.domain.Document;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
+import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import com.ritense.processdocument.domain.ProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
-import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
+import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndStartProcessRequest;
@@ -63,6 +62,7 @@ import org.camunda.bpm.engine.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -71,20 +71,19 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
 
     private static final Logger logger = LoggerFactory.getLogger(CamundaProcessJsonSchemaDocumentService.class);
     private final DocumentService documentService;
-    private final DocumentDefinitionService documentDefinitionService;
     private final CamundaTaskService camundaTaskService;
     private final CamundaProcessService camundaProcessService;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
 
-    public CamundaProcessJsonSchemaDocumentService(DocumentService documentService, DocumentDefinitionService documentDefinitionService, CamundaTaskService camundaTaskService, CamundaProcessService camundaProcessService, ProcessDocumentAssociationService processDocumentAssociationService) {
+    public CamundaProcessJsonSchemaDocumentService(DocumentService documentService, CamundaTaskService camundaTaskService, CamundaProcessService camundaProcessService, ProcessDocumentAssociationService processDocumentAssociationService) {
         this.documentService = documentService;
-        this.documentDefinitionService = documentDefinitionService;
         this.camundaTaskService = camundaTaskService;
         this.camundaProcessService = camundaProcessService;
         this.processDocumentAssociationService = processDocumentAssociationService;
     }
 
     @Override
+    @Transactional
     public DocumentFunctionResult dispatch(Request request) {
         if (request instanceof NewDocumentAndStartProcessRequest) {
             return newDocumentAndStartProcess((NewDocumentAndStartProcessRequest) request);
@@ -106,18 +105,6 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         try {
             final var processDefinitionKey = new CamundaProcessDefinitionKey(request.processDefinitionKey());
             final var newDocumentRequest = request.newDocumentRequest();
-            final var documentDefinitionId = documentDefinitionService.findIdByName(
-                newDocumentRequest.documentDefinitionName()
-            );
-            final var processDocumentDefinitionId = CamundaProcessJsonSchemaDocumentDefinitionId.existingId(
-                processDefinitionKey,
-                documentDefinitionId
-            );
-            final var processDocumentDefinitionResult = processDocumentAssociationService.getProcessDocumentDefinitionResult(processDocumentDefinitionId);
-
-            if (!processDocumentDefinitionResult.hasResult()) {
-                return new NewDocumentAndStartProcessResultFailed(processDocumentDefinitionResult.errors());
-            }
 
             final var newDocumentResult = documentService.createDocument(newDocumentRequest);
 
@@ -190,22 +177,8 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         final NewDocumentForRunningProcessRequest request
     ) {
         try {
-            final var processDefinitionKey = new CamundaProcessDefinitionKey(request.processDefinitionKey());
             final var processInstanceId = new CamundaProcessInstanceId(request.processInstanceId());
             final var newDocumentRequest = request.newDocumentRequest();
-            final var documentDefinitionId = documentDefinitionService.findIdByName(
-                newDocumentRequest.documentDefinitionName()
-            );
-
-            final var processDocumentDefinitionId = CamundaProcessJsonSchemaDocumentDefinitionId.newId(
-                processDefinitionKey,
-                documentDefinitionId
-            );
-            final var processDocumentDefinitionResult = processDocumentAssociationService.getProcessDocumentDefinitionResult(processDocumentDefinitionId);
-
-            if (!processDocumentDefinitionResult.hasResult()) {
-                return new NewDocumentForRunningProcessResultFailed(processDocumentDefinitionResult.errors());
-            }
 
             final var newDocumentResult = documentService.createDocument(newDocumentRequest);
 
@@ -243,18 +216,10 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             if (modifyDocumentResult.resultingDocument().isEmpty()) {
                 return new ModifyDocumentAndStartProcessResultFailed(modifyDocumentResult.errors());
             }
-            final var document = modifyDocumentResult.resultingDocument().get();
+            final var document = modifyDocumentResult.resultingDocument().orElseThrow();
 
             //Part 2 process start
-            final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(document.definitionId());
             final var processDefinitionKey = new CamundaProcessDefinitionKey(request.processDefinitionKey());
-            final var processDocumentDefinitionId = CamundaProcessJsonSchemaDocumentDefinitionId.existingId(processDefinitionKey, documentDefinitionId);
-            final var processDocumentDefinitionResult = processDocumentAssociationService.getProcessDocumentDefinitionResult(processDocumentDefinitionId);
-
-            if (!processDocumentDefinitionResult.hasResult()) {
-                return new ModifyDocumentAndStartProcessResultFailed(processDocumentDefinitionResult.errors());
-            }
-
             final var processInstanceWithDefinition = startProcess(document, processDefinitionKey.toString(), request.getProcessVars());
             final var camundaProcessInstanceId = new CamundaProcessInstanceId(
                 processInstanceWithDefinition.getProcessInstanceDto().getId()
@@ -283,15 +248,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
             Document document = optionalDocument.get();
 
             //Part 2 process start
-            final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(document.definitionId());
             final var processDefinitionKey = new CamundaProcessDefinitionKey(request.getProcessDefinitionKey());
-            final var processDocumentDefinitionId = CamundaProcessJsonSchemaDocumentDefinitionId.existingId(processDefinitionKey, documentDefinitionId);
-            final var processDocumentDefinitionResult = processDocumentAssociationService.getProcessDocumentDefinitionResult(processDocumentDefinitionId);
-
-            if (!processDocumentDefinitionResult.hasResult()) {
-                return new StartProcessForDocumentResultFailed(processDocumentDefinitionResult.errors());
-            }
-
             final var processInstanceWithDefinition = startProcess(document, processDefinitionKey.toString(), request.getProcessVars());
             final var camundaProcessInstanceId = new CamundaProcessInstanceId(
                 processInstanceWithDefinition.getProcessInstanceDto().getId()
@@ -327,6 +284,15 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
 
     public Document getDocument(ProcessInstanceId processInstanceId, VariableScope variableScope) {
         return documentService.get(getDocumentId(processInstanceId, variableScope).toString());
+    }
+
+    @Override
+    public Optional<ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessInstanceId processInstanceId) {
+        return camundaProcessService.findProcessInstanceById(processInstanceId.toString())
+            .map(instance -> camundaProcessService.findProcessDefinitionById(instance.getProcessDefinitionId()))
+            .map(definition -> new CamundaProcessDefinitionKey(definition.getKey()))
+            .map(processDocumentAssociationService::findProcessDocumentDefinition)
+            .map(optional -> (CamundaProcessJsonSchemaDocumentDefinition) optional.orElse(null));
     }
 
     private String getBusinessKey(ProcessInstanceId processInstanceId, VariableScope variableScope) {

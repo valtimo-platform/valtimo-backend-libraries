@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,18 @@ dependencies {
     api project(':contract')
 
     implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-security"
 
-    implementation "io.github.microutils:kotlin-logging:2.1.23"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "org.apache.tika:tika-core:${apacheTikaVersion}"
+    implementation "org.apache.tika:tika-parser-microsoft-module:${apacheTikaVersion}"
 
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+
+    testImplementation project(':test-utils-common')
 
     jar {
         enabled = true

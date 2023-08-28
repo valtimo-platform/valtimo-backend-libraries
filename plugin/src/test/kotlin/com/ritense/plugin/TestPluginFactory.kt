@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package com.ritense.plugin
 
+import com.ritense.plugin.service.PluginService
+
 class TestPluginFactory(
-    private val someObject: String
-) : PluginFactory<TestPlugin>() {
+    private val someObject: String,
+    pluginService: PluginService
+) : PluginFactory<TestPlugin>(pluginService) {
     override fun create(): TestPlugin {
         return TestPlugin(someObject)
     }

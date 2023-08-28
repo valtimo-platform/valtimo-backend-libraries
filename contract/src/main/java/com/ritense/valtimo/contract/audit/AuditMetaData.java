@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,11 @@ package com.ritense.valtimo.contract.audit;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
+
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
@@ -44,6 +46,9 @@ public abstract class AuditMetaData {
         this.origin = origin;
         this.occurredOn = occurredOn;
         this.user = user;
+    }
+
+    public AuditMetaData() {
     }
 
     public UUID getId() {

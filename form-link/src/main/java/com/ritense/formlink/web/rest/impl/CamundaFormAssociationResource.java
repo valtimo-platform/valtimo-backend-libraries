@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import com.ritense.formlink.service.FormAssociationSubmissionService;
 import com.ritense.formlink.service.result.FormSubmissionResult;
 import com.ritense.formlink.web.rest.FormAssociationResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,11 +32,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
+@Deprecated(since = "10.6.0", forRemoval = true)
 @RestController
-@RequestMapping(value = "/api/form-association", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class CamundaFormAssociationResource implements FormAssociationResource {
 
     private final FormAssociationService formAssociationService;
@@ -52,7 +55,7 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
     }
 
     @Override
-    @GetMapping(value = "/form-definition", params = {"processDefinitionKey", "formLinkId"})
+    @GetMapping(value = "/v1/form-association/form-definition", params = {"processDefinitionKey", "formLinkId"})
     public ResponseEntity<JsonNode> getPreFilledFormDefinition(
         @RequestParam String processDefinitionKey,
         @RequestParam String formLinkId,
@@ -68,17 +71,18 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
     }
 
     @Override
-    @GetMapping(value = "/form-definition", params = {"processDefinitionKey"})
+    @GetMapping(value = "/v1/form-association/form-definition", params = {"processDefinitionKey"})
     public ResponseEntity<JsonNode> getStartEventFormDefinitionByProcessDefinitionKey(
-        @RequestParam String processDefinitionKey
+        @RequestParam String processDefinitionKey,
+        @RequestParam(required = false) Optional<UUID> documentId
     ) {
-        return formAssociationService.getStartEventFormDefinition(processDefinitionKey)
+        return formAssociationService.getStartEventFormDefinition(processDefinitionKey, documentId)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
 
     @Override
-    @GetMapping(value = "/form-definition/{formKey}")
+    @GetMapping("/v1/form-association/form-definition/{formKey}")
     public ResponseEntity<JsonNode> getFormDefinitionByFormKey(
         @PathVariable String formKey,
         @RequestParam(required = false) Optional<UUID> documentId
@@ -89,7 +93,7 @@ public class CamundaFormAssociationResource implements FormAssociationResource {
     }
 
     @Override
-    @PostMapping(value = "/form-definition/submission")
+    @PostMapping("/v1/form-association/form-definition/submission")
     @PreAuthorize("#taskInstanceId.present == false or hasPermission(#taskInstanceId.orElseThrow(), 'taskAccess')")
     public ResponseEntity<FormSubmissionResult> handleSubmission(
         @RequestParam String processDefinitionKey,

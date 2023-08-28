@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,13 @@ import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.ritense.form.web.rest.dto.FormOption;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class FormIoFormDefinitionService implements FormDefinitionService {
 
@@ -39,6 +41,14 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     @Override
     public Page<FormIoFormDefinition> getAll(Pageable pageable) {
         return formDefinitionRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<FormOption> getAllFormOptions() {
+        return formDefinitionRepository.findAllByOrderByNameAsc()
+            .stream()
+            .map(formIoFormDefinition -> new FormOption(formIoFormDefinition.getId(), formIoFormDefinition.getName()))
+            .toList();
     }
 
     @Override
@@ -57,8 +67,16 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     }
 
     @Override
+    public Optional<FormIoFormDefinition> getFormDefinitionByNameIgnoringCase(String name) {
+        return formDefinitionRepository.findByNameIgnoreCase(name);
+    }
+
+    @Override
     @Transactional
     public FormIoFormDefinition createFormDefinition(CreateFormDefinitionRequest request) {
+        if(formDefinitionRepository.findByName(request.getName()).isPresent()) {
+            throw new IllegalArgumentException("Duplicate name for new form: "+request.getName());
+        }
         return formDefinitionRepository.save(
             new FormIoFormDefinition(
                 UUID.randomUUID(),
@@ -87,15 +105,19 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     @Override
     @Transactional
     public FormIoFormDefinition modifyFormDefinition(UUID id, String name, String definition, Boolean readOnly) {
-       return formDefinitionRepository.findById(id)
-        .map(formIoFormDefinition -> {
-            formIoFormDefinition.isWriting();
-            formIoFormDefinition.changeName(name);
-            formIoFormDefinition.changeDefinition(definition);
-            formIoFormDefinition.setReadOnly(readOnly);
-            formIoFormDefinition.doneWriting();
-            return formDefinitionRepository.save(formIoFormDefinition);
-        }).orElseThrow();
+        return formDefinitionRepository
+            .findById(id)
+            .map(
+                formIoFormDefinition -> {
+                    formIoFormDefinition.isWriting();
+                    formIoFormDefinition.changeName(name);
+                    formIoFormDefinition.changeDefinition(definition);
+                    formIoFormDefinition.setReadOnly(readOnly);
+                    formIoFormDefinition.doneWriting();
+                    return formDefinitionRepository.save(formIoFormDefinition);
+                }
+            )
+            .orElseThrow();
     }
 
     @Override
@@ -107,6 +129,12 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     @Override
     public boolean formDefinitionExistsById(UUID id) {
         return formDefinitionRepository.existsById(id);
+    }
+
+    @Override
+    public Long countAllForms() {
+        return formDefinitionRepository.count();
+
     }
 
 }

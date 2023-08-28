@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import com.ritense.resource.web.ResourceDTO
 import com.ritense.valtimo.contract.resource.FileStatus
 import com.ritense.valtimo.contract.resource.Resource
 import org.springframework.web.multipart.MultipartFile
+import java.net.URI
 import java.net.URL
 import java.time.LocalDateTime
 import java.util.UUID
@@ -163,8 +164,12 @@ class OpenZaakService(
         TODO("Not yet implemented")
     }
 
+    fun getResourceByInformatieObjectUrl(url: URI): OpenZaakResource {
+        return openZaakResourceRepository.findByInformatieObjectUrl(url)
+    }
+
     private fun getDownloadUrl(resource: OpenZaakResource): URL {
         val currentRequestUrl = URL(request.requestURL.toString())
-        return URL(currentRequestUrl, "/api/resource/${resource.resourceId.id}/download")
+        return URL(currentRequestUrl, "/api/v1/resource/${resource.resourceId.id}/download")
     }
 }

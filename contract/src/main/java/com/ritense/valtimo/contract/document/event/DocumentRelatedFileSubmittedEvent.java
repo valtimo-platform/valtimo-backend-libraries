@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.ritense.valtimo.contract.document.event;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.UUID;
 
 public class DocumentRelatedFileSubmittedEvent {
@@ -33,7 +34,7 @@ public class DocumentRelatedFileSubmittedEvent {
         this.documentDefinitionName = documentDefinitionName;
     }
 
-    @JsonIgnore(value = false)
+    @JsonIgnore(false)
     public UUID getDocumentId() {
         return documentId;
     }

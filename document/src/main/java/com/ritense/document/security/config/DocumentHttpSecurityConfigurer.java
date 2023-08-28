@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.ritense.document.security.config;
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
@@ -31,11 +32,14 @@ public class DocumentHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/document/{id}").hasAuthority(USER)
-                .antMatchers(POST, "/api/document").hasAuthority(USER)
-                .antMatchers(PUT, "/api/document").hasAuthority(USER)
-                .antMatchers(POST, "/api/document/{document-id}/resource/{resource-id}").hasAuthority(USER)
-                .antMatchers(DELETE, "/api/document/{document-id}/resource/{resource-id}").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/document/{id}").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/document").hasAuthority(USER)
+                .antMatchers(PUT, "/api/v1/document").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/document/{document-id}/resource/{resource-id}").hasAuthority(USER)
+                .antMatchers(DELETE, "/api/v1/document/{document-id}/resource/{resource-id}").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/document/{documentId}/assign").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/document/{documentId}/unassign").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/document/{document-id}/candidate-user").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

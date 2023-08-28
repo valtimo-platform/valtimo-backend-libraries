@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,7 +146,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         """.trimIndent()
 
         val result = mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/connector/instance")
+            MockMvcRequestBuilders.post("/api/v1/connector/instance")
                 .content(postBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
@@ -188,7 +188,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         """.trimIndent()
 
         val result = mockMvc.perform(
-            MockMvcRequestBuilders.put("/api/connector/instance")
+            MockMvcRequestBuilders.put("/api/v1/connector/instance")
                 .content(putBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON_VALUE))
@@ -211,7 +211,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         prepareConnectorInstance()
 
         mockMvc.perform(
-            MockMvcRequestBuilders.delete("/api/connector/instance/${productAanvraagConnectorInstance.id.id}")
+            MockMvcRequestBuilders.delete("/api/v1/connector/instance/${productAanvraagConnectorInstance.id.id}")
                 .accept(MediaType.APPLICATION_JSON_VALUE))
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
@@ -248,7 +248,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         """.trimIndent()
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/notification?connectorId=26141e07-40e4-4a7e-9c78-f7a40db3b3e9")
+            MockMvcRequestBuilders.post("/api/v1/notification?connectorId=26141e07-40e4-4a7e-9c78-f7a40db3b3e9")
                 .header("Authorization", "some-key")
                 .content(postBody)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -289,7 +289,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         """.trimIndent()
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/notification?connectorId=26141e07-40e4-4a7e-9c78-f7a40db3b3e9")
+            MockMvcRequestBuilders.post("/api/v1/notification?connectorId=26141e07-40e4-4a7e-9c78-f7a40db3b3e9")
                 .header("Authorization", "some-key")
                 .content(postBody)
                 .contentType(MediaType.APPLICATION_JSON)

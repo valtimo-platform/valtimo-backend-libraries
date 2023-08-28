@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping(value = "/api/v1", produces = APPLICATION_JSON_UTF8_VALUE)
 public class AuthorityResource {
 
     private static final String AUTHORITY = "authority";
@@ -53,18 +56,18 @@ public class AuthorityResource {
         this.authorityService = authorityService;
     }
 
-    @PostMapping(value = "/authorities")
+    @PostMapping("/authorities")
     public ResponseEntity<Authority> createAuthority(
         @RequestBody @Valid AuthorityRequest authorityRequest
     ) throws URISyntaxException {
         logger.debug("REST request to create Authority : {}", authorityRequest);
         final Authority authority = authorityService.createAuthority(authorityRequest);
-        return ResponseEntity.created(new URI("/api/authorities/" + authority.getName()))
+        return ResponseEntity.created(new URI("/api/v1/authorities/" + authority.getName()))
             .headers(HeaderUtil.createEntityCreationAlert(AUTHORITY, authority.getName()))
             .body(authority);
     }
 
-    @PutMapping(value = "/authorities")
+    @PutMapping("/authorities")
     public ResponseEntity<Authority> updateAuthority(@RequestBody @Valid AuthorityRequest authorityRequest) {
         final Authority authority = authorityService.updateAuthority(authorityRequest);
         return ResponseEntity.ok()
@@ -72,15 +75,15 @@ public class AuthorityResource {
             .body(authority);
     }
 
-    @GetMapping(value = "/authorities")
+    @GetMapping("/authorities")
     public ResponseEntity<List<Authority>> getAllAuthorities(Pageable pageable) {
         logger.debug("REST request to get a page of Authorities");
         Page<Authority> page = authorityService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/authorities");
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/authorities");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/authorities/{name}")
+    @GetMapping("/authorities/{name}")
     public ResponseEntity<Authority> getAuthority(@PathVariable String name) {
         logger.debug("REST request to get Authority by name : {}", name);
         return authorityService.findBy(name)
@@ -88,7 +91,7 @@ public class AuthorityResource {
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping(value = "/authorities/{name}")
+    @DeleteMapping("/authorities/{name}")
     public ResponseEntity<Void> deleteAuthority(@PathVariable String name) throws IllegalAccessException {
         logger.debug("REST request to delete Authority : {}", name);
         authorityService.deleteAuthority(name);

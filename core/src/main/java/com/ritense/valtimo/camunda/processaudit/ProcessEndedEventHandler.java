@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ public class ProcessEndedEventHandler implements HistoryEventHandler {
             final String processDefinitionId = historyEvent.getProcessDefinitionId();
             final String processInstanceId = historyEvent.getProcessInstanceId();
             final String businessKey = ((HistoricProcessInstanceEventEntity) historyEvent).getBusinessKey();
+            final String processDefinitionKey = historyEvent.getProcessDefinitionKey();
 
             applicationEventPublisher.publishEvent(
                 new ProcessEndedEvent(
@@ -49,7 +50,8 @@ public class ProcessEndedEventHandler implements HistoryEventHandler {
                     AuditHelper.getActor(),
                     processDefinitionId,
                     processInstanceId,
-                    businessKey
+                    businessKey,
+                    processDefinitionKey
                 )
             );
         }

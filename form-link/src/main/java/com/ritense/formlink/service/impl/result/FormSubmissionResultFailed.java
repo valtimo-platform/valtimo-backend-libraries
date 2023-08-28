@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,14 @@ package com.ritense.formlink.service.impl.result;
 import com.ritense.formlink.service.result.FormSubmissionResult;
 import com.ritense.processdocument.service.result.TransactionalResult;
 import com.ritense.valtimo.contract.result.OperationError;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormSubmissionResultFailed implements FormSubmissionResult, TransactionalResult {
 
     private final List<OperationError> errors;

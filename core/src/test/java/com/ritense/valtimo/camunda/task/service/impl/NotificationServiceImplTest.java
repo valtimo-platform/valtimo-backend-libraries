@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,12 @@ import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
-import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake;
+import java.util.List;
+import java.util.Optional;
+import org.camunda.community.mockito.delegate.DelegateTaskFake;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import java.util.List;
-import java.util.Optional;
 import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.mockTask;
 import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.user;
 import static org.mockito.ArgumentMatchers.anyString;

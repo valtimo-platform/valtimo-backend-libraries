@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,28 +18,28 @@ package com.ritense.valtimo.camunda.task.service;
 
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
-import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake;
-import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake;
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import java.util.List;
 import java.util.Map;
+import org.camunda.community.mockito.delegate.DelegateExecutionFake;
+import org.camunda.community.mockito.delegate.DelegateTaskFake;
 
 public class NotificationTestHelper {
 
     public static ManageableUser user(String email, List<String> role) {
-        return new ValtimoUser(
-            "id",
-            "username",
-            "full name",
-            email,
-            "firstName",
-            "lastName",
-            "04545656",
-            true,
-            "nl",
-            false,
-            true,
-            role
-        );
+        return new ValtimoUserBuilder()
+            .id("id")
+            .username("username")
+            .name("full name")
+            .email(email)
+            .firstName("firstName")
+            .lastName("lastName")
+            .phoneNo("04545656")
+            .isEmailVerified(true)
+            .langKey("nl")
+            .blocked(false)
+            .activated(true)
+            .roles(role).build();
     }
 
     public static DelegateTaskFake mockTask(String id) {

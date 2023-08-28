@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.contactmoment.web.rest;
+package com.ritense.contactmoment.web.rest
 
 import com.ritense.contactmoment.domain.request.SendMessageRequest
-import java.util.UUID
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
-@RequestMapping(value = ["/api/document/{documentId}/message"], produces = [MediaType.APPLICATION_JSON_VALUE])
-public interface MessageResource {
+@RequestMapping(value = ["/api/v1/document/{documentId}/message"], produces = [APPLICATION_JSON_UTF8_VALUE])
+interface MessageResource {
 
     @PostMapping
     fun sendMessage(

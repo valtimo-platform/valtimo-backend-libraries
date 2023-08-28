@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,10 +34,9 @@ public class FormFileHttpSecurityConfigurer implements HttpSecurityConfigurer {
         try {
             http
                 .authorizeRequests()
-                .antMatchers(GET, "/api/form-file").permitAll()
-                .antMatchers(POST, "/api/form-file").hasAuthority(USER)
-                .antMatchers(POST, "/api/form-file/upload").hasAuthority(USER)
-                .antMatchers(DELETE, "/api/form-file").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/form-file").permitAll()
+                .antMatchers(POST, "/api/v1/form-file/upload").hasAuthority(USER)
+                .antMatchers(DELETE, "/api/v1/form-file").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

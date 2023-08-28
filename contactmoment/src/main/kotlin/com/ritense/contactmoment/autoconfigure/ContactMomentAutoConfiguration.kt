@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,26 +48,12 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 class ContactMomentAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun contactMomentWebClientBuilder(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
-    }
-
-    @Bean
     @ConditionalOnMissingBean(ContactMomentClient::class)
     fun contactMomentClient(
-        contactMomentWebClient: WebClient,
+        webclientBuilder: WebClient.Builder,
         contactMomentTokenGenerator: ContactMomentTokenGenerator,
     ): ContactMomentClient {
-        return ContactMomentClient(contactMomentWebClient, contactMomentTokenGenerator)
+        return ContactMomentClient(webclientBuilder, contactMomentTokenGenerator)
     }
 
     @Bean

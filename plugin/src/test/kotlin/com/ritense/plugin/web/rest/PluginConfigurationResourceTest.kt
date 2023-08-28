@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,25 @@ package com.ritense.plugin.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
 import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
 import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
 import com.ritense.valtimo.contract.json.Mapper
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.format.support.FormattingConversionService
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -56,8 +59,12 @@ internal class PluginConfigurationResourceTest {
         pluginService = mock()
         pluginConfigurationResource = PluginConfigurationResource(pluginService)
 
+        val formattingConversionService = FormattingConversionService()
+        formattingConversionService.addConverter(StringToActivityTypeConverter())
+
         mockMvc = MockMvcBuilders
             .standaloneSetup(pluginConfigurationResource)
+            .setConversionService(formattingConversionService)
             .build()
     }
 
@@ -69,15 +76,79 @@ internal class PluginConfigurationResourceTest {
         val plugin2 = PluginDefinition("key2", "title2", "description2", "className2")
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties1, plugin)
         val pluginConfiguration2 = PluginConfiguration(PluginConfigurationId.newId(), "title2", properties2, plugin2)
-        whenever(pluginService.getPluginConfigurations()).thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
+        whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
 
-        mockMvc.perform(get("/api/plugin/configuration")
+        mockMvc.perform(get("/api/v1/plugin/configuration")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())
-            .andExpect(status().is2xxSuccessful)
+            .assertConfigurationListOutput()
+
+        verify(pluginService).getPluginConfigurations(any())
+    }
+
+    @Test
+    fun `should get plugin configurations by category`() {
+        val properties1: ObjectNode = ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode
+        val properties2: ObjectNode = ObjectMapper().readTree("{\"other\": \"something\" }") as ObjectNode
+        val plugin = PluginDefinition("key", "title", "description", "className")
+        val plugin2 = PluginDefinition("key2", "title2", "description2", "className2")
+        val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties1, plugin)
+        val pluginConfiguration2 = PluginConfiguration(PluginConfigurationId.newId(), "title2", properties2, plugin2)
+        whenever(pluginService
+            .getPluginConfigurations(any()))
+            .thenReturn(listOf(pluginConfiguration, pluginConfiguration2))
+
+        mockMvc.perform(get("/api/v1/plugin/configuration?category=some-category")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .assertConfigurationListOutput()
+    }
+
+    @Test
+    fun `should filter on plugins for activityType`() {
+        whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
+
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ServiceTask")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$").isEmpty)
+    }
+
+    @Test
+    fun `should not filter on plugins for rare activityType`() {
+        whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
+
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:IntermediateLinkCatch")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$").isEmpty)
+    }
+
+    @Test
+    fun `should respond with 400 bad request when filtering on non existing activityType`() {
+        whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
+
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ActivityTypeDoesntExist")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isBadRequest)
+    }
+
+    private fun ResultActions.assertConfigurationListOutput() {
+        this.andExpect(status().is2xxSuccessful)
             .andExpect(
                 jsonPath("$").isNotEmpty)
             .andExpect(
@@ -133,7 +204,7 @@ internal class PluginConfigurationResourceTest {
         )
 
         mockMvc.perform(
-            post("/api/plugin/configuration")
+            post("/api/v1/plugin/configuration")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(Mapper.INSTANCE.get().writeValueAsString(pluginConfiguratieDto))
@@ -179,7 +250,7 @@ internal class PluginConfigurationResourceTest {
         )
 
         mockMvc.perform(
-            put("/api/plugin/configuration/$pluginConfigurationId")
+            put("/api/v1/plugin/configuration/$pluginConfigurationId")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(Mapper.INSTANCE.get().writeValueAsString(pluginConfiguratieDto))
@@ -214,7 +285,7 @@ internal class PluginConfigurationResourceTest {
         val pluginConfigurationId = UUID.randomUUID()
 
         mockMvc.perform(
-            delete("/api/plugin/configuration/$pluginConfigurationId")
+            delete("/api/v1/plugin/configuration/$pluginConfigurationId")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)

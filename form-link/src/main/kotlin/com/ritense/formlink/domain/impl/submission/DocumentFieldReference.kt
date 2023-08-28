@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.ritense.formlink.domain.impl.submission
 
 import com.ritense.formlink.domain.impl.submission.formfield.FormField
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.domain.submission.formfield.FormField"))
 data class DocumentFieldReference(
     val formfield: FormField
 )

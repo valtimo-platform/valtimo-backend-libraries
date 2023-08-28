@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.formflow
 
-import com.ritense.resource.service.ResourceService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag
@@ -26,17 +25,14 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class])
+@ExtendWith(SpringExtension::class)
 @Tag("integration")
-class BaseIntegrationTest {
+class BaseIntegrationTest : BaseTest() {
 
     @MockBean
     lateinit var mailSender: MailSender
 
     @MockBean
     lateinit var userManagementService: UserManagementService
-
-    @MockBean
-    lateinit var resourceService: ResourceService
 }
 

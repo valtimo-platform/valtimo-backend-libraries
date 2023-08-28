@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpConnector
 import com.ritense.haalcentraal.brp.domain.Person
 import com.ritense.haalcentraal.brp.web.rest.request.GetPeopleRequest
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -27,12 +28,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/haalcentraal"])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class HaalCentraalBrpResource(
     val connectorService: ConnectorService
 ) {
 
-    @PostMapping("/personen")
+    @PostMapping("/v1/haalcentraal/personen")
     fun findPersonByBsn(
         @RequestBody request: GetPeopleRequest
     ): ResponseEntity<List<Person>> {

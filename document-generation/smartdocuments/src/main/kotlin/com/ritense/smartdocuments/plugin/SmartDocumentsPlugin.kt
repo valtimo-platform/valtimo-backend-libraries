@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGene
 import com.ritense.valtimo.contract.utils.RequestHelper
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.hibernate.validator.constraints.URL
 import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDateTime
 import java.util.UUID
@@ -51,6 +52,7 @@ class SmartDocumentsPlugin(
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) {
 
+    @URL
     @PluginProperty(key = "url", required = true, secret = false)
     private lateinit var url: String
 
@@ -64,7 +66,7 @@ class SmartDocumentsPlugin(
         key = "generate-document",
         title = "Generate document",
         description = "Generates a document of a given type based on a template with data from a case.",
-        activityTypes = [ActivityType.SERVICE_TASK]
+        activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun generate(
         execution: DelegateExecution,
@@ -78,12 +80,14 @@ class SmartDocumentsPlugin(
         val resolvedTemplateData = resolveTemplateData(templateData, execution)
         val generatedDocument = generateDocument(templateGroup, templateName, resolvedTemplateData, DocumentFormatOption.valueOf(format))
         publishDossierDocumentGeneratedEvent(document.id(), templateName)
-        val resourceId = saveGeneratedDocumentToTempFile(generatedDocument)
+        val resourceId = generatedDocument.use {
+            saveGeneratedDocumentToTempFile(generatedDocument)
+        }
         execution.setVariable(resultingDocumentProcessVariableName, resourceId)
     }
 
     private fun saveGeneratedDocumentToTempFile(generatedDocument: FileStreamResponse): String {
-        val metadata = mapOf(MetadataType.FILE_NAME.name to generatedDocument.filename)
+        val metadata = mapOf(MetadataType.FILE_NAME.key to generatedDocument.filename)
         return temporaryResourceStorageService.store(generatedDocument.documentData, metadata)
     }
 
@@ -106,7 +110,7 @@ class SmartDocumentsPlugin(
     private fun generateDocument(
         templateGroup: String,
         templateName: String,
-        templateData: Map<String, Any>,
+        templateData: Map<String, Any?>,
         format: DocumentFormatOption
     ): FileStreamResponse {
         val request = SmartDocumentsRequest(
@@ -125,12 +129,12 @@ class SmartDocumentsPlugin(
     private fun resolveTemplateData(
         templateData: Array<TemplateDataEntry>,
         execution: DelegateExecution
-    ): Map<String, Any> {
+    ): Map<String, Any?> {
         val placeHolderValueMap = valueResolverService.resolveValues(
             execution.processInstanceId,
             execution,
             templateData.map { it.value }.toList()
         )
-        return templateData.associate { it.key to placeHolderValueMap.getOrDefault(it.value, it.value) }
+        return templateData.associate { it.key to placeHolderValueMap.getOrDefault(it.value, null) }
     }
 }

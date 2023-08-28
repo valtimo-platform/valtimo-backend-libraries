@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,27 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import java.time.temporal.TemporalAccessor;
 
 public class MysqlQueryDialectHelper implements QueryDialectHelper {
 
-    private static final String LOWER_CASE_FUNTION = "lower";
+    private static final String LOWER_CASE_FUNCTION = "lower";
 
     @Override
-    public Expression<?> getJsonValueExpression(CriteriaBuilder cb, Path column, String path) {
-        return cb.function(LOWER_CASE_FUNTION, String.class,
-            cb.function(
-                "JSON_EXTRACT",
-                String.class,
-                column,
-                cb.literal(path)
-            )
+    public <T> Expression<T> getJsonValueExpression(CriteriaBuilder cb, Path column, String path, Class<T> type) {
+        var jsonValue = cb.function(
+            "JSON_EXTRACT",
+            Object.class,
+            column,
+            cb.literal(path)
         );
+        if (CharSequence.class.isAssignableFrom(type) || TemporalAccessor.class.isAssignableFrom(type)) {
+            return cb.function("JSON_UNQUOTE", type, jsonValue); // Strings or timestamps extracted from JSON have additional quotes ("") around them in MySQL 5.7.
+        } else if (Boolean.class.isAssignableFrom(type)) {
+            return cb.function("IF", type, jsonValue, cb.literal(1), cb.literal(0)); // Booleans extracted from JSON can be true/false while MySQL only accepts 1/0.
+        } else {
+            return jsonValue.as(type);
+        }
     }
 
     @Override
@@ -43,9 +49,9 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
             cb.function(
                 "JSON_SEARCH",
                 String.class,
-                cb.function(LOWER_CASE_FUNTION, String.class, column),
+                cb.function(LOWER_CASE_FUNCTION, String.class, column),
                 cb.literal("all"),
-                cb.function(LOWER_CASE_FUNTION, String.class, cb.literal("%" + value.trim() + "%"))
+                cb.function(LOWER_CASE_FUNCTION, String.class, cb.literal("%" + value.trim() + "%"))
             )
         );
     }
@@ -57,11 +63,11 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
             cb.function(
                 "JSON_SEARCH",
                 String.class,
-                cb.function(LOWER_CASE_FUNTION, String.class, column),
+                cb.function(LOWER_CASE_FUNCTION, String.class, column),
                 cb.literal("all"),
-                cb.function(LOWER_CASE_FUNTION, String.class, cb.literal("%" + value.trim() + "%")),
+                cb.function(LOWER_CASE_FUNCTION, String.class, cb.literal("%" + value.trim() + "%")),
                 cb.nullLiteral(String.class),
-                cb.function(LOWER_CASE_FUNTION, String.class, cb.literal(path))
+                cb.function(LOWER_CASE_FUNCTION, String.class, cb.literal(path))
             )
         );
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public interface SubmissionTransformerService<T extends FormDefinition> {
 
+    @Deprecated(since = "10.6.0", forRemoval = true)
     void prePreFillTransform(T formDefinition, JsonNode placeholders, JsonNode source);
 
+    @Deprecated(since = "10.6.0", forRemoval = true)
     JsonPatch preSubmissionTransform(T formDefinition, JsonNode submission, JsonNode placeholders, JsonNode source);
 
 }

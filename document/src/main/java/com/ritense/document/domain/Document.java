@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.ritense.document.domain.relation.DocumentRelation;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
@@ -41,6 +42,12 @@ public interface Document {
 
     @JsonProperty
     DocumentDefinition.Id definitionId();
+
+    @JsonProperty
+    String assigneeId();
+
+    @JsonProperty
+    String assigneeFullName();
 
     @JsonProperty
     DocumentContent content();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.haalcentraal.brp.autoconfigure
 
+import com.ritense.connector.service.ConnectorService
 import com.ritense.haalcentraal.brp.client.HaalCentraalBrpClient
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpConnector
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
@@ -33,21 +34,6 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat
 
 @Configuration
 internal class HaalCentraalAutoConfiguration {
-
-    // Webclient
-    @Bean
-    @ConditionalOnMissingBean(WebClient::class)
-    fun haalcentraalWebClient(): WebClient {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        ).build()
-    }
 
     // Connector
     @Bean
@@ -70,16 +56,18 @@ internal class HaalCentraalAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(HaalCentraalBrpClient::class)
     fun haalCentraalBrpClient(
-        haalcentraalWebClient: WebClient
+        webclientBuilder: WebClient.Builder
     ) : HaalCentraalBrpClient {
-        return HaalCentraalBrpClient(haalcentraalWebClient)
+        return HaalCentraalBrpClient(webclientBuilder)
     }
 
     // Resource
 
     @Bean
     @ConditionalOnMissingBean(HaalCentraalBrpResource::class)
-    fun haalCentraalBrpResource() : HaalCentraalBrpResource {
-        return haalCentraalBrpResource()
+    fun haalCentraalBrpResource(
+        connectorService: ConnectorService
+    ) : HaalCentraalBrpResource {
+        return HaalCentraalBrpResource(connectorService)
     }
 }

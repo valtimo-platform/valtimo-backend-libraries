@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -85,13 +86,13 @@ public class ProcessDocumentAuditResourceTest extends BaseTest {
             .thenReturn(new PageImpl<>(List.of(auditRecord)));
 
         mockMvc.perform(
-                get("/api/process-document/instance/document/{documentId}/audit", UUID.randomUUID().toString())
+                get("/api/v1/process-document/instance/document/{documentId}/audit", UUID.randomUUID().toString())
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .accept(APPLICATION_JSON_VALUE)
                     .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.content").isArray())
             .andExpect(jsonPath("$.content").isNotEmpty())
             .andExpect(jsonPath("$.content[0].metaData.origin").doesNotExist())

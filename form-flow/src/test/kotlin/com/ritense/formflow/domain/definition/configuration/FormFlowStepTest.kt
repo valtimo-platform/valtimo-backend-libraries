@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,14 @@ package com.ritense.formflow.domain.definition.configuration
 
 import com.ritense.formflow.domain.definition.FormFlowNextStep as FormFlowNextStepEntity
 import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 internal class FormFlowStepTest {
 
@@ -37,8 +37,8 @@ internal class FormFlowStepTest {
         whenever(mockStep.contentEquals(otherMock)).thenReturn(true)
 
         val thisStep = FormFlowStep(
-            "step-key",
-            listOf(
+            key = "step-key",
+            nextSteps = listOf(
                 mockStep
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
@@ -67,7 +67,7 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            listOf(
+            nextSteps = listOf(
                 mockStep1,
                 mockStep2
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
@@ -93,7 +93,7 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = mutableListOf(
                 mockStep1,
                 mockStep2
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
@@ -115,7 +115,7 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = mutableListOf(
                 mockStep
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )
@@ -145,7 +145,7 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = mutableListOf(
                 mockStep1,
                 mockStep2
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
@@ -168,7 +168,7 @@ internal class FormFlowStepTest {
 
         val thisStep = FormFlowStep(
             "step-key",
-            mutableListOf(
+            nextSteps = mutableListOf(
                 mockStep
             ), type = FormFlowStepType("form", FormStepTypeProperties("my-form-definition"))
         )

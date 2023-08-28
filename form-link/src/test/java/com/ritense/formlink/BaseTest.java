@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.form.domain.FormIoFormDefinition;
+import com.ritense.form.domain.FormSpringContextHelper;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociation;
 import com.ritense.formlink.domain.impl.formassociation.CamundaProcessFormAssociationId;
@@ -36,20 +37,26 @@ import com.ritense.formlink.domain.request.ModifyFormAssociationRequest;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
+import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import org.apache.commons.io.IOUtils;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationContext;
+
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public abstract class BaseTest {
 
-    protected static final String PROCESS_DEFINITION_KEY = "process-definition-key";
+    protected static final String PROCESS_DEFINITION_KEY = "formlink-one-task-process";
     protected static final String USERNAME = "test@test.com";
     protected DocumentSequenceGeneratorService documentSequenceGeneratorService;
 
@@ -57,6 +64,15 @@ public abstract class BaseTest {
         MockitoAnnotations.openMocks(this);
         documentSequenceGeneratorService = mock(DocumentSequenceGeneratorService.class);
         when(documentSequenceGeneratorService.next(any())).thenReturn(1L);
+    }
+
+    protected static void mockSpringContextHelper() {
+        var applicationContext = mock(ApplicationContext.class);
+        var formFieldDataResolver = mock(FormFieldDataResolver.class);
+        when(formFieldDataResolver.supports(eq("oz"))).thenReturn(true);
+        when(applicationContext.getBeansOfType(FormFieldDataResolver.class)).thenReturn(Map.of("Test", formFieldDataResolver));
+        var springContextHelper = new FormSpringContextHelper();
+        springContextHelper.setApplicationContext(applicationContext);
     }
 
     protected CamundaProcessFormAssociation processFormAssociation(UUID id, UUID formId) {
@@ -111,6 +127,20 @@ public abstract class BaseTest {
         );
     }
 
+    protected CreateFormAssociationRequest createFormFlowUserTaskFormAssociationRequest(String formFlowId) {
+        return new CreateFormAssociationRequest(
+            PROCESS_DEFINITION_KEY,
+            new FormLinkRequest(
+                "userTaskId",
+                FormAssociationType.USER_TASK,
+                null,
+                formFlowId,
+                null,
+                null
+            )
+        );
+    }
+
     protected CreateFormAssociationRequest createFormAssociationRequestWithStartEvent(UUID formId) {
         return new CreateFormAssociationRequest(
             PROCESS_DEFINITION_KEY,
@@ -141,7 +171,11 @@ public abstract class BaseTest {
     }
 
     protected CreateFormDefinitionRequest createFormDefinitionRequest() throws IOException {
-        return new CreateFormDefinitionRequest("myForm", rawFormDefinition("form-example"), false);
+        return createFormDefinitionRequest("myForm");
+    }
+
+    protected CreateFormDefinitionRequest createFormDefinitionRequest(String formName) throws IOException {
+        return new CreateFormDefinitionRequest(formName, rawFormDefinition("form-example"), false);
     }
 
     protected String rawFormDefinition(String formDefinitionId) throws IOException {

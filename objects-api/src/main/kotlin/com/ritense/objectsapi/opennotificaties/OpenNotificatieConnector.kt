@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,10 @@ import com.ritense.objectsapi.domain.AbonnementLink
 import com.ritense.objectsapi.domain.Kanaal
 import com.ritense.objectsapi.domain.KanaalLink
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
+import mu.KotlinLogging
 import java.security.SecureRandom
 import java.util.Base64
 import java.util.UUID
-import mu.KotlinLogging
 
 @ConnectorType(name = "OpenNotificatie")
 class OpenNotificatieConnector(
@@ -46,7 +46,7 @@ class OpenNotificatieConnector(
         val key: String = createRandomKey()
         val abonnementRequest = Abonnement(
             null,
-            "${openNotificatieProperties.callbackBaseUrl}/api/notification?connectorId=${connectorId.id}",
+            "${openNotificatieProperties.callbackBaseUrl}/api/v1/notification?connectorId=${connectorId.id}",
             key,
             listOf(
                 KanaalLink(OBJECTEN_KANAAL_NAME)

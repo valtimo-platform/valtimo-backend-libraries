@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,13 +37,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ChoiceFieldValueResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ChoiceFieldValueResource.class);
@@ -56,7 +58,7 @@ public class ChoiceFieldValueResource {
         this.choiceFieldRepository = choiceFieldRepository;
     }
 
-    @PostMapping(value = "/choice-field-values")
+    @PostMapping("/v1/choice-field-values")
     public ResponseEntity<ChoiceFieldValue> createChoiceFieldValue(
         @Valid @RequestBody ChoiceFieldValue choiceFieldValue,
         @RequestParam("choice_field_name") String choiceFieldName
@@ -70,12 +72,12 @@ public class ChoiceFieldValueResource {
         ChoiceField choiceField = choiceFieldRepository.findByKeyName(choiceFieldName);
         choiceFieldValue.setChoiceField(choiceField);
         ChoiceFieldValue result = choiceFieldValueService.save(choiceFieldValue);
-        return ResponseEntity.created(new URI("/api/choice-field-values/" + result.getId()))
+        return ResponseEntity.created(new URI("/api/v1/choice-field-values/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert("choiceFieldValue", result.getName()))
             .body(result);
     }
 
-    @PutMapping(value = "/choice-field-values")
+    @PutMapping("/v1/choice-field-values")
     public ResponseEntity<ChoiceFieldValue> updateChoiceFieldValue(
         @Valid @RequestBody ChoiceFieldValue choiceFieldValue,
         @RequestParam("choice_field_name") String choiceFieldName
@@ -92,15 +94,15 @@ public class ChoiceFieldValueResource {
             .body(result);
     }
 
-    @GetMapping(value = "/choice-field-values")
+    @GetMapping("/v1/choice-field-values")
     public ResponseEntity<List<ChoiceFieldValue>> getAllChoiceFieldValues(Pageable pageable) {
         logger.debug("REST request to get a page of ChoiceFieldValues");
         final Page<ChoiceFieldValue> page = choiceFieldValueService.findAll(pageable);
-        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/choice-field-values");
+        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/choice-field-values");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @GetMapping(value = "/choice-field-values/{id}")
+    @GetMapping("/v1/choice-field-values/{id}")
     public ResponseEntity<ChoiceFieldValue> getChoiceFieldValue(@PathVariable Long id) {
         logger.debug("REST request to get ChoiceFieldValue : {}", id);
         return choiceFieldValueService.findOne(id)
@@ -108,14 +110,14 @@ public class ChoiceFieldValueResource {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping(value = "/choice-field-values/{id}")
+    @DeleteMapping("/v1/choice-field-values/{id}")
     public ResponseEntity<Void> deleteChoiceFieldValue(@PathVariable Long id) {
         logger.debug("REST request to delete ChoiceFieldValue : {}", id);
         choiceFieldValueService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert("choiceFieldValue", id.toString())).build();
     }
 
-    @GetMapping(value = "/choice-field-values/choice-field/{choicefield_name}/value/{value}")
+    @GetMapping("/v1/choice-field-values/choice-field/{choicefield_name}/value/{value}")
     public ResponseEntity<ChoiceFieldValue> getChoiceFieldValuesByChoiceField(
         @PathVariable(name = "choicefield_name") String choiceFieldName,
         @PathVariable(name = "value") String value
@@ -125,14 +127,14 @@ public class ChoiceFieldValueResource {
         return ResponseEntity.ok(choiceFieldValue);
     }
 
-    @GetMapping(value = "/choice-field-values/{choice_field_name}/values")
+    @GetMapping("/v1/choice-field-values/{choice_field_name}/values")
     public ResponseEntity<List<ChoiceFieldValue>> getChoiceFieldValuesByChoiceField(
         Pageable pageable,
         @PathVariable(name = "choice_field_name") String choiceFieldName
     ) {
         logger.debug("REST request to get ChoiceField : {}", choiceFieldName);
         final Page<ChoiceFieldValue> page = choiceFieldValueService.findAllByChoiceFieldKeyName(pageable, choiceFieldName);
-        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/choice-field-values");
+        final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/choice-field-values");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 

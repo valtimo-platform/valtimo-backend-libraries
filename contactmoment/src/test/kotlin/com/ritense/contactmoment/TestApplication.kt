@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,12 @@
 package com.ritense.contactmoment
 
 import com.ritense.klant.autoconfiguration.KlantAutoConfiguration
+import com.ritense.klant.service.KlantService
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.boot.test.mock.mockito.MockBean
 
 @SpringBootApplication(
     scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class],
@@ -29,5 +32,12 @@ class TestApplication {
 
     fun main(args: Array<String>) {
         runApplication<TestApplication>(*args)
+    }
+
+    @TestConfiguration
+    class TestConfig {
+
+        @MockBean
+        lateinit var klantService: KlantService
     }
 }

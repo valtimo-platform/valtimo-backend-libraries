@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,11 +39,16 @@ public interface ProcessDocumentAssociationService {
 
     Optional<? extends ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey);
 
+    ProcessDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey);
+
     List<? extends ProcessDocumentDefinition> findAllProcessDocumentDefinitions(ProcessDefinitionKey processDefinitionKey);
 
     Optional<? extends ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion);
+    ProcessDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion);
 
     List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName);
+
+    List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitionsByProcessDefinitionKey(String processDefinitionKey);
 
     Optional<? extends  ProcessDocumentDefinition> findByDocumentDefinitionName(String documentDefinitionName);
 

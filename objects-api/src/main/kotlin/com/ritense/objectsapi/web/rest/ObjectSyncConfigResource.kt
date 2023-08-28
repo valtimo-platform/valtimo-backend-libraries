@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import com.ritense.objectsapi.web.rest.request.CreateObjectSyncConfigRequest
 import com.ritense.objectsapi.web.rest.request.ModifyObjectSyncConfigRequest
 import com.ritense.objectsapi.web.rest.result.CreateObjectSyncConfigResult
 import com.ritense.objectsapi.web.rest.result.ModifyObjectSyncConfigResult
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -35,28 +35,29 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 import javax.validation.Valid
 
+
 @RestController
-@RequestMapping(value = ["/api/object/sync"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface ObjectSyncConfigResource {
 
-    @GetMapping(value = ["/config/{id}"])
+    @GetMapping("/v1/object/sync/config/{id}")
     fun getConfig(@PathVariable(name = "id") id: UUID): ResponseEntity<ObjectSyncConfig>
 
-    @GetMapping(value = ["/config"])
+    @GetMapping("/v1/object/sync/config")
     fun getConfigs(
         @RequestParam("documentDefinitionName") documentDefinitionName: String
     ): ResponseEntity<List<ObjectSyncConfig>>
 
-    @PostMapping(value = ["/config"])
+    @PostMapping("/v1/object/sync/config")
     fun create(
         @Valid @RequestBody request: CreateObjectSyncConfigRequest
     ): ResponseEntity<CreateObjectSyncConfigResult>
 
-    @PutMapping(value = ["/config"])
+    @PutMapping("/v1/object/sync/config")
     fun modify(
         @Valid @RequestBody request: ModifyObjectSyncConfigRequest
     ): ResponseEntity<ModifyObjectSyncConfigResult>
 
-    @DeleteMapping(value = ["/config/{id}"])
+    @DeleteMapping("/v1/object/sync/config/{id}")
     fun remove(@PathVariable(name = "id") id: UUID): ResponseEntity<Void>
 }

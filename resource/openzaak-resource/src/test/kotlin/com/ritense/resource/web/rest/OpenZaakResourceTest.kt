@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,21 @@
 
 package com.ritense.resource.web.rest
 
-import com.nhaarman.mockitokotlin2.verify
 import com.ritense.resource.service.ResourceService
 import com.ritense.resource.web.ObjectContentDTO
 import com.ritense.resource.web.ObjectUrlDTO
 import com.ritense.resource.web.ResourceDTO
-import java.net.URL
-import java.util.Arrays
-import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.verify
 import org.springframework.http.HttpStatus
+import java.net.URL
+import java.util.Arrays
+import java.util.UUID
 
 internal class OpenZaakResourceTest {
 

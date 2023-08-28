@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package com.ritense.openzaak.web.rest.impl
 
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.openzaak.domain.mapping.impl.InformatieObjectTypeLink
 import com.ritense.openzaak.domain.mapping.impl.InformatieObjectTypeLinkId
 import com.ritense.openzaak.service.impl.InformatieObjectTypeLinkService
@@ -29,6 +27,8 @@ import com.ritense.valtimo.contract.result.OperationError
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -71,7 +71,7 @@ internal class InformatieObjectTypeLinkResourceTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders.get(
-                "/api/openzaak/informatie-object-type-link/{documentDefinitionName}",
+                "/api/v1/openzaak/informatie-object-type-link/{documentDefinitionName}",
                 documentDefinitionName
             )
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -91,7 +91,7 @@ internal class InformatieObjectTypeLinkResourceTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders.get(
-                "/api/openzaak/informatie-object-type-link/{documentDefinitionName}",
+                "/api/v1/openzaak/informatie-object-type-link/{documentDefinitionName}",
                 documentDefinitionName
             )
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -119,7 +119,7 @@ internal class InformatieObjectTypeLinkResourceTest {
             .thenReturn(CreateInformatieObjectTypeLinkResultSucceeded(informatieObjectTypeLink))
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/openzaak/informatie-object-type-link")
+            MockMvcRequestBuilders.post("/api/v1/openzaak/informatie-object-type-link")
                 .content(Mapper.INSTANCE.get().writeValueAsString(createInformatieObjectTypeRequest))
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -146,7 +146,7 @@ internal class InformatieObjectTypeLinkResourceTest {
             .thenReturn(CreateInformatieObjectTypeLinkResultFailed(listOf(OperationError.FromException(RuntimeException("message")))))
 
         mockMvc.perform(
-            MockMvcRequestBuilders.post("/api/openzaak/informatie-object-type-link")
+            MockMvcRequestBuilders.post("/api/v1/openzaak/informatie-object-type-link")
                 .content(Mapper.INSTANCE.get().writeValueAsString(createInformatieObjectTypeRequest))
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,49 +37,49 @@ class MilestoneSecurityResourceTest extends SecuritySpecificEndpointIntegrationT
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void getMilestoneAsAdmin() throws Exception {
-        assertHttpStatus(GET, "/api/milestones/1", NOT_FOUND);
+        assertHttpStatus(GET, "/api/v1/milestones/1", NOT_FOUND);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void getMilestoneAsUser() throws Exception {
-        assertHttpStatus(GET, "/api/milestones/1", FORBIDDEN);
+        assertHttpStatus(GET, "/api/v1/milestones/1", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void listMilestonesAsAdmin() throws Exception {
-        assertHttpStatus(GET, "/api/milestones", OK);
+        assertHttpStatus(GET, "/api/v1/milestones", OK);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void listMilestonesAsUser() throws Exception {
-        assertHttpStatus(GET, "/api/milestones", FORBIDDEN);
+        assertHttpStatus(GET, "/api/v1/milestones", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void saveMilestoneAsAdmin() throws Exception {
-        assertHttpStatus(POST, "/api/milestones", BAD_REQUEST);
+        assertHttpStatus(POST, "/api/v1/milestones", BAD_REQUEST);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void saveMilestoneAsUser() throws Exception {
-        assertHttpStatus(POST, "/api/milestones", FORBIDDEN);
+        assertHttpStatus(POST, "/api/v1/milestones", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void deleteMilestoneAsAdmin() throws Exception {
-        assertHttpStatus(DELETE, "/api/milestones/1", NO_CONTENT);
+        assertHttpStatus(DELETE, "/api/v1/milestones/1", NO_CONTENT);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void deleteMilestoneAsUser() throws Exception {
-        assertHttpStatus(DELETE, "/api/milestones/1", FORBIDDEN);
+        assertHttpStatus(DELETE, "/api/v1/milestones/1", FORBIDDEN);
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2022 Ritense BV, the Netherlands.
+ *  Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.formflow.expression
 
+import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.stereotype.Component
 
 @FormFlowBean
@@ -27,7 +28,7 @@ class FormFlowBeanTestHelper {
     }
 
     // Used in expressions, do not remove
-    fun parseContext(submissionData: String): Boolean {
+    fun parseContext(submissionData: JsonNode): Boolean {
         return true
     }
 

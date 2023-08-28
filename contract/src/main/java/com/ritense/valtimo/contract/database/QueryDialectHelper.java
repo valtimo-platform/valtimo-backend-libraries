@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import javax.persistence.criteria.Predicate;
 
 public interface QueryDialectHelper {
 
-    Expression<?> getJsonValueExpression(CriteriaBuilder cb, Path column, String path);
+    <T> Expression<T> getJsonValueExpression(CriteriaBuilder cb, Path column, String path, Class<T> type);
 
     Predicate getJsonValueExistsExpression(CriteriaBuilder cb, Path column, String value);
 

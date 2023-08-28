@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,6 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.request.Request
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
-import com.ritense.valtimo.contract.form.ExternalFormFieldType
-import com.ritense.valtimo.contract.json.JsonPointerHelper
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromString
@@ -50,6 +48,7 @@ import org.springframework.context.ApplicationEventPublisher
 import java.util.UUID
 import java.util.function.Consumer
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.service.FormSubmissionService"))
 data class FormIoSubmission(
     val formAssociation: FormAssociation,
     val formDefinition: FormIoFormDefinition,
@@ -70,7 +69,7 @@ data class FormIoSubmission(
     private var documentFieldReferences: MutableList<DocumentFieldReference> = mutableListOf()
     private var preJsonPatch: JsonPatch? = null
     private val request: Request
-    private lateinit var externalFormData: Map<ExternalFormFieldType, Map<String, Any>>
+    private lateinit var externalFormData: Map<String, Map<String, Any>>
 
     init {
         initDocumentDefinitionFieldReferences()  //Load all mappable document definition form fields
@@ -109,12 +108,12 @@ data class FormIoSubmission(
         }
     }
 
-    public fun documentContent(): ObjectNode {
+    fun documentContent(): ObjectNode {
         return documentContent
     }
 
     private fun initDocumentDefinitionFieldReferences() {
-        formDefinition.documentMappedFields.forEach(Consumer { objectNode: ObjectNode ->
+        formDefinition.documentMappedFieldsForSubmission.forEach(Consumer { objectNode: ObjectNode ->
             val formField = FormField.getFormField(formData, objectNode, { document }, applicationEventPublisher)
             if (formField != null) {
                 documentFieldReferences.add(
@@ -149,7 +148,7 @@ data class FormIoSubmission(
     }
 
     private fun buildExternalFormData() {
-        externalFormData = formDefinition.buildExternalFormFieldsMap().map { entry ->
+        externalFormData = formDefinition.buildExternalFormFieldsMapForSubmission().map { entry ->
             entry.key to entry.value.map {
                 it.name to FormField.getValue(formData, it.jsonPointer)
             }.toMap()
@@ -157,10 +156,11 @@ data class FormIoSubmission(
     }
 
     private fun buildDocumentContent() {
-        documentFieldReferences.forEach {
-            it.formfield.preProcess()
-            JsonPointerHelper.appendJsonPointerTo(documentContent, it.formfield.pointer, it.formfield.value)
-        }
+        documentFieldReferences.map(DocumentFieldReference::formfield)
+            .forEach {
+                it.preProcess()
+                it.appendValueToDocument(documentContent)
+            }
     }
 
     private fun parseAndLogException(ex: Exception): OperationError {
@@ -172,7 +172,7 @@ data class FormIoSubmission(
     companion object RequestFactory {
         fun makeRequest(submission: FormIoSubmission): Request {
             if (submission.formAssociation is StartEventFormAssociation) {
-                if (submission.processDocumentDefinition.canInitializeDocument()) {
+                if (submission.processDocumentDefinition.canInitializeDocument() && submission.document == null) {
                     val documentDefinitionId = submission.processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId()
                     return NewDocumentAndStartProcessRequest(
                         submission.processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.domain.impl;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
 import org.springframework.data.domain.Persistable;
@@ -23,6 +24,8 @@ import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
@@ -37,6 +40,9 @@ public class CamundaProcessJsonSchemaDocumentInstance
 
     @Column(name = "process_name", columnDefinition = "VARCHAR(255)")
     private String processName;
+
+    @Transient
+    public boolean isActive;
 
     public CamundaProcessJsonSchemaDocumentInstance(
         final CamundaProcessJsonSchemaDocumentInstanceId processDocumentInstanceId,
@@ -76,4 +82,12 @@ public class CamundaProcessJsonSchemaDocumentInstance
         return processDocumentInstanceId.isNew();
     }
 
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    @JsonGetter
+    public boolean isActive() {
+        return isActive;
+    }
 }

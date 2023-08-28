@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+dockerCompose {
+    projectName = "flowmailer"
+    isRequiredBy(integrationTesting)
+    isRequiredBy(securityTesting)
+    useComposeFiles.addAll("../../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+}
+
 dependencies {
     api project(":mail")
     implementation project(":connector")
@@ -23,7 +30,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:1"
+    api "javax.inject:javax.inject:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -32,7 +39,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-validation"
 
-    implementation "com.fasterxml.jackson.module:jackson-module-afterburner"
+    implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
     implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
@@ -40,26 +47,28 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
-    implementation "com.vladmihalcea:hibernate-types-52:2.12.1"
+    implementation "com.vladmihalcea:hibernate-types-55:${hibernateTypesVersion}"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
-    implementation 'org.apache.tika:tika-core:1.18'
+    implementation "org.apache.tika:tika-core:${apacheTikaVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
+    testImplementation project(":core")
+    testImplementation project(":test-utils-common")
     testImplementation project(":mail")
     testImplementation project(':resource')
     testImplementation "org.springframework.security:spring-security-test"
-    testImplementation "org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.13.0"
+    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
 
     //Kotlin
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {
         enabled = true

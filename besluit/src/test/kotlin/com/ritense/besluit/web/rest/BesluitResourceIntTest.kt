@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 package com.ritense.besluit.web.rest
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.besluit.BaseIntegrationTest
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.BesluitType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
@@ -60,10 +60,10 @@ internal class BesluitResourceIntTest : BaseIntegrationTest() {
             )
         )
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/besluittype"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/besluittype"))
             .andDo(MockMvcResultHandlers.print())
             .andExpect(status().isOk)
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$.[0].url").value("http://example.com/36020980-99c3-44e6-a258-63ea3b5c1c73"))
             .andExpect(jsonPath("$.[0].omschrijving").value("My Besluit"))

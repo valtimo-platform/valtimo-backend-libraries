@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,17 @@
 
 package com.ritense.valtimo.service;
 
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
+import java.sql.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import javax.inject.Inject;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,15 +35,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
-import java.sql.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
 class CamundaTaskServiceIntTest extends BaseIntegrationTest {
@@ -49,24 +48,23 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     @Inject
     private CamundaProcessService camundaProcessService;
 
-    private ProcessInstanceWithDefinition processInstanceWithDefinition;
-
     private final String processDefinitionKey = "one-task-process";
     private final String businessKey = "some-id";
 
     @BeforeEach
     void setUp() throws IllegalAccessException {
-        processInstanceWithDefinition = camundaProcessService.startProcess(
-            processDefinitionKey,
-            businessKey,
-            Map.of()
-        );
         addProcessToContext(processDefinitionKey);
     }
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = USER)
     void getProcessInstanceTasks() {
+        ProcessInstanceWithDefinition processInstanceWithDefinition = camundaProcessService.startProcess(
+            processDefinitionKey,
+            businessKey,
+            Map.of()
+        );
+
         final var processInstance = camundaProcessService
             .findProcessInstanceById(processInstanceWithDefinition.getProcessInstanceDto().getId()).orElseThrow();
         final var processInstanceTasks = camundaTaskService
@@ -81,6 +79,12 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = USER)
     void shouldFindTasksFiltered() throws IllegalAccessException {
+        camundaProcessService.startProcess(
+            processDefinitionKey,
+            businessKey,
+            Map.of()
+        );
+
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
             PageRequest.of(0, 5)
@@ -90,12 +94,34 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         assertThat(pagedTasks.getTotalElements()).isEqualTo(1);
         assertThat(task.businessKey).isEqualTo(businessKey);
         assertThat(task.processDefinitionKey).isEqualTo(processDefinitionKey);
+        assertThat(task.getContext()).isNull();
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    void shouldFindTasksFilteredWithContext() throws IllegalAccessException {
+        camundaProcessService.startProcess(
+            processDefinitionKey,
+            businessKey,
+            Map.of("context", "something")
+        );
+
+        var pagedTasks = camundaTaskService.findTasksFiltered(
+            CamundaTaskService.TaskFilter.ALL,
+            PageRequest.of(0, 5)
+        );
+
+        var task = pagedTasks.get().findFirst().orElseThrow();
+        assertThat(pagedTasks.getTotalElements()).isEqualTo(1);
+        assertThat(task.businessKey).isEqualTo(businessKey);
+        assertThat(task.processDefinitionKey).isEqualTo(processDefinitionKey);
+        assertThat(task.getContext()).isEqualTo("something");
     }
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = USER)
     void shouldFind10TasksFiltered() throws IllegalAccessException {
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 10; i++) {
             camundaProcessService.startProcess(
                 processDefinitionKey,
                 businessKey,
@@ -165,6 +191,12 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = USER)
     void shouldFindCandidateUsers() throws IllegalAccessException {
+        final var processInstance = camundaProcessService.startProcess(
+            processDefinitionKey,
+            businessKey,
+            Map.of()
+        );
+
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
             PageRequest.of(0, 20)

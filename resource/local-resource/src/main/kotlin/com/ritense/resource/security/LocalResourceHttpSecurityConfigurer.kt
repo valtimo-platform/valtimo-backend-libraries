@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,10 @@ class LocalResourceHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/resource/pre-signed-url/{fileName}").hasAuthority(USER)
-                .antMatchers(GET, "/api/resource/{resourceId}").hasAuthority(USER)
-                .antMatchers(DELETE, "/api/resource/{resourceId}").hasAuthority(USER)
-                .antMatchers(PUT, "/api/resource").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/resource/pre-signed-url/{fileName}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/resource/{resourceId}").hasAuthority(USER)
+                .antMatchers(DELETE, "/api/v1/resource/{resourceId}").hasAuthority(USER)
+                .antMatchers(PUT, "/api/v1/resource").hasAuthority(USER);
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

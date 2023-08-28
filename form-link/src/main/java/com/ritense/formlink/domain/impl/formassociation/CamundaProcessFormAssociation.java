@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class CamundaProcessFormAssociation implements ProcessFormAssociation {
 
     private CamundaProcessFormAssociationId id;
@@ -35,7 +36,7 @@ public class CamundaProcessFormAssociation implements ProcessFormAssociation {
     public CamundaProcessFormAssociation(CamundaProcessFormAssociationId id, String processDefinitionKey, FormAssociations formAssociations) {
         assertArgumentNotNull(id, "id is required");
         assertArgumentNotEmpty(processDefinitionKey, "processDefinitionKey cannot be empty");
-        assertArgumentLength(processDefinitionKey, 64, "processDefinitionKey max length is 64");
+        assertArgumentLength(processDefinitionKey, 255, "processDefinitionKey max length is 255");
         this.id = id;
         this.processDefinitionKey = processDefinitionKey;
         this.formAssociations = formAssociations;

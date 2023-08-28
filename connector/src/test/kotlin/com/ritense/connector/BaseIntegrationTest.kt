@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.ritense.connector
 
-import com.ritense.connector.autodeployment.ConnectorApplicationReadyEventListener
 import com.ritense.connector.domain.Connector
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import org.junit.jupiter.api.Tag
@@ -26,12 +25,9 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
+@ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
 @Tag("integration")
 abstract class BaseIntegrationTest {
-
-    @MockBean
-    lateinit var connectorApplicationReadyEventListener: ConnectorApplicationReadyEventListener
 
     @MockBean(name = "test-connector")
     lateinit var testConnector: Connector

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.UUID
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
+@ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
 @Tag("integration")
 class BaseIntegrationTest : BaseTest() {
 

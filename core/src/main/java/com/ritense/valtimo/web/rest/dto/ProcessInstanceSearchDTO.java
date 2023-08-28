@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,13 @@ package com.ritense.valtimo.web.rest.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.valtimo.web.rest.dto.processvariable.ProcessVariableDTOV2;
+
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProcessInstanceSearchDTO {
 
-    @JsonProperty(value = "processVariables")
+    @JsonProperty("processVariables")
     private List<ProcessVariableDTOV2> processVariables;
 
     public ProcessInstanceSearchDTO() {

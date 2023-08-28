@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,15 @@ import com.ritense.valtimo.repository.queryparameter.type.FileUploadProcessVaria
 import com.ritense.valtimo.repository.queryparameter.type.LongProcessVariableQueryParameterV2;
 import com.ritense.valtimo.repository.queryparameter.type.StringProcessVariableQueryParameterV2;
 import java.util.Objects;
-import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.ACTIVE_REF;
-import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.BUSINESS_KEY_REF;
-import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.PROCESS_ENDED_REF;
-import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.PROCESS_STARTED_REF;
-import static com.ritense.valtimo.contract.viewconfigurator.ProcessVariablesConstants.START_PROCESS_USER_REF;
 
 public abstract class ProcessVariableQueryParameterV2 implements IQueryParameter {
-    public String name;
+    public static final String BUSINESS_KEY_REF = "businessKey";
+    public static final String PROCESS_STARTED_REF = "processStarted";
+    public static final String PROCESS_ENDED_REF = "processEnded";
+    public static final String ACTIVE_REF = "active";
+    public static final String START_PROCESS_USER_REF = "startUser";
+
+    private String name;
 
     public ProcessVariableQueryParameterV2(String name) {
         Objects.requireNonNull(name, "name cannot be null");
@@ -105,4 +106,7 @@ public abstract class ProcessVariableQueryParameterV2 implements IQueryParameter
         return this.name.equals(START_PROCESS_USER_REF);
     }
 
+    public String getName() {
+        return name;
+    }
 }

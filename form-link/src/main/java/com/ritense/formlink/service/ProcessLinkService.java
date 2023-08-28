@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 package com.ritense.formlink.service;
 
 import com.ritense.formlink.domain.TaskOpenResult;
+
 import java.util.UUID;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public interface ProcessLinkService {
     TaskOpenResult openTask(UUID taskId);
 }

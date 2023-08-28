@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -122,7 +123,7 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
 
         final var savedFormAssociation = formAssociationService.createFormAssociation(createFormAssociationRequest);
 
-        final var secondFormDefinition = formDefinitionService.createFormDefinition(createFormDefinitionRequest());
+        final var secondFormDefinition = formDefinitionService.createFormDefinition(createFormDefinitionRequest("myOtherForm"));
         final var modifyFormAssociationRequest = modifyFormAssociationRequest(savedFormAssociation.getId(), secondFormDefinition.getId(), true);
 
         formAssociationService.modifyFormAssociation(modifyFormAssociationRequest);
@@ -143,7 +144,7 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
         formAssociationService.createFormAssociation(request);
 
         final var formDefinition = formAssociationService
-            .getStartEventFormDefinition(PROCESS_DEFINITION_KEY).orElseThrow();
+            .getStartEventFormDefinition(PROCESS_DEFINITION_KEY, Optional.empty()).orElseThrow();
 
         assertThat(formDefinition).isNotNull();
         assertThat(formDefinition.get("formAssociation")).isNotNull();
@@ -205,6 +206,21 @@ public class CamundaFormAssociationServiceIntTest extends BaseIntegrationTest {
         final var formAssociations = formAssociationService
             .getAllFormAssociations(PROCESS_DEFINITION_KEY);
         assertThat(formAssociations).isNull();
+    }
+
+    @Test
+    public void shouldCreateFormFlowUserFormAssociation() {
+        final var formFlowId = "myFormFlowId";
+        final var request = createFormFlowUserTaskFormAssociationRequest(formFlowId);
+
+        final var savedFormAssociation = formAssociationService.createFormAssociation(request);
+
+        final var formDefinition = formAssociationService
+            .getFormDefinitionByFormLinkId(PROCESS_DEFINITION_KEY, request.getFormLinkRequest().getId())
+            .orElseThrow();
+
+        assertThat(formDefinition).isNotNull();
+        assertThat(formDefinition.get("formAssociation")).isNotNull();
     }
 
 }

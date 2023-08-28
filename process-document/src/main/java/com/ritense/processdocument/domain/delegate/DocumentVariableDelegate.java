@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,19 @@
 
 package com.ritense.processdocument.domain.delegate;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public interface DocumentVariableDelegate {
 
     Object findValueByJsonPointer(final String jsonPointer, final DelegateExecution execution);
+
+    default Object findValueByJsonPointerOrDefault(
+        final String jsonPointer,
+        final DelegateExecution execution,
+        Object defaultValue
+    ) {
+        throw new NotImplementedException();
+    }
 
 }

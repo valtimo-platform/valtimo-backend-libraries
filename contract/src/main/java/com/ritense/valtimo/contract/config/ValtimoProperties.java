@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,16 +31,20 @@ public class ValtimoProperties {
 
     private final Portal portal;
 
+    private final Process process;
+
     public ValtimoProperties(
         App app,
         Mandrill mandrill,
         JWT jwt,
-        Portal portal
+        Portal portal,
+        Process process
     ) {
         this.app = app != null ? app : new App();
         this.mandrill = mandrill != null ? mandrill : new Mandrill();
         this.jwt = jwt != null ? jwt : new JWT();
         this.portal = portal != null ? portal : new Portal();
+        this.process = process != null ? process : new Process();
     }
 
     public App getApp() {
@@ -57,6 +61,10 @@ public class ValtimoProperties {
 
     public Portal getPortal() {
         return portal;
+    }
+
+    public Process getProcess() {
+        return process;
     }
 
     public static class App {
@@ -134,18 +142,8 @@ public class ValtimoProperties {
     }
 
     public static class JWT {
-        private boolean base64encoding = false;
         private String secret;
         private long tokenValidityInSeconds = 180000;
-        private long tokenValidityInSecondsForRememberMe = 2592000;
-
-        public boolean isBase64encoding() {
-            return base64encoding;
-        }
-
-        public void setBase64encoding(boolean base64encoding) {
-            this.base64encoding = base64encoding;
-        }
 
         public String getSecret() {
             return secret;
@@ -161,14 +159,6 @@ public class ValtimoProperties {
 
         public void setTokenValidityInSeconds(long tokenValidityInSeconds) {
             this.tokenValidityInSeconds = tokenValidityInSeconds;
-        }
-
-        public long getTokenValidityInSecondsForRememberMe() {
-            return tokenValidityInSecondsForRememberMe;
-        }
-
-        public void setTokenValidityInSecondsForRememberMe(long tokenValidityInSecondsForRememberMe) {
-            this.tokenValidityInSecondsForRememberMe = tokenValidityInSecondsForRememberMe;
         }
     }
 
@@ -195,6 +185,18 @@ public class ValtimoProperties {
 
         public String getBaselUrl() {
             return String.format("%s://%s/", scheme, hostname);
+        }
+    }
+
+    public static class Process {
+        private boolean systemProcessUpdatable = false;
+
+        public boolean isSystemProcessUpdatable() {
+            return systemProcessUpdatable;
+        }
+
+        public void setSystemProcessUpdatable(boolean systemProcessUpdatable) {
+            this.systemProcessUpdatable = systemProcessUpdatable;
         }
     }
 

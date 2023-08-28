@@ -32,7 +32,6 @@ import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.openzaak.provider.ZaakBsnProvider
 import com.ritense.openzaak.provider.ZaakKvkProvider
 import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
-import com.ritense.openzaak.repository.ZaakInstanceLinkRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
 import com.ritense.openzaak.service.DocumentenService
 import com.ritense.openzaak.service.ZaakRolService
@@ -40,13 +39,13 @@ import com.ritense.openzaak.service.impl.EigenschapService
 import com.ritense.openzaak.service.impl.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.impl.OpenZaakConfigService
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
-import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakProcessService
 import com.ritense.openzaak.service.impl.ZaakResultaatService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakStatusService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakTypeService
+import com.ritense.openzaak.web.rest.ZaakInstanceLinkResource
 import com.ritense.openzaak.web.rest.impl.InformatieObjectTypeLinkResource
 import com.ritense.openzaak.web.rest.impl.InformatieObjectTypeResource
 import com.ritense.openzaak.web.rest.impl.OpenZaakConfigResource
@@ -56,6 +55,7 @@ import com.ritense.openzaak.web.rest.impl.ZaakTypeLinkResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -128,14 +128,6 @@ class OpenZaakAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ZaakInstanceLinkService::class)
-    fun zaakInstanceLinkService(
-        zaakInstanceLinkRepository: ZaakInstanceLinkRepository
-    ): ZaakInstanceLinkService {
-        return ZaakInstanceLinkService(zaakInstanceLinkRepository)
-    }
-
-    @Bean
     @ConditionalOnMissingBean(ZaakTypeService::class)
     fun zaakTypeService(
         restTemplate: RestTemplate,
@@ -153,7 +145,7 @@ class OpenZaakAutoConfiguration {
         tokenGeneratorService: OpenZaakTokenGeneratorService,
         documentService: DocumentService,
         zaakTypeLinkService: com.ritense.openzaak.service.ZaakTypeLinkService,
-        zaakInstanceLinkService: com.ritense.openzaak.service.ZaakInstanceLinkService
+        zaakInstanceLinkService: ZaakInstanceLinkService
     ): ZaakStatusService {
         return ZaakStatusService(
             restTemplate,
@@ -303,6 +295,14 @@ class OpenZaakAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ZaakInstanceLinkResource::class)
+    fun zaakInstanceLinkResource(
+        zaakInstanceLinkService: ZaakInstanceLinkService
+    ): ZaakInstanceLinkResource {
+        return ZaakInstanceLinkResource(zaakInstanceLinkService)
+    }
+
+    @Bean
     @ConditionalOnMissingBean(ZaakTypeResource::class)
     fun zaakTypeResource(
         zaakTypeService: ZaakTypeService
@@ -361,7 +361,7 @@ class OpenZaakAutoConfiguration {
     @ConditionalOnMissingBean(BsnProvider::class)
     fun bsnProvider(
         processDocumentService: ProcessDocumentService,
-        zaakInstanceLinkService: com.ritense.openzaak.service.ZaakInstanceLinkService,
+        zaakInstanceLinkService: ZaakInstanceLinkService,
         zaakRolService: ZaakRolService
     ): BsnProvider {
         return ZaakBsnProvider(
@@ -376,7 +376,7 @@ class OpenZaakAutoConfiguration {
     @ConditionalOnMissingBean(KvkProvider::class)
     fun kvkProvider(
         processDocumentService: ProcessDocumentService,
-        zaakInstanceLinkService: com.ritense.openzaak.service.ZaakInstanceLinkService,
+        zaakInstanceLinkService: ZaakInstanceLinkService,
         zaakRolService: ZaakRolService
     ) : KvkProvider {
         return ZaakKvkProvider(

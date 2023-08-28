@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,13 @@ import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
-import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.handler.TypeProperties
+import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
+import kotlin.jvm.optionals.getOrNull
 
 class FormFlowService(
     private val formFlowDefinitionRepository: FormFlowDefinitionRepository,
@@ -41,6 +42,20 @@ class FormFlowService(
 
     fun findDefinition(formFlowId: FormFlowDefinitionId): FormFlowDefinition {
         return formFlowDefinitionRepository.getById(formFlowId)
+    }
+
+    fun findDefinition(formFlowDefinitionId: String): FormFlowDefinition? {
+        val formFlowIdAsArray = formFlowDefinitionId.split(":")
+        if (formFlowIdAsArray.size != 2) {
+            throw IllegalArgumentException("Invalid Format found for formFlowId '${formFlowIdAsArray.joinToString(":")}'. Form flow id must have format key:version")
+        }
+        return if (formFlowIdAsArray[1] == "latest") {
+            findLatestDefinitionByKey(formFlowIdAsArray[0])
+        } else {
+            formFlowDefinitionRepository.findById(
+                FormFlowDefinitionId(formFlowIdAsArray[0], formFlowIdAsArray[1].toLong())
+            ).getOrNull()
+        }
     }
 
     fun findLatestDefinitionByKey(formFlowKey: String): FormFlowDefinition? {
@@ -63,8 +78,8 @@ class FormFlowService(
         return formFlowInstanceRepository.getById(formFlowInstanceId)
     }
 
-    fun save(formFlowInstance: FormFlowInstance) {
-        formFlowInstanceRepository.save(formFlowInstance)
+    fun save(formFlowInstance: FormFlowInstance): FormFlowInstance {
+        return formFlowInstanceRepository.save(formFlowInstance)
     }
 
     fun findInstances(additionalProperties: Map<String, Any>): List<FormFlowInstance> {

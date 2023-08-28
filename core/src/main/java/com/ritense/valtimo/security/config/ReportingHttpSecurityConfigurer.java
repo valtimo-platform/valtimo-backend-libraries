@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,13 @@ public class ReportingHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/reporting/instancecount").hasAuthority(USER)
-                .antMatchers(GET, "/api/reporting/instancesstatistics").hasAuthority(USER)
-                .antMatchers(GET, "/api/reporting/tasksAverage").hasAuthority(USER)
-                .antMatchers(GET, "/api/reporting/tasksPerPerson").hasAuthority(USER)
-                .antMatchers(GET, "/api/reporting/pendingTasksByRole").hasAuthority(USER)
-                .antMatchers(GET, "/api/reporting/unfinishedTasksPerType").hasAuthority(USER)
-                .antMatchers(GET, "/api/reporting/finishedAndUnfinishedInstances").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/reporting/instancecount").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/reporting/instancesstatistics").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/reporting/tasksAverage").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/reporting/tasksPerPerson").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/reporting/pendingTasksByRole").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/reporting/unfinishedTasksPerType").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/reporting/finishedAndUnfinishedInstances").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

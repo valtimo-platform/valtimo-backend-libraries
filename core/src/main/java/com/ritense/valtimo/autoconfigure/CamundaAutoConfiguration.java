@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.autoconfigure;
 
+import com.ritense.valtimo.camunda.ProcessDefinitionDeployedEventPublisher;
 import com.ritense.valtimo.camunda.command.ValtimoSchemaOperationsCommand;
 import com.ritense.valtimo.camunda.processaudit.HistoryEventAuditProcessEnginePlugin;
 import com.ritense.valtimo.camunda.processaudit.TaskEventHandler;
@@ -75,9 +76,10 @@ public class CamundaAutoConfiguration {
     @ConditionalOnMissingBean(CamundaConfiguration.class)
     public CamundaConfiguration camundaConfiguration(
         final ValtimoSchemaOperationsCommand valtimoSchemaOperationsCommand,
-        final CustomRepositoryServiceImpl repositoryService
+        final CustomRepositoryServiceImpl repositoryService,
+        final ProcessDefinitionDeployedEventPublisher processDefinitionDeployedEventPublisher
     ) {
-        return new CamundaConfiguration(valtimoSchemaOperationsCommand, repositoryService);
+        return new CamundaConfiguration(valtimoSchemaOperationsCommand, repositoryService, processDefinitionDeployedEventPublisher);
     }
 
     @Bean
@@ -133,5 +135,13 @@ public class CamundaAutoConfiguration {
     @ConditionalOnMissingBean(TaskEventHandler.class)
     public TaskEventHandler taskEventHandler(final ApplicationEventPublisher applicationEventPublisher) {
         return new TaskEventHandler(applicationEventPublisher);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDefinitionDeployedEventPublisher.class)
+    public ProcessDefinitionDeployedEventPublisher bpmnPropertyListener(
+        final ApplicationEventPublisher applicationEventPublisher
+    ) {
+        return new ProcessDefinitionDeployedEventPublisher(applicationEventPublisher);
     }
 }

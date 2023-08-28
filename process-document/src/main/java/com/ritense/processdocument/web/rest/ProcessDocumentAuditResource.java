@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.UUID;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
-@RequestMapping(value = "/api", produces = APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ProcessDocumentAuditResource {
 
     private final ProcessDocumentAuditService processDocumentAuditService;
@@ -41,7 +43,7 @@ public class ProcessDocumentAuditResource {
         this.processDocumentAuditService = processDocumentAuditService;
     }
 
-    @GetMapping(value = "/process-document/instance/document/{documentId}/audit")
+    @GetMapping("/v1/process-document/instance/document/{documentId}/audit")
     @JsonView(AuditView.Public.class)
     public ResponseEntity<Page<AuditRecord>> getAuditLog(
         @PathVariable UUID documentId,

@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <!--
-  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,9 +19,14 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-    <changeSet id="context_process_add_visible_in_menu" author="Max">
+    <changeSet id="context_process_add_visible_in_menu_fix" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="context_processes" columnName="visible_in_menu"/>
+            </not>
+        </preConditions>
         <addColumn tableName="context_processes">
-            <column name="visible_in_menu" type="boolean" valueBoolean="true" defaultValue="true" defaultValueBoolean="true">
+            <column name="visible_in_menu" type="boolean" valueBoolean="true" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
         </addColumn>

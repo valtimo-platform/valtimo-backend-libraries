@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.ritense.valtimo.contract.json.serializer.PageSerializer;
+import java.time.format.DateTimeFormatter;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
-import java.time.format.DateTimeFormatter;
 
 @Configuration
 public class JacksonConfiguration {
@@ -68,11 +68,11 @@ public class JacksonConfiguration {
     }
 
     /*
-     * Jackson Afterburner module to speed up serialization/deserialization.
+     * Jackson Blackbird module to speed up serialization/deserialization.
      */
     @Bean
-    public AfterburnerModule afterburnerModule() {
-        return new AfterburnerModule();
+    public BlackbirdModule blackbirdModule() {
+        return new BlackbirdModule();
     }
 
     /*

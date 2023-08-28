@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,18 @@
 
 package com.ritense.mail.flowmailer
 
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class])
+@ExtendWith(SpringExtension::class)
 @Tag("integration")
-abstract class BaseIntegrationTest
+abstract class BaseIntegrationTest {
+
+    @MockBean
+    lateinit var userManagementService: UserManagementService
+}

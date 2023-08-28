@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,13 @@ package com.ritense.processdocument.security.config;
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -31,15 +33,20 @@ public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfig
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/process-document/definition").hasAuthority(USER)
-                .antMatchers(POST, "/api/process-document/definition").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/process-document/definition").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/process-document/definition/document/{document-definition-name}").hasAuthority(USER)
-                .antMatchers(GET, "/api/process-document/instance/document/{document-id}").hasAuthority(USER)
-                .antMatchers(GET, "/api/process-document/instance/document/{document-id}/audit").hasAuthority(USER)
-                .antMatchers(POST, "/api/process-document/operation/new-document-and-start-process").hasAuthority(USER)
-                .antMatchers(POST, "/api/process-document/operation/modify-document-and-complete-task").hasAuthority(USER)
-                .antMatchers(POST, "/api/process-document/operation/modify-document-and-start-process").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/process-document/definition").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/process-document/definition").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/process-document/definition").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/process-document/definition/document/{document-definition-name}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/process-document/definition/process/{process-definition-key}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/process-document/definition/processinstance/{process-instance-id}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/process-document/instance/document/{document-id}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/process-document/instance/document/{document-id}/audit").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/process-document/operation/new-document-and-start-process").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/process-document/operation/modify-document-and-complete-task").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/process-document/operation/modify-document-and-start-process").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/process-document/demo/{documentDefinitionName}/process").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/process-document/demo/{documentDefinitionName}/process").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/process-document/demo/{documentDefinitionName}/process").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0972v71" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="intermediate-catch-event-sample-one-id" name="intermediate-catch-event-sample-one" isExecutable="true">
+    <bpmn:startEvent id="intermediate-catch-event-sample-one-start-event">
+      <bpmn:outgoing>Flow_0ow7kop</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0ow7kop" sourceRef="intermediate-catch-event-sample-one-start-event" targetRef="intermediate-catch-event-test-1" />
+    <bpmn:intermediateCatchEvent id="intermediate-catch-event-test-1" name="intermediate-catch-event-test-1">
+      <bpmn:incoming>Flow_0ow7kop</bpmn:incoming>
+      <bpmn:outgoing>Flow_0lcke42</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1g443sl" messageRef="Message_3f4ra38" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_0lcke42" sourceRef="intermediate-catch-event-test-1" targetRef="Activity_0093bqy" />
+    <bpmn:userTask id="Activity_0093bqy" name="intermediate-catch-event-1-user-task">
+      <bpmn:incoming>Flow_0lcke42</bpmn:incoming>
+      <bpmn:outgoing>Flow_1mxfiwy</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_14q2ftk">
+      <bpmn:incoming>Flow_1mxfiwy</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1mxfiwy" sourceRef="Activity_0093bqy" targetRef="Event_14q2ftk" />
+  </bpmn:process>
+  <bpmn:message id="Message_3f4ra38" name="intermediate-catch-event-ref" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="intermediate-catch-event-sample-one-id">
+      <bpmndi:BPMNEdge id="Flow_1mxfiwy_di" bpmnElement="Flow_1mxfiwy">
+        <di:waypoint x="470" y="97" />
+        <di:waypoint x="532" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lcke42_di" bpmnElement="Flow_0lcke42">
+        <di:waypoint x="308" y="97" />
+        <di:waypoint x="370" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ow7kop_di" bpmnElement="Flow_0ow7kop">
+        <di:waypoint x="215" y="97" />
+        <di:waypoint x="272" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="intermediate-catch-event-sample-one-start-event">
+        <dc:Bounds x="179" y="79" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1rrckxz_di" bpmnElement="intermediate-catch-event-test-1">
+        <dc:Bounds x="272" y="79" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="246" y="122" width="89" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_11bnsaz_di" bpmnElement="Activity_0093bqy">
+        <dc:Bounds x="370" y="57" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_14q2ftk_di" bpmnElement="Event_14q2ftk">
+        <dc:Bounds x="532" y="79" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 
 data class FormFlowStep(
     val key: String,
+    val nextStep: String? = null,
     val nextSteps: List<FormFlowNextStep> = listOf(),
+    val onBack: List<String> = listOf(),
     val onOpen: List<String> = listOf(),
     val onComplete: List<String> = listOf(),
     val type: FormFlowStepType
@@ -37,6 +39,7 @@ data class FormFlowStep(
             }
         }) return false
 
+        if (onBack != other.onBack.toList()) return false
         if (onOpen != other.onOpen.toList()) return false
         if (onComplete != other.onComplete.toList()) return false
         if (type != other.type) return false
@@ -45,12 +48,17 @@ data class FormFlowStep(
     }
 
     fun toDefinition(): FormFlowStepEntity {
-        val nextSteps = this.nextSteps
-            .map(FormFlowNextStep::toDefinition)
+        val nextSteps =
+            if (this.nextStep != null)
+                listOf(FormFlowNextStep(step = this.nextStep).toDefinition())
+            else
+                this.nextSteps.map(FormFlowNextStep::toDefinition)
+
 
         return FormFlowStepEntity(
             FormFlowStepId.create(key),
             nextSteps,
+            onBack,
             onOpen,
             onComplete,
             type

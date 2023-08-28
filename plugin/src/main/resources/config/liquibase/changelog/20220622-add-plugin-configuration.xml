@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <!--
-  ~ Copyright 2015-2022 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -53,8 +53,10 @@
     </changeSet>
 
     <changeSet id="6" author="Ritense">
+        <validCheckSum>8:f34aa99715f0d28665247e7d7e103be4</validCheckSum><!-- Postgres check sum -->
+        <validCheckSum>8:ad48c1a6453fe5ff9951a64a62095005</validCheckSum><!-- MySQL check sum -->
         <addColumn tableName="plugin_configuration">
-            <column name="plugin_configuration_id" type="${uuidType}" beforeColumn="title">
+            <column name="plugin_configuration_id" type="${uuidType}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
         </addColumn>

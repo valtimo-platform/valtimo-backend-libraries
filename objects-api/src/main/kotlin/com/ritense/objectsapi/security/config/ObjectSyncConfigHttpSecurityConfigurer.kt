@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,12 @@ class ObjectSyncConfigHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/object/sync/config/{id}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/object/sync/config").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/object/sync/config").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/object/sync/config").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/object/sync/config/{id}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/notification").permitAll()
+                .antMatchers(GET, "/api/v1/object/sync/config/{id}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/object/sync/config").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/object/sync/config").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/object/sync/config").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/object/sync/config/{id}").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/notification").permitAll()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

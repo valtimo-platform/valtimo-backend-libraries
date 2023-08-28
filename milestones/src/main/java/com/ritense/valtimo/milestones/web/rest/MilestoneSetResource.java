@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,12 +31,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class MilestoneSetResource {
 
     private static final String ENTITY_NAME = "milestoneSet";
@@ -50,7 +53,7 @@ public class MilestoneSetResource {
         this.milestoneSetRepository = milestoneSetRepository;
     }
 
-    @GetMapping("/milestone-sets/{id}")
+    @GetMapping("/v1/milestone-sets/{id}")
     public ResponseEntity<MilestoneSet> getMilestoneSet(@PathVariable Long id) {
         logger.debug("REST request to get Milestone set : {}", id);
         Optional<MilestoneSet> milestoneSetOptional = milestoneSetRepository.findById(id);
@@ -59,14 +62,14 @@ public class MilestoneSetResource {
             .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/milestone-sets")
+    @GetMapping("/v1/milestone-sets")
     public ResponseEntity<List<MilestoneSet>> listMilestoneSets() {
         logger.debug("REST request to get all milestone sets");
         List<MilestoneSet> milestoneSetList = milestoneSetService.listMilestoneSets();
         return ResponseEntity.ok(milestoneSetList);
     }
 
-    @PostMapping("/milestone-sets")
+    @PostMapping("/v1/milestone-sets")
     public ResponseEntity<MilestoneSet> saveMilestoneSet(@Valid @RequestBody MilestoneSet milestoneSet) {
         logger.debug("REST request to save Milestone set : {}", milestoneSet);
 
@@ -89,7 +92,7 @@ public class MilestoneSetResource {
 
     }
 
-    @DeleteMapping("/milestone-sets/{id}")
+    @DeleteMapping("/v1/milestone-sets/{id}")
     public ResponseEntity<Void> deleteMilestoneSet(@PathVariable Long id) {
         logger.debug("REST request to delete Milestone set : {}", id);
         milestoneSetService.delete(id);

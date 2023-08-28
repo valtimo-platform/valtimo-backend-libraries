@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.service.ObjectTypeConfig
 import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.objectsapi.service.ServerAuthSpecification
-import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
@@ -38,7 +38,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.UUID
 
 @SpringBootTest
-@ExtendWith(value = [SpringExtension::class, LiquibaseRunnerExtension::class])
+@ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
 @Tag("integration")
 abstract class BaseIntegrationTest {
 

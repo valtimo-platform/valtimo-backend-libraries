@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.ritense.formlink.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.formlink.service.result.FormSubmissionResult;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public interface FormAssociationSubmissionService {
 
     FormSubmissionResult handleSubmission(

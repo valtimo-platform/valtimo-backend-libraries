@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,12 @@ package com.ritense.document.domain.impl.snapshot;
 
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.valtimo.contract.domain.AbstractId;
-import java.util.Objects;
-import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
+import java.util.UUID;
 
 @Embeddable
 public class JsonSchemaDocumentSnapshotId extends AbstractId<JsonSchemaDocumentSnapshotId> implements DocumentSnapshot.Id {
@@ -31,9 +32,6 @@ public class JsonSchemaDocumentSnapshotId extends AbstractId<JsonSchemaDocumentS
     private UUID id;
 
     private JsonSchemaDocumentSnapshotId(@NotNull UUID id) {
-        if (id == null) {
-            throw new NullPointerException(("id is marked non-null but is null"));
-        }
         this.id = id;
     }
 

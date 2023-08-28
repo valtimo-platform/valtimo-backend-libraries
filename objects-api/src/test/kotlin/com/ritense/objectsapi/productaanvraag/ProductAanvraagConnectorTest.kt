@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package com.ritense.objectsapi.productaanvraag
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.connector.domain.ConnectorInstanceId
 import com.ritense.connector.domain.ConnectorProperties
@@ -35,10 +34,11 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.whenever
 import org.springframework.core.ParameterizedTypeReference
 import java.net.URI
 import java.util.UUID

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,20 @@
 package com.ritense.formlink.web.rest;
 
 import com.ritense.formlink.domain.TaskOpenResult;
-import java.util.UUID;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
+@Deprecated(since = "10.6.0", forRemoval = true)
 @RestController
-@RequestMapping(value = "/api/process-link", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public interface ProcessLinkResource {
-    @GetMapping(value = "/task/{taskId}")
+    @GetMapping("/v1/process-link/task/{taskId}")
     ResponseEntity<TaskOpenResult> getTask(@PathVariable UUID taskId);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,17 +31,18 @@ class ExpressionProcessorFactoryHolder {
                 applicationContext.getBeansWithAnnotation(FormFlowBean::class.java)
             )
 
-            if(this.expressionProcessorFactory != null) {
+            if (this.expressionProcessorFactory != null) {
                 logger.warn { "ExpressionProcessorFactory instance was already set, this should not happen in runtime!" }
             }
             this.expressionProcessorFactory = expressionProcessorFactory
         }
 
-        fun getinstance(): ExpressionProcessorFactory? {
-            if(this.expressionProcessorFactory == null) {
-                logger.warn { "ExpressionProcessorFactory instance is not available. Expressions will not be executed!" }
+        fun getInstance(): ExpressionProcessorFactory {
+            if (this.expressionProcessorFactory == null) {
+                throw IllegalStateException("ExpressionProcessorFactory instance is not available")
+            } else {
+                return expressionProcessorFactory!!
             }
-            return expressionProcessorFactory
         }
     }
 }

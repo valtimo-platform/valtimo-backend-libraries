@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ public class MilestoneInstanceHttpSecurityConfigurer implements HttpSecurityConf
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/milestone-instances").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/milestones/{processDefinitionId}/flownodes").hasAuthority(ADMIN);
+                .antMatchers(GET, "/api/v1/milestone-instances").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/milestones/{processDefinitionId}/flownodes").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

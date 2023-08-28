@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.valtimo.camunda.task.service.impl.NotificationServiceImpl;
 import com.ritense.valtimo.context.repository.ContextRepository;
 import com.ritense.valtimo.context.repository.UserContextRepository;
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants;
@@ -23,19 +24,23 @@ import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.exception.ValtimoRuntimeException;
 import com.ritense.valtimo.domain.contexts.Context;
 import com.ritense.valtimo.domain.contexts.UserContext;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
-import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.camunda.bpm.engine.RepositoryService;
+import org.camunda.bpm.engine.repository.ProcessDefinition;
+import org.camunda.bpm.engine.rest.dto.repository.ProcessDefinitionDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 public class ContextService {
 
+    private static final Logger logger = LoggerFactory.getLogger(ContextService.class);
     private final CurrentUserService currentUserService;
     private final ContextRepository contextRepository;
     private final UserContextRepository userContextRepository;
@@ -97,7 +102,12 @@ public class ContextService {
             );
         }
         UserContext userContext = new UserContext(context.getId(), valtimoUser.getId());
-        userContextRepository.save(userContext);
+        try {
+            userContextRepository.save(userContext);
+        } catch (DataIntegrityViolationException exception) {
+            // We know there is a race condition here, but it is not worth it to lock.
+            logger.debug("User context for context {} and user {} already exists", context.getId(), valtimoUser.getId());
+        }
         return context;
     }
 

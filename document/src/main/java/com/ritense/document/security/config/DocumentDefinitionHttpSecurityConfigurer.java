@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,13 @@ public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityCon
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/document-definition").hasAuthority(USER)
-                .antMatchers(GET, "/api/document-definition/{name}").hasAuthority(USER)
-                .antMatchers(POST, "/api/document-definition").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/document-definition/{name}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/document-definition/{name}/roles").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/document-definition/{name}/roles").hasAuthority(ADMIN);
+                .antMatchers(GET, "/api/v1/document-definition").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/document-definition/{name}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/document-definition/open/count").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/document-definition").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/document-definition/{name}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/document-definition/{name}/roles").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/document-definition/{name}/roles").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

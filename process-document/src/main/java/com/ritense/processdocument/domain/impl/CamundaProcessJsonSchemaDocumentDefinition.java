@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.ritense.processdocument.domain.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import org.hibernate.annotations.Formula;
 import org.springframework.data.domain.Persistable;
@@ -48,6 +49,14 @@ public class CamundaProcessJsonSchemaDocumentDefinition
         " ORDER BY act_re_procdef.version_ DESC" +
         " LIMIT    1)")
     private String processName;
+
+    @Formula("( " +
+        " SELECT   act_re_procdef.id_ " +
+        " FROM     act_re_procdef " +
+        " WHERE    act_re_procdef.key_ = camunda_process_definition_key" +
+        " ORDER BY act_re_procdef.version_ DESC" +
+        " LIMIT    1)")
+    private String latestVersionId;
 
     public CamundaProcessJsonSchemaDocumentDefinition(
         final CamundaProcessJsonSchemaDocumentDefinitionId processDocumentDefinitionId,
@@ -85,6 +94,11 @@ public class CamundaProcessJsonSchemaDocumentDefinition
     @Override
     public String processName() {
         return processName;
+    }
+
+    @JsonProperty("latestVersionId")
+    public String getLatestVersionId() {
+        return latestVersionId;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.ritense.valtimo.contract.hardening.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.Set;
 
-@ConfigurationProperties(prefix = "hardening")
+@ConfigurationProperties(prefix = "valtimo.hardening")
 public class HardeningProperties {
     private Set<String> allowStacktraceOnIps = HardeningDefaults.Hardening.allowStacktraceOnIps;
 

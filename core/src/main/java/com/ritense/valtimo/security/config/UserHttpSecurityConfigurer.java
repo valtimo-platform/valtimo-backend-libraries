@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -31,16 +32,18 @@ public class UserHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/users").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/users").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/users").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/users/{userId}/activate").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/users/{userId}/deactivate").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/users/email/{email}/").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/users/{userId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/users/authority/{authority}").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/users/{userId}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/users/send-verification-email/{userId}").hasAuthority(ADMIN);
+                .antMatchers(GET, "/api/v1/users").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/users").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/users").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/users/{userId}/activate").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/v1/users/{userId}/deactivate").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/users/email/{email}/").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/users/{userId}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/users/authority/{authority}").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/users/{userId}").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/users/send-verification-email/{userId}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/user/settings").hasAuthority(USER)
+                .antMatchers(PUT, "/api/v1/user/settings").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -31,10 +31,16 @@ dependencies {
     implementation project(':process-document')
     implementation project(':resource')
 
+    implementation project(':plugin')
+    implementation project(':zgw:documenten-api')
+    api project(':zgw:catalogi-api')
+    api project(":zgw:zaken-api")
+    api project(":zgw:besluiten-api")
+
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:1"
+    api "javax.inject:javax.inject:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -44,7 +50,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-validation"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
 
-    implementation "com.fasterxml.jackson.module:jackson-module-afterburner"
+    implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
     implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
@@ -52,28 +58,30 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
-    implementation "com.vladmihalcea:hibernate-types-52:2.12.1"
-    implementation "io.jsonwebtoken:jjwt-api:0.11.2"
-    implementation "io.jsonwebtoken:jjwt-impl:0.11.2"
-    implementation "io.jsonwebtoken:jjwt-jackson:0.11.2"
+    implementation "com.vladmihalcea:hibernate-types-55:${hibernateTypesVersion}"
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
-    implementation "org.liquibase.ext:liquibase-hibernate5:4.8.0"
+    implementation "org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
     testImplementation "org.springframework.security:spring-security-test"
-    testImplementation "org.camunda.bpm.extension.mockito:camunda-bpm-mockito:4.13.0"
+    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
 
     //Kotlin
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.mockito:mockito-inline"
+
+    testImplementation project(':test-utils-common')
 
     jar {
         enabled = true

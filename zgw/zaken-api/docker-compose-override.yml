@@ -1,0 +1,7 @@
+version: '3.9'
+services:
+    db:
+        ports:
+            - "3325:5432"
+        environment:
+            - POSTGRES_DB=zaken-api-test

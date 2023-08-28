@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package com.ritense.plugin.web.rest
 
-import com.ritense.plugin.domain.PluginConfiguration
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
 import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
 import com.ritense.plugin.web.rest.result.PluginConfigurationDto
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -31,21 +32,36 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping(value = ["/api/plugin"])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class PluginConfigurationResource(
     private var pluginService: PluginService
 ) {
 
-    @GetMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getPluginDefinitions(): ResponseEntity<List<PluginConfiguration>> {
-        return ResponseEntity.ok(pluginService.getPluginConfigurations())
+    @GetMapping("/v1/plugin/configuration")
+    fun getPluginDefinitions(@RequestParam("pluginDefinitionKey") pluginDefinitionKey: String?,
+                             @RequestParam("pluginConfigurationTitle") pluginConfigurationTitle: String?,
+                             @RequestParam("category") category: String?,
+                             @RequestParam("activityType") activityType: ActivityType?)
+        : ResponseEntity<List<PluginConfigurationDto>> {
+
+        return ResponseEntity.ok(
+            pluginService.getPluginConfigurations(
+                PluginConfigurationSearchParameters(
+                    pluginDefinitionKey = pluginDefinitionKey,
+                    pluginConfigurationTitle = pluginConfigurationTitle,
+                    category = category,
+                    activityType = activityType?.mapOldActivityTypeToCurrent()
+                )
+            )
+            .map { PluginConfigurationDto(it) })
     }
 
-    @PostMapping(value = ["/configuration"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("/v1/plugin/configuration")
     fun createPluginConfiguration(
         @RequestBody createPluginConfiguration: CreatePluginConfigurationDto
     ): ResponseEntity<PluginConfigurationDto> {
@@ -60,21 +76,23 @@ class PluginConfigurationResource(
         )
     }
 
-    @PutMapping(value = ["/configuration/{pluginConfigurationId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("/v1/plugin/configuration/{pluginConfigurationId}")
     fun updatePluginConfiguration(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID,
         @RequestBody updatePluginConfiguration: UpdatePluginConfigurationDto
-    ): ResponseEntity<PluginConfiguration> {
+    ): ResponseEntity<PluginConfigurationDto> {
         return ResponseEntity.ok(
-            pluginService.updatePluginConfiguration(
-                PluginConfigurationId.existingId(pluginConfigurationId),
-                updatePluginConfiguration.title,
-                updatePluginConfiguration.properties
+            PluginConfigurationDto(
+                pluginService.updatePluginConfiguration(
+                    PluginConfigurationId.existingId(pluginConfigurationId),
+                    updatePluginConfiguration.title,
+                    updatePluginConfiguration.properties
+                )
             )
         )
     }
 
-    @DeleteMapping(value = ["/configuration/{pluginConfigurationId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping("/v1/plugin/configuration/{pluginConfigurationId}")
     fun deletePluginConfiguration(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID
     ): ResponseEntity<Void> {

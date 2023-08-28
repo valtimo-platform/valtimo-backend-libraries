@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import javax.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -62,4 +64,10 @@ public interface DocumentDefinitionService {
     Set<String> getDocumentDefinitionRoles(String documentDefinitionName);
 
     void putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles);
+
+    void validateJsonPath(String documentDefinitionName, String jsonPathExpression) throws ValidationException;
+
+    boolean isValidJsonPath(JsonSchemaDocumentDefinition definition, String jsonPathExpression);
+
+    void validateJsonPointer(String documentDefinitionName, String jsonPointer) throws ValidationException;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 package com.ritense.document.domain.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ritense.document.config.SpringContextHelper;
+import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.Document;
+
 import java.util.List;
 
 public interface DocumentModifiedEvent {
@@ -28,11 +29,11 @@ public interface DocumentModifiedEvent {
 
     List<? extends DocumentFieldChangedEvent> changes();
 
-    @JsonProperty(value = "changes")
+    @JsonProperty("changes")
     default List<? extends DocumentFieldChangedEvent> registeredChanges() {
         List<? extends DocumentFieldChangedEvent> changes = null;
 
-        Boolean registerDocumentChanges = SpringContextHelper
+        Boolean registerDocumentChanges = DocumentSpringContextHelper
             .getProperty("valtimo.audit.auditDocumentChanges", Boolean.class);
 
         if (registerDocumentChanges != null && registerDocumentChanges) {

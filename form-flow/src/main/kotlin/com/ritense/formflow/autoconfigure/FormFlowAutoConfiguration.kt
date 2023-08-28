@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,21 @@ package com.ritense.formflow.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.handler.ApplicationReadyEventHandler
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
-import com.ritense.formflow.repository.DefaultFormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import com.ritense.formflow.repository.FormFlowStepInstanceRepository
 import com.ritense.formflow.repository.FormFlowStepRepository
+import com.ritense.formflow.repository.MySqlFormFlowAdditionalPropertiesSearchRepository
+import com.ritense.formflow.repository.PostgresFormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.service.FormFlowDeploymentService
-import com.ritense.formflow.service.FormFlowObjectMapper
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.formflow.service.ObjectMapperConfigurer
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
@@ -58,10 +59,10 @@ class FormFlowAutoConfiguration {
 
     @Bean
     fun formFlowObjectMapper(
-        objectMapper: ObjectMapper?,
-        stepPropertiesTypes: Collection<NamedType>?
-    ): FormFlowObjectMapper {
-        return FormFlowObjectMapper(objectMapper?: jacksonObjectMapper(), stepPropertiesTypes)
+        objectMapper: ObjectMapper,
+        stepPropertiesTypes: Collection<NamedType>
+    ): ObjectMapperConfigurer {
+        return ObjectMapperConfigurer(objectMapper, stepPropertiesTypes)
     }
 
     @Bean
@@ -89,11 +90,20 @@ class FormFlowAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(FormFlowAdditionalPropertiesSearchRepository::class)
-    fun formFlowAdditionalPropertiesSearchRepository(
+    @ConditionalOnProperty(prefix = "valtimo", name = ["database"], havingValue = "postgres")
+    fun postgresFormFlowAdditionalPropertiesSearchRepository(
+        entityManager: EntityManager,
+        objectMapper: ObjectMapper
+    ): FormFlowAdditionalPropertiesSearchRepository {
+        return PostgresFormFlowAdditionalPropertiesSearchRepository(entityManager, objectMapper)
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "valtimo", name = ["database"], havingValue = "mysql", matchIfMissing = true)
+    fun mysqlFormFlowAdditionalPropertiesSearchRepository(
         entityManager: EntityManager
     ): FormFlowAdditionalPropertiesSearchRepository {
-        return DefaultFormFlowAdditionalPropertiesSearchRepository(entityManager)
+        return MySqlFormFlowAdditionalPropertiesSearchRepository(entityManager)
     }
 
     @Bean
@@ -101,12 +111,12 @@ class FormFlowAutoConfiguration {
     fun formFlowDeploymentService(
         resourceLoader: ResourceLoader,
         formFlowService: FormFlowService,
-        formFlowObjectMapper: FormFlowObjectMapper
+        objectMapper: ObjectMapper,
     ): FormFlowDeploymentService {
         return FormFlowDeploymentService(
             resourceLoader,
             formFlowService,
-            formFlowObjectMapper
+            objectMapper
         )
     }
 }

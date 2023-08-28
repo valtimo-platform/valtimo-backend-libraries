@@ -1,16 +1,16 @@
-###GZAC
+### GZAC
 
 This is a GZAC - Valtimo edition for local development.
 Includes an array of additional services for OpenZaak/OpenFormulieren
 
 Clone external git repo https://github.com/valtimo-platform/valtimo-docker-profiles
 
-####1 Docker-compose up
+#### 1 Docker-compose up
 
 Run in terminal:
 <code>valtimo-docker-profiles/gzac-platform% docker-compose up</code>
 
-####2 Run Spring-boot-application
+#### 2 Run Spring-boot-application
 
 Run in IntellJ Gradle: <code>app -> gzac -> application -> bootRun</code>
 
@@ -26,10 +26,10 @@ Keycloak management can be accessed on http://localhost:8082 with the default cr
 
 Keycloak comes preconfigured with the following users. 
 
-| Name | Role | Username | Password |
-|---|---|---|---|
-| James Vance | ROLE_USER | user | user |
-| Asha Miller | ROLE_ADMIN | admin | admin |
+| Name         | Role           | Username  | Password  |
+|--------------|----------------|-----------|-----------|
+| James Vance  | ROLE_USER      | user      | user      |
+| Asha Miller  | ROLE_ADMIN     | admin     | admin     |
 | Morgan Finch | ROLE_DEVELOPER | developer | developer |
 
 ### Objects API 
@@ -70,7 +70,7 @@ Create a token for the access under Home › API authorizations > Token authoriz
 
 Admin can be accessed on http://localhost:8002.
 
-By default an admin user is created with the following credentials
+By default, an admin user is created with the following credentials
 
 >Username: admin  
 >Password: admin

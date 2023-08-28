@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ package com.ritense.document.domain.impl;
 import com.ritense.document.TestHelper;
 import org.everit.json.schema.ValidationException;
 import org.junit.jupiter.api.Test;
+
+import java.net.URI;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -27,7 +30,7 @@ public class JsonSchemaDocumentDefinitionTest extends TestHelper {
     @Test
     public void shouldNotCreateDocumentDefinitionWithInvalidJsonSchema() {
         final JsonSchemaDocumentDefinitionId jsonSchemaDocumentDefinitionId = JsonSchemaDocumentDefinitionId.newId("invalidperson");
-        assertThrows(ValidationException.class, () -> JsonSchema.fromResourceUri(path(jsonSchemaDocumentDefinitionId.name())));
+        assertThrows(ValidationException.class, () -> JsonSchema.fromResourceUri(URI.create("config/data/invalidperson.schema.json")));
     }
 
     @Test

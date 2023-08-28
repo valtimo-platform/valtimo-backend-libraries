@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package com.ritense.contactmoment.web.rest.impl
 
-import com.nhaarman.mockitokotlin2.verify
 import com.ritense.contactmoment.domain.request.SendMessageRequest
 import com.ritense.contactmoment.service.KlantcontactService
-import java.util.UUID
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.verify
+import java.util.UUID
 
 internal class MessageResourceTest {
 

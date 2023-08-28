@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,13 @@ package com.ritense.smartdocuments.plugin
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.plugin.domain.ActivityType
+import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -33,6 +34,7 @@ import com.ritense.valtimo.contract.json.Mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
+import org.camunda.bpm.engine.repository.ProcessDefinition
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -45,38 +47,24 @@ import java.util.UUID
 @Transactional
 @AutoConfigureWebTestClient(timeout = "36000")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() {
-
-    @Autowired
-    lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
-
-    @Autowired
-    lateinit var processDocumentService: ProcessDocumentService
-
-    @Autowired
-    lateinit var pluginService: PluginService
-
-    @Autowired
-    lateinit var smartDocumentsPluginFactory: SmartDocumentsPluginFactory
-
-    @Autowired
-    lateinit var pluginProcessLinkRepository: PluginProcessLinkRepository
-
-    @Autowired
-    lateinit var repositoryService: RepositoryService
-
-    @Autowired
-    lateinit var runtimeService: RuntimeService
-
-    @Autowired
-    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+class SmartDocumentsPluginIntegrationTest @Autowired constructor(
+    private val processDocumentService: ProcessDocumentService,
+    private val pluginService: PluginService,
+    private val smartDocumentsPluginFactory: SmartDocumentsPluginFactory,
+    private val pluginProcessLinkRepository: PluginProcessLinkRepository,
+    private val repositoryService: RepositoryService,
+    private val runtimeService: RuntimeService,
+    private val temporaryResourceStorageService: TemporaryResourceStorageService
+): BaseSmartDocumentsIntegrationTest() {
 
     lateinit var smartDocumentsPlugin: SmartDocumentsPlugin
+    lateinit var pluginConfiguration: PluginConfiguration
+    lateinit var processDefinition: ProcessDefinition
 
     @BeforeEach
     internal fun beforeEach() {
         startMockServer()
-        val configuration = pluginService.createPluginConfiguration(
+        pluginConfiguration = pluginService.createPluginConfiguration(
             "Smart documents plugin configuration",
             Mapper.INSTANCE.get().readTree(
                 "{\"url\":\"${server.url("/")}\",\"username\":\"test-username\",\"password\":\"test-password\"}"
@@ -96,28 +84,31 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
                     {
                         "key": "leeftijd",
                         "value": "pv:age"
+                    },
+                    {
+                        "key": "nonExistingDocumentVar",
+                        "value": "doc:/nonExisting"
+                    },
+                    {
+                        "key": "nonExistingProcessVar",
+                        "value": "pv:/nonExisting"
+                    },
+                    {
+                        "key": "fixedValue",
+                        "value": "My fixed value"
                     }
                 ],
                 "resultingDocumentProcessVariableName": "my-generated-document"
             }
         """.trimIndent()
 
-        smartDocumentsPlugin = smartDocumentsPluginFactory.create(configuration)
-        val processDefinitionId = repositoryService.createProcessDefinitionQuery()
+        smartDocumentsPlugin = smartDocumentsPluginFactory.create(pluginConfiguration)
+        processDefinition = repositoryService.createProcessDefinitionQuery()
             .processDefinitionKey("document-generation-plugin")
             .latestVersion()
             .singleResult()
 
-        pluginProcessLinkRepository.save(
-            PluginProcessLink(
-                PluginProcessLinkId(UUID.randomUUID()),
-                processDefinitionId.id,
-                "GenerateDocument",
-                Mapper.INSTANCE.get().readTree(generateDocumentActionProperties) as ObjectNode,
-                configuration.id,
-                "generate-document"
-            )
-        )
+        saveProcessLink(generateDocumentActionProperties)
     }
 
     @Test
@@ -134,9 +125,15 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
         // then
         val requestBody =
             findRequestBody(HttpMethod.POST, "/wsxmldeposit/deposit/unattended", SmartDocumentsRequest::class.java)
-        assertThat(requestBody.smartDocument.selection.templateGroup).isEqualTo("test-template-group")
+        assertThat(requestBody.smartDocument.selection.templateGroup).isNotEqualTo("test-template-group")
         assertThat(requestBody.smartDocument.selection.template).isEqualTo("test-template-name")
-        assertThat(requestBody.customerData).isEqualTo(mapOf("achternaam" to "Klaveren", "leeftijd" to 138))
+        assertThat(requestBody.customerData).isEqualTo(mapOf(
+            "achternaam" to "Klaveren",
+            "leeftijd" to 138,
+            "nonExistingDocumentVar" to null,
+            "nonExistingProcessVar" to null,
+            "fixedValue" to "My fixed value",
+        ))
     }
 
     @Test
@@ -155,7 +152,7 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
             .value as String
         val metadata = temporaryResourceStorageService.getResourceMetadata(resourceId)
         val content = temporaryResourceStorageService.getResourceContentAsInputStream(resourceId).reader().readText()
-        assertThat(metadata[MetadataType.FILE_NAME.name]).isEqualTo("integration-test_answer.xml")
+        assertThat(metadata[MetadataType.FILE_NAME.key]).isEqualTo("integration-test_answer.xml")
         assertThat(content).isEqualToIgnoringWhitespace(
             """
             <?xml version="1.0" encoding="UTF-8"?>
@@ -167,6 +164,73 @@ class SmartDocumentsPluginIntegrationTest : BaseSmartDocumentsIntegrationTest() 
                </customerData>
             </root>
             """
+        )
+    }
+
+    @Test
+    fun `should resolve template-name value from process-variable`() {
+        // given
+        saveProcessLink(
+            """
+            {
+                "templateGroup": "test-template-group",
+                "templateName": "pv:my-template-name-variable",
+                "format": "XML",
+                "templateData": [],
+                "resultingDocumentProcessVariableName": "my-generated-document"
+            }
+        """.trimIndent()
+        )
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
+            .withProcessVars(mapOf("my-template-name-variable" to "my-custom-template-name"))
+
+        // when
+        processDocumentService.newDocumentAndStartProcess(request)
+
+        // then
+        val requestBody =
+            findRequestBody(HttpMethod.POST, "/wsxmldeposit/deposit/unattended", SmartDocumentsRequest::class.java)
+        assertThat(requestBody.smartDocument.selection.template).isEqualTo("my-custom-template-name")
+    }
+
+    @Test
+    fun `should respond with placeholder when template-name contains process-variable that doesn't exist`() {
+        // given
+        saveProcessLink(
+            """
+            {
+                "templateGroup": "test-template-group",
+                "templateName": "pv:non-existing-process-variable",
+                "format": "XML",
+                "templateData": [],
+                "resultingDocumentProcessVariableName": "my-generated-document"
+            }
+        """.trimIndent()
+        )
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
+
+        // when
+        processDocumentService.newDocumentAndStartProcess(request)
+
+        // then
+        val requestBody =
+            findRequestBody(HttpMethod.POST, "/wsxmldeposit/deposit/unattended", SmartDocumentsRequest::class.java)
+        assertThat(requestBody.smartDocument.selection.template).isEqualTo("pv:non-existing-process-variable")
+    }
+
+    private fun saveProcessLink(generateDocumentActionProperties: String) {
+        pluginProcessLinkRepository.save(
+            PluginProcessLink(
+                PluginProcessLinkId(UUID.fromString("aad69a1b-0325-40ff-91df-27762305dcc1")),
+                processDefinition.id,
+                "GenerateDocument",
+                Mapper.INSTANCE.get().readTree(generateDocumentActionProperties) as ObjectNode,
+                pluginConfiguration.id,
+                "generate-document",
+                ActivityType.SERVICE_TASK_START
+            )
         )
     }
 

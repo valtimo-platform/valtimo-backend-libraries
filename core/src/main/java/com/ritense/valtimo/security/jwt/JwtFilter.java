@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.ritense.valtimo.security.jwt;
 
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
+import com.ritense.valtimo.security.jwt.exception.TokenAuthenticatorNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.camunda.bpm.engine.IdentityService;
 import org.slf4j.Logger;
@@ -68,6 +69,9 @@ public class JwtFilter extends GenericFilterBean {
             identityService.clearAuthentication();
         } catch (ExpiredJwtException eje) {
             slf4jLogger.info("Security exception for user {} - {}", eje.getClaims().getSubject(), eje.getMessage());
+            ((HttpServletResponse) servletResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            filterChain.doFilter(servletRequest, servletResponse);
+        } catch (TokenAuthenticatorNotFoundException e) {
             ((HttpServletResponse) servletResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             filterChain.doFilter(servletRequest, servletResponse);
         }

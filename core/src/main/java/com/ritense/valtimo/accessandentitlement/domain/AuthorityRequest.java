@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package com.ritense.valtimo.accessandentitlement.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.math.BigDecimal;
 
 public class AuthorityRequest {
 
@@ -26,22 +27,7 @@ public class AuthorityRequest {
     @Pattern(regexp = "^[a-zA-Z0-9-_]+$")
     private String name;
 
-    private BigDecimal hourlyRate;
-
-    private AuthorityRequest() {
-    }
-
-    /**
-     * @deprecated - This method will be removed in 11.0.0
-     * Use {@link #AuthorityRequest(String, BigDecimal)}  instead.
-     */
-    @Deprecated(forRemoval = true, since = "9.4.0")
-    public AuthorityRequest(String name, BigDecimal hourlyRate) {
-        this.name = name;
-        this.hourlyRate = hourlyRate;
-    }
-
-    public AuthorityRequest(String name) {
+    public AuthorityRequest(@JsonProperty("name") String name) {
         this.name = name;
     }
 
@@ -49,12 +35,8 @@ public class AuthorityRequest {
         return name;
     }
 
-    /**
-     * @deprecated - This method will be removed in 11.0.0
-     */
-    @Deprecated(forRemoval = true, since = "9.4.0")
-    public BigDecimal getHourlyRate() {
-        return hourlyRate == null ? BigDecimal.ZERO : hourlyRate;
+    public void setName(String name) {
+        this.name = name;
     }
 
 }

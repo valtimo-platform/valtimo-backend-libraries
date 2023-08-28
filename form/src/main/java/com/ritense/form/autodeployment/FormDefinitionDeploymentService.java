@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,8 @@ public class FormDefinitionDeploymentService {
     private final FormDefinitionRepository formDefinitionRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public FormDefinitionDeploymentService(ResourceLoader resourceLoader, FormDefinitionService formDefinitionService, FormDefinitionRepository formDefinitionRepository, ApplicationEventPublisher applicationEventPublisher) {
+    public FormDefinitionDeploymentService(ResourceLoader resourceLoader, FormDefinitionService formDefinitionService,
+        FormDefinitionRepository formDefinitionRepository, ApplicationEventPublisher applicationEventPublisher) {
         this.resourceLoader = resourceLoader;
         this.formDefinitionService = formDefinitionService;
         this.formDefinitionRepository = formDefinitionRepository;
@@ -109,7 +110,7 @@ public class FormDefinitionDeploymentService {
     private Resource[] loadResources() {
         try {
             return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH);
-        } catch( IOException ioe) {
+        } catch (IOException ioe) {
             logger.error("Failed to load resources from " + PATH, ioe);
             return new Resource[0];
         }

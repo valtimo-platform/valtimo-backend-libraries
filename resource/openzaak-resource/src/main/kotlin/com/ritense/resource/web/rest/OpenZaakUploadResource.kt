@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.ritense.resource.web.rest
 
 import com.ritense.resource.service.ResourceService
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.contract.resource.Resource
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -27,12 +28,12 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping(value = ["/api/resource"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class OpenZaakUploadResource(
     val resourceService: ResourceService
 ) {
 
-    @PostMapping(value = ["/upload-open-zaak"], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping("/v1/resource/upload-open-zaak", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun uploadOpenZaakFile(
         @RequestParam("file") file: MultipartFile,
         @RequestParam("documentDefinitionName") documentDefinitionName: String

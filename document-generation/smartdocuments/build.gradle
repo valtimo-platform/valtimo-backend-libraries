@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,17 +27,19 @@ dependencies {
     implementation project(':core')
     implementation project(':document')
     implementation project(":document-generation")
-    implementation project(':plugin')
     implementation project(':process-document')
     implementation project(':resource')
     implementation project(':resource:temporary-resource-storage')
     implementation project(':value-resolver')
+
     api project(':document-generation')
+
+    compileOnly project(':plugin')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:1"
+    api "javax.inject:javax.inject:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -46,7 +48,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-validation"
 
-    implementation "com.fasterxml.jackson.module:jackson-module-afterburner"
+    implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
     implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
@@ -54,8 +56,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation "org.apache.commons:commons-text:1.9"
-    implementation "io.github.microutils:kotlin-logging:2.0.4"
+    implementation "org.apache.commons:commons-text:${commonsText}"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
@@ -63,14 +65,14 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
-    implementation "commons-io:commons-io:2.11.0"
+    implementation "commons-io:commons-io:${commonsIoVersion}"
 
-    testImplementation "io.netty:netty-resolver-dns-native-macos:4.1.72.Final:osx-aarch_64"
     testImplementation "org.springframework.security:spring-security-test"
-    testImplementation "com.squareup.okhttp3:mockwebserver:4.9.3"
-    testImplementation "com.squareup.okhttp3:okhttp:4.9.3"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
+    testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation project(':test-utils-common')
+    testImplementation project(':plugin-valtimo')
 }
 
 apply from: "gradle/publishing.gradle"

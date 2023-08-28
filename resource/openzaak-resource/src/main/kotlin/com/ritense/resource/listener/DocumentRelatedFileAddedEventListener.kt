@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,14 @@ class DocumentRelatedFileAddedEventListener(
     @EventListener(DocumentRelatedFileAddedEvent::class)
     fun handle(event: DocumentRelatedFileAddedEvent) {
         if (event.documentId != null) {
+            if( event.metadata != null && !(event.metadata.getValue("createInformatieObject") as Boolean)) {
+                return
+            }
+
             val resource = openZaakService.getResource(event.fileId)
             documentenService.createObjectInformatieObject(
                 resource.informatieObjectUrl,
-                event.documentId,
-            )
+                event.documentId)
         }
     }
 }

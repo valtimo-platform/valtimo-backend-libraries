@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -65,15 +66,15 @@ public class ProcessShortTimerService {
             throw new ProcessNotFoundException("Process not found for: " + processDefinitionId);
         }
         Document doc = createDocumentFrom(processModel);
-        doc = timerEventCycleSetOneMinuteOneCycle(doc);
-        doc = timerEventDurationSetOneMinute(doc);
-        doc = changeNameAndIdToTimerVersion(doc);
-        doc = changeBpmnPlaneElementName(doc);
+        timerEventCycleSetOneMinuteOneCycle(doc);
+        timerEventDurationSetOneMinute(doc);
+        changeNameAndIdToTimerVersion(doc);
+        changeBpmnPlaneElementName(doc);
         return doc;
     }
 
     private Document createDocumentFrom(InputStream processModel) throws DocumentParserException {
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newDefaultInstance();
         dbFactory.setNamespaceAware(true);
         DocumentBuilder docBuilder;
         Document doc;
@@ -132,7 +133,8 @@ public class ProcessShortTimerService {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             Source xmlSource = new DOMSource(doc);
             Result outputTarget = new StreamResult(outputStream);
-            TransformerFactory.newInstance().newTransformer().transform(xmlSource, outputTarget);
+            TransformerFactory factory = TransformerFactory.newDefaultInstance();
+            factory.newTransformer().transform(xmlSource, outputTarget);
             processModelTimers = new ByteArrayInputStream(outputStream.toByteArray());
         } catch (TransformerException ex) {
             throw new DocumentParserException("Not able to transform xmlSource");

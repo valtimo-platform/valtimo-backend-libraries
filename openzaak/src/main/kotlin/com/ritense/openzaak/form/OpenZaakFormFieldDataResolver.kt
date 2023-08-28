@@ -18,25 +18,27 @@ package com.ritense.openzaak.form
 
 import com.ritense.openzaak.exception.UnmappableOpenZaakPropertyException
 import com.ritense.openzaak.exception.ZaakInstanceNotFoundException
-import com.ritense.openzaak.service.impl.ZaakInstanceLinkService
 import com.ritense.openzaak.service.impl.ZaakService
-import com.ritense.valtimo.contract.form.ExternalFormFieldType
+import com.ritense.valtimo.contract.form.DataResolvingContext
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
-import java.util.UUID
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 
 class OpenZaakFormFieldDataResolver(
     private val zaakService: ZaakService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService
 ) : FormFieldDataResolver {
 
-    override fun supports(externalFormFieldType: ExternalFormFieldType): Boolean {
-        return externalFormFieldType == ExternalFormFieldType.OZ
+    override fun supports(externalFormFieldType: String): Boolean {
+        return externalFormFieldType == "OpenZaak"
     }
 
-    override fun get(documentDefinitionName: String, documentId: UUID, vararg varNames: String): Map<String, Any> {
+    override fun get(
+        dataResolvingContext: DataResolvingContext,
+        vararg varNames: String
+    ): Map<String, Any> {
         val result = mutableMapOf<String, String>()
         try {
-            val zaakInstanceLink = zaakInstanceLinkService.getByDocumentId(documentId)
+            val zaakInstanceLink = zaakInstanceLinkService.getByDocumentId(dataResolvingContext.documentId)
             val eigenschappen = zaakService.getZaakEigenschappen(zaakInstanceLink.zaakInstanceId)
 
             if (eigenschappen.isNotEmpty()) {
@@ -52,5 +54,4 @@ class OpenZaakFormFieldDataResolver(
         }
         return result
     }
-
 }

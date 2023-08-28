@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,15 +31,15 @@ public class TaskHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/task").hasAuthority(USER)
-                .antMatchers(POST, "/api/task/assign/batch-assign").hasAuthority(USER)
-                .antMatchers(POST, "/api/task/batch-complete").hasAuthority(USER)
-                .antMatchers(GET, "/api/task/{taskId}").access(TASK_ACCESS_PERMISSION)
-                .antMatchers(POST, "/api/task/{taskId}/assign").access(TASK_ACCESS_PERMISSION)
-                .antMatchers(GET, "/api/task/{taskId}/comments").access(TASK_ACCESS_PERMISSION)
-                .antMatchers(POST, "/api/task/{taskId}/complete").access(TASK_ACCESS_PERMISSION)
-                .antMatchers(POST, "/api/task/{taskId}/unassign").access(TASK_ACCESS_PERMISSION)
-                .antMatchers(GET, "/api/task/{taskId}/candidate-user").access(TASK_ACCESS_PERMISSION);
+                .antMatchers(GET, "/api/v1/task").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/task/assign/batch-assign").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/task/batch-complete").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/task/{taskId}").access(TASK_ACCESS_PERMISSION)
+                .antMatchers(POST, "/api/v1/task/{taskId}/assign").access(TASK_ACCESS_PERMISSION)
+                .antMatchers(GET, "/api/v1/task/{taskId}/comments").access(TASK_ACCESS_PERMISSION)
+                .antMatchers(POST, "/api/v1/task/{taskId}/complete").access(TASK_ACCESS_PERMISSION)
+                .antMatchers(POST, "/api/v1/task/{taskId}/unassign").access(TASK_ACCESS_PERMISSION)
+                .antMatchers(GET, "/api/v1/task/{taskId}/candidate-user").access(TASK_ACCESS_PERMISSION);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

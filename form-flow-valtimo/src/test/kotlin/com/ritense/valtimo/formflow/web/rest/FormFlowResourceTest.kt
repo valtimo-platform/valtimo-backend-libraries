@@ -1,10 +1,22 @@
+/*
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.valtimo.formflow.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
@@ -18,6 +30,10 @@ import com.ritense.valtimo.formflow.BaseTest
 import com.ritense.valtimo.formflow.handler.FormTypeProperties
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -76,7 +92,7 @@ class FormFlowResourceTest : BaseTest() {
             .perform(
                 MockMvcRequestBuilders
                     .get(
-                        "/api/form-flow/{instanceId}",
+                        "/api/v1/form-flow/{instanceId}",
                         formFlowInstanceId.id.toString()
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -100,7 +116,7 @@ class FormFlowResourceTest : BaseTest() {
             .perform(
                 MockMvcRequestBuilders
                     .get(
-                        "/api/form-flow/{instanceId}",
+                        "/api/v1/form-flow/{instanceId}",
                         UUID.randomUUID().toString()
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -113,7 +129,7 @@ class FormFlowResourceTest : BaseTest() {
     fun `should complete step`() {
         whenever(formFlowInstance.complete(any(), any())).thenReturn(stepInstance)
 
-        mockMvc.perform(post("/api/form-flow/{flowId}/step/{stepId}", formFlowInstance.id.id, formFlowInstance.getCurrentStep().id.id))
+        mockMvc.perform(post("/api/v1/form-flow/{flowId}/step/{stepId}", formFlowInstance.id.id, formFlowInstance.getCurrentStep().id.id))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(formFlowInstance.id.id.toString()))
@@ -130,7 +146,7 @@ class FormFlowResourceTest : BaseTest() {
     fun `should navigate to previous step`() {
         whenever(formFlowInstance.back()).thenReturn(stepInstance)
 
-        mockMvc.perform(post("/api/form-flow/{flowId}/back", formFlowInstance.id.id))
+        mockMvc.perform(post("/api/v1/form-flow/{flowId}/back", formFlowInstance.id.id))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(formFlowInstance.id.id.toString()))
@@ -141,5 +157,34 @@ class FormFlowResourceTest : BaseTest() {
 
         verify(formFlowInstance).back()
         verify(stepInstance).open()
+    }
+
+    @Test
+    fun `should save submission data when navigating to previous step`() {
+        whenever(formFlowInstance.back()).thenReturn(stepInstance)
+
+        mockMvc.perform(
+            post("/api/v1/form-flow/{flowId}/back", formFlowInstance.id.id)
+                .content("{\"step1\":\"A\"}")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.step.id").value(stepInstanceId.id.toString()))
+
+        verify(formFlowInstance).save(any())
+    }
+
+    @Test
+    fun `should save submission data`() {
+        mockMvc.perform(
+            post("/api/v1/form-flow/{flowId}/save", formFlowInstance.id.id)
+                .content("{\"step1\":\"A\"}")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isNoContent)
+
+        verify(formFlowInstance).save(any())
     }
 }

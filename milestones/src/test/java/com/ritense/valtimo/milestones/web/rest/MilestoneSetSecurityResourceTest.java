@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,61 +38,61 @@ class MilestoneSetSecurityResourceTest extends SecuritySpecificEndpointIntegrati
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void getMilestoneSetAsAdmin() throws Exception {
-        assertHttpStatus(GET, "/api/milestone-sets/1", NOT_FOUND);
+        assertHttpStatus(GET, "/api/v1/milestone-sets/1", NOT_FOUND);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void getMilestoneSetAsUser() throws Exception {
-        assertHttpStatus(GET, "/api/milestone-sets/1", FORBIDDEN);
+        assertHttpStatus(GET, "/api/v1/milestone-sets/1", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void listMilestoneSetsAsAdmin() throws Exception {
-        assertHttpStatus(GET, "/api/milestone-sets", OK);
+        assertHttpStatus(GET, "/api/v1/milestone-sets", OK);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void listMilestoneSetsAsUser() throws Exception {
-        assertHttpStatus(GET, "/api/milestone-sets", FORBIDDEN);
+        assertHttpStatus(GET, "/api/v1/milestone-sets", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {DEVELOPER})
     void saveMilestoneSetAsDeveloper() throws Exception {
-        assertHttpStatus(POST, "/api/milestone-sets", BAD_REQUEST);
+        assertHttpStatus(POST, "/api/v1/milestone-sets", BAD_REQUEST);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void saveMilestoneSetAsAdmin() throws Exception {
-        assertHttpStatus(POST, "/api/milestone-sets", FORBIDDEN);
+        assertHttpStatus(POST, "/api/v1/milestone-sets", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void saveMilestoneSetAsUser() throws Exception {
-        assertHttpStatus(POST, "/api/milestone-sets", FORBIDDEN);
+        assertHttpStatus(POST, "/api/v1/milestone-sets", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {DEVELOPER})
     void deleteMilestoneSetAsDeveloper() throws Exception {
-        assertHttpStatus(DELETE, "/api/milestone-sets/1", NO_CONTENT);
+        assertHttpStatus(DELETE, "/api/v1/milestone-sets/1", NO_CONTENT);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void deleteMilestoneSetAsAdmin() throws Exception {
-        assertHttpStatus(DELETE, "/api/milestone-sets/1", FORBIDDEN);
+        assertHttpStatus(DELETE, "/api/v1/milestone-sets/1", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void deleteMilestoneSetAsUser() throws Exception {
-        assertHttpStatus(DELETE, "/api/milestone-sets/1", FORBIDDEN);
+        assertHttpStatus(DELETE, "/api/v1/milestone-sets/1", FORBIDDEN);
     }
 
 }

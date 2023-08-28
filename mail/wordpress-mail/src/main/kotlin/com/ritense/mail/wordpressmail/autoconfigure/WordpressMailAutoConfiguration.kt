@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,20 +54,6 @@ class WordpressMailAutoConfiguration {
         wordpressMailWebClientBuilder: WebClient.Builder
     ): WordpressMailClient {
         return WordpressMailClient(wordpressMailConnectorProperties, wordpressMailWebClientBuilder)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(WebClient.Builder::class)
-    fun wordpressMailWebClientBuilder(): WebClient.Builder {
-        return WebClient.builder().clientConnector(
-            ReactorClientHttpConnector(
-                HttpClient.create().wiretap(
-                    "reactor.netty.http.client.HttpClient",
-                    io.netty.handler.logging.LogLevel.DEBUG,
-                    AdvancedByteBufFormat.TEXTUAL
-                )
-            )
-        )
     }
 
     //Connector

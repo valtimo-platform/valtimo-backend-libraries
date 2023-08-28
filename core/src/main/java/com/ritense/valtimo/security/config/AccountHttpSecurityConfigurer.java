@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ public class AccountHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/account").hasAuthority(USER)
-                .antMatchers(POST, "/api/account/profile", "/api/account/change_password").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/account").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/account/profile", "/api/v1/account/change_password").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

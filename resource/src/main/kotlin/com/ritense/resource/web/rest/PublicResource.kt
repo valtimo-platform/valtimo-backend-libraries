@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 package com.ritense.resource.web.rest
 
 import com.ritense.resource.web.ObjectUrlDTO
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.TEXT_PLAIN_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -25,19 +26,19 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/public"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface PublicResource {
 
     @GetMapping(
-        value = ["/task/{taskDefinitionId}/resource/pre-signed-url/{fileName}"],
-        produces = ["text/plain;charset=UTF-8"]
+        value = ["/v1/public/task/{taskDefinitionId}/resource/pre-signed-url/{fileName}"],
+        produces = [TEXT_PLAIN_UTF8_VALUE]
     )
     fun generatePreSignedUrlForFileName(
         @PathVariable(name = "taskDefinitionId") taskDefinitionId: String,
         @PathVariable(name = "fileName") fileName: String
     ): ResponseEntity<String>
 
-    @GetMapping(value = ["/task/{taskDefinitionId}/resource/{resourceId}"])
+    @GetMapping("/v1/public/task/{taskDefinitionId}/resource/{resourceId}")
     fun get(
         @PathVariable(name = "taskDefinitionId") taskDefinitionId: String,
         @PathVariable(name = "resourceId") resourceId: String

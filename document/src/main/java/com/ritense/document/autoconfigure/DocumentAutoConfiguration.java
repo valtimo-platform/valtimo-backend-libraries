@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.ritense.document.autoconfigure;
 
-import com.ritense.document.config.SpringContextHelper;
+import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
@@ -31,7 +31,9 @@ import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.DocumentVariableService;
+import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionSequenceGeneratorService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
@@ -42,11 +44,14 @@ import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionSer
 import com.ritense.document.web.rest.DocumentDefinitionResource;
 import com.ritense.document.web.rest.DocumentResource;
 import com.ritense.document.web.rest.DocumentSearchResource;
+import com.ritense.document.web.rest.error.DocumentModuleExceptionTranslator;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
+import com.ritense.valtimo.contract.hardening.service.HardeningService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
@@ -54,7 +59,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
 import javax.persistence.EntityManager;
+import java.util.Optional;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.document.repository")
@@ -67,13 +74,17 @@ public class DocumentAutoConfiguration {
         final DocumentRepository documentRepository,
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
         final JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
-        final ResourceService resourceService
+        final ResourceService resourceService,
+        final UserManagementService userManagementService,
+        final ApplicationEventPublisher applicationEventPublisher
     ) {
         return new JsonSchemaDocumentService(
             documentRepository,
             documentDefinitionService,
             documentSequenceGeneratorService,
-            resourceService
+            resourceService,
+            userManagementService,
+            applicationEventPublisher
         );
     }
 
@@ -117,9 +128,16 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentSearchService.class)
     public JsonSchemaDocumentSearchService documentSearchService(
         final EntityManager entityManager,
-        final QueryDialectHelper queryDialectHelper
+        final QueryDialectHelper queryDialectHelper,
+        final SearchFieldService searchFieldService,
+        final UserManagementService userManagementService
     ) {
-        return new JsonSchemaDocumentSearchService(entityManager, queryDialectHelper);
+        return new JsonSchemaDocumentSearchService(
+            entityManager,
+            queryDialectHelper,
+            searchFieldService,
+            userManagementService
+        );
     }
 
     @Bean
@@ -152,11 +170,13 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentDefinitionResource.class)
     public JsonSchemaDocumentDefinitionResource documentDefinitionResource(
         final DocumentDefinitionService documentDefinitionService,
-        final UndeployDocumentDefinitionService undeployDocumentDefinitionService
+        final UndeployDocumentDefinitionService undeployDocumentDefinitionService,
+        final DocumentStatisticService documentStatisticService
     ) {
         return new JsonSchemaDocumentDefinitionResource(
             documentDefinitionService,
-            undeployDocumentDefinitionService
+            undeployDocumentDefinitionService,
+            documentStatisticService
         );
     }
 
@@ -182,8 +202,16 @@ public class DocumentAutoConfiguration {
     }
 
     @Bean("documentSpringContextHelper")
-    @ConditionalOnMissingBean(SpringContextHelper.class)
-    public SpringContextHelper springContextHelper() {
-        return new SpringContextHelper();
+    @ConditionalOnMissingBean(DocumentSpringContextHelper.class)
+    public DocumentSpringContextHelper documentSpringContextHelper() {
+        return new DocumentSpringContextHelper();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentModuleExceptionTranslator.class)
+    public DocumentModuleExceptionTranslator documentModuleExceptionTranslator(
+        Optional<HardeningService> hardeningServiceOptional
+    ) {
+        return new DocumentModuleExceptionTranslator(hardeningServiceOptional);
     }
 }

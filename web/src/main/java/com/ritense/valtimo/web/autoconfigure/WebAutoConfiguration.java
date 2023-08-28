@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.zalando.problem.ProblemModule;
+import org.zalando.problem.jackson.ProblemModule;
 import org.zalando.problem.violations.ConstraintViolationProblemModule;
+
 import java.util.Optional;
 
 @Configuration
-@EnableConfigurationProperties(value = {WebProperties.class})
+@EnableConfigurationProperties(WebProperties.class)
 public class WebAutoConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(WebAutoConfiguration.class);

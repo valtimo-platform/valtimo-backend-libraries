@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import com.ritense.valtimo.security.config.DenyAllHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.EmailNotificationSettingsSecurityConfigurer;
 import com.ritense.valtimo.security.config.ErrorHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.JwtHttpSecurityConfigurer;
+import com.ritense.valtimo.security.config.OpenApiHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.PingHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ProcessHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ProcessInstanceHttpSecurityConfigurer;
@@ -42,7 +43,6 @@ import com.ritense.valtimo.security.config.PublicProcessHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ReportingHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.StatelessHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.StaticResourcesHttpSecurityConfigurer;
-import com.ritense.valtimo.security.config.SwaggerHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.TaskHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.UserHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ValtimoVersionHttpSecurityConfigurer;
@@ -62,11 +62,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableConfigurationProperties(value = SecurityWhitelistProperties.class)
+@EnableConfigurationProperties(SecurityWhitelistProperties.class)
 public class HttpSecurityAutoConfiguration {
 
     @Bean
@@ -211,9 +212,9 @@ public class HttpSecurityAutoConfiguration {
 
     @Order(398)
     @Bean
-    @ConditionalOnMissingBean(SwaggerHttpSecurityConfigurer.class)
-    public SwaggerHttpSecurityConfigurer swaggerHttpSecurityConfigurer() {
-        return new SwaggerHttpSecurityConfigurer();
+    @ConditionalOnMissingBean(OpenApiHttpSecurityConfigurer.class)
+    public OpenApiHttpSecurityConfigurer swaggerHttpSecurityConfigurer() {
+        return new OpenApiHttpSecurityConfigurer();
     }
 
     @Order(399)

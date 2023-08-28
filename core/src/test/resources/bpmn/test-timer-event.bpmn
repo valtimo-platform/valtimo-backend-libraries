@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0dexp2y" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="test-timer-event" isExecutable="true">
+    <bpmn:subProcess id="Activity_1fadk76">
+      <bpmn:incoming>Flow_1y9hsxl</bpmn:incoming>
+      <bpmn:startEvent id="Event_094cpgl">
+        <bpmn:outgoing>Flow_02nyq2q</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:endEvent id="Event_009h1q7">
+        <bpmn:incoming>Flow_0yn0m4r</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:intermediateCatchEvent id="test-timer">
+        <bpmn:incoming>Flow_02nyq2q</bpmn:incoming>
+        <bpmn:outgoing>Flow_0yn0m4r</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="TimerEventDefinition_10fsp1w">
+          <bpmn:timeDate xsi:type="bpmn:tFormalExpression">2149-12-31T23:59:59Z</bpmn:timeDate>
+        </bpmn:timerEventDefinition>
+      </bpmn:intermediateCatchEvent>
+      <bpmn:sequenceFlow id="Flow_0yn0m4r" sourceRef="test-timer" targetRef="Event_009h1q7" />
+      <bpmn:sequenceFlow id="Flow_02nyq2q" sourceRef="Event_094cpgl" targetRef="test-timer" />
+    </bpmn:subProcess>
+    <bpmn:startEvent id="Event_094cpglStartEvent_1">
+      <bpmn:outgoing>Flow_1y9hsxl</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1y9hsxl" sourceRef="Event_094cpglStartEvent_1" targetRef="Activity_1fadk76" />
+    <bpmn:subProcess id="Activity_0by70jq" triggeredByEvent="true">
+      <bpmn:serviceTask id="delay-timer-service-task" camunda:expression="${jobService.addOffsetInMillisToTimerDueDateByActivityId(1000,&#34;test-timer&#34;,execution)}">
+        <bpmn:incoming>Flow_0dm95vx</bpmn:incoming>
+        <bpmn:outgoing>Flow_1c8lw15</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_0dm95vx" sourceRef="message-start-event-id" targetRef="delay-timer-service-task" />
+      <bpmn:endEvent id="Event_0j73tiw">
+        <bpmn:incoming>Flow_1c8lw15</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_1c8lw15" sourceRef="delay-timer-service-task" targetRef="Event_0j73tiw" />
+      <bpmn:startEvent id="message-start-event-id" isInterrupting="false">
+        <bpmn:outgoing>Flow_0dm95vx</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_1altyx9" messageRef="Message_3qd8tr5" />
+      </bpmn:startEvent>
+    </bpmn:subProcess>
+    <bpmn:subProcess id="Activity_1sv4r6i" triggeredByEvent="true">
+      <bpmn:startEvent id="Event_1kdakkw" isInterrupting="false">
+        <bpmn:outgoing>Flow_1m9ngib</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_1w2dllu" messageRef="Message_1gcgcvs" />
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_1m9ngib" sourceRef="Event_1kdakkw" targetRef="move-forward-timer-service-task" />
+      <bpmn:serviceTask id="move-forward-timer-service-task" camunda:expression="${jobService.addOffsetInMillisToTimerDueDateByActivityId(-3599000,&#34;test-timer&#34;,execution)}">
+        <bpmn:incoming>Flow_1m9ngib</bpmn:incoming>
+        <bpmn:outgoing>Flow_1foa8kp</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="Event_0g33ak6">
+        <bpmn:incoming>Flow_1foa8kp</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_1foa8kp" sourceRef="move-forward-timer-service-task" targetRef="Event_0g33ak6" />
+    </bpmn:subProcess>
+    <bpmn:subProcess id="Activity_1b6xvxz" triggeredByEvent="true">
+      <bpmn:startEvent id="Event_14sq2bj" isInterrupting="false">
+        <bpmn:outgoing>Flow_0mir645</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="MessageEventDefinition_162e3f0" messageRef="Message_0ur7nlv" />
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_0mir645" sourceRef="Event_14sq2bj" targetRef="change-date-service-task" />
+      <bpmn:endEvent id="Event_0r40eor">
+        <bpmn:incoming>Flow_1caqwe4</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_1caqwe4" sourceRef="change-date-service-task" targetRef="Event_0r40eor" />
+      <bpmn:serviceTask id="change-date-service-task" camunda:expression="${jobService.updateTimerDueDateByActivityId(&#34;2300-01-01T00:00:00Z&#34;,&#34;test-timer&#34;,execution)} ">
+        <bpmn:incoming>Flow_0mir645</bpmn:incoming>
+        <bpmn:outgoing>Flow_1caqwe4</bpmn:outgoing>
+      </bpmn:serviceTask>
+    </bpmn:subProcess>
+  </bpmn:process>
+  <bpmn:message id="Message_3qd8tr5" name="message-start-event-offset-delay" />
+  <bpmn:message id="Message_1gcgcvs" name="message-start-event-offset-forward" />
+  <bpmn:message id="Message_0ur7nlv" name="message-start-event-change-date" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="test-timer-event">
+      <bpmndi:BPMNEdge id="Flow_1y9hsxl_di" bpmnElement="Flow_1y9hsxl">
+        <di:waypoint x="188" y="240" />
+        <di:waypoint x="280" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_094cpgl_di" bpmnElement="Event_094cpglStartEvent_1">
+        <dc:Bounds x="152" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1fadk76_di" bpmnElement="Activity_1fadk76" isExpanded="true">
+        <dc:Bounds x="280" y="80" width="570" height="320" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0yn0m4r_di" bpmnElement="Flow_0yn0m4r">
+        <di:waypoint x="568" y="240" />
+        <di:waypoint x="722" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02nyq2q_di" bpmnElement="Flow_02nyq2q">
+        <di:waypoint x="395" y="240" />
+        <di:waypoint x="532" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="Event_094cpgl">
+        <dc:Bounds x="359" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_009h1q7_di" bpmnElement="Event_009h1q7">
+        <dc:Bounds x="722" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1lct021_di" bpmnElement="test-timer">
+        <dc:Bounds x="532" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1gf7hgr_di" bpmnElement="Activity_0by70jq" isExpanded="true">
+        <dc:Bounds x="280" y="450" width="350" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0dm95vx_di" bpmnElement="Flow_0dm95vx">
+        <di:waypoint x="356" y="550" />
+        <di:waypoint x="410" y="550" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1c8lw15_di" bpmnElement="Flow_1c8lw15">
+        <di:waypoint x="510" y="550" />
+        <di:waypoint x="572" y="550" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_04imcuy_di" bpmnElement="delay-timer-service-task">
+        <dc:Bounds x="410" y="510" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0j73tiw_di" bpmnElement="Event_0j73tiw">
+        <dc:Bounds x="572" y="532" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0idhzl5_di" bpmnElement="message-start-event-id">
+        <dc:Bounds x="320" y="532" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0bw17mr_di" bpmnElement="Activity_1sv4r6i" isExpanded="true">
+        <dc:Bounds x="670" y="450" width="360" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1m9ngib_di" bpmnElement="Flow_1m9ngib">
+        <di:waypoint x="746" y="550" />
+        <di:waypoint x="800" y="550" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1foa8kp_di" bpmnElement="Flow_1foa8kp">
+        <di:waypoint x="900" y="550" />
+        <di:waypoint x="962" y="550" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1dnnfg6_di" bpmnElement="Event_1kdakkw">
+        <dc:Bounds x="710" y="532" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0vdfico_di" bpmnElement="move-forward-timer-service-task">
+        <dc:Bounds x="800" y="510" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0g33ak6_di" bpmnElement="Event_0g33ak6">
+        <dc:Bounds x="962" y="532" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1xbrk3o_di" bpmnElement="Activity_1b6xvxz" isExpanded="true">
+        <dc:Bounds x="280" y="710" width="350" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0mir645_di" bpmnElement="Flow_0mir645">
+        <di:waypoint x="356" y="810" />
+        <di:waypoint x="410" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1caqwe4_di" bpmnElement="Flow_1caqwe4">
+        <di:waypoint x="510" y="810" />
+        <di:waypoint x="572" y="810" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0206spc_di" bpmnElement="Event_14sq2bj">
+        <dc:Bounds x="320" y="792" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0r40eor_di" bpmnElement="Event_0r40eor">
+        <dc:Bounds x="572" y="792" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1bmj990_di" bpmnElement="change-date-service-task">
+        <dc:Bounds x="410" y="770" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ class ContactMomentHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/contactmoment").hasAuthority(USER)
-                .antMatchers(POST, "/api/contactmoment").hasAuthority(USER)
-                .antMatchers(GET, "/api/contactmoment/kanaal").hasAuthority(USER)
-                .antMatchers(POST, "/api/document/{documentId}/message").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/contactmoment").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/contactmoment").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/contactmoment/kanaal").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/document/{documentId}/message").hasAuthority(USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

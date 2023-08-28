@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package com.ritense.valueresolver
 
-import java.util.UUID
 import org.assertj.core.api.Assertions
-import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
+import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.util.UUID
 
 internal class FixedValueResolverTest {
 
@@ -87,13 +87,42 @@ internal class FixedValueResolverTest {
     }
 
     @Test
+    fun `should resolve prefixed value from requestedValue`() {
+        val processInstanceId = UUID.randomUUID().toString()
+        val variableScope = DelegateTaskFake()
+
+        val resolvedValue = FixedValueResolverFactory("http").createResolver(
+            processInstanceId = processInstanceId,
+            variableScope = variableScope
+        ).apply(
+            "//localhost.local"
+        )
+
+        Assertions.assertThat(resolvedValue).isEqualTo("http://localhost.local")
+    }
+
+    @Test
+    fun `should resolve boolean value from requestedValue for documentId`() {
+        val documentInstanceId = UUID.randomUUID().toString()
+
+        val resolvedValue = fixedValueResolver.createResolver(
+            documentInstanceId = documentInstanceId,
+        ).apply(
+            "true"
+        )
+
+        Assertions.assertThat(resolvedValue).isEqualTo(true)
+    }
+
+    @Test
     fun `should NOT handle value`() {
         val processInstanceId = UUID.randomUUID().toString()
         val variableScope = DelegateTaskFake()
 
-        assertThrows<RuntimeException>("Can't handle value that doesn't have a prefix. firstName to John") {
+        val throwable = assertThrows<RuntimeException> {
             fixedValueResolver.handleValues(processInstanceId, variableScope, mapOf("firstName" to "John"))
         }
+        Assertions.assertThat(throwable.message).isEqualTo("Can't save fixed value (unknown destination): {firstName to John}")
     }
 
 }

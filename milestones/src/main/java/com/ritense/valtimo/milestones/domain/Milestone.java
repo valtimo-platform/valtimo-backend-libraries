@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.ritense.valtimo.milestones.domain;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Range;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -53,9 +54,11 @@ public class Milestone {
     @ManyToOne
     private MilestoneSet milestoneSet;
 
+    @SuppressWarnings({"squid:S2637","java:S2637"})
     public Milestone(){
     }
 
+    @SuppressWarnings({"squid:S2637","java:S2637"})
     public Milestone(
             String title,
             String processDefinitionKey,
@@ -117,12 +120,19 @@ public class Milestone {
 
     public void setColor(String color) {
         String colorHex = color.substring(1);
+        String newColorHex = "";
         if (colorHex.length() == 3) {
-            //noinspection ReplaceAllDot
-            colorHex = colorHex.replaceAll(".", "$0$0");
+            newColorHex += colorHex.charAt(0);
+            newColorHex += colorHex.charAt(0);
+            newColorHex += colorHex.charAt(1);
+            newColorHex += colorHex.charAt(1);
+            newColorHex += colorHex.charAt(2);
+            newColorHex += colorHex.charAt(2);
+        } else {
+            newColorHex = colorHex;
         }
 
-        this.color = Integer.parseInt(colorHex, 16);
+        this.color = Integer.parseInt(newColorHex, 16);
     }
 
     public MilestoneSet getMilestoneSet() {

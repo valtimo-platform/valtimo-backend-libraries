@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.externalevent.config.MappedCasesConfig
 import com.ritense.externalevent.messaging.ExternalDomainMessage
+import com.ritense.externalevent.messaging.builder.CaseMessageSender
+import com.ritense.externalevent.messaging.builder.TaskMessageSender
 import com.ritense.externalevent.messaging.`in`.CompleteTaskMessage
 import com.ritense.externalevent.messaging.`in`.CreateExternalCaseMessage
 import com.ritense.externalevent.messaging.`in`.ExternalIdUpdatedConfirmationMessage
-import com.ritense.externalevent.messaging.builder.CaseMessageSender
-import com.ritense.externalevent.messaging.builder.TaskMessageSender
 import com.ritense.externalevent.service.ExternalCaseService
 import com.ritense.externalevent.service.ExternalTaskService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
@@ -48,7 +48,7 @@ import java.util.function.Supplier
 class ExternalEventAutoConfiguration {
 
     @Bean
-    @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     fun caseMessageSender(
         externalCaseService: ExternalCaseService,
         documentService: JsonSchemaDocumentService
@@ -61,7 +61,7 @@ class ExternalEventAutoConfiguration {
     }
 
     @Bean
-    @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     fun taskMessageSender(
         externalTaskService: ExternalTaskService,
         documentService: JsonSchemaDocumentService,

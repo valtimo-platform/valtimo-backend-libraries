@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,43 +17,49 @@
 package com.ritense.plugin.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.plugin.PluginCategoryResolver
 import com.ritense.plugin.PluginDefinitionResolver
 import com.ritense.plugin.PluginDeploymentListener
 import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.autodeployment.PluginAutoDeploymentEventListener
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
+import com.ritense.plugin.repository.PluginCategoryRepository
 import com.ritense.plugin.repository.PluginConfigurationRepository
+import com.ritense.plugin.repository.PluginConfigurationSearchRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.plugin.repository.PluginProcessLinkRepositoryImpl
 import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginService
+import com.ritense.plugin.web.rest.PluginConfigurationResource
 import com.ritense.plugin.web.rest.PluginDefinitionResource
+import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
 import com.ritense.valueresolver.ValueResolverService
-import org.hibernate.cfg.AvailableSettings
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
+import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.orm.hibernate5.SpringBeanContainer
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
-import javax.sql.DataSource
+import javax.persistence.EntityManager
+import javax.validation.Validator
 
 @Configuration
 @EnableJpaRepositories(
     basePackageClasses = [
-        PluginDefinitionRepository::class,
-        PluginConfigurationRepository::class,
         PluginActionDefinitionRepository::class,
-        PluginProcessLinkRepository::class,
-        PluginPropertyRepository::class,
         PluginActionPropertyDefinitionRepository::class,
+        PluginCategoryRepository::class,
+        PluginConfigurationRepository::class,
+        PluginDefinitionRepository::class,
+        PluginProcessLinkRepositoryImpl::class,
+        PluginPropertyRepository::class,
     ]
 )
 @EntityScan(basePackages = ["com.ritense.plugin.domain"])
@@ -62,23 +68,36 @@ class PluginAutoConfiguration {
     @Bean
     fun pluginDeploymentListener(
         pluginDefinitionResolver: PluginDefinitionResolver,
+        pluginCategoryResolver: PluginCategoryResolver,
         pluginDefinitionRepository: PluginDefinitionRepository,
-        pluginPropertyRepository: PluginPropertyRepository,
+        pluginCategoryRepository: PluginCategoryRepository,
         pluginActionDefinitionRepository: PluginActionDefinitionRepository,
         pluginActionPropertyDefinitionRepository: PluginActionPropertyDefinitionRepository
     ): PluginDeploymentListener {
         return PluginDeploymentListener(
             pluginDefinitionResolver,
+            pluginCategoryResolver,
             pluginDefinitionRepository,
-            pluginPropertyRepository,
+            pluginCategoryRepository,
             pluginActionDefinitionRepository,
             pluginActionPropertyDefinitionRepository
         )
     }
 
     @Bean
+    @ConditionalOnMissingBean(StringToActivityTypeConverter::class)
+    fun stringToActivityTypeConverter(): StringToActivityTypeConverter {
+        return StringToActivityTypeConverter()
+    }
+
+    @Bean
     fun pluginDefinitionResolver(): PluginDefinitionResolver {
         return PluginDefinitionResolver()
+    }
+
+    @Bean
+    fun pluginCategoryResolver(): PluginCategoryResolver {
+        return PluginCategoryResolver()
     }
 
     @Order(420)
@@ -94,18 +113,29 @@ class PluginAutoConfiguration {
         pluginConfigurationRepository: PluginConfigurationRepository,
         pluginActionDefinitionRepository: PluginActionDefinitionRepository,
         pluginProcessLinkRepository: PluginProcessLinkRepository,
-        pluginFactories: List<PluginFactory<*>>,
+        @Lazy pluginFactories: List<PluginFactory<*>>,
         objectMapper: ObjectMapper,
-        valueResolverService: ValueResolverService
+        @Lazy valueResolverService: ValueResolverService,
+        pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
+        validator: Validator
     ): PluginService {
-        return PluginService(pluginDefinitionRepository,
+        return PluginService(
+            pluginDefinitionRepository,
             pluginConfigurationRepository,
             pluginActionDefinitionRepository,
             pluginProcessLinkRepository,
             pluginFactories,
             objectMapper,
-            valueResolverService
+            valueResolverService,
+            pluginConfigurationSearchRepository,
+            validator,
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun pluginConfigurationSearchRepository(entityManager: EntityManager): PluginConfigurationSearchRepository {
+        return PluginConfigurationSearchRepository(entityManager)
     }
 
     @Bean
@@ -117,10 +147,40 @@ class PluginAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(PluginConfigurationResource::class)
+    fun pluginConfigurationResource(
+        pluginService: PluginService
+    ): PluginConfigurationResource {
+        return PluginConfigurationResource(pluginService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginProcessLinkRepository::class)
+    fun pluginProcessLinkRepository(
+        pluginProcessLinkRepositoryImpl: PluginProcessLinkRepositoryImpl
+    ): PluginProcessLinkRepository {
+        return PluginProcessLinkRepository(pluginProcessLinkRepositoryImpl)
+    }
+
+    @Bean
     fun propertyEncryptionService(
         @Value("\${valtimo.plugin.encryption-secret}")
         secret: String
     ): EncryptionService {
         return EncryptionService(secret)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginAutoDeploymentEventListener::class)
+    fun pluginAutoDeploymentEventListener(
+        objectMapper: ObjectMapper,
+        pluginService: PluginService,
+        resourceLoader: ResourceLoader
+    ): PluginAutoDeploymentEventListener{
+        return PluginAutoDeploymentEventListener(
+            pluginService = pluginService,
+            objectMapper = objectMapper,
+            resourceLoader = resourceLoader
+        )
     }
 }

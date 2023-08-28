@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,19 @@ public interface ProcessDocumentDefinitionRepository extends
         ")")
     List<CamundaProcessJsonSchemaDocumentDefinition> findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(
         @Param("documentDefinitionName") String documentDefinitionName
+    );
+
+    @Query("" +
+        "SELECT  pdd " +
+        "FROM    CamundaProcessJsonSchemaDocumentDefinition pdd " +
+        "WHERE   pdd.processDocumentDefinitionId.processDefinitionKey.key = :processDefinitionKey " +
+        "AND     pdd.processDocumentDefinitionId.documentDefinitionId.version = ( " +
+        "   SELECT  MAX(dd.id.version) " +
+        "   FROM    JsonSchemaDocumentDefinition dd " +
+        "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +
+        ")")
+    List<CamundaProcessJsonSchemaDocumentDefinition> findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(
+        @Param("processDefinitionKey") String processDefinitionKey
     );
 
     @Query("" +

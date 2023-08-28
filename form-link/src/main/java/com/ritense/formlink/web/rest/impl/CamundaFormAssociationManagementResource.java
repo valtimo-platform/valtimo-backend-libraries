@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,11 @@ import javax.validation.Valid;
 import java.util.Collection;
 import java.util.UUID;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
+@Deprecated(since = "10.6.0", forRemoval = true)
 @RestController
-@RequestMapping(value = "/api/form-association-management", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class CamundaFormAssociationManagementResource implements FormAssociationManagementResource {
 
     private final FormAssociationService formAssociationService;
@@ -48,7 +51,7 @@ public class CamundaFormAssociationManagementResource implements FormAssociation
     }
 
     @Override
-    @GetMapping(params = {"processDefinitionKey"})
+    @GetMapping(value = "/v1/form-association-management", params = {"processDefinitionKey"})
     public ResponseEntity<Collection<? extends FormAssociation>> getAll(@RequestParam String processDefinitionKey) {
         final var formAssociations = formAssociationService.getAllFormAssociations(
             processDefinitionKey
@@ -61,7 +64,7 @@ public class CamundaFormAssociationManagementResource implements FormAssociation
     }
 
     @Override
-    @GetMapping(value = "/{formAssociationId}", params = {"processDefinitionKey"}, consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = "/v1/form-association-management/{formAssociationId}", params = {"processDefinitionKey"}, consumes = MediaType.ALL_VALUE)
     public ResponseEntity<? extends FormAssociation> getFormAssociationById(
         @RequestParam String processDefinitionKey,
         @PathVariable String formAssociationId
@@ -72,7 +75,7 @@ public class CamundaFormAssociationManagementResource implements FormAssociation
     }
 
     @Override
-    @GetMapping(params = {"processDefinitionKey", "formLinkId"}, consumes = MediaType.ALL_VALUE)
+    @GetMapping(value = "/v1/form-association-management", params = {"processDefinitionKey", "formLinkId"}, consumes = MediaType.ALL_VALUE)
     public ResponseEntity<? extends FormAssociation> getFormAssociationByFormLinkId(
         @RequestParam String processDefinitionKey,
         @RequestParam String formLinkId
@@ -83,19 +86,19 @@ public class CamundaFormAssociationManagementResource implements FormAssociation
     }
 
     @Override
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/form-association-management", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<FormAssociation> createFormAssociation(@Valid @RequestBody CreateFormAssociationRequest request) {
         return parseResult(formAssociationService.createFormAssociation(request));
     }
 
     @Override
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/v1/form-association-management", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<FormAssociation> modifyFormAssociation(@Valid @RequestBody ModifyFormAssociationRequest request) {
         return parseResult(formAssociationService.modifyFormAssociation(request));
     }
 
     @Override
-    @DeleteMapping(value = "/{processDefinitionKey}/{formAssociationId}")
+    @DeleteMapping("/v1/form-association-management/{processDefinitionKey}/{formAssociationId}")
     public ResponseEntity<Void> deleteFormAssociation(
         @PathVariable String processDefinitionKey,
         @PathVariable String formAssociationId

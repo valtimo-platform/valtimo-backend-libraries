@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -88,7 +88,7 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
         );
 
         mockMvc.perform(
-                get("/api/form-association-management").param("processDefinitionKey", PROCESS_DEFINITION_KEY)
+                get("/api/v1/form-association-management").param("processDefinitionKey", PROCESS_DEFINITION_KEY)
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andExpect(jsonPath("*").isArray())
@@ -104,7 +104,7 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
         final var request = createUserTaskFormAssociationRequest(formDefinition.getId());
 
         mockMvc.perform(
-                post("/api/form-association-management")
+                post("/api/v1/form-association-management")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .content(TestUtil.convertObjectToJsonBytes(request))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -120,11 +120,12 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
     public void shouldReturn200WithFormAssociationModified() throws Exception {
         final var createFormDefinitionRequest = createFormDefinitionRequest();
         formDefinition = formDefinitionService.createFormDefinition(createFormDefinitionRequest);
-        var secondFormDefinition = formDefinitionService.createFormDefinition(createFormDefinitionRequest);
+        var secondFormDefinition = formDefinitionService
+            .createFormDefinition(createFormDefinitionRequest("myOtherForm"));
 
         final var request = createUserTaskFormAssociationRequest(formDefinition.getId());
         final MvcResult result = mockMvc.perform(
-                post("/api/form-association-management")
+                post("/api/v1/form-association-management")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .content(TestUtil.convertObjectToJsonBytes(request))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -135,7 +136,7 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
         final var id = UUID.fromString(documentContext.read("$['id']").toString());
         final var modifyFormLinkRequest = modifyFormAssociationRequest(id, secondFormDefinition.getId(), true);
         mockMvc.perform(
-                put("/api/form-association-management")
+                put("/api/v1/form-association-management")
                     .characterEncoding(StandardCharsets.UTF_8.name())
                     .content(TestUtil.convertObjectToJsonBytes(modifyFormLinkRequest))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -172,7 +173,7 @@ public class CamundaFormAssociationManagementResourceIntTest extends BaseIntegra
 
         mockMvc.perform(
                 delete(
-                    "/api/form-association-management/{processDefinitionKey}/{formAssociationId}",
+                    "/api/v1/form-association-management/{processDefinitionKey}/{formAssociationId}",
                     PROCESS_DEFINITION_KEY,
                     formAssociation.getId()
                 )

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.REALM_ACCESS;
+import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.RESOURCE_ACCESS;
 
 public class KeycloakSecretKeyProvider implements SecretKeyProvider {
 
@@ -40,7 +41,7 @@ public class KeycloakSecretKeyProvider implements SecretKeyProvider {
 
     @Override
     public boolean supports(SignatureAlgorithm algorithm, Claims claims) {
-        return algorithm.isRsa() && claims.containsKey(REALM_ACCESS);
+        return algorithm.isRsa() && (claims.containsKey(REALM_ACCESS) || claims.containsKey(RESOURCE_ACCESS));
     }
 
     @Override

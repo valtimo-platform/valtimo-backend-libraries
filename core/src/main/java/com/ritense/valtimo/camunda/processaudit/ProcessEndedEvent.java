@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,16 @@
 package com.ritense.valtimo.camunda.processaudit;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.ritense.valtimo.contract.audit.view.AuditView;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class ProcessEndedEvent extends ProcessInstanceEvent {
+
+    private final String processDefinitionKey;
 
     @JsonCreator
     public ProcessEndedEvent(
@@ -30,8 +36,16 @@ public class ProcessEndedEvent extends ProcessInstanceEvent {
         final String user,
         final String processDefinitionId,
         final String processInstanceId,
-        final String businessKey
+        final String businessKey,
+        final String processDefinitionKey
     ) {
         super(id, origin, occurredOn, user, processDefinitionId, processInstanceId, businessKey);
+        this.processDefinitionKey = processDefinitionKey;
+    }
+
+    @JsonIgnore(false)
+    @JsonView(AuditView.Public.class)
+    public String getProcessDefinitionKey() {
+        return processDefinitionKey;
     }
 }

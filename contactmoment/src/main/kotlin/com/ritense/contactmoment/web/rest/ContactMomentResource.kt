@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,26 +19,26 @@ package com.ritense.contactmoment.web.rest
 import com.ritense.contactmoment.domain.ContactMoment
 import com.ritense.contactmoment.domain.Kanaal
 import com.ritense.contactmoment.web.rest.request.CreateContactMomentRequest
-import javax.validation.Valid
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import javax.validation.Valid
 
 @RestController
-@RequestMapping(value = ["/api/contactmoment"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface ContactMomentResource {
 
-    @GetMapping
+    @GetMapping("/v1/contactmoment")
     fun getContactMomenten(): ResponseEntity<List<ContactMoment>>
 
-    @PostMapping
+    @PostMapping("/v1/contactmoment")
     fun createContactMomenten(@Valid @RequestBody request: CreateContactMomentRequest): ResponseEntity<ContactMoment>
 
-    @GetMapping("/kanaal")
+    @GetMapping("/v1/contactmoment/kanaal")
     fun getKanalen(): ResponseEntity<Array<Kanaal>>
 
 }

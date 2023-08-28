@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,19 +22,18 @@ import com.ritense.objectsapi.domain.Abonnement
 import com.ritense.objectsapi.domain.AbonnementLink
 import com.ritense.objectsapi.domain.Kanaal
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
-import java.util.Optional
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
+import java.util.Optional
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class OpenNotificatieConnectorTest : BaseTest() {
     lateinit var openNotificatieProperties: OpenNotificatieProperties
@@ -76,7 +75,7 @@ class OpenNotificatieConnectorTest : BaseTest() {
         val abonnementId = UUID.randomUUID()
         val abonnement = Abonnement(
             "http://base.url/api/v1/abonnement/$abonnementId",
-            "http://callback.base.url/api/notification?connectorId=${connectorId.id}",
+            "http://callback.base.url/api/v1/notification?connectorId=${connectorId.id}",
             "some-key",
             emptyList()
         )

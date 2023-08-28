@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,10 @@ import com.ritense.formlink.domain.impl.formassociation.FormAssociations;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
+
 import java.io.IOException;
 import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CamundaProcessFormAssociationJsonSerializingTest extends BaseTest {

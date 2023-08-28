@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package com.ritense.form.service;
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
+import com.ritense.form.web.rest.dto.FormOption;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.Optional;
@@ -28,11 +30,15 @@ public interface FormDefinitionService {
 
     Page<? extends FormDefinition> getAll(Pageable pageable);
 
+    List<FormOption> getAllFormOptions();
+
     Page<? extends FormDefinition> queryFormDefinitions(String searchTerm, Pageable pageable);
 
     Optional<? extends FormDefinition> getFormDefinitionById(UUID id);
 
     Optional<? extends FormDefinition> getFormDefinitionByName(String name);
+
+    Optional<? extends FormDefinition> getFormDefinitionByNameIgnoringCase(String name);
 
     FormDefinition createFormDefinition(CreateFormDefinitionRequest request);
 
@@ -43,4 +49,6 @@ public interface FormDefinitionService {
     void deleteFormDefinition(UUID id);
 
     boolean formDefinitionExistsById(UUID id);
+
+    Long countAllForms();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ class TaskResourceTest {
 
     @Test
     void assign() throws Exception {
-        mockMvc.perform(post("/api/task/{taskId}/assign", taskId)
+        mockMvc.perform(post("/api/v1/task/{taskId}/assign", taskId)
             .content(objectMapper.writeValueAsString(assigneeRequest))
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)

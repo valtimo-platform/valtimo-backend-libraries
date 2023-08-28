@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,29 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
         assertThat(inkomensLoket.steps).hasSize(7)
     }
 
+    @Test
+    fun `should deploy Form Flow when nextStep is provided`() {
+        formFlowDeploymentService.deploy(
+            "testOnOpenExpression", """
+            {
+                "startStep": "woonplaats",
+                "steps": [
+                    {
+                        "key": "woonplaats",
+                        "nextStep": "leeftijd",
+                        "type": {
+                            "name": "form",
+                            "properties": {
+                                "definition": "my-form-definition"
+                            }
+                        }
+                    }
+                ]
+            }
+        """.trimIndent()
+        )
+    }
+
 
     @Test
     fun `should not deploy same Form Flow twice`() {
@@ -61,7 +84,7 @@ internal class FormFlowDeploymentServiceIntTest : BaseIntegrationTest() {
     @Test
     fun `should deploy new version Form Flow`() {
         var inkomensLoketJson = readFileAsString("/config/form-flow/inkomens_loket.json")
-        inkomensLoketJson = inkomensLoketJson.replace("isOuderDan21 == true", "isOuderDan21 == false")
+        inkomensLoketJson = inkomensLoketJson.replace("4*3", "5*2")
         formFlowDeploymentService.deploy("inkomens_loket", inkomensLoketJson)
 
         val inkomensLoket = formFlowService.findLatestDefinitionByKey("inkomens_loket")

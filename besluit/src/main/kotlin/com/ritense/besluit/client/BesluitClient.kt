@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 
 open class BesluitClient(
-    private val besluitWebClient: WebClient,
+    private val webclientBuilder: WebClient.Builder,
     private val besluitTokenGenerator: BesluitTokenGenerator
 ) {
     /**
@@ -62,8 +62,8 @@ open class BesluitClient(
             besluitProperties.secret,
             besluitProperties.clientId
         )
-        return besluitWebClient
-            .mutate()
+        return webclientBuilder
+            .clone()
             .baseUrl(besluitProperties.url)
             .defaultHeader("Authorization", "Bearer $token")
             .build()

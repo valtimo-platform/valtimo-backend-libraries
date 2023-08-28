@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@ package com.ritense.formlink.service.impl.result;
 
 import com.ritense.formlink.service.result.FormSubmissionResult;
 import com.ritense.valtimo.contract.result.OperationError;
+
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormSubmissionResultSucceeded implements FormSubmissionResult {
 
     private final String documentId;

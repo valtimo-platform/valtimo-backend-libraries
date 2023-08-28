@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,32 @@
 
 package com.ritense.resource.service
 
-import com.ritense.resource.service.TemporaryResourceStorageService.Companion.TEMP_DIR
 import mu.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.Duration
 import java.time.Instant
+import java.util.concurrent.TimeUnit
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.listDirectoryEntries
 
-open class TemporaryResourceStorageDeletionService {
+open class TemporaryResourceStorageDeletionService(
+    private val retentionInMinutes: Long,
+    private val temporaryResourceStorageService: TemporaryResourceStorageService,
+) {
 
-    @Scheduled(cron = "\${scheduling.job.cron.cleanupTemporaryResources:-}")
+    @Scheduled(
+        fixedRateString = "\${valtimo.temporaryResourceStorage.retentionInMinutes:60}",
+        timeUnit = TimeUnit.MINUTES
+    )
     open fun deleteOldTemporaryResources() {
 
-        TEMP_DIR.listDirectoryEntries().forEach { file ->
+        temporaryResourceStorageService.tempDir.listDirectoryEntries().forEach { file ->
             try {
                 val fileCreationTime = Files.readAttributes(file, BasicFileAttributes::class.java).creationTime()
 
-                if (fileCreationTime.toInstant().plus(Duration.ofMinutes(5)) < Instant.now()) {
+                if (fileCreationTime.toInstant().plus(Duration.ofMinutes(retentionInMinutes)) < Instant.now()) {
                     file.deleteIfExists()
                 }
             } catch (e: Exception) {

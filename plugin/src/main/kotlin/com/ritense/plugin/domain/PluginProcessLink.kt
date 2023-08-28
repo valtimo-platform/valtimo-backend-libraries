@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,74 @@
 package com.ritense.plugin.domain
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.domain.ProcessLink
 import org.hibernate.annotations.Type
+import java.util.UUID
 import javax.persistence.Column
+import javax.persistence.DiscriminatorValue
 import javax.persistence.Embedded
 import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
 
 @Entity
-@Table(name = "plugin_process_link")
+@DiscriminatorValue(PROCESS_LINK_TYPE_PLUGIN)
 data class PluginProcessLink(
-    @Id
-    @Embedded
-    val id: PluginProcessLinkId,
-    @Column(name = "process_definition_id", updatable = false)
-    val processDefinitionId: String,
-    @Column(name = "activity_id", updatable = false)
-    val activityId: String,
+    override val id: UUID,
+
+    override val processDefinitionId: String,
+
+    override val activityId: String,
+
+    override val activityType: ActivityTypeWithEventName,
+
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "action_properties", columnDefinition = "JSON")
     val actionProperties: ObjectNode? = null,
+
     @Embedded
     val pluginConfigurationId: PluginConfigurationId,
-    @Column(name = "plugin_action_definition_key")
+
+    @Column(name = "plugin_action_definition_key", nullable = false)
     val pluginActionDefinitionKey: String
-)
+
+) : ProcessLink(
+    id,
+    processDefinitionId,
+    activityId,
+    activityType,
+    PROCESS_LINK_TYPE_PLUGIN,
+) {
+
+    @Deprecated("Marked for removal since 10.6.0")
+    constructor(
+        id: PluginProcessLinkId,
+        processDefinitionId: String,
+        activityId: String,
+        actionProperties: ObjectNode? = null,
+        pluginConfigurationId: PluginConfigurationId,
+        pluginActionDefinitionKey: String,
+        activityType: ActivityType
+    ) : this(
+        id.id,
+        processDefinitionId,
+        activityId,
+        activityType.toActivityTypeWithEventName(),
+        actionProperties,
+        pluginConfigurationId,
+        pluginActionDefinitionKey,
+    )
+
+    override fun copy(
+        id: UUID,
+        processDefinitionId: String,
+    ) = copy(
+        id = id,
+        processDefinitionId = processDefinitionId,
+        activityId = activityId,
+        activityType = activityType,
+        actionProperties = actionProperties,
+        pluginConfigurationId = pluginConfigurationId,
+        pluginActionDefinitionKey = pluginActionDefinitionKey
+    )
+}

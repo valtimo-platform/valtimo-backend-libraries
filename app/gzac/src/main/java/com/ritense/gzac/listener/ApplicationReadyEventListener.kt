@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.gzac.listener
 
 import com.ritense.besluit.connector.BesluitProperties
@@ -23,8 +39,8 @@ import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
-import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
-import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -33,7 +49,6 @@ import org.springframework.stereotype.Component
 import java.net.URI
 import java.util.UUID
 
-
 @Component
 class ApplicationReadyEventListener(
     private val connectorService: ConnectorService,
@@ -41,6 +56,7 @@ class ApplicationReadyEventListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
     private val documentDefinitionService: DocumentDefinitionService,
+    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
@@ -57,26 +73,22 @@ class ApplicationReadyEventListener(
     fun createConnectors() {
         val connectorTypes = connectorService.getConnectorTypes()
 
-        connectorService.getConnectorTypes().forEach {
-            try {
-                createHaalCentraalBrpConnector(connectorTypes.findId("HaalCentraalBrp"))
-                createOpenZaakConnector(connectorTypes.findId("OpenZaak"))
-                createOpenNotificatiesConnector(connectorTypes.findId("OpenNotificatie"))
-                createContactMomentConnector(connectorTypes.findId("ContactMoment"))
-                createObjectApiConnectors(connectorTypes.findId("ObjectsApi"))
-                createProductAanvraagConnector(connectorTypes.findId("ProductAanvragen"))
-                createTaakConnector(connectorTypes.findId("Taak"))
-                createBesluitConnector(connectorTypes.findId("Besluit"))
-            } catch (ex: Exception) {
-                logger.error { ex }
-            }
+        try {
+            createHaalCentraalBrpConnector(connectorTypes.findId("HaalCentraalBrp"))
+            createOpenZaakConnector(connectorTypes.findId("OpenZaak"))
+            createOpenNotificatiesConnector(connectorTypes.findId("OpenNotificatie"))
+            createContactMomentConnector(connectorTypes.findId("ContactMoment"))
+            createObjectApiConnectors(connectorTypes.findId("ObjectsApi"))
+            createProductAanvraagConnector(connectorTypes.findId("ProductAanvragen"))
+            createTaakConnector(connectorTypes.findId("Taak"))
+            createBesluitConnector(connectorTypes.findId("Besluiten"))
+        } catch (ex: Exception) {
+            logger.error { ex }
         }
     }
 
     fun List<ConnectorType>.findId(connectorName: String): UUID {
-        return this
-            .filter { it.name.equals(connectorName) }
-            .first()
+        return this.first { it.name == connectorName }
             .id.id
     }
 
@@ -147,16 +159,15 @@ class ApplicationReadyEventListener(
                 )
             )
         )
-        val configResult = objectSyncService.createObjectSyncConfig(
-            request = CreateObjectSyncConfigRequest(
-                connectorInstanceId = result.connectorTypeInstance()!!.id.id,
-                enabled = true,
-                documentDefinitionName = "leningen",
-                objectTypeId = UUID.fromString("3a82fb7f-fc9b-4104-9804-993f639d6d0d")
+        if (result.errors().isEmpty()) {
+            objectSyncService.createObjectSyncConfig(
+                request = CreateObjectSyncConfigRequest(
+                    connectorInstanceId = result.connectorTypeInstance()!!.id.id,
+                    enabled = true,
+                    documentDefinitionName = "leningen",
+                    objectTypeId = UUID.fromString("3a82fb7f-fc9b-4104-9804-993f639d6d0d")
+                )
             )
-        )
-        if (configResult.errors().isNotEmpty()) {
-            configResult.errors()
         }
     }
 
@@ -262,26 +273,43 @@ class ApplicationReadyEventListener(
         )
     }
 
-    fun connectZaakType(event: DocumentDefinitionDeployedEvent) {
-        if (event.documentDefinition().id().name().equals("leningen")) {
+    private fun connectZaakType(event: DocumentDefinitionDeployedEvent) {
+        if (event.documentDefinition().id().name().equals("bezwaar")) {
             zaakTypeLinkService.createZaakTypeLink(
                 CreateZaakTypeLinkRequest(
-                    "leningen",
+                    "bezwaar",
                     URI("http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"),
                     true
                 )
             )
             informatieObjectTypeLinkService.create(
                 CreateInformatieObjectTypeLinkRequest(
-                    "leningen",
+                    "bezwaar",
                     URI("http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"),
                     URI("http://localhost:8001/catalogi/api/v1/informatieobjecttypen/efc332f2-be3b-4bad-9e3c-49a6219c92ad")
                 )
             )
         }
+        if (event.documentDefinition().id().name().equals("portal-person")) {
+            zaakTypeLinkService.createZaakTypeLink(
+                CreateZaakTypeLinkRequest(
+                    "portal-person",
+                    URI("http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"),
+                    true
+                )
+            )
+        }
+        documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+            "portal-person",
+            DocumentDefinitionProcessRequest("document-upload", "DOCUMENT_UPLOAD")
+        )
+        documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+            "bezwaar",
+            DocumentDefinitionProcessRequest("document-upload", "DOCUMENT_UPLOAD")
+        )
     }
 
-    fun setDocumentDefinitionRole(event: DocumentDefinitionDeployedEvent) {
+    private fun setDocumentDefinitionRole(event: DocumentDefinitionDeployedEvent) {
         documentDefinitionService.putDocumentDefinitionRoles(
             event.documentDefinition().id().name(),
             setOf(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER)
@@ -290,8 +318,8 @@ class ApplicationReadyEventListener(
 
     companion object {
         val logger = KotlinLogging.logger {}
-        val OPENNOTIFICATIES_CONNECTOR_NAME = "OpenNotificaties"
-        val TAAK_OBJECTAPI_CONNECTOR_NAME = "TaakObjects"
-        val PRODUCTAANVRAAG_OBJECTAPI_CONNECTOR_NAME = "ProductAanvraagObjects"
+        const val OPENNOTIFICATIES_CONNECTOR_NAME = "OpenNotificaties"
+        const val TAAK_OBJECTAPI_CONNECTOR_NAME = "TaakObjects"
+        const val PRODUCTAANVRAAG_OBJECTAPI_CONNECTOR_NAME = "ProductAanvraagObjects"
     }
 }

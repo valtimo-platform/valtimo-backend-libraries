@@ -27,6 +27,8 @@ import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.valtimo.contract.domain.AggregateRoot
 import com.ritense.valtimo.contract.domain.DomainEvent
 import com.ritense.valtimo.contract.validation.Validatable
+import com.ritense.zakenapi.domain.ZaakInstanceLink
+import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.annotations.Type
 import org.hibernate.validator.constraints.Length
@@ -138,7 +140,18 @@ data class ZaakTypeLink(
                 Operation.SET_RESULTAAT -> {
                     assignZaakInstanceResultaat(zaakInstanceUrl!!, serviceTaskHandler.parameter)
                 }
+
+                else -> {
+                    logger.debug {
+                        "Handling service task for unsupported type ${serviceTaskHandler.operation.name} for task " +
+                            "$serviceTaskId in process $processDefinitionKey"
+                    }
+                }
             }
         }
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }

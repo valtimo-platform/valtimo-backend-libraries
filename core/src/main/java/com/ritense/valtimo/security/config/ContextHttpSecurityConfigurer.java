@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,16 +32,16 @@ public class ContextHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/user/context/processes").hasAuthority(USER)
-                .antMatchers(GET, "/api/user/contexts").hasAuthority(USER)
-                .antMatchers(GET, "/api/contexts").hasAuthority(USER)
-                .antMatchers(GET, "/api/user/context").hasAuthority(USER)
-                .antMatchers(POST, "/api/user/context").hasAuthority(USER)
-                .antMatchers(PUT, "/api/contexts").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/contexts").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/contexts/{id}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/contexts/{id}").hasAuthority(USER)
-                .antMatchers(GET, "/api/context/process/user/active").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/user/context/processes").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/user/contexts").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/contexts").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/user/context").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/user/context").hasAuthority(USER)
+                .antMatchers(PUT, "/api/v1/contexts").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/contexts").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/v1/contexts/{id}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/contexts/{id}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/context/process/user/active").hasAuthority(USER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

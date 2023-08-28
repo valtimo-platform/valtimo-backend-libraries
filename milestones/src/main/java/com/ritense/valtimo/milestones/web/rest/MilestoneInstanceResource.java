@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,20 +23,22 @@ import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.model.bpmn.instance.FlowNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class MilestoneInstanceResource {
 
     private static final Logger logger = LoggerFactory.getLogger(MilestoneInstanceResource.class);
@@ -48,13 +50,13 @@ public class MilestoneInstanceResource {
         this.milestoneInstanceService = milestoneInstanceService;
     }
 
-    @GetMapping(value = "/milestone-instances")
+    @GetMapping("/v1/milestone-instances")
     public ResponseEntity<List<MilestoneInstanceDTO>> getMilestoneInstances() {
         logger.debug("REST request to get all milestone instances");
         return ResponseEntity.ok(milestoneInstanceService.getAllMilestoneInstances());
     }
 
-    @GetMapping(value = "/milestones/{processDefinitionId}/flownodes", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/v1/milestones/{processDefinitionId}/flownodes")
     @ResponseBody
     public ResponseEntity<FlowNodeDTO> getDiagramFlowNodes(@PathVariable String processDefinitionId) {
         final Collection<FlowNode> flowNodeCollection =

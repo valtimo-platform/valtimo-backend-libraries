@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@ import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.web.rest.FormManagementResource;
+import java.util.UUID;
+import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import javax.validation.Valid;
-import java.util.UUID;
 
 public class FormIoFormManagementResource implements FormManagementResource {
 
@@ -53,6 +53,11 @@ public class FormIoFormManagementResource implements FormManagementResource {
         return formDefinitionService.getFormDefinitionById(UUID.fromString(formDefinitionId))
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.noContent().build());
+    }
+
+    @Override
+    public ResponseEntity<? extends Boolean> getExistsByName(@PathVariable String name) {
+        return ResponseEntity.ok(formDefinitionService.getFormDefinitionByName(name).isPresent());
     }
 
     @Override

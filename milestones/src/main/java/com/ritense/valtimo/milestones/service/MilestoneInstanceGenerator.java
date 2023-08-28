@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import com.ritense.valtimo.milestones.repository.MilestoneRepository;
 import com.ritense.valtimo.milestones.service.exception.DuplicateMilestoneException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -54,7 +55,6 @@ public class MilestoneInstanceGenerator {
             }
         } catch (DuplicateMilestoneException ignore) {
             // Ignore if the set is already loaded in
-            return;
         }
     }
 
@@ -96,12 +96,7 @@ public class MilestoneInstanceGenerator {
         LocalDate referenceDate
     ) {
         return MilestoneInstance.create(
-            milestone.getMilestoneSet(),
-            milestone.getTitle(),
-            milestone.getProcessDefinitionKey(),
-            milestone.getTaskDefinitionKey(),
-            milestone.getPlannedIntervalInDays(),
-            milestone.getColor(),
+            milestone,
             processInstanceId,
             referenceDate,
             false,

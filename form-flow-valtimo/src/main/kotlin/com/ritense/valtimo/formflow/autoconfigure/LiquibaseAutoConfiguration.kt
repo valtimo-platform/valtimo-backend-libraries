@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,5 +35,12 @@ class LiquibaseAutoConfiguration {
     @Bean
     fun formFlowLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
         return LiquibaseMasterChangeLogLocation("config/liquibase/form-flow-master.xml")
+    }
+
+    @Order(Ordered.HIGHEST_PRECEDENCE + 28)
+    @ConditionalOnMissingBean(name = ["formFlowValtimoLiquibaseMasterChangeLogLocation"])
+    @Bean
+    fun formFlowValtimoLiquibaseMasterChangeLogLocation(): LiquibaseMasterChangeLogLocation {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/form-flow-valtimo-master.xml")
     }
 }

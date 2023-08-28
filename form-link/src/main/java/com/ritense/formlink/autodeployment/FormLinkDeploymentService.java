@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,6 @@ import com.ritense.form.domain.Mapper;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.formlink.domain.request.FormLinkRequest;
 import com.ritense.formlink.service.FormAssociationService;
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -32,8 +29,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormLinkDeploymentService {
 
     private static final Logger logger = LoggerFactory.getLogger(FormLinkDeploymentService.class);

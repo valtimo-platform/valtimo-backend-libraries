@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import org.springframework.context.ApplicationEventPublisher
 
+@Deprecated("Since 10.6.0", ReplaceWith("com.ritense.form.domain.submission.formfield.DataField"))
 data class DataField(
     override val value: JsonNode,
     override val pointer: JsonPointer,

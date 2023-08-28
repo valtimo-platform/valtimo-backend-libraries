@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,38 +61,51 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
             formFlowDefinition = formFlowDefinition!!
         )
         formFlowInstanceRepository.saveAndFlush(formFlowInstance)
-        formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject("{\"data\":\"data\"}"))
+        formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject("""{"woonplaats":{"inUtrecht":true}}"""))
         formFlowInstanceRepository.saveAndFlush(formFlowInstance)
 
         val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
         assertEquals(2, storedInstance.getHistory().size)
         val firstStep = storedInstance.getHistory()[0]
-        assertEquals(firstStep.submissionData, "{\"data\":\"data\"}")
+        assertEquals(firstStep.submissionData, """{"woonplaats":{"inUtrecht":true}}""")
         val secondStep = storedInstance.getHistory()[1]
         assertNull(secondStep.submissionData)
     }
-
-
 
     @Test
     fun `complete goes through the entire flow`() {
         val formFlowDefinition =
             formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc("inkomens_loket")
-
+        val submissionData = """
+            {
+                "inkomen": {
+                    "value": 1500
+                },
+                "leeftijd": {
+                    "isJongerDanAOW":true,
+                    "isOuderDan21":true
+                },
+                "gezinssituatie": {
+                    "vermogenGrens": 2000
+                },
+                "woonplaats": {
+                    "inUtrecht":true
+                }
+            }"""
         val formFlowInstance = FormFlowInstance(
             formFlowDefinition = formFlowDefinition!!
         )
         formFlowInstanceRepository.saveAndFlush(formFlowInstance)
         while (formFlowInstance.currentFormFlowStepInstanceId != null) {
             formFlowInstance.getCurrentStep().open()
-            formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject("{\"data\":\"data\"}"))
+            formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject(submissionData))
             formFlowInstanceRepository.saveAndFlush(formFlowInstance)
         }
 
         val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
         assertEquals(7, storedInstance.getHistory().size)
         storedInstance.getHistory().forEach{
-            assertEquals(it.submissionData, "{\"data\":\"data\"}")
+            assertEquals(it.submissionData, submissionData.replace("[ \\n]".toRegex(), ""))
         }
     }
 }

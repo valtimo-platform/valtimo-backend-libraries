@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,7 @@ import java.util.TimeZone;
 
 public class DateUtils {
 
-    private static final DateFormat iso8601UtcFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     private static final TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
-
-    static {
-        iso8601UtcFormatter.setTimeZone(utcTimeZone);
-    }
 
     public static SimpleDateFormat getSimpleUtcDateFormat(String format) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
@@ -38,6 +33,8 @@ public class DateUtils {
     }
 
     public static String getIso8601UtcDateFormat(Object date) {
+        DateFormat iso8601UtcFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        iso8601UtcFormatter.setTimeZone(utcTimeZone);
         return iso8601UtcFormatter.format(date);
     }
 

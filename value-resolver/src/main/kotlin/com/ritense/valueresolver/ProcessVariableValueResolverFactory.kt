@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package com.ritense.valueresolver
 
-import java.util.function.Function
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
+import java.util.function.Function
 
 /**
  * This resolver can resolve requestedValues against the variables of a process or task.
@@ -43,9 +43,26 @@ class ProcessVariableValueResolverFactory(
         }
     }
 
+    override fun createResolver(documentInstanceId: String): Function<String, Any?> {
+        val processInstanceIds = runtimeService.createProcessInstanceQuery()
+            .processInstanceBusinessKey(documentInstanceId)
+            .list()
+            .map { it.id }
+            .toTypedArray()
+
+        return Function { requestedValue ->
+            runtimeService.createVariableInstanceQuery()
+                .processInstanceIdIn(*processInstanceIds)
+                .variableName(requestedValue)
+                .list()
+                .map { it.value }
+                .distinct()
+        }
+    }
+
     override fun handleValues(
         processInstanceId: String,
-        variableScope: VariableScope,
+        variableScope: VariableScope?,
         values: Map<String, Any>
     ) {
         runtimeService.setVariables(processInstanceId, values)

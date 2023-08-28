@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.mail.repository")
 @EntityScan("com.ritense.mail.domain")
-@EnableConfigurationProperties(value = {MandrillProperties.class})
+@EnableConfigurationProperties(MandrillProperties.class)
 public class MandrillMailAutoConfiguration {
 
     //services

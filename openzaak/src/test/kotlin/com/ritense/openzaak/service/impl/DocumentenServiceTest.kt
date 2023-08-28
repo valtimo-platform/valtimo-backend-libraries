@@ -1,15 +1,16 @@
 package com.ritense.openzaak.service.impl
 
-import com.nhaarman.mockitokotlin2.verify
 import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.connector.OpenZaakConfig
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
+import org.mockito.kotlin.verify
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod

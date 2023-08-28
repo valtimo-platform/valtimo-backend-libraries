@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public class FormIoFormFileResourceTest extends BaseTest {
     public void shouldReturn302FoundGettingFile() throws Exception {
         when(resourceService.getResourceUrl(anyString())).thenReturn(new URL("http://www.nu.nl"));
 
-        mockMvc.perform(get("/api/form-file").param("form", "aKeyValue")
+        mockMvc.perform(get("/api/v1/form-file").param("form", "aKeyValue")
             .accept(MediaType.APPLICATION_JSON_VALUE)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
         )

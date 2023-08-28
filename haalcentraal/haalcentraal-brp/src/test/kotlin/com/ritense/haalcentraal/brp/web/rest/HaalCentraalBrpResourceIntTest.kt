@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.ritense.haalcentraal.brp.web.rest
 
 import com.ritense.haalcentraal.brp.BaseIntegrationTest
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,12 +54,12 @@ class HaalCentraalBrpResourceIntTest : BaseIntegrationTest() {
             }
         """.trimIndent()
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/haalcentraal/personen")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/haalcentraal/personen")
             .content(request)
             .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$.[0].burgerservicenummer").value("555555021"))
             .andExpect(jsonPath("$.[0].voornamen").value("Pieter Jan"))
@@ -76,12 +77,12 @@ class HaalCentraalBrpResourceIntTest : BaseIntegrationTest() {
             }
         """.trimIndent()
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/haalcentraal/personen")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/haalcentraal/personen")
             .content(request)
             .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk)
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$.[0].burgerservicenummer").value("555555021"))
             .andExpect(jsonPath("$.[0].voornamen").value("Pieter Jan"))
@@ -98,7 +99,7 @@ class HaalCentraalBrpResourceIntTest : BaseIntegrationTest() {
             }
         """.trimIndent()
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/haalcentraal/personen")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/haalcentraal/personen")
             .content(request)
             .contentType(APPLICATION_JSON_VALUE))
             .andDo(print())

@@ -5,7 +5,12 @@
     "type": "object",
     "properties": {
         "address": {
-            "$ref": "address.schema.json"
+            "allOf": [
+                {
+                    "$ref": "address.schema.json#/definitions/streetName"
+                }
+            ]
         }
-    }
+    },
+    "additionalProperties": false
 }

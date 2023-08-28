@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package com.ritense.smartdocuments.plugin
 
 import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
@@ -28,7 +29,8 @@ class SmartDocumentsPluginFactory(
     private val smartDocumentsClient: SmartDocumentsClient,
     private val valueResolverService: ValueResolverService,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
-) : PluginFactory<SmartDocumentsPlugin>() {
+    pluginService: PluginService,
+) : PluginFactory<SmartDocumentsPlugin>(pluginService) {
     override fun create(): SmartDocumentsPlugin {
         return SmartDocumentsPlugin(
             processDocumentService,

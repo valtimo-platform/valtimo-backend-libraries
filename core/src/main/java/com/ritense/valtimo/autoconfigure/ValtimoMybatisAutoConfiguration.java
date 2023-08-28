@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,8 +40,8 @@ public class ValtimoMybatisAutoConfiguration {
     @Value("${valtimo.database:mysql}")
     private String valtimoDatabaseType;
 
-    public static final Map<String, String> databaseSpecificTruncDatepart1 = new HashMap<>();
-    public static final Map<String, String> databaseSpecificTruncDatepart2 = new HashMap<>();
+    protected static final Map<String, String> databaseSpecificTruncDatepart1 = new HashMap<>();
+    protected static final Map<String, String> databaseSpecificTruncDatepart2 = new HashMap<>();
 
     static {
         // init database specific trunc date functions

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
 
 package com.ritense.plugin.service
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.plugin.domain.PluginConfiguration
 import mu.KotlinLogging
 import javax.persistence.PostLoad
@@ -33,60 +30,19 @@ class PluginConfigurationEntityListener(
     val objectMapper: ObjectMapper
 ) {
     @PrePersist
-    @PreUpdate
     fun encryptPropertiesOnSave(pluginConfiguration: PluginConfiguration) {
-        logger.debug { "Encrypting secrets for PluginConfiguration ${pluginConfiguration.title}" }
-        pluginConfiguration.pluginDefinition.pluginProperties.filter {
-            it.secret
-        }.filter {
-            pluginConfiguration.properties?.has(it.fieldName) ?: false
-        }.forEach {
-            logger.debug { "Encrypting property ${it.fieldName} for PluginConfiguration ${pluginConfiguration.title}" }
-            replaceProperty(
-                pluginConfiguration.properties!!,
-                it.fieldName,
-                this::encryptProperty
-            )
-        }
+        logger.debug { "Encrypting secrets for PluginConfiguration ${pluginConfiguration.title} on initial save" }
+        setBeans(pluginConfiguration)
+        pluginConfiguration.encryptProperties()
     }
 
     @PostLoad
     @PostPersist
     @PostUpdate
-    fun decryptPropertiesOnLoad(pluginConfiguration: PluginConfiguration) {
-        logger.debug { "Decrypting secrets for PluginConfiguration ${pluginConfiguration.title}" }
-        pluginConfiguration.pluginDefinition.pluginProperties.filter {
-            it.secret
-        }.filter {
-            pluginConfiguration.properties?.has(it.fieldName) ?: false
-        }.forEach {
-            logger.debug { "Decrypting property ${it.fieldName} for PluginConfiguration ${pluginConfiguration.title}" }
-            replaceProperty(
-                pluginConfiguration.properties!!,
-                it.fieldName,
-                this::decryptProperty
-            )
-        }
-    }
-
-    private fun encryptProperty(property: JsonNode): JsonNode {
-        val serializedValue = objectMapper.writeValueAsString(property)
-        val encryptedValue = encryptionService.encrypt(serializedValue)
-        return TextNode(encryptedValue)
-    }
-
-    private fun decryptProperty(property: JsonNode): JsonNode {
-        val serializedValue = property.textValue()
-        val decryptedValue = encryptionService.decrypt(serializedValue)
-        return objectMapper.readTree(decryptedValue)
-    }
-
-    private fun replaceProperty(properties: ObjectNode, propertyName: String,  transformFun: (JsonNode) -> JsonNode) {
-        val originalValue = properties.get(propertyName)
-        if (originalValue != null && !originalValue.isNull) {
-            val newValue = transformFun(originalValue)
-            properties.replace(propertyName, newValue)
-        }
+    @PreUpdate
+    fun setBeans(pluginConfiguration: PluginConfiguration) {
+        pluginConfiguration.encryptionService = encryptionService
+        pluginConfiguration.objectMapper = objectMapper
     }
 
     companion object {

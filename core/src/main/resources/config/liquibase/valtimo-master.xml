@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,9 +16,14 @@
   -->
 
 <databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="postgresql"/>
+    <property name="jsonType" value="JSON" dbms="mysql"/>
+    <property name="jsonType" value="JSON" dbms="postgresql"/>
 
     <property name="now" value="now()" dbms="mysql,h2"/>
     <property name="now" value="current_timestamp" dbms="postgresql"/>
@@ -34,14 +39,19 @@
     <include file="changelog/20170621-auditevents-changed-value-column-datatype.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20170808_contexts_changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20171127-aditional_roles.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/initial-process-data-object.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180219-authorities-fix.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180801-auditevents-added-column-action.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180824-auditevents-added-column-unique_id.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180919-context-processes.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20190719-email-notification-settings-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20190828-email-settings-changed-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20220111-create-shedlock-table.xml" relativeToChangelogFile="true"/>
     <include file="camunda/20201217-camunda-upgrade-7-14-0-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20211229-add-json-support-function.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20220912-add-system-process.xml" relativeToChangelogFile="true"/>
+    <include file="camunda/20220928-camunda-upgrade-7-17-0-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="camunda/20221031-camunda-upgrade-7-18-0-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230511-add-user-settings.xml" relativeToChangelogFile="true"/>
+
 
 </databaseChangeLog>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,18 @@ import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.task.TaskQuery;
-import org.camunda.bpm.extension.mockito.CamundaMockito;
+import org.camunda.community.mockito.CamundaMockito;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.test.util.ReflectionTestUtils;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.user;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;

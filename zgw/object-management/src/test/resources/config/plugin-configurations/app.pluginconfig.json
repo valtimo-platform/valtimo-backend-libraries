@@ -1,0 +1,28 @@
+[
+    {
+        "id": "feb1d774-229e-4c28-b385-b7f59def8bba",
+        "title": "Objecten API Authentication",
+        "pluginDefinitionKey": "objecttokenauthentication",
+        "properties": {
+            "token": "some-secret-token-long"
+        }
+    },
+    {
+        "id": "8f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c",
+        "title": "Objecten API",
+        "pluginDefinitionKey": "objectenapi",
+        "properties": {
+            "url": "http://localhost:47797/some-object/",
+            "authenticationPluginConfiguration": "feb1d774-229e-4c28-b385-b7f59def8bba"
+        }
+    },
+    {
+        "id": "5f35c270-21f4-4e99-a8a1-6c4f9d5a6c5c",
+        "title": "Objecttypen API",
+        "pluginDefinitionKey": "objecttypenapi",
+        "properties": {
+            "url": "http://localhost:47797/some-objectTypesApi/",
+            "authenticationPluginConfiguration": "feb1d774-229e-4c28-b385-b7f59def8bba"
+        }
+    }
+]

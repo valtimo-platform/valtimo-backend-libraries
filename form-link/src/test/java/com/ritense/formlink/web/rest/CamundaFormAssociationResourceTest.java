@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -86,7 +88,7 @@ public class CamundaFormAssociationResourceTest extends BaseTest {
         parameters.put("formLinkId", Collections.singletonList(formAssociation.getFormLink().getId()));
 
         mockMvc.perform(
-            get("/api/form-association/form-definition").params(parameters).contentType(MediaType.APPLICATION_JSON_VALUE))
+            get("/api/v1/form-association/form-definition").params(parameters).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
     }
@@ -113,7 +115,7 @@ public class CamundaFormAssociationResourceTest extends BaseTest {
         //parameters.put("taskInstanceId", Collections.singletonList(null));
 
         mockMvc.perform(
-            get("/api/form-association/form-definition").params(parameters)
+            get("/api/v1/form-association/form-definition").params(parameters)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
@@ -125,7 +127,7 @@ public class CamundaFormAssociationResourceTest extends BaseTest {
         final ObjectNode jsonNode = JsonNodeFactory.instance.objectNode();
         when(camundaFormAssociationService
             .getStartEventFormDefinition(
-                eq(camundaProcessFormAssociation.getProcessDefinitionKey())
+                eq(camundaProcessFormAssociation.getProcessDefinitionKey()), eq(Optional.empty())
             )
         ).thenReturn(Optional.of(jsonNode));
 
@@ -133,7 +135,7 @@ public class CamundaFormAssociationResourceTest extends BaseTest {
         parameters.put("processDefinitionKey", Collections.singletonList(camundaProcessFormAssociation.getProcessDefinitionKey()));
 
         mockMvc.perform(
-            get("/api/form-association/form-definition").params(parameters).contentType(MediaType.APPLICATION_JSON_VALUE))
+            get("/api/v1/form-association/form-definition").params(parameters).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
     }

@@ -18,7 +18,7 @@ package com.ritense.openzaak.web.rest
 
 import com.ritense.openzaak.service.impl.model.catalogi.ResultaatType
 import com.ritense.openzaak.web.rest.request.ZaakTypeRequest
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -26,13 +26,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/openzaak/resultaat"],
-    produces = [MediaType.APPLICATION_JSON_VALUE],
-    consumes = [MediaType.APPLICATION_JSON_VALUE]
+@RequestMapping("/api",
+    produces = [APPLICATION_JSON_UTF8_VALUE],
+    consumes = [APPLICATION_JSON_UTF8_VALUE]
 )
 interface ResultaatResource {
 
-    @PostMapping // can get worden body naar query param
+    @PostMapping ("/v1/openzaak/resultaat") // can be a get if body is moved to queryparam
     fun getResultaatTypes(@RequestBody zaakTypeRequest: ZaakTypeRequest): ResponseEntity<List<ResultaatType>>
 
 }

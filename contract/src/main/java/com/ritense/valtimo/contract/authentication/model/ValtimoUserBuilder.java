@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,10 +94,23 @@ public class ValtimoUserBuilder {
     }
 
     public ValtimoUser createValtimoUser() {
-        return new ValtimoUser(id, userName, name, email, firstName, lastName, phoneNo, isEmailVerified, langKey, blocked, activated, roles);
+        return build();
     }
 
     public ValtimoUser build() {
-        return new ValtimoUser(id, userName, name, email, firstName, lastName, phoneNo, isEmailVerified, langKey, blocked, activated, roles);
+        var user = new ValtimoUser();
+        user.setId(id);
+        user.setUsername(userName);
+        user.setName(name);
+        user.setEmail(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPhoneNo(phoneNo);
+        user.setEmailVerified(isEmailVerified);
+        user.setLangKey(langKey);
+        user.setBlocked(blocked);
+        user.setActivated(activated);
+        user.setRoles(roles);
+        return user;
     }
 }

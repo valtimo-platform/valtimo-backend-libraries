@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 package com.ritense.valtimo.repository;
 
 import com.ritense.valtimo.repository.camunda.dto.TaskExtended;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import org.camunda.bpm.engine.impl.Direction;
 import org.camunda.bpm.engine.impl.QueryOrderingProperty;
@@ -26,11 +29,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import static org.camunda.bpm.engine.impl.Direction.ASCENDING;
 import static org.camunda.bpm.engine.impl.Direction.DESCENDING;
 

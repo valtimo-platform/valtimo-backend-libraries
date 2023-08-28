@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,12 @@ public abstract class BaseTest {
         final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(name, version);
         final var schema = JsonSchema.fromResourceUri(URI.create("config/document/definition/" + schemaPath));
         return new JsonSchemaDocumentDefinition(documentDefinitionId, schema);
+    }
+
+    protected JsonSchemaDocument createDocument() {
+        final var json = "{\"firstName\": \"John\"}";
+        final var content = new JsonDocumentContent(json);
+        return createDocument(content);
     }
 
     protected JsonSchemaDocument createDocument(JsonDocumentContent content) {

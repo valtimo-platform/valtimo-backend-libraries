@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentI
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import com.ritense.processdocument.exception.DuplicateProcessDocumentDefinitionException;
+import com.ritense.processdocument.exception.ProcessDocumentDefinitionNotFoundException;
 import com.ritense.processdocument.exception.UnknownProcessDefinitionException;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
@@ -43,14 +44,17 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
+import org.camunda.bpm.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 public class CamundaProcessJsonSchemaDocumentAssociationService implements ProcessDocumentAssociationService {
@@ -61,13 +65,15 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private final DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository;
     private final DocumentDefinitionService documentDefinitionService;
     private final CamundaProcessService camundaProcessService;
+    private final RuntimeService runtimeService;
 
-    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaProcessService camundaProcessService) {
+    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaProcessService camundaProcessService, RuntimeService runtimeService) {
         this.processDocumentDefinitionRepository = processDocumentDefinitionRepository;
         this.processDocumentInstanceRepository = processDocumentInstanceRepository;
         this.documentDefinitionRepository = documentDefinitionRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.camundaProcessService = camundaProcessService;
+        this.runtimeService = runtimeService;
     }
 
     @Override
@@ -81,6 +87,12 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
+    public CamundaProcessJsonSchemaDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey) {
+        return findProcessDocumentDefinition(processDefinitionKey)
+            .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException("for processDefinitionKey '" + processDefinitionKey + "'"));
+    }
+
+    @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findAllProcessDocumentDefinitions(ProcessDefinitionKey processDefinitionKey) {
         return processDocumentDefinitionRepository.findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
@@ -91,8 +103,19 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
+    public CamundaProcessJsonSchemaDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion) {
+        return findProcessDocumentDefinition(processDefinitionKey, documentDefinitionVersion)
+            .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException("for processDefinitionKey '" + processDefinitionKey + "' and version '" + documentDefinitionVersion + "'"));
+    }
+
+    @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName) {
         return processDocumentDefinitionRepository.findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(documentDefinitionName);
+    }
+
+    @Override
+    public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitionsByProcessDefinitionKey(String processDefinitionKey) {
+        return processDocumentDefinitionRepository.findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
     }
 
     @Override
@@ -112,7 +135,14 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstances(Document.Id documentId) {
-        return processDocumentInstanceRepository.findAllByDocumentId(documentId);
+        var processes = processDocumentInstanceRepository.findAllByDocumentId(documentId);
+        for (var process : processes) {
+            var camundaProcess = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(process.getId().processInstanceId().toString())
+                    .singleResult();
+            process.setActive(camundaProcess != null && !camundaProcess.isEnded());
+        }
+        return processes;
     }
 
     @Override

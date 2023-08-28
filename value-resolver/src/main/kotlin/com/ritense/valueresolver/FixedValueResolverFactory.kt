@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package com.ritense.valueresolver
 
-import java.util.function.Function
 import org.camunda.bpm.engine.delegate.VariableScope
+import java.util.function.Function
 
 /**
  * This resolver returns the requestedValue as the value.
@@ -27,30 +27,45 @@ import org.camunda.bpm.engine.delegate.VariableScope
  *
  * These requestedValues do not have a prefix
  */
-class FixedValueResolverFactory : ValueResolverFactory {
+class FixedValueResolverFactory(
+    val prefix: String = ""
+) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
-        return ""
+        return prefix
     }
 
     override fun createResolver(
         processInstanceId: String,
         variableScope: VariableScope
     ): Function<String, Any?> {
-        return Function { requestedValue->
-            requestedValue.toBooleanStrictOrNull()
-                ?: requestedValue.toLongOrNull()
-                ?: requestedValue.toDoubleOrNull()
-                ?: requestedValue
-        }
+        return createResolver()
+    }
+
+    override fun createResolver(documentInstanceId: String): Function<String, Any?> {
+        return createResolver()
     }
 
     override fun handleValues(
         processInstanceId: String,
-        variableScope: VariableScope,
+        variableScope: VariableScope?,
         values: Map<String, Any>
     ) {
         val firstValue = values.iterator().next()
-        throw RuntimeException("Can't handle value that doesn't have a prefix. {${firstValue.key} to ${firstValue.value}}")
+        throw RuntimeException("Can't save fixed value (unknown destination): {${firstValue.key} to ${firstValue.value}}")
     }
+
+    private fun createResolver(): Function<String, Any?> {
+        return Function { requestedValue->
+            requestedValue.toBooleanStrictOrNull()
+                ?: requestedValue.toLongOrNull()
+                ?: requestedValue.toDoubleOrNull()
+                ?:  if (prefix.isEmpty()) {
+                        requestedValue
+                    } else {
+                        "$prefix:$requestedValue"
+                    }
+        }
+    }
+
 }

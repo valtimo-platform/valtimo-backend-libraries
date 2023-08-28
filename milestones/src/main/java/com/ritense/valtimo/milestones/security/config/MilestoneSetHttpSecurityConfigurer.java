@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,10 @@ public class MilestoneSetHttpSecurityConfigurer implements HttpSecurityConfigure
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/milestone-sets/{id}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/milestone-sets").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/milestone-sets").hasAuthority(DEVELOPER)
-                .antMatchers(DELETE, "/api/milestone-sets/{id}").hasAuthority(DEVELOPER);
+                .antMatchers(GET, "/api/v1/milestone-sets/{id}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/v1/milestone-sets").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/v1/milestone-sets").hasAuthority(DEVELOPER)
+                .antMatchers(DELETE, "/api/v1/milestone-sets/{id}").hasAuthority(DEVELOPER);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

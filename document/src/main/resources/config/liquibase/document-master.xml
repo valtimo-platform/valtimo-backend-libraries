@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2015-2020 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -26,6 +26,9 @@
     <property name="jsonType" value="JSON" dbms="mysql"/>
     <property name="jsonType" value="JSONB" dbms="postgresql"/>
 
+    <property name="intType" value="int" dbms="mysql"/>
+    <property name="intType" value="integer" dbms="postgresql"/>
+
     <include file="changelog/20190712-create-document-domain-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20190815-document-dates-added-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20190916-document-created-by-added-changelog.xml" relativeToChangelogFile="true"/>
@@ -37,5 +40,7 @@
     <include file="changelog/20201014-document-snapshot.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20210202-add-readonly-column.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20220215-create-document-definition-role-changelog.xml" relativeToChangelogFile="true"/>
-
+    <include file="changelog/20220923-add-assginee-columns-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20221021-add-search-field-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20221114-add-column-title-to-search-field-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

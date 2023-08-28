@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2022 Ritense BV, the Netherlands.
+ *  Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,11 +36,11 @@ class ExpressionProcessorFactoryHolderIntTest: BaseIntegrationTest() {
             .setInstance(SpelExpressionProcessorFactory(), applicationContext = applicationContext)
 
         val spelExpressionProcessorFactory =
-            ExpressionProcessorFactoryHolder.getinstance()!! as SpelExpressionProcessorFactory
+            ExpressionProcessorFactoryHolder.getInstance() as SpelExpressionProcessorFactory
 
         assertNotNull(spelExpressionProcessorFactory.formFlowBeans)
         assertEquals(1, spelExpressionProcessorFactory.formFlowBeans.size)
-        assertTrue(spelExpressionProcessorFactory.formFlowBeans.get("formFlowBeanTestHelper") is FormFlowBeanTestHelper)
+        assertTrue(spelExpressionProcessorFactory.formFlowBeans["formFlowBeanTestHelper"] is FormFlowBeanTestHelper)
     }
 
     @Test
@@ -48,7 +48,7 @@ class ExpressionProcessorFactoryHolderIntTest: BaseIntegrationTest() {
         ExpressionProcessorFactoryHolder
             .setInstance(SpelExpressionProcessorFactory(), applicationContext = applicationContext)
         val evaluationResult = ExpressionProcessorFactoryHolder
-            .getinstance()!!
+            .getInstance()
             .create()
             .process<Any>("\${formFlowBeanTestHelper.returnTrue()}")
 
@@ -61,7 +61,7 @@ class ExpressionProcessorFactoryHolderIntTest: BaseIntegrationTest() {
         ExpressionProcessorFactoryHolder
             .setInstance(SpelExpressionProcessorFactory(), applicationContext = applicationContext)
         val expressionProcessor = ExpressionProcessorFactoryHolder
-            .getinstance()!!
+            .getInstance()
             .create()
 
         assertThrows<ExpressionExecutionException> {

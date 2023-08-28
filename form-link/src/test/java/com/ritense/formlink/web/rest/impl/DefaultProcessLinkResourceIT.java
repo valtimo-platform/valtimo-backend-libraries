@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,6 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
-import java.io.IOException;
-import java.util.List;
-import javax.inject.Inject;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,15 +37,22 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.List;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
 
     private final static String DOCUMENT_DEFINITION_NAME = "house";
@@ -105,11 +109,11 @@ class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
         assertEquals(1, list.size());
 
         mockMvc.perform(
-            get("/api/process-link/task/" + list.get(0).getId())
+            get("/api/v1/process-link/task/" + list.get(0).getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(content().contentType(APPLICATION_JSON_VALUE))
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.type").value("form"))
             .andExpect(jsonPath("$.properties.formLinkId").value("userTaskId"));
     }

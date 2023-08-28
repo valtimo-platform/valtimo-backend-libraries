@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.domain.FormIoFormDefinition;
@@ -39,7 +40,9 @@ import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
+import com.ritense.valtimo.contract.form.DataResolvingContext;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
+import com.ritense.valtimo.contract.json.JsonPointerHelper;
 import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.TaskService;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,9 +57,11 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static com.ritense.form.domain.FormIoFormDefinition.EXTERNAL_FORM_FIELD_TYPE_SEPARATOR;
 import static com.ritense.form.domain.FormIoFormDefinition.PROCESS_VAR_PREFIX;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class CamundaFormAssociationService implements FormAssociationService {
     private final FormDefinitionService formDefinitionService;
     private final ProcessFormAssociationRepository processFormAssociationRepository;
@@ -85,6 +90,18 @@ public class CamundaFormAssociationService implements FormAssociationService {
         this.taskService = taskService;
         this.submissionTransformerService = submissionTransformerService;
         this.formFieldDataResolvers = formFieldDataResolvers;
+    }
+
+    private static <T> Collector<T, ?, Optional<T>> singleElementCollector() {
+        return Collectors.collectingAndThen(
+            Collectors.toList(),
+            list -> {
+                if (list.size() == 1) {
+                    return Optional.of(list.get(0));
+                }
+                throw new IllegalStateException("Expected single result but found: " + list.size());
+            }
+        );
     }
 
     @Override
@@ -119,7 +136,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
             processDefinitionKey,
             formLinkId
         ).flatMap(
-            camundaFormAssociation -> Optional.of(buildFormDefinition(camundaFormAssociation))
+            camundaFormAssociation -> Optional.of(buildFormDefinition(camundaFormAssociation, Optional.empty()))
         );
     }
 
@@ -127,8 +144,9 @@ public class CamundaFormAssociationService implements FormAssociationService {
         return Optional.ofNullable(processFormAssociationRepository.findStartEventAssociation(processDefinitionKey));
     }
 
-    public Optional<JsonNode> getStartEventFormDefinition(String processDefinitionKey) {
-        return getStartEventFormDefinitionByProcessDefinitionKey(processDefinitionKey).map(this::buildFormDefinition);
+    public Optional<JsonNode> getStartEventFormDefinition(String processDefinitionKey,Optional<UUID> documentId) {
+        return getStartEventFormDefinitionByProcessDefinitionKey(processDefinitionKey)
+            .map( (camundaFormAssociation) -> this.buildFormDefinition(camundaFormAssociation,documentId));
     }
 
     @Override
@@ -144,21 +162,6 @@ public class CamundaFormAssociationService implements FormAssociationService {
             processDefinitionKey,
             formLinkId
         ).flatMap(getPrefilledFormDefinitionFromFormAssociation(Optional.of(documentId), Optional.empty()));
-    }
-
-    @Override
-    public Optional<JsonNode> getPreFilledFormDefinitionByFormLinkId(
-        Document.Id documentId,
-        String processDefinitionKey,
-        String formLinkId,
-        String taskInstanceId
-    ) {
-        return getPreFilledFormDefinitionByFormLinkId(
-            processDefinitionKey,
-            formLinkId,
-            Optional.ofNullable(documentId),
-            Optional.ofNullable(taskInstanceId)
-        );
     }
 
     @Override
@@ -226,21 +229,9 @@ public class CamundaFormAssociationService implements FormAssociationService {
 
     @Override
     @Transactional
-    public FormAssociation createFormAssociation(
-        String processDefinitionKey,
-        String formName,
-        String formLinkElementId,
-        FormAssociationType type,
-        boolean isPublic
-    ) {
-        return createFormAssociation(processDefinitionKey, formName, formLinkElementId, type);
-    }
-
-    @Override
-    @Transactional
     public CamundaFormAssociation createFormAssociation(CreateFormAssociationRequest request) {
         final var formAssociation = FormAssociationFactory.getFormAssociation(
-            UUID.nameUUIDFromBytes(request.getFormLinkRequest().getId().getBytes()),
+            UUID.randomUUID(),
             request.getFormLinkRequest().getType(),
             request.getFormLinkRequest().getId(),
             request.getFormLinkRequest().getFormId(),
@@ -352,7 +343,9 @@ public class CamundaFormAssociationService implements FormAssociationService {
         final ObjectNode extendedDocumentContent = (ObjectNode) document.content().asJson();
         extendedDocumentContent.set("metadata", buildMetaDataObject(document));
 
-        prefillProcessVariables(formDefinition, document);
+        if (taskInstanceId.isEmpty() && !formDefinition.getName().endsWith(".summary")) {
+            prefillProcessVariables(formDefinition, document);
+        }
         prefillDataResolverFields(formDefinition, document, extendedDocumentContent);
         if (camundaFormAssociation.isPresent() && camundaFormAssociation.get() instanceof UserTaskFormAssociation) {
             taskInstanceId
@@ -360,47 +353,79 @@ public class CamundaFormAssociationService implements FormAssociationService {
         }
     }
 
+    @Deprecated(since = "10.6.0", forRemoval = true)
     public void prefillProcessVariables(FormIoFormDefinition formDefinition, Document document) {
         final List<String> processVarsNames = formDefinition.extractProcessVarNames();
-        final Map<String, Object> processInstanceVariables = new HashMap<>();
-        processDocumentAssociationService.findProcessDocumentInstances(document.id())
-            .forEach(processDocumentInstance -> processInstanceVariables.putAll(
-                camundaProcessService.getProcessInstanceVariables(
-                    processDocumentInstance.processDocumentInstanceId().processInstanceId().toString(),
-                    processVarsNames
-                ))
-            );
-        if (!processInstanceVariables.isEmpty()) {
-            formDefinition.preFillWith(PROCESS_VAR_PREFIX, processInstanceVariables);
+        if (processVarsNames.size() > 0) {
+            final Map<String, Object> processInstanceVariables = new HashMap<>();
+            processDocumentAssociationService.findProcessDocumentInstances(document.id())
+                .forEach(processDocumentInstance -> processInstanceVariables.putAll(
+                    camundaProcessService.getProcessInstanceVariables(
+                        processDocumentInstance.processDocumentInstanceId().processInstanceId().toString(),
+                        processVarsNames
+                    ))
+                );
+            if (!processInstanceVariables.isEmpty()) {
+                formDefinition.preFillWith(PROCESS_VAR_PREFIX, processInstanceVariables);
+            }
         }
     }
 
+    @Deprecated(since = "10.6.0", forRemoval = true)
     public void prefillDataResolverFields(FormIoFormDefinition formDefinition, Document document, JsonNode extendedDocumentContent) {
-        //FormFieldDataResolver pre-filling
-        formDefinition.buildExternalFormFieldsMap()
+        // FormFieldDataResolver pre-filling
+        formDefinition
+            .buildExternalFormFieldsMap()
             .forEach((externalFormFieldType, externalContentItems) -> formFieldDataResolvers
                 .stream()
                 .filter(formFieldDataResolver -> formFieldDataResolver.supports(externalFormFieldType))
                 .collect(singleElementCollector())
                 .ifPresent(
                     formFieldDataResolver -> {
-                        String[] varNames = externalContentItems.stream()
+                        final String[] varNames = externalContentItems.stream()
                             .map(FormIoFormDefinition.ExternalContentItem::getName).toArray(String[]::new);
-                        Map<String, Object> externalDataMap = formFieldDataResolver.get(
-                            document.definitionId().name(),
-                            document.id().getId(),
+
+                        var externalDataMap = formFieldDataResolver.get(
+                            new DataResolvingContext(
+                                document.definitionId().name(),
+                                document.id().getId(),
+                                formDefinition.getFormDefinition()
+                            ),
                             varNames
                         );
-                        formDefinition.preFillWith(externalFormFieldType.name().toLowerCase(), externalDataMap);
+
+                        //TODO: remove support for legacy separator type and clean up code
+                        //support new notation prefix:some-expression
+                        final ObjectNode dataNode = JsonNodeFactory.instance.objectNode();
+                        externalContentItems.forEach(contentItem -> {
+                            if (contentItem.getSeparator().equals(EXTERNAL_FORM_FIELD_TYPE_SEPARATOR)) {
+                                String fieldName = externalFormFieldType + EXTERNAL_FORM_FIELD_TYPE_SEPARATOR + contentItem.getName();
+                                dataNode.set(fieldName, Mapper.INSTANCE.objectMapper()
+                                    .valueToTree(externalDataMap.get(contentItem.getName())));
+                                externalDataMap.remove(contentItem.getName());
+                            }
+                        });
+                        formDefinition.preFill(dataNode);
+
+                        // Support old notation prefix.field-a.field-b.field-c
+                        final ObjectNode prefillDataNode = JsonNodeFactory.instance.objectNode();
+                        externalContentItems.forEach(externalContentItem -> JsonPointerHelper.appendJsonPointerTo(
+                            prefillDataNode,
+                            externalContentItem.getJsonPointer(),
+                            Mapper.INSTANCE.objectMapper().valueToTree(externalDataMap.get(externalContentItem.getName()))
+                        ));
+                        formDefinition.preFill(prefillDataNode);
                     }
                 )
             );
         formDefinition.preFill(extendedDocumentContent);
     }
 
+    @Deprecated(since = "10.6.0", forRemoval = true)
     public void prefillTaskVariables(FormIoFormDefinition formDefinition, String taskInstanceId, JsonNode extendedDocumentContent) {
         final Map<String, Object> taskVariables = taskService.getVariables(taskInstanceId);
         final ObjectNode placeholders = Mapper.INSTANCE.objectMapper().valueToTree(taskVariables);
+        formDefinition.preFillWith("pv", taskVariables);
         submissionTransformerService.prePreFillTransform(formDefinition, placeholders, extendedDocumentContent);
     }
 
@@ -410,8 +435,12 @@ public class CamundaFormAssociationService implements FormAssociationService {
         return Optional.of(formDefinitionJson);
     }
 
-    private ObjectNode buildFormDefinition(CamundaFormAssociation camundaFormAssociation) {
-        return (ObjectNode) getPrefilledFormDefinitionFromFormAssociation(Optional.empty(), Optional.empty())
+    private ObjectNode buildFormDefinition(CamundaFormAssociation camundaFormAssociation, Optional<UUID> documentId) {
+        Optional<Document.Id> jsonSchemaDocumentId = Optional.empty();
+        if(documentId.isPresent()){
+            jsonSchemaDocumentId = Optional.of(JsonSchemaDocumentId.existingId(documentId.get()));
+        }
+        return (ObjectNode) getPrefilledFormDefinitionFromFormAssociation(jsonSchemaDocumentId, Optional.empty())
             .apply(camundaFormAssociation).orElseThrow();
     }
 
@@ -431,18 +460,6 @@ public class CamundaFormAssociationService implements FormAssociationService {
         metaDataNode.put("modifiedOn", document.modifiedOn().toString());
         metaDataNode.put("sequence", document.sequence());
         return metaDataNode;
-    }
-
-    private static <T> Collector<T, ?, Optional<T>> singleElementCollector() {
-        return Collectors.collectingAndThen(
-            Collectors.toList(),
-            list -> {
-                if (list.size() == 1) {
-                    return Optional.of(list.get(0));
-                }
-                throw new IllegalStateException("Expected single result but found: " + list.size());
-            }
-        );
     }
 
 }

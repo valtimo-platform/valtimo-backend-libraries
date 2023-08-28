@@ -1,8 +1,8 @@
 spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3313/milestones-test
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:3313/milestones-test
         username: valtimo
         password: password
         hikari:
@@ -14,7 +14,6 @@ scheduling:
     enabled: false
     job:
         cron:
-            syncAuth0LogsEvents: 0 0 3 * * ? # Every day at 3:00
             cleanupAuditEvents: 0 0 4 * * ? # Every day at 00:00
             taskNotificationReminder: 0 0 10 * * ? # Every day at 10:00
 
@@ -27,8 +26,7 @@ camunda:
         history-level: audit
 
 valtimo:
-    auth0:
-        enabled: false
+    database: postgres
     mandrill:
         apiKey: some-key
         dateFormat: dd-MM-yyyy

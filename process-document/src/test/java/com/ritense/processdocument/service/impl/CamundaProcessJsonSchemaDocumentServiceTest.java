@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2021 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,9 @@
 
 package com.ritense.processdocument.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
@@ -36,36 +28,41 @@ import com.ritense.processdocument.service.impl.result.StartProcessForDocumentRe
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.result.FunctionResult;
-import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.junit.jupiter.api.Test;
 
-public class CamundaProcessJsonSchemaDocumentServiceTest {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+class CamundaProcessJsonSchemaDocumentServiceTest {
 
     private final DocumentService documentService = mock(DocumentService.class);
-    private final DocumentDefinitionService documentDefinitionService = mock(DocumentDefinitionService.class);
     private final CamundaTaskService camundaTaskService = mock(CamundaTaskService.class);
     private final CamundaProcessService camundaProcessService = mock(CamundaProcessService.class);
     private final ProcessDocumentAssociationService processDocumentAssociationService = mock(ProcessDocumentAssociationService.class);
 
     private final ProcessDocumentService processDocumentService = new CamundaProcessJsonSchemaDocumentService(
         documentService,
-        documentDefinitionService,
         camundaTaskService,
         camundaProcessService,
         processDocumentAssociationService
     );
 
     @Test
-    public void startProcessForDocument_shouldReturnErrorWhenDocumentNotFound() {
+    void startProcessForDocument_shouldReturnErrorWhenDocumentNotFound() {
         when(documentService.findBy(any())).thenReturn(Optional.empty());
 
         JsonSchemaDocumentId id = JsonSchemaDocumentId.existingId(UUID.randomUUID());
@@ -83,32 +80,7 @@ public class CamundaProcessJsonSchemaDocumentServiceTest {
     }
 
     @Test
-    public void startProcessForDocument_shouldReturnErrorWhenNoDocumentDefinitionLinkIsFound() {
-        Document document = mock(Document.class);
-        JsonSchemaDocumentDefinitionId documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("testdef", 1L);
-        FunctionResult processDocumentDefinitionResult = mock(FunctionResult.class);
-        JsonSchemaDocumentId id = JsonSchemaDocumentId.existingId(UUID.randomUUID());
-
-        doReturn(Optional.of(document)).when(documentService).findBy(id);
-        doReturn(processDocumentDefinitionResult).when(processDocumentAssociationService).getProcessDocumentDefinitionResult(any());
-        when(processDocumentDefinitionResult.hasResult()).thenReturn(false);
-        when(processDocumentDefinitionResult.errors()).thenReturn(List.of(new OperationError.FromString("error-text")));
-        when(document.definitionId()).thenReturn(documentDefinitionId);
-
-        StartProcessForDocumentRequest request = new StartProcessForDocumentRequest(
-            id,
-            "test",
-            new HashMap<>()
-        );
-
-        StartProcessForDocumentResult result = processDocumentService.startProcessForDocument(request);
-
-        assertTrue(result instanceof StartProcessForDocumentResultFailed);
-        assertEquals("error-text", result.errors().get(0).asString());
-    }
-
-    @Test
-    public void startProcessForDocument_shouldReturnErrorWhenRuntimeExceptionOccurred() {
+    void startProcessForDocument_shouldReturnErrorWhenRuntimeExceptionOccurred() {
         when(documentService.findBy(any())).thenThrow(new RuntimeException("error"));
 
         JsonSchemaDocumentId id = JsonSchemaDocumentId.existingId(UUID.randomUUID());
@@ -126,7 +98,7 @@ public class CamundaProcessJsonSchemaDocumentServiceTest {
     }
 
     @Test
-    public void startProcessForDocument_shouldReturnSuccessWhenProcessWasStarted() {
+    void startProcessForDocument_shouldReturnSuccessWhenProcessWasStarted() {
         JsonSchemaDocumentDefinitionId documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId("testdef", 1L);
         FunctionResult processDocumentDefinitionResult = mock(FunctionResult.class);
 

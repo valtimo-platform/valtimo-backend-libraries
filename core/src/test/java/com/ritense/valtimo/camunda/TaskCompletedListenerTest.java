@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,15 @@
 package com.ritense.valtimo.camunda;
 
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
+import java.util.Date;
 import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
-import java.util.Date;
-import static org.camunda.bpm.extension.mockito.CamundaMockito.delegateExecutionFake;
-import static org.camunda.bpm.extension.mockito.CamundaMockito.delegateTaskFake;
+import static org.camunda.community.mockito.CamundaMockito.delegateExecutionFake;
+import static org.camunda.community.mockito.CamundaMockito.delegateTaskFake;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

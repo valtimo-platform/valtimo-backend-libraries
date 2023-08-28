@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,21 @@
 
 package com.ritense.valueresolver
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.RuntimeService
-import org.camunda.bpm.extension.mockito.delegate.DelegateTaskFake
+import org.camunda.bpm.engine.variable.Variables
+import org.camunda.community.mockito.delegate.DelegateCaseVariableInstanceFake
+import org.camunda.community.mockito.delegate.DelegateTaskFake
+import org.camunda.community.mockito.process.ProcessInstanceFake
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.RETURNS_DEEP_STUBS
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import java.util.UUID
 
 internal class ProcessVariableValueResolverTest {
-    private val runtimeService: RuntimeService = mock()
+    private val runtimeService: RuntimeService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
     private val processVariableValueResolver = ProcessVariableValueResolverFactory(runtimeService)
 
     @Test
@@ -63,6 +68,29 @@ internal class ProcessVariableValueResolverTest {
         )
 
         Assertions.assertThat(resolvedValue).isNull()
+    }
+
+    @Test
+    fun `should resolve requestedValue from process variables by document ID`() {
+        val somePropertyName = "somePropertyName"
+        val documentInstanceId = UUID.randomUUID().toString()
+        val processInstance = ProcessInstanceFake.builder().processInstanceId(UUID.randomUUID().toString()).build()
+        whenever(runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(documentInstanceId).list())
+            .thenReturn(listOf(processInstance))
+        val variableInstance = DelegateCaseVariableInstanceFake().create(somePropertyName, Variables.booleanValue(true))
+        whenever(runtimeService.createVariableInstanceQuery()
+            .processInstanceIdIn(processInstance.id)
+            .variableName(somePropertyName)
+            .list())
+            .thenReturn(listOf(variableInstance))
+
+        val resolvedValue = processVariableValueResolver.createResolver(
+            documentInstanceId = documentInstanceId
+        ).apply(
+            somePropertyName
+        )
+
+        Assertions.assertThat(resolvedValue).isEqualTo(listOf(true))
     }
 
     @Test

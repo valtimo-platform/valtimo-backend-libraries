@@ -17,17 +17,17 @@
 package com.ritense.openzaak.web.rest
 
 import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
-import org.springframework.http.MediaType
+import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(value = ["/api/openzaak/zaaktype"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface ZaakTypeResource {
 
-    @GetMapping
+    @GetMapping("/v1/openzaak/zaaktype")
     fun getZaakTypes(): ResponseEntity<List<ZaakType>>
 
 }

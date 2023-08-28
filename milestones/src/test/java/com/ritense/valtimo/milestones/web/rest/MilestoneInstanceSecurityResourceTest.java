@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,13 @@ class MilestoneInstanceSecurityResourceTest extends SecuritySpecificEndpointInte
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void getDiagramFlowNodesAsAdmin() throws Exception {
-        assertHttpStatus(GET, "/api/milestones/" + UUID.randomUUID().toString() + "/flownodes", INTERNAL_SERVER_ERROR);
+        assertHttpStatus(GET, "/api/v1/milestones/" + UUID.randomUUID().toString() + "/flownodes", INTERNAL_SERVER_ERROR);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void getDiagramFlowNodesAsUser() throws Exception {
-        assertHttpStatus(GET, "/api/milestones/" + UUID.randomUUID().toString() + "/flownodes", FORBIDDEN);
+        assertHttpStatus(GET, "/api/v1/milestones/" + UUID.randomUUID().toString() + "/flownodes", FORBIDDEN);
     }
 
 }

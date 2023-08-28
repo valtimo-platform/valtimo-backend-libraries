@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,24 +27,55 @@ import java.util.List;
 @Repository
 public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefinitionRepository<JsonSchemaDocumentDefinition> {
 
-    @Query(""
-        + "SELECT  distinct dd "
-        + "FROM    JsonSchemaDocumentDefinition dd "
-        + "INNER JOIN JsonSchemaDocumentDefinitionRole ddRole ON ddRole.id.documentDefinitionName = dd.id.name AND ddRole.id.role in :roles "
-        + "WHERE   dd.id.version = (" +
-        "   SELECT max(dd2.id.version) " +
-        "   FROM JsonSchemaDocumentDefinition dd2 " +
-        "   WHERE dd2.id.name = dd.id.name " +
-        ") ")
+    @Query(nativeQuery = true, value = "" +
+        "select " +
+        "    distinct jsonschema.document_definition_name, " +
+        "    jsonschema.document_definition_version, " +
+        "    jsonschema.created_on, " +
+        "    jsonschema.read_only, " +
+        "    jsonschema.json_schema " +
+        "from " +
+        "    json_schema_document_definition jsonschema " +
+        "inner join " +
+        "    json_schema_document_definition_role jsonschema_role " +
+        "        on (" +
+        "            jsonschema_role.document_definition_name = jsonschema.document_definition_name " +
+        "            and (" +
+        "                jsonschema_role.role in (:roles)" +
+        "            )" +
+        "        ) " +
+        "inner join (" +
+        "        select" +
+        "            max(jsonschema_for_max.document_definition_version) as latest_version," +
+        "            jsonschema_for_max.document_definition_name" +
+        "        from" +
+        "            json_schema_document_definition jsonschema_for_max " +
+        "        group by " +
+        "            jsonschema_for_max.document_definition_name" +
+        ") version_per_definition " +
+        "on version_per_definition.latest_version = jsonschema.document_definition_version " +
+        "and version_per_definition.document_definition_name = jsonschema.document_definition_name ")
     Page<JsonSchemaDocumentDefinition> findAllForRoles(List<String> roles, Pageable pageable);
 
-    @Query(""
-        + "SELECT  dd "
-        + "FROM    JsonSchemaDocumentDefinition dd "
-        + "WHERE   dd.id.version = (" +
-        "   SELECT max(dd2.id.version) " +
-        "   FROM JsonSchemaDocumentDefinition dd2 " +
-        "   WHERE dd2.id.name = dd.id.name " +
-        ") ")
+    @Query(nativeQuery = true, value = "" +
+        "select " +
+        "    distinct jsonschema.document_definition_name, " +
+        "    jsonschema.document_definition_version, " +
+        "    jsonschema.created_on, " +
+        "    jsonschema.read_only, " +
+        "    jsonschema.json_schema " +
+        "from " +
+        "    json_schema_document_definition jsonschema " +
+        "inner join (" +
+        "        select" +
+        "            max(jsonschema_for_max.document_definition_version) as latest_version," +
+        "            jsonschema_for_max.document_definition_name" +
+        "        from" +
+        "            json_schema_document_definition jsonschema_for_max " +
+        "        group by " +
+        "            jsonschema_for_max.document_definition_name" +
+        ") version_per_definition " +
+        "on version_per_definition.latest_version = jsonschema.document_definition_version " +
+        "and version_per_definition.document_definition_name = jsonschema.document_definition_name ")
     Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable);
 }

@@ -3,8 +3,8 @@ spring:
         allow-bean-definition-overriding: false
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3310/process-document-test
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:3310/process-document-test
         username: valtimo
         password: password
         hikari:
@@ -12,8 +12,8 @@ spring:
     liquibase:
         enabled: false
     jpa:
-        database-platform: org.hibernate.dialect.MySQL57Dialect
-        database: mysql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database: postgresql
         show_sql: true
         open-in-view: false
         properties:
@@ -59,19 +59,12 @@ aws:
         bucketRegion: eu-central-1
 
 valtimo:
+    database: postgres
     mandrill:
         apiKey: n/a
         dateFormat: dd-MM-yyyy
         notificationTemplate: bpc-task-notification
         completionTemplate: bpc-task-completion
         reminderTemplate: bpc-task-reminder
-    auth0:
-        clientId: z07PPstdpIFTCPo52ZkanGjnVU9u1mTs
-        defaultConnection: bp-console
-        managementTokenApiClientId: 4b2rIa9Kbu6WVwtOgZ6k1xrEJub9IWHA
-        enabled: false
-        domain: ritense.eu.auth0.com
-        issuer: https://ritense.eu.auth0.com/
-        managementTokenApiClientSecret: #external
     plugin:
         encryption-secret: "abcdefghijklmnop"

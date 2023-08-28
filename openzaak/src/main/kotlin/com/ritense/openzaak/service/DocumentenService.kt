@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,6 @@ import java.util.UUID
 interface DocumentenService {
 
     fun createEnkelvoudigInformatieObject(documentDefinitionName: String, multipartFile: MultipartFile): URI
-
-    @Deprecated(
-        message = "Deprecated since 9.0.0, use the new function createObjectInformatieObject(URI, UUID)",
-        replaceWith = ReplaceWith("createObjectInformatieObject(enkelvoudigInformatieObject, documentId"),
-        DeprecationLevel.WARNING
-    )
-    fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, documentId: UUID, documentDefinitionName: String)
 
     fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, documentId: UUID)
 

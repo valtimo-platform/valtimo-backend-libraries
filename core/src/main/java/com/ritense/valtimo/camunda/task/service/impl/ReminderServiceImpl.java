@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import com.ritense.valtimo.camunda.task.service.ReminderService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -49,6 +50,9 @@ public class ReminderServiceImpl implements ReminderService {
 
     @Override
     @Scheduled(cron = "${scheduling.job.cron.taskNotificationReminder:-}")
+    @SchedulerLock(
+        name = "ReminderServiceImpl_notifyUsersWithOpenTasks", lockAtLeastFor = "PT4S", lockAtMostFor = "PT60M"
+    )
     public void notifyUsersWithOpenTasks() {
         final List<String> users = userToNotifyToday();
 

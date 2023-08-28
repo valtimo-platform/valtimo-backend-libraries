@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.ritense.formlink.domain.impl.formassociation;
 import java.util.Collection;
 import java.util.HashSet;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 public class FormAssociations extends HashSet<CamundaFormAssociation> {
 
     public FormAssociations() {

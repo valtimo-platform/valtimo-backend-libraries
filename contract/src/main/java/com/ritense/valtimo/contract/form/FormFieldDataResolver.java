@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,11 @@ import java.util.UUID;
 
 public interface FormFieldDataResolver {
 
-    boolean supports(ExternalFormFieldType externalFormFieldType);
+    boolean supports(String externalFormFieldType);
 
-    Map<String, Object> get(String documentDefinitionName, UUID documentId, String... varNames);
+    Map<String, Object> get(
+        DataResolvingContext dataResolvingContext,
+        String... varNames
+    );
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,37 +34,37 @@ class ChoiceFieldSecurityResourceTest extends SecuritySpecificEndpointIntegratio
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void createChoiceFieldAsAdmin() throws Exception {
-        assertHttpStatus(POST, "/api/choice-fields", BAD_REQUEST);
+        assertHttpStatus(POST, "/api/v1/choice-fields", BAD_REQUEST);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void createChoiceFieldAsUser() throws Exception {
-        assertHttpStatus(POST, "/api/choice-fields", FORBIDDEN);
+        assertHttpStatus(POST, "/api/v1/choice-fields", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void updateChoiceFieldAsAdmin() throws Exception {
-        assertHttpStatus(PUT, "/api/choice-fields", BAD_REQUEST);
+        assertHttpStatus(PUT, "/api/v1/choice-fields", BAD_REQUEST);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void updateChoiceFieldAsUser() throws Exception {
-        assertHttpStatus(PUT, "/api/choice-fields", FORBIDDEN);
+        assertHttpStatus(PUT, "/api/v1/choice-fields", FORBIDDEN);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void deleteChoiceFieldAsAdmin() throws Exception {
-        assertHttpStatus(DELETE, "/api/choice-fields/1", INTERNAL_SERVER_ERROR);
+        assertHttpStatus(DELETE, "/api/v1/choice-fields/1", INTERNAL_SERVER_ERROR);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void deleteChoiceFieldAsUser() throws Exception {
-        assertHttpStatus(DELETE, "/api/choice-fields/1", FORBIDDEN);
+        assertHttpStatus(DELETE, "/api/v1/choice-fields/1", FORBIDDEN);
     }
 
 }

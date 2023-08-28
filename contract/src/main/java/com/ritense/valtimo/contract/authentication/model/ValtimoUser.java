@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,12 @@
 package com.ritense.valtimo.contract.authentication.model;
 
 import com.ritense.valtimo.contract.authentication.ManageableUser;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 public class ValtimoUser implements Serializable, ManageableUser {
 
@@ -40,34 +43,6 @@ public class ValtimoUser implements Serializable, ManageableUser {
     private String password;
 
     public ValtimoUser() {
-    }
-
-    public ValtimoUser(
-        String id,
-        String username,
-        String name,
-        String email,
-        String firstName,
-        String lastName,
-        String phoneNo,
-        boolean isEmailVerified,
-        String langKey,
-        boolean blocked,
-        boolean activated,
-        List<String> roles
-    ) {
-        this.id = id;
-        this.username = username;
-        this.name = name;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNo = phoneNo;
-        this.isEmailVerified = isEmailVerified;
-        this.langKey = langKey;
-        this.blocked = blocked;
-        this.activated = activated;
-        this.roles = roles;
     }
 
     public void setId(String id) {
@@ -144,7 +119,15 @@ public class ValtimoUser implements Serializable, ManageableUser {
 
     @Override
     public String getFullName() {
-        return firstName + " " + lastName;
+        if (isEmpty(firstName) && isEmpty(lastName)) {
+            return "";
+        } else if (isEmpty(firstName)) {
+            return lastName;
+        } else  if (isEmpty(lastName)) {
+            return firstName;
+        } else {
+            return firstName + " " + lastName;
+        }
     }
 
     @Override

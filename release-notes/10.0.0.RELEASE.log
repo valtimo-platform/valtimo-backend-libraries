@@ -1,0 +1,38 @@
+200ccff7 - Updated version to 10.0.0.RELEASE
+fa29ff82 - Changed test configuration to postgres (#436)
+417439b4 - Added variant versions of allowed licenses
+ab54b24d - Fixed project version setting
+9911418e - Merge branch 'main' into rc/10.0.0.5.RC
+14295ea8 - Updated version to 10.0.0.5.RC-SNAPSHOT
+3c4e95b9 - Fixed dependencies after merging in development (#420)
+2ebef477 - Fixed test
+fde85b75 - Fixed some style changes (indentation, parentheses, method ordering) (#418)
+9f1cf86c - Merge branch 'development' into feature/major10
+da11fd4b - Override existing camunda endpoint
+bfd7906e - test fixes
+0c7a8815 - checkstyle fixes
+f3ccc92e - Feature/remove deprecated code (#403)
+7a258d3d - 31954 - Removed Auth0 module (#397)
+d26679ad - Merge branch 'development' into feature/major10
+e94a00eb - Fixes
+a5e7b051 - Merge remote-tracking branch 'origin/development' into feature/major10_merge_dev
+8b74e535 - fixed tests (#380)
+8e1bf870 - Feature/api versioning (#379)
+dfa9ec65 - Introduced springdoc for OpenAPI support. (#372)
+0065efe8 - Fixed build
+e97526b7 - Fixed dependency issues
+f8cfaebc - Updated dependencies (#365)
+22ae763a - Fixed configuration merge
+343380f4 - Merge branch 'development' into feature/major10
+3f12e963 - removed process data objects (#361)
+5eb38e37 - Removed view configurator module (#356)
+d3d1adde - Feature/36420 upgrade liquibase to latest version (#347)
+e1a7ce99 - test fixes
+2d92324a - test fixes
+9e85595f - spring dependency upgrades (#348)
+0bc29ae6 - mysql upgrade (#342)
+4f8a34ff - Updated version to major 10
+515994f6 - Set gradle parallel to false because builds are failing.
+da58bfcf - Placed fixed checkstyle file in project temporarily
+af658cf9 - Java 17 support (#326)
+69edcb00 - Camunda upgrade (#325)

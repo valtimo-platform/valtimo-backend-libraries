@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -60,18 +61,17 @@ public class LiquibaseRunner {
         } catch (LiquibaseException e) {
             throw new DatabaseException(e);
         } finally {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                    connection.close();
-                } catch (SQLException e) {
-                    logger.error("Error closing connection ", e);
-                }
+            try {
+                connection.rollback();
+                connection.close();
+            } catch (SQLException e) {
+                logger.error("Error closing connection ", e);
             }
         }
         logger.info("Finished running liquibase");
     }
 
+    @SuppressWarnings({"squid:S2095", "java:S2095"}) // Liquibase connection is closed elsewhere
     private void runChangeLog(Database database, String filePath) throws LiquibaseException {
         Liquibase liquibase = new Liquibase(filePath, new ClassLoaderResourceAccessor(), database);
         logger.info("Running liquibase master changelog: {}", liquibase.getChangeLogFile());

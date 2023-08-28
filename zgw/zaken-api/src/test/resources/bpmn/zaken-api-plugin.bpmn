@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0wkbaj7" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.6.0">
+  <bpmn:process id="zaken-api-plugin" name="Zaak link process" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0c1yo1y</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="EndEvent_0v6qdzq">
+      <bpmn:incoming>SequenceFlow_17rgisa</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_17rgisa" sourceRef="LinkDocument" targetRef="EndEvent_0v6qdzq" />
+    <bpmn:serviceTask id="LinkDocument" name="Link Document" camunda:expression="${null}">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_0c1yo1y</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_17rgisa</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0c1yo1y" sourceRef="StartEvent_1" targetRef="LinkDocument" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="zaken-api-plugin">
+      <bpmndi:BPMNEdge id="SequenceFlow_17rgisa_di" bpmnElement="SequenceFlow_17rgisa">
+        <di:waypoint x="341" y="159" />
+        <di:waypoint x="392" y="159" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0c1yo1y_di" bpmnElement="Flow_0c1yo1y">
+        <di:waypoint x="191" y="159" />
+        <di:waypoint x="241" y="159" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="155" y="141" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0alraup_di" bpmnElement="LinkDocument">
+        <dc:Bounds x="241" y="119" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0v6qdzq_di" bpmnElement="EndEvent_0v6qdzq">
+        <dc:Bounds x="392" y="141" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

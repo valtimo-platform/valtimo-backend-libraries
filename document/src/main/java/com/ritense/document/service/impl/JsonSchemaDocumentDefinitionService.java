@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,24 @@
 
 package com.ritense.document.service.impl;
 
+import com.jayway.jsonpath.InvalidPathException;
+import com.jayway.jsonpath.internal.path.ArrayPathToken;
+import com.jayway.jsonpath.internal.path.CompiledPath;
+import com.jayway.jsonpath.internal.path.FunctionPathToken;
+import com.jayway.jsonpath.internal.path.PathCompiler;
+import com.jayway.jsonpath.internal.path.PathToken;
+import com.jayway.jsonpath.internal.path.PredicatePathToken;
+import com.jayway.jsonpath.internal.path.RootPathToken;
+import com.jayway.jsonpath.internal.path.ScanPathToken;
+import com.jayway.jsonpath.internal.path.WildcardPathToken;
 import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.domain.EveritSchemaAllowsPropertyKt;
 import com.ritense.document.domain.impl.JsonSchema;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRole;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionRoleId;
+import com.ritense.document.exception.DocumentDefinitionDeploymentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.repository.DocumentDefinitionRoleRepository;
@@ -41,13 +53,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
+
+import javax.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Transactional
@@ -124,7 +140,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                 }
             }
         } catch (Exception ex) {
-            logger.error("Error deploying document schema's", ex);
+            throw new DocumentDefinitionDeploymentException("Error deploying document schema's", ex);
         }
     }
 
@@ -167,7 +183,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                 } else {
                     // Definition changed increase version
                     documentDefinitionId = JsonSchemaDocumentDefinitionId.nextVersion(existingDocumentDefinition.id());
-                    logger.info("Schema changed. Deploying next version - {} - {} ", documentDefinitionId.toString(), jsonSchema.getSchema().getId());
+                    logger.info("Schema changed. Deploying next version - {} - {} ", documentDefinitionId, jsonSchema.getSchema().getId());
                 }
             }
 
@@ -178,7 +194,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
             }
 
             store(documentDefinition);
-            logger.info("Deployed schema - {} - {} ", documentDefinitionId.toString(), jsonSchema.getSchema().getId());
+            logger.info("Deployed schema - {} - {} ", documentDefinitionId, jsonSchema.getSchema().getId());
             return new DeployDocumentDefinitionResultSucceeded(documentDefinition);
         } catch (Exception ex) {
             DocumentDefinitionError error = ex::getMessage;
@@ -218,6 +234,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
             || getDocumentDefinitionRoles(documentDefinitionName).stream().anyMatch(roles::contains);
     }
 
+
     @Override
     public Set<String> getDocumentDefinitionRoles(String documentDefinitionName) {
         return documentDefinitionRoleRepository.findAllByIdDocumentDefinitionName(documentDefinitionName)
@@ -231,9 +248,101 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         List<JsonSchemaDocumentDefinitionRole> documentDefinitionRoles = roles.stream().map(it -> new JsonSchemaDocumentDefinitionRole(new JsonSchemaDocumentDefinitionRoleId(
             documentDefinitionName,
             it
-        ))).collect(Collectors.toList());
+        ))).toList();
         documentDefinitionRoleRepository.deleteByIdDocumentDefinitionName(documentDefinitionName);
         documentDefinitionRoleRepository.saveAll(documentDefinitionRoles);
+    }
+
+    @Override
+    public void validateJsonPath(String documentDefinitionName, String jsonPathExpression) {
+        var definition = findLatestByName(documentDefinitionName)
+            .orElseThrow(() -> new UnknownDocumentDefinitionException(documentDefinitionName));
+        if (jsonPathExpression.startsWith("doc:")) {
+            jsonPathExpression = "$." + jsonPathExpression.substring("doc:".length());
+        } else if (jsonPathExpression.startsWith("case:")) {
+            return;
+        }
+        try {
+            PathCompiler.compile(jsonPathExpression);
+        } catch (InvalidPathException e) {
+            throw new ValidationException("Failed to compile JsonPath '" + jsonPathExpression + "' for document definition '" + documentDefinitionName + "'", e);
+        }
+        if (!isValidJsonPath(definition, jsonPathExpression)) {
+            throw new ValidationException("JsonPath '" + jsonPathExpression + "' doesn't point to any property inside document definition '" + documentDefinitionName + "'");
+        }
+    }
+
+    @Override
+    public boolean isValidJsonPath(JsonSchemaDocumentDefinition definition, String jsonPathExpression) {
+        CompiledPath compiledJsonPath;
+        try {
+            compiledJsonPath = (CompiledPath) PathCompiler.compile(jsonPathExpression);
+        } catch (InvalidPathException e) {
+            logger.error("Failed to compile JsonPath '{}' for document definition '{}'", jsonPathExpression, definition.id().name(), e);
+            return false;
+        }
+        var jsonPointer = toJsonPointerRecursive(compiledJsonPath.getRoot());
+        return isValidJsonPointer(definition, jsonPointer);
+    }
+
+    @Override
+    public void validateJsonPointer(String documentDefinitionName, String jsonPointer) {
+        var definition = findLatestByName(documentDefinitionName)
+            .orElseThrow(() -> new UnknownDocumentDefinitionException(documentDefinitionName));
+        if (!isValidJsonPointer(definition, jsonPointer)) {
+            throw new ValidationException("JsonPointer '" + jsonPointer + "' doesn't point to any property inside document definition '" + documentDefinitionName + "'");
+        }
+    }
+
+    private boolean isValidJsonPointer(JsonSchemaDocumentDefinition definition, String jsonPointer) {
+        return EveritSchemaAllowsPropertyKt.allowsProperty(definition.getSchema().getSchema(), jsonPointer);
+    }
+
+    private String toJsonPointerRecursive(PathToken pathToken) {
+        var jsonPointerPart = toJsonPointerPart(pathToken);
+        if (jsonPointerPart == null) {
+            return "";
+        } else {
+            return jsonPointerPart + toJsonPointerRecursive(pathToken.getNext());
+        }
+    }
+
+    private String toJsonPointerPart(PathToken pathToken) {
+        if (pathToken == null
+            || pathToken instanceof PredicatePathToken
+            || pathToken instanceof WildcardPathToken
+            || pathToken instanceof FunctionPathToken
+            || pathToken instanceof ScanPathToken) {
+            return null;
+        } else if (pathToken instanceof RootPathToken) {
+            return "";
+        } else if (pathToken instanceof ArrayPathToken) {
+            return "/0";
+        } else {
+            return "/" + trim(getPathFragment(pathToken), "['", "']", "[", "]");
+        }
+    }
+
+    private String getPathFragment(PathToken pathToken) {
+        try {
+            var getPathFragmentMethod = PathToken.class.getDeclaredMethod("getPathFragment");
+            getPathFragmentMethod.setAccessible(true);
+            return (String) getPathFragmentMethod.invoke(pathToken);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException("Broken method. The Jayway JsonPath library might've changed.", e);
+        }
+    }
+
+    private String trim(String value, String... trims) {
+        for (var trim : trims) {
+            if (value.startsWith(trim)) {
+                value = value.substring(trim.length());
+            }
+            if (value.endsWith(trim)) {
+                value = value.substring(0, value.length() - trim.length());
+            }
+        }
+        return value;
     }
 
     private Resource[] loadResources() throws IOException {

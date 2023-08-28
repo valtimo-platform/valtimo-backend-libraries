@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+
 import javax.sql.DataSource;
+
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
+@Deprecated(since = "10.6.0", forRemoval = true)
 @Configuration
 @ConditionalOnClass(DataSource.class)
 public class FormLinkLiquibaseAutoConfiguration {

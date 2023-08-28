@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,11 @@
 package com.ritense.formlink.service.impl;
 
 import com.ritense.formlink.domain.FormLink;
-import com.ritense.formlink.domain.ProcessLinkTaskProvider;
+import com.ritense.formlink.domain.FormLinkTaskProvider;
 import com.ritense.formlink.domain.TaskOpenResult;
 import com.ritense.formlink.domain.impl.formassociation.CamundaFormAssociation;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.service.ProcessLinkService;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
@@ -34,7 +30,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -46,13 +48,13 @@ class DefaultProcessLinkServiceTest {
     private final TaskService taskService = mock(TaskService.class, Mockito.RETURNS_DEEP_STUBS);
     private final RepositoryService repositoryService = mock(RepositoryService.class);
     private final FormAssociationService formAssociationService = mock(FormAssociationService.class);
-    private final ProcessLinkTaskProvider processLinkTaskProvider = mock(ProcessLinkTaskProvider.class);
-    private final List<ProcessLinkTaskProvider> processLinkTaskProviders = List.of(processLinkTaskProvider);
+    private final FormLinkTaskProvider formLinkTaskProvider = mock(FormLinkTaskProvider.class);
+    private final List<FormLinkTaskProvider> formLinkTaskProviders = List.of(formLinkTaskProvider);
     private final ProcessLinkService service = new DefaultProcessLinkService(
         repositoryService,
         taskService,
         formAssociationService,
-        processLinkTaskProviders
+            formLinkTaskProviders
     );
     Task task = mock(Task.class);
     CamundaFormAssociation formAssociation = mock(CamundaFormAssociation.class);
@@ -73,7 +75,7 @@ class DefaultProcessLinkServiceTest {
 
         when(formAssociation.getFormLink()).thenReturn(formLink);
 
-        when(processLinkTaskProvider.supports(formLink)).thenReturn(true);
+        when(formLinkTaskProvider.supports(formLink)).thenReturn(true);
 
         final var processDefinition = mock(ProcessDefinition.class);
         when(processDefinition.getKey()).thenReturn("test");
@@ -87,12 +89,12 @@ class DefaultProcessLinkServiceTest {
             "test",
             "test"
         );
-        when(processLinkTaskProvider.getTaskResult(task, formLink)).thenReturn(mockResult);
+        when(formLinkTaskProvider.getTaskResult(task, formLink)).thenReturn(mockResult);
 
         TaskOpenResult taskOpenResult = service.openTask(taskId);
 
         assertEquals(taskOpenResult, mockResult);
-        verify(processLinkTaskProvider).getTaskResult(task, formLink);
+        verify(formLinkTaskProvider).getTaskResult(task, formLink);
     }
 
     @Test
@@ -111,7 +113,7 @@ class DefaultProcessLinkServiceTest {
     void openTaskShouldThrowExceptionWhenNoProviderFound() {
         UUID taskId = UUID.randomUUID();
 
-        when(processLinkTaskProvider.supports(formLink)).thenReturn(false);
+        when(formLinkTaskProvider.supports(formLink)).thenReturn(false);
 
         assertThrows(NoSuchElementException.class, () -> {
             service.openTask(taskId);

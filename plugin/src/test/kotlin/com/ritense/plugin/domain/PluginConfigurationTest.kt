@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2022 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,17 @@
 
 package com.ritense.plugin.domain
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.plugin.service.EncryptionService
 import com.ritense.valtimo.contract.json.Mapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 internal class PluginConfigurationTest {
 
@@ -88,6 +93,12 @@ internal class PluginConfigurationTest {
             Mapper.INSTANCE.get().readTree(input) as ObjectNode,
             pluginDefinition
         )
+
+        val encryptionService = mock<EncryptionService>()
+        whenever(encryptionService.encrypt(any())).thenAnswer { it.arguments[0] }
+        whenever(encryptionService.decrypt(any())).thenAnswer { it.arguments[0] }
+        configuration.objectMapper = ObjectMapper()
+        configuration.encryptionService = encryptionService
     }
 
     @Test
