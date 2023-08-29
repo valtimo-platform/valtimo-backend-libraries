@@ -16,14 +16,14 @@
 
 package com.ritense.authorization.permission.condition
 
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
-class PermissionExpressionOperatorTest {
+class PermissionConditionOperatorTest {
 
     @Test
     fun `NOT_EQUAL_TO should evaluate correctly`() {
-        val op = PermissionExpressionOperator.NOT_EQUAL_TO
+        val op = PermissionConditionOperator.NOT_EQUAL_TO
         assertEquals(true, op, "a", "b")
         assertEquals(false, op, "b", "b")
         assertEquals(true, op, "b", "a")
@@ -37,7 +37,7 @@ class PermissionExpressionOperatorTest {
 
     @Test
     fun `EQUAL_TO should evaluate correctly`() {
-        val op = PermissionExpressionOperator.EQUAL_TO
+        val op = PermissionConditionOperator.EQUAL_TO
         assertEquals(false, op, "a", "b")
         assertEquals(true, op, "b", "b")
         assertEquals(false, op, "b", "a")
@@ -51,7 +51,7 @@ class PermissionExpressionOperatorTest {
 
     @Test
     fun `GREATER_THAN should evaluate correctly`() {
-        val op = PermissionExpressionOperator.GREATER_THAN
+        val op = PermissionConditionOperator.GREATER_THAN
 
         assertEquals(false, op, "a", "b")
         assertEquals(false, op, "b", "b")
@@ -66,7 +66,7 @@ class PermissionExpressionOperatorTest {
 
     @Test
     fun `GREATER_THAN_OR_EQUAL_TO should evaluate correctly`() {
-        val op = PermissionExpressionOperator.GREATER_THAN_OR_EQUAL_TO
+        val op = PermissionConditionOperator.GREATER_THAN_OR_EQUAL_TO
 
         assertEquals(false, op, "a", "b")
         assertEquals(true, op, "b", "b")
@@ -81,7 +81,7 @@ class PermissionExpressionOperatorTest {
 
     @Test
     fun `LESS_THAN should evaluate correctly`() {
-        val op = PermissionExpressionOperator.LESS_THAN
+        val op = PermissionConditionOperator.LESS_THAN
 
         assertEquals(true, op, "a", "b")
         assertEquals(false, op, "b", "b")
@@ -96,7 +96,7 @@ class PermissionExpressionOperatorTest {
 
     @Test
     fun `LESS_THAN_OR_EQUAL_TO should evaluate correctly`() {
-        val op = PermissionExpressionOperator.LESS_THAN_OR_EQUAL_TO
+        val op = PermissionConditionOperator.LESS_THAN_OR_EQUAL_TO
 
         assertEquals(true, op, "a", "b")
         assertEquals(true, op, "b", "b")
@@ -104,12 +104,28 @@ class PermissionExpressionOperatorTest {
         assertEquals(false, op, 1.35, 1.34)
         assertEquals(true, op, 1.34, 1.34)
         assertEquals(true, op, 1.33, 1.34)
-        assertEquals(true, op,null, null)
+        assertEquals(true, op, null, null)
         assertEquals(false, op, null, "a")
         assertEquals(false, op, "a", null)
     }
 
-    fun <T: Comparable<T>> assertEquals(expected: Boolean, op: PermissionExpressionOperator, left: T?, right: T?) {
+    @Test
+    fun `CONTAINS should evaluate correctly`() {
+        val op = PermissionConditionOperator.CONTAINS
+
+        assertEquals(true, op, listOf("a", "b"), "a")
+        assertEquals(true, op, listOf("a", "b"), "b")
+        assertEquals(false, op, listOf("a", "b"), "c")
+        assertEquals(false, op, listOf(1.34, 1.35), 1.36)
+        assertEquals(true, op, listOf(1.34, 1.35), 1.35)
+        assertEquals(true, op, listOf(null), null)
+        assertEquals(false, op, listOf(null), "a")
+        assertEquals(false, op, listOf("a"), null)
+        assertEquals(true, op, null, null)
+        assertEquals(false, op, null, "a")
+    }
+
+    private fun assertEquals(expected: Boolean, op: PermissionConditionOperator, left: Any?, right: Any?) {
         assertEquals(expected, op.evaluate(left, right), "[ $left ${op.asText} $right ]")
     }
 }
