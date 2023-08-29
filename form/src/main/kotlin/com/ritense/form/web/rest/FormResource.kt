@@ -34,7 +34,7 @@ import java.util.UUID
 @RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class FormResource(
-    private var formSubmissionService: FormSubmissionService,
+    private var formSubmissionService: FormSubmissionService
 ) {
 
     @PostMapping("/v1/process-link/{processLinkId}/form/submission")
@@ -44,8 +44,8 @@ class FormResource(
         @RequestParam(required = false) documentId: String?,
         @RequestParam(required = false) taskInstanceId: String?,
         @RequestBody submission: JsonNode
-    ): ResponseEntity<FormSubmissionResult> {
-        return applyResult(
+    ): ResponseEntity<FormSubmissionResult> =
+        applyResult(
             formSubmissionService.handleSubmission(
                 processLinkId,
                 submission,
@@ -53,7 +53,6 @@ class FormResource(
                 taskInstanceId,
             )
         )
-    }
 
     fun <T : FormSubmissionResult?> applyResult(result: T): ResponseEntity<T> {
         val httpStatus = if (result!!.errors().isEmpty()) HttpStatus.OK else HttpStatus.BAD_REQUEST

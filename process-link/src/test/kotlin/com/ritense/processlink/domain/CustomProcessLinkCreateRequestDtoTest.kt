@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
 
-
 class CustomProcessLinkCreateRequestDtoTest {
 
     private val mapper = jacksonObjectMapper().apply {

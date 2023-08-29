@@ -23,6 +23,7 @@ import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.service.FormSubmissionService
 import com.ritense.form.service.FormSupportedProcessLinksHandler
 import com.ritense.form.service.PrefillFormService
+import com.ritense.form.service.impl.DefaultFormSubmissionService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.web.rest.FormResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -41,26 +42,24 @@ class FormAutoConfigurationKotlin {
 
     @Bean
     @ConditionalOnMissingBean(FormSupportedProcessLinksHandler::class)
-    fun formSupportedProcessLinks(formDefinitionService: FormDefinitionService): FormSupportedProcessLinksHandler {
-        return FormSupportedProcessLinksHandler(formDefinitionService)
-    }
+    fun formSupportedProcessLinks(
+        formDefinitionService: FormDefinitionService
+    ) = FormSupportedProcessLinksHandler(
+        formDefinitionService
+    )
 
     @Order(270)
     @Bean
     @ConditionalOnMissingBean(FormHttpSecurityConfigurerKotlin::class)
-    fun formHttpSecurityConfigurerKotlin(): FormHttpSecurityConfigurerKotlin {
-        return FormHttpSecurityConfigurerKotlin()
-    }
+    fun formHttpSecurityConfigurerKotlin() = FormHttpSecurityConfigurerKotlin()
 
     @Bean
     @ConditionalOnMissingBean(FormResource::class)
     fun formResource(
-        formSubmissionService: FormSubmissionService,
-    ): FormResource {
-        return FormResource(
-            formSubmissionService,
-        )
-    }
+        formSubmissionService: FormSubmissionService
+    ) = FormResource(
+        formSubmissionService
+    )
 
     @Bean
     @ConditionalOnMissingBean(FormSubmissionService::class)
@@ -73,19 +72,17 @@ class FormAutoConfigurationKotlin {
         camundaTaskService: CamundaTaskService,
         camundaProcessService: CamundaProcessService,
         applicationEventPublisher: ApplicationEventPublisher,
-        prefillFormService: PrefillFormService,
-    ): FormSubmissionService {
-        return FormSubmissionService(
-            processLinkService,
-            formDefinitionService,
-            documentService,
-            processDocumentAssociationService,
-            processDocumentService,
-            camundaTaskService,
-            camundaProcessService,
-            applicationEventPublisher,
-            prefillFormService,
-        )
-    }
+        prefillFormService: PrefillFormService
+    ) = DefaultFormSubmissionService(
+        processLinkService,
+        formDefinitionService,
+        documentService,
+        processDocumentAssociationService,
+        processDocumentService,
+        camundaTaskService,
+        camundaProcessService,
+        applicationEventPublisher,
+        prefillFormService,
+    )
 
 }
