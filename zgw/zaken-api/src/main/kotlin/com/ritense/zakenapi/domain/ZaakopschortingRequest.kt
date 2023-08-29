@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.document.dashboard
+package com.ritense.zakenapi.domain
 
-data class DocumentCountDataSourceProperties(
-    val documentDefinition: String,
-    val queryConditions: List<QueryCondition<*>>? = listOf()
+data class ZaakopschortingRequest(
+    val verlenging: Verlenging,
+    val opschorting: Opschorting,
 )

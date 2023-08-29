@@ -19,6 +19,7 @@ package com.ritense.valtimo.formflow.common
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.MissingNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext
@@ -82,7 +83,9 @@ open class ValtimoFormFlow(
     ) {
         if (submissionData != null) {
             val processInstanceId = additionalProperties["processInstanceId"] as String
-            val submissionValues = submissionSavePath.entries.associate { it.key to getValue(submissionData, it.value) }
+            val submissionValues = submissionSavePath.entries
+                .associate { it.key to getValue(submissionData, it.value) }
+                .filter { it.value !is MissingNode }
             valueResolverService.handleValues(processInstanceId, null, submissionValues)
         }
 
@@ -105,7 +108,9 @@ open class ValtimoFormFlow(
 
         val submission = jacksonObjectMapper().readValue<JsonNode>(formFlowInstance.getSubmissionDataContext())
 
-        val submissionValues = submissionSavePath.entries.associate { it.key to getValue(submission, it.value) }
+        val submissionValues = submissionSavePath.entries
+            .associate { it.key to getValue(submission, it.value) }
+            .filter { it.value !is MissingNode }
         val submittedByType = valueResolverService.preProcessValuesForNewCase(submissionValues)
 
         val document = AuthorizationContext.runWithoutAuthorization {
@@ -159,7 +164,9 @@ open class ValtimoFormFlow(
         ).toString()
 
         val submission = jacksonObjectMapper().readValue<JsonNode>(formFlowInstance.getSubmissionDataContext())
-        val submissionValues = submissionSavePath.entries.associate { it.key to getValue(submission, it.value) }
+        val submissionValues = submissionSavePath.entries
+            .associate { it.key to getValue(submission, it.value) }
+            .filter { it.value !is MissingNode }
         valueResolverService.handleValues(UUID.fromString(documentId), submissionValues)
         val submittedByType = valueResolverService.preProcessValuesForNewCase(submissionValues)
 
@@ -191,7 +198,7 @@ open class ValtimoFormFlow(
     private fun getValue(data: JsonNode, path: String): Any {
         val valueNode = data.at(JsonPointer.valueOf(path))
         if (valueNode.isMissingNode) {
-            throw RuntimeException("Missing data on path '$path'")
+            return valueNode
         }
         return objectMapper.treeToValue(valueNode, Object::class.java)
     }

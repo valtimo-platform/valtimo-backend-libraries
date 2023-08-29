@@ -257,3 +257,5 @@ external:
             bezwaar:
                 caseKey: bezwaar
                 processDefinitionKey: bezwaar
+
+valtimo.changelog.dashboard.clear-tables: true
