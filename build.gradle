@@ -35,7 +35,7 @@ plugins {
     id "com.avast.gradle.docker-compose" version "${dockerComposePluginVersion}"
     id "com.github.jk1.dependency-license-report" version "${dependencyLicenseReportVersion}"
     id "project-report"
-    id "org.owasp.dependencycheck" version "7.1.2"
+    id "org.owasp.dependencycheck" version "8.4.0"
 }
 
 jacoco {
@@ -130,7 +130,7 @@ subprojects { subproject ->
         apply plugin: "com.avast.gradle.docker-compose"
         apply plugin: "org.jetbrains.dokka"
         apply plugin: "maven-publish"
-        apply plugin: "org.owasp.dependencycheck
+        apply plugin: "org.owasp.dependencycheck"
 
         tasks.register("allDeps", DependencyReportTask) {}
 
