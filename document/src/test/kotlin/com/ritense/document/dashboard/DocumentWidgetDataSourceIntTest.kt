@@ -75,6 +75,27 @@ class DocumentWidgetDataSourceIntTest @Autowired constructor(
         assertThat(result.value).isEqualTo(expectedCount.toLong())
     }
 
+    @Test
+    fun `should count by documentDefinitionName and null criteria`() {
+        documentRepository.deleteAll()
+        val definition = definition()
+
+        val street = "Sesame Street"
+        repeat(3) {
+            createDocument(definition, street)
+        }
+        createDocument(definition)
+
+        val documentDefinitionName = definition.id().name()
+
+        val properties = DocumentCountDataSourceProperties(
+            documentDefinitionName,
+            null
+        )
+        val result = documentWidgetDataSource.getCaseCount(properties)
+        assertThat(result.value).isEqualTo(4)
+    }
+
     private fun createDocument(documentDefinition: JsonSchemaDocumentDefinition, street: String = "Funenpark"): CreateDocumentResult? {
         val content = JsonDocumentContent("""{"street": "$street", "housenumber": 1}""")
         return runWithoutAuthorization {

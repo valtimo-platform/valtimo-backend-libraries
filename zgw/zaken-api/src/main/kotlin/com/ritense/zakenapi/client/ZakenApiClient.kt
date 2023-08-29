@@ -228,6 +228,27 @@ class ZakenApiClient(
         return result?.body!!
     }
 
+    fun setZaakOpschorting(
+        authentication: ZakenApiAuthentication,
+        url: URI,
+        request: ZaakopschortingRequest,
+    ): ZaakopschortingResponse {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .patch()
+            .uri { url }
+            .headers(this::defaultHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(request))
+            .retrieve()
+            .toEntity(ZaakopschortingResponse::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
     fun getZaak(authentication: ZakenApiAuthentication, zaakUrl: URI): ZaakResponse {
         val result = webclientBuilder
             .clone()
