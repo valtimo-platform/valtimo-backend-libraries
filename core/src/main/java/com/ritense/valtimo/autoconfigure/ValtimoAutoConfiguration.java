@@ -41,14 +41,10 @@ import com.ritense.valtimo.processdefinition.repository.ProcessDefinitionPropert
 import com.ritense.valtimo.repository.CamundaReportingRepository;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
 import com.ritense.valtimo.repository.UserSettingsRepository;
-import com.ritense.valtimo.security.permission.Permission;
-import com.ritense.valtimo.security.permission.TaskAccessPermission;
-import com.ritense.valtimo.security.permission.ValtimoPermissionEvaluator;
 import com.ritense.valtimo.service.AuthorizedUsersServiceImpl;
 import com.ritense.valtimo.service.BpmnModelService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import com.ritense.valtimo.service.ContextService;
 import com.ritense.valtimo.service.CurrentUserServiceImpl;
 import com.ritense.valtimo.service.ProcessPropertyService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
@@ -96,22 +92,6 @@ public class ValtimoAutoConfiguration {
     @ConditionalOnMissingBean(BpmnModelService.class)
     public BpmnModelService bpmnModelService(final CustomRepositoryServiceImpl repositoryService) {
         return new BpmnModelService(repositoryService);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ValtimoPermissionEvaluator.class)
-    public ValtimoPermissionEvaluator valtimoPermissionEvaluator(
-        final TaskAccessPermission taskAccessPermission
-    ) {
-        final HashMap<String, Permission> permissionMap = new HashMap<>();
-        permissionMap.put("taskAccess", taskAccessPermission);
-        return new ValtimoPermissionEvaluator(permissionMap);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(TaskAccessPermission.class)
-    public TaskAccessPermission taskAccessPermission(final CamundaTaskService taskService) {
-        return new TaskAccessPermission(taskService);
     }
 
     @Bean
@@ -182,7 +162,6 @@ public class ValtimoAutoConfiguration {
     public CamundaTaskService camundaTaskService(
         final TaskService taskService,
         final FormService formService,
-        final ContextService contextService,
         final DelegateTaskHelper delegateTaskHelper,
         final CamundaTaskRepository camundaTaskRepository,
         final CamundaIdentityLinkRepository camundaIdentityLinkRepository,
@@ -196,7 +175,6 @@ public class ValtimoAutoConfiguration {
         return new CamundaTaskService(
             taskService,
             formService,
-            contextService,
             delegateTaskHelper,
             camundaTaskRepository,
             camundaIdentityLinkRepository,

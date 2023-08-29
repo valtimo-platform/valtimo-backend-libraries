@@ -20,31 +20,19 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="Ritense" id="1">
-        <createTable tableName="valtimo_changelog">
-            <column name="id" type="VARCHAR(255)">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="key" type="VARCHAR(255)"/>
-            <column name="filename" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="date_executed" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="order_executed" type="${intType}">
-                <constraints nullable="false" unique="true"/>
-            </column>
-            <column name="md5sum" type="VARCHAR(35)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-        </createTable>
+        <dropTable tableName="context_processes"/>
     </changeSet>
 
     <changeSet author="Ritense" id="2">
-        <dropUniqueConstraint
-            tableName="valtimo_changelog"
-            constraintName="valtimo_changelog_md5sum_key"
-            uniqueColumns="md5sum"/>
+        <dropTable tableName="context_roles"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="3">
+        <dropTable tableName="menu_item"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="4">
+        <dropTable tableName="context"/>
     </changeSet>
 
 </databaseChangeLog>

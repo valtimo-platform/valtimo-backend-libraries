@@ -19,10 +19,8 @@ package com.ritense.processdocument.service.impl;
 import com.ritense.processdocument.BaseIntegrationTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Pageable;
 
 import javax.transaction.Transactional;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,18 +41,6 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceIntTest extends BaseInteg
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
         assertThat(processDocumentDefinitions.get(0).canInitializeDocument()).isTrue();
         assertThat(processDocumentDefinitions.get(0).startableByUser()).isTrue();
-    }
-
-    @Test
-    void shouldDeployProcessContextFromResourceFolder() {
-        var contextProcesses = contextService.findAll(Pageable.unpaged()).stream()
-                .flatMap(c -> c.getProcesses().stream())
-                .filter(cp -> cp.getProcessDefinitionKey().equals(PROCESS_DEFINITION_KEY))
-                .collect(Collectors.toList());
-
-        assertThat(contextProcesses.size()).isEqualTo(1);
-        assertThat(contextProcesses.get(0).getProcessDefinitionKey()).isEqualTo(PROCESS_DEFINITION_KEY);
-        assertThat(contextProcesses.get(0).isVisibleInMenu()).isTrue();
     }
 
 }
