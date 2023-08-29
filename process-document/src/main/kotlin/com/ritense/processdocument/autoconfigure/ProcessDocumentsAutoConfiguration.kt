@@ -68,12 +68,14 @@ class ProcessDocumentsAutoConfiguration {
     fun documentDelegateService(
         @Lazy processDocumentService: ProcessDocumentService,
         documentService: DocumentService,
-        jsonSchemaDocumentService: JsonSchemaDocumentService
+        jsonSchemaDocumentService: JsonSchemaDocumentService,
+        userManagementService: UserManagementService
     ): DocumentDelegateService {
         return DocumentDelegateService(
             processDocumentService,
             documentService,
-            jsonSchemaDocumentService
+            jsonSchemaDocumentService,
+            userManagementService
         )
     }
     @ProcessBean
