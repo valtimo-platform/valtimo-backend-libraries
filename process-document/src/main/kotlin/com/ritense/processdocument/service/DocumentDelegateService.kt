@@ -26,18 +26,20 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
+import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.json.Mapper
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.time.LocalDateTime
-import java.util.UUID
 import java.util.Optional
+import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 class DocumentDelegateService(
     private val processDocumentService: ProcessDocumentService,
     private val documentService: DocumentService,
-    private val jsonSchemaDocumentService: JsonSchemaDocumentService
+    private val jsonSchemaDocumentService: JsonSchemaDocumentService,
+    private val userManagementService: UserManagementService,
 ) {
 
     private val mapper = Mapper.INSTANCE.get()
@@ -83,6 +85,29 @@ class DocumentDelegateService(
 
     fun findValueByJsonPointerOrDefault(jsonPointer: String?, execution: DelegateExecution, defaultValue: Any): Any {
         return findOptionalValueByJsonPointer(jsonPointer, execution).orElse(defaultValue)
+    }
+
+    fun setAssignee(execution: DelegateExecution, userEmail: String?) {
+        if (userEmail == null) {
+            unassign(execution)
+        }
+        logger.debug("Assigning user {} to document {}", userEmail, execution.processBusinessKey)
+        AuthorizationContext.runWithoutAuthorization {
+            val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+            val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
+            val user = userManagementService.findByEmail(userEmail)
+                .orElseThrow { IllegalArgumentException("No user found with email: $userEmail") }
+            documentService.assignUserToDocument(documentId.id, user.id)
+        }
+    }
+
+    fun unassign(execution: DelegateExecution) {
+        logger.debug("Unassigning user from document {}", execution.processBusinessKey)
+        AuthorizationContext.runWithoutAuthorization {
+            val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
+            val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
+            documentService.unassignUserFromDocument(documentId.id)
+        }
     }
 
     private fun findOptionalValueByJsonPointer(jsonPointer: String?, execution: DelegateExecution): Optional<Any> {
