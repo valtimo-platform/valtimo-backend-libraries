@@ -28,7 +28,6 @@ import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
 import java.util.UUID
 
-
 class CustomProcessLinkUpdateRequestDtoTest {
 
     private val mapper = jacksonObjectMapper().apply {
