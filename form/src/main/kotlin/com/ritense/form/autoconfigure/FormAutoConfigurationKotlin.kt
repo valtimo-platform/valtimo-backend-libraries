@@ -57,9 +57,13 @@ class FormAutoConfigurationKotlin {
     @ConditionalOnMissingBean(FormResource::class)
     fun formResource(
         formSubmissionService: FormSubmissionService,
+        prefillFormService: PrefillFormService,
+        formDefinitionService: FormDefinitionService,
     ): FormResource {
         return FormResource(
             formSubmissionService,
+            prefillFormService,
+            formDefinitionService
         )
     }
 
