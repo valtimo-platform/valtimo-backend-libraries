@@ -29,6 +29,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.domain.FormProcessLink
 import com.ritense.form.service.impl.FormIoFormDefinitionService
+import com.ritense.form.service.impl.DefaultFormSubmissionService
 import com.ritense.form.web.rest.dto.FormSubmissionResultFailed
 import com.ritense.form.web.rest.dto.FormSubmissionResultSucceeded
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
@@ -64,9 +65,9 @@ import java.util.Optional
 import java.util.UUID
 import java.util.stream.Collectors
 
-class FormSubmissionServiceTest {
+class DefaultFormSubmissionServiceTest {
 
-    lateinit var formSubmissionService: FormSubmissionService
+    lateinit var defaultFormSubmissionService: DefaultFormSubmissionService
     lateinit var processLinkService: ProcessLinkService
     lateinit var formDefinitionService: FormIoFormDefinitionService
     lateinit var documentService: JsonSchemaDocumentService
@@ -93,7 +94,7 @@ class FormSubmissionServiceTest {
         camundaProcessService = mock()
         applicationEventPublisher = mock()
         prefillFormService = mock()
-        formSubmissionService = FormSubmissionService(
+        defaultFormSubmissionService = DefaultFormSubmissionService(
             processLinkService,
             formDefinitionService,
             documentService,
@@ -134,7 +135,7 @@ class FormSubmissionServiceTest {
             .thenReturn(ModifyDocumentAndCompleteTaskResultSucceeded(document))
 
         //When
-        val formSubmissionResult = formSubmissionService.handleSubmission(
+        val formSubmissionResult = defaultFormSubmissionService.handleSubmission(
             processLinkId = formProcessLink(START_EVENT_START).id,
             formData = formData,
             documentId = null,
@@ -161,7 +162,7 @@ class FormSubmissionServiceTest {
             .thenReturn(ModifyDocumentAndCompleteTaskResultSucceeded(document))
 
         //When
-        val formSubmissionResult = formSubmissionService.handleSubmission(
+        val formSubmissionResult = defaultFormSubmissionService.handleSubmission(
             processLinkId = formProcessLink(START_EVENT_START).id,
             formData = formData,
             documentId = documentId,
@@ -188,7 +189,7 @@ class FormSubmissionServiceTest {
             .thenReturn(ModifyDocumentAndCompleteTaskResultSucceeded(document))
 
         //When
-        val formSubmissionResult = formSubmissionService.handleSubmission(
+        val formSubmissionResult = defaultFormSubmissionService.handleSubmission(
             processLinkId = formProcessLink.id,
             formData = formData,
             documentId = documentId,
@@ -207,7 +208,7 @@ class FormSubmissionServiceTest {
         val formData = JsonNodeFactory.instance.objectNode()
         formData.put("name", "value")
 
-        val formSubmissionResult = formSubmissionService.handleSubmission(
+        val formSubmissionResult = defaultFormSubmissionService.handleSubmission(
             processLinkId = formProcessLink.id,
             formData = formData,
             documentId = UUID.randomUUID().toString(),
@@ -226,7 +227,7 @@ class FormSubmissionServiceTest {
             .thenThrow(DocumentNotFoundException("Document not found with id: $documentId"))
 
         //When
-        val documentNotFoundException = formSubmissionService.handleSubmission(
+        val documentNotFoundException = defaultFormSubmissionService.handleSubmission(
             processLinkId = formProcessLink.id,
             formData = formData(),
             documentId = documentId,
@@ -249,7 +250,7 @@ class FormSubmissionServiceTest {
         whenever(documentService.get(documentId)).thenReturn(document)
 
         //When
-        val documentNotFoundException = formSubmissionService.handleSubmission(
+        val documentNotFoundException = defaultFormSubmissionService.handleSubmission(
             processLinkId = formProcessLink.id,
             formData = formData,
             documentId = documentId,
@@ -270,7 +271,7 @@ class FormSubmissionServiceTest {
         whenever(documentService.get(documentId)).thenReturn(document)
 
         //When
-        val documentNotFoundException = formSubmissionService.handleSubmission(
+        val documentNotFoundException = defaultFormSubmissionService.handleSubmission(
             processLinkId = formProcessLink.id,
             formData = formData,
             documentId = documentId,
