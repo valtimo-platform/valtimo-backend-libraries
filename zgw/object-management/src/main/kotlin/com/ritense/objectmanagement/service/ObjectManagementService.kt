@@ -75,17 +75,19 @@ class ObjectManagementService(
                     "This title already exists. Please choose another title"
                 )
             }
-            objectManagementRepository.save(objectManagement)
+            val result = objectManagementRepository.save(objectManagement)
+            return result
         }
 
     @Transactional
     fun update(objectManagement: ObjectManagement): ObjectManagement =
         with(objectManagementRepository.findByTitle(objectManagement.title)) {
-            if (this != null && objectManagement.id != id) {
+            val result = if (this != null && objectManagement.id != id) {
                 objectManagementRepository.save(objectManagement.copy(id = this.id))
             } else {
                 objectManagementRepository.save(objectManagement)
             }
+            return result
         }
 
     fun getById(id: UUID): ObjectManagement? = objectManagementRepository.findByIdOrNull(id)
@@ -95,7 +97,9 @@ class ObjectManagementService(
     fun getAll(): List<ObjectManagement> = objectManagementRepository.findAll()
 
     @Transactional
-    fun deleteById(id: UUID) = objectManagementRepository.deleteById(id)
+    fun deleteById(id: UUID) {
+        objectManagementRepository.deleteById(id)
+    }
 
     fun getObjects(id: UUID, pageable: Pageable): PageImpl<ObjectsListRowDto> {
         val objectManagement = getById(id) ?: let {
