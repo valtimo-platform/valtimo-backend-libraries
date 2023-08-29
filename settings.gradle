@@ -70,7 +70,6 @@ include(
     "value-resolver",
     "valtimo-dependencies",
     "valtimo-gzac-dependencies",
-    "view-configurator",
     "web",
     "zgw:catalogi-api",
     "zgw:documenten-api",
