@@ -18,6 +18,9 @@ package com.ritense.case.service
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import java.io.FileNotFoundException
 import java.nio.charset.StandardCharsets
@@ -41,6 +44,7 @@ open class CaseListDeploymentService(
 
     @Transactional
     @EventListener(ApplicationReadyEvent::class)
+    @RunWithoutAuthorization
     open fun deployColumns() {
         logger.info("Deploying case list column definitions")
         try {

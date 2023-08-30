@@ -16,7 +16,6 @@
 
 package com.ritense.document.service.impl;
 
-import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -34,8 +33,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
 import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.util.Set;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")
@@ -52,7 +50,6 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     public void beforeEach() {
         definition = definition();
         documentDefinitionService.store(definition);
-        documentDefinitionService.putDocumentDefinitionRoles(definition.id().name(), Set.of(FULL_ACCESS_ROLE));
         document = (JsonSchemaDocument) createDocument("{\"street\": \"Funenpark\"}");
     }
 
@@ -128,7 +125,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     }
 
     private Document createDocument(String content) {
-        return AuthorizationContext.runWithoutAuthorization(() -> documentService.createDocument(
+        return runWithoutAuthorization(() -> documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
                 new JsonDocumentContent(content).asJson()

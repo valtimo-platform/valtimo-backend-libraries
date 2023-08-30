@@ -19,6 +19,7 @@ package com.ritense.processdocument.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.annotation.RunWithoutAuthorization;
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent;
 import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.service.DocumentDefinitionService;
@@ -54,6 +55,7 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
     }
 
     @EventListener(DocumentDefinitionDeployedEvent.class)
+    @RunWithoutAuthorization
     public void deployNewProcessDocumentLinks(DocumentDefinitionDeployedEvent documentDefinitionDeployedEvent) {
         final var documentDefinitionName = documentDefinitionDeployedEvent.documentDefinition().id().name();
         final var path = getProcessDocumentLinkResourcePath(documentDefinitionName);
@@ -70,6 +72,7 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
     }
 
     @EventListener(ApplicationReadyEvent.class)
+    @RunWithoutAuthorization
     public void deployChangedProcessDocumentLinks() throws IOException {
         final var resources = loadResources(getProcessDocumentLinkResourcesPath());
         for (var resource : resources) {

@@ -153,6 +153,11 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
     }
 
     @Override
+    public String toString() {
+        return id.toString();
+    }
+
+    @Override
     @JsonIgnore
     public JsonSchemaDocumentDefinitionId getId() {
         return id;

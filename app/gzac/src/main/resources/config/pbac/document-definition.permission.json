@@ -1,0 +1,40 @@
+{
+    "changesetId": "document-definitions-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
+            "action": "view",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
+            "action": "view_list",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
+            "action": "view",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
+            "action": "view_list",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
+            "action": "create",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
+            "action": "modify",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
+            "action": "delete",
+            "roleKey": "ROLE_ADMIN"
+        }
+    ]
+}

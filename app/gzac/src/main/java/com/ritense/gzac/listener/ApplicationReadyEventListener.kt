@@ -66,7 +66,6 @@ class ApplicationReadyEventListener(
     @EventListener(DocumentDefinitionDeployedEvent::class)
     fun handleDocumentDefinitionDeployed(event: DocumentDefinitionDeployedEvent) {
         connectZaakType(event)
-        setDocumentDefinitionRole(event)
     }
 
     fun createConnectors() {
@@ -305,13 +304,6 @@ class ApplicationReadyEventListener(
         documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
             "bezwaar",
             DocumentDefinitionProcessRequest("document-upload", "DOCUMENT_UPLOAD")
-        )
-    }
-
-    private fun setDocumentDefinitionRole(event: DocumentDefinitionDeployedEvent) {
-        documentDefinitionService.putDocumentDefinitionRoles(
-            event.documentDefinition().id().name(),
-            setOf(AuthoritiesConstants.ADMIN, AuthoritiesConstants.USER)
         )
     }
 

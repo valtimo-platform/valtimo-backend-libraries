@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
@@ -44,6 +45,8 @@ class UndeployJsonSchemaDocumentDefinitionServiceTest extends BaseTest {
     private UndeployDocumentDefinitionEvent undeployDocumentDefinitionEvent;
     private JsonSchemaDocumentDefinition documentDefinition;
 
+    private AuthorizationService authorizationService;
+
     @BeforeEach
     void setUp() {
         undeployDocumentDefinitionEvent = new UndeployDocumentDefinitionEvent(documentDefinitionName);
@@ -51,11 +54,13 @@ class UndeployJsonSchemaDocumentDefinitionServiceTest extends BaseTest {
         documentDefinitionService = mock(JsonSchemaDocumentDefinitionService.class);
         documentService = mock(JsonSchemaDocumentService.class);
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
+        authorizationService = mock(AuthorizationService.class);
 
         undeployJsonSchemaDocumentDefinitionService = new UndeployJsonSchemaDocumentDefinitionService(
             documentDefinitionService,
             documentService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            authorizationService
         );
     }
 
