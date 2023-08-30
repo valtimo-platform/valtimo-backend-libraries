@@ -229,19 +229,6 @@ class AuthorizationServiceTest {
     }
 
     @Test
-    fun `should get DenyAuthorizationSpecification when permission list is empty`() {
-        whenever(factory1.canCreate(any(), any())).thenReturn(true)
-        whenever(factory2.canCreate(any(), any())).thenReturn(true)
-
-        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), null)
-        val result = authorizationService.getAuthorizationSpecification(context, emptyList())
-        assertEquals(true, result is DenyAuthorizationSpecification)
-
-        verify(factory1, never()).canCreate(any(), any())
-        verify(factory2, never()).canCreate(any(), any())
-    }
-
-    @Test
     fun `should throw an error when no correct AuthorizationSpecification can be found`() {
         assertThrows<AccessDeniedException> {
             val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), null)

@@ -50,6 +50,7 @@ public class GzacApplication {
         Environment environment = app.run(args).getEnvironment();
         logger.info(
             """
+
                 ----------------------------------------------------------
                 \tApplication '{}' is running! Access URLs:
                 \tLocal: \t\thttp://127.0.0.1:{}

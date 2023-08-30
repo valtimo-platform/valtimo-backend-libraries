@@ -77,7 +77,7 @@ class CatalogiService(
             .createInstance(CatalogiApiPlugin::class.java, CatalogiApiPlugin.findConfigurationByUrl(zaakTypeUrl))
 
         if (catalogiApiPluginInstance == null) {
-            logger.debug {"No catalogi plugin configuration was found for zaaktype with URL $zaakTypeUrl" }
+            logger.error {"No catalogi plugin configuration was found for zaaktype with URL $zaakTypeUrl" }
         }
 
         return catalogiApiPluginInstance
@@ -87,7 +87,7 @@ class CatalogiService(
         return try {
             zaaktypeUrlProvider.getZaaktypeUrl(documentDefinitionName)
         } catch (e: ZaakTypeLinkNotFoundException) {
-            logger.debug { e }
+            logger.error { e }
             null
         }
     }
@@ -96,7 +96,7 @@ class CatalogiService(
         return try {
             zaaktypeUrlProvider.getZaaktypeUrlByCaseDefinitionName(caseDefinitionName)
         } catch (e: ZaakTypeLinkNotFoundException) {
-            logger.debug { e }
+            logger.error { e }
             null
         }
     }
