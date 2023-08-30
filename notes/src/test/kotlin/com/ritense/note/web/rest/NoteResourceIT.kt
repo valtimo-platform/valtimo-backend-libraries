@@ -202,6 +202,6 @@ internal class NoteResourceIT : BaseIntegrationTest() {
 
     companion object {
         private const val TEST_USER = "user@valtimo.nl"
-        const val PROFILE_DOCUMENT_DEFINITION_NAME = "profile"
+        private const val PROFILE_DOCUMENT_DEFINITION_NAME = "profile"
     }
 }
