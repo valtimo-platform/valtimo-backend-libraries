@@ -1,5 +1,5 @@
 {
-    "changesetId": "task-admin-v2",
+    "changesetId": "search-field-admin-v1",
     "permissions": [
         {
             "resourceType": "com.ritense.document.domain.impl.searchfield.SearchField",
