@@ -29,6 +29,7 @@ import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorFluentBuilder
 import com.ritense.connector.service.ConnectorService
 import com.ritense.connector.web.rest.impl.ConnectorResource
+import com.ritense.valtimo.contract.annotation.ProcessBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -66,6 +67,7 @@ class ConnectorAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ConnectorService::class)
+    @ProcessBean
     fun connectorService(
         applicationContext: ApplicationContext,
         connectorTypeInstanceRepository: ConnectorTypeInstanceRepository,
