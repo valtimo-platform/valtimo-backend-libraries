@@ -1,5 +1,7 @@
 package com.ritense.case.service
 
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
@@ -19,13 +21,15 @@ class CaseDefinitionDeploymentServiceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create settings when settings are defined`() {
-        documentDefinitionService.deploy(
-            "" +
-                "{\n" +
-                "    \"\$id\": \"all-properties-present.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-                "}\n"
-        )
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "" +
+                    "{\n" +
+                    "    \"\$id\": \"all-properties-present.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+            )
+        }
 
         val settings = caseDefinitionSettingsRepository.getById("all-properties-present")
 
@@ -38,26 +42,30 @@ class CaseDefinitionDeploymentServiceIntTest : BaseIntegrationTest() {
     @Test
     @Transactional
     fun `should throw exception when settings are invalid`() {
-        val result = documentDefinitionService.deploy(
-            "" +
-                "{\n" +
-                "    \"\$id\": \"invalid-properties.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-                "}\n"
-        )
+        val result = runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "" +
+                    "{\n" +
+                    "    \"\$id\": \"invalid-properties.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+            )
+        }
 
         assertEquals(1, result.errors().size)
     }
 
     @Test
     fun `should create settings with default values when settings are not defined`() {
-        documentDefinitionService.deploy(
-            "" +
-                "{\n" +
-                "    \"\$id\": \"empty-properties.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-                "}\n"
-        )
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "" +
+                    "{\n" +
+                    "    \"\$id\": \"empty-properties.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+            )
+        }
 
         val settings = caseDefinitionSettingsRepository.getById("empty-properties")
 
@@ -67,13 +75,15 @@ class CaseDefinitionDeploymentServiceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create settings with default values when settings file is not present`() {
-        documentDefinitionService.deploy(
-            "" +
-                "{\n" +
-                "    \"\$id\": \"no-settings-present.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-                "}\n"
-        )
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "" +
+                    "{\n" +
+                    "    \"\$id\": \"no-settings-present.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+            )
+        }
 
         val settings = caseDefinitionSettingsRepository.getById("no-settings-present")
 

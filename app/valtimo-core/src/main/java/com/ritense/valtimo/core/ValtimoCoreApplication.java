@@ -16,19 +16,16 @@
 
 package com.ritense.valtimo.core;
 
-import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.valtimo.config.DefaultProfileUtil;
-import com.ritense.valtimo.core.listener.ApplicationReadyEventListener;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 @SpringBootApplication
 @EnableScheduling
@@ -51,15 +48,6 @@ public class ValtimoCoreApplication {
             environment.getProperty("server.port"),
             InetAddress.getLocalHost().getHostAddress(),
             environment.getProperty("server.port")
-        );
-    }
-
-    @Bean
-    public ApplicationReadyEventListener setupListener(
-        DocumentDefinitionService documentDefinitionService
-    ) {
-        return new ApplicationReadyEventListener(
-            documentDefinitionService
         );
     }
 }

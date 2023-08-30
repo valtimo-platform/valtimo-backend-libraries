@@ -65,13 +65,14 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
 
     @Test
     fun `should not create form flow instance when Camunda user task is created`() {
-        documentDefinitionService.deploy("" +
-            "{\n" +
-            "    \"\$id\": \"testing.schema\",\n" +
-            "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-            "}\n")
-
         runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "" +
+                    "{\n" +
+                    "    \"\$id\": \"testing.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+            )
             processDocumentAssociationService.createProcessDocumentDefinition(
                 ProcessDocumentDefinitionRequest(
                     "formflow-one-task-process",
@@ -107,15 +108,15 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
     @Test
     @WithMockUser(username = TEST_USER, authorities = [AuthoritiesConstants.USER])
     fun `should create form flow instance when task is opened`() {
-        documentDefinitionService.deploy(
-            "" +
-                "{\n" +
-                "    \"\$id\": \"testing.schema\",\n" +
-                "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
-                "}\n"
-        )
-
         runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "" +
+                    "{\n" +
+                    "    \"\$id\": \"testing.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+            )
+
             processDocumentAssociationService.createProcessDocumentDefinition(
                 ProcessDocumentDefinitionRequest(
                     "formflow-one-task-process",

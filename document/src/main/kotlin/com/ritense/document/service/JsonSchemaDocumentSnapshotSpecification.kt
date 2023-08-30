@@ -15,28 +15,24 @@
  */
 package com.ritense.document.service
 
+import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
-import com.ritense.authorization.permission.Permission
-import com.ritense.document.domain.impl.JsonSchemaDocument
-import com.ritense.document.service.impl.JsonSchemaDocumentService
+import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import org.springframework.data.jpa.domain.Specification
-import java.util.UUID
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
-class JsonSchemaDocumentSpecification(
-        authRequest: AuthorizationRequest<JsonSchemaDocument>,
+class JsonSchemaDocumentSnapshotSpecification(
+        authRequest: AuthorizationRequest<JsonSchemaDocumentSnapshot>,
         permissions: List<Permission>,
-        private val documentService: JsonSchemaDocumentService,
         private val queryDialectHelper: QueryDialectHelper
-) : AuthorizationSpecification<JsonSchemaDocument>(authRequest, permissions) {
+) : AuthorizationSpecification<JsonSchemaDocumentSnapshot>(authRequest, permissions) {
 
     override fun toPredicate(
-        root: Root<JsonSchemaDocument>,
+        root: Root<JsonSchemaDocumentSnapshot>,
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
@@ -49,7 +45,7 @@ class JsonSchemaDocumentSpecification(
         }
         val predicates = permissions
             .filter { permission: Permission ->
-                JsonSchemaDocument::class.java == permission.resourceType && authRequest.action == permission.action
+                JsonSchemaDocumentSnapshot::class.java == permission.resourceType && authRequest.action == permission.action
             }
             .map { permission: Permission ->
                 permission.toPredicate(
@@ -63,7 +59,7 @@ class JsonSchemaDocumentSpecification(
         return combinePredicates(criteriaBuilder, predicates)
     }
 
-    override fun identifierToEntity(identifier: String): JsonSchemaDocument {
-        return documentService.get(identifier)
+    override fun identifierToEntity(identifier: String): JsonSchemaDocumentSnapshot {
+        TODO("Not implemented yet")
     }
 }

@@ -101,7 +101,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
     @Test
     void shouldReturnPagedRecordPage() throws Exception {
-        when(documentDefinitionService.findForUser(anyBoolean(), any())).thenReturn(definitionPage);
+        when(documentDefinitionService.findAll(any())).thenReturn(definitionPage);
 
         mockMvc.perform(get("/api/v1/document-definition"))
             .andDo(print())
@@ -113,7 +113,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     @Test
     void shouldReturnPagedRecordPageWithOldSortByNameProperty() throws Exception {
         ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
-        when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
+        when(documentDefinitionService.findAll(pageCaptor.capture())).thenReturn(definitionPage);
 
         mockMvc.perform(get("/api/v1/document-definition?sort=id.name,DESC"))
             .andDo(print())
@@ -129,7 +129,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     @Test
     void shouldReturnPagedRecordPageWithOldSortByVersionProperty() throws Exception {
         ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
-        when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
+        when(documentDefinitionService.findAll(pageCaptor.capture())).thenReturn(definitionPage);
 
         mockMvc.perform(get("/api/v1/document-definition?sort=id.version,DESC"))
             .andDo(print())
@@ -145,7 +145,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     @Test
     void shouldReturnPagedRecordPageWithMultipleOrderProperties() throws Exception {
         ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
-        when(documentDefinitionService.findForUser(anyBoolean(), pageCaptor.capture())).thenReturn(definitionPage);
+        when(documentDefinitionService.findAll(pageCaptor.capture())).thenReturn(definitionPage);
 
         mockMvc.perform(get("/api/v1/document-definition?sort=readOnly,ASC&sort=id.name,DESC&sort=other,ASC"))
             .andDo(print())
@@ -167,7 +167,6 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     void shouldReturnSingleDefinitionRecordByName() throws Exception {
         String definitionName = definition.getId().name();
         when(documentDefinitionService.findLatestByName(anyString())).thenReturn(Optional.of(definition));
-        when(documentDefinitionService.getDocumentDefinitionRoles(eq(definitionName))).thenReturn(Set.of(SOME_ROLE));
         mockMvc.perform(get("/api/v1/document-definition/{name}", definitionName))
             .andDo(print())
             .andExpect(status().isOk())

@@ -27,13 +27,12 @@ import javax.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
-import java.util.Set;
 
 public interface DocumentDefinitionService {
 
     Page<? extends DocumentDefinition> findAll(Pageable pageable);
 
-    Page<? extends DocumentDefinition> findForUser(boolean filteredForRole, Pageable pageable);
+    Page<? extends DocumentDefinition> findAllForManagement(Pageable pageable);
 
     JsonSchemaDocumentDefinitionId findIdByName(String name);
 
@@ -58,12 +57,6 @@ public interface DocumentDefinitionService {
     void removeDocumentDefinition(String documentDefinitionName);
 
     boolean currentUserCanAccessDocumentDefinition(String documentDefinitionName);
-
-    boolean currentUserCanAccessDocumentDefinition(boolean allowPrivilegedRoles, String documentDefinitionName);
-
-    Set<String> getDocumentDefinitionRoles(String documentDefinitionName);
-
-    void putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles);
 
     void validateJsonPath(String documentDefinitionName, String jsonPathExpression) throws ValidationException;
 

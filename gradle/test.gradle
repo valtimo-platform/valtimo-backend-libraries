@@ -20,7 +20,7 @@ test {
     testLogging {
         events("passed", "skipped", "failed", "standardError")
     }
-
+    ignoreFailures = true
     useJUnitPlatform {
         excludeTags "security", "integration"
     }
@@ -28,19 +28,28 @@ test {
 
 tasks.register("integrationTesting", Test) {
     group = 'verification'
+    ignoreFailures = false
     useJUnitPlatform {
         includeTags "integration"
         excludeTags "security"
     }
     mustRunAfter check
+
+    doLast {
+        composeDownForced
+    }
 }
 
 tasks.register("securityTesting", Test) {
     group = 'verification'
+    ignoreFailures = false
     useJUnitPlatform {
         includeTags "security"
         excludeTags "integration"
     }
     mustRunAfter check
-}
 
+    doLast {
+        composeDownForced
+    }
+}

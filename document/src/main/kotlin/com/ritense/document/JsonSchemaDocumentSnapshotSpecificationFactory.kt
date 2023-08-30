@@ -16,33 +16,30 @@
 
 package com.ritense.document
 
+import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
-import com.ritense.authorization.permission.Permission
-import com.ritense.document.domain.impl.JsonSchemaDocument
-import com.ritense.document.service.JsonSchemaDocumentSpecification
-import com.ritense.document.service.impl.JsonSchemaDocumentService
+import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot
+import com.ritense.document.service.JsonSchemaDocumentSnapshotSpecification
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 
-class JsonSchemaDocumentSpecificationFactory(
-    private val documentService: JsonSchemaDocumentService,
+class JsonSchemaDocumentSnapshotSpecificationFactory(
     private var queryDialectHelper: QueryDialectHelper
-) : AuthorizationSpecificationFactory<JsonSchemaDocument> {
+) : AuthorizationSpecificationFactory<JsonSchemaDocumentSnapshot> {
 
     override fun create(
-        request: AuthorizationRequest<JsonSchemaDocument>,
+        request: AuthorizationRequest<JsonSchemaDocumentSnapshot>,
         permissions: List<Permission>
-    ): AuthorizationSpecification<JsonSchemaDocument> {
-        return JsonSchemaDocumentSpecification(
+    ): AuthorizationSpecification<JsonSchemaDocumentSnapshot> {
+        return JsonSchemaDocumentSnapshotSpecification(
             request,
             permissions,
-            documentService,
             queryDialectHelper
         )
     }
 
     override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
-        return JsonSchemaDocument::class.java == request.resourceType
+        return JsonSchemaDocumentSnapshot::class.java == request.resourceType
     }
 }

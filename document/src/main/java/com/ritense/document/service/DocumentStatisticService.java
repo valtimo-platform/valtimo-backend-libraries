@@ -19,9 +19,7 @@ package com.ritense.document.service;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
 import com.ritense.document.domain.search.AssigneeFilter;
-import com.ritense.document.repository.DocumentRepository;
 import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
 public class DocumentStatisticService {
@@ -37,7 +35,7 @@ public class DocumentStatisticService {
     }
 
     public List<UnassignedDocumentCountDto> getUnassignedDocumentCountDtos() {
-        return documentDefinitionService.findForUser(true, Pageable.unpaged())
+        return documentDefinitionService.findAll(Pageable.unpaged())
             .map(documentDefinition -> getUnassignedDocumentCountDto(documentDefinition.id().name()))
             .toList();
     }

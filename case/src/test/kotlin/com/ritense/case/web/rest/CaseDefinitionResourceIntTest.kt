@@ -16,18 +16,19 @@
 
 package com.ritense.case.web.rest
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -37,6 +38,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @Transactional
 class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
@@ -62,14 +65,17 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(username = "user@ritense.com", authorities = [USER])
     fun `should get case settings with default values`() {
-        documentDefinitionService.deploy(
-            "" +
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "" +
                     "{\n" +
                     "    \"\$id\": \"resource-test-default.schema\",\n" +
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
                     "}\n"
-        )
+            )
+        }
         val caseDefinitionName = "resource-test-default"
         mockMvc.perform(
             MockMvcRequestBuilders.get(
@@ -84,13 +90,15 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should update case settings`() {
-        documentDefinitionService.deploy(
-            "" +
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "" +
                     "{\n" +
                     "    \"\$id\": \"resource-test-update.schema\",\n" +
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
                     "}\n"
-        )
+            )
+        }
 
 
         val caseDefinitionName = "resource-test-update"
@@ -113,12 +121,14 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should not update case settings property when it has not been submitted`() {
         val caseDefinitionName = "resource-test-empty"
-        documentDefinitionService.deploy(
-            "{\n" +
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "{\n" +
                     "    \"\$id\": \"$caseDefinitionName.schema\",\n" +
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
                     "}\n"
-        )
+            )
+        }
         val settings = CaseDefinitionSettings(
             caseDefinitionName,
             canHaveAssignee = true,
@@ -147,7 +157,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             MockMvcRequestBuilders.get(
                 "/api/v1/case/{caseDefinitionName}/settings", caseDefinitionName
             )
-        ).andExpect(status().isNotFound)
+        ).andExpect(status().isBadRequest)
     }
 
     @Test
@@ -160,14 +170,15 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                 )
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content("{\"canHaveAssignee\": true, \"autoAssignTasks\": true}")
-        ).andExpect(status().isNotFound)
+        ).andExpect(status().isBadRequest)
     }
 
     @Test
     fun `should create list column`() {
         val caseDefinitionName = "listColumnDocumentDefinition"
-        documentDefinitionService.deploy(
-            "{\n" +
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "{\n" +
                     "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
                     "    \"title\": \"listColumnDocumentDefinition\",\n" +
@@ -183,7 +194,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     "        }\n" +
                     "    }\n" +
                     "}"
-        )
+            )
+        }
         mockMvc.perform(
             MockMvcRequestBuilders.post(
                 LIST_COLUMN_PATH, caseDefinitionName
@@ -196,8 +208,9 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should return bad request on create`() {
         val caseDefinitionName = "listColumnDocumentDefinition"
-        documentDefinitionService.deploy(
-            "{\n" +
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "{\n" +
                     "  \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
                     "  \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
                     "  \"title\": \"listColumnDocumentDefinition\",\n" +
@@ -213,7 +226,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     "    }\n" +
                     "  }\n" +
                     "}"
-        )
+            )
+        }
         createListColumn(
             caseDefinitionName,
             """
@@ -282,8 +296,9 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should update columns for case definition`() {
         val caseDefinitionName = "listColumnDocumentDefinition"
-        documentDefinitionService.deploy(
-            "{\n" +
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "{\n" +
                     "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
                     "    \"title\": \"listColumnDocumentDefinition\",\n" +
@@ -299,7 +314,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     "        }\n" +
                     "    }\n" +
                     "}"
-        )
+            )
+        }
         createListColumn(
             caseDefinitionName,
             """
@@ -389,8 +405,9 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should delete column for case definition`() {
         val caseDefinitionName = "listColumnDocumentDefinition"
-        documentDefinitionService.deploy(
-            "{\n" +
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "{\n" +
                     "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
                     "    \"title\": \"listColumnDocumentDefinition\",\n" +
@@ -406,7 +423,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     "        }\n" +
                     "    }\n" +
                     "}"
-        )
+            )
+        }
         val columnKey = "first-name"
         createListColumn(
             caseDefinitionName,
@@ -437,8 +455,9 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should respond with no content for non existing column`() {
         val caseDefinitionName = "listColumnDocumentDefinition"
-        documentDefinitionService.deploy(
-            "{\n" +
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "{\n" +
                     "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
                     "    \"title\": \"listColumnDocumentDefinition\",\n" +
@@ -454,7 +473,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     "        }\n" +
                     "    }\n" +
                     "}"
-        )
+            )
+        }
         val columnKey = "first-name"
         mockMvc.perform(
             MockMvcRequestBuilders.delete("$LIST_COLUMN_PATH/{columnKey}", caseDefinitionName, columnKey)
@@ -475,8 +495,9 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     @Test
     fun `should insert list column with correct order`() {
         val caseDefinitionName = "listColumnDocumentDefinition"
-        documentDefinitionService.deploy(
-            "{\n" +
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "{\n" +
                     "    \"\$id\": \"listColumnDocumentDefinition.schema\",\n" +
                     "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
                     "    \"title\": \"listColumnDocumentDefinition\",\n" +
@@ -492,7 +513,8 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
                     "        }\n" +
                     "    }\n" +
                     "}"
-        )
+            )
+        }
         createListColumn(
             caseDefinitionName,
             """
