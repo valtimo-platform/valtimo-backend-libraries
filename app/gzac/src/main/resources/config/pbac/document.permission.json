@@ -89,6 +89,11 @@
         },
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "modify",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
             "action": "view_list",
             "roleKey": "ROLE_ADMIN"
         },
