@@ -17,6 +17,8 @@
 package com.ritense.case.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
@@ -43,7 +45,7 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
 
     @Test
     fun `should load columns on application startup`() {
-        val listColumns = caseDefinitionService.getListColumns("house")
+        val listColumns = runWithoutAuthorization { caseDefinitionService.getListColumns("house") }
         val firstColumn = listColumns[0]
 
         assertEquals("some-title", firstColumn.title)
@@ -94,7 +96,7 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
             caseDefinitionService
         )
 
-        service.deployColumns()
+        runWithoutAuthorization { service.deployColumns() }
 
         //override configuration by loading new file
         val newResource = mock<Resource>()
@@ -121,9 +123,9 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
 
         doReturn(arrayOf(newResource)).whenever(spyResolver).getResources(CASE_LIST_DEFINITIONS_PATH)
 
-        service.deployColumns()
+        runWithoutAuthorization { service.deployColumns() }
 
-        val listColumns = caseDefinitionService.getListColumns("some-document")
+        val listColumns = runWithoutAuthorization { caseDefinitionService.getListColumns("some-document") }
         val firstColumn = listColumns[0]
 
         assertEquals(1, listColumns.size)

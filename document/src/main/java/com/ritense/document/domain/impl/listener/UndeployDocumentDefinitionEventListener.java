@@ -16,6 +16,7 @@
 
 package com.ritense.document.domain.impl.listener;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent;
 import org.slf4j.Logger;
@@ -39,6 +40,9 @@ public class UndeployDocumentDefinitionEventListener {
     public void handleEvent(UndeployDocumentDefinitionEvent event) throws Exception {
         final String documentDefinitionName = event.getDocumentDefinitionName();
         logger.debug("Undeployed document definition with name: {}. remove all snapshots", event.getDocumentDefinitionName());
-        documentSnapshotService.deleteSnapshotsBy(documentDefinitionName);
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            documentSnapshotService.deleteSnapshotsBy(documentDefinitionName);
+            return null;
+        });
     }
 }

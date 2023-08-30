@@ -69,6 +69,10 @@ sonarqube {
     }
 }
 
+dockerCompose {
+    useDockerComposeV2 = false
+}
+
 configurations {
     testImplementation {
         // Globally exclude JUnit4, will not be on the testCompileClasspath thus
@@ -142,6 +146,10 @@ subprojects { subproject ->
             tasks.getByName('javadocJar') {
                 from dokkaJavadoc
             }
+        }
+
+        dockerCompose {
+            useDockerComposeV2 = false
         }
 
         tasks.withType(KotlinCompile).configureEach {

@@ -16,6 +16,7 @@
 
 package com.ritense.document.domain.impl.listener;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.service.DocumentDefinitionService;
 import javax.transaction.Transactional;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -35,6 +36,9 @@ public class ApplicationReadyEventListenerImpl {
     @EventListener(ApplicationReadyEvent.class)
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public void handle() {
-        documentDefinitionService.deployAll(true, true);
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            documentDefinitionService.deployAll(true, true);
+            return null;
+        });
     }
 }

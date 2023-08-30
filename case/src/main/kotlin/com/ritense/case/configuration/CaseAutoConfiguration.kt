@@ -18,6 +18,7 @@ package com.ritense.case.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.ritense.authorization.AuthorizationService
 import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
@@ -77,12 +78,14 @@ class CaseAutoConfiguration {
         caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
         documentDefinitionService: DocumentDefinitionService,
         valueResolverService: ValueResolverService,
+        authorizationService: AuthorizationService,
         ): CaseDefinitionService {
         return CaseDefinitionService(
             repository,
             caseDefinitionListColumnRepository,
             documentDefinitionService,
-            valueResolverService
+            valueResolverService,
+            authorizationService
         )
     }
 

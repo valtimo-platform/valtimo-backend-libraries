@@ -22,6 +22,7 @@ import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -30,11 +31,11 @@ public interface DocumentSnapshotService {
     Optional<JsonSchemaDocumentSnapshot> findById(DocumentSnapshot.Id id);
 
     Page<? extends DocumentSnapshot> getDocumentSnapshots(
-        String definitionName,
-        JsonSchemaDocumentId documentId,
-        LocalDateTime fromDateTime,
-        LocalDateTime toDateTime,
-        Pageable pageable
+        @Nullable String definitionName,
+        @Nullable JsonSchemaDocumentId documentId,
+        @Nullable LocalDateTime fromDateTime,
+        @Nullable LocalDateTime toDateTime,
+        @Nullable Pageable pageable
     );
 
     void makeSnapshot(Document.Id documentId, LocalDateTime createdOn, String createdBy);

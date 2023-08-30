@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.UserManagementServiceHolder
+import com.ritense.authorization.permission.condition.PermissionConditionOperator.CONTAINS
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.GREATER_THAN
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.LESS_THAN
@@ -144,6 +145,26 @@ class FieldPermissionConditionTest {
         val condition = FieldPermissionCondition("child.property", EQUAL_TO, "\${currentUserId}")
         val result = condition.isValid(entity)
         assertTrue(result)
+    }
+
+    @Test
+    fun `should pass contains validation`() {
+        val entity = TestEntity(
+            TestChildEntity(listOf("a", "b", "c"))
+        )
+        val condition = FieldPermissionCondition("child.property", CONTAINS, "b")
+        val result = condition.isValid(entity)
+        assertTrue(result)
+    }
+
+    @Test
+    fun `should not pass contains validation`() {
+        val entity = TestEntity(
+            TestChildEntity(listOf("a", "b", "c"))
+        )
+        val condition = FieldPermissionCondition("child.property", CONTAINS, "Z")
+        val result = condition.isValid(entity)
+        assertFalse(result)
     }
 
     @Test

@@ -19,7 +19,7 @@ package com.ritense.authorization.permission.condition
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.authorization.permission.condition.PermissionExpressionOperator.EQUAL_TO
+import com.ritense.authorization.permission.condition.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
 import kotlin.test.assertEquals
