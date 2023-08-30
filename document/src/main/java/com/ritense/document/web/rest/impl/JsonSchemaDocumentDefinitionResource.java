@@ -31,11 +31,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static org.springframework.http.ResponseEntity.ok;
 
 public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionResource {
@@ -55,9 +53,22 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(boolean filteredOnRole, Pageable pageable) {
-        // this keeps the API backwards compatible with old jpa entity columns in the sort
-        PageRequest pageRequest = PageRequest.of(
+    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(Pageable pageable) {
+        return ok(documentDefinitionService.findAll(fixPageable(pageable)));
+    }
+
+    @Override
+    public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(Pageable pageable) {
+        return ok(runWithoutAuthorization(() -> documentDefinitionService.findAllForManagement(fixPageable(pageable))));
+    }
+
+    /**
+     * This keeps the API backwards compatible with old jpa entity columns in the sort
+     * @param pageable
+     * @return
+     */
+    private Pageable fixPageable(Pageable pageable) {
+        return PageRequest.of(
             pageable.getPageNumber(),
             pageable.getPageSize(),
             Sort.by(
@@ -68,8 +79,6 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
                     ).collect(Collectors.toList())
             )
         );
-
-        return ok(documentDefinitionService.findForUser(filteredOnRole, pageRequest));
     }
 
     private String mapSortProperty(String property) {
@@ -90,10 +99,6 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
 
     @Override
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(String name) {
-        if (!documentDefinitionService.currentUserCanAccessDocumentDefinition(true, name)) {
-            ResponseEntity.notFound();
-        }
-
         return ResponseEntity.of(documentDefinitionService.findLatestByName(name));
     }
 
@@ -110,19 +115,6 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     @Override
     public ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(String name) {
         return applyResult(undeployDocumentDefinitionService.undeploy(name));
-    }
-
-    @Override
-    public ResponseEntity<Set<String>> getDocumentDefinitionRoles(String documentDefinitionName) {
-        return ResponseEntity.ok()
-            .body(documentDefinitionService.getDocumentDefinitionRoles(documentDefinitionName));
-    }
-
-    @Override
-    public ResponseEntity<Void> putDocumentDefinitionRoles(String documentDefinitionName, Set<String> roles) {
-        documentDefinitionService.putDocumentDefinitionRoles(documentDefinitionName, roles);
-
-        return ResponseEntity.ok().build();
     }
 
     <T extends DeployDocumentDefinitionResult> ResponseEntity<T> applyResult(T result) {

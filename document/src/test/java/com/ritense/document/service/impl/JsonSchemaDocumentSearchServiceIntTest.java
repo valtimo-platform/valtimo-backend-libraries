@@ -73,7 +73,6 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     public void beforeEach() {
 
         definition = definition();
-        documentDefinitionService.putDocumentDefinitionRoles(definition.id().name(), Set.of(USER, DEVELOPER));
         var content = new JsonDocumentContent("{\"street\": \"Funenpark\"}");
 
         originalDocument = AuthorizationContext.runWithoutAuthorization(() -> documentService.createDocument(
@@ -94,7 +93,6 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         JsonSchemaDocumentDefinition definitionHouseV2 = definitionOf("house", 2, "noautodeploy/house_v2.schema.json");
         documentDefinitionService.store(definitionHouseV2);
-        documentDefinitionService.putDocumentDefinitionRoles(definitionHouseV2.id().name(), Set.of(USER, DEVELOPER));
         documentService.createDocument(
             new NewDocumentRequest(
                 definitionHouseV2.id().name(),

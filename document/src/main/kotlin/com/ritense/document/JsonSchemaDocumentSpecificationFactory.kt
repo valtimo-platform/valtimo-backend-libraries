@@ -31,18 +31,18 @@ class JsonSchemaDocumentSpecificationFactory(
 ) : AuthorizationSpecificationFactory<JsonSchemaDocument> {
 
     override fun create(
-            context: AuthorizationRequest<JsonSchemaDocument>,
-            permissions: List<Permission>
+        request: AuthorizationRequest<JsonSchemaDocument>,
+        permissions: List<Permission>
     ): AuthorizationSpecification<JsonSchemaDocument> {
         return JsonSchemaDocumentSpecification(
-            context,
+            request,
             permissions,
             documentService,
             queryDialectHelper
         )
     }
 
-    override fun canCreate(context: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
-        return JsonSchemaDocument::class.java == context.resourceType
+    override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
+        return JsonSchemaDocument::class.java == request.resourceType
     }
 }

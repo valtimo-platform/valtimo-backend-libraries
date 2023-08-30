@@ -87,7 +87,6 @@ internal class NoteResourceIT : BaseIntegrationTest() {
                 NewDocumentRequest(PROFILE_DOCUMENT_DEFINITION_NAME, Mapper.INSTANCE.get().createObjectNode())
             ).resultingDocument().get().id()!!.id
         }
-        documentDefinitionService.putDocumentDefinitionRoles(PROFILE_DOCUMENT_DEFINITION_NAME, setOf(USER))
         whenever(userManagementService.currentUser)
             .thenReturn(ValtimoUserBuilder().id("anId").firstName("aFirstName").lastName("aLastName").build())
     }

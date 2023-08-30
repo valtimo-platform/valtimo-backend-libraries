@@ -38,21 +38,4 @@ class DocumentEventAutoConfiguration {
     fun documentCreatedEventListener(sseSubscritionService: SseSubscriptionService): DocumentEventListener {
         return DocumentEventListener(sseSubscritionService)
     }
-
-    @Bean
-    @ConditionalOnMissingBean(JsonSchemaDocumentSpecificationFactory::class)
-    fun jsonSchemaDocumentSpecificationFactory(
-        @Lazy documentService: JsonSchemaDocumentService,
-        queryDialectHelper: QueryDialectHelper
-    ): AuthorizationSpecificationFactory<JsonSchemaDocument> {
-        return JsonSchemaDocumentSpecificationFactory(documentService, queryDialectHelper)
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(SearchFieldSpecificationFactory::class)
-    fun searchFieldSpecificationFactory(
-        queryDialectHelper: QueryDialectHelper
-    ): AuthorizationSpecificationFactory<SearchField> {
-        return SearchFieldSpecificationFactory(queryDialectHelper)
-    }
 }

@@ -66,15 +66,4 @@ class JsonSchemaDocumentSpecification(
     override fun identifierToEntity(identifier: String): JsonSchemaDocument {
         return documentService.get(identifier)
     }
-
-    companion object {
-        @JvmStatic
-        fun byDocumentDefinitionIdName(name: String): Specification<JsonSchemaDocument> {
-            return Specification { root: Root<JsonSchemaDocument>,
-                                   _: CriteriaQuery<*>?,
-                                   criteriaBuilder: CriteriaBuilder ->
-                criteriaBuilder.equal(root.get<UUID>("documentDefinitionId").get<String>("name"), name)
-            }
-        }
-    }
 }

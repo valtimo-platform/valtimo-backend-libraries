@@ -40,7 +40,6 @@ class ValtimoAuthorizationService(
         request: EntityAuthorizationRequest<T>
     ) {
         if (!hasPermission(request)) {
-            val user = request.user
             if (request.action.key == Action.DENY) {
                 logger.error { "Access denied on '${request.resourceType}'. This generally indicates attempting to " +
                     "access a resource without considering authorization. Please refer to the Valtimo documentation." }
