@@ -49,24 +49,24 @@ public class KeycloakService {
             .build();
     }
 
-    public UsersResource usersResource() {
-        return realmResource().users();
+    public UsersResource usersResource(Keycloak keycloak) {
+        return realmResource(keycloak).users();
     }
 
-    public RolesResource realmRolesResource() {
-        return realmResource().roles();
+    public RolesResource realmRolesResource(Keycloak keycloak) {
+        return realmResource(keycloak).roles();
     }
 
-    public RolesResource clientRolesResource() {
-        return clientResource().roles();
+    public RolesResource clientRolesResource(Keycloak keycloak) {
+        return clientResource(keycloak).roles();
     }
 
-    private RealmResource realmResource() {
-        return keycloak().realm(properties.getRealm());
+    private RealmResource realmResource(Keycloak keycloak) {
+        return keycloak.realm(properties.getRealm());
     }
 
-    private ClientResource clientResource() {
-        var clients = keycloak().realm(properties.getRealm()).clients().findByClientId(clientName);
+    private ClientResource clientResource(Keycloak keycloak) {
+        var clients = keycloak.realm(properties.getRealm()).clients().findByClientId(clientName);
 
         if (clients.size() == 1) {
             ClientResource clientResource = keycloak().realm(properties.getRealm()).clients().get(clients.get(0).getId());

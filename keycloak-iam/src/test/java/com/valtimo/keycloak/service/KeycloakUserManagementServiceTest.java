@@ -33,6 +33,7 @@ import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.A
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.valtimo.keycloak.service.KeycloakUserManagementService.MAX_USERS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,9 +56,9 @@ class KeycloakUserManagementServiceTest {
         johnDoe = newUser("John", "Doe", List.of(USER, ADMIN));
         ashaMiller = newUser("Asha", "Miller", List.of(ADMIN));
 
-        when(keycloakService.realmRolesResource().get(USER).getRoleUserMembers(0, MAX_USERS))
+        when(keycloakService.realmRolesResource(any()).get(USER).getRoleUserMembers(0, MAX_USERS))
             .thenReturn(Set.of(johnDoe, jamesVance));
-        when(keycloakService.realmRolesResource().get(ADMIN).getRoleUserMembers(0, MAX_USERS))
+        when(keycloakService.realmRolesResource(any()).get(ADMIN).getRoleUserMembers(0, MAX_USERS))
             .thenReturn(Set.of(johnDoe, ashaMiller));
     }
 
@@ -109,7 +110,7 @@ class KeycloakUserManagementServiceTest {
 
     @Test
     void findByRoleShouldReturnEmptyListWhenNotFoundExceptionIsThrown() {
-        when( keycloakService.realmRolesResource().get("some-role").getRoleUserMembers())
+        when( keycloakService.realmRolesResource(any()).get("some-role").getRoleUserMembers())
             .thenThrow(new NotFoundException());
 
         var users = userManagementService.findByRole("some-role");
@@ -126,7 +127,7 @@ class KeycloakUserManagementServiceTest {
         var roleRepresentations = roles.stream()
             .map(role -> new RoleRepresentation(role, role + " description", false))
             .collect(Collectors.toList());
-        when(keycloakService.usersResource().get(user.getId()).roles().realmLevel().listAll())
+        when(keycloakService.usersResource(any()).get(user.getId()).roles().realmLevel().listAll())
             .thenReturn(roleRepresentations);
         return user;
     }
