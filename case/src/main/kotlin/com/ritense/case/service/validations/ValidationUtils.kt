@@ -34,7 +34,7 @@ open class ValidationUtils(
 ) {
 
     @Throws(InvalidListColumnException::class)
-    internal fun existsListColumn(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
+    internal fun assertListColumnExists(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
         if (caseDefinitionListColumnRepository.existsByIdCaseDefinitionNameAndIdKey(
                 caseDefinitionName,
                 caseListColumnDto.key
@@ -64,7 +64,7 @@ open class ValidationUtils(
     }
 
     @Throws(InvalidListColumnException::class)
-    internal fun existsDocumentDefinition(documentDefinitionName: String) {
+    internal fun assertDocumentDefinitionExists(documentDefinitionName: String) {
         try {
             documentDefinitionService.findIdByName(documentDefinitionName)
         } catch (ex: UnknownDocumentDefinitionException) {

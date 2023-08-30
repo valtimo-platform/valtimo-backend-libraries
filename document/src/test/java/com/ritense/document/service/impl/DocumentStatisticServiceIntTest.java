@@ -50,7 +50,6 @@ class DocumentStatisticServiceIntTest extends BaseIntegrationTest {
     public void beforeEach() {
         documentRepository.deleteAll();
         definition = definition();
-        documentDefinitionService.putDocumentDefinitionRoles(definition.id().name(), Set.of(FULL_ACCESS_ROLE));
 
         var user = new ValtimoUserBuilder().username(USERNAME).email(USERNAME).id(USER_ID).build();
         when(userManagementService.findById(USER_ID)).thenReturn(user);

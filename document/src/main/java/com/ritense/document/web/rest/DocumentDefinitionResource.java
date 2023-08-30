@@ -44,32 +44,30 @@ import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@RequestMapping(value = "/api/v1", produces = APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public interface DocumentDefinitionResource {
 
-    @GetMapping("/document-definition")
+    @GetMapping("/v1/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
-        @RequestParam(name = "filteredOnRole", defaultValue = "true") boolean filteredOnRole,
         @PageableDefault(sort = {"document_definition_name"}, direction = ASC) Pageable pageable
     );
 
-    @GetMapping("/document-definition/{name}")
+    @GetMapping("/management/v1/document-definition")
+    ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(
+        @PageableDefault(sort = {"document_definition_name"}, direction = ASC) Pageable pageable
+    );
+
+    @GetMapping("/v1/document-definition/{name}")
     ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(@PathVariable String name);
 
-    @GetMapping("/document-definition/open/count")
+    @GetMapping("/v1/document-definition/open/count")
     ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount();
 
-    @PostMapping(value = "/document-definition", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/v1/document-definition", consumes = APPLICATION_JSON_VALUE)
     ResponseEntity<DeployDocumentDefinitionResult> deployDocumentDefinition(
         @Valid @RequestBody DocumentDefinitionCreateRequest request
     );
 
-    @DeleteMapping("/document-definition/{name}")
+    @DeleteMapping("/v1/document-definition/{name}")
     ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(@PathVariable String name);
-
-    @GetMapping("/document-definition/{documentDefinitionName}/roles")
-    ResponseEntity<Set<String>> getDocumentDefinitionRoles(@PathVariable String documentDefinitionName);
-
-    @PutMapping("/document-definition/{documentDefinitionName}/roles")
-    ResponseEntity<Void> putDocumentDefinitionRoles(@PathVariable String documentDefinitionName, @RequestBody Set<String> roles);
 }

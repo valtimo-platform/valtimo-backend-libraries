@@ -34,8 +34,8 @@ class CreateColumnValidator(
 
     @Throws(InvalidListColumnException::class)
     override fun validate(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
-        existsDocumentDefinition(caseDefinitionName)
-        existsListColumn(caseDefinitionName, caseListColumnDto)
+        assertDocumentDefinitionExists(caseDefinitionName)
+        assertListColumnExists(caseDefinitionName, caseListColumnDto)
         isCreateColumnDefaultSortValid(caseDefinitionName, caseListColumnDto)
         isPropertyPathValid(caseDefinitionName, caseListColumnDto)
         caseListColumnDto.validate()

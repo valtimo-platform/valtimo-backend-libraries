@@ -66,11 +66,6 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         document = result.resultingDocument().orElseThrow();
         documentRepository.save(document);
 
-        documentDefinitionService.putDocumentDefinitionRoles(
-            document.definitionId().name(),
-            Set.of(USER)
-        );
-
         jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService, documentDefinitionService);
         mockMvc = MockMvcBuilders
             .standaloneSetup(jsonSchemaDocumentResource)

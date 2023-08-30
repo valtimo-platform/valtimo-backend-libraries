@@ -43,6 +43,7 @@ import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
+import com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.JsonSchemaDocumentSpecification;
 import com.ritense.resource.service.ResourceService;
@@ -67,6 +68,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.byDocumentDefinitionIdName;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGNABLE;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CLAIM;
@@ -157,7 +159,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 null
             );
 
-        return documentRepository.findAll(spec.and(JsonSchemaDocumentSpecification.byDocumentDefinitionIdName(definitionName)), pageable);
+        return documentRepository.findAll(spec.and(byDocumentDefinitionIdName(definitionName)), pageable);
     }
 
     // TODO: Can this be removed?
