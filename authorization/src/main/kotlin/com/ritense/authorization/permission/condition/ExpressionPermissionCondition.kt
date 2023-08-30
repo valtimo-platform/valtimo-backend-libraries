@@ -39,7 +39,7 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val path: String,
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
-    val operator: PermissionExpressionOperator,
+    val operator: PermissionConditionOperator,
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     @JsonDeserialize(using = ComparableDeserializer::class)
     val value: V?,
@@ -73,7 +73,7 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
     ): Predicate {
         val path: Path<Any>? = createDatabaseObjectPath(field, root)
 
-        return operator.toPredicate(
+        return operator.toPredicate<Comparable<Any>>(
             criteriaBuilder,
             queryDialectHelper.getJsonValueExpression(criteriaBuilder, path, this.path, clazz),
             PermissionConditionValueResolver.resolveValue(value)
