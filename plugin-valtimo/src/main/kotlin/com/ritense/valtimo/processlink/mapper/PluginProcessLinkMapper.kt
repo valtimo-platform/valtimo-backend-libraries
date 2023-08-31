@@ -27,6 +27,7 @@ import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
+import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import java.util.UUID
@@ -68,6 +69,17 @@ class PluginProcessLinkMapper(
             pluginActionDefinitionKey = deployDto.pluginActionDefinitionKey,
             actionProperties = deployDto.actionProperties,
             activityType = deployDto.activityType,
+        )
+    }
+
+    override fun toProcessLinkExportResponseDto(processLink: ProcessLink): ProcessLinkExportResponseDto {
+        processLink as PluginProcessLink
+        return PluginProcessLinkExportResponseDto(
+            activityId = processLink.activityId,
+            activityType = processLink.activityType,
+            pluginConfigurationId = processLink.pluginConfigurationId.id,
+            pluginActionDefinitionKey = processLink.pluginActionDefinitionKey,
+            actionProperties = processLink.actionProperties,
         )
     }
 

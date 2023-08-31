@@ -145,6 +145,24 @@ internal class ProcessLinkResourceIT : BaseIntegrationTest() {
             .andExpect(status().isNoContent)
     }
 
+    @Test
+    @Transactional
+    fun `should export a process-links`() {
+        mockMvc.perform(
+            get("/api/v1/process-link/export")
+                .param("processDefinitionKey", "auto-deploy-process-link")
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$[0].activityId").value( "my-service-task"))
+            .andExpect(jsonPath("$[0].activityType").value( "bpmn:ServiceTask:start"))
+            .andExpect(jsonPath("$[0].processLinkType").value( "test"))
+            .andExpect(jsonPath("$[0].someValue").value( "test"))
+    }
+
     private fun createProcessLink(): UUID {
         return processLinkRepository.save(
             CustomProcessLink(
