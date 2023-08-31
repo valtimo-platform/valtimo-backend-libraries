@@ -237,7 +237,7 @@ open class FormSubmissionService(
                 )
             } else {
                 modifyDocumentAndStartProcessRequest(
-                    document!!,
+                    document,
                     processDefinitionKey,
                     submittedDocumentContent,
                     formDefinedProcessVariables,

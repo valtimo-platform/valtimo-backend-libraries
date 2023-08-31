@@ -126,29 +126,18 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                 final ProcessDocumentDefinition processDocumentDefinition = AuthorizationContext.runWithoutAuthorization(() -> {
                     if (document == null) {
                         return processDocumentAssociationService
-                            .findProcessDocumentDefinition(new CamundaProcessDefinitionKey(processDefinitionKey))
-                            .orElseThrow(() -> new ProcessDefinitionNotFoundException(
-                                String.format(
-                                    "Unable to find a ProcessDocumentDefinition for processDefinitionKey '%s'",
-                                    processDefinitionKey
-                                )
-                            ));
+                            .findProcessDocumentDefinition(new CamundaProcessDefinitionKey(processDefinitionKey)).orElse(null);
                     } else {
                         var documentVersion = document.definitionId().version();
 
                         return processDocumentAssociationService
                             .findProcessDocumentDefinition(
-                                new CamundaProcessDefinitionKey(processDefinitionKey), documentVersion)
-                            .orElseThrow(() -> new ProcessDefinitionNotFoundException(
-                                String.format(
-                                    "Unable to find a ProcessDocumentDefinition for processDefinitionKey '%s' and version '%s'",
-                                    processDefinitionKey,
-                                    documentVersion
-                                )
-                            ));
+                                new CamundaProcessDefinitionKey(processDefinitionKey), documentVersion).orElse(null);
                     }
                 });
-                documentDefinitionName = processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId().name();
+                if (processDocumentDefinition != null) {
+                    documentDefinitionName = processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId().name();
+                }
             }
 
             var submission = new FormIoSubmission(

@@ -123,7 +123,7 @@ class AuthorizationAutoConfiguration(
         objectMapper: ObjectMapper,
         roleRepository: RoleRepository,
         changelogService: ChangelogService,
-        @Value("\${valtimo.pbac.clear-tables:false}") clearTables: Boolean
+        @Value("\${valtimo.changelog.pbac.clear-tables:false}") clearTables: Boolean
     ): RoleDeployer {
         return RoleDeployer(objectMapper, roleRepository, changelogService, clearTables)
     }
@@ -136,7 +136,7 @@ class AuthorizationAutoConfiguration(
         permissionRepository: PermissionRepository,
         roleRepository: RoleRepository,
         changelogService: ChangelogService,
-        @Value("\${valtimo.pbac.clear-tables:false}") clearTables: Boolean
+        @Value("\${valtimo.changelog.pbac.clear-tables:false}") clearTables: Boolean
     ): PermissionDeployer {
         return PermissionDeployer(objectMapper, permissionRepository, roleRepository, changelogService, clearTables)
     }
