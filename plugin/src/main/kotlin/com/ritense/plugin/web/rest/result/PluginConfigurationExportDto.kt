@@ -55,7 +55,7 @@ class PluginConfigurationExportDto(
 
         private fun toSnakeUpperCase(camelCase: String): String {
             return camelCase
-                .replace("[^a-zA-Z0-9]".toRegex(), "_")
+                .replace("[^a-zA-Z0-9]+".toRegex(), "_")
                 .replace("([a-z])([A-Z]+)".toRegex(), "$1_$2")
                 .uppercase(Locale.getDefault())
         }
