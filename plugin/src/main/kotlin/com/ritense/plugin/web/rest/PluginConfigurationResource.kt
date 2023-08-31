@@ -23,6 +23,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
 import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
 import com.ritense.plugin.web.rest.result.PluginConfigurationDto
+import com.ritense.plugin.web.rest.result.PluginConfigurationExportDto
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -43,10 +44,12 @@ class PluginConfigurationResource(
 ) {
 
     @GetMapping("/v1/plugin/configuration")
-    fun getPluginDefinitions(@RequestParam("pluginDefinitionKey") pluginDefinitionKey: String?,
-                             @RequestParam("pluginConfigurationTitle") pluginConfigurationTitle: String?,
-                             @RequestParam("category") category: String?,
-                             @RequestParam("activityType") activityType: ActivityType?)
+    fun getPluginDefinitions(
+        @RequestParam("pluginDefinitionKey") pluginDefinitionKey: String?,
+        @RequestParam("pluginConfigurationTitle") pluginConfigurationTitle: String?,
+        @RequestParam("category") category: String?,
+        @RequestParam("activityType") activityType: ActivityType?
+    )
         : ResponseEntity<List<PluginConfigurationDto>> {
 
         return ResponseEntity.ok(
@@ -58,7 +61,7 @@ class PluginConfigurationResource(
                     activityType = activityType?.mapOldActivityTypeToCurrent()
                 )
             )
-            .map { PluginConfigurationDto(it) })
+                .map { PluginConfigurationDto(it) })
     }
 
     @PostMapping("/v1/plugin/configuration")
@@ -90,6 +93,13 @@ class PluginConfigurationResource(
                 )
             )
         )
+    }
+
+    @GetMapping("/v1/plugin/configuration/export")
+    fun exportPluginConfiguration(): ResponseEntity<List<PluginConfigurationExportDto>> {
+        val pluginConfigurations = pluginService.getPluginConfigurations(PluginConfigurationSearchParameters())
+            .map { PluginConfigurationExportDto(it) }
+        return ResponseEntity.ok(pluginConfigurations)
     }
 
     @DeleteMapping("/v1/plugin/configuration/{pluginConfigurationId}")
