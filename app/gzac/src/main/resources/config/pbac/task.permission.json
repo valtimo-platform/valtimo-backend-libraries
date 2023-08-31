@@ -1,5 +1,5 @@
 {
-    "changesetId": "task-admin-v3",
+    "changesetId": "task-admin-v1",
     "permissions": [
         {
             "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
@@ -9,6 +9,21 @@
         {
             "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
             "action": "assignable",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "view_list",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "view",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "complete",
             "roleKey": "ROLE_USER"
         }
     ]
