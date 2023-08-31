@@ -147,7 +147,7 @@ internal class ProcessLinkResourceIT : BaseIntegrationTest() {
 
     @Test
     @Transactional
-    fun `should export a process-links`() {
+    fun `should export process-links`() {
         mockMvc.perform(
             get("/api/v1/process-link/export")
                 .param("processDefinitionKey", "auto-deploy-process-link")

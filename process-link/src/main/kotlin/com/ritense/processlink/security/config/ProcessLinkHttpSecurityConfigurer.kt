@@ -33,7 +33,6 @@ class ProcessLinkHttpSecurityConfigurer: HttpSecurityConfigurer {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/process-link").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/process-link/types").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/process-link/export").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/v1/process-link").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/v1/process-link").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/process-link/export").hasAuthority(ADMIN)

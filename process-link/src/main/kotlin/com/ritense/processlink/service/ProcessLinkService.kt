@@ -16,7 +16,6 @@
 
 package com.ritense.processlink.service
 
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.domain.ProcessLinkType
@@ -58,7 +57,7 @@ open class ProcessLinkService(
     }
 
     fun getProcessLinksByProcessDefinitionKey(processDefinitionKey: String): List<ProcessLink> {
-        return runWithoutAuthorization { camundaRepositoryService.findProcessDefinitions(byKey(processDefinitionKey)) }
+        return camundaRepositoryService.findProcessDefinitions(byKey(processDefinitionKey))
             .flatMap { processLinkRepository.findByProcessDefinitionId(it.id) }
     }
 
