@@ -1,10 +1,15 @@
 {
-    "changesetId": "task-admin-v1",
+    "changesetId": "task-admin-v3",
     "permissions": [
         {
             "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
             "action": "assign",
             "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "assignable",
+            "roleKey": "ROLE_USER"
         }
     ]
 }

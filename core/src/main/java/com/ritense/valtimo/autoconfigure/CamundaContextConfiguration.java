@@ -18,9 +18,12 @@ package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.valtimo.CamundaBeansPlugin;
 import com.ritense.valtimo.contract.annotation.ProcessBean;
+import org.camunda.bpm.spring.boot.starter.configuration.Ordering;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,8 +33,9 @@ import java.util.Map;
 public class CamundaContextConfiguration {
 
     @Bean
-    public CamundaBeansPlugin camundaBeansPlugin(@ProcessBean Map<String, Object> processBeans) {
-        return new CamundaBeansPlugin(new HashMap<>(processBeans));
+    @Order(Ordering.DEFAULT_ORDER - 1)
+    public CamundaBeansPlugin camundaBeansPlugin(@ProcessBean Map<String, Object> processBeans, ApplicationContext applicationContext) {
+        return new CamundaBeansPlugin(new HashMap<>(processBeans), applicationContext);
     }
 
 }

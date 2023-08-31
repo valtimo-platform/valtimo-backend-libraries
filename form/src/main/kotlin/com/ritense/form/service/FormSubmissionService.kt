@@ -238,7 +238,7 @@ open class FormSubmissionService(
             } else {
                 modifyDocumentAndStartProcessRequest(
                     document!!,
-                    documentDefinitionName,
+                    processDefinitionKey,
                     submittedDocumentContent,
                     formDefinedProcessVariables,
                     preJsonPatch

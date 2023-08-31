@@ -49,12 +49,12 @@ public interface DocumentDefinitionResource {
 
     @GetMapping("/v1/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(
-        @PageableDefault(sort = {"document_definition_name"}, direction = ASC) Pageable pageable
+        @PageableDefault(sort = {"id_name"}, direction = ASC) Pageable pageable
     );
 
     @GetMapping("/management/v1/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(
-        @PageableDefault(sort = {"document_definition_name"}, direction = ASC) Pageable pageable
+        @PageableDefault(sort = {"id_name"}, direction = ASC) Pageable pageable
     );
 
     @GetMapping("/v1/document-definition/{name}")

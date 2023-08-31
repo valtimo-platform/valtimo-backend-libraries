@@ -31,7 +31,6 @@ class DenyAuthorizationSpecificationFactory<T: Any> : AuthorizationSpecification
     }
 
     override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
-        return request.action == Action<T>(Action.DENY) ||
-            permissions.isEmpty()
+        return request.action == Action<T>(Action.DENY)
     }
 }
