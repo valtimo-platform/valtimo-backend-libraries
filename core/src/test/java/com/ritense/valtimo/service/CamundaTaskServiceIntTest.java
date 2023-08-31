@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -254,6 +255,23 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
         assertThat(candidateUsers).contains(manageableUser);
         verify(userManagementService, never()).findByRole(ADMIN);
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
+    void shouldGetSerializedVariable() {
+        final var processInstance = AuthorizationContext.runWithoutAuthorization(() -> camundaProcessService.startProcess(
+            processDefinitionKey,
+            businessKey,
+            Map.of("serialized_var", LocalDateTime.now())
+        ));
+        final var task = taskService.createTaskQuery()
+            .processInstanceId(processInstance.getProcessInstanceDto().getId())
+            .singleResult();
+
+        var variables = camundaTaskService.getVariables(task.getId());
+
+        assertThat(variables.get("serialized_var")).isNotNull();
     }
 
     private void startProcessAndModifyTask(Consumer<Task> taskHandler) {

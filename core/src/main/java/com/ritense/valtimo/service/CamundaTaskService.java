@@ -30,6 +30,7 @@ import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
 import com.ritense.valtimo.camunda.dto.TaskExtended;
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
+import com.ritense.valtimo.camunda.service.CamundaContextService;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
@@ -114,6 +115,7 @@ public class CamundaTaskService {
     private final UserManagementService userManagementService;
     private final EntityManager entityManager;
     private final AuthorizationService authorizationService;
+    private final CamundaContextService camundaContextService;
 
     public CamundaTaskService(
         TaskService taskService,
@@ -126,8 +128,8 @@ public class CamundaTaskService {
         RuntimeService runtimeService,
         UserManagementService userManagementService,
         EntityManager entityManager,
-        AuthorizationService authorizationService
-    ) {
+        AuthorizationService authorizationService,
+        CamundaContextService camundaContextService) {
         this.taskService = taskService;
         this.formService = formService;
         this.delegateTaskHelper = delegateTaskHelper;
@@ -139,6 +141,7 @@ public class CamundaTaskService {
         this.userManagementService = userManagementService;
         this.entityManager = entityManager;
         this.authorizationService = authorizationService;
+        this.camundaContextService = camundaContextService;
     }
 
     @Transactional(readOnly = true)
@@ -367,7 +370,8 @@ public class CamundaTaskService {
 
     @Transactional(readOnly = true)
     public Map<String, Object> getVariables(String taskInstanceId) {
-        return findTaskById(taskInstanceId).getVariables(null);
+        var task = findTaskById(taskInstanceId);
+        return camundaContextService.runWithCommandContext(() -> task.getVariables(null));
     }
 
     @Transactional(readOnly = true)
