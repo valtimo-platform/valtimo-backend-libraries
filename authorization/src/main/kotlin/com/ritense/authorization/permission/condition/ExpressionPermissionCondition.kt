@@ -53,9 +53,13 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
         }
 
         val pathValue = try {
-            JsonPath.read<V?>(jsonValue, path)
+            JsonPath.read<Any?>(jsonValue, path)
         } catch (e: PathNotFoundException) {
             null
+        }
+
+        if (pathValue != null && pathValue !is Collection<*> && !pathValue.javaClass.isInstance(clazz)) {
+            throw IllegalStateException("Value at path '$path' isn't of type '$clazz'.")
         }
 
         return evaluateExpression(
@@ -80,7 +84,7 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
         )
     }
 
-    private fun evaluateExpression(pathValue: V?): Boolean {
+    private fun evaluateExpression(pathValue: Any?): Boolean {
         return operator.evaluate(
             pathValue,
             PermissionConditionValueResolver.resolveValue(value)
