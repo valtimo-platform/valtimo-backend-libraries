@@ -58,8 +58,8 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
             null
         }
 
-        if (pathValue != null && pathValue !is Collection<*> && !pathValue.javaClass.isInstance(clazz)) {
-            throw IllegalStateException("Value at path '$path' isn't of type '$clazz'.")
+        if (pathValue != null && pathValue !is Collection<*> && pathValue.javaClass != clazz) {
+            return false
         }
 
         return evaluateExpression(
