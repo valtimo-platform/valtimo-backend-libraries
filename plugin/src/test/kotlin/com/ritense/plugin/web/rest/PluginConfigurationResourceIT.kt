@@ -16,12 +16,15 @@
 
 package com.ritense.plugin.web.rest
 
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,7 +39,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.nio.charset.StandardCharsets
 import javax.transaction.Transactional
-import org.hamcrest.Matchers.greaterThanOrEqualTo
 
 @Transactional
 internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
@@ -65,7 +67,14 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
             PluginConfiguration(
                 PluginConfigurationId.newId(),
                 "some-config",
-                null,
+                jacksonObjectMapper().readTree(
+                    """
+                    {
+                        "property1": "my-secret",
+                        "property2": "my-normal-property"
+                    }
+                    """
+                ) as ObjectNode,
                 pluginDefinition
             )
         )
@@ -129,5 +138,21 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$.*", hasSize<Int>(greaterThanOrEqualTo(1))))
             .andExpect(jsonPath("$[?(@.title=='some-config')]","").exists())
+    }
+
+    @Test
+    fun `should export plugin configurations with placeholders`() {
+        mockMvc.perform(get("/api/v1/plugin/configuration/export")
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$[?(@.title=='some-config')].id","").exists())
+            .andExpect(jsonPath("$[?(@.title=='some-config')].title").value("some-config"))
+            .andExpect(jsonPath("$[?(@.title=='some-config')].pluginDefinitionKey").value("test-plugin"))
+            .andExpect(jsonPath("$[?(@.title=='some-config')].properties.property1").value("\${SOME_CONFIG_PROPERTY1}"))
+            .andExpect(jsonPath("$[?(@.title=='some-config')].properties.property2").value("my-normal-property"))
     }
 }
