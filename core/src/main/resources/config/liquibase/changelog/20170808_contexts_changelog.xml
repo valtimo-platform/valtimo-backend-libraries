@@ -102,18 +102,4 @@
 								 referencedTableName="context"/>
 	</changeSet>
 
-	<changeSet author="tom bokma (generated)" id="1502112472863-15">
-		<loadData encoding="UTF-8"
-				  file="config/liquibase/import/defaultContext.csv"
-				  separator=";"
-				  tableName="context"/>
-	</changeSet>
-
-	<changeSet author="tom bokma (generated)" id="1502112472863-16">
-		<loadData encoding="UTF-8"
-				  file="config/liquibase/import/defaultContextRoles.csv"
-				  separator=";"
-				  tableName="context_roles"/>
-	</changeSet>
-
 </databaseChangeLog>
