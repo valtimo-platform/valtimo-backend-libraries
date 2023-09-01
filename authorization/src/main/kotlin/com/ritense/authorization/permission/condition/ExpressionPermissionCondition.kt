@@ -77,6 +77,10 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
     ): Predicate {
         val path: Path<Any>? = createDatabaseObjectPath(field, root)
 
+        if (Collection::class.java.isAssignableFrom(clazz)) {
+            throw UnsupportedOperationException("Unsupported class '$clazz' for this action-type")
+        }
+
         return operator.toPredicate<Comparable<Any>>(
             criteriaBuilder,
             queryDialectHelper.getJsonValueExpression(criteriaBuilder, path, this.path, clazz),

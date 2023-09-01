@@ -103,7 +103,7 @@ class ExpressionPermissionConditionTest {
     }
 
     @Test
-    fun `should pass validation when for CONTAINS operation`() {
+    fun `should pass validation for CONTAINS operation`() {
         val conditionTemplate = ExpressionPermissionCondition(
             field = "child.property",
             path = "value",
