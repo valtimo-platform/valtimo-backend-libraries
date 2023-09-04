@@ -53,9 +53,23 @@ class CaseDefinitionResource(
         }
     }
 
+    @GetMapping("/management/v1/case/{caseDefinitionName}/settings")
+    @RunWithoutAuthorization
+    fun getCaseSettingsForManagement(
+        @PathVariable caseDefinitionName: String
+    ): ResponseEntity<CaseDefinitionSettings> = getCaseSettings(caseDefinitionName)
+
+    @Deprecated("Since 11.0.0", ReplaceWith("com.ritense.case.web.rest.CaseDefinitionResource.updateCaseSettingsForManagement"))
     @PatchMapping("/v1/case/{caseDefinitionName}/settings")
     @RunWithoutAuthorization
     fun updateCaseSettings(
+        @RequestBody caseSettingsDto: CaseSettingsDto,
+        @PathVariable caseDefinitionName: String
+    ): ResponseEntity<CaseDefinitionSettings> = updateCaseSettingsForManagement(caseSettingsDto, caseDefinitionName)
+
+    @PatchMapping("/management/v1/case/{caseDefinitionName}/settings")
+    @RunWithoutAuthorization
+    fun updateCaseSettingsForManagement(
         @RequestBody caseSettingsDto: CaseSettingsDto,
         @PathVariable caseDefinitionName: String
     ): ResponseEntity<CaseDefinitionSettings> {
@@ -75,9 +89,23 @@ class CaseDefinitionResource(
         return ResponseEntity.ok().body(service.getListColumns(caseDefinitionName))
     }
 
+    @GetMapping("/management/v1/case/{caseDefinitionName}/list-column")
+    @RunWithoutAuthorization
+    fun getCaseListColumnForManagement(
+        @PathVariable caseDefinitionName: String
+    ): ResponseEntity<List<CaseListColumnDto>> = getCaseListColumn(caseDefinitionName)
+
+    @Deprecated("Since 11.0.0", ReplaceWith("com.ritense.case.web.rest.CaseDefinitionResource.createCaseListColumnForManagement"))
     @PostMapping("/v1/case/{caseDefinitionName}/list-column")
     @RunWithoutAuthorization
     fun createCaseListColumn(
+        @PathVariable caseDefinitionName: String,
+        @RequestBody caseListColumnDto: CaseListColumnDto
+    ): ResponseEntity<Any> = createCaseListColumnForManagement(caseDefinitionName, caseListColumnDto)
+
+    @PostMapping("/management/v1/case/{caseDefinitionName}/list-column")
+    @RunWithoutAuthorization
+    fun createCaseListColumnForManagement(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDto: CaseListColumnDto
     ): ResponseEntity<Any> {
@@ -85,9 +113,17 @@ class CaseDefinitionResource(
         return ResponseEntity.ok().build()
     }
 
+    @Deprecated("Since 11.0.0", ReplaceWith("com.ritense.case.web.rest.CaseDefinitionResource.updateListColumnForManagement"))
     @PutMapping("/v1/case/{caseDefinitionName}/list-column")
     @RunWithoutAuthorization
     fun updateListColumn(
+        @PathVariable caseDefinitionName: String,
+        @RequestBody caseListColumnDtoList: List<CaseListColumnDto>
+    ): ResponseEntity<Any> = updateListColumnForManagement(caseDefinitionName, caseListColumnDtoList)
+
+    @PutMapping("/management/v1/case/{caseDefinitionName}/list-column")
+    @RunWithoutAuthorization
+    fun updateListColumnForManagement(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseListColumnDtoList: List<CaseListColumnDto>
     ): ResponseEntity<Any> {
@@ -95,9 +131,17 @@ class CaseDefinitionResource(
         return ResponseEntity.ok().build()
     }
 
+    @Deprecated("Since 11.0.0", ReplaceWith("com.ritense.case.web.rest.CaseDefinitionResource.deleteListColumnForManagement"))
     @DeleteMapping("/v1/case/{caseDefinitionName}/list-column/{columnKey}")
     @RunWithoutAuthorization
     fun deleteListColumn(
+        @PathVariable caseDefinitionName: String,
+        @PathVariable columnKey: String
+    ): ResponseEntity<Any> = deleteListColumnForManagement(caseDefinitionName, columnKey)
+
+    @DeleteMapping("/management/v1/case/{caseDefinitionName}/list-column/{columnKey}")
+    @RunWithoutAuthorization
+    fun deleteListColumnForManagement(
         @PathVariable caseDefinitionName: String,
         @PathVariable columnKey: String
     ): ResponseEntity<Any> {
