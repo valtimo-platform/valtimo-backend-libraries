@@ -31,12 +31,11 @@ import com.ritense.formlink.service.impl.result.FormSubmissionResultFailed;
 import com.ritense.formlink.service.impl.result.FormSubmissionResultSucceeded;
 import com.ritense.formlink.service.result.FormSubmissionResult;
 import com.ritense.processdocument.domain.ProcessInstanceId;
-import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
+import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.processdocument.service.impl.result.ModifyDocumentAndCompleteTaskResultSucceeded;
 import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultSucceeded;
-import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,17 +44,15 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
+class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
 
     private FormIoFormDefinition formDefinition;
     private CamundaFormAssociation formAssociation;
@@ -95,7 +92,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotHandleSubmission() {
+    void shouldNotHandleSubmission() {
         String processDefinitionKey = "myProcessKey";
         String formLinkId = "myFormLinkId";
         String documentId = UUID.randomUUID().toString();
@@ -111,7 +108,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
     }
 
     @Test
-    public void shouldHandleSubmission() throws IOException {
+    void shouldHandleSubmission() throws IOException {
         //Given
         String processDefinitionKey = "myProcessKey";
         String formLinkId = "myFormLinkId";
@@ -143,7 +140,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
     }
 
     @Test
-    public void shouldHandleSubmissionWithoutProcessDocumentDefinitionButWithDocumentDefinitionName() throws IOException {
+    void shouldHandleSubmissionWithoutProcessDocumentDefinitionButWithDocumentDefinitionName() throws IOException {
         //Given
         String processDefinitionKey = "myProcessKey";
         String documentDefinitionName = "myDocumentName";
@@ -174,7 +171,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotFindDocument() throws IOException {
+    void shouldNotFindDocument() throws IOException {
         //Given
         String processDefinitionKey = "myProcessKey";
         String formLinkId = "myFormLinkId";
@@ -201,7 +198,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotFindProcessDocumentDefinitionByProdDefKey() throws IOException {
+    void shouldNotFindProcessDocumentDefinitionByProdDefKey() throws IOException {
         //Given
         String processDefinitionKey = "myProcessKey";
         String formLinkId = "myFormLinkId";
@@ -221,6 +218,8 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
         final var jsonDocumentContent = JsonDocumentContent.build(formData);
         final Optional<JsonSchemaDocument> document = Optional.of(createDocument(jsonDocumentContent));
         when(documentService.findBy(any())).thenReturn(document);
+        when(processDocumentService.dispatch(any()))
+            .thenReturn(new NewDocumentAndStartProcessResultSucceeded(document.get(), mock(CamundaProcessInstanceId.class)));
 
         //When
         final var documentNotFoundException = formAssociationSubmissionService
@@ -228,12 +227,11 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
 
         //Then
         assertThat(documentNotFoundException).isNotNull();
-        assertThat(documentNotFoundException.errors()).isNotEmpty();
-        assertThat(documentNotFoundException.errors().stream().map(OperationError::asString).collect(Collectors.joining())).contains(processDefinitionKey);
+        assertThat(documentNotFoundException.errors()).isEmpty();
     }
 
     @Test
-    public void shouldNotFindProcessDocumentDefinitionByProdDefKeyAndVersion() throws IOException {
+    void shouldNotFindProcessDocumentDefinitionByProdDefKeyAndVersion() throws IOException {
         //Given
         String processDefinitionKey = "myProcessKey";
         String formLinkId = "myFormLinkId";
@@ -253,6 +251,8 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
         final var jsonDocumentContent = JsonDocumentContent.build(formData);
         final Optional<JsonSchemaDocument> document = Optional.of(createDocument(jsonDocumentContent));
         when(documentService.findBy(any())).thenReturn(document);
+        when(processDocumentService.dispatch(any()))
+            .thenReturn(new NewDocumentAndStartProcessResultSucceeded(document.get(), mock(CamundaProcessInstanceId.class)));
 
         //When
         final var documentNotFoundException = formAssociationSubmissionService
@@ -260,9 +260,7 @@ public class CamundaFormAssociationSubmissionServiceTest extends BaseTest {
 
         //Then
         assertThat(documentNotFoundException).isNotNull();
-        assertThat(documentNotFoundException.errors()).isNotEmpty();
-        assertThat(documentNotFoundException.errors().stream().map(OperationError::asString).collect(Collectors.joining()))
-            .contains(processDefinitionKey, Long.toString(document.orElseThrow().definitionId().version()));
+        assertThat(documentNotFoundException.errors()).isEmpty();
     }
 
     private ObjectNode formData() {
