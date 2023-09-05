@@ -16,7 +16,7 @@
 
 package com.ritense.zakenapi.uploadprocess
 
-import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
@@ -31,20 +31,21 @@ class UploadProcessService(
 ) {
 
     fun startUploadResourceProcess(caseId: String, resourceId: String) {
-        val caseDefinitionName = AuthorizationContext
-            .runWithoutAuthorization { documentService.get(caseId) }.definitionId().name()
+        val caseDefinitionName = runWithoutAuthorization { documentService.get(caseId) }.definitionId().name()
         val link = documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, DOCUMENT_UPLOAD)
         if (!link.isPresent) {
             throw IllegalStateException("No upload-process linked to case: $caseDefinitionName")
         }
 
-        val result = processDocumentService.startProcessForDocument(
-            StartProcessForDocumentRequest(
-                JsonSchemaDocumentId.existingId(UUID.fromString(caseId)),
-                link.get().id.processDefinitionKey,
-                mapOf(RESOURCE_ID_PROCESS_VAR to resourceId)
+        val result = runWithoutAuthorization {
+            processDocumentService.startProcessForDocument(
+                StartProcessForDocumentRequest(
+                    JsonSchemaDocumentId.existingId(UUID.fromString(caseId)),
+                    link.get().id.processDefinitionKey,
+                    mapOf(RESOURCE_ID_PROCESS_VAR to resourceId)
+                )
             )
-        )
+        }
 
         if (result.resultingDocument().isEmpty) {
             var message = "Failed to upload resource. Found ${result.errors().size} errors:\n"

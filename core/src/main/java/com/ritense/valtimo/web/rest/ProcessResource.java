@@ -86,6 +86,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
@@ -258,8 +259,10 @@ public class ProcessResource extends AbstractProcessResource {
         Map<String, Long> heatmapDataCount = historicActivityInstances.stream()
                 .collect(Collectors.groupingBy(HistoricActivityInstance::getActivityId, Collectors.counting()));
 
+        LocalDateTime fromDateStart = fromDate == null ? null : fromDate.atStartOfDay();
+        LocalDateTime toDateStart = toDate == null ? null : toDate.atStartOfDay();
         Map<String, HeatmapTaskCountDTO> activeTasksCount = getActiveTasksCounts(
-                processDefinition, searchStatus, fromDate.atStartOfDay(), toDate.atStartOfDay(), duration);
+                processDefinition, searchStatus, fromDateStart, toDateStart, duration);
 
         for (Map.Entry<String, Long> entry : heatmapDataCount.entrySet()) {
             HeatmapTaskCountDTO heatmapTaskCountDTO = activeTasksCount.get(entry.getKey());
