@@ -78,7 +78,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import javax.persistence.EntityManager;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Optional;
 
 @Configuration

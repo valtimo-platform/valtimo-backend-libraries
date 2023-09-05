@@ -18,7 +18,6 @@ package com.ritense.document.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
-import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSearchService;
