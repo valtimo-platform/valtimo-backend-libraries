@@ -24,8 +24,6 @@ import java.util.UUID;
 
 public class DossierDocumentGeneratedEvent extends AuditMetaData implements AuditEvent {
 
-    private static final long serialVersionUID = -1001787410861765142L;
-
     private final String templateIdentifier;
     private final String dossierId;
 
