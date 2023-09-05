@@ -32,7 +32,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.zalando.problem.jackson.ProblemModule;
 import org.zalando.problem.violations.ConstraintViolationProblemModule;
-
+import java.util.List;
 import java.util.Optional;
 
 @Configuration
@@ -44,9 +44,10 @@ public class WebAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public CorsFilter corsFilter(WebProperties webProperties) {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = webProperties.getCors().getCorsConfiguration();
-        if (config.getAllowedOrigins() != null && !config.getAllowedOrigins().isEmpty()) {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final CorsConfiguration config = webProperties.getCors().getCorsConfiguration();
+        final List<String> allowedOrigins = config.getAllowedOrigins();
+        if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
             logger.debug("Registering CORS filter");
             if (!webProperties.getCors().getPaths().isEmpty()) {
                 webProperties.getCors().getPaths().forEach(path -> source.registerCorsConfiguration(path, config));

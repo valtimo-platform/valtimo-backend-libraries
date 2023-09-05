@@ -71,7 +71,7 @@ public class ChoiceFieldValueService {
 
         ChoiceField choiceField = choiceFieldRepository.findByKeyName(choiceFieldName);
 
-        ChoiceFieldValue choiceFieldValue = choiceFieldValueRepository.findById(requestDTO.getId()).get();
+        ChoiceFieldValue choiceFieldValue = choiceFieldValueRepository.findById(requestDTO.getId()).orElseThrow();
         choiceFieldValue.setName(requestDTO.getName());
         choiceFieldValue.setDeprecated(requestDTO.getDeprecated());
         choiceFieldValue.setSortOrder(requestDTO.getSortOrder());

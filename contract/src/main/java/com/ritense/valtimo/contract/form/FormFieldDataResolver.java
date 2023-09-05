@@ -17,7 +17,6 @@
 package com.ritense.valtimo.contract.form;
 
 import java.util.Map;
-import java.util.UUID;
 
 public interface FormFieldDataResolver {
 
