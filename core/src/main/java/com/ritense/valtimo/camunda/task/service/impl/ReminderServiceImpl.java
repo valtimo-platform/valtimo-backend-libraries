@@ -27,11 +27,8 @@ import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSe
 import com.ritense.valtimo.service.CamundaTaskService;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssignee;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCandidateGroups;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byUnassigned;
@@ -45,7 +42,10 @@ public class ReminderServiceImpl implements ReminderService {
     private final UserManagementService userManagementService;
     private final String reminderTemplate;
 
-    public ReminderServiceImpl(CamundaTaskService taskService, EmailNotificationSettingsService emailNotificationService, MailSender mailSender, UserManagementService userManagementService, String reminderTemplate) {
+    public ReminderServiceImpl(
+        CamundaTaskService taskService, EmailNotificationSettingsService emailNotificationService,
+        MailSender mailSender, UserManagementService userManagementService, String reminderTemplate
+    ) {
         this.taskService = taskService;
         this.emailNotificationService = emailNotificationService;
         this.mailSender = mailSender;

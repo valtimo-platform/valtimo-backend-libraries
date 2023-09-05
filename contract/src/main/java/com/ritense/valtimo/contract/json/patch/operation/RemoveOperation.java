@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonPointer;
 public class RemoveOperation extends JsonPatchOperation {
 
     public RemoveOperation(JsonPointer path) {
-       super(Operation.REMOVE, path);
+        super(Operation.REMOVE, path);
     }
 
 }

@@ -20,13 +20,10 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.DocumentRelationRequest;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.domain.relation.DocumentRelationType;
-import java.io.Serializable;
 import java.util.Objects;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
-public class JsonSchemaDocumentRelation implements DocumentRelation, Serializable {
-
-    private static final long serialVersionUID = 4766534733755676635L;
+public class JsonSchemaDocumentRelation implements DocumentRelation {
 
     private JsonSchemaDocumentId id;
     private DocumentRelationType relationType;

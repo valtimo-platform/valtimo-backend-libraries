@@ -17,7 +17,6 @@
 package com.ritense.valtimo.domain.user;
 
 import org.hibernate.annotations.Type;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -55,12 +54,18 @@ public class UserSettings {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         UserSettings that = (UserSettings) o;
 
-        if (getUserId() != null ? !getUserId().equals(that.getUserId()) : that.getUserId() != null) return false;
+        if (getUserId() != null ? !getUserId().equals(that.getUserId()) : that.getUserId() != null) {
+            return false;
+        }
         return getSettings() != null ? getSettings().equals(that.getSettings()) : that.getSettings() == null;
     }
 
