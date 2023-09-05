@@ -24,7 +24,6 @@ import com.ritense.valtimo.security.adapter.CoreHttpSecurityConfigurerAdapter;
 import com.ritense.valtimo.security.config.AccountHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ActuatorHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ApiLoginHttpSecurityConfigurer;
-import com.ritense.valtimo.security.config.AuthorityHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CamundaCockpitHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CamundaHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CamundaRestHttpSecurityConfigurer;
@@ -126,13 +125,6 @@ public class HttpSecurityAutoConfiguration {
     @ConditionalOnMissingBean(EmailNotificationSettingsSecurityConfigurer.class)
     public EmailNotificationSettingsSecurityConfigurer emailNotificationSettingsSecurityConfigurer() {
         return new EmailNotificationSettingsSecurityConfigurer();
-    }
-
-    @Order(300)
-    @Bean
-    @ConditionalOnMissingBean(AuthorityHttpSecurityConfigurer.class)
-    public AuthorityHttpSecurityConfigurer authorityHttpSecurityConfigurer() {
-        return new AuthorityHttpSecurityConfigurer();
     }
 
     @Order(310)

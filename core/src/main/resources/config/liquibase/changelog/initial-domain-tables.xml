@@ -20,25 +20,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="0" author="jhipster">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="jhi_authority"/>
-            </not>
-        </preConditions>
-        <createTable tableName="jhi_authority">
-            <column name="name" type="varchar(50)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-        </createTable>
-
-        <loadData encoding="UTF-8"
-                  file="config/liquibase/authorities.csv"
-                  separator=";"
-                  tableName="jhi_authority"/>
-
-    </changeSet>
-
     <!--
         Added the entity ChoiceField.
     -->
@@ -123,17 +104,6 @@
                                  constraintName="fk_choicefieldvalue_choicefield_id"
                                  referencedColumnNames="id"
                                  referencedTableName="choice_fields"/>
-    </changeSet>
-
-    <changeSet author="Niels Leemburg" id="9">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <columnExists tableName="jhi_authority" columnName="system_authority"/>
-            </not>
-        </preConditions>
-        <addColumn tableName="jhi_authority">
-            <column name="system_authority" type="boolean" defaultValueBoolean="false"/>
-        </addColumn>
     </changeSet>
 
     <changeSet id="10" author="Niels Leemburg">
