@@ -55,8 +55,8 @@ public abstract class JsonPatchOperation {
             return false;
         }
         JsonPatchOperation that = (JsonPatchOperation) o;
-        return operation == that.operation &&
-            path.equals(that.path);
+        return operation == that.operation
+            && path.equals(that.path);
     }
 
     @Override

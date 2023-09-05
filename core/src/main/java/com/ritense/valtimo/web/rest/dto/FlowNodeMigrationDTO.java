@@ -16,10 +16,9 @@
 
 package com.ritense.valtimo.web.rest.dto;
 
-import java.io.Serializable;
 import java.util.Map;
 
-public class FlowNodeMigrationDTO implements Serializable {
+public class FlowNodeMigrationDTO {
 
     private Map<String, String> sourceFlowNodeMap;
     private Map<String, String> targetFlowNodeMap;

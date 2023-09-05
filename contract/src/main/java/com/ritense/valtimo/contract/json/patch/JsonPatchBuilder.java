@@ -100,15 +100,15 @@ public final class JsonPatchBuilder {
     private JsonPointer determineUnindexedPath(JsonNode destination, JsonPointer path) {
         String stringPath = path.toString();
         int dashIndex = stringPath.indexOf("/-");
-        if(dashIndex == -1) {
+        if (dashIndex == -1) {
             return path;
         }
 
         String arrayPath = stringPath.substring(0, dashIndex);
-        for(int i = 0;;i++) {
+        for (int i = 0; ; i++) {
             String testPath = arrayPath + "/" + i;
-            if (operations.stream().noneMatch(op -> op.getPath().equals(testPath)) &&
-                destination.at(testPath).isMissingNode()
+            if (operations.stream().noneMatch(op -> op.getPath().equals(testPath))
+                && destination.at(testPath).isMissingNode()
             ) {
                 String correctedPath = testPath + stringPath.substring(dashIndex + 2)
                     .replace("/-", "/0");
@@ -121,10 +121,11 @@ public final class JsonPatchBuilder {
         if (destination.at(path.head()).isMissingNode()) {
             var propertyName = path.last().getMatchingProperty();
             JsonNode newValue;
-            if (propertyName.matches("\\d+"))
+            if (propertyName.matches("\\d+")) {
                 newValue = jacksonObjectMapper().createArrayNode();
-            else
+            } else {
                 newValue = jacksonObjectMapper().createObjectNode();
+            }
 
             addJsonNodeValueInternal(destination, path.head(), newValue);
         }

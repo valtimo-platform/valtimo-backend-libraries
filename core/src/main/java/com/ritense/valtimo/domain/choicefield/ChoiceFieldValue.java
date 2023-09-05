@@ -29,7 +29,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -38,9 +37,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "choice_field_values")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class ChoiceFieldValue extends AbstractAuditingEntity implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class ChoiceFieldValue extends AbstractAuditingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")

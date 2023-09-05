@@ -16,10 +16,9 @@
 
 package com.ritense.valtimo.milestones.web.rest.dto;
 
-import java.io.Serializable;
 import java.util.Map;
 
-public class FlowNodeDTO implements Serializable {
+public class FlowNodeDTO {
 
     private Map<String, String> flowNodeMap;
 

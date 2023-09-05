@@ -19,11 +19,10 @@ package com.ritense.valtimo.contract.documentgeneration.event;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class DossierDocumentGeneratedEvent extends AuditMetaData implements AuditEvent, Serializable {
+public class DossierDocumentGeneratedEvent extends AuditMetaData implements AuditEvent {
 
     private static final long serialVersionUID = -1001787410861765142L;
 

@@ -24,7 +24,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.Objects;
@@ -42,7 +41,7 @@ import static javax.persistence.FetchType.EAGER;
 
 @Entity
 @Table(name = "email_notification_settings")
-public class EmailNotificationSettings implements Serializable {
+public class EmailNotificationSettings {
 
     @Id
     @Column(name = "email_address", columnDefinition = "VARCHAR(255)")
