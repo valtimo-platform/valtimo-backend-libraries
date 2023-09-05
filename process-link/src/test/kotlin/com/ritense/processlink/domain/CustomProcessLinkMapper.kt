@@ -21,6 +21,7 @@ import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
+import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import java.util.UUID
@@ -58,6 +59,15 @@ class CustomProcessLinkMapper(
             activityId = deployDto.activityId,
             activityType = deployDto.activityType,
             someValue = deployDto.someValue
+        )
+    }
+
+    override fun toProcessLinkExportResponseDto(processLink: ProcessLink): ProcessLinkExportResponseDto {
+        processLink as CustomProcessLink
+        return CustomProcessLinkExportResponseDto(
+            activityId = processLink.activityId,
+            activityType = processLink.activityType,
+            someValue = processLink.someValue
         )
     }
 

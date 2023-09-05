@@ -16,10 +16,12 @@
 
 package com.ritense.processlink.web.rest
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.processlink.domain.ProcessLinkType
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
+import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -86,6 +88,19 @@ class ProcessLinkResource(
         processLinkService.deleteProcessLink(processLinkId)
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+    }
+
+
+    @GetMapping("/v1/process-link/export")
+    fun exportProcessLinks(
+        @RequestParam("processDefinitionKey") processDefinitionKey: String
+    ): ResponseEntity<List<ProcessLinkExportResponseDto>> {
+        val list = runWithoutAuthorization {
+            processLinkService.getProcessLinksByProcessDefinitionKey(processDefinitionKey)
+                .map { getProcessLinkMapper(it.processLinkType).toProcessLinkExportResponseDto(it) }
+        }
+
+        return ResponseEntity.ok(list)
     }
 
     private fun getProcessLinkMapper(processLinkType: String): ProcessLinkMapper {
