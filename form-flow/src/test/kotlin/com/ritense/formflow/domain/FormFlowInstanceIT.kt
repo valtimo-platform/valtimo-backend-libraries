@@ -49,7 +49,7 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
 
         val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
 
-        assertTrue(storedInstance.equals(formFlowInstance))
+        assertTrue(storedInstance == formFlowInstance)
     }
 
     @Test

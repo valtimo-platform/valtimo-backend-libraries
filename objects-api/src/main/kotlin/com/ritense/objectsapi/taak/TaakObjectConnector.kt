@@ -31,16 +31,15 @@ import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.taak.TaakObjectConnector.Companion.TAAK_CONNECTOR_NAME
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.openzaak.provider.KvkProvider
-import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valueresolver.ValueResolverService
 import java.net.URI
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import kotlin.contracts.ExperimentalContracts
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
-import kotlin.contracts.ExperimentalContracts
 
 @OptIn(ExperimentalContracts::class)
 @ConnectorType(name = TAAK_CONNECTOR_NAME)

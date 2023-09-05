@@ -25,7 +25,7 @@ import com.ritense.plugin.domain.ActivityType.USER_TASK_CREATE
     title = "Test plugin",
     description = "This is a test plugin only available in tests and doesn't have any plugin configurations"
 )
-class TestPluginWithoutConfiguration() {
+class TestPluginWithoutConfiguration {
 
     @PluginAction(
         key = "test-action-on-user-task",

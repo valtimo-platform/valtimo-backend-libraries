@@ -34,7 +34,7 @@ public interface ProcessInstanceId {
             final String id = execution.getProcessInstanceId();
             target = targetClass.getConstructor(String.class).newInstance(id);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IllegalArgumentException("Cannot create instance of ProcessInstanceId class" + targetClass.toString());
+            throw new IllegalArgumentException("Cannot create instance of ProcessInstanceId class" + targetClass);
         }
         return target;
     }

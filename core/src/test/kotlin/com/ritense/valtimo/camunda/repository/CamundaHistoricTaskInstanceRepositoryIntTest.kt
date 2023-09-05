@@ -17,16 +17,10 @@
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.BaseIntegrationTest
-import com.ritense.valtimo.camunda.domain.CamundaHistoricTaskInstance
 import java.util.UUID
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.jpa.domain.Specification
 import org.springframework.transaction.annotation.Transactional
 
 class CamundaHistoricTaskInstanceRepositoryIntTest @Autowired constructor(

@@ -121,7 +121,7 @@ internal class ConnectorResourceIntTest : BaseIntegrationTest() {
         val typeId = ConnectorTypeId.newId(UUID.randomUUID())
         val type = ConnectorType(typeId, "name", "class", object : ConnectorProperties {})
 
-        val paged = PageRequest.of(0, 10, Sort.by("name").descending());
+        val paged = PageRequest.of(0, 10, Sort.by("name").descending())
 
         `when`(connectorService.getConnectorInstances(paged)).thenReturn(
             PageImpl(

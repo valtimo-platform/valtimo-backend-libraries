@@ -53,7 +53,7 @@ internal class ZaakObjectValueResolverFactoryTest {
                 "path" to "test-value-2"
             )
         )
-        whenever(object1.record.data).thenReturn(Mapper.INSTANCE.get().valueToTree<JsonNode>(objectData1))
+        whenever(object1.record.data).thenReturn(Mapper.INSTANCE.get().valueToTree(objectData1))
         whenever(zaakObjectService.getZaakObjectOfTypeByName(documentId, "sometype"))
             .thenReturn(object1)
 

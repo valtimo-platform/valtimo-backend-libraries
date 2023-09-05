@@ -19,7 +19,6 @@ package com.ritense.valtimo.camunda.repository
 import com.ritense.valtimo.BaseIntegrationTest
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
-import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional

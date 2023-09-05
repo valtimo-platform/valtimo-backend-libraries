@@ -28,8 +28,9 @@ data class ResultPage<T>(
         return next
             ?.query
             ?.split("&")
+            ?.asSequence()
             ?.map { Pair(it.substringBefore("="), it.substringAfter("=")) }
-            ?.filter { it.first.equals("page") }
+            ?.filter { it.first == "page" }
             ?.map { it.second }
             ?.map { it.toInt() }
             ?.single()

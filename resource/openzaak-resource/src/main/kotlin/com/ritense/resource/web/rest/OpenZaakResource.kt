@@ -19,14 +19,10 @@ package com.ritense.resource.web.rest
 import com.ritense.resource.service.ResourceService
 import com.ritense.resource.web.ObjectUrlDTO
 import com.ritense.resource.web.ResourceDTO
-import com.ritense.valtimo.contract.resource.Resource
 import java.net.URLConnection
 import java.util.UUID
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.multipart.MultipartFile
 
 class OpenZaakResource(
     val resourceService: ResourceService
@@ -40,7 +36,7 @@ class OpenZaakResource(
         val resourceContent = resourceService.getResourceContent(UUID.fromString(resourceId))
 
         // try to guess content type for file
-        var fileMediaType: MediaType;
+        var fileMediaType: MediaType
         try {
             val contentType = URLConnection.guessContentTypeFromName(resourceContent.resource.name)
             fileMediaType = MediaType.valueOf(contentType)

@@ -3,6 +3,8 @@ package com.ritense.openzaak.service.impl
 import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import java.net.URI
+import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -17,9 +19,6 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
-import java.net.URI
-import java.util.Arrays
-import java.util.UUID
 
 internal class DocumentenServiceTest {
 
@@ -74,7 +73,7 @@ internal class DocumentenServiceTest {
 
         assertEquals("http://documenten.api/documenten/api/v1/enkelvoudiginformatieobjecten/$documentId/download", urlCaptor.value)
         assertEquals(HttpMethod.GET, methodCaptor.value)
-        assertTrue(Arrays.equals("content".toByteArray(), bytes))
+        assertTrue("content".toByteArray().contentEquals(bytes))
 
         val httpEntity = bodyCaptor.value
         assertTrue(httpEntity.headers.accept.contains(MediaType.APPLICATION_OCTET_STREAM))

@@ -18,7 +18,7 @@ package com.ritense.zgw.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-enum class Vertrouwelijkheid() {
+enum class Vertrouwelijkheid {
     @JsonProperty("openbaar")
     OPENBAAR,
     @JsonProperty("beperkt_openbaar")

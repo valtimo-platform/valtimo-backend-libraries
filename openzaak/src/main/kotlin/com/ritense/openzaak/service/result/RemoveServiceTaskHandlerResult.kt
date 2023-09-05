@@ -16,5 +16,4 @@
 
 package com.ritense.openzaak.service.result
 
-interface RemoveServiceTaskHandlerResult: ZaakTypeLinkResult {
-}
+interface RemoveServiceTaskHandlerResult: ZaakTypeLinkResult

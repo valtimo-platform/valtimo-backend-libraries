@@ -70,7 +70,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
         val processDefinition = repositoryService.createProcessDefinitionQuery()
             .latestVersion()
             .processDefinitionKey("formflow-one-task-process")
-            .singleResult();
+            .singleResult()
 
         processLinkService.createProcessLink(
             FormFlowProcessLinkCreateRequestDto(
@@ -98,7 +98,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
         val processDefinition = repositoryService.createProcessDefinitionQuery()
             .latestVersion()
             .processDefinitionKey("formflow-one-task-process")
-            .singleResult();
+            .singleResult()
 
         processLinkService.createProcessLink(
             FormFlowProcessLinkCreateRequestDto(
@@ -133,7 +133,7 @@ internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() 
         val processDefinition = repositoryService.createProcessDefinitionQuery()
             .latestVersion()
             .processDefinitionKey("formflow-one-task-process")
-            .singleResult();
+            .singleResult()
 
         val formFlowDefinition = formFlowService.findDefinition("inkomens_loket:1")
 

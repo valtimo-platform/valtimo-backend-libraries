@@ -16,7 +16,6 @@
 package com.ritense.authorization
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.vladmihalcea.hibernate.type.util.ObjectMapperSupplier
 import java.util.function.Supplier
 
 /*

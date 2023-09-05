@@ -18,4 +18,4 @@ package com.ritense.document.domain.event
 
 import com.ritense.valtimo.web.sse.event.BaseSseEvent
 
-class CaseUnassignedEvent(): BaseSseEvent("CASE_UNASSIGNED")
+class CaseUnassignedEvent : BaseSseEvent("CASE_UNASSIGNED")

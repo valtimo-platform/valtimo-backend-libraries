@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.note.service;
+package com.ritense.note.service
 
 import com.ritense.authorization.Action
 import com.ritense.authorization.ResourceActionProvider
