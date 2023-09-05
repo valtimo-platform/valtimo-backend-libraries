@@ -42,6 +42,7 @@ public enum Operation {
         throw new IllegalStateException(String.format("Cannot create Operation from string %s", text));
     }
 
+    @Override
     public String toString() {
         return this.name;
     }

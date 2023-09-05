@@ -39,6 +39,7 @@ public class ProcessDefinitionDeletedEvent extends AuditMetaData implements Audi
         return processDefinitionKey;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

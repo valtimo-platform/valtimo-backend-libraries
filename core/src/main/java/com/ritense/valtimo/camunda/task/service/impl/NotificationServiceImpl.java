@@ -38,7 +38,11 @@ public class NotificationServiceImpl implements NotificationService {
     private final DelegateTaskHelper delegateTaskHelper;
     private final UserManagementService userManagementService;
 
-    public NotificationServiceImpl(EmailNotificationSettingsService emailNotificationService, MailSender mailSender, ValtimoProperties valtimoProperties, DelegateTaskHelper delegateTaskHelper, UserManagementService userManagementService) {
+    public NotificationServiceImpl(
+        EmailNotificationSettingsService emailNotificationService, MailSender mailSender,
+        ValtimoProperties valtimoProperties, DelegateTaskHelper delegateTaskHelper,
+        UserManagementService userManagementService
+    ) {
         this.emailNotificationService = emailNotificationService;
         this.mailSender = mailSender;
         this.valtimoProperties = valtimoProperties;

@@ -18,15 +18,12 @@ package com.ritense.formlink.domain.impl.formassociation.formlink;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.io.Serializable;
 import java.util.Objects;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
-public abstract class CamundaBpmnElement implements Serializable {
+public abstract class CamundaBpmnElement {
 
     @JsonIgnore
     protected String elementId;
