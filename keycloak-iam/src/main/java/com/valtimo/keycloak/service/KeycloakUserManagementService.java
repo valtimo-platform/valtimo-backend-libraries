@@ -24,6 +24,7 @@ import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCrite
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -59,37 +60,37 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public ManageableUser createUser(ManageableUser user) {
-        return null;
+        throw new NotImplementedException();
     }
 
     @Override
     public ManageableUser updateUser(ManageableUser updatedUserData) throws UserNotFoundException {
-        return null;
+        throw new NotImplementedException();
     }
 
     @Override
     public void deleteUser(String userId) {
-        //Not implemented
+        throw new NotImplementedException();
     }
 
     @Override
     public boolean resendVerificationEmail(String userId) {
-        return false;
+        throw new NotImplementedException();
     }
 
     @Override
     public void activateUser(String userId) {
-        //Not implemented
+        throw new NotImplementedException();
     }
 
     @Override
     public void deactivateUser(String userId) {
-        //Not implemented
+        throw new NotImplementedException();
     }
 
     @Override
     public Page<ManageableUser> getAllUsers(Pageable pageable) {
-        return null;
+        throw new NotImplementedException();
     }
 
     public Integer countUsers() {
@@ -117,7 +118,7 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public Page<ManageableUser> queryUsers(String searchTerm, Pageable pageable) {
-        return null;
+        throw new NotImplementedException();
     }
 
     @Override
