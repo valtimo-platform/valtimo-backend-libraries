@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.formflow.processlink.dto
+package com.ritense.valtimo.processlink.mapper
 
 import com.fasterxml.jackson.annotation.JsonTypeName
-import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
+import com.fasterxml.jackson.databind.node.JsonNodeFactory
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
 import com.ritense.processlink.domain.ActivityTypeWithEventName
-import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM_FLOW
+import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
+import java.util.UUID
 
-@JsonTypeName(PROCESS_LINK_TYPE_FORM_FLOW)
-data class FormFlowProcessLinkDeployDto(
-    override val processDefinitionId: String,
+@JsonTypeName(PROCESS_LINK_TYPE_PLUGIN)
+class PluginProcessLinkExportResponseDto(
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
-    val formFlowDefinitionId: String,
-) : ProcessLinkDeployDto {
+    val pluginConfigurationId: UUID,
+    val pluginActionDefinitionKey: String,
+    val actionProperties: ObjectNode? = JsonNodeFactory.instance.objectNode(),
+) : ProcessLinkExportResponseDto {
     override val processLinkType: String
-        get() = PROCESS_LINK_TYPE_FORM_FLOW
+        get() = PROCESS_LINK_TYPE_PLUGIN
 }

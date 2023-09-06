@@ -13,7 +13,6 @@ import java.time.LocalDateTime
 import mu.KotlinLogging
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation.REQUIRES_NEW
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClient
@@ -60,7 +59,7 @@ class ExactService(
             LocalDateTime::class.java
         )
 
-        logger.info { "Access token expires on ${expiresOn} it is now ${LocalDateTime.now()}" }
+        logger.info { "Access token expires on $expiresOn it is now ${LocalDateTime.now()}" }
         if (expiresOn.minusSeconds(30).isBefore(LocalDateTime.now())) {
             return refreshTokens(pluginConfiguration).properties?.get("accessToken")?.asText()!!
         }
@@ -79,8 +78,8 @@ class ExactService(
             refreshToken
         ).call(exactClient)
 
-        pluginConfiguration.properties?.put("accessToken", resp.accessToken);
-        pluginConfiguration.properties?.put("refreshToken", resp.refreshToken);
+        pluginConfiguration.properties?.put("accessToken", resp.accessToken)
+        pluginConfiguration.properties?.put("refreshToken", resp.refreshToken)
         pluginConfiguration.properties?.putPOJO(
             "accessTokenExpiresOn",
             LocalDateTime.now().plusSeconds(resp.expiresIn.toLong())

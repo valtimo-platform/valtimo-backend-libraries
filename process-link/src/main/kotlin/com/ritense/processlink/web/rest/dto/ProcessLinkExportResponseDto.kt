@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.accessandentitlement.domain;
+package com.ritense.processlink.web.rest.dto
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
-public class AuthorityRequest {
-
-    @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9-_]+$")
-    private String name;
-
-    public AuthorityRequest(@JsonProperty("name") String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+@JsonIgnoreProperties("processLinkType", allowGetters = true)
+interface ProcessLinkExportResponseDto {
+    val activityId: String
+    val activityType: ActivityTypeWithEventName
+    val processLinkType: String
 }

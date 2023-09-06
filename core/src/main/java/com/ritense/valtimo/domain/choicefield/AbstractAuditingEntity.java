@@ -26,7 +26,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 
 /**
@@ -36,9 +35,7 @@ import java.time.ZonedDateTime;
 @MappedSuperclass
 @Audited
 @EntityListeners(AuditingEntityListener.class)
-public abstract class AbstractAuditingEntity implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public abstract class AbstractAuditingEntity {
 
     @CreatedBy
     @Column(name = "created_by", nullable = false, length = 50, updatable = false)

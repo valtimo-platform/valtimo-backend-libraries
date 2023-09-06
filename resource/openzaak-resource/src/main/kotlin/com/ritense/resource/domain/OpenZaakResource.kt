@@ -20,9 +20,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.ritense.openzaak.repository.converter.UriAttributeConverter
 import com.ritense.valtimo.contract.resource.Resource
 import com.ritense.valtimo.contract.validation.Validatable
-import org.hibernate.validator.constraints.Length
-import org.springframework.data.domain.Persistable
-import java.io.Serializable
 import java.net.URI
 import java.time.LocalDateTime
 import java.util.UUID
@@ -33,6 +30,8 @@ import javax.persistence.Entity
 import javax.persistence.Table
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
+import org.hibernate.validator.constraints.Length
+import org.springframework.data.domain.Persistable
 
 @Entity
 @Table(name = "open_zaak_resource")
@@ -62,7 +61,7 @@ data class OpenZaakResource(
     @Column(name = "created_on", nullable = false, columnDefinition = "DATETIME")
     @field:NotNull
     val createdOn: LocalDateTime
-) : Resource, Serializable, Persistable<ResourceId>, Validatable {
+) : Resource, Persistable<ResourceId>, Validatable {
 
     init {
         validate()

@@ -41,9 +41,9 @@ class TokenGeneratorServiceTest {
             .parseClaimsJws(generatedToken)
 
         assertThat(claims.body.issuer).isEqualTo("testClientId")
-        assertThat(claims.body.get("client_id")).isEqualTo("testClientId")
-        assertThat(claims.body.get("user_id")).isEqualTo("Valtimo")
-        assertThat(claims.body.get("user_representation")).isEqualTo("")
+        assertThat(claims.body["client_id"]).isEqualTo("testClientId")
+        assertThat(claims.body["user_id"]).isEqualTo("Valtimo")
+        assertThat(claims.body["user_representation"]).isEqualTo("")
     }
 
 }

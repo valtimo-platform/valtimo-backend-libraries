@@ -16,8 +16,6 @@
 
 package com.ritense.dashboard.web.rest.dto
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped
-
 class DashboardWidgetDataResultDto(
     val key: String,
     val data: Any

@@ -17,16 +17,11 @@
 package com.ritense.valtimo.contract.authentication.model;
 
 import com.ritense.valtimo.contract.authentication.ManageableUser;
-
-import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-
 import static org.springframework.util.ObjectUtils.isEmpty;
 
-public class ValtimoUser implements Serializable, ManageableUser {
-
-    private static final long serialVersionUID = 1L;
+public class ValtimoUser implements ManageableUser {
 
     private String id;
     private String username;
@@ -190,10 +185,9 @@ public class ValtimoUser implements Serializable, ManageableUser {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ValtimoUser)) {
+        if (!(o instanceof ValtimoUser that)) {
             return false;
         }
-        ValtimoUser that = (ValtimoUser) o;
         return Objects.equals(id, that.id)
             && Objects.equals(username, that.username)
             && Objects.equals(email, that.email);

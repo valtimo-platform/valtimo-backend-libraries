@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonValue
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Expression
 import javax.persistence.criteria.Predicate
-import kotlin.reflect.full.isSubclassOf
 
 enum class ExpressionOperator(
     @JsonValue val asText: String,

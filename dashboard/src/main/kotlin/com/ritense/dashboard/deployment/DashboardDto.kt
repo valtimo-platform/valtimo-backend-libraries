@@ -16,8 +16,6 @@
 
 package com.ritense.dashboard.deployment
 
-import com.ritense.dashboard.domain.Dashboard
-
 data class DashboardDto(
     val key: String,
     val title: String,

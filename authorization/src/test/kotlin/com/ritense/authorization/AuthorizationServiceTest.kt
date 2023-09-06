@@ -282,19 +282,19 @@ class AuthorizationServiceTest {
     }
 }
 
-class StringTestActionProvider(): ResourceActionProvider<String> {
+class StringTestActionProvider : ResourceActionProvider<String> {
     override fun getAvailableActions(): List<Action<String>> {
         return listOf(Action(Action.VIEW))
     }
 }
 
-class OtherStringTestActionProvider(): ResourceActionProvider<String> {
+class OtherStringTestActionProvider : ResourceActionProvider<String> {
     override fun getAvailableActions(): List<Action<String>> {
         return listOf(Action(Action.CLAIM))
     }
 }
 
-class IntTestActionProvider(): ResourceActionProvider<Int> {
+class IntTestActionProvider : ResourceActionProvider<Int> {
     override fun getAvailableActions(): List<Action<Int>> {
         return listOf(Action(Action.MODIFY))
     }

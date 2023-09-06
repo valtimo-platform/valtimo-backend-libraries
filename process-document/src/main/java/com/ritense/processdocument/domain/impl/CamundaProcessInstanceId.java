@@ -19,6 +19,7 @@ package com.ritense.processdocument.domain.impl;
 import com.ritense.processdocument.domain.ProcessInstanceId;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
@@ -26,7 +27,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 
 @Embeddable
-public class CamundaProcessInstanceId implements ProcessInstanceId {
+public class CamundaProcessInstanceId implements ProcessInstanceId, Serializable {
 
     @Column(name = "camunda_process_instance_id", columnDefinition = "VARCHAR(64)")
     private String id;

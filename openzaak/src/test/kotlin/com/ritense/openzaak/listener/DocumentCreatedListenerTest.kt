@@ -97,5 +97,5 @@ internal class DocumentCreatedListenerTest {
         verify(zaakService, never()).createZaakWithLink(any(Document.Id::class.java))
     }
 
-    private fun <T> any(type: Class<T>): T = Mockito.any<T>(type)
+    private fun <T> any(type: Class<T>): T = Mockito.any(type)
 }

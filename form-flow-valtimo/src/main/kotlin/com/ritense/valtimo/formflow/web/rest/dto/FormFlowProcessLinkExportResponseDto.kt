@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.formflow.processlink.dto
+package com.ritense.valtimo.formflow.web.rest.dto
 
 import com.fasterxml.jackson.annotation.JsonTypeName
-import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM_FLOW
 
 @JsonTypeName(PROCESS_LINK_TYPE_FORM_FLOW)
-data class FormFlowProcessLinkDeployDto(
-    override val processDefinitionId: String,
+data class FormFlowProcessLinkExportResponseDto(
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
     val formFlowDefinitionId: String,
-) : ProcessLinkDeployDto {
+) : ProcessLinkExportResponseDto {
     override val processLinkType: String
         get() = PROCESS_LINK_TYPE_FORM_FLOW
 }

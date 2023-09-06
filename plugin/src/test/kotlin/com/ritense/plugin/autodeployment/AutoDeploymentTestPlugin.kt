@@ -28,8 +28,7 @@ import java.net.URI
     title = "Auto deployment Test plugin",
     description = "This is a test plugin used to verify plugin auto deployment functionality"
 )
-class AutoDeploymentTestPlugin(
-)  {
+class AutoDeploymentTestPlugin {
     @Url
     @PluginProperty(key = "property1", secret = false)
     lateinit var property1: URI

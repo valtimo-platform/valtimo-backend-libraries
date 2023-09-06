@@ -28,5 +28,5 @@ interface TestPluginInterface {
         description = "This is an action that should be implemented in a plugin",
         activityTypes = [SERVICE_TASK_START]
     )
-    fun interfaceAction();
+    fun interfaceAction()
 }

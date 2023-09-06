@@ -58,8 +58,11 @@ public class ExceptionTranslator implements ProblemHandling {
         ProblemBuilder builder = Problem.builder()
                 .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
                 .withStatus(problem.getStatus())
-                .withTitle(problem.getTitle())
-                .with("path", request.getNativeRequest(HttpServletRequest.class).getRequestURI());
+                .withTitle(problem.getTitle());
+        final HttpServletRequest httpServletRequest;
+        if ((httpServletRequest = request.getNativeRequest(HttpServletRequest.class)) != null) {
+            builder.with("path", httpServletRequest.getRequestURI());
+        }
 
         String MESSAGE = "message";
         if (problem instanceof ConstraintViolationProblem) {

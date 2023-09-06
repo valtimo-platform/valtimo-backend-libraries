@@ -19,6 +19,7 @@ package com.ritense.processlink.mapper
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
+import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 
@@ -26,6 +27,7 @@ interface ProcessLinkMapper {
     fun supportsProcessLinkType(processLinkType: String): Boolean
     fun toProcessLinkResponseDto(processLink: ProcessLink): ProcessLinkResponseDto
     fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): ProcessLinkCreateRequestDto
+    fun toProcessLinkExportResponseDto(processLink: ProcessLink): ProcessLinkExportResponseDto
     fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink
     fun toUpdatedProcessLink(
         processLinkToUpdate: ProcessLink,

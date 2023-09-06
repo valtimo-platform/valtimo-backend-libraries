@@ -166,8 +166,7 @@ class OpenKlantClientIT : BaseIntegrationTest() {
     fun findRequest(method: HttpMethod, path: String): RecordedRequest? {
         return executedRequests
             .filter { method.matches(it.method!!) }
-            .filter { it.path?.substringBefore('?').equals(path) }
-            .firstOrNull()
+            .firstOrNull { it.path?.substringBefore('?').equals(path) }
     }
 
     fun verifyRequestSent(method: HttpMethod, path: String) {

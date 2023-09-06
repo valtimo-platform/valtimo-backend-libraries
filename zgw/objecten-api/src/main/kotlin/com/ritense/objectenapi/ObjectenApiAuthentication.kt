@@ -20,5 +20,4 @@ import com.ritense.plugin.annotation.PluginCategory
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 
 @PluginCategory("objecten-api-authentication")
-interface ObjectenApiAuthentication : ExchangeFilterFunction {
-}
+interface ObjectenApiAuthentication : ExchangeFilterFunction

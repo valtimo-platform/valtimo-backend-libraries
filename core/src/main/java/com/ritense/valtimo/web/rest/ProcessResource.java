@@ -82,10 +82,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
@@ -94,17 +94,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.VERSION;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byActive;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceId;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+import static java.time.ZoneId.systemDefault;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-
-import static java.time.ZoneId.systemDefault;
 
 @RestController
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
@@ -258,8 +256,10 @@ public class ProcessResource extends AbstractProcessResource {
         Map<String, Long> heatmapDataCount = historicActivityInstances.stream()
                 .collect(Collectors.groupingBy(HistoricActivityInstance::getActivityId, Collectors.counting()));
 
+        LocalDateTime fromDateStart = fromDate == null ? null : fromDate.atStartOfDay();
+        LocalDateTime toDateStart = toDate == null ? null : toDate.atStartOfDay();
         Map<String, HeatmapTaskCountDTO> activeTasksCount = getActiveTasksCounts(
-                processDefinition, searchStatus, fromDate.atStartOfDay(), toDate.atStartOfDay(), duration);
+                processDefinition, searchStatus, fromDateStart, toDateStart, duration);
 
         for (Map.Entry<String, Long> entry : heatmapDataCount.entrySet()) {
             HeatmapTaskCountDTO heatmapTaskCountDTO = activeTasksCount.get(entry.getKey());
@@ -330,7 +330,13 @@ public class ProcessResource extends AbstractProcessResource {
             }
         }
 
-        List<CamundaTask> taskList = getAllActiveTasks(processDefinition, searchStatus, fromDate.atStartOfDay(), toDate.atStartOfDay(), duration);
+        List<CamundaTask> taskList = getAllActiveTasks(
+            processDefinition,
+            searchStatus,
+            fromDate != null ? fromDate.atStartOfDay() : null,
+            toDate != null ? toDate.atStartOfDay() : null,
+            duration
+        );
         Map<String, Long> groupedList = taskList.stream()
                 .collect(Collectors.groupingBy(CamundaTask::getTaskDefinitionKey, Collectors.counting()));
 

@@ -31,7 +31,7 @@ class AuthorizationContext {
         @JvmStatic
         fun <T> runWithoutAuthorization(callable: Callable<T>): T {
             return if (ignoreAuthorization) {
-                return callable.call();
+                return callable.call()
             } else {
                 try {
                     ignoreAuthorizationThreadLocal.set(true)

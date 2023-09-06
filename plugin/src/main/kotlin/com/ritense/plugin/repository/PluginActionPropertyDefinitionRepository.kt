@@ -20,5 +20,4 @@ import com.ritense.plugin.domain.PluginActionPropertyDefinition
 import com.ritense.plugin.domain.PluginActionPropertyDefinitionId
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface PluginActionPropertyDefinitionRepository: JpaRepository<PluginActionPropertyDefinition, PluginActionPropertyDefinitionId> {
-}
+interface PluginActionPropertyDefinitionRepository: JpaRepository<PluginActionPropertyDefinition, PluginActionPropertyDefinitionId>

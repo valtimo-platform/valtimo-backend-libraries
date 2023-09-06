@@ -35,7 +35,7 @@ class ExchangeTokenEndpoint(
         val accessToken: String,
         @JsonProperty("expires_in")
         val expiresIn: Number
-    ) {}
+    )
 }
 
 

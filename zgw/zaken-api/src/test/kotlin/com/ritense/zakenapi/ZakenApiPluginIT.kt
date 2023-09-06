@@ -91,7 +91,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
         val actionPropertiesJson = """
             {
-                "documentUrl" : "${INFORMATIE_OBJECT_URL}",
+                "documentUrl" : "$INFORMATIE_OBJECT_URL",
                 "titel": "titelVariableName",
                 "beschrijving": "beschrijvingVariableName"
             }
@@ -213,7 +213,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
             {
               "url": "http://example.com",
               "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-              "informatieobject": "${INFORMATIE_OBJECT_URL}",
+              "informatieobject": "$INFORMATIE_OBJECT_URL",
               "zaak": "http://example.com",
               "aardRelatieWeergave": "Hoort bij, omgekeerd: kent",
               "titel": "string",

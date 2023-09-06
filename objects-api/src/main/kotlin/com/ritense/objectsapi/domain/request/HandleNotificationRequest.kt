@@ -29,15 +29,15 @@ data class HandleNotificationRequest (
     }
 
     fun isCreateNotification(): Boolean {
-        return actie.equals(CREATE_ACTION_TYPE)
+        return actie == CREATE_ACTION_TYPE
     }
 
     fun isUpdateNotification(): Boolean {
-        return actie.equals(UPDATE_ACTION_TYPE)
+        return actie == UPDATE_ACTION_TYPE
     }
 
     fun isTestNotification(): Boolean {
-        return kanaal.equals(TEST_KANAAL_NAME)
+        return kanaal == TEST_KANAAL_NAME
     }
 
     fun getObjectTypeUrl(): String? {

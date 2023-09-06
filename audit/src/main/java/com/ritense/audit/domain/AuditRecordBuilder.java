@@ -17,7 +17,6 @@
 package com.ritense.audit.domain;
 
 import com.ritense.valtimo.contract.audit.AuditEvent;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
