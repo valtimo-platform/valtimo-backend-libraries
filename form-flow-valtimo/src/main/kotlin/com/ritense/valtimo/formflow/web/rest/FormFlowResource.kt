@@ -57,7 +57,7 @@ class FormFlowResource(
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
     }
 
-    @PostMapping(value = ["/v1/form-flow/instance/{formFlowId}/step/{stepInstanceId}","/v1/form-flow/{formFlowId}/step/{stepInstanceId}"]) // TODO: deprecate "/v1/form-flow/{formFlowId}/step/{stepInstanceId}"
+    @PostMapping(value = ["/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}","/v1/form-flow/{formFlowId}/step/{stepInstanceId}"]) // TODO: deprecate "/v1/form-flow/{formFlowId}/step/{stepInstanceId}"
     @Transactional
     fun completeStep(
         @PathVariable(name = "formFlowId") formFlowId: String,
