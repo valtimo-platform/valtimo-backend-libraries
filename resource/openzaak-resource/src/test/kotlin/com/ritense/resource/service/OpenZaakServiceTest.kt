@@ -131,7 +131,7 @@ internal class OpenZaakServiceTest {
 
         assertEquals(URL("http://some.base.url/api/v1/resource/${resourceId}/download"), objectContentDTO.url)
 
-        assertTrue(Arrays.equals("bytes".toByteArray(), objectContentDTO.content))
+        assertTrue("bytes".toByteArray().contentEquals(objectContentDTO.content))
     }
 
     object MockitoHelper {

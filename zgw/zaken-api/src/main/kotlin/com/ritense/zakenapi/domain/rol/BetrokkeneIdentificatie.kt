@@ -23,4 +23,4 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
         JsonSubTypes.Type(value = RolNatuurlijkPersoon::class, name = "natuurlijk_persoon"),
         JsonSubTypes.Type(value = RolNietNatuurlijkPersoon::class, name = "niet_natuurlijk_persoon")
     ])
-sealed class BetrokkeneIdentificatie()
+sealed class BetrokkeneIdentificatie

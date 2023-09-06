@@ -26,6 +26,7 @@ import com.ritense.contactmoment.connector.ContactMomentConnector
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
+import java.util.UUID
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -34,8 +35,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import java.util.Optional
-import java.util.UUID
 
 class BaseContactMomentIntegrationTest : BaseIntegrationTest() {
 

@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.springframework.web.reactive.function.client.WebClient
 
 internal class BesluitenApiPluginFactoryTest {
     @Test
@@ -39,7 +38,7 @@ internal class BesluitenApiPluginFactoryTest {
         val pluginService: PluginService = mock()
         val besluitenApiClient: BesluitenApiClient = mock()
         val urlProvider: ZaakUrlProvider = mock()
-        val authentication: BesluitenApiAuthentication = mock();
+        val authentication: BesluitenApiAuthentication = mock()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authentication)
         whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
 

@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.formflow
 
-import com.ritense.authorization.AuthorizationService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag

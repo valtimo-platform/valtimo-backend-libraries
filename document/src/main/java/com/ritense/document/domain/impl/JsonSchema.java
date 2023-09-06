@@ -45,10 +45,10 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 public final class JsonSchema {
 
     @Transient
-    private static final transient String DEFAULT_REFERENCE_PATH_LOCATION = "classpath://config/document/definition/reference/";
+    private static final String DEFAULT_REFERENCE_PATH_LOCATION = "classpath://config/document/definition/reference/";
 
     @Transient
-    private static final transient Validator VALIDATOR = Validator.builder()
+    private static final Validator VALIDATOR = Validator.builder()
         .readWriteContext(ReadWriteContext.WRITE)
         .build();
 
@@ -72,7 +72,7 @@ public final class JsonSchema {
             return new JsonSchema(rawJson);
         } catch (IOException ex) {
             throw new RuntimeException(
-                String.format("Cannot build schema from resource %s", resourceUri.toString()),
+                String.format("Cannot build schema from resource %s", resourceUri),
                 ex
             );
         }

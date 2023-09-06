@@ -81,7 +81,7 @@ internal class DocumentDelegateServiceTest : BaseTest() {
             userManagementService
         )
         delegateExecutionFake =
-            DelegateExecutionFake("id").withProcessBusinessKey("56f29315-c581-4c26-9b70-8bc818e8c86e");
+            DelegateExecutionFake("id").withProcessBusinessKey("56f29315-c581-4c26-9b70-8bc818e8c86e")
     }
 
     @Test
@@ -143,7 +143,7 @@ internal class DocumentDelegateServiceTest : BaseTest() {
     @Test
     fun `get version from document`() {
         val delegateExecutionFake = DelegateExecutionFake("id").withProcessInstanceId(processInstanceId)
-        val version = documentMock.version();
+        val version = documentMock.version()
 
         whenever(documentMock.version()).thenReturn(version)
         prepareDocument(processDocumentService, delegateExecutionFake, jsonSchemaDocumentService)

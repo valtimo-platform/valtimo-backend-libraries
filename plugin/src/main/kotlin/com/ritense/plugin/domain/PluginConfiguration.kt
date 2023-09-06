@@ -82,13 +82,13 @@ class PluginConfiguration(
         if (propertiesToEncrypt !== this.rawProperties) {
             this.rawProperties = propertiesToEncrypt?.deepCopy()
         }
-        PluginConfigurationEntityListener.logger.debug { "Encrypting secrets for PluginConfiguration ${title}" }
+        PluginConfigurationEntityListener.logger.debug { "Encrypting secrets for PluginConfiguration $title" }
         pluginDefinition.properties.filter {
             it.secret
         }.filter {
             this.rawProperties?.has(it.fieldName) ?: false
         }.forEach {
-            PluginConfigurationEntityListener.logger.debug { "Encrypting property ${it.fieldName} for PluginConfiguration ${title}" }
+            PluginConfigurationEntityListener.logger.debug { "Encrypting property ${it.fieldName} for PluginConfiguration $title" }
             replaceProperty(
                 this.rawProperties!!,
                 it.fieldName,
@@ -98,13 +98,13 @@ class PluginConfiguration(
     }
 
     internal fun decryptProperties() {
-        PluginConfigurationEntityListener.logger.debug { "Decrypting secrets for PluginConfiguration ${title}" }
+        PluginConfigurationEntityListener.logger.debug { "Decrypting secrets for PluginConfiguration $title" }
         pluginDefinition.properties.filter {
             it.secret
         }.filter {
             properties?.has(it.fieldName) ?: false
         }.forEach {
-            PluginConfigurationEntityListener.logger.debug { "Decrypting property ${it.fieldName} for PluginConfiguration ${title}" }
+            PluginConfigurationEntityListener.logger.debug { "Decrypting property ${it.fieldName} for PluginConfiguration $title" }
             replaceProperty(
                 properties!!,
                 it.fieldName,

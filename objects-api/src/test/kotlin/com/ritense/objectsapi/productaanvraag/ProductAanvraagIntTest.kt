@@ -36,6 +36,12 @@ import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import java.net.URI
+import java.util.UUID
+import javax.transaction.Transactional
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.fail
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -44,8 +50,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
@@ -56,12 +62,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.net.URI
-import java.util.UUID
-import javax.transaction.Transactional
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.fail
 
 @Transactional
 class ProductAanvraagIntTest : BaseIntegrationTest() {
@@ -112,8 +112,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
 
         connectorDeploymentService.deployAll(listOf(productAanvraagConnector, openZaakConnector))
         connectorType = connectorService.getConnectorTypes()
-            .filter { it.name.equals("ProductAanvragen") }
-            .first()
+            .first { it.name == "ProductAanvragen" }
     }
 
     @AfterEach
@@ -154,7 +153,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
                 .andReturn()
 
-        val id: String = JsonPath.read(result.getResponse().getContentAsString(), "$.connectorTypeInstance.id")
+        val id: String = JsonPath.read(result.response.contentAsString, "$.connectorTypeInstance.id")
         val abonnementLink = abonnementLinkRepository.findById(ConnectorInstanceId.existingId(UUID.fromString(id)))
 
         verifyRequestSent(HttpMethod.POST, "/api/v1/abonnement")
@@ -199,7 +198,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         verifyRequestSent(HttpMethod.DELETE, "/api/v1/abonnement/693fb25a-20ee-407b-917b-9dd0e76988c9")
         verifyRequestSent(HttpMethod.POST, "/api/v1/abonnement")
 
-        val id: String = JsonPath.read(result.getResponse().getContentAsString(), "$.connectorTypeInstance.id")
+        val id: String = JsonPath.read(result.response.contentAsString, "$.connectorTypeInstance.id")
         val abonnementLink = abonnementLinkRepository.findById(ConnectorInstanceId.existingId(UUID.fromString(id)))
 
         assertTrue(abonnementLink.isPresent)
@@ -348,8 +347,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     fun findRequest(method: HttpMethod, path: String): RecordedRequest? {
         return executedRequests
             .filter { method.matches(it.method!!) }
-            .filter { it.path?.substringBefore('?').equals(path) }
-            .firstOrNull()
+            .firstOrNull { it.path?.substringBefore('?').equals(path) }
     }
 
     fun verifyRequestSent(method: HttpMethod, path: String) {
@@ -566,9 +564,9 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
         val body = """
             {
                 "url":"${baseUrl}zaken/api/v1/zaakinformatieobjecten/${uuid}",
-                "uuid":"${uuid}",
-                "informatieobject":"${informatieobject}",
-                "zaak":"${zaak}",
+                "uuid":"$uuid",
+                "informatieobject":"$informatieobject",
+                "zaak":"$zaak",
                 "aardRelatieWeergave":"Hoort bij, omgekeerd: kent",
                 "titel":"string",
                 "beschrijving":"string",
@@ -675,8 +673,7 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     fun prepareOpenZaakConfig() {
         val connectorInstanceId = ConnectorInstanceId.newId(UUID.fromString("26141e07-40e4-4a7e-9c78-f7a40db3b3f0"))
         val openZaakConnectorType = connectorService.getConnectorTypes()
-            .filter { it.name.equals("OpenZaak") }
-            .first()
+            .first { it.name == "OpenZaak" }
 
         openZaakConnectorInstance = ConnectorInstance(
             connectorInstanceId,

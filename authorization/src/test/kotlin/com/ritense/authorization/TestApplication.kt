@@ -19,9 +19,7 @@ package com.ritense.authorization
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication(
-    //scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class, HibernateJsonMapperConfiguration::class]
-)
+@SpringBootApplication
 class TestApplication {
 
     fun main(args: Array<String>) {

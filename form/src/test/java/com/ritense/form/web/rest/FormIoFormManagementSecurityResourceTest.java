@@ -56,13 +56,13 @@ class FormIoFormManagementSecurityResourceTest extends SecuritySpecificEndpointI
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void getFormDefinitionByIdAsAdmin() throws Exception {
-        assertHttpStatus(GET, "/api/v1/form-management/" + UUID.randomUUID().toString(), NO_CONTENT);
+        assertHttpStatus(GET, "/api/v1/form-management/" + UUID.randomUUID(), NO_CONTENT);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void getFormDefinitionByIdAsUser() throws Exception {
-        assertHttpStatus(GET, "/api/v1/form-management/" + UUID.randomUUID().toString(), FORBIDDEN);
+        assertHttpStatus(GET, "/api/v1/form-management/" + UUID.randomUUID(), FORBIDDEN);
     }
 
     @Test
@@ -146,13 +146,13 @@ class FormIoFormManagementSecurityResourceTest extends SecuritySpecificEndpointI
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void deleteFormDefinitionAsAdmin() throws Exception {
-        assertHttpStatus(DELETE, "/api/v1/form-management/" + UUID.randomUUID().toString(), INTERNAL_SERVER_ERROR);
+        assertHttpStatus(DELETE, "/api/v1/form-management/" + UUID.randomUUID(), INTERNAL_SERVER_ERROR);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void deleteFormDefinitionAsUser() throws Exception {
-        assertHttpStatus(DELETE, "/api/v1/form-management/" + UUID.randomUUID().toString(), FORBIDDEN);
+        assertHttpStatus(DELETE, "/api/v1/form-management/" + UUID.randomUUID(), FORBIDDEN);
     }
 
 }

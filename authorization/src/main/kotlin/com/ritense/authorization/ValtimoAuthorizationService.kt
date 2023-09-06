@@ -66,7 +66,7 @@ class ValtimoAuthorizationService(
     override fun <T : Any> hasPermission(
         request: AuthorizationRequest<T>
     ) : Boolean {
-        return getAuthorizationSpecification(request).isAuthorized();
+        return getAuthorizationSpecification(request).isAuthorized()
     }
 
     override fun <T : Any> getAuthorizationSpecification(
@@ -75,7 +75,7 @@ class ValtimoAuthorizationService(
     ): AuthorizationSpecification<T> {
         val usedPermissions = permissions ?: getPermissions(request)
 
-        val factory = (authorizationSpecificationFactories.firstOrNull() {
+        val factory = (authorizationSpecificationFactories.firstOrNull {
             it.canCreate(request, usedPermissions)
         } as AuthorizationSpecificationFactory<T>?)?: throw AccessDeniedException("No specification found for given context.")
         return factory.create(request, usedPermissions)
@@ -89,7 +89,7 @@ class ValtimoAuthorizationService(
         from: Class<FROM>,
         to: Class<TO>
     ): AuthorizationEntityMapper<FROM, TO> {
-        return (mappers.firstOrNull() {
+        return (mappers.firstOrNull {
             it.supports(from, to)
         } as AuthorizationEntityMapper<FROM, TO>?)?: throw AccessDeniedException("No entity mapper found for given arguments.")
     }

@@ -16,10 +16,6 @@
 
 package com.ritense.mail.wordpressmail.connector
 
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.isNull
-import org.mockito.kotlin.whenever
 import com.ritense.document.service.DocumentService
 import com.ritense.mail.wordpressmail.BaseTest
 import com.ritense.mail.wordpressmail.domain.EmailSendRequest
@@ -29,7 +25,6 @@ import com.ritense.mail.wordpressmail.service.WordpressMailClient
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
 import com.ritense.valtimo.contract.mail.model.value.Recipient
-import org.apache.commons.lang3.NotImplementedException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -38,6 +33,10 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
+import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
 
 class WordpressMailConnectorTest : BaseTest() {

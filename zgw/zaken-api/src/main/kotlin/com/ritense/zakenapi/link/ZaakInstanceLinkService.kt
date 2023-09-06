@@ -46,11 +46,11 @@ class  ZaakInstanceLinkService(
 
     fun getByDocumentId(documentId: UUID): ZaakInstanceLink {
         return zaakInstanceLinkRepository.findByDocumentId(documentId)
-            ?: throw ZaakInstanceLinkNotFoundException("No ZaakInstanceLink found for document id ${documentId}")
+            ?: throw ZaakInstanceLinkNotFoundException("No ZaakInstanceLink found for document id $documentId")
     }
 
     fun getByZaakInstanceUrl(zaakInstanceUrl: URI): ZaakInstanceLink {
         return zaakInstanceLinkRepository.findByZaakInstanceUrl(zaakInstanceUrl)
-            ?: throw ZaakInstanceLinkNotFoundException("No ZaakInstanceLink found for zaak instance url ${zaakInstanceUrl}")
+            ?: throw ZaakInstanceLinkNotFoundException("No ZaakInstanceLink found for zaak instance url $zaakInstanceUrl")
     }
 }

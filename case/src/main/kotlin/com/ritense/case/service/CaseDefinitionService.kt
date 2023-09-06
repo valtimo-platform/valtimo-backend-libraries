@@ -40,7 +40,7 @@ import kotlin.jvm.optionals.getOrNull
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class CaseDefinitionService constructor(
+class CaseDefinitionService(
     private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository,
     private val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     private val documentDefinitionService: DocumentDefinitionService,

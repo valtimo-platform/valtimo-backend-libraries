@@ -21,7 +21,6 @@ import com.ritense.valtimo.contract.domain.AbstractId
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Embeddable
-import org.hibernate.annotations.Type
 
 @Embeddable
 data class ConnectorTypeId(

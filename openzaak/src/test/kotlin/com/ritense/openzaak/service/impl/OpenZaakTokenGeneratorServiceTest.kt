@@ -2,7 +2,6 @@ package com.ritense.openzaak.service.impl
 
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.impl.DefaultJwtParserBuilder
 import io.jsonwebtoken.security.Keys
 import java.nio.charset.Charset

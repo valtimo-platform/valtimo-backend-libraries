@@ -20,10 +20,6 @@ import com.ritense.valtimo.contract.domain.AbstractId
 import javax.persistence.Column
 import javax.persistence.Embeddable
 import javax.persistence.Embedded
-import javax.persistence.FetchType
-import javax.persistence.JoinColumn
-import javax.persistence.JoinColumns
-import javax.persistence.ManyToOne
 
 @Embeddable
 data class PluginActionPropertyDefinitionId(
