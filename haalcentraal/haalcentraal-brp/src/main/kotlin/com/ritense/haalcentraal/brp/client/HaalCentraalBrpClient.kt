@@ -43,7 +43,7 @@ class HaalCentraalBrpClient(
             .retrieve()
             .awaitBody<Personen>()
 
-        if (burgerservicenummer != null && burgerservicenummer.isNotEmpty()
+        if (!burgerservicenummer.isNullOrEmpty()
             &&  people.embedded.ingeschrevenpersonen != null && people.embedded.ingeschrevenpersonen.size > 1 ) {
            throw IllegalStateException("Multiple people found for BSN: $burgerservicenummer")
         }

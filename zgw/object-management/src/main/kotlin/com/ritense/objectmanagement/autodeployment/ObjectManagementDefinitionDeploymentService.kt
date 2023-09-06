@@ -75,7 +75,7 @@ class ObjectManagementDefinitionDeploymentService(
         return try {
             ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH)
         } catch (ioe: IOException) {
-            throw RuntimeException("Failed to load resources from " + PATH, ioe)
+            throw RuntimeException("Failed to load resources from $PATH", ioe)
         }
     }
 

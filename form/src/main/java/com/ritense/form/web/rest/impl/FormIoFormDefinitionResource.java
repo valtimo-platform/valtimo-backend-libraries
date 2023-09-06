@@ -16,12 +16,11 @@
 
 package com.ritense.form.web.rest.impl;
 
-import com.ritense.form.domain.FormDefinition;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.web.rest.FormDefinitionResource;
 import com.ritense.form.web.rest.dto.FormOption;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
+import java.util.List;
 
 public class FormIoFormDefinitionResource implements FormDefinitionResource {
 

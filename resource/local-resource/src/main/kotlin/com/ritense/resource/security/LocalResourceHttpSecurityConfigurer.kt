@@ -32,7 +32,7 @@ class LocalResourceHttpSecurityConfigurer : HttpSecurityConfigurer {
                 .antMatchers(GET, "/api/v1/resource/pre-signed-url/{fileName}").hasAuthority(USER)
                 .antMatchers(GET, "/api/v1/resource/{resourceId}").hasAuthority(USER)
                 .antMatchers(DELETE, "/api/v1/resource/{resourceId}").hasAuthority(USER)
-                .antMatchers(PUT, "/api/v1/resource").hasAuthority(USER);
+                .antMatchers(PUT, "/api/v1/resource").hasAuthority(USER)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

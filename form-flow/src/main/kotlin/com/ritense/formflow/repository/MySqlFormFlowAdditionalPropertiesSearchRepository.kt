@@ -39,11 +39,11 @@ class MySqlFormFlowAdditionalPropertiesSearchRepository(
         value: Any
     ): Predicate {
         return criteriaBuilder.equal(
-            criteriaBuilder.function<FormFlowInstance>(
+            criteriaBuilder.function(
                 "JSON_EXTRACT",
                 FormFlowInstance::class.java,
                 root.get<Any>("additionalProperties"),
-                criteriaBuilder.literal("$."+ key)
+                criteriaBuilder.literal("$.$key")
             ),
             value
         )

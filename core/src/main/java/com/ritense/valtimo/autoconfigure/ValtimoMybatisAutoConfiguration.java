@@ -28,7 +28,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,13 +91,14 @@ public class ValtimoMybatisAutoConfiguration {
         properties.put("prefix", conf.getDatabaseTablePrefix());
 
         String dbmsToUse;
-        if (conf.getDatabaseType() == null || conf.getDatabaseType().isEmpty())
+        if (conf.getDatabaseType() == null || conf.getDatabaseType().isEmpty()) {
             dbmsToUse = valtimoDatabaseType;
-        else{
+        } else {
             dbmsToUse = conf.getDatabaseType();
         }
 
-        ProcessEngineConfigurationImpl.initSqlSessionFactoryProperties(properties, conf.getDatabaseTablePrefix(), dbmsToUse);
+        ProcessEngineConfigurationImpl.initSqlSessionFactoryProperties(
+            properties, conf.getDatabaseTablePrefix(), dbmsToUse);
         // Add database specific trunc date function
         properties.put("truncDatepart1", databaseSpecificTruncDatepart1.get(conf.getDatabaseType()));
         properties.put("truncDatepart2", databaseSpecificTruncDatepart2.get(conf.getDatabaseType()));

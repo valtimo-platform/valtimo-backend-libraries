@@ -22,7 +22,6 @@ import com.ritense.valtimo.contract.domain.AbstractId;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
-import java.io.Serializable;
 import java.util.Objects;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
@@ -31,7 +30,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 
 @Embeddable
 public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumentDefinitionId>
-    implements DocumentDefinition.Id, Serializable {
+    implements DocumentDefinition.Id {
 
     @Transient
     private static final long INITIAL_VERSION = 1;

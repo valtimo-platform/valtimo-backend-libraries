@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.accessandentitlement.domain.event;
+package com.ritense.processlink.domain
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.ritense.valtimo.accessandentitlement.domain.Money;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonTypeName
+import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
+import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 
-public class AuthorityDeletedEvent extends AuthorityEvent {
-
-    @JsonCreator
-    public AuthorityDeletedEvent(
-        UUID id,
-        String origin,
-        LocalDateTime occurredOn,
-        String user,
-        String name,
-        Boolean systemAuthority
-    ) {
-        super(id, origin, occurredOn, user, name, systemAuthority);
-    }
-
+@JsonTypeName(PROCESS_LINK_TYPE_TEST)
+data class CustomProcessLinkExportResponseDto(
+    override val activityId: String,
+    override val activityType: ActivityTypeWithEventName,
+    val someValue: String = "test"
+) : ProcessLinkExportResponseDto {
+    override val processLinkType: String
+        get() = PROCESS_LINK_TYPE_TEST
 }

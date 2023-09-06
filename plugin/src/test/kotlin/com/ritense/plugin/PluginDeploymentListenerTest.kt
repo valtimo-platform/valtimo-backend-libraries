@@ -168,5 +168,5 @@ internal class PluginDeploymentListenerTest {
         assertEquals(expectedMessage, exception.message)
     }
 
-    private class UnitTestPlugin()
+    private class UnitTestPlugin
 }

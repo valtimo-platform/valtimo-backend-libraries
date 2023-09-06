@@ -90,7 +90,7 @@ class TaakObjectListener(
 
     private fun saveDataAndCompleteTask(taakObject: TaakObjectDto) {
         val task = camundaTaskService.findTaskById(taakObject.verwerkerTaakId.toString())
-        if (taakObject.verzondenData != null && taakObject.verzondenData.isNotEmpty()) {
+        if (!taakObject.verzondenData.isNullOrEmpty()) {
             val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
             val variableScope = getVariableScope(task)
             val taakObjectData = Mapper.INSTANCE.get().valueToTree<JsonNode>(taakObject.verzondenData)

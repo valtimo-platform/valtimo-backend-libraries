@@ -19,7 +19,7 @@ package com.ritense.openzaak.repository.converter
 import java.net.URI
 import javax.persistence.AttributeConverter
 
-class UriAttributeConverter () : AttributeConverter<URI, String> {
+class UriAttributeConverter : AttributeConverter<URI, String> {
 
     override fun convertToDatabaseColumn(attribute: URI): String {
         return attribute.toString()

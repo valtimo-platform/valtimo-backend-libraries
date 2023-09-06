@@ -40,8 +40,8 @@ internal class ExactPluginTest {
 
     @BeforeAll
     fun setUpAll() {
-        mockWebServer = MockWebServer();
-        mockWebServer.start();
+        mockWebServer = MockWebServer()
+        mockWebServer.start()
     }
 
     @AfterAll
@@ -86,7 +86,7 @@ internal class ExactPluginTest {
 
         verify(execution).setVariable(eq("exactGetResult"), any<JsonNode>())
 
-        var request = mockWebServer.takeRequest();
+        val request = mockWebServer.takeRequest()
         assertEquals("GET", request.method)
         assertEquals("http://localhost:${mockWebServer.port}/api/test", request.requestUrl.toString())
     }
@@ -131,7 +131,7 @@ internal class ExactPluginTest {
 
         verify(execution).setVariable(eq("test"), any<JsonNode>())
 
-        var request = mockWebServer.takeRequest();
+        val request = mockWebServer.takeRequest()
         assertEquals("GET", request.method)
         assertEquals("http://localhost:${mockWebServer.port}/api/test", request.requestUrl.toString())
     }
@@ -170,7 +170,7 @@ internal class ExactPluginTest {
 
         verify(execution).setVariable(eq("exactPostResult"), any<JsonNode>())
 
-        var request = mockWebServer.takeRequest();
+        val request = mockWebServer.takeRequest()
         assertEquals("POST", request.method)
         assertEquals("http://localhost:${mockWebServer.port}/api/test", request.requestUrl.toString())
         assertEquals(
@@ -224,7 +224,7 @@ internal class ExactPluginTest {
 
         verify(execution).setVariable(eq("test"), any<JsonNode>())
 
-        var request = mockWebServer.takeRequest();
+        val request = mockWebServer.takeRequest()
         assertEquals("POST", request.method)
         assertEquals("http://localhost:${mockWebServer.port}/api/test", request.requestUrl.toString())
         assertEquals(
@@ -268,7 +268,7 @@ internal class ExactPluginTest {
 
         verify(execution).setVariable(eq("exactPutResult"), any<JsonNode>())
 
-        var request = mockWebServer.takeRequest();
+        val request = mockWebServer.takeRequest()
         assertEquals("PUT", request.method)
         assertEquals("http://localhost:${mockWebServer.port}/api/test", request.requestUrl.toString())
         assertEquals(
@@ -322,7 +322,7 @@ internal class ExactPluginTest {
 
         verify(execution).setVariable(eq("test"), any<JsonNode>())
 
-        var request = mockWebServer.takeRequest();
+        val request = mockWebServer.takeRequest()
         assertEquals("PUT", request.method)
         assertEquals("http://localhost:${mockWebServer.port}/api/test", request.requestUrl.toString())
         assertEquals(

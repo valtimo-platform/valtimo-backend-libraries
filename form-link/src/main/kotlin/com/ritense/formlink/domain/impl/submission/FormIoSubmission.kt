@@ -151,9 +151,9 @@ data class FormIoSubmission(
 
     private fun buildExternalFormData() {
         externalFormData = formDefinition.buildExternalFormFieldsMapForSubmission().map { entry ->
-            entry.key to entry.value.map {
+            entry.key to entry.value.associate {
                 it.name to FormField.getValue(formData, it.jsonPointer)
-            }.toMap()
+            }
         }.toMap()
     }
 

@@ -265,6 +265,6 @@ class ConnectorServiceIntTest : BaseIntegrationTest() {
         val connectorInstancesByType = connectorService.getConnectorInstancesByType(connectorTypeId.id, Pageable.unpaged())
         assertThat(connectorInstancesByType).isNotNull
         assertThat(connectorInstancesByType.totalElements).isEqualTo(1)
-        assertThat(connectorInstancesByType.content.get(0).type.id).isEqualTo(connectorTypeId)
+        assertThat(connectorInstancesByType.content[0].type.id).isEqualTo(connectorTypeId)
     }
 }

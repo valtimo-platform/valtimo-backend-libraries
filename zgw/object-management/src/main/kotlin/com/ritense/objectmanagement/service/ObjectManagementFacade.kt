@@ -61,7 +61,7 @@ class ObjectManagementFacade(
         val accessObject = getAccessObject(objectName)
         val objects = mutableListOf<ObjectWrapper>()
 
-        objectUrls.forEach(){
+        objectUrls.forEach {
             objects.add(findObjectByUri(accessObject = accessObject, objectUrl = it))
         }
 

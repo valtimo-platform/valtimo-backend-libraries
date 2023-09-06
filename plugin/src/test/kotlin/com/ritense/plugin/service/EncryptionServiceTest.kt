@@ -18,7 +18,6 @@ package com.ritense.plugin.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import javax.crypto.spec.SecretKeySpec
 
 internal class EncryptionServiceTest {
     val oldEncryptedValue = "tRAgOSv2vlAuxA4+igFVyw=="

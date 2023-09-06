@@ -60,7 +60,7 @@ class UnicodeUnescapeInputStream(
         return try {
             unicodeHex.toInt(16)
         } catch (e: Exception) {
-            throw IllegalArgumentException("Unable to parse unicode value: '\\u$unicodeHex'", e);
+            throw IllegalArgumentException("Unable to parse unicode value: '\\u$unicodeHex'", e)
         }
     }
 

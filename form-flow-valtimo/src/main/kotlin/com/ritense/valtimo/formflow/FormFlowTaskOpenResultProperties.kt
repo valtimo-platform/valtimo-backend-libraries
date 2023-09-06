@@ -18,5 +18,4 @@ package com.ritense.valtimo.formflow
 
 import java.util.UUID
 
-class FormFlowTaskOpenResultProperties(val formFlowInstanceId: UUID) {
-}
+class FormFlowTaskOpenResultProperties(val formFlowInstanceId: UUID)

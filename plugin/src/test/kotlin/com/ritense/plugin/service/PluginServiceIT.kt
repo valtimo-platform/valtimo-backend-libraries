@@ -30,6 +30,11 @@ import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.valtimo.contract.json.Mapper
+import java.lang.reflect.InvocationTargetException
+import java.net.URI
+import java.util.UUID
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotEquals
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.camunda.community.mockito.delegate.DelegateTaskFake
@@ -48,11 +53,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import java.lang.reflect.InvocationTargetException
-import java.net.URI
-import java.util.UUID
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNotEquals
 
 
 internal class PluginServiceIT : BaseIntegrationTest() {
@@ -120,7 +120,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
 
         // value should be decrypted when loading from database
         val configurations = pluginService.getPluginConfigurations(PluginConfigurationSearchParameters())
-        val configurationFromDatabase = configurations.filter { it.id.id == configuration.id.id }.first()
+        val configurationFromDatabase = configurations.first { it.id.id == configuration.id.id }
 
         assertEquals("test123", configurationFromDatabase.properties!!.get("property1").textValue())
 
@@ -140,7 +140,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
         )
 
         val configurations2 = pluginService.getPluginConfigurations(PluginConfigurationSearchParameters())
-        val configurationFromDatabase2 = configurations2.filter { it.id.id == configuration.id.id }.first()
+        val configurationFromDatabase2 = configurations2.first { it.id.id == configuration.id.id }
 
         assertEquals("test1234", configurationFromDatabase2.properties!!.get("property1").textValue())
         assertNotEquals("test1234", configurationFromDatabase2.rawProperties!!.get("property1").textValue())
