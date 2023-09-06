@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.milestones.web.rest.dto;
+package com.ritense.processlink.domain
 
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonTypeName
+import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
+import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 
-public class FlowNodeDTO {
-
-    private Map<String, String> flowNodeMap;
-
-    public FlowNodeDTO() {
-    }
-
-    public FlowNodeDTO(Map<String, String> flowNodeMap) {
-        this.flowNodeMap = flowNodeMap;
-    }
-
-    public Map<String, String> getFlowNodeMap() {
-        return flowNodeMap;
-    }
-
-    public void setFlowNodeMap(Map<String, String> flowNodeMap) {
-        this.flowNodeMap = flowNodeMap;
-    }
+@JsonTypeName(PROCESS_LINK_TYPE_TEST)
+data class CustomProcessLinkExportResponseDto(
+    override val activityId: String,
+    override val activityType: ActivityTypeWithEventName,
+    val someValue: String = "test"
+) : ProcessLinkExportResponseDto {
+    override val processLinkType: String
+        get() = PROCESS_LINK_TYPE_TEST
 }

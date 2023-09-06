@@ -120,7 +120,7 @@ public class TaskCompletedEvent extends AuditMetaData
     public UUID getDocumentId() {
         try {
             return UUID.fromString(businessKey);
-        } catch (IllegalArgumentException iae) {
+        } catch (IllegalArgumentException illegalArgumentException) {
             return null;
         }
     }
@@ -130,14 +130,12 @@ public class TaskCompletedEvent extends AuditMetaData
         if (this == o) {
             return true;
         }
-        if (!(o instanceof TaskCompletedEvent)) {
+        if (!(o instanceof TaskCompletedEvent that)) {
             return false;
         }
         if (!super.equals(o)) {
             return false;
         }
-
-        TaskCompletedEvent that = (TaskCompletedEvent) o;
 
         return taskId.equals(that.taskId);
     }

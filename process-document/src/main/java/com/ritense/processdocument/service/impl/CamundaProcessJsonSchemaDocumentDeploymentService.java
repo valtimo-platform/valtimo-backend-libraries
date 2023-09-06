@@ -36,10 +36,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
-
 import java.io.IOException;
 import java.util.List;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class CamundaProcessJsonSchemaDocumentDeploymentService implements ProcessDocumentDeploymentService {
@@ -77,7 +75,11 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
         final var resources = loadResources(getProcessDocumentLinkResourcesPath());
         for (var resource : resources) {
             try {
-                final var documentDefinitionName = resource.getFilename().split("\\.")[0];
+                final String filename = resource.getFilename();
+                if (filename == null) {
+                    continue;
+                }
+                final var documentDefinitionName = filename.split("\\.")[0];
                 final var processDocumentLinkConfigItems = getJson(IOUtils.toString(resource.getInputStream(), UTF_8));
 
                 if (documentDefinitionService.findLatestByName(documentDefinitionName).isPresent()) {

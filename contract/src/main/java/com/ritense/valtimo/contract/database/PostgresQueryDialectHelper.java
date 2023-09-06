@@ -74,8 +74,8 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
                 LOWER_CASE_FUNCTION,
                 String.class,
                 getValueForPathText(cb, column, path)
-            )
-            , "%" + value.toLowerCase() + "%"
+            ),
+            "%" + value.toLowerCase() + "%"
         );
     }
 

@@ -16,7 +16,6 @@
 
 package com.ritense.document.domain.impl.listener;
 
-import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentSnapshotCapturedEvent;
 import com.ritense.document.service.DocumentSnapshotService;
 import org.slf4j.Logger;

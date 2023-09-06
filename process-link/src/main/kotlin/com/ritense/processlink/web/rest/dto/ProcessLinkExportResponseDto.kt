@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.milestones.web.rest.dto;
+package com.ritense.processlink.web.rest.dto
 
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 
-public class FlowNodeDTO {
-
-    private Map<String, String> flowNodeMap;
-
-    public FlowNodeDTO() {
-    }
-
-    public FlowNodeDTO(Map<String, String> flowNodeMap) {
-        this.flowNodeMap = flowNodeMap;
-    }
-
-    public Map<String, String> getFlowNodeMap() {
-        return flowNodeMap;
-    }
-
-    public void setFlowNodeMap(Map<String, String> flowNodeMap) {
-        this.flowNodeMap = flowNodeMap;
-    }
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+@JsonIgnoreProperties("processLinkType", allowGetters = true)
+interface ProcessLinkExportResponseDto {
+    val activityId: String
+    val activityType: ActivityTypeWithEventName
+    val processLinkType: String
 }

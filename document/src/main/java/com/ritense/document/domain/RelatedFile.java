@@ -17,11 +17,10 @@
 package com.ritense.document.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public interface RelatedFile extends Serializable {
+public interface RelatedFile {
 
     @JsonProperty
     UUID getFileId();

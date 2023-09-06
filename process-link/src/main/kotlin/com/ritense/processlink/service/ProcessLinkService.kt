@@ -25,6 +25,8 @@ import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
@@ -35,7 +37,8 @@ import kotlin.jvm.optionals.getOrElse
 open class ProcessLinkService(
     private val processLinkRepository: ProcessLinkRepository,
     private val processLinkMappers: List<ProcessLinkMapper>,
-    private val processLinkTypes: List<SupportedProcessLinkTypeHandler>
+    private val processLinkTypes: List<SupportedProcessLinkTypeHandler>,
+    private val camundaRepositoryService: CamundaRepositoryService,
 ) {
 
     fun <T: ProcessLink> getProcessLink(processLinkId: UUID, clazz: Class<T> ): T {
@@ -51,6 +54,11 @@ open class ProcessLinkService(
 
     fun getProcessLinks(processDefinitionId: String, activityId: String): List<ProcessLink> {
         return processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinitionId, activityId)
+    }
+
+    fun getProcessLinksByProcessDefinitionKey(processDefinitionKey: String): List<ProcessLink> {
+        return camundaRepositoryService.findProcessDefinitions(byKey(processDefinitionKey))
+            .flatMap { processLinkRepository.findByProcessDefinitionId(it.id) }
     }
 
     fun getProcessLinks(

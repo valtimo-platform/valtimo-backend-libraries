@@ -21,12 +21,14 @@ import com.ritense.form.domain.FormProcessLink
 import com.ritense.form.processlink.dto.FormProcessLinkDeployDto
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.web.rest.dto.FormProcessLinkCreateRequestDto
+import com.ritense.form.web.rest.dto.FormProcessLinkExportResponseDto
 import com.ritense.form.web.rest.dto.FormProcessLinkResponseDto
 import com.ritense.form.web.rest.dto.FormProcessLinkUpdateRequestDto
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
+import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import java.util.UUID
@@ -67,6 +69,15 @@ class FormProcessLinkMapper(
             activityId = deployDto.activityId,
             activityType = deployDto.activityType,
             formDefinitionId = formDefinition.id
+        )
+    }
+
+    override fun toProcessLinkExportResponseDto(processLink: ProcessLink): ProcessLinkExportResponseDto {
+        processLink as FormProcessLink
+        return FormProcessLinkExportResponseDto(
+            activityId = processLink.activityId,
+            activityType = processLink.activityType,
+            formDefinitionId = processLink.formDefinitionId
         )
     }
 

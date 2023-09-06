@@ -18,15 +18,12 @@ package com.ritense.valtimo.web.rest.dto;
 
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
-import kotlin.jvm.Transient;
 import org.camunda.bpm.engine.form.FormField;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
-
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class CustomTaskDto implements Serializable {
+public class CustomTaskDto {
 
     private CamundaTaskDto task;
 

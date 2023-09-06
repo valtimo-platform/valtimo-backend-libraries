@@ -27,7 +27,6 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
-
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -58,14 +57,14 @@ public class LiquibaseRunner {
             for (LiquibaseMasterChangeLogLocation changeLogLocation : liquibaseMasterChangeLogLocations) {
                 runChangeLog(database, changeLogLocation.getFilePath());
             }
-        } catch (LiquibaseException e) {
-            throw new DatabaseException(e);
+        } catch (LiquibaseException liquibaseException) {
+            throw new DatabaseException(liquibaseException);
         } finally {
             try {
                 connection.rollback();
                 connection.close();
-            } catch (SQLException e) {
-                logger.error("Error closing connection ", e);
+            } catch (SQLException sqlException) {
+                logger.error("Error closing connection ", sqlException);
             }
         }
         logger.info("Finished running liquibase");

@@ -19,10 +19,8 @@ package com.ritense.formlink.web.rest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.formlink.service.result.FormSubmissionResult;
 import org.springframework.http.ResponseEntity;
-
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
 public interface FormAssociationResource {
