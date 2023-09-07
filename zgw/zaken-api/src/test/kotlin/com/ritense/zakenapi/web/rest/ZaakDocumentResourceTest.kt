@@ -80,7 +80,7 @@ class ZaakDocumentResourceTest : BaseIntegrationTest() {
             .andExpect(jsonPath("$.[0].pluginConfigurationId").value(relatedFile.pluginConfigurationId.toString()))
             .andExpect(jsonPath("$.[0].fileName").value(relatedFile.fileName))
             .andExpect(jsonPath("$.[0].sizeInBytes").value(relatedFile.sizeInBytes))
-            .andExpect(jsonPath("$.[0].createdOn").value(relatedFile.createdOn.toString()))
+            .andExpect(jsonPath("$.[0].createdOn").value("2023-01-01T12:10:01.000Z"))
             .andExpect(jsonPath("$.[0].createdBy").value(relatedFile.createdBy))
             .andExpect(jsonPath("$.[0].fileId").value(relatedFile.fileId.toString()))
     }
