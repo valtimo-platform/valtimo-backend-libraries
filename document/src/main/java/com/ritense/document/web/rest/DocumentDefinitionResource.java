@@ -58,11 +58,11 @@ public interface DocumentDefinitionResource {
     @GetMapping("/v1/document-definition/open/count")
     ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount();
 
-    @PostMapping(value = "/v1/document-definition", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/management/v1/document-definition", consumes = APPLICATION_JSON_VALUE)
     ResponseEntity<DeployDocumentDefinitionResult> deployDocumentDefinition(
         @Valid @RequestBody DocumentDefinitionCreateRequest request
     );
 
-    @DeleteMapping("/v1/document-definition/{name}")
+    @DeleteMapping("/management/v1/document-definition/{name}")
     ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(@PathVariable String name);
 }
