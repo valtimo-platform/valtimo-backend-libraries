@@ -35,15 +35,12 @@ class ValtimoAuthorizationService(
     private val actionProviders: List<ResourceActionProvider<*>>,
     private val permissionRepository: PermissionRepository,
     private val userManagementService: UserManagementService
-): AuthorizationService {
+) : AuthorizationService {
     override fun <T : Any> requirePermission(
         request: EntityAuthorizationRequest<T>
     ) {
         if (!hasPermission(request)) {
-            if (request.action.key == Action.DENY) {
-                logger.error { "Access denied on '${request.resourceType}'. This generally indicates attempting to " +
-                    "access a resource without considering authorization. Please refer to the Valtimo documentation." }
-            } else {
+            if (request.action.key != Action.DENY) {
                 logger.debug { "Unauthorized. User is missing permission '${request.action.key}' on '${request.resourceType}'." }
             }
             throw AccessDeniedException("Unauthorized")
@@ -53,7 +50,7 @@ class ValtimoAuthorizationService(
     override fun <T : Any> getAuthorizedRoles(request: EntityAuthorizationRequest<T>): Set<Role> {
         return getPermissions(request.resourceType, request.action)
             .groupBy { it.role }
-            .filter { getAuthorizationSpecification(request, it.value).isAuthorized() }
+            .filter { getAuthorizationSpecificationWithoutLogging(request, it.value).isAuthorized() }
             .map { it.key }
             .toSet()
     }
@@ -65,7 +62,7 @@ class ValtimoAuthorizationService(
      */
     override fun <T : Any> hasPermission(
         request: AuthorizationRequest<T>
-    ) : Boolean {
+    ): Boolean {
         return getAuthorizationSpecification(request).isAuthorized()
     }
 
@@ -74,11 +71,8 @@ class ValtimoAuthorizationService(
         permissions: List<Permission>?
     ): AuthorizationSpecification<T> {
         val usedPermissions = permissions ?: getPermissions(request)
-
-        val factory = (authorizationSpecificationFactories.firstOrNull {
-            it.canCreate(request, usedPermissions)
-        } as AuthorizationSpecificationFactory<T>?)?: throw AccessDeniedException("No specification found for given context.")
-        return factory.create(request, usedPermissions)
+        logPermissions(request, usedPermissions)
+        return getAuthorizationSpecificationWithoutLogging(request, usedPermissions)
     }
 
     override fun getPermissions(resourceType: Class<*>, action: Action<*>): List<Permission> {
@@ -91,7 +85,8 @@ class ValtimoAuthorizationService(
     ): AuthorizationEntityMapper<FROM, TO> {
         return (mappers.firstOrNull {
             it.supports(from, to)
-        } as AuthorizationEntityMapper<FROM, TO>?)?: throw AccessDeniedException("No entity mapper found for given arguments.")
+        } as AuthorizationEntityMapper<FROM, TO>?)
+            ?: throw AccessDeniedException("No entity mapper found for given arguments.")
     }
 
     override fun <T : Any> getAvailableActionsForResource(clazz: Class<T>): List<Action<T>> {
@@ -100,6 +95,19 @@ class ValtimoAuthorizationService(
             .map { it as ResourceActionProvider<T> }
             .map { it.getAvailableActions() }
             .flatten()
+    }
+
+    private fun <T : Any> getAuthorizationSpecificationWithoutLogging(
+        request: AuthorizationRequest<T>,
+        permissions: List<Permission>? = null
+    ): AuthorizationSpecification<T> {
+        val usedPermissions = permissions ?: getPermissions(request)
+
+        val factory = (authorizationSpecificationFactories.firstOrNull {
+            it.canCreate(request, usedPermissions)
+        } as AuthorizationSpecificationFactory<T>?)
+            ?: throw AccessDeniedException("No specification found for given context.")
+        return factory.create(request, usedPermissions)
     }
 
     private fun getPermissions(context: AuthorizationRequest<*>): List<Permission> {
@@ -114,6 +122,21 @@ class ValtimoAuthorizationService(
             .filter { permission ->
                 context.resourceType == permission.resourceType && context.action == permission.action
             }
+    }
+
+    private fun logPermissions(request: AuthorizationRequest<*>, permissions: List<Permission>? = null) {
+        if (request.action.key == Action.DENY) {
+            logger.error {
+                "Access denied on '${request.resourceType}'. This generally indicates attempting to " +
+                    "access a resource without considering authorization. Please refer to the Valtimo documentation."
+            }
+        } else {
+            val userPermissions = permissions ?: getPermissions(request)
+            val permissionsLogLine = userPermissions.joinToString(", ") { "${it.id}:${it.role.key}" }
+            val logLine =
+                "User '${request.user}' is requesting permission to '${request.action.key}:${request.resourceType.simpleName}' and has the following matching permissions: [$permissionsLogLine]"
+            logger.debug { logLine }
+        }
     }
 
     companion object {
