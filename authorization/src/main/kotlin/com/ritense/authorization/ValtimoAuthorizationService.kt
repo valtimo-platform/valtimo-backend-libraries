@@ -134,7 +134,7 @@ class ValtimoAuthorizationService(
             val userPermissions = permissions ?: getPermissions(request)
             val permissionsLogLine = userPermissions.joinToString(", ") { "${it.id}:${it.role.key}" }
             val logLine =
-                "User '${request.user}' is requesting permission to '${request.action.key}:${request.resourceType.simpleName}' and has the following matching permissions: [$permissionsLogLine]"
+                "Requesting permissions '${request.action.key}:${request.resourceType.simpleName}' for user '${request.user}' and found matching permissions: [$permissionsLogLine]"
             logger.debug { logLine }
         }
     }
