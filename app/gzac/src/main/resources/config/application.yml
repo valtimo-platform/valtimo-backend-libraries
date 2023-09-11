@@ -121,6 +121,8 @@ logging:
     level:
         org.springframework.beans: DEBUG
         reactor.netty.http.client.HttpClient: DEBUG
+        org.jboss.resteasy: INFO
+        org.postgresql.jdbc.PgConnection: INFO
 
 server:
     port: 8080
