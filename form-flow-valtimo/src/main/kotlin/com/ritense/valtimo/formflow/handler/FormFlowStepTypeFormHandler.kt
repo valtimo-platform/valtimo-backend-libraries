@@ -22,15 +22,15 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.service.DocumentService
 import com.ritense.form.domain.FormDefinition
 import com.ritense.form.domain.FormIoFormDefinition
+import com.ritense.form.service.PrefillFormService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
-import com.ritense.formlink.service.impl.CamundaFormAssociationService
 
 class FormFlowStepTypeFormHandler(
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
-    private val camundaFormAssociationService: CamundaFormAssociationService,
+    private val prefillFormService: PrefillFormService,
     private val documentService: DocumentService,
     private val objectMapper: ObjectMapper
 ) : FormFlowStepTypeHandler {
@@ -72,13 +72,13 @@ class FormFlowStepTypeFormHandler(
         val documentContent = document.content().asJson() as ObjectNode
 
         if (taskInstanceId == null) {
-            camundaFormAssociationService.prefillProcessVariables(formDefinition, document)
+            prefillFormService.prefillProcessVariables(formDefinition, document)
         }
 
-        camundaFormAssociationService.prefillDataResolverFields(formDefinition, document, documentContent)
+        prefillFormService.prefillDataResolverFields(formDefinition, document, documentContent)
 
         if (taskInstanceId != null) {
-            camundaFormAssociationService.prefillTaskVariables(formDefinition, taskInstanceId, documentContent)
+            prefillFormService.prefillTaskVariables(formDefinition, taskInstanceId, documentContent)
         }
     }
 }
