@@ -21,6 +21,7 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.DelegateUserEntityAuthorizationRequest;
+import com.ritense.authorization.request.EntitiesAuthorizationRequest;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.role.Role;
 import com.ritense.authorization.specification.AuthorizationSpecification;
@@ -589,6 +590,37 @@ public class JsonSchemaDocumentService implements DocumentService {
                 JsonSchemaDocument.class,
                 ASSIGNABLE,
                 document
+            )
+        ).stream().map(Role::getKey).collect(Collectors.toSet());
+
+        return userManagementService.findNamedUserByRoles(authorizedRoles);
+    }
+
+    @Override
+    public List<NamedUser> getCandidateUsers(List<Document.Id> documentIds) {
+        List<JsonSchemaDocument> documents = runWithoutAuthorization(() ->
+            documentRepository.findAllById(documentIds)
+        );
+        authorizationService.requirePermission(
+            new EntitiesAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                ASSIGN,
+                documents
+            )
+        );
+        if (documents.size() != documentIds.size()) {
+            var missingDocumentIds = documentIds.stream()
+                .filter(documentId -> documents.stream().noneMatch(document -> document.id().equals(documentId)))
+                .map(Document.Id::toString)
+                .collect(Collectors.joining(", "));
+            throw new DocumentNotFoundException("Document(s) not found with id(s) " + missingDocumentIds);
+        }
+
+        Set<String> authorizedRoles = authorizationService.getAuthorizedRoles(
+            new EntitiesAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                ASSIGNABLE,
+                documents
             )
         ).stream().map(Role::getKey).collect(Collectors.toSet());
 
