@@ -44,6 +44,4 @@ public interface JsonSchemaDocumentRepository extends DocumentRepository<JsonSch
         @Param("createdBy") String createdBy,
         Pageable pageable
     );
-
-    Long countByDocumentDefinitionIdNameAndAssigneeId(String definitionName, String assigneeId);
 }
