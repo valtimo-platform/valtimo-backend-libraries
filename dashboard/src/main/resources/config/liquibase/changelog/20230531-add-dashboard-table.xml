@@ -80,10 +80,28 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="5" author="Ritense">
+    <changeSet id="6" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*)
+                FROM information_schema.COLUMNS
+                WHERE column_name = 'display_type_properties'
+                  AND table_name = 'dashboard_widget_configuration'
+                  AND is_nullable = 'NO'
+                  AND table_catalog in (select current_database())
+            </sqlCheck>
+        </preConditions>
+        <dropNotNullConstraint tableName="dashboard_widget_configuration"
+                               columnName="display_type_properties"
+                               columnDataType="${jsonType}"/>
+    </changeSet>
+
+    <changeSet id="7" author="Ritense">
         <addNotNullConstraint tableName="dashboard_widget_configuration"
                               columnName="display_type_properties"
-                              defaultNullValue="{}"/>
+                              defaultNullValue="{}"
+                              columnDataType="${jsonType}"/>
     </changeSet>
 
 </databaseChangeLog>
