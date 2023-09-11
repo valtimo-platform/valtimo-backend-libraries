@@ -30,7 +30,12 @@ class ProcessLinkFormFlowDefinitionResource(
     val formFlowService: FormFlowService
 ) {
 
-    @GetMapping(value = ["/v1/form-flow/definition", "/v1/process-link/form-flow-definition"]) // TODO: deprecate "/v1/process-link/form-flow-definition"
+    @GetMapping(
+        value = [
+            "/v1/form-flow/definition",
+            "/v1/process-link/form-flow-definition" // Deprecated since 11.0.0
+        ]
+    )
     fun getFormLinkOptions(): ResponseEntity<List<FormFlowDefinition>> {
         val formFlowDefinitions = formFlowService.getFormFlowDefinitions()
 

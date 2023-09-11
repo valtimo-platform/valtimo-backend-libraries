@@ -40,7 +40,12 @@ import javax.transaction.Transactional
 class FormFlowResource(
     private val formFlowService: FormFlowService
 ) {
-    @GetMapping(value = ["/v1/form-flow/instance/{formFlowInstanceId}", "/v1/form-flow/{formFlowInstanceId}"]) // TODO: deprecate "/v1/form-flow/{formFlowInstanceId}"
+    @GetMapping(
+        value = [
+            "/v1/form-flow/instance/{formFlowInstanceId}",
+            "/v1/form-flow/{formFlowInstanceId}" // Deprecated since 11.0.0
+        ]
+    )
     @Transactional
     fun getFormFlowState(
         @PathVariable(name = "formFlowInstanceId") instanceId: String,
@@ -57,7 +62,12 @@ class FormFlowResource(
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
     }
 
-    @PostMapping(value = ["/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}","/v1/form-flow/{formFlowId}/step/{stepInstanceId}"]) // TODO: deprecate "/v1/form-flow/{formFlowId}/step/{stepInstanceId}"
+    @PostMapping(
+        value = [
+            "/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}",
+            "/v1/form-flow/{formFlowId}/step/{stepInstanceId}" // Deprecated since 11.0.0
+        ]
+    )
     @Transactional
     fun completeStep(
         @PathVariable(name = "formFlowId") formFlowId: String,
@@ -75,7 +85,12 @@ class FormFlowResource(
         return ResponseEntity.ok(CompleteStepResult(instance.id.id, openStep(stepInstance)))
     }
 
-    @PostMapping(value = ["/v1/form-flow/instance/{formFlowId}/back", "/v1/form-flow/{formFlowId}/back"]) // TODO: deprecate "/v1/form-flow/{formFlowId}/back"
+    @PostMapping(
+        value = [
+            "/v1/form-flow/instance/{formFlowId}/back",
+            "/v1/form-flow/{formFlowId}/back" // Deprecated since 11.0.0
+        ]
+    )
     @Transactional
     fun backStep(
         @PathVariable(name = "formFlowId") formFlowId: String,
@@ -91,7 +106,12 @@ class FormFlowResource(
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
     }
 
-    @PostMapping(value = ["/v1/form-flow/instance/{formFlowId}/save", "/v1/form-flow/{formFlowId}/save"]) // TODO: deprecate "/v1/form-flow/{formFlowId}/save"
+    @PostMapping(
+        value = [
+            "/v1/form-flow/instance/{formFlowId}/save",
+            "/v1/form-flow/{formFlowId}/save" // Deprecated since 11.0.0
+        ]
+    )
     @Transactional
     fun saveStep(
         @PathVariable(name = "formFlowId") formFlowId: String,
