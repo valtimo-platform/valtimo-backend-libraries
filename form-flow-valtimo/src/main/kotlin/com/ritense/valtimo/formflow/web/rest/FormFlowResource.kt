@@ -40,14 +40,7 @@ import javax.transaction.Transactional
 class FormFlowResource(
     private val formFlowService: FormFlowService
 ) {
-    @Deprecated("Since 11.0.0", ReplaceWith("com.ritense.valtimo.formflow.web.rest.FormFlowResource.getFormFlowState"))
-    @GetMapping("/v1/form-flow/{formFlowInstanceId}")
-    @Transactional
-    fun getFormFlowStateDeprecated(
-        @PathVariable(name = "formFlowInstanceId") instanceId: String,
-    ): ResponseEntity<GetFormFlowStateResult>? = getFormFlowState(instanceId)
-
-    @GetMapping("/v1/form-flow/instance/{formFlowInstanceId}")
+    @GetMapping(value = ["/v1/form-flow/instance/{formFlowInstanceId}", "/v1/form-flow/{formFlowInstanceId}"]) // TODO: deprecate "/v1/form-flow/{formFlowInstanceId}"
     @Transactional
     fun getFormFlowState(
         @PathVariable(name = "formFlowInstanceId") instanceId: String,
@@ -64,16 +57,7 @@ class FormFlowResource(
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
     }
 
-    @Deprecated("Since 11.0.0", ReplaceWith("com.ritense.valtimo.formflow.web.rest.FormFlowResource.completeStep"))
-    @PostMapping("/v1/form-flow/{formFlowId}/step/{stepInstanceId}")
-    @Transactional
-    fun completeStepDeprecated(
-        @PathVariable(name = "formFlowId") formFlowId: String,
-        @PathVariable(name = "stepInstanceId") stepInstanceId: String,
-        @RequestBody submissionData: JsonNode?
-    ): ResponseEntity<CompleteStepResult> = completeStep(formFlowId, stepInstanceId, submissionData)
-
-    @PostMapping("/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}")
+    @PostMapping(value = ["/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}","/v1/form-flow/{formFlowId}/step/{stepInstanceId}"]) // TODO: deprecate "/v1/form-flow/{formFlowId}/step/{stepInstanceId}"
     @Transactional
     fun completeStep(
         @PathVariable(name = "formFlowId") formFlowId: String,
@@ -91,15 +75,7 @@ class FormFlowResource(
         return ResponseEntity.ok(CompleteStepResult(instance.id.id, openStep(stepInstance)))
     }
 
-    @Deprecated("Since 11.0.0", ReplaceWith("com.ritense.valtimo.formflow.web.rest.FormFlowResource.backStep"))
-    @PostMapping("/v1/form-flow/{formFlowId}/back")
-    @Transactional
-    fun backStepDeprecated(
-        @PathVariable(name = "formFlowId") formFlowId: String,
-        @RequestBody incompleteSubmissionData: JsonNode?
-    ): ResponseEntity<GetFormFlowStateResult> = backStep(formFlowId, incompleteSubmissionData)
-
-    @PostMapping("/v1/form-flow/instance/{formFlowId}/back")
+    @PostMapping(value = ["/v1/form-flow/instance/{formFlowId}/back", "/v1/form-flow/{formFlowId}/back"]) // TODO: deprecate "/v1/form-flow/{formFlowId}/back"
     @Transactional
     fun backStep(
         @PathVariable(name = "formFlowId") formFlowId: String,
@@ -115,21 +91,7 @@ class FormFlowResource(
         return ResponseEntity.ok(GetFormFlowStateResult(instance.id.id, openStep(stepInstance)))
     }
 
-    @Deprecated("Since 11.0.0", ReplaceWith("com.ritense.valtimo.formflow.web.rest.FormFlowResource.saveStep"))
-    @PostMapping("/v1/form-flow/{formFlowId}/save")
-    @Transactional
-    fun saveStepDeprecated(
-        @PathVariable(name = "formFlowId") formFlowId: String,
-        @RequestBody incompleteSubmissionData: JsonNode?
-    ): ResponseEntity<Unit> {
-        val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
-        instance.save(toJsonObject(incompleteSubmissionData))
-        formFlowService.save(instance)
-
-        return ResponseEntity.noContent().build()
-    }
-
-    @PostMapping("/v1/form-flow/instance/{formFlowId}/save")
+    @PostMapping(value = ["/v1/form-flow/instance/{formFlowId}/save", "/v1/form-flow/{formFlowId}/save"]) // TODO: deprecate "/v1/form-flow/{formFlowId}/save"
     @Transactional
     fun saveStep(
         @PathVariable(name = "formFlowId") formFlowId: String,

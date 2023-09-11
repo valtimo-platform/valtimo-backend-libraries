@@ -129,7 +129,7 @@ class FormFlowResourceTest : BaseTest() {
     fun `should complete step`() {
         whenever(formFlowInstance.complete(any(), any())).thenReturn(stepInstance)
 
-        mockMvc.perform(post("/api/v1/form-flow/instance/{flowId}/step/instance/{stepId}", formFlowInstance.id.id, formFlowInstance.getCurrentStep().id.id))
+        mockMvc.perform(post("/api/v1/form-flow/instance/{flowId}/step/{stepId}", formFlowInstance.id.id, formFlowInstance.getCurrentStep().id.id))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(formFlowInstance.id.id.toString()))
