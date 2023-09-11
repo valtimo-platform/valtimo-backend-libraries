@@ -80,10 +80,20 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="5" author="Ritense">
+    <changeSet id="6" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <dropNotNullConstraint tableName="dashboard_widget_configuration"
+                               columnName="display_type_properties"
+                               columnDataType="${jsonType}"/>
+    </changeSet>
+
+    <changeSet id="7" author="Ritense">
         <addNotNullConstraint tableName="dashboard_widget_configuration"
                               columnName="display_type_properties"
-                              defaultNullValue="{}"/>
+                              defaultNullValue="{}"
+                              columnDataType="${jsonType}"/>
     </changeSet>
 
 </databaseChangeLog>
