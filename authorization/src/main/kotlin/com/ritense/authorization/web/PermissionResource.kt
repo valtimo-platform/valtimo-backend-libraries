@@ -59,9 +59,9 @@ class PermissionResource(
                 )
             }
         } catch (ex: ClassNotFoundException) {
-            throw AccessDeniedException("Unauthorized")
+            throw AccessDeniedException("Unauthorized", ex)
         } catch (ex: ResourceNotSupportedException) {
-            throw AccessDeniedException("Unauthorized")
+            throw AccessDeniedException("Unauthorized", ex)
         }
 
         return ResponseEntity.ok(permissionResponse)
