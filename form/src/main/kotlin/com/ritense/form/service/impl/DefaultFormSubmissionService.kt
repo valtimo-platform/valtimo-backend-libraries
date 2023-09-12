@@ -20,6 +20,9 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -47,11 +50,14 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName.START_EVENT_STAR
 import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.Companion.COMPLETE
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromException
-import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
@@ -65,39 +71,60 @@ open class DefaultFormSubmissionService(
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val processDocumentService: ProcessDocumentService,
     private val camundaTaskService: CamundaTaskService,
-    private val processService: CamundaProcessService,
+    private val repositoryService: CamundaRepositoryService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val prefillFormService: PrefillFormService,
+    private val authorizationService: AuthorizationService,
 ) : FormSubmissionService {
 
     @Transactional
     override fun handleSubmission(
         processLinkId: UUID,
         formData: JsonNode,
+        documentDefinitionName: String?,
         documentId: String?,
         taskInstanceId: String?,
     ): FormSubmissionResult {
         return try {
-            val processLink = processLinkService.getProcessLink(processLinkId, FormProcessLink::class.java)
-            val document = documentId?.let { documentService.get(documentId) }
-            val processDocumentDefinition = getProcessDocumentDefinition(processLink, document)
-            val processVariables = getProcessVariables(taskInstanceId)
-            val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
-            val formFields = getFormFields(formDefinition, formData)
-            val submittedDocumentContent = getSubmittedDocumentContent(formFields, document)
-            val formDefinedProcessVariables = formDefinition.extractProcessVars(formData)
-            val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
-            val externalFormData = getExternalFormData(formDefinition, formData)
-            val request = getRequest(
-                processLink,
-                document,
-                taskInstanceId,
-                processDocumentDefinition,
-                submittedDocumentContent,
-                formDefinedProcessVariables,
-                preJsonPatch
-            )
-            return dispatchRequest(request, processDocumentDefinition, formFields, externalFormData)
+            // TODO: Implement else, done by verifying what the processLink contains
+            if (taskInstanceId != null) {
+                camundaTaskService.findTaskById(taskInstanceId)
+                authorizationService.requirePermission(
+                    EntityAuthorizationRequest(
+                        CamundaTask::class.java,
+                        COMPLETE,
+                        camundaTaskService.findTaskById(taskInstanceId)
+                    )
+                )
+            }
+
+            return AuthorizationContext.runWithoutAuthorization {
+                val processLink = processLinkService.getProcessLink(processLinkId, FormProcessLink::class.java)
+                val document = documentId
+                    ?.let { AuthorizationContext.runWithoutAuthorization { documentService.get(documentId) } }
+                val processDefinition = getProcessDefinition(processLink)
+                val documentDefinitionNameToUse = document?.definitionId()?.name()
+                    ?: documentDefinitionName
+                    ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId().documentDefinitionId().name()
+                val processVariables = getProcessVariables(taskInstanceId)
+                val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
+                val formFields = getFormFields(formDefinition, formData)
+                val submittedDocumentContent = getSubmittedDocumentContent(formFields, document)
+                val formDefinedProcessVariables = formDefinition.extractProcessVars(formData)
+                val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
+                val externalFormData = getExternalFormData(formDefinition, formData)
+                val request = getRequest(
+                    processLink,
+                    document,
+                    taskInstanceId,
+                    documentDefinitionNameToUse,
+                    processDefinition.key,
+                    submittedDocumentContent,
+                    formDefinedProcessVariables,
+                    preJsonPatch
+                )
+                dispatchRequest(request, formFields, externalFormData, documentDefinitionNameToUse)
+            }
         } catch (notFoundException: DocumentNotFoundException) {
             logger.error("Document could not be found", notFoundException)
             FormSubmissionResultFailed(FromException(notFoundException))
@@ -113,25 +140,34 @@ open class DefaultFormSubmissionService(
         }
     }
 
+    private fun getProcessDefinition(
+        processLink: ProcessLink
+    ): CamundaProcessDefinition {
+        return AuthorizationContext.runWithoutAuthorization {
+            repositoryService.findProcessDefinitionById(processLink.processDefinitionId)!!
+        }
+    }
+
     private fun getProcessDocumentDefinition(
-        processLink: ProcessLink,
+        processDefinition: CamundaProcessDefinition,
         document: Document?
     ): ProcessDocumentDefinition {
-        val processDefinition = processService.getProcessDefinitionById(processLink.processDefinitionId)
         val processDefinitionKey = CamundaProcessDefinitionKey(processDefinition.key)
-        return if (document == null) {
-            processDocumentAssociationService.getProcessDocumentDefinition(processDefinitionKey)
-        } else {
-            processDocumentAssociationService.getProcessDocumentDefinition(
-                processDefinitionKey,
-                document.definitionId().version()
-            )
+        return AuthorizationContext.runWithoutAuthorization {
+            if (document == null) {
+                processDocumentAssociationService.getProcessDocumentDefinition(processDefinitionKey)
+            } else {
+                processDocumentAssociationService.getProcessDocumentDefinition(
+                    processDefinitionKey,
+                    document.definitionId().version()
+                )
+            }
         }
     }
 
     private fun getProcessVariables(taskInstanceId: String?): JsonNode? {
         return if (!taskInstanceId.isNullOrEmpty()) {
-            Mapper.INSTANCE.get().valueToTree(camundaTaskService.getTaskVariables(taskInstanceId))
+            Mapper.INSTANCE.get().valueToTree(camundaTaskService.getVariables(taskInstanceId))
         } else {
             null
         }
@@ -186,22 +222,24 @@ open class DefaultFormSubmissionService(
         processLink: FormProcessLink,
         document: Document?,
         taskInstanceId: String?,
-        processDocumentDefinition: ProcessDocumentDefinition,
+        documentDefinitionName: String,
+        processDefinitionKey: String,
         submittedDocumentContent: JsonNode,
         formDefinedProcessVariables: Map<String, Any>,
         preJsonPatch: JsonPatch
     ): Request {
         return if (processLink.activityType == START_EVENT_START) {
-            if (processDocumentDefinition.canInitializeDocument() && document == null) {
+            if (document == null) {
                 newDocumentAndStartProcessRequest(
-                    processDocumentDefinition,
+                    documentDefinitionName,
+                    processDefinitionKey,
                     submittedDocumentContent,
                     formDefinedProcessVariables
                 )
             } else {
                 modifyDocumentAndStartProcessRequest(
-                    document!!,
-                    processDocumentDefinition,
+                    document,
+                    processDefinitionKey,
                     submittedDocumentContent,
                     formDefinedProcessVariables,
                     preJsonPatch
@@ -221,15 +259,15 @@ open class DefaultFormSubmissionService(
     }
 
     private fun newDocumentAndStartProcessRequest(
-        processDocumentDefinition: ProcessDocumentDefinition,
+        documentDefinitionName: String,
+        processDefinitionKey: String,
         submittedDocumentContent: JsonNode,
         formDefinedProcessVariables: Map<String, Any>,
     ): NewDocumentAndStartProcessRequest {
         return NewDocumentAndStartProcessRequest(
-            processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey()
-                .toString(),
+            processDefinitionKey,
             NewDocumentRequest(
-                processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId().name(),
+                documentDefinitionName,
                 submittedDocumentContent
             )
         ).withProcessVars(formDefinedProcessVariables)
@@ -237,13 +275,13 @@ open class DefaultFormSubmissionService(
 
     private fun modifyDocumentAndStartProcessRequest(
         document: Document,
-        processDocumentDefinition: ProcessDocumentDefinition,
+        processDefinitionKey: String,
         submittedDocumentContent: JsonNode,
         formDefinedProcessVariables: Map<String, Any>,
         preJsonPatch: JsonPatch
     ): ModifyDocumentAndStartProcessRequest {
         return ModifyDocumentAndStartProcessRequest(
-            processDocumentDefinition.processDocumentDefinitionId().processDefinitionKey().toString(),
+            processDefinitionKey,
             ModifyDocumentRequest(
                 document.id().toString(),
                 submittedDocumentContent,
@@ -271,9 +309,9 @@ open class DefaultFormSubmissionService(
 
     private fun dispatchRequest(
         request: Request,
-        processDocumentDefinition: ProcessDocumentDefinition,
         formFields: List<FormField>,
         externalFormData: Map<String, Map<String, JsonNode>>,
+        documentDefinitionName: String,
     ): FormSubmissionResult {
         return try {
             val result = processDocumentService.dispatch(request)
@@ -282,7 +320,7 @@ open class DefaultFormSubmissionService(
             } else {
                 val submittedDocument = result.resultingDocument().orElseThrow()
                 formFields.forEach { it.postProcess(submittedDocument) }
-                publishExternalDataSubmittedEvent(externalFormData, processDocumentDefinition, submittedDocument)
+                publishExternalDataSubmittedEvent(externalFormData, documentDefinitionName, submittedDocument)
                 FormSubmissionResultSucceeded(submittedDocument.id().toString())
             }
         } catch (ex: RuntimeException) {
@@ -296,14 +334,14 @@ open class DefaultFormSubmissionService(
 
     private fun publishExternalDataSubmittedEvent(
         externalFormData: Map<String, Map<String, JsonNode>>,
-        processDocumentDefinition: ProcessDocumentDefinition,
+        documentDefinitionName: String,
         submittedDocument: Document
     ) {
         if (externalFormData.isNotEmpty()) {
             applicationEventPublisher.publishEvent(
                 ExternalDataSubmittedEvent(
                     externalFormData,
-                    processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId().name(),
+                    documentDefinitionName,
                     submittedDocument.id().id
                 )
             )

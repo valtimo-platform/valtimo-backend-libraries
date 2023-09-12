@@ -164,7 +164,7 @@ class DefaultFormSubmissionServiceTest {
             .thenReturn(ModifyDocumentAndCompleteTaskResultSucceeded(document))
 
         //When
-        val formSubmissionResult = formSubmissionService.handleSubmission(
+        val formSubmissionResult = defaultFormSubmissionService.handleSubmission(
             processLinkId = formProcessLink(START_EVENT_START).id,
             formData = formData,
             documentId = null,
