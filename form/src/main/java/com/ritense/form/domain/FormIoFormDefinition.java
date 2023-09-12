@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -170,19 +171,19 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     public Map<String, List<ExternalContentItem>> buildExternalFormFieldsMap() {
-        return buildExternalFormFieldsMapFiltered(Optional.empty());
+        return buildExternalFormFieldsMapFiltered(null);
     }
 
     public Map<String, List<ExternalContentItem>> buildExternalFormFieldsMapForSubmission() {
-        return buildExternalFormFieldsMapFiltered(Optional.of(field -> !shouldIgnoreField(field)));
+        return buildExternalFormFieldsMapFiltered(this::shouldNotIgnoreField);
     }
 
-    private Map<String, List<ExternalContentItem>> buildExternalFormFieldsMapFiltered(Optional<Predicate<ObjectNode>> predicate) {
+    private Map<String, List<ExternalContentItem>> buildExternalFormFieldsMapFiltered(@Nullable Predicate<ObjectNode> predicate) {
         var map = new HashMap<String, List<ExternalContentItem>>();
         final JsonNode formDefinitionNode = asJson();
         FormIoFormDefinition.getInputFields(formDefinitionNode)
             .stream()
-            .filter(field -> predicate.isEmpty() || predicate.get().test(field))
+            .filter(field -> predicate == null || predicate.test(field))
             .forEach(field -> getExternalFormField(field)
                 .ifPresent(externalContentItem ->
                     map.computeIfAbsent(
@@ -199,7 +200,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionNode);
         inputFields
             .stream()
-            .filter(field -> !shouldIgnoreField(field))
+            .filter(this::shouldNotIgnoreField)
             .forEach(field -> getProcessVar(field)
             .ifPresent(contentItem -> getValueBy(formData, contentItem.getJsonPointer())
                 .ifPresent(valueNode -> processVarFormData.put(contentItem.getName(), extractNodeValue(valueNode)))
@@ -254,18 +255,18 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     public List<ObjectNode> getDocumentMappedFields() {
-        return getDocumentMappedFieldsFiltered(Optional.empty());
+        return getDocumentMappedFieldsFiltered(null);
     }
 
     public List<ObjectNode> getDocumentMappedFieldsForSubmission() {
-        return getDocumentMappedFieldsFiltered(Optional.of(field -> !shouldIgnoreField(field)));
+        return getDocumentMappedFieldsFiltered(this::shouldNotIgnoreField);
     }
 
-    private List<ObjectNode> getDocumentMappedFieldsFiltered(Optional<Predicate<JsonNode>> predicate) {
+    private List<ObjectNode> getDocumentMappedFieldsFiltered(@Nullable Predicate<JsonNode> predicate) {
         final List<ObjectNode> inputFields = new LinkedList<>();
         List<ArrayNode> components = getComponents(this.asJson());
         components.forEach(componentsNode -> componentsNode.forEach(fieldNode -> {
-            if (predicate.isEmpty() || predicate.get().test(fieldNode) && (isDocumentContentVar(fieldNode))) {
+            if (predicate == null || predicate.test(fieldNode) && (isDocumentContentVar(fieldNode))) {
                 inputFields.add((ObjectNode) fieldNode);
             }
         }));
@@ -292,10 +293,12 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         this.formDefinition = formDefinition;
     }
 
-    private boolean shouldIgnoreField(JsonNode fieldNode) {
-        return FormAutoConfiguration.isIgnoreDisabledFields()
+    private boolean shouldNotIgnoreField(JsonNode fieldNode) {
+        return !(
+            FormAutoConfiguration.isIgnoreDisabledFields()
             && fieldNode.has(DISABLED_KEY)
-            && fieldNode.get(DISABLED_KEY).asBoolean();
+            && fieldNode.get(DISABLED_KEY).asBoolean()
+        );
     }
 
     private boolean shouldPrefillField(JsonNode fieldNode) {
@@ -503,11 +506,9 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         if (this == o) {
             return true;
         }
-        if (!(o instanceof FormIoFormDefinition)) {
+        if (!(o instanceof FormIoFormDefinition that)) {
             return false;
         }
-
-        FormIoFormDefinition that = (FormIoFormDefinition) o;
 
         return id.equals(that.id);
     }
