@@ -40,6 +40,7 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
+import com.ritense.valueresolver.ValueResolverService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -138,7 +139,8 @@ public class FormAutoConfiguration {
         CamundaProcessService camundaProcessService,
         CamundaTaskService taskService,
         List<FormFieldDataResolver> formFieldDataResolvers,
-        ProcessDocumentAssociationService processDocumentAssociationService
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        ValueResolverService valueResolverService
     ) {
         return new PrefillFormService(
             documentService,
@@ -146,7 +148,8 @@ public class FormAutoConfiguration {
             camundaProcessService,
             taskService,
             formFieldDataResolvers,
-            processDocumentAssociationService
+            processDocumentAssociationService,
+            valueResolverService
         );
     }
 

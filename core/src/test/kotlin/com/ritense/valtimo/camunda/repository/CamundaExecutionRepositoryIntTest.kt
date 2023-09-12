@@ -42,7 +42,7 @@ class CamundaExecutionRepositoryIntTest @Autowired constructor(
         val execution = result.get()
         assertThat(execution.id).isEqualTo(instance.id)
         assertThat(execution.businessKey).isEqualTo(instance.businessKey)
-        val variable = execution.variables.first { it.name == "test" }
+        val variable = execution.variableInstances.first { it.name == "test" }
         assertThat(variable.longValue).isEqualTo(1L)
     }
 }

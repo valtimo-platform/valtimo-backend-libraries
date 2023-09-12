@@ -441,8 +441,18 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     private static List<ArrayNode> getComponents(JsonNode formDefinition) {
-        final List<ArrayNode> components = new LinkedList<>();
-        addComponents(components, formDefinition);
+        final var components = new ArrayList<ArrayNode>();
+        if (formDefinition.isObject()
+            && (formDefinition.has(COMPONENTS_KEY))
+            && formDefinition.get(COMPONENTS_KEY).isArray()
+        ) {
+            components.add((ArrayNode) formDefinition.get(COMPONENTS_KEY));
+        }
+        if (formDefinition.isContainerNode()) {
+            for (JsonNode arrayNode : formDefinition) {
+                components.addAll(getComponents(arrayNode));
+            }
+        }
         return Collections.unmodifiableList(components);
     }
 
@@ -461,20 +471,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         } else {
             logger.warn("Submitted form field value to be stored in process variables is of an unsupported type");
             return null;
-        }
-    }
-
-    private static void addComponents(List<ArrayNode> components, JsonNode formDefinition) {
-        if (formDefinition.isObject()
-            && (formDefinition.has(COMPONENTS_KEY))
-            && formDefinition.get(COMPONENTS_KEY).isArray()
-        ) {
-            components.add((ArrayNode) formDefinition.get(COMPONENTS_KEY));
-        }
-        if (formDefinition.isContainerNode()) {
-            for (JsonNode arrayNode : formDefinition) {
-                addComponents(components, arrayNode);
-            }
         }
     }
 
