@@ -17,6 +17,7 @@
 package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
@@ -41,6 +42,8 @@ public interface DocumentResource {
     ResponseEntity<Void> removeRelatedFile(UUID documentId, UUID resourceId);
 
     ResponseEntity<Void> assignHandlerToDocument(UUID documentId, UpdateAssigneeRequest request);
+
+    ResponseEntity<Void> assignHandlerToDocuments(AssignToDocumentsRequest request);
 
     ResponseEntity<Void> unassignHandlerFromDocument(UUID documentId);
 

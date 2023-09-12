@@ -18,6 +18,7 @@ package com.ritense.document.web.rest.impl;
 
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
+import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
@@ -112,7 +113,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     @Override
     @PostMapping("/v1/document/{documentId}/assign")
     public ResponseEntity<Void> assignHandlerToDocument(
-        @PathVariable(name = "documentId")UUID documentId,
+        @PathVariable(name = "documentId") UUID documentId,
         @RequestBody @Valid UpdateAssigneeRequest request) {
         logger.debug(String.format("REST call /api/v1/document/%s/assign", documentId));
 
@@ -126,8 +127,19 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     }
 
     @Override
+    @PostMapping("/v1/document/assign")
+    public ResponseEntity<Void> assignHandlerToDocuments(@RequestBody AssignToDocumentsRequest request) {
+        try {
+            documentService.assignUserToDocuments(request.getDocumentIds(), request.getAssigneeId());
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @Override
     @PostMapping("/v1/document/{documentId}/unassign")
-    public ResponseEntity<Void> unassignHandlerFromDocument(@PathVariable(name = "documentId")UUID documentId) {
+    public ResponseEntity<Void> unassignHandlerFromDocument(@PathVariable(name = "documentId") UUID documentId) {
         logger.debug(String.format("REST call /api/v1/document/%s/unassign", documentId));
 
         try {

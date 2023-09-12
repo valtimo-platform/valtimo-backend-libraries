@@ -58,6 +58,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -593,6 +595,81 @@ public class JsonSchemaDocumentService implements DocumentService {
         ).stream().map(Role::getKey).collect(Collectors.toSet());
 
         return userManagementService.findNamedUserByRoles(authorizedRoles);
+    }
+
+    public void assignUserToDocuments(@NotNull List<UUID> documentIds, @NotNull String assigneeId) {
+        List<JsonSchemaDocument> documents = runWithoutAuthorization(
+            () -> documentIds.stream().map(
+                documentId -> getDocumentBy(JsonSchemaDocumentId.existingId(documentId))
+            ).collect(Collectors.toList())
+        );
+
+        var assignee = runWithoutAuthorization(() -> userManagementService.findById(assigneeId));
+        if (assignee == null) {
+            logger.debug("Cannot set assignee for the invalid user id {}", assigneeId);
+            throw new IllegalArgumentException("Cannot set assignee for the invalid user id " + assigneeId);
+        }
+        if (assigneeId.equals(userManagementService.getCurrentUser().getId())) {
+            documents.forEach(document -> {
+                try {
+                    authorizationService
+                        .requirePermission(
+                            new EntityAuthorizationRequest<>(
+                                JsonSchemaDocument.class,
+                                CLAIM,
+                                document
+                            )
+                        );
+                } catch (AccessDeniedException e) {
+                    authorizationService
+                        .requirePermission(
+                            new EntityAuthorizationRequest<>(
+                                JsonSchemaDocument.class,
+                                ASSIGN,
+                                document
+                            )
+                        );
+                    authorizationService
+                        .requirePermission(
+                            new EntityAuthorizationRequest<>(
+                                JsonSchemaDocument.class,
+                                ASSIGNABLE,
+                                document
+                            )
+                        );
+                }
+
+                document.setAssignee(assigneeId, assignee.getFullName());
+            });
+        } else {
+            documents.forEach(document -> {
+                authorizationService
+                    .requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            ASSIGN,
+                            document
+                        )
+                    );
+                authorizationService
+                    .requirePermission(
+                        new DelegateUserEntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            ASSIGNABLE,
+                            assignee.getEmail(),
+                            document
+                        )
+                    );
+
+                document.setAssignee(assigneeId, assignee.getFullName());
+            });
+        }
+        documentRepository.saveAll(documents);
+
+        // Publish an event to update the audit log
+        documents.forEach(document ->
+            publishDocumentAssigneeChangedEvent(document.id().getId(), assignee.getFullName())
+        );
     }
 
 }
