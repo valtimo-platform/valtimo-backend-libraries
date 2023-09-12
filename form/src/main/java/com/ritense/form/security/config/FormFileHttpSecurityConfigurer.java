@@ -36,8 +36,8 @@ public class FormFileHttpSecurityConfigurer implements HttpSecurityConfigurer {
             http
                 .authorizeRequests()
                 .antMatchers(GET, "/api/v1/form-file").permitAll()
-                .antMatchers(POST, "/api/v1/form-file/upload").hasAuthority(USER)
-                .antMatchers(DELETE, "/api/v1/form-file").hasAuthority(USER);
+                .antMatchers(POST, "/api/v1/form-file/upload").authenticated()
+                .antMatchers(DELETE, "/api/v1/form-file").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

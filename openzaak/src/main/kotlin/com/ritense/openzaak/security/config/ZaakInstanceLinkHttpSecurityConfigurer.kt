@@ -27,8 +27,8 @@ class ZaakInstanceLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/zaakinstancelink/zaak").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/zaakinstancelink/document").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/zaakinstancelink/zaak").authenticated()
+                .antMatchers(GET, "/api/v1/zaakinstancelink/document").authenticated()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

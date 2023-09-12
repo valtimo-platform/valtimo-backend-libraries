@@ -27,7 +27,7 @@ class DocumentenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/documenten-api/{pluginConfigurationId}/files/{documentId}/download").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/documenten-api/{pluginConfigurationId}/files/{documentId}/download").authenticated()
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

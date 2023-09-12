@@ -27,11 +27,11 @@ class CatalogiApiHttpSecurityConfigurer: HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/roltype").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/statustype").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype").authenticated()
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/roltype").authenticated()
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/statustype").authenticated()
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype").authenticated()
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype").authenticated()
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

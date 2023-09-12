@@ -35,9 +35,9 @@ public class FormAssociationHttpSecurityConfigurer implements HttpSecurityConfig
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/form-association/form-definition").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/form-association/form-definition/{formKey}").hasAuthority(USER)
-                .antMatchers(POST, "/api/v1/form-association/form-definition/submission").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/form-association/form-definition").authenticated()
+                .antMatchers(GET, "/api/v1/form-association/form-definition/{formKey}").authenticated()
+                .antMatchers(POST, "/api/v1/form-association/form-definition/submission").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

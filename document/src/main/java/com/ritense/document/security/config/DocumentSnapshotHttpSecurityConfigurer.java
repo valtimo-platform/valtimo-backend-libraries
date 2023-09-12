@@ -28,8 +28,8 @@ public class DocumentSnapshotHttpSecurityConfigurer implements HttpSecurityConfi
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/document-snapshot/{id}").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/document-snapshot").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/document-snapshot/{id}").authenticated()
+                .antMatchers(GET, "/api/v1/document-snapshot").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

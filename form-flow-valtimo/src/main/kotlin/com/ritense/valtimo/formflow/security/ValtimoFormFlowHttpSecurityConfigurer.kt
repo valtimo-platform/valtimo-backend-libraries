@@ -28,13 +28,13 @@ class ValtimoFormFlowHttpSecurityConfigurer: HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/api/v1/form-flow/{formFlowInstanceId}")
-                .hasAuthority(USER)
+                .authenticated()
                 .antMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/step/{stepInstanceId}")
-                .hasAuthority(USER)
+                .authenticated()
                 .antMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/back")
-                .hasAuthority(USER)
+                .authenticated()
                 .antMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/save")
-                .hasAuthority(USER)
+                .authenticated()
                 .antMatchers(HttpMethod.GET, "/api/v1/process-link/form-flow-definition")
                 .hasAuthority(ADMIN)
         } catch (e: Exception) {

@@ -26,8 +26,8 @@ class FormHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(POST, "/api/v1/process-link/{processLinkId}/form/submission").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/process-link/form-definition/{formKey}").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/process-link/{processLinkId}/form/submission").authenticated()
+                .antMatchers(GET, "/api/v1/process-link/form-definition/{formKey}").authenticated()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

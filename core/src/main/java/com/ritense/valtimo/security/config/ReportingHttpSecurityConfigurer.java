@@ -28,13 +28,13 @@ public class ReportingHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/reporting/instancecount").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/reporting/instancesstatistics").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/reporting/tasksAverage").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/reporting/tasksPerPerson").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/reporting/pendingTasksByRole").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/reporting/unfinishedTasksPerType").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/reporting/finishedAndUnfinishedInstances").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/reporting/instancecount").authenticated()
+                .antMatchers(GET, "/api/v1/reporting/instancesstatistics").authenticated()
+                .antMatchers(GET, "/api/v1/reporting/tasksAverage").authenticated()
+                .antMatchers(GET, "/api/v1/reporting/tasksPerPerson").authenticated()
+                .antMatchers(GET, "/api/v1/reporting/pendingTasksByRole").authenticated()
+                .antMatchers(GET, "/api/v1/reporting/unfinishedTasksPerType").authenticated()
+                .antMatchers(GET, "/api/v1/reporting/finishedAndUnfinishedInstances").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

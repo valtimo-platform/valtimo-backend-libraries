@@ -29,8 +29,8 @@ public class AccountHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/account").hasAuthority(USER)
-                .antMatchers(POST, "/api/v1/account/profile", "/api/v1/account/change_password").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/account").authenticated()
+                .antMatchers(POST, "/api/v1/account/profile", "/api/v1/account/change_password").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -31,10 +31,10 @@ public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityCon
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/document-definition").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/document-definition").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/document-definition/{name}").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/document-definition/open/count").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/document-definition").authenticated()
+                .antMatchers(GET, "/api/v1/document-definition").authenticated()
+                .antMatchers(GET, "/api/v1/document-definition/{name}").authenticated()
+                .antMatchers(GET, "/api/v1/document-definition/open/count").authenticated()
                 .antMatchers(GET, "/api/management/v1/document-definition").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/v1/document-definition").hasAuthority(ADMIN) // Deprecated since v11
                 .antMatchers(POST, "/api/management/v1/document-definition").hasAuthority(ADMIN)

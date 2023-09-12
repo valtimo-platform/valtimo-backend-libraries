@@ -32,9 +32,9 @@ public class FormHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/form").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/form/{formDefinitionName}").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/form/{formDefinitionName}/document/{documentId}").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/form").authenticated()
+                .antMatchers(GET, "/api/v1/form/{formDefinitionName}").authenticated()
+                .antMatchers(GET, "/api/v1/form/{formDefinitionName}/document/{documentId}").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }
