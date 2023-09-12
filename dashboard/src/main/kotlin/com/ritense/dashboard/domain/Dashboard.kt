@@ -32,7 +32,7 @@ import javax.persistence.Table
 data class Dashboard(
 
     @Id
-    @Column(name = "key", updatable = false, nullable = false, unique = true)
+    @Column(name = "`key`", updatable = false, nullable = false, unique = true)
     val key: String,
 
     @Column(name = "title", nullable = false)

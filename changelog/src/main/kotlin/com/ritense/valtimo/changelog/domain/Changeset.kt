@@ -30,7 +30,7 @@ data class Changeset(
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     val id: String,
 
-    @Column(name = "key")
+    @Column(name = "`key`")
     val key: String?,
 
     @Column(name = "filename", nullable = false, updatable = false)
