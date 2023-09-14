@@ -41,9 +41,22 @@
     </changeSet>
 
     <changeSet author="Ritense" id="2">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
         <dropUniqueConstraint
             tableName="valtimo_changelog"
             constraintName="valtimo_changelog_md5sum_key"
+            uniqueColumns="md5sum"/>
+    </changeSet>
+
+    <changeSet author="Ritense" id="3">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+        </preConditions>
+        <dropUniqueConstraint
+            tableName="valtimo_changelog"
+            constraintName="md5sum"
             uniqueColumns="md5sum"/>
     </changeSet>
 

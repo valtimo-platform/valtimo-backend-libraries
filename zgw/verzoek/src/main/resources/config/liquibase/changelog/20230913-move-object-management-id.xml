@@ -1,0 +1,64 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="1" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            UPDATE plugin_configuration
+            SET properties = jsonb_set(to_jsonb(plugin_configuration.properties) - 'objectManagementId', '{verzoekProperties}', to_jsonb(new_verzoek_properties))
+                FROM (
+                    SELECT a.plugin_configuration_id, json_agg(new_p) new_verzoek_properties
+                    FROM LATERAL (
+                        SELECT c.plugin_configuration_id, jsonb_set(to_jsonb(json_array_elements(json_extract_path(c.properties, 'verzoekProperties'))), '{objectManagementId}', to_jsonb(json_extract_path(c.properties, 'objectManagementId')), true) AS new_p
+                        FROM plugin_configuration c
+                        WHERE c.plugin_definition_key = 'verzoek'
+                    ) AS a
+                    GROUP BY a.plugin_configuration_id
+                ) AS b
+            WHERE plugin_configuration.plugin_configuration_id = b.plugin_configuration_id
+        </sql>
+    </changeSet>
+
+    <changeSet id="2" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="mysql"/>
+            <sqlCheck expectedResult="1">
+                SELECT version() >= 8.0
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            UPDATE plugin_configuration as d
+                INNER JOIN (
+                    SELECT c.plugin_configuration_id, json_remove(json_replace(c.properties, '$.verzoekProperties', json_arrayagg(json_insert(a.verzoek_property, '$.objectManagementId', json_extract(c.properties, '$.objectManagementId')))), '$.objectManagementId') as new_verzoek_properties
+                    FROM plugin_configuration c, json_table(c.properties, '$.verzoekProperties[*]'
+                        columns(
+                            verzoek_property JSON PATH '$'
+                        )
+                    ) AS a
+                    GROUP BY c.plugin_configuration_id
+                ) AS b ON d.plugin_configuration_id = b.plugin_configuration_id
+            SET d.properties = b.new_verzoek_properties
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

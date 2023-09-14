@@ -90,8 +90,9 @@ abstract class PluginFactory<T : Any>(
             }
 
             val propertyDefinition = pluginDefinition.findPluginProperty(configuredPropertyEntry.key)
+                ?: throw IllegalStateException("Error while creating plugin '${configuration.title}'. Unknown property '${configuredPropertyEntry.key}'.")
 
-            setProperty(instance, propertyDefinition!!, configuredPropertyEntry.value, mapper)
+            setProperty(instance, propertyDefinition, configuredPropertyEntry.value, mapper)
         }
     }
 
