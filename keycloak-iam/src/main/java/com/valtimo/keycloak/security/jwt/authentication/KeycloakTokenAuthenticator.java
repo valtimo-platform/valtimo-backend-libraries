@@ -25,12 +25,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
 import static java.util.Objects.requireNonNull;
@@ -56,12 +57,6 @@ public class KeycloakTokenAuthenticator extends TokenAuthenticator {
             }
             if (email.isBlank()) {
                 logger.info("Support failed: email is blank");
-                return false;
-            }
-            final List<String> roles = getRoles(claims);
-            boolean hasUserRole = roles.contains(USER);
-            if (!hasUserRole) {
-                logger.info("Support failed: missing USER_ROLE");
                 return false;
             }
             return true;

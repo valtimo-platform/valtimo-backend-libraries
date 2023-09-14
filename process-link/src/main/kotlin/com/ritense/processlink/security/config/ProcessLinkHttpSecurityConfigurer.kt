@@ -17,7 +17,6 @@
 package com.ritense.processlink.security.config
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.DELETE
@@ -26,7 +25,7 @@ import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
-class ProcessLinkHttpSecurityConfigurer: HttpSecurityConfigurer {
+class ProcessLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
@@ -39,7 +38,7 @@ class ProcessLinkHttpSecurityConfigurer: HttpSecurityConfigurer {
                 .antMatchers(DELETE, "/api/v1/process-link/{processLinkId}").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v2/process-link/task/{taskId}").authenticated()
                 .antMatchers(GET, "/api/v1/process-definition/{processDefinitionId}/start-form").authenticated()
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
     }

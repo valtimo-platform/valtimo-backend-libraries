@@ -16,17 +16,16 @@
 
 package com.ritense.objectenapi.security
 
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
+import org.springframework.http.HttpMethod.PATCH
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
-import org.springframework.http.HttpMethod.DELETE
-import org.springframework.http.HttpMethod.PATCH
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
-class ObjectenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
+class ObjectenApiHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
@@ -40,7 +39,7 @@ class ObjectenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
                 .antMatchers(GET, "/api/v1/object/form").authenticated()
                 .antMatchers(PATCH, "/api/v1/object").authenticated()
                 .antMatchers(GET, "/api/v1/object").authenticated()
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
     }

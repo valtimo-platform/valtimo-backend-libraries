@@ -17,13 +17,12 @@
 package com.ritense.valtimo.formflow.security
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
-class ValtimoFormFlowHttpSecurityConfigurer: HttpSecurityConfigurer {
+class ValtimoFormFlowHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
