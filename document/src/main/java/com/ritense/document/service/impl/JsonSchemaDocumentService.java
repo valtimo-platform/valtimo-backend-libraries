@@ -21,7 +21,6 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.DelegateUserEntityAuthorizationRequest;
-import com.ritense.authorization.request.EntitiesAuthorizationRequest;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.role.Role;
 import com.ritense.authorization.specification.AuthorizationSpecification;
@@ -152,8 +151,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             .getAuthorizationSpecification(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    VIEW_LIST,
-                    null
+                    VIEW_LIST
                 ),
                 null
             );
@@ -167,15 +165,13 @@ public class JsonSchemaDocumentService implements DocumentService {
         var spec = authorizationService.getAuthorizationSpecification(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                VIEW_LIST,
-                null
+                VIEW_LIST
             ),
             null
         ).or(authorizationService.getAuthorizationSpecification(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                VIEW,
-                null
+                VIEW
             ),
             null
         ));
@@ -296,8 +292,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             .requirePermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    Action.deny(),
-                    null
+                    Action.deny()
                 )
             );
 
@@ -602,7 +597,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             documentRepository.findAllById(documentIds)
         );
         authorizationService.requirePermission(
-            new EntitiesAuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 ASSIGN,
                 documents
@@ -617,7 +612,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         }
 
         Set<String> authorizedRoles = authorizationService.getAuthorizedRoles(
-            new EntitiesAuthorizationRequest<>(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 ASSIGNABLE,
                 documents

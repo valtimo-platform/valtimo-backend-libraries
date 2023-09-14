@@ -26,7 +26,6 @@ import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.condition.ContainerPermissionCondition
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.condition.PermissionCondition
-import com.ritense.authorization.request.EntitiesAuthorizationRequest
 import org.springframework.data.jpa.domain.Specification
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
@@ -40,27 +39,20 @@ abstract class AuthorizationSpecification<T : Any>(
     internal open fun isAuthorized(): Boolean {
         return when (authRequest) {
             is EntityAuthorizationRequest<T> -> isAuthorizedForEntity(authRequest)
-            is EntitiesAuthorizationRequest<T> -> isAuthorizedForAllEntities(authRequest)
             is RelatedEntityAuthorizationRequest<T> -> isAuthorizedForRelatedEntity(authRequest)
             else -> false
         }
     }
 
-    // TODO: See EntityAuthorizationRequest
     private fun isAuthorizedForEntity(entityAuthorizationRequest: EntityAuthorizationRequest<T>): Boolean {
-        return entityAuthorizationRequest.entity != null && permissions.filter { permission ->
-            entityAuthorizationRequest.resourceType == permission.resourceType && entityAuthorizationRequest.action == permission.action
-        }.any { permission ->
-            permission.appliesTo(entityAuthorizationRequest.resourceType, entityAuthorizationRequest.entity)
+        if (entityAuthorizationRequest.entities.isNullOrEmpty()) {
+            return false
         }
-    }
-
-    private fun isAuthorizedForAllEntities(entitiesAuthorizationRequest: EntitiesAuthorizationRequest<T>): Boolean {
         val permissions = permissions.filter { permission ->
-            entitiesAuthorizationRequest.resourceType == permission.resourceType && entitiesAuthorizationRequest.action == permission.action
+            entityAuthorizationRequest.resourceType == permission.resourceType && entityAuthorizationRequest.action == permission.action
         }
-        return entitiesAuthorizationRequest.entities.all { entity ->
-            permissions.any { permission -> permission.appliesTo(entitiesAuthorizationRequest.resourceType, entity) }
+        return entityAuthorizationRequest.entities.all { entity ->
+            permissions.any { permission -> permission.appliesTo(entityAuthorizationRequest.resourceType, entity) }
         }
     }
 

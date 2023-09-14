@@ -22,8 +22,15 @@ import com.ritense.valtimo.contract.utils.SecurityUtils
 open class EntityAuthorizationRequest<T>(
     override val resourceType: Class<T>,
     override val action: Action<T>,
-    val entity: T?, //TODO: Determine if this really should be nullable
+    val entities: List<T>?,
 ) : AuthorizationRequest<T> {
+
+    constructor(resourceType: Class<T>, action: Action<T>, vararg entities: T?) : this(
+        resourceType,
+        action,
+        if (entities.any { it == null }) null else entities.filterNotNull().toList()
+    )
+
     override val user: String?
         get() = SecurityUtils.getCurrentUserLogin()
 }

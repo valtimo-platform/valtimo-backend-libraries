@@ -49,8 +49,7 @@ public class DocumentStatisticService {
         final var authSpec = authorizationService.getAuthorizationSpecification(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                VIEW_LIST,
-                null
+                VIEW_LIST
             ),
             null
         );

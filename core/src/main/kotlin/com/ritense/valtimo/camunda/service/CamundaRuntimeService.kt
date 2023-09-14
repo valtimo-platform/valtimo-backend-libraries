@@ -75,8 +75,7 @@ open class CamundaRuntimeService(
         authorizationService.requirePermission(
             EntityAuthorizationRequest(
                 CamundaProcessDefinition::class.java,
-                Action.deny(),
-                null
+                Action.deny()
             )
         )
     }
