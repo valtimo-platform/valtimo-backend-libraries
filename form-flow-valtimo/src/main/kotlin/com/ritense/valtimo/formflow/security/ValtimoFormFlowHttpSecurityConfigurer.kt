@@ -26,16 +26,16 @@ class ValtimoFormFlowHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/v1/form-flow/{formFlowInstanceId}")
-                .authenticated()
-                .antMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/step/{stepInstanceId}")
-                .authenticated()
-                .antMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/back")
-                .authenticated()
-                .antMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/save")
-                .authenticated()
-                .antMatchers(HttpMethod.GET, "/api/v1/process-link/form-flow-definition")
-                .hasAuthority(ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/v1/form-flow/{formFlowInstanceId}").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/step/{stepInstanceId}").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/back").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/save").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/v1/process-link/form-flow-definition").hasAuthority(ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/v1/form-flow/instance/{formFlowInstanceId}").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/back").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/save").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/v1/form-flow/definition").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
