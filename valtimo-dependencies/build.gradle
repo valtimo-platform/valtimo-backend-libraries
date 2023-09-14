@@ -64,7 +64,7 @@ dependencies {
         api("org.liquibase:liquibase-core:${liquibaseVersion}")
         api("org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}")
 
-        api("org.hibernate:hibernate-core:5.6.14.FINAL")
+        api("org.hibernate:hibernate-core:5.6.15.Final")
     }
 }
 
