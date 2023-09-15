@@ -30,6 +30,7 @@ import com.ritense.valtimo.contract.json.patch.operation.Operation
 import com.ritense.valtimo.contract.json.patch.operation.ReplaceOperation
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valueresolver.ValueResolverService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -44,6 +45,7 @@ class PrefillFormServiceTest : BaseTest() {
     lateinit var taskService: CamundaTaskService
     lateinit var formFieldDataResolver: FormFieldDataResolver
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
+    lateinit var valueResolverService: ValueResolverService
 
     @BeforeEach
     fun setUp() {
@@ -53,13 +55,15 @@ class PrefillFormServiceTest : BaseTest() {
         taskService = mock()
         formFieldDataResolver = mock()
         processDocumentAssociationService = mock()
+        valueResolverService = mock()
         prefillFormService = PrefillFormService(
             documentService,
             formDefinitionService,
             camundaProcessService,
             taskService,
             listOf(formFieldDataResolver),
-            processDocumentAssociationService
+            processDocumentAssociationService,
+            valueResolverService
         )
     }
 

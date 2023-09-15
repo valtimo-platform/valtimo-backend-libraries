@@ -16,8 +16,8 @@
 
 package com.ritense.valueresolver
 
-import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.function.Function
+import org.camunda.bpm.engine.delegate.VariableScope
 
 /**
  * This resolver returns the requestedValue as the value.
@@ -28,7 +28,7 @@ import java.util.function.Function
  * These requestedValues do not have a prefix
  */
 class FixedValueResolverFactory(
-    val prefix: String = ""
+    private val prefix: String = ""
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {

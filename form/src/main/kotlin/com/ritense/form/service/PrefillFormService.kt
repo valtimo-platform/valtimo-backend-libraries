@@ -30,6 +30,7 @@ import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.domain.Mapper
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.contract.form.DataResolvingContext
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
 import com.ritense.valtimo.contract.json.JsonPointerHelper
@@ -37,7 +38,9 @@ import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valueresolver.ValueResolverService
 import java.util.UUID
+import org.camunda.bpm.engine.delegate.VariableScope
 
 class PrefillFormService(
     private val documentService: DocumentService,
@@ -45,7 +48,8 @@ class PrefillFormService(
     private val camundaProcessService: CamundaProcessService,
     private val taskService: CamundaTaskService,
     private val formFieldDataResolvers: List<FormFieldDataResolver>,
-    private val processDocumentAssociationService: ProcessDocumentAssociationService
+    private val processDocumentAssociationService: ProcessDocumentAssociationService,
+    private val valueResolverService: ValueResolverService
 ) {
 
     fun getPrefilledFormDefinition(
@@ -53,15 +57,16 @@ class PrefillFormService(
         processInstanceId: String,
         taskInstanceId: String,
     ): FormIoFormDefinition {
-        val documentId = runWithoutAuthorization {
-            camundaProcessService.findProcessInstanceById(processInstanceId)
-                .orElseThrow { RuntimeException("Process instance not found by id $processInstanceId") }
-                .businessKey
+        val processInstance = runWithoutAuthorization {
+            camundaProcessService.findExecutionByProcessInstanceId(processInstanceId)
+                ?: throw RuntimeException("Process instance not found by id $processInstanceId")
         }
-        val document = runWithoutAuthorization { documentService.get(documentId.toString()) }
+        val documentId = processInstance.businessKey
+            ?: throw RuntimeException("Process instance with id $processInstanceId has no businessKey")
+        val document = runWithoutAuthorization { documentService.get(documentId) }
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
-        prefillFormDefinition(formDefinition, document, taskInstanceId)
+        prefillFormDefinition(formDefinition, document, processInstance, taskInstanceId)
         return formDefinition
     }
 
@@ -73,7 +78,7 @@ class PrefillFormService(
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
         if (documentId != null) {
             val document = runWithoutAuthorization { documentService.get(documentId.toString()) }
-            prefillFormDefinition(formDefinition, document)
+            prefillFormDefinition(formDefinition, document, null, null)
         }
         return formDefinition
     }
@@ -81,12 +86,15 @@ class PrefillFormService(
     private fun prefillFormDefinition(
         formDefinition: FormIoFormDefinition,
         document: Document,
+        processInstance: CamundaExecution?,
         taskInstanceId: String? = null,
     ) {
         val extendedDocumentContent = document.content().asJson() as ObjectNode
 
         val documentMetadata = buildMetaDataObject(document)
         extendedDocumentContent.set<JsonNode>("metadata", documentMetadata)
+
+        prefillValueResolverFields(formDefinition, document.id(), processInstance, taskInstanceId)
 
         prefillDataResolverFields(formDefinition, document, extendedDocumentContent)
 
@@ -95,6 +103,27 @@ class PrefillFormService(
         } else {
             prefillProcessVariables(formDefinition, document)
         }
+    }
+
+    private fun prefillValueResolverFields(
+        formDefinition: FormIoFormDefinition,
+        documentInstanceId: Document.Id,
+        processInstance: CamundaExecution?,
+        taskInstanceId: String?
+    ) {
+        val requestedValues = formDefinition.inputKeysForPrefill.filter {
+            it.matches(Regex.fromLiteral("[a-zA-Z]+:.*"))
+                    && valueResolverService.supportsValue( it )
+        }
+
+        val valueMap = if(processInstance == null) {
+            valueResolverService.resolveValues(documentInstanceId.toString(), requestedValues)
+        } else {
+            val variableScope: VariableScope = taskInstanceId?.let { taskService.findTaskById(taskInstanceId) }?: processInstance
+            valueResolverService.resolveValues(processInstance.id, variableScope, requestedValues)
+        }
+
+        formDefinition.preFill(valueMap)
     }
 
     fun prefillProcessVariables(formDefinition: FormIoFormDefinition, document: Document) {

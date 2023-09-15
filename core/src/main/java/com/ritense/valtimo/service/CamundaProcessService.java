@@ -20,9 +20,11 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
+import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
+import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
@@ -43,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.Comparator;
@@ -76,13 +79,16 @@ public class CamundaProcessService {
     private final ValtimoProperties valtimoProperties;
     private final AuthorizationService authorizationService;
 
+    private final CamundaExecutionRepository camundaExecutionRepository;
+
     public CamundaProcessService(
         RuntimeService runtimeService,
         CamundaRuntimeService camundaRuntimeService,
         RepositoryService repositoryService, CamundaRepositoryService camundaRepositoryService, FormService formService,
         CamundaHistoryService historyService, ProcessPropertyService processPropertyService,
         ValtimoProperties valtimoProperties,
-        AuthorizationService authorizationService
+        AuthorizationService authorizationService,
+        CamundaExecutionRepository camundaExecutionRepository
     ) {
         this.runtimeService = runtimeService;
         this.camundaRuntimeService = camundaRuntimeService;
@@ -93,6 +99,7 @@ public class CamundaProcessService {
         this.processPropertyService = processPropertyService;
         this.valtimoProperties = valtimoProperties;
         this.authorizationService = authorizationService;
+        this.camundaExecutionRepository = camundaExecutionRepository;
     }
 
     public CamundaProcessDefinition findProcessDefinitionById(String processDefinitionId) {
@@ -126,6 +133,12 @@ public class CamundaProcessService {
             .createProcessInstanceQuery()
             .processInstanceId(processInstanceId)
             .singleResult());
+    }
+
+    @Nullable
+    public CamundaExecution findExecutionByProcessInstanceId(String processInstanceId) {
+        denyAuthorization();
+        return camundaExecutionRepository.findById(processInstanceId).orElse(null);
     }
 
     public void deleteProcessInstanceById(String processInstanceId, String reason) {

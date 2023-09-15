@@ -16,23 +16,30 @@
 
 package com.ritense.valueresolver
 
-import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.UUID
+import org.camunda.bpm.engine.delegate.VariableScope
 
 open class ValueResolverServiceImpl(
     private val valueResolverFactories: List<ValueResolverFactory>
 ) : ValueResolverService {
-    private val resolverFactoryMap: Map<String, ValueResolverFactory>
-        get() = valueResolverFactories.groupBy { it.supportedPrefix() }
-        .filter { (key, value) ->
-            if(value.size != 1) {
-                throw RuntimeException("Expected 1 resolver for prefix '$key'. Found: ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")
-            }
-            true
-        }.map { (key, value) ->
-            key to value.first()
-        }.toMap()
 
+    private lateinit var resolverFactoryMap: Map<String, ValueResolverFactory>
+    fun getResolverFactoryMap() = if (this::resolverFactoryMap.isInitialized) {
+        resolverFactoryMap
+    } else {
+        valueResolverFactories.groupBy { it.supportedPrefix() }
+            .onEach { (key, value) ->
+                if(value.size != 1) {
+                    throw RuntimeException("Expected 1 resolver for prefix '$key'. Found: ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")
+                }
+            }.map { (key, value) ->
+                key to value.first()
+            }.toMap()
+    }
+
+    override fun supportsValue(value: String) : Boolean {
+        return getResolverFactoryMap().containsKey(getPrefix(value))
+    }
 
     /**
      * This method provides a way of resolving requestedValues into values using defined resolvers.
@@ -56,7 +63,7 @@ open class ValueResolverServiceImpl(
             val resolver = resolverFactory.createResolver(processInstanceId, variableScope)
             //Create a list of resolved Map entries
             requestedValues.mapNotNull { requestedValue ->
-                resolver.apply(requestedValue.substringAfter(":"))
+                resolver.apply(trimPrefix(requestedValue))
                     ?.let { requestedValue to it }
             }
         }.flatten().toMap()
@@ -70,7 +77,7 @@ open class ValueResolverServiceImpl(
      *
      * If the resolver doesn't accept the propertyName, it will throw an error.
      *
-     * @param documentInstanceId The documentInstanceId these values belong to.
+     * @param documentDefinitionName The documentInstanceId these values belong to.
      * @param requestedValues The requestedValues that should be validated.
      */
     override fun validateValues(
@@ -81,7 +88,7 @@ open class ValueResolverServiceImpl(
             val validator = resolverFactory.createValidator(documentDefinitionName)
 
             requestedValues.forEach { requestedValue ->
-                validator.apply(requestedValue.substringAfter(":"))
+                validator.apply(trimPrefix(requestedValue))
             }
         }
     }
@@ -106,7 +113,7 @@ open class ValueResolverServiceImpl(
             val resolver = resolverFactory.createResolver(documentInstanceId)
             //Create a list of resolved Map entries
             requestedValues.mapNotNull { requestedValue ->
-                resolver.apply(requestedValue.substringAfter(":"))
+                resolver.apply(trimPrefix(requestedValue))
                     ?.let { requestedValue to it }
             }
         }.flatten().toMap()
@@ -129,7 +136,7 @@ open class ValueResolverServiceImpl(
             resolverFactory.handleValues(
                 processInstanceId,
                 variableScope,
-                propertyPaths.associate { propertyPath -> propertyPath.substringAfter(":") to values[propertyPath]!! }
+                propertyPaths.associate { propertyPath -> trimPrefix(propertyPath) to values[propertyPath]!! }
             )
         }
     }
@@ -142,7 +149,7 @@ open class ValueResolverServiceImpl(
 
             resolverFactory.handleValues(
                 documentId,
-                propertyPaths.associate { propertyPath -> propertyPath.substringAfter(":") to values[propertyPath]!! }
+                propertyPaths.associate { propertyPath -> trimPrefix(propertyPath) to values[propertyPath]!! }
             )
         }
     }
@@ -152,7 +159,7 @@ open class ValueResolverServiceImpl(
     ): Map<String, Any> {
         return toResolverFactoryMap(values.keys).mapValues { (resolverFactory, propertyPaths) ->
             resolverFactory.preProcessValuesForNewCase(
-                propertyPaths.associate { propertyPath -> propertyPath.substringAfter(":") to values[propertyPath]!! }
+                propertyPaths.associate { propertyPath -> trimPrefix(propertyPath) to values[propertyPath]!! }
             )
         }.mapKeys { (resolverFactory, _) ->
             resolverFactory.supportedPrefix()
@@ -161,14 +168,20 @@ open class ValueResolverServiceImpl(
 
     private fun toResolverFactoryMap(requestedValues: Collection<String>): Map<ValueResolverFactory, List<String>> {
         //Group by prefix
-        return requestedValues.groupBy {
-            it.substringBefore(":", missingDelimiterValue = "")
-        }.mapNotNull { (prefix, requestedValues) ->
-            //Create a resolver per prefix group
-            val resolverFactory = resolverFactoryMap[prefix]
-                ?: throw RuntimeException("No resolver factory found for value prefix $prefix")
-            //Create a map of ValueResolverFactories
-            resolverFactory to requestedValues
-        }.toMap()
+        return requestedValues.groupBy(::getPrefix)
+            .mapNotNull { (prefix, requestedValues) ->
+                //Create a resolver per prefix group
+                val resolverFactory = getResolverFactoryMap()[prefix]
+                    ?: throw RuntimeException("No resolver factory found for value prefix $prefix")
+                //Create a map of ValueResolverFactories
+                resolverFactory to requestedValues
+            }.toMap()
+    }
+
+    private fun getPrefix(value:String) = value.substringBefore(DELIMITER, missingDelimiterValue = "")
+    private fun trimPrefix(value:String) = value.substringAfter(DELIMITER)
+
+    companion object {
+        const val DELIMITER = ":"
     }
 }

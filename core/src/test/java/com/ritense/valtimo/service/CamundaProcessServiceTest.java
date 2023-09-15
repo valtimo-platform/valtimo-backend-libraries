@@ -19,6 +19,7 @@ package com.ritense.valtimo.service;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
+import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
@@ -92,6 +93,9 @@ class CamundaProcessServiceTest {
     @Mock
     private AuthorizationService authorizationService;
 
+    @Mock
+    private CamundaExecutionRepository camundaExecutionRepository;
+
     private CamundaHistoryService historyService = mock(CamundaHistoryService.class, RETURNS_DEEP_STUBS);
 
     @BeforeEach
@@ -101,7 +105,9 @@ class CamundaProcessServiceTest {
 
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectAll() {
-        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties, authorizationService);
+        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties, authorizationService,
+                camundaExecutionRepository
+        );
 
         //when
         when(historyService.findHistoricProcessInstances(any()))
@@ -133,7 +139,9 @@ class CamundaProcessServiceTest {
 
     @Test
     void getAllActiveContextProcessesStartedByCurrentUserTestExpectTwo() {
-        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties, authorizationService);
+        camundaProcessService = new CamundaProcessService(runtimeService, camundaRuntimeService, repositoryService, camundaRepositoryService, formService, historyService, processPropertyService, valtimoProperties, authorizationService,
+                camundaExecutionRepository
+        );
 
         //when
         when(historyService.findHistoricProcessInstances(any()))

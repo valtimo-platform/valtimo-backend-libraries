@@ -16,8 +16,8 @@
 
 package com.ritense.valueresolver
 
-import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.UUID
+import org.camunda.bpm.engine.delegate.VariableScope
 
 interface ValueResolverService {
     /**
@@ -92,4 +92,6 @@ interface ValueResolverService {
     fun preProcessValuesForNewCase(
         values: Map<String, Any>
     ): Map<String, Any>
+
+    fun supportsValue(value: String): Boolean
 }

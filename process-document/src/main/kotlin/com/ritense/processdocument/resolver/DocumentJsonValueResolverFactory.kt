@@ -77,9 +77,9 @@ class DocumentJsonValueResolverFactory(
         }
     }
 
-    override fun createResolver(documentInstanceId: String): Function<String, Any?> {
+    override fun createResolver(documentId: String): Function<String, Any?> {
         return createResolver(
-            AuthorizationContext.runWithoutAuthorization { documentService.get(documentInstanceId) }
+            AuthorizationContext.runWithoutAuthorization { documentService.get(documentId) }
         )
     }
 
@@ -126,7 +126,7 @@ class DocumentJsonValueResolverFactory(
         val emptyDocumentContent = jacksonObjectMapper().createObjectNode()
         buildJsonPatch(emptyDocumentContent, values)
         return emptyDocumentContent
-   }
+    }
 
     private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any>) {
         val jsonPatchBuilder = JsonPatchBuilder()
@@ -191,7 +191,7 @@ class DocumentJsonValueResolverFactory(
     private fun resolveForJsonPath(document: Document, jsonPathPostfix: String): Any? {
         return try {
             JsonPath.read<Any?>(document.content().asJson().toString(), "$.$jsonPathPostfix")
-        } catch (ignore: PathNotFoundException){
+        } catch (ignore: PathNotFoundException) {
             null
         }
     }
