@@ -45,7 +45,7 @@ abstract class AuthorizationSpecification<T : Any>(
     }
 
     private fun isAuthorizedForEntity(entityAuthorizationRequest: EntityAuthorizationRequest<T>): Boolean {
-        if (entityAuthorizationRequest.entities.isNullOrEmpty()) {
+        if (entityAuthorizationRequest.entities.isEmpty()) {
             return false
         }
         val permissions = permissions.filter { permission ->

@@ -22,7 +22,7 @@ class DelegateUserEntityAuthorizationRequest<T>(
     resourceType: Class<T>,
     action: Action<T>,
     override val user: String?,
-    entities: List<T>?
+    entities: List<T>
 ) : EntityAuthorizationRequest<T>(
     resourceType,
     action,
@@ -32,6 +32,6 @@ class DelegateUserEntityAuthorizationRequest<T>(
         resourceType,
         action,
         user,
-        if (entities.any { it == null }) null else entities.filterNotNull().toList()
+        if (entities.any { it == null }) emptyList() else entities.filterNotNull().toList()
     )
 }
