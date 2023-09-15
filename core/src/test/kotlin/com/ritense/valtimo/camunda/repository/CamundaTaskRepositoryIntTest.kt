@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional
 class CamundaTaskRepositoryIntTest @Autowired constructor(
     private val taskService: TaskService,
     private val camundaTaskRepository: CamundaTaskRepository,
-    private val camundaVariableInstanceRepository: CamundaVariableInstanceRepository,
 ): BaseIntegrationTest() {
 
     @Test
@@ -86,8 +85,6 @@ class CamundaTaskRepositoryIntTest @Autowired constructor(
                 instance.id
             )
         }
-
-        val findAll = camundaVariableInstanceRepository.findAll()
 
         Assertions.assertThat(result.isPresent).isTrue()
 
