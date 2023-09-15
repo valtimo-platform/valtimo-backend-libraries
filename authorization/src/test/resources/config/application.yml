@@ -38,3 +38,6 @@ spring:
 spring-actuator:
     username: test
     password: test
+
+valtimo:
+    database: postgres

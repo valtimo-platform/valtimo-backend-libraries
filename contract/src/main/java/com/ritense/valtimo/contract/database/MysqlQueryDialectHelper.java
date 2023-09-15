@@ -73,4 +73,10 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
             )
         );
     }
+
+    @Override
+    public Predicate getJsonArrayContainsExpression(CriteriaBuilder cb, Path column, String path, String value) {
+        //TODO: implement this
+        return null;
+    }
 }

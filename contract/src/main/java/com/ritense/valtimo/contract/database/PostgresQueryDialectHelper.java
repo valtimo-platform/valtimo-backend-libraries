@@ -79,6 +79,23 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
         );
     }
 
+    @Override
+    public Predicate getJsonArrayContainsExpression(CriteriaBuilder cb, Path column, String path, String value) {
+        return cb.isTrue(
+            cb.function(
+                "jsonb_contains_filter",
+                Boolean.class,
+                cb.function(
+                    "jsonb_path_query_first",
+                    Object.class,
+                    column,
+                    cb.function("jsonpath", String.class, cb.literal(path))
+                ),
+                cb.literal(value)
+            )
+        );
+    }
+
     private Expression<String> getValueForPathText(CriteriaBuilder cb, Path column, String path) {
         List<Expression<String>> pathParts = splitPath(path).stream().map(cb::literal).toList();
         Expression[] expressions = new Expression[pathParts.size() + 1];

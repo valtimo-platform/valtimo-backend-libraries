@@ -5,6 +5,7 @@
         "ROLE_ADMIN",
         "ROLE_UPDATE",
         "TO_REMOVE_ROLE_1",
-        "TO_REMOVE_ROLE_2"
+        "TO_REMOVE_ROLE_2",
+        "TEST_ROLE"
     ]
 }

@@ -122,6 +122,25 @@ class ExpressionPermissionConditionTest {
     }
 
     @Test
+    fun `should fail validation for CONTAINS operation when value is not found`() {
+        val conditionTemplate = ExpressionPermissionCondition(
+            field = "child.property",
+            path = "value",
+            operator = CONTAINS,
+            value = "myValue",
+            clazz = String::class.java
+        )
+        val entity = TestEntity(TestChildEntity("""
+            {
+                "value": ["someValue","otherValue"]
+            }
+        """.trimIndent()))
+
+        val result = conditionTemplate.isValid(entity)
+        assertEquals(false, result)
+    }
+
+    @Test
     fun `should fail validation when json property is not found and condition value is not null`() {
         val condition = conditionTemplate.copy(path = "y")
 

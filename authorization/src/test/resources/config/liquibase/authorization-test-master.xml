@@ -20,12 +20,18 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
-    <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
-    <property name="jsonType" value="JSON" dbms="mysql"/>
-    <property name="jsonType" value="JSON" dbms="postgresql"/>
-
-    <include file="changelog/20230424-create-authorization-table.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20230910-create-json-array-contains-function.xml" relativeToChangelogFile="true"/>
+    <changeSet author="Ritense" id="1">
+        <createTable tableName="test_entity">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="child" type="jsonb">
+                <constraints nullable="true"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 
 </databaseChangeLog>

@@ -81,6 +81,13 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
             throw UnsupportedOperationException("Unsupported class '$clazz' for this action-type")
         }
 
+        // we need an exception for json contains
+        if (operator == PermissionConditionOperator.CONTAINS) {
+            return queryDialectHelper.getJsonArrayContainsExpression(
+                criteriaBuilder, path, this.path, value.toString()
+            )
+        }
+
         return operator.toPredicate<Comparable<Any>>(
             criteriaBuilder,
             queryDialectHelper.getJsonValueExpression(criteriaBuilder, path, this.path, clazz),

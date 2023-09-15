@@ -20,15 +20,19 @@ import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.authorization.permission.Permission
+import com.ritense.valtimo.contract.database.QueryDialectHelper
 
-class TestAuthorizationSpecificationFactory : AuthorizationSpecificationFactory<TestEntity> {
+class TestAuthorizationSpecificationFactory(
+    val queryDialectHelper: QueryDialectHelper
+) : AuthorizationSpecificationFactory<TestEntity> {
     override fun create(
             context: AuthorizationRequest<TestEntity>,
-            permissions: List<Permission>
+            permissions: List<Permission>,
     ): AuthorizationSpecification<TestEntity> {
         return TestAuthorizationSpecification(
             context,
-            permissions
+            permissions,
+            queryDialectHelper
         )
     }
 

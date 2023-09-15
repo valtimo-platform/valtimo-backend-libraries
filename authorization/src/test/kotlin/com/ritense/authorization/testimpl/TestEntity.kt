@@ -16,7 +16,21 @@
 
 package com.ritense.authorization.testimpl
 
+import org.hibernate.annotations.Type
+import java.util.UUID
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Table
+
+@Entity
+@Table(name = "test_entity")
 data class TestEntity(
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "child", columnDefinition = "json")
     val child: TestChildEntity? = null,
-    val name: String = "test"
+    @Column(name = "name", columnDefinition = "varchar(100)")
+    val name: String = "test",
+    @Id
+    val id: UUID = UUID.randomUUID()
 )

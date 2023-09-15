@@ -28,6 +28,7 @@ import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -47,7 +48,8 @@ class AuthorizationSpecificationTest {
                     conditionContainer = ConditionContainer(listOf()),
                     role = Role(key = "")
                 )
-            )
+            ),
+            mock()
         )
 
         assertEquals(true, spec.isAuthorized())
@@ -66,7 +68,8 @@ class AuthorizationSpecificationTest {
                     conditionContainer = ConditionContainer(listOf()),
                     role = Role(key = "")
                 )
-            )
+            ),
+            mock()
         ) as AuthorizationSpecification<Any>
 
         assertEquals(false, spec.isAuthorized())
@@ -85,7 +88,8 @@ class AuthorizationSpecificationTest {
                     conditionContainer = ConditionContainer(listOf()),
                     role = Role(key = "")
                 )
-            )
+            ),
+            mock()
         )
 
         assertEquals(false, spec.isAuthorized())
@@ -105,7 +109,8 @@ class AuthorizationSpecificationTest {
             ),
             listOf(
                 permission
-            )
+            ),
+            mock()
         )
 
         whenever(permission.appliesTo(eq(TestEntity::class.java), any())).thenReturn(false)

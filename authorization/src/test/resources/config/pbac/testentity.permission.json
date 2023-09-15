@@ -1,0 +1,20 @@
+{
+    "changesetId": "testentity-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.authorization.testimpl.TestEntity",
+            "action": "view_list",
+            "roleKey": "TEST_ROLE",
+            "conditions": [
+                {
+                    "type": "expression",
+                    "field": "child",
+                    "path": "$.property",
+                    "operator": "contains",
+                    "value": "two",
+                    "clazz": "java.lang.String"
+                }
+            ]
+        }
+    ]
+}

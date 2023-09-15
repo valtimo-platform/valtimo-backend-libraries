@@ -16,17 +16,8 @@
 
 package com.ritense.authorization.testimpl
 
-import com.ritense.authorization.Action
-import com.ritense.authorization.ResourceActionProvider
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import java.util.UUID
 
-class TestEntityActionProvider: ResourceActionProvider<TestEntity> {
-    override fun getAvailableActions(): List<Action<TestEntity>> {
-        return listOf(view, complete)
-    }
-
-    companion object {
-        val view_list = Action<TestEntity>(Action.VIEW_LIST)
-        val view = Action<TestEntity>(Action.VIEW)
-        val complete = Action<TestEntity>(Action.COMPLETE)
-    }
-}
+interface TestEntityRepository: JpaRepository<TestEntity, UUID>, JpaSpecificationExecutor<TestEntity>
