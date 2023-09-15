@@ -20,7 +20,6 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
@@ -35,8 +34,8 @@ public class ProcessLinkHttpSecurityConfigurer implements HttpSecurityConfigurer
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/process-link/task/{taskId}").hasAuthority(USER)
-                .antMatchers(POST, "/api/v1/process-definition/{processDefinitionKey}/form-flow").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/process-link/task/{taskId}").authenticated()
+                .antMatchers(POST, "/api/v1/process-definition/{processDefinitionKey}/form-flow").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

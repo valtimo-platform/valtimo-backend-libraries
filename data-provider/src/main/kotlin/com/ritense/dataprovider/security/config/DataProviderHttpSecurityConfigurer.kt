@@ -17,7 +17,6 @@
 package com.ritense.dataprovider.security.config
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.DELETE
@@ -31,8 +30,8 @@ class DataProviderHttpSecurityConfigurer : HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 .antMatchers(GET, "/api/v1/data/{category}/provider").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/data/{category}/all").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/data/{category}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/data/{category}/all").authenticated()
+                .antMatchers(GET, "/api/v1/data/{category}").authenticated()
                 .antMatchers(POST, "/api/v1/data/{category}").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/v1/data/{category}").hasAuthority(ADMIN)
         } catch (e: Exception) {
