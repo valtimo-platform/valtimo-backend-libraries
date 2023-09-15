@@ -211,12 +211,8 @@ class PrefillFormService(
         val inputFields = FormIoFormDefinition.getInputFields(formDefinitionData)
         val dataToPreFill = JsonNodeFactory.instance.objectNode()
         inputFields.forEach { field ->
-            if (field.has(CUSTOM_PROPERTIES)
-                && !field[CUSTOM_PROPERTIES].isEmpty
-                && field[CUSTOM_PROPERTIES].has(CONTAINER_KEY)
-                && !field[CUSTOM_PROPERTIES][CONTAINER_KEY].isNull
-            ) {
-                val container = field[CUSTOM_PROPERTIES][CONTAINER_KEY].asText()
+            val container = field.at("/$CUSTOM_PROPERTIES/$CONTAINER_KEY").asText()
+            if (container != null) {
                 val propertyName = field[FormIoFormDefinition.PROPERTY_KEY].textValue()
                 if (container.contains("/{indexOf")) {
                     val indexValueJsonPointer = getIndexValueJsonPointer(container)
@@ -332,11 +328,10 @@ class PrefillFormService(
         val formDefinitionData = formDefinition.formDefinition
         val inputFields = FormIoFormDefinition.getInputFields(formDefinitionData)
         inputFields.forEach { field ->
-            if (field.has(CUSTOM_PROPERTIES)
-                && !field[CUSTOM_PROPERTIES].isEmpty
+            val container = field.at("/$CUSTOM_PROPERTIES/$CONTAINER_KEY").asText()
+            if (container != null
                 && submission.has(field[FormIoFormDefinition.PROPERTY_KEY].textValue())
             ) {
-                val container = field[CUSTOM_PROPERTIES][CONTAINER_KEY].asText()
                 val propertyName = field[FormIoFormDefinition.PROPERTY_KEY].textValue()
                 val propertyValue = submission.at("/$propertyName")
                 val submissionProperty =

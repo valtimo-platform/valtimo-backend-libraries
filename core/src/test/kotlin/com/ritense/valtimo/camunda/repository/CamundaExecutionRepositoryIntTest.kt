@@ -32,8 +32,7 @@ class CamundaExecutionRepositoryIntTest @Autowired constructor(
     fun `should find a camunda execution`() {
         val instance = runtimeService.startProcessInstanceByKey(
             "one-task-process",
-            UUID.randomUUID().toString(),
-            mapOf("test" to true)
+            UUID.randomUUID().toString()
         )
 
         val result = camundaExecutionRepository.findById(instance.id)
@@ -42,7 +41,41 @@ class CamundaExecutionRepositoryIntTest @Autowired constructor(
         val execution = result.get()
         assertThat(execution.id).isEqualTo(instance.id)
         assertThat(execution.businessKey).isEqualTo(instance.businessKey)
-        val variable = execution.variableInstances.first { it.name == "test" }
-        assertThat(variable.longValue).isEqualTo(1L)
+    }
+
+    @Test
+    @Transactional
+    fun `should find camunda execution variables`() {
+        val variableMap = mapOf(
+            "myBoolean" to true,
+            "myNumber" to 1337,
+            "myText" to "Hello World!"
+        )
+        val instance = runtimeService.startProcessInstanceByKey(
+            "one-task-process",
+            UUID.randomUUID().toString(),
+            variableMap
+        )
+
+        val result = camundaExecutionRepository.findById(instance.id)
+        assertThat(result.isPresent).isTrue()
+
+        val execution = result.get()
+        assertThat(execution.id).isEqualTo(instance.id)
+        assertThat(execution.businessKey).isEqualTo(instance.businessKey)
+
+        variableMap.forEach { (key , value) ->
+            val variableInstance = execution.variableInstances.first { it.name == key }
+            assertThat(variableInstance.getValue()).isEqualTo(value)
+
+            val localVariable = execution.getVariableLocal(key)
+            assertThat(localVariable).isEqualTo(value)
+
+            val variable = execution.getVariableLocal(key)
+            assertThat(variable).isEqualTo(value)
+        }
+
+        val variableNames = execution.variableNamesLocal
+        assertThat(variableNames).containsAll(variableMap.keys)
     }
 }

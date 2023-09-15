@@ -33,7 +33,7 @@ abstract class CamundaVariableScope : VariableScope {
         val parentEntries = getParentVariableScope()?.getVariablesTyped(deserializeValues)?.getEntriesTyped() ?: setOf()
         val localEntries = getVariablesLocalTyped(deserializeValues).getEntriesTyped()
 
-        return CamundaVariableMap((localEntries + parentEntries).associate { it.key to it.value })
+        return CamundaVariableMap((parentEntries + localEntries).associate { it.key to it.value })
     }
 
     override fun getVariablesLocal(): Map<String, Any?> = variablesLocalTyped
