@@ -19,7 +19,7 @@ package com.ritense.valtimo.security.config;
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
@@ -29,8 +29,8 @@ public class AccountHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/account").hasAuthority(USER)
-                .antMatchers(POST, "/api/v1/account/profile", "/api/v1/account/change_password").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/account").authenticated()
+                .antMatchers(POST, "/api/v1/account/profile", "/api/v1/account/change_password").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

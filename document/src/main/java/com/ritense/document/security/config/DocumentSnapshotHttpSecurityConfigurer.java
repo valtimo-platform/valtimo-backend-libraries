@@ -19,7 +19,7 @@ package com.ritense.document.security.config;
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+
 import static org.springframework.http.HttpMethod.GET;
 
 public class DocumentSnapshotHttpSecurityConfigurer implements HttpSecurityConfigurer {
@@ -28,8 +28,8 @@ public class DocumentSnapshotHttpSecurityConfigurer implements HttpSecurityConfi
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/document-snapshot/{id}").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/document-snapshot").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/document-snapshot/{id}").authenticated()
+                .antMatchers(GET, "/api/v1/document-snapshot").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }
