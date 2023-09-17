@@ -21,4 +21,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 abstract class BaseSseEvent(
     @JsonProperty("_t")
     val eventType: String
-)
+) {
+
+
+
+}

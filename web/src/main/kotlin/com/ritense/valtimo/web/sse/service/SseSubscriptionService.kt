@@ -28,7 +28,7 @@ import java.util.UUID
 
 class SseSubscriptionService {
 
-    // use cache so items get automatically evicted after 3h as final safeguard for memory leaks
+    // use cache so items get automatically evicted after 3h as final safe-guard for memory leaks
     private val subscriberHandles: Cache<UUID, SubscriberHandler> = CacheBuilder.newBuilder()
         .expireAfterAccess(Duration.ofHours(3))
         .build()
