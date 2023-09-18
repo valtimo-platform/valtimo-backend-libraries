@@ -16,23 +16,22 @@
 
 package com.ritense.catalogiapi.security
 
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.GET
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
-class CatalogiApiHttpSecurityConfigurer: HttpSecurityConfigurer {
+class CatalogiApiHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/roltype").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/statustype").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype").hasAuthority(USER)
-        } catch(e: Exception) {
+                .antMatchers(GET, "/api/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype").authenticated()
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/roltype").authenticated()
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/statustype").authenticated()
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype").authenticated()
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype").authenticated()
+        } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
     }

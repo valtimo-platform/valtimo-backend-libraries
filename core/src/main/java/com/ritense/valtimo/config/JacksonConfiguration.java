@@ -74,13 +74,4 @@ public class JacksonConfiguration {
     public BlackbirdModule blackbirdModule() {
         return new BlackbirdModule();
     }
-
-    /*
-     * Allows auto-detecting of properties when using JsonCreator
-     * */
-    @Bean
-    public ParameterNamesModule parameterNamesModule() {
-        return new ParameterNamesModule();
-    }
-
 }

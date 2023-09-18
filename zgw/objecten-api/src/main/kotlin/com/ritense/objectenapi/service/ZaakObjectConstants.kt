@@ -18,6 +18,6 @@ package com.ritense.objectenapi.service
 
 class ZaakObjectConstants {
     companion object {
-        val ZAAKOBJECT_PREFIX = "zaakobject"
+        const val ZAAKOBJECT_PREFIX = "zaakobject"
     }
 }

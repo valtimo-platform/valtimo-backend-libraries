@@ -50,5 +50,7 @@
     <include file="camunda/20221031-camunda-upgrade-7-18-0-changelog.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230511-add-user-settings.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230901-remove-authority.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230904-choice-field-values-change-deprecated-datatype.xml" relativeToChangelogFile="true"/>
+
 
 </databaseChangeLog>

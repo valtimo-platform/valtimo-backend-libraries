@@ -36,7 +36,7 @@ public interface ProcessDefinitionKey {
             final String id = executionEntity.getProcessDefinition().getKey();
             target = targetClass.getConstructor(String.class).newInstance(id);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new IllegalArgumentException("Cannot create instance of ProcessInstanceId class - " + targetClass.toString());
+            throw new IllegalArgumentException("Cannot create instance of ProcessInstanceId class - " + targetClass);
         }
         return target;
     }

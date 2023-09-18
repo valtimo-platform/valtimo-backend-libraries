@@ -108,21 +108,17 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
-    public ResponseEntity<DeployDocumentDefinitionResult> deployDocumentDefinition(DocumentDefinitionCreateRequest request) {
-        return applyResult(documentDefinitionService.deploy(request.getDefinition()));
-    }
-
-    @Override
-    public ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(String name) {
-        return applyResult(undeployDocumentDefinitionService.undeploy(name));
-    }
-
-    <T extends DeployDocumentDefinitionResult> ResponseEntity<T> applyResult(T result) {
+    public ResponseEntity<DeployDocumentDefinitionResult> deployDocumentDefinition(
+        DocumentDefinitionCreateRequest request
+    ) {
+        var result = runWithoutAuthorization(() -> documentDefinitionService.deploy(request.getDefinition()));
         var httpStatus = result.documentDefinition() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(httpStatus).body(result);
     }
 
-    <T extends UndeployDocumentDefinitionResult> ResponseEntity<T> applyResult(T result) {
+    @Override
+    public ResponseEntity<UndeployDocumentDefinitionResult> removeDocumentDefinition(String name) {
+        var result = runWithoutAuthorization(() -> undeployDocumentDefinitionService.undeploy(name));
         var httpStatus = result.documentDefinitionName() != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(httpStatus).body(result);
     }

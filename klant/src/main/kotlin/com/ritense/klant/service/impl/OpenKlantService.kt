@@ -27,6 +27,6 @@ open class OpenKlantService(
                 klantnummer = klantnummer
             )
         )
-        return klantPage.results.size == 0
+        return klantPage.results.isEmpty()
     }
 }

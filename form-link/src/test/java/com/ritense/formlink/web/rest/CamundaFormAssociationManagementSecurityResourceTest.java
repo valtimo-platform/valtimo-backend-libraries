@@ -126,7 +126,7 @@ class CamundaFormAssociationManagementSecurityResourceTest extends SecuritySpeci
     void deleteFormAssociationAsAdmin() throws Exception {
         assertHttpStatus(
             DELETE,
-            "/api/v1/form-association-management/" + UUID.randomUUID().toString() + "/" + UUID.randomUUID().toString(),
+            "/api/v1/form-association-management/" + UUID.randomUUID() + "/" + UUID.randomUUID(),
             NO_CONTENT
         );
     }
@@ -136,7 +136,7 @@ class CamundaFormAssociationManagementSecurityResourceTest extends SecuritySpeci
     void deleteFormAssociationAsUser() throws Exception {
         assertHttpStatus(
             DELETE,
-            "/api/v1/form-association-management/" + UUID.randomUUID().toString() + "/" + UUID.randomUUID().toString(),
+            "/api/v1/form-association-management/" + UUID.randomUUID() + "/" + UUID.randomUUID(),
             FORBIDDEN
         );
     }

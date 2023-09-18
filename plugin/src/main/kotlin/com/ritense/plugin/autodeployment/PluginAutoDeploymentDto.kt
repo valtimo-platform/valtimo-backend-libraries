@@ -19,7 +19,6 @@ package com.ritense.plugin.autodeployment
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.plugin.domain.PluginDefinition
 import java.util.UUID
 
 data class PluginAutoDeploymentDto(

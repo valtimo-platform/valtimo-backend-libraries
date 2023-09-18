@@ -39,7 +39,7 @@ class ObjectSyncServiceIntTest : BaseIntegrationTest() {
     internal fun setUp() {
         val connectorTypes = connectorDeploymentService.deployAll(listOf(objectsApiConnector))
         connectorInstance = connectorService.createConnectorInstance(
-            typeId = connectorTypes.get(0).id.id,
+            typeId = connectorTypes[0].id.id,
             name = "testInstance",
             connectorProperties = ObjectsApiProperties(
                 objectsApi = ServerAuthSpecification(),

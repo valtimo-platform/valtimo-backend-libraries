@@ -91,7 +91,7 @@ class NotificatiesApiClientTest {
         assertEquals("/kanaal", recordedRequest.path)
 
         assertNull(requestBody["url"])
-        assertEquals("Test Kanaal", requestBody.get("naam"))
+        assertEquals("Test Kanaal", requestBody["naam"])
         assertNull(requestBody["documentatieLink"])
         assertEquals(emptyList<String>(), requestBody["filters"])
 
@@ -206,8 +206,8 @@ class NotificatiesApiClientTest {
         assertEquals("/abonnement", recordedRequest.path)
 
         assertEquals("http://example.com", requestBody["url"])
-        assertEquals("http://example.com/callback", requestBody.get("callbackUrl"))
-        assertEquals("Bearer token", requestBody.get("auth"))
+        assertEquals("http://example.com/callback", requestBody["callbackUrl"])
+        assertEquals("Bearer token", requestBody["auth"])
         assertEquals(
             listOf(
                 mapOf(

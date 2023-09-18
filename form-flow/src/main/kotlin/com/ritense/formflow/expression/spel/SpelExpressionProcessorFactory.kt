@@ -22,8 +22,7 @@ import org.springframework.context.expression.MapAccessor
 import org.springframework.expression.spel.support.StandardEvaluationContext
 import org.springframework.integration.json.JsonPropertyAccessor
 
-class SpelExpressionProcessorFactory(
-): ExpressionProcessorFactory {
+class SpelExpressionProcessorFactory : ExpressionProcessorFactory {
     lateinit var formFlowBeans: Map<String, Any>
     override fun create(variables: Map<String, Any>?): ExpressionProcessor {
         val context = StandardEvaluationContext()

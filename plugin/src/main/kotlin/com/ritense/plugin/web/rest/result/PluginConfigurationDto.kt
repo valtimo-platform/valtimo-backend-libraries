@@ -20,7 +20,7 @@ class PluginConfigurationDto(
         if (pluginConfiguration.properties != null) {
             val configurationProperties: ObjectNode = pluginConfiguration.properties!!.deepCopy()
 
-            var secretDefinitionProperties = pluginConfiguration.pluginDefinition.properties.filter {
+            val secretDefinitionProperties = pluginConfiguration.pluginDefinition.properties.filter {
                 it.secret
             }.map {
                 it.fieldName

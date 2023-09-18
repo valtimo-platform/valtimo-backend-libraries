@@ -15,7 +15,6 @@
  */
 package com.ritense.valtimo.contract.upload
 
-import com.ritense.valtimo.contract.hardening.config.HardeningProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration
 

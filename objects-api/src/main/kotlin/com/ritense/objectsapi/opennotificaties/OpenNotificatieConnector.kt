@@ -25,10 +25,10 @@ import com.ritense.objectsapi.domain.AbonnementLink
 import com.ritense.objectsapi.domain.Kanaal
 import com.ritense.objectsapi.domain.KanaalLink
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
-import mu.KotlinLogging
 import java.security.SecureRandom
 import java.util.Base64
 import java.util.UUID
+import mu.KotlinLogging
 
 @ConnectorType(name = "OpenNotificatie")
 class OpenNotificatieConnector(
@@ -86,8 +86,7 @@ class OpenNotificatieConnector(
 
     private fun verifyObjectenKanaalExists(): Boolean {
         return openNotificatieClient.getKanalen()
-            .filter { it.naam.equals(OBJECTEN_KANAAL_NAME) }
-            .isNotEmpty()
+            .any { it.naam == OBJECTEN_KANAAL_NAME }
     }
 
     private fun createObjectenKanaal() {
@@ -95,7 +94,7 @@ class OpenNotificatieConnector(
     }
 
     private fun createRandomKey(): String {
-        val random = SecureRandom();
+        val random = SecureRandom()
         val bytes = ByteArray(32)
         random.nextBytes(bytes)
         return Base64.getEncoder().encodeToString(bytes)

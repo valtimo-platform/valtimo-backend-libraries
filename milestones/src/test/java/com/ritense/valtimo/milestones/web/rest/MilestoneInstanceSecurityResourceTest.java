@@ -33,13 +33,13 @@ class MilestoneInstanceSecurityResourceTest extends SecuritySpecificEndpointInte
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void getDiagramFlowNodesAsAdmin() throws Exception {
-        assertHttpStatus(GET, "/api/v1/milestones/" + UUID.randomUUID().toString() + "/flownodes", INTERNAL_SERVER_ERROR);
+        assertHttpStatus(GET, "/api/v1/milestones/" + UUID.randomUUID() + "/flownodes", INTERNAL_SERVER_ERROR);
     }
 
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {USER})
     void getDiagramFlowNodesAsUser() throws Exception {
-        assertHttpStatus(GET, "/api/v1/milestones/" + UUID.randomUUID().toString() + "/flownodes", FORBIDDEN);
+        assertHttpStatus(GET, "/api/v1/milestones/" + UUID.randomUUID() + "/flownodes", FORBIDDEN);
     }
 
 }

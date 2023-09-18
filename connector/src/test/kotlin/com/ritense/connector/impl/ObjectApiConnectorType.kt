@@ -28,7 +28,7 @@ open class ObjectApiConnectorType(
 ) : Connector {
 
     init {
-        logger.info { "ctor ObjectApiConnectorType with prop: ${properties}" }
+        logger.info { "ctor ObjectApiConnectorType with prop: $properties" }
     }
 
     open fun action() {

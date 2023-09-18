@@ -35,10 +35,10 @@ class FormFlowDefinition(
         } else {
             "v${version}"
         }
-        return "${name} (${versionString})"
+        return "$name (${versionString})"
     }
 
     companion object {
-        val LATEST_VERSION_KEY = "latest"
+        const val LATEST_VERSION_KEY = "latest"
     }
 }
