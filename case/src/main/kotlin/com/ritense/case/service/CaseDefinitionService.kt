@@ -145,8 +145,7 @@ class CaseDefinitionService(
         authorizationService.requirePermission(
             EntityAuthorizationRequest(
                 Any::class.java,
-                Action.deny(),
-                null
+                Action.deny()
             )
         )
     }

@@ -241,12 +241,15 @@ class AuthorizationServiceIntTest @Autowired constructor(
         action: Action<TestEntity> = Action(Action.VIEW),
         entity: TestEntity? = null
     ) {
-        authorizationService
-            .requirePermission(
-                EntityAuthorizationRequest(
-                    TestEntity::class.java,
-                    action = action,
-                    entity)
+        if (entity == null) {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(TestEntity::class.java, action)
             )
+        } else {
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(TestEntity::class.java, action, entity)
+            )
+        }
     }
+
 }

@@ -303,10 +303,9 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private <T> void denyAuthorization(Class<T> clazz) {
         authorizationService
             .requirePermission(
-                new EntityAuthorizationRequest<T>(
+                new EntityAuthorizationRequest(
                     clazz,
-                    Action.deny(),
-                    null
+                    Action.deny()
                 )
             );
     }

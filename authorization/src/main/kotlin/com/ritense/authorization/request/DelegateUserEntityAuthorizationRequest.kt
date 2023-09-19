@@ -22,9 +22,16 @@ class DelegateUserEntityAuthorizationRequest<T>(
     resourceType: Class<T>,
     action: Action<T>,
     override val user: String?,
-    entity: T?, //TODO: Determine if this really should be nullable
+    entities: List<T>
 ) : EntityAuthorizationRequest<T>(
     resourceType,
     action,
-    entity
-)
+    entities
+) {
+    constructor(resourceType: Class<T>, action: Action<T>, user: String?, vararg entities: T) : this(
+        resourceType,
+        action,
+        user,
+        if (entities.any { it == null }) emptyList() else entities.filterNotNull().toList()
+    )
+}

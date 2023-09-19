@@ -76,8 +76,7 @@ public class SearchFieldService {
         Specification<SearchField> authorizationSpec = authorizationService.getAuthorizationSpecification(
             new EntityAuthorizationRequest<>(
                 SearchField.class,
-                VIEW_LIST,
-                null
+                VIEW_LIST
             ),
             null
         );
@@ -180,8 +179,7 @@ public class SearchFieldService {
         authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
                 SearchField.class,
-                Action.deny(),
-                null
+                Action.deny()
             )
         );
     }

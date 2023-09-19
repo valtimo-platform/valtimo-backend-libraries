@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.request
+package com.ritense.document.domain.impl.request;
 
-import com.ritense.authorization.Action
-import com.ritense.valtimo.contract.utils.SecurityUtils
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-open class EntityAuthorizationRequest<T>(
-    override val resourceType: Class<T>,
-    override val action: Action<T>,
-    val entities: List<T>,
-) : AuthorizationRequest<T> {
+import java.util.List;
+import java.util.UUID;
 
-    constructor(resourceType: Class<T>, action: Action<T>, vararg entities: T?) : this(
-        resourceType,
-        action,
-        if (entities.any { it == null }) emptyList() else entities.filterNotNull().toList()
-    )
-
-    override val user: String?
-        get() = SecurityUtils.getCurrentUserLogin()
+public record GetDocumentCandidateUsersRequest(@JsonProperty List<UUID> documentIds) {
 }

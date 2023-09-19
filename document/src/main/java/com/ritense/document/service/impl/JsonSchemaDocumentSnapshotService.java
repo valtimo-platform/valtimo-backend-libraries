@@ -80,8 +80,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
         var spec = (Specification<JsonSchemaDocumentSnapshot>) authorizationService.getAuthorizationSpecification(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocumentSnapshot.class,
-                VIEW_LIST,
-                null
+                VIEW_LIST
             ), null
         ).and(
             bySearch(
@@ -124,8 +123,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
         authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocumentSnapshot.class,
-                Action.deny(),
-                null
+                Action.deny()
             )
         );
     }

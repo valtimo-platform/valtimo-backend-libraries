@@ -493,7 +493,7 @@ public class CamundaTaskService {
 
     private AuthorizationSpecification<CamundaTask> getAuthorizationSpecification(Action<CamundaTask> action) {
         return authorizationService.getAuthorizationSpecification(
-            new EntityAuthorizationRequest<>(CamundaTask.class, action, null),
+            new EntityAuthorizationRequest<>(CamundaTask.class, action),
             null
         );
     }

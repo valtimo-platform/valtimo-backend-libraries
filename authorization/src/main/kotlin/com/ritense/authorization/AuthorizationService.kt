@@ -18,16 +18,15 @@ package com.ritense.authorization
 
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.role.Role
 import com.ritense.authorization.specification.AuthorizationSpecification
 
 interface AuthorizationService {
     fun <T : Any> requirePermission(
-        request: EntityAuthorizationRequest<T>
+        request: AuthorizationRequest<T>
     )
 
-    fun <T : Any> getAuthorizedRoles(request: EntityAuthorizationRequest<T>): Set<Role>
+    fun <T : Any> getAuthorizedRoles(request: AuthorizationRequest<T>): Set<Role>
 
     fun <T : Any> getAuthorizationSpecification(
         request: AuthorizationRequest<T>,

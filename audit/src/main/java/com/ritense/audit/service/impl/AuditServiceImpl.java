@@ -104,8 +104,7 @@ public class AuditServiceImpl implements AuditService {
         authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocumentSnapshot.class,
-                Action.deny(),
-                null
+                Action.deny()
             )
         );
     }

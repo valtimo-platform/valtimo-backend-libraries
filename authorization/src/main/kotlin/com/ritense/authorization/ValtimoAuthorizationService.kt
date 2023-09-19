@@ -37,7 +37,7 @@ class ValtimoAuthorizationService(
     private val userManagementService: UserManagementService
 ) : AuthorizationService {
     override fun <T : Any> requirePermission(
-        request: EntityAuthorizationRequest<T>
+        request: AuthorizationRequest<T>
     ) {
         if (!hasPermission(request)) {
             if (request.action.key != Action.DENY) {
@@ -47,7 +47,7 @@ class ValtimoAuthorizationService(
         }
     }
 
-    override fun <T : Any> getAuthorizedRoles(request: EntityAuthorizationRequest<T>): Set<Role> {
+    override fun <T : Any> getAuthorizedRoles(request: AuthorizationRequest<T>): Set<Role> {
         return getPermissions(request.resourceType, request.action)
             .groupBy { it.role }
             .filter { getAuthorizationSpecification(request, it.value, enablePermissionLogging = false).isAuthorized() }

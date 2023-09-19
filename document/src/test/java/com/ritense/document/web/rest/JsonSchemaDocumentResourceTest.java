@@ -207,9 +207,6 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
 
         when(documentService.getCandidateUsers(document.id()))
             .thenReturn(List.of(new NamedUser("1234", "John", "Doe")));
-        when(documentService.get(document.id().toString())).thenReturn(document);
-        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
-            .thenReturn(true);
 
         mockMvc.perform(get("/api/v1/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -225,14 +222,25 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         final var content = new JsonDocumentContent(json);
         final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
 
-        when(documentService.get(document.id().toString())).thenReturn(document);
-        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
-            .thenReturn(false);
-
         mockMvc.perform(get("/api/v1/document/{document-id}/candidate-user", document.id()).accept(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    void shouldGetCandidateUsersForMultipleDocuments() throws Exception {
+        when(documentService.getCandidateUsers(any(List.class)))
+            .thenReturn(List.of(new NamedUser("1234", "John", "Doe")));
+
+        mockMvc.perform(post("/api/v1/document/candidate-user")
+                .contentType(APPLICATION_JSON_VALUE)
+            .content("{\"documentIds\":[\"e4715f07-7c91-4015-ae18-f505cb082935\"]}"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].firstName").value("John"))
+            .andExpect(jsonPath("$[0].lastName").value("Doe"));
     }
 
 }

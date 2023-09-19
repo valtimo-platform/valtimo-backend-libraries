@@ -93,8 +93,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
             .getAuthorizationSpecification(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocumentDefinition.class,
-                    VIEW_LIST,
-                    null
+                    VIEW_LIST
                 ),
                 null
             ).and(
@@ -108,8 +107,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         authorizationService.requirePermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocumentDefinition.class,
-                    Action.deny(),
-                    null
+                    Action.deny()
                 ));
 
         final var spec = JsonSchemaDocumentDefinitionSpecificationHelper.byLatestVersion();
