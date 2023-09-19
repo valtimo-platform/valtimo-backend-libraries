@@ -69,10 +69,10 @@ public class FormAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(FormLoaderService.class)
     public FormIoFormLoaderService formLoaderService(
-        DocumentService documentService,
-        FormDefinitionRepository formDefinitionRepository
+        FormDefinitionRepository formDefinitionRepository,
+        PrefillFormService prefillFormService
     ) {
-        return new FormIoFormLoaderService(documentService, formDefinitionRepository);
+        return new FormIoFormLoaderService(formDefinitionRepository, prefillFormService);
     }
 
     @Bean
