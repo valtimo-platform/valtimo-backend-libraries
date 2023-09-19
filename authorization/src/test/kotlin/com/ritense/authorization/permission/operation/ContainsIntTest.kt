@@ -21,13 +21,18 @@ import com.ritense.authorization.BaseIntegrationTest
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
+import com.ritense.authorization.testimpl.TestEntityActionProvider.Companion.view
 import com.ritense.authorization.testimpl.TestEntityActionProvider.Companion.view_list
 import com.ritense.authorization.testimpl.TestEntityRepository
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.test.context.support.WithMockUser
+import kotlin.test.assertEquals
 
-class ContainsIntTest() : BaseIntegrationTest() {
+class ContainsIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var repository: TestEntityRepository
@@ -35,9 +40,14 @@ class ContainsIntTest() : BaseIntegrationTest() {
     @Autowired
     lateinit var authorizationService: AuthorizationService
 
+    @AfterEach
+    fun tearDown() {
+        repository.deleteAll()
+    }
+
     @Test
-    @WithMockUser(authorities = ["TEST_ROLE"])
-    fun `should find entity where json array contains value in permission`(){
+    @WithMockUser(authorities = ["EXPRESSION_CONTAINS_ROLE"])
+    fun `should find entity where json array contains value in permission`() {
         val testEntity = TestEntity(
             TestChildEntity(listOf("one", "two", "three")),
             "henk"
@@ -55,14 +65,13 @@ class ContainsIntTest() : BaseIntegrationTest() {
 
         val entities = repository.findAll(spec)
 
-        //TODO: assert 1 result found
-        testEntity.name
-
+        assertEquals(1, entities.size)
+        assertEquals("henk", entities[0].name)
     }
 
     @Test
-    @WithMockUser(authorities = ["TEST_ROLE"])
-    fun `should not find entity where json array does not contain value in permission`(){
+    @WithMockUser(authorities = ["EXPRESSION_CONTAINS_ROLE"])
+    fun `should not find entity where json array does not contain value in permission`() {
         val testEntity = TestEntity(
             TestChildEntity(listOf("one", "three")),
             "henk"
@@ -80,7 +89,129 @@ class ContainsIntTest() : BaseIntegrationTest() {
 
         val entities = repository.findAll(spec)
 
-        //TODO: assert no results found
-        testEntity.name
+        assertEquals(0, entities.size)
+    }
+
+    @Test
+    @WithMockUser(authorities = ["EXPRESSION_CONTAINS_ROLE"])
+    fun `should have permissions for entity where json array contains value in permission`() {
+        val testEntity = TestEntity(
+            TestChildEntity(listOf("one", "two", "three")),
+            "henk"
+        )
+
+        val hasPermission = authorizationService.hasPermission(
+            EntityAuthorizationRequest(
+                TestEntity::class.java,
+                view,
+                testEntity
+            )
+        )
+
+        assertTrue(hasPermission)
+    }
+
+    @Test
+    @WithMockUser(authorities = ["EXPRESSION_CONTAINS_ROLE"])
+    fun `should not have permissions for entity where json array contains value in permission`() {
+        val testEntity = TestEntity(
+            TestChildEntity(listOf("one", "three")),
+            "henk"
+        )
+
+        val hasPermission = authorizationService.hasPermission(
+            EntityAuthorizationRequest(
+                TestEntity::class.java,
+                view,
+                testEntity
+            )
+        )
+
+        assertFalse(hasPermission)
+    }
+
+    @Test
+    @WithMockUser(authorities = ["FIELD_CONTAINS_ROLE"])
+    fun `should find entity where field list contains value in permission`() {
+        val testEntity = TestEntity(
+            name = "henk",
+            fruits = mutableListOf("peer", "strawberry", "banana")
+        )
+
+        repository.save(testEntity)
+
+        val spec = authorizationService.getAuthorizationSpecification(
+            EntityAuthorizationRequest(
+                TestEntity::class.java,
+                view_list,
+                null
+            )
+        )
+
+        val entities = repository.findAll(spec)
+
+        assertEquals(1, entities.size)
+        assertEquals("henk", entities[0].name)
+    }
+
+    @Test
+    @WithMockUser(authorities = ["FIELD_CONTAINS_ROLE"])
+    fun `should not find entity where field list does not contain value in permission`() {
+        val testEntity = TestEntity(
+            name = "henk",
+            fruits = mutableListOf("peer", "banana")
+        )
+
+        repository.save(testEntity)
+
+        val spec = authorizationService.getAuthorizationSpecification(
+            EntityAuthorizationRequest(
+                TestEntity::class.java,
+                view_list,
+                null
+            )
+        )
+
+        val entities = repository.findAll(spec)
+
+        assertEquals(0, entities.size)
+    }
+
+    @Test
+    @WithMockUser(authorities = ["FIELD_CONTAINS_ROLE"])
+    fun `should have permission for entity where field list contains value in permission`() {
+        val testEntity = TestEntity(
+            name = "henk",
+            fruits = mutableListOf("peer", "strawberry", "banana")
+        )
+
+        val hasPermission = authorizationService.hasPermission(
+            EntityAuthorizationRequest(
+                TestEntity::class.java,
+                view,
+                testEntity
+            )
+        )
+
+        assertTrue(hasPermission)
+    }
+
+    @Test
+    @WithMockUser(authorities = ["FIELD_CONTAINS_ROLE"])
+    fun `should not have permission for entity where field list does not contain value in permission`() {
+        val testEntity = TestEntity(
+            name = "henk",
+            fruits = mutableListOf("peer", "banana")
+        )
+
+        val hasPermission = authorizationService.hasPermission(
+            EntityAuthorizationRequest(
+                TestEntity::class.java,
+                view,
+                testEntity
+            )
+        )
+
+        assertFalse(hasPermission)
     }
 }

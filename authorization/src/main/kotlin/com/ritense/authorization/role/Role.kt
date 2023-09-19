@@ -30,7 +30,7 @@ data class Role(
     @Id
     @Column(name = "id")
     val id: UUID = UUID.randomUUID(),
-    @Column(name = "key", nullable = false, unique = true)
+    @Column(name = "`key`", nullable = false, unique = true)
     @field:JsonView(PermissionView.PermissionManagement::class)
     val key: String
 )

@@ -34,4 +34,23 @@
         </createTable>
     </changeSet>
 
+    <changeSet author="Ritense" id="2">
+        <createTable tableName="fruit">
+            <column name="test_entity_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Ritense" id="3">
+        <addForeignKeyConstraint baseTableName="fruit"
+                                 baseColumnNames="test_entity_id"
+                                 constraintName="fk_fruit_test_entity_id"
+                                 referencedTableName="test_entity"
+                                 referencedColumnNames="id" />
+    </changeSet>
+
 </databaseChangeLog>

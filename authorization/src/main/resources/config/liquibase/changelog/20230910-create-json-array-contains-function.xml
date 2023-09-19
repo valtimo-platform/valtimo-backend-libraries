@@ -23,7 +23,6 @@
             <dbms type="postgresql"/>
         </preConditions>
         <sqlFile path="sql/postgres-json-contains.sql"
-                 encoding="UTF-8"
                  relativeToChangelogFile="true"
                  splitStatements="false"/>
     </changeSet>

@@ -6,6 +6,7 @@
         "ROLE_UPDATE",
         "TO_REMOVE_ROLE_1",
         "TO_REMOVE_ROLE_2",
-        "TEST_ROLE"
+        "EXPRESSION_CONTAINS_ROLE",
+        "FIELD_CONTAINS_ROLE"
     ]
 }

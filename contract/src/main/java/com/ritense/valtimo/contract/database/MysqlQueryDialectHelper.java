@@ -76,7 +76,12 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
 
     @Override
     public Predicate getJsonArrayContainsExpression(CriteriaBuilder cb, Path column, String path, String value) {
-        //TODO: implement this
-        return null;
+        return cb.isTrue(cb.function(
+            "JSON_CONTAINS",
+            Boolean.class,
+            column,
+            cb.function("JSON_QUOTE", Object.class, cb.literal(value)),
+            cb.literal(path)
+        ));
     }
 }
