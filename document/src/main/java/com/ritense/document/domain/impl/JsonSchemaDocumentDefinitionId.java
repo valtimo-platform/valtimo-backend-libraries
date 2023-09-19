@@ -62,7 +62,7 @@ public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumen
 
     private void assertArgumentId(String name, long version) {
         assertArgumentNotNull(name, "name is required");
-        assertArgumentLength(name, 5, 50, "name must be between 5-50 characters");
+        assertArgumentLength(name, 1, 50, "name must be between 5-50 characters");
         assertArgumentTrue(name.matches("[A-z0-9-_.]+"), "name contains illegal character. For name: " + name);
         assertArgumentRange(version, INITIAL_VERSION, Long.MAX_VALUE, "version should be >= 1. For version: " + version);
     }

@@ -22,7 +22,6 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTru
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
@@ -40,15 +39,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import kotlin.Pair;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -75,6 +73,21 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ".";
     public static final String DISABLED_KEY = "disabled";
     public static final String PREFILL_KEY = "prefill";
+
+    public static final String DATAKEY_POINTER = "/properties/dataKey";
+
+    public static final Predicate<JsonNode> HAS_PREFILL_ENABLED = objectNode ->
+        !objectNode.has(PREFILL_KEY) || objectNode.get(PREFILL_KEY).asBoolean();
+
+    public static final Function<JsonNode, Optional<String>> GET_DATA_KEY = objectNode -> {
+        JsonNode dataKeyNode = objectNode.at(DATAKEY_POINTER);
+        return Optional.ofNullable(dataKeyNode.isTextual() ? dataKeyNode.textValue() : null);
+    };
+
+    public static final Function<JsonNode, Optional<String>> GET_KEY = objectNode -> {
+        JsonNode keyNode = objectNode.path(PROPERTY_KEY);
+        return Optional.ofNullable(keyNode.isTextual() ? keyNode.textValue() : null);
+    };
 
     @Id
     @Column(name = "id", updatable = false)
@@ -154,8 +167,8 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     @Override
     public FormIoFormDefinition preFill(final JsonNode content) {
-        FormIoFormDefinition.getInputFields(asJson()).stream()
-                .filter(this::shouldPrefillField)
+        getInputFields().stream()
+                .filter(HAS_PREFILL_ENABLED)
                 .forEach(field -> fill(field, content));
 
         return this;
@@ -163,8 +176,8 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     @Override
     public void preFill(@NotNull Map<String, ?> valueMap) {
-        FormIoFormDefinition.getInputFields(asJson()).stream()
-                .filter(this::shouldPrefillField)
+        getInputFields().stream()
+                .filter(HAS_PREFILL_ENABLED)
                 .forEach(fieldNode -> {
                     String fieldKey = getFieldKey(fieldNode);
                     Object value = valueMap.get(fieldKey);
@@ -184,18 +197,11 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     public List<String> extractProcessVarNames() {
-        return FormIoFormDefinition.getInputFields(asJson()).stream()
+        return getInputFields().stream()
                 .map(this::getProcessVar)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(ContentItem::getName)
-                .toList();
-    }
-
-    public List<String> getInputKeysForPrefill() {
-        return FormIoFormDefinition.getInputFields(asJson()).stream()
-                .filter(this::shouldPrefillField)
-                .map(this::getFieldKey)
                 .toList();
     }
 
@@ -211,8 +217,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             @Nullable Predicate<ObjectNode> predicate
     ) {
         var map = new HashMap<String, List<ExternalContentItem>>();
-        final JsonNode formDefinitionNode = asJson();
-        FormIoFormDefinition.getInputFields(formDefinitionNode)
+        getInputFields()
                 .stream()
                 .filter(field -> predicate == null || predicate.test(field))
                 .forEach(field -> getExternalFormField(field)
@@ -228,9 +233,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     public Map<String, Object> extractProcessVars(JsonNode formData) {
         final Map<String, Object> processVarFormData = new HashMap<>();
-        final JsonNode formDefinitionNode = asJson();
-        final List<ObjectNode> inputFields = FormIoFormDefinition.getInputFields(formDefinitionNode);
-        inputFields
+        getInputFields()
                 .stream()
                 .filter(this::shouldNotIgnoreField)
                 .forEach(field -> getProcessVar(field)
@@ -308,6 +311,10 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         return Collections.unmodifiableList(inputFields);
     }
 
+    public List<ObjectNode> getInputFields() {
+        return getInputFields(asJson());
+    }
+
     public static List<ObjectNode> getInputFields(JsonNode formDefinition) {
         final List<ObjectNode> inputFields = new LinkedList<>();
         List<ArrayNode> components = getComponents(formDefinition);
@@ -336,21 +343,17 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         );
     }
 
-    private boolean shouldPrefillField(JsonNode fieldNode) {
-        return !fieldNode.has(DEFAULT_VALUE_FIELD) && (
-                !fieldNode.has(PREFILL_KEY) || fieldNode.get(PREFILL_KEY).asBoolean()
-        );
-    }
-
     private void fill(ObjectNode field, JsonNode content) {
         assertArgumentNotNull(field, "field is required");
         assertArgumentNotNull(content, "content is required");
-        getContentItem(field)
+        if(GET_DATA_KEY.apply(field).isEmpty()) { // Only prefill when the properties.dataKey is not set
+            getContentItem(field)
                 .flatMap(
-                        contentItem -> getValueBy(content, contentItem.getJsonPointer())
+                    contentItem -> getValueBy(content, contentItem.getJsonPointer())
                 ).ifPresent(
-                        valueNode -> field.set(DEFAULT_VALUE_FIELD, htmlEscape(valueNode))
+                    valueNode -> field.set(DEFAULT_VALUE_FIELD, htmlEscape(valueNode))
                 );
+        }
     }
 
     private Optional<? extends ContentItem> getContentItem(ObjectNode node) {
@@ -474,7 +477,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     private String getFieldKey(JsonNode fieldNode) {
-        return fieldNode.get(PROPERTY_KEY).asText();
+        return GET_KEY.apply(fieldNode).orElseThrow();
     }
 
     private static Optional<JsonNode> getValueBy(JsonNode rootNode, JsonPointer jsonPointer) {

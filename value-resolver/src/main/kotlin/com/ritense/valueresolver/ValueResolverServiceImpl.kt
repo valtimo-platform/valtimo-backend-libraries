@@ -57,7 +57,7 @@ open class ValueResolverServiceImpl(
     override fun resolveValues(
         processInstanceId: String,
         variableScope: VariableScope,
-        requestedValues: List<String>
+        requestedValues: Collection<String>
     ): Map<String, Any> {
         return toResolverFactoryMap(requestedValues).map { (resolverFactory, requestedValues) ->
             val resolver = resolverFactory.createResolver(processInstanceId, variableScope)
@@ -107,7 +107,7 @@ open class ValueResolverServiceImpl(
      */
     override fun resolveValues(
         documentInstanceId: String,
-        requestedValues: List<String>
+        requestedValues: Collection<String>
     ): Map<String, Any> {
         return toResolverFactoryMap(requestedValues).map { (resolverFactory, requestedValues) ->
             val resolver = resolverFactory.createResolver(documentInstanceId)

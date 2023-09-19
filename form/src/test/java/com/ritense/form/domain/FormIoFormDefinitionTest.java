@@ -203,10 +203,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     public void shouldGetInputFieldsOnly() throws IOException {
         final var formDefinition = formDefinitionOf("form-example-nested-components");
 
-        JsonNode definition = formDefinition.getFormDefinition();
-        List<ObjectNode> components = FormIoFormDefinition.getInputFields(definition);
-
-        assertThat(components).hasSize(7);
+        assertThat(formDefinition.getInputFields()).hasSize(7);
     }
 
     @Test

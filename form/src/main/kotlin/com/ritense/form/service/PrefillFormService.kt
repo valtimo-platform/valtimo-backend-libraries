@@ -89,12 +89,12 @@ class PrefillFormService(
         processInstance: CamundaExecution?,
         taskInstanceId: String? = null,
     ) {
+        prefillValueResolverFields(formDefinition, document.id(), processInstance, taskInstanceId)
+
         val extendedDocumentContent = document.content().asJson() as ObjectNode
 
         val documentMetadata = buildMetaDataObject(document)
         extendedDocumentContent.set<JsonNode>("metadata", documentMetadata)
-
-        prefillValueResolverFields(formDefinition, document.id(), processInstance, taskInstanceId)
 
         prefillDataResolverFields(formDefinition, document, extendedDocumentContent)
 
@@ -111,19 +111,35 @@ class PrefillFormService(
         processInstance: CamundaExecution?,
         taskInstanceId: String?
     ) {
-        val requestedValues = formDefinition.inputKeysForPrefill.filter {
-            it.matches(Regex.fromLiteral("[a-zA-Z]+:.*"))
-                    && valueResolverService.supportsValue( it )
-        }
+        // Map input fields to Map<{input.key}, {input.properties.dataKey}>
+        val inputDataKeyMap = formDefinition.inputFields
+            .filter { FormIoFormDefinition.HAS_PREFILL_ENABLED.test(it) }
+            .mapNotNull {
+                val inputKey = FormIoFormDefinition.GET_KEY.apply(it).orElseThrow()
+                val dataKey = FormIoFormDefinition.GET_DATA_KEY.apply(it)
+                if(dataKey.isPresent) {
+                    Pair(inputKey, dataKey.get())
+                } else {
+                    null
+                }
+            }
+            .toMap()
+            .filter {valueResolverService.supportsValue( it.value ) }
 
+        // Resolve dataKeys into a Map<{dataKey}, {dataValue}>
         val valueMap = if(processInstance == null) {
-            valueResolverService.resolveValues(documentInstanceId.toString(), requestedValues)
+            valueResolverService.resolveValues(documentInstanceId.toString(), inputDataKeyMap.values)
         } else {
             val variableScope: VariableScope = taskInstanceId?.let { taskService.findTaskById(taskInstanceId) }?: processInstance
-            valueResolverService.resolveValues(processInstance.id, variableScope, requestedValues)
+            valueResolverService.resolveValues(processInstance.id, variableScope, inputDataKeyMap.values)
         }
 
-        formDefinition.preFill(valueMap)
+        // Create a Map<{input.key}, {resolvedValue}>
+        val keyValueMap = inputDataKeyMap.entries.mapNotNull { entry ->
+            valueMap[entry.value]?.let { resolvedValue -> Pair(entry.key, resolvedValue) }
+        }.toMap()
+
+        formDefinition.preFill(keyValueMap)
     }
 
     fun prefillProcessVariables(formDefinition: FormIoFormDefinition, document: Document) {
@@ -207,10 +223,8 @@ class PrefillFormService(
     }
 
     fun prePreFillTransform(formDefinition: FormIoFormDefinition, placeholders: JsonNode, source: JsonNode) {
-        val formDefinitionData = formDefinition.formDefinition
-        val inputFields = FormIoFormDefinition.getInputFields(formDefinitionData)
         val dataToPreFill = JsonNodeFactory.instance.objectNode()
-        inputFields.forEach { field ->
+        formDefinition.inputFields.forEach { field ->
             val container = field.at("/$CUSTOM_PROPERTIES/$CONTAINER_KEY").asText()
             if (container != null) {
                 val propertyName = field[FormIoFormDefinition.PROPERTY_KEY].textValue()
@@ -325,9 +339,7 @@ class PrefillFormService(
     ): JsonPatch {
         val sourceJsonPatchBuilder = JsonPatchBuilder()
         val submissionJsonPatchBuilder = JsonPatchBuilder()
-        val formDefinitionData = formDefinition.formDefinition
-        val inputFields = FormIoFormDefinition.getInputFields(formDefinitionData)
-        inputFields.forEach { field ->
+        formDefinition.inputFields.forEach { field ->
             val container = field.at("/$CUSTOM_PROPERTIES/$CONTAINER_KEY").asText()
             if (container != null
                 && submission.has(field[FormIoFormDefinition.PROPERTY_KEY].textValue())

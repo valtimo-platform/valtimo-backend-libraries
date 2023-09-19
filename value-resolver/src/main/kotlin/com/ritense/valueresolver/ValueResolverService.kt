@@ -36,7 +36,7 @@ interface ValueResolverService {
     fun resolveValues(
         processInstanceId: String,
         variableScope: VariableScope,
-        requestedValues: List<String>
+        requestedValues: Collection<String>
     ): Map<String, Any>
 
     /**
@@ -68,7 +68,7 @@ interface ValueResolverService {
      */
     fun resolveValues(
         documentInstanceId: String,
-        requestedValues: List<String>
+        requestedValues: Collection<String>
     ): Map<String, Any>
 
     /**
