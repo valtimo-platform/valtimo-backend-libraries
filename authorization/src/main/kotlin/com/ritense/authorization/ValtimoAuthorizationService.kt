@@ -140,6 +140,12 @@ class ValtimoAuthorizationService(
                     "Requesting permissions '${request.action.key}:${request.resourceType.simpleName}' for user '${request.user}' and found matching permissions: [$permissionsLogLine]"
                 logger.debug { logLine }
             }
+        } else {
+            if (request.action.key != Action.DENY) {
+                val logLine =
+                    "Ignoring authorization request for '${request.action.key}:${request.resourceType.simpleName}' for user '${request.user}'. "
+                logger.debug { logLine }
+            }
         }
     }
 
