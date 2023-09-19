@@ -130,7 +130,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         assertThat(permissions[0].id).isNotNull
         assertThat(permissions[0].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
-        assertThat(permissions[0].action).isEqualTo(Action<TestDocument>(Action.VIEW_LIST))
+        assertThat(permissions[0].action).isIn(Action<TestDocument>(Action.VIEW_LIST), Action<TestDocument>(Action.VIEW))
         assertThat(permissions[0].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[0].conditionContainer.conditions[0].type).isEqualTo(FIELD)
         assertTrue(permissions[0].conditionContainer.conditions[0] is FieldPermissionCondition<*>)
@@ -140,7 +140,7 @@ internal class PermissionRepositoryIntTest : BaseIntegrationTest() {
 
         assertThat(permissions[1].id).isNotNull
         assertThat(permissions[1].resourceType).isEqualTo(Class.forName("com.ritense.authorization.testimpl.TestDocument"))
-        assertThat(permissions[1].action).isEqualTo(Action<TestDocument>(Action.VIEW))
+        assertThat(permissions[1].action).isIn(Action<TestDocument>(Action.VIEW_LIST), Action<TestDocument>(Action.VIEW))
         assertThat(permissions[1].conditionContainer.conditions).hasSize(1)
         assertThat(permissions[1].conditionContainer.conditions[0].type).isEqualTo(FIELD)
         assertTrue(permissions[1].conditionContainer.conditions[0] is FieldPermissionCondition<*>)

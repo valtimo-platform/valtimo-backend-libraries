@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization.testimpl
-
-import com.ritense.authorization.Action
-import com.ritense.authorization.ResourceActionProvider
-
-class TestEntityActionProvider: ResourceActionProvider<TestEntity> {
-    override fun getAvailableActions(): List<Action<TestEntity>> {
-        return listOf(view, complete)
-    }
-
-    companion object {
-        val view_list = Action<TestEntity>(Action.VIEW_LIST)
-        val view = Action<TestEntity>(Action.VIEW)
-        val complete = Action<TestEntity>(Action.COMPLETE)
-    }
-}
+CREATE FUNCTION jsonb_contains_filter(a jsonb, b text)
+    RETURNS BOOLEAN AS $$
+        SELECT CASE
+       WHEN a ? b THEN TRUE
+       ELSE FALSE
+       END;
+    $$
+LANGUAGE SQL IMMUTABLE STRICT;

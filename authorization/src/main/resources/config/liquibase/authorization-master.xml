@@ -26,5 +26,6 @@
     <property name="jsonType" value="JSON" dbms="postgresql"/>
 
     <include file="changelog/20230424-create-authorization-table.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20230910-create-json-array-contains-function.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
