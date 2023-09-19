@@ -489,8 +489,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                Action.deny(),
-                null
+                Action.deny()
             )
         );
     }
