@@ -71,14 +71,11 @@ class FormFlowStepTypeFormHandler(
         val document = AuthorizationContext.runWithoutAuthorization { documentService.get(documentId) }
         val documentContent = document.content().asJson() as ObjectNode
 
-        if (taskInstanceId == null) {
-            prefillFormService.prefillProcessVariables(formDefinition, document)
-        }
-
-        prefillFormService.prefillDataResolverFields(formDefinition, document, documentContent)
-
-        if (taskInstanceId != null) {
-            prefillFormService.prefillTaskVariables(formDefinition, taskInstanceId, documentContent)
-        }
+        prefillFormService.prefillFormDefinition(
+            formDefinition,
+            document,
+            null,
+            taskInstanceId
+        )
     }
 }

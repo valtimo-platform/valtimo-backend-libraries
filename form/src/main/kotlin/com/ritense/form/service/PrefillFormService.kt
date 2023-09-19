@@ -40,7 +40,6 @@ import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import java.util.UUID
-import org.camunda.bpm.engine.delegate.VariableScope
 
 class PrefillFormService(
     private val documentService: DocumentService,
@@ -83,7 +82,7 @@ class PrefillFormService(
         return formDefinition
     }
 
-    private fun prefillFormDefinition(
+    fun prefillFormDefinition(
         formDefinition: FormIoFormDefinition,
         document: Document,
         processInstance: CamundaExecution?,
@@ -127,11 +126,13 @@ class PrefillFormService(
             .filter {valueResolverService.supportsValue( it.value ) }
 
         // Resolve dataKeys into a Map<{dataKey}, {dataValue}>
-        val valueMap = if(processInstance == null) {
-            valueResolverService.resolveValues(documentInstanceId.toString(), inputDataKeyMap.values)
+        val valueMap = if(taskInstanceId != null) {
+            val task = taskService.findTaskById(taskInstanceId)
+            valueResolverService.resolveValues(task.getProcessInstanceId(), task, inputDataKeyMap.values)
+        } else if(processInstance != null) {
+            valueResolverService.resolveValues(processInstance.id, processInstance, inputDataKeyMap.values)
         } else {
-            val variableScope: VariableScope = taskInstanceId?.let { taskService.findTaskById(taskInstanceId) }?: processInstance
-            valueResolverService.resolveValues(processInstance.id, variableScope, inputDataKeyMap.values)
+            valueResolverService.resolveValues(documentInstanceId.toString(), inputDataKeyMap.values)
         }
 
         // Create a Map<{input.key}, {resolvedValue}>
