@@ -35,7 +35,7 @@ class CamundaIdentityLinkMapperIntTest @Autowired constructor(
     @WithMockUser(authorities = ["IDENTITY_LINK_ROLE"])
     fun `should have access to task with groupId`() {
         val instance = runtimeService.startProcessInstanceByKey(
-            "identity-link-mapper-test-process.bpmn",
+            "identity-link-mapper-test-process",
             UUID.randomUUID().toString()
         )
 
@@ -48,7 +48,7 @@ class CamundaIdentityLinkMapperIntTest @Autowired constructor(
     @WithMockUser(authorities = ["SOME_OTHER_ROLE"])
     fun `should not have access to task with groupId`() {
         val instance = runtimeService.startProcessInstanceByKey(
-            "identity-link-mapper-test-process.bpmn",
+            "identity-link-mapper-test-process",
             UUID.randomUUID().toString()
         )
 
