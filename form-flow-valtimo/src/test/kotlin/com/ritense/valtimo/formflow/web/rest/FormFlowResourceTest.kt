@@ -92,7 +92,7 @@ class FormFlowResourceTest : BaseTest() {
             .perform(
                 MockMvcRequestBuilders
                     .get(
-                        "/api/v1/form-flow/{instanceId}",
+                        "/api/v1/form-flow/instance/{instanceId}",
                         formFlowInstanceId.id.toString()
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -116,7 +116,7 @@ class FormFlowResourceTest : BaseTest() {
             .perform(
                 MockMvcRequestBuilders
                     .get(
-                        "/api/v1/form-flow/{instanceId}",
+                        "/api/v1/form-flow/instance/{instanceId}",
                         UUID.randomUUID().toString()
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -129,7 +129,7 @@ class FormFlowResourceTest : BaseTest() {
     fun `should complete step`() {
         whenever(formFlowInstance.complete(any(), any())).thenReturn(stepInstance)
 
-        mockMvc.perform(post("/api/v1/form-flow/{flowId}/step/{stepId}", formFlowInstance.id.id, formFlowInstance.getCurrentStep().id.id))
+        mockMvc.perform(post("/api/v1/form-flow/instance/{flowId}/step/instance/{stepId}", formFlowInstance.id.id, formFlowInstance.getCurrentStep().id.id))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(formFlowInstance.id.id.toString()))
@@ -146,7 +146,7 @@ class FormFlowResourceTest : BaseTest() {
     fun `should navigate to previous step`() {
         whenever(formFlowInstance.back()).thenReturn(stepInstance)
 
-        mockMvc.perform(post("/api/v1/form-flow/{flowId}/back", formFlowInstance.id.id))
+        mockMvc.perform(post("/api/v1/form-flow/instance/{flowId}/back", formFlowInstance.id.id))
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(formFlowInstance.id.id.toString()))
@@ -164,7 +164,7 @@ class FormFlowResourceTest : BaseTest() {
         whenever(formFlowInstance.back()).thenReturn(stepInstance)
 
         mockMvc.perform(
-            post("/api/v1/form-flow/{flowId}/back", formFlowInstance.id.id)
+            post("/api/v1/form-flow/instance/{flowId}/back", formFlowInstance.id.id)
                 .content("{\"step1\":\"A\"}")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         )
@@ -178,7 +178,7 @@ class FormFlowResourceTest : BaseTest() {
     @Test
     fun `should save submission data`() {
         mockMvc.perform(
-            post("/api/v1/form-flow/{flowId}/save", formFlowInstance.id.id)
+            post("/api/v1/form-flow/instance/{flowId}/save", formFlowInstance.id.id)
                 .content("{\"step1\":\"A\"}")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         )

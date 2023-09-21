@@ -17,6 +17,7 @@
 package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.request.GetDocumentCandidateUsersRequest;
 import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
@@ -49,4 +50,5 @@ public interface DocumentResource {
 
     ResponseEntity<List<NamedUser>> getCandidateUsers(UUID documentId);
 
+    ResponseEntity<List<NamedUser>> getCandidateUsersForMultipleDocuments(GetDocumentCandidateUsersRequest request);
 }

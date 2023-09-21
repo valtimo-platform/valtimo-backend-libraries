@@ -16,31 +16,30 @@
 
 package com.ritense.objectenapi.security
 
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
+import org.springframework.http.HttpMethod.PATCH
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
-import org.springframework.http.HttpMethod.DELETE
-import org.springframework.http.HttpMethod.PATCH
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 
-class ObjectenApiHttpSecurityConfigurer: HttpSecurityConfigurer {
+class ObjectenApiHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/objecttype").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/object").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/object/form").hasAuthority(USER)
-                .antMatchers(POST, "/api/v1/object").hasAuthority(USER)
-                .antMatchers(PUT, "/api/v1/object").hasAuthority(USER)
-                .antMatchers(DELETE, "/api/v1/object").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/object/form").hasAuthority(USER)
-                .antMatchers(PATCH, "/api/v1/object").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/object").hasAuthority(USER)
-        } catch(e: Exception) {
+                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/objecttype").authenticated()
+                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/object").authenticated()
+                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/object/form").authenticated()
+                .antMatchers(POST, "/api/v1/object").authenticated()
+                .antMatchers(PUT, "/api/v1/object").authenticated()
+                .antMatchers(DELETE, "/api/v1/object").authenticated()
+                .antMatchers(GET, "/api/v1/object/form").authenticated()
+                .antMatchers(PATCH, "/api/v1/object").authenticated()
+                .antMatchers(GET, "/api/v1/object").authenticated()
+        } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
     }

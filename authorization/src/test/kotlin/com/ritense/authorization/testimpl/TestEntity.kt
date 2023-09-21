@@ -16,7 +16,35 @@
 
 package com.ritense.authorization.testimpl
 
+import org.hibernate.annotations.Type
+import java.util.UUID
+import javax.persistence.CollectionTable
+import javax.persistence.Column
+import javax.persistence.ElementCollection
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.Table
+
+@Entity
+@Table(name = "test_entity")
 data class TestEntity(
+
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "child", columnDefinition = "json")
     val child: TestChildEntity? = null,
-    val name: String = "test"
+
+    @Column(name = "name", columnDefinition = "varchar(100)")
+    val name: String = "test",
+
+    @ElementCollection
+    @CollectionTable(
+        name = "fruit",
+        joinColumns = [JoinColumn(name = "test_entity_id", referencedColumnName = "id")]
+    )
+    @Column(name = "name")
+    val fruits: MutableList<String> = mutableListOf(),
+
+    @Id
+    val id: UUID = UUID.randomUUID(),
 )

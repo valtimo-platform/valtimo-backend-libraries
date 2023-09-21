@@ -44,6 +44,4 @@ public interface DocumentRepository<T extends Document>
         String createdBy,
         Pageable pageable
     );
-
-    Long countByDocumentDefinitionIdNameAndAssigneeId(String definitionName, String assigneeId);
 }

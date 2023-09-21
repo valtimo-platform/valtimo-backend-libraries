@@ -19,6 +19,7 @@ package com.ritense.authorization.permission.condition
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 import com.ritense.authorization.jackson.ComparableDeserializer
@@ -47,15 +48,16 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
     val clazz: Class<V>
 ) : ReflectingPermissionCondition(PermissionConditionType.EXPRESSION) {
     override fun <E : Any> isValid(entity: E): Boolean {
-        val jsonValue = findEntityFieldValue(entity, field)
-        if (jsonValue !is String) {
-            return value == null && jsonValue == null
-        }
-
+        val jsonValue = toJsonString(entity)
+            ?: return value == null
         val pathValue = try {
-            JsonPath.read<V?>(jsonValue, path)
+            JsonPath.read<Any?>(jsonValue, path)
         } catch (e: PathNotFoundException) {
             null
+        }
+
+        if (pathValue != null && pathValue !is Collection<*> && pathValue.javaClass != clazz) {
+            return false
         }
 
         return evaluateExpression(
@@ -73,6 +75,17 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
     ): Predicate {
         val path: Path<Any>? = createDatabaseObjectPath(field, root)
 
+        // we need an exception for json contains
+        if (operator == PermissionConditionOperator.CONTAINS) {
+            if (Collection::class.java.isAssignableFrom(clazz)) {
+                return queryDialectHelper.getJsonArrayContainsExpression(
+                    criteriaBuilder, path, this.path, value.toString()
+                )
+            } else {
+                throw IllegalStateException("PBAC: Unsupported 'contains' for clazz '$clazz'")
+            }
+        }
+
         return operator.toPredicate<Comparable<Any>>(
             criteriaBuilder,
             queryDialectHelper.getJsonValueExpression(criteriaBuilder, path, this.path, clazz),
@@ -80,7 +93,20 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
         )
     }
 
-    private fun evaluateExpression(pathValue: V?): Boolean {
+    private fun toJsonString(entity: Any): String? {
+        val fieldValue = findEntityFieldValue(entity, field) ?: return null
+        return if (fieldValue is String) {
+            fieldValue
+        } else {
+            try {
+                jacksonObjectMapper().writeValueAsString(fieldValue) ?: return null
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    private fun evaluateExpression(pathValue: Any?): Boolean {
         return operator.evaluate(
             pathValue,
             PermissionConditionValueResolver.resolveValue(value)

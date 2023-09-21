@@ -153,8 +153,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             .getAuthorizationSpecification(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    VIEW_LIST,
-                    null
+                    VIEW_LIST
                 ),
                 null
             );
@@ -168,15 +167,13 @@ public class JsonSchemaDocumentService implements DocumentService {
         var spec = authorizationService.getAuthorizationSpecification(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                VIEW_LIST,
-                null
+                VIEW_LIST
             ),
             null
         ).or(authorizationService.getAuthorizationSpecification(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
-                VIEW,
-                null
+                VIEW
             ),
             null
         ));
@@ -297,8 +294,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             .requirePermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
-                    Action.deny(),
-                    null
+                    Action.deny()
                 )
             );
 
@@ -591,6 +587,37 @@ public class JsonSchemaDocumentService implements DocumentService {
                 JsonSchemaDocument.class,
                 ASSIGNABLE,
                 document
+            )
+        ).stream().map(Role::getKey).collect(Collectors.toSet());
+
+        return userManagementService.findNamedUserByRoles(authorizedRoles);
+    }
+
+    @Override
+    public List<NamedUser> getCandidateUsers(List<Document.Id> documentIds) {
+        List<JsonSchemaDocument> documents = runWithoutAuthorization(() ->
+            documentRepository.findAllById(documentIds)
+        );
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                ASSIGN,
+                documents
+            )
+        );
+        if (documents.size() != documentIds.size()) {
+            var missingDocumentIds = documentIds.stream()
+                .filter(documentId -> documents.stream().noneMatch(document -> document.id().equals(documentId)))
+                .map(Document.Id::toString)
+                .collect(Collectors.joining(", "));
+            throw new DocumentNotFoundException("Document(s) not found with id(s) " + missingDocumentIds);
+        }
+
+        Set<String> authorizedRoles = authorizationService.getAuthorizedRoles(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                ASSIGNABLE,
+                documents
             )
         ).stream().map(Role::getKey).collect(Collectors.toSet());
 

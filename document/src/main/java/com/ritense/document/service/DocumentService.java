@@ -71,4 +71,6 @@ public interface DocumentService {
     void unassignUserFromDocument(UUID documentId);
 
     List<NamedUser> getCandidateUsers(Document.Id documentId);
+
+    List<NamedUser> getCandidateUsers(List<Document.Id> documentIds);
 }

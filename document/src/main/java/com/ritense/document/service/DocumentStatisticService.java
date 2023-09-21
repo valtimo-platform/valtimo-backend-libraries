@@ -16,33 +16,50 @@
 
 package com.ritense.document.service;
 
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
-import com.ritense.document.domain.search.AdvancedSearchRequest;
-import com.ritense.document.domain.search.AssigneeFilter;
+import com.ritense.document.repository.DocumentRepository;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+
 import java.util.List;
+
+import static com.ritense.document.repository.impl.JsonSchemaDocumentSpecificationHelper.byDocumentDefinitionName;
+import static com.ritense.document.repository.impl.JsonSchemaDocumentSpecificationHelper.byUnassigned;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 
 public class DocumentStatisticService {
 
     private final DocumentDefinitionService documentDefinitionService;
-    private final DocumentSearchService documentSearchService;
+    private final DocumentRepository documentRepository;
+    private final AuthorizationService authorizationService;
 
     public DocumentStatisticService(
         DocumentDefinitionService documentDefinitionService,
-        DocumentSearchService documentSearchService) {
+        DocumentRepository documentRepository,
+        AuthorizationService authorizationService) {
         this.documentDefinitionService = documentDefinitionService;
-        this.documentSearchService = documentSearchService;
+        this.documentRepository = documentRepository;
+        this.authorizationService = authorizationService;
     }
 
     public List<UnassignedDocumentCountDto> getUnassignedDocumentCountDtos() {
+        final var authSpec = authorizationService.getAuthorizationSpecification(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                VIEW_LIST
+            ),
+            null
+        );
         return documentDefinitionService.findAll(Pageable.unpaged())
-            .map(documentDefinition -> getUnassignedDocumentCountDto(documentDefinition.id().name()))
+            .map(documentDefinition -> getUnassignedDocumentCountDto(documentDefinition.id().name(), authSpec))
             .toList();
     }
 
-    private UnassignedDocumentCountDto getUnassignedDocumentCountDto(String documentDefinitionName) {
-        long count = documentSearchService
-            .count(documentDefinitionName, new AdvancedSearchRequest().assigneeFilter(AssigneeFilter.OPEN));
+    private UnassignedDocumentCountDto getUnassignedDocumentCountDto(String documentDefinitionName, Specification authSpec) {
+        long count = documentRepository.count(authSpec.and(byDocumentDefinitionName(documentDefinitionName).and(byUnassigned())));
         return new UnassignedDocumentCountDto(documentDefinitionName, count);
     }
 

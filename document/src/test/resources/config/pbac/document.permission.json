@@ -1,0 +1,30 @@
+{
+    "changesetId": "documents-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "assignable",
+            "roleKey": "ROLE_USER",
+            "conditions": [
+                {
+                    "type": "expression",
+                    "field": "content.content",
+                    "path": "$.street",
+                    "operator": "!=",
+                    "value": "Admin street",
+                    "clazz": "java.lang.String"
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "assign",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "assignable",
+            "roleKey": "ROLE_ADMIN"
+        }
+    ]
+}

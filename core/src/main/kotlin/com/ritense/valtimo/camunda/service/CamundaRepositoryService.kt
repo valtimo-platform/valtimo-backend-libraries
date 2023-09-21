@@ -85,8 +85,7 @@ open class CamundaRepositoryService(
         authorizationService.requirePermission(
             EntityAuthorizationRequest(
                 CamundaProcessDefinition::class.java,
-                Action.deny(),
-                null
+                Action.deny()
             )
         )
     }
