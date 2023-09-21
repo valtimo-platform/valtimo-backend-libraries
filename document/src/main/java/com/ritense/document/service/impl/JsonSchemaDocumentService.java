@@ -669,27 +669,25 @@ public class JsonSchemaDocumentService implements DocumentService {
                 document.setAssignee(assigneeId, assignee.getFullName());
             });
         } else {
-            documents.forEach(document -> {
-                authorizationService
-                    .requirePermission(
-                        new EntityAuthorizationRequest<>(
-                            JsonSchemaDocument.class,
-                            ASSIGN,
-                            document
-                        )
-                    );
-                authorizationService
-                    .requirePermission(
-                        new DelegateUserEntityAuthorizationRequest<>(
-                            JsonSchemaDocument.class,
-                            ASSIGNABLE,
-                            assignee.getEmail(),
-                            document
-                        )
-                    );
+            authorizationService
+                .requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        ASSIGN,
+                        documents
+                    )
+                );
+            authorizationService
+                .requirePermission(
+                    new DelegateUserEntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        ASSIGNABLE,
+                        assignee.getEmail(),
+                        documents
+                    )
+                );
 
-                document.setAssignee(assigneeId, assignee.getFullName());
-            });
+            documents.forEach(document -> document.setAssignee(assigneeId, assignee.getFullName()));
         }
         documentRepository.saveAll(documents);
 
