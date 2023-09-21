@@ -24,30 +24,26 @@ import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Root
 
-class CamundaTaskIdentityLinkMapper() : AuthorizationEntityMapper<CamundaIdentityLink, CamundaTask> {
-    override fun mapRelated(entity: CamundaIdentityLink): List<CamundaTask> {
-        return entity.task?.let { listOf(it) } ?: listOf()
+class CamundaTaskIdentityLinkMapper() : AuthorizationEntityMapper<CamundaTask, CamundaIdentityLink> {
+    override fun mapRelated(entity: CamundaTask): List<CamundaIdentityLink> {
+        return entity.identityLinks
     }
 
     override fun mapQuery(
-        root: Root<CamundaIdentityLink>,
+        root: Root<CamundaTask>,
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder
-    ): AuthorizationEntityMapperResult<CamundaTask> {
-        val taskRoot: Root<CamundaTask> = query.from(CamundaTask::class.java)
-
-        val groupList = query.groupList.toMutableList()
-        groupList.add(root.get<CamundaTask>("task"))
-        query.groupBy(groupList)
+    ): AuthorizationEntityMapperResult<CamundaIdentityLink> {
+        val ilRoot: Root<CamundaIdentityLink> = query.from(CamundaIdentityLink::class.java)
 
         return AuthorizationEntityMapperResult(
-            taskRoot,
+            ilRoot,
             query,
-            criteriaBuilder.equal(root.get<CamundaTask>("task").get<String>("id"), taskRoot.get<String>("id"))
+            criteriaBuilder.equal(root.get<String>("id"), ilRoot.get<CamundaTask>("task").get<String>("id"))
         )
     }
 
     override fun supports(fromClass: Class<*>, toClass: Class<*>): Boolean {
-        return fromClass == CamundaIdentityLink::class.java && toClass == CamundaTask::class.java
+        return fromClass == CamundaTask::class.java && toClass == CamundaIdentityLink::class.java
     }
 }

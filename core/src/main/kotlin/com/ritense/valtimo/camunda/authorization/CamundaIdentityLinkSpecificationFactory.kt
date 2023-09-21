@@ -44,6 +44,6 @@ class CamundaIdentityLinkSpecificationFactory(
     }
 
     override fun canCreate(request: AuthorizationRequest<*>, permissions: List<Permission>): Boolean {
-        return CamundaTask::class.java == request.resourceType
+        return CamundaIdentityLink::class.java == request.resourceType
     }
 }
