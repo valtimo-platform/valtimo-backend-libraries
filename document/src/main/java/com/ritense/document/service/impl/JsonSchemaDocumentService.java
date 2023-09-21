@@ -625,10 +625,11 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     public void assignUserToDocuments(@NotNull List<UUID> documentIds, @NotNull String assigneeId) {
-        List<JsonSchemaDocument> documents = runWithoutAuthorization(
-            () -> documentIds.stream().map(
-                documentId -> getDocumentBy(JsonSchemaDocumentId.existingId(documentId))
-            ).collect(Collectors.toList())
+        var documentIdObjects = documentIds.stream()
+            .map(documentId -> (Document.Id) JsonSchemaDocumentId.existingId(documentId))
+            .toList();
+        List<JsonSchemaDocument> documents = runWithoutAuthorization(() ->
+            documentRepository.findAllById(documentIdObjects)
         );
 
         var assignee = runWithoutAuthorization(() -> userManagementService.findById(assigneeId));
