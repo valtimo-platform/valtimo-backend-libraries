@@ -45,7 +45,7 @@ data class ContainerPermissionCondition<TO : Any>(
         val mapper = findMapper(entity::class.java) as AuthorizationEntityMapper<FROM, TO>
         val relatedEntities = mapper.mapRelated(entity)
         val spec = findChildSpecification()
-        return relatedEntities.any {relatedEntity -> //TODO: entity is not used
+        return relatedEntities.any { _ -> //TODO: entity is not used
             spec.isAuthorized()
         }
     }
@@ -72,7 +72,7 @@ data class ContainerPermissionCondition<TO : Any>(
 
     private fun findChildSpecification(): AuthorizationSpecification<TO> {
         return AuthorizationServiceHolder.currentInstance.getAuthorizationSpecification(
-            EntityAuthorizationRequest(this.resourceType, Action(Action.IGNORE), null), //TODO: not sure if we need to pass in the child entity here or null
+            EntityAuthorizationRequest(this.resourceType, Action(Action.IGNORE)),
             listOf(
                 Permission(
                     resourceType = resourceType,

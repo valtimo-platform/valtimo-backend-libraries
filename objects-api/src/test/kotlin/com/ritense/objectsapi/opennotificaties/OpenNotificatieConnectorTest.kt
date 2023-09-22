@@ -22,6 +22,10 @@ import com.ritense.objectsapi.domain.Abonnement
 import com.ritense.objectsapi.domain.AbonnementLink
 import com.ritense.objectsapi.domain.Kanaal
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
+import java.util.Optional
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
@@ -30,10 +34,6 @@ import org.mockito.Mockito.never
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
-import java.util.Optional
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class OpenNotificatieConnectorTest : BaseTest() {
     lateinit var openNotificatieProperties: OpenNotificatieProperties
@@ -87,7 +87,7 @@ class OpenNotificatieConnectorTest : BaseTest() {
 
         assertEquals(connectorId, argumentCaptor.value.connectorId)
         assertEquals(abonnementId, argumentCaptor.value.abonnementId)
-        assertTrue(argumentCaptor.value.key.length > 0)
+        assertTrue(argumentCaptor.value.key.isNotEmpty())
     }
 
     @Test

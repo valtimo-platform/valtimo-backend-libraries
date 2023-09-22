@@ -16,9 +16,7 @@
 
 package com.ritense.valtimo.contract.authentication.model;
 
-import java.io.Serializable;
-
-public class Profile implements Serializable {
+public class Profile {
 
     private String firstName;
     private String lastName;

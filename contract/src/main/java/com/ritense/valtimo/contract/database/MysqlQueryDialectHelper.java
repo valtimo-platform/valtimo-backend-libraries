@@ -35,9 +35,11 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
             cb.literal(path)
         );
         if (CharSequence.class.isAssignableFrom(type) || TemporalAccessor.class.isAssignableFrom(type)) {
-            return cb.function("JSON_UNQUOTE", type, jsonValue); // Strings or timestamps extracted from JSON have additional quotes ("") around them in MySQL 5.7.
+            // Strings or timestamps extracted from JSON have additional quotes ("") around them in MySQL 5.7.
+            return cb.function("JSON_UNQUOTE", type, jsonValue);
         } else if (Boolean.class.isAssignableFrom(type)) {
-            return cb.function("IF", type, jsonValue, cb.literal(1), cb.literal(0)); // Booleans extracted from JSON can be true/false while MySQL only accepts 1/0.
+            // Booleans extracted from JSON can be true/false while MySQL only accepts 1/0.
+            return cb.function("IF", type, jsonValue, cb.literal(1), cb.literal(0));
         } else {
             return jsonValue.as(type);
         }
@@ -70,5 +72,16 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
                 cb.function(LOWER_CASE_FUNCTION, String.class, cb.literal(path))
             )
         );
+    }
+
+    @Override
+    public Predicate getJsonArrayContainsExpression(CriteriaBuilder cb, Path column, String path, String value) {
+        return cb.isTrue(cb.function(
+            "JSON_CONTAINS",
+            Boolean.class,
+            column,
+            cb.function("JSON_QUOTE", Object.class, cb.literal(value)),
+            cb.literal(path)
+        ));
     }
 }

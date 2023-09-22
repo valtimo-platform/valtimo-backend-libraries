@@ -19,7 +19,7 @@ package com.ritense.form.security.config;
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -36,8 +36,8 @@ public class FormFileHttpSecurityConfigurer implements HttpSecurityConfigurer {
             http
                 .authorizeRequests()
                 .antMatchers(GET, "/api/v1/form-file").permitAll()
-                .antMatchers(POST, "/api/v1/form-file/upload").hasAuthority(USER)
-                .antMatchers(DELETE, "/api/v1/form-file").hasAuthority(USER);
+                .antMatchers(POST, "/api/v1/form-file/upload").authenticated()
+                .antMatchers(DELETE, "/api/v1/form-file").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

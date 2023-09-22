@@ -54,11 +54,9 @@ import org.camunda.bpm.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
@@ -154,22 +152,25 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentInstance> findProcessDocumentInstances(Document.Id documentId) {
-        var document = documentService.findBy(documentId).get();
+        var document = documentService.findBy(documentId).orElseThrow();
 
         authorizationService.requirePermission(
-            new EntityAuthorizationRequest(
+            new EntityAuthorizationRequest<>(
                 JsonSchemaDocument.class,
                 JsonSchemaDocumentActionProvider.VIEW,
-                document
+                (JsonSchemaDocument) document
             )
         );
 
         var processes = processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(documentId);
         for (var process : processes) {
-            var camundaProcess = runtimeService.createProcessInstanceQuery()
-                .processInstanceId(process.getId().processInstanceId().toString())
+            CamundaProcessJsonSchemaDocumentInstanceId id = process.getId();
+            if (id != null) {
+                var camundaProcess = runtimeService.createProcessInstanceQuery()
+                    .processInstanceId(id.processInstanceId().toString())
                     .singleResult();
-            process.setActive(camundaProcess != null && !camundaProcess.isEnded());
+                process.setActive(camundaProcess != null && !camundaProcess.isEnded());
+            }
         }
         return processes;
     }
@@ -302,10 +303,9 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private <T> void denyAuthorization(Class<T> clazz) {
         authorizationService
             .requirePermission(
-                new EntityAuthorizationRequest<T>(
+                new EntityAuthorizationRequest(
                     clazz,
-                    Action.deny(),
-                    null
+                    Action.deny()
                 )
             );
     }

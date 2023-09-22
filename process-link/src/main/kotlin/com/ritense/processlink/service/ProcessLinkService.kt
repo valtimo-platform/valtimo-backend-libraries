@@ -25,6 +25,8 @@ import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
@@ -35,10 +37,11 @@ import kotlin.jvm.optionals.getOrElse
 open class ProcessLinkService(
     private val processLinkRepository: ProcessLinkRepository,
     private val processLinkMappers: List<ProcessLinkMapper>,
-    private val processLinkTypes: List<SupportedProcessLinkTypeHandler>
+    private val processLinkTypes: List<SupportedProcessLinkTypeHandler>,
+    private val camundaRepositoryService: CamundaRepositoryService,
 ) {
 
-    fun <T: ProcessLink> getProcessLink(processLinkId: UUID, clazz: Class<T> ): T {
+    fun <T : ProcessLink> getProcessLink(processLinkId: UUID, clazz: Class<T>): T {
         val processLink = processLinkRepository.findByIdOrNull(processLinkId)
             ?: throw ProcessLinkNotFoundException("For id $processLinkId")
 
@@ -51,6 +54,11 @@ open class ProcessLinkService(
 
     fun getProcessLinks(processDefinitionId: String, activityId: String): List<ProcessLink> {
         return processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinitionId, activityId)
+    }
+
+    fun getProcessLinksByProcessDefinitionKey(processDefinitionKey: String): List<ProcessLink> {
+        return camundaRepositoryService.findProcessDefinitions(byKey(processDefinitionKey))
+            .flatMap { processLinkRepository.findByProcessDefinitionId(it.id) }
     }
 
     fun getProcessLinks(
@@ -71,7 +79,7 @@ open class ProcessLinkService(
 
     @Transactional
     @Throws(ProcessLinkExistsException::class)
-    fun createProcessLink(createRequest: ProcessLinkCreateRequestDto) {
+    fun createProcessLink(createRequest: ProcessLinkCreateRequestDto): ProcessLink {
         val mapper = getProcessLinkMapper(createRequest.processLinkType)
         val newProcessLink = mapper.toNewProcessLink(createRequest)
 
@@ -87,11 +95,11 @@ open class ProcessLinkService(
             )
         }
 
-        processLinkRepository.save(mapper.toNewProcessLink(createRequest))
+        return processLinkRepository.save(mapper.toNewProcessLink(createRequest))
     }
 
     @Transactional
-    fun updateProcessLink(updateRequest: ProcessLinkUpdateRequestDto) {
+    fun updateProcessLink(updateRequest: ProcessLinkUpdateRequestDto): ProcessLink {
         val processLinkToUpdate = processLinkRepository.findById(updateRequest.id)
             .getOrElse { throw IllegalStateException("No ProcessLink found with id ${updateRequest.id}") }
         check(updateRequest.processLinkType == processLinkToUpdate.processLinkType) {
@@ -99,7 +107,7 @@ open class ProcessLinkService(
         }
         val mapper = getProcessLinkMapper(processLinkToUpdate.processLinkType)
         val processLinkUpdated = mapper.toUpdatedProcessLink(processLinkToUpdate, updateRequest)
-        processLinkRepository.save(processLinkUpdated)
+        return processLinkRepository.save(processLinkUpdated)
     }
 
     @Transactional

@@ -77,7 +77,7 @@ enum class PermissionConditionOperator(@JsonValue val asText: String) {
                 }
 
             CONTAINS ->
-                criteriaBuilder.literal(value).`in`(expression as Expression<Collection<T>>)
+                criteriaBuilder.isMember(value, expression as Expression<Collection<T>>)
         }
     }
 

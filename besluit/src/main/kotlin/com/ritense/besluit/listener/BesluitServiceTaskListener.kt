@@ -28,17 +28,17 @@ import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import java.net.URI
+import java.util.UUID
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.annotation.Transactional
-import java.net.URI
-import java.util.UUID
 
 open class BesluitServiceTaskListener(
-    private val zaakTypeLinkService: ZaakTypeLinkService,
-    private val documentService: DocumentService,
+    zaakTypeLinkService: ZaakTypeLinkService,
+    documentService: DocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
-    private val repositoryService: RepositoryService,
+    repositoryService: RepositoryService,
     private val connectorService: ConnectorService,
     private val openZaakService: OpenZaakService,
     private val besluitDocumentRequired: Boolean,

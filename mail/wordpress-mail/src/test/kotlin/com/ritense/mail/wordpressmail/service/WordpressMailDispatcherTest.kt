@@ -37,7 +37,7 @@ class WordpressMailDispatcherTest : BaseTest() {
     internal fun setUp() {
         connectorService = mock(ConnectorService::class.java)
         wordpressMailMailDispatcher = WordpressMailDispatcher(connectorService)
-        wordpressMailConnector = mock(WordpressMailConnector::class.java);
+        wordpressMailConnector = mock(WordpressMailConnector::class.java)
 
         whenever(connectorService.loadByClassName(WordpressMailConnector::class.java))
             .thenReturn(wordpressMailConnector)

@@ -35,6 +35,7 @@ import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSe
 import com.ritense.valtimo.helper.CamundaCollectionHelper;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.service.CamundaTaskService;
+import com.ritense.valtimo.web.rest.error.CamundaExceptionTranslator;
 import org.camunda.bpm.application.impl.event.ProcessApplicationEventListenerPlugin;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -143,5 +144,11 @@ public class CamundaAutoConfiguration {
         final ApplicationEventPublisher applicationEventPublisher
     ) {
         return new ProcessDefinitionDeployedEventPublisher(applicationEventPublisher);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaExceptionTranslator.class)
+    public CamundaExceptionTranslator camundaExceptionTranslator() {
+        return new CamundaExceptionTranslator();
     }
 }

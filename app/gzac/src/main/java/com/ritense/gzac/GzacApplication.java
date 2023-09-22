@@ -33,11 +33,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-@SpringBootApplication(scanBasePackages = {"com.ritense.valtimo", "com.ritense.gzac"})
+@SpringBootApplication
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 @EnableProcessApplication

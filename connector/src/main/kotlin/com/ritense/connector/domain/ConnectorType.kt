@@ -22,7 +22,6 @@ import java.util.Locale
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
-import javax.persistence.Index
 import javax.persistence.Table
 import javax.validation.constraints.NotBlank
 import org.hibernate.annotations.Type

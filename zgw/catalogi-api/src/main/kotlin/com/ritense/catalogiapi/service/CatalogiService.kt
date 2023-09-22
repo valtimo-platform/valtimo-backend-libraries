@@ -16,7 +16,6 @@
 
 package com.ritense.catalogiapi.service
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.catalogiapi.domain.Besluittype
 import com.ritense.catalogiapi.domain.Informatieobjecttype
@@ -25,8 +24,8 @@ import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
 import com.ritense.plugin.service.PluginService
-import mu.KotlinLogging
 import java.net.URI
+import mu.KotlinLogging
 
 class CatalogiService(
     val zaaktypeUrlProvider: ZaaktypeUrlProvider,

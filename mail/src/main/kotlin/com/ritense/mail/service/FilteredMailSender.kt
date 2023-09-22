@@ -23,7 +23,6 @@ import com.ritense.valtimo.contract.mail.model.MailMessageStatus
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import java.util.Optional
-import kotlin.streams.toList
 
 /**
  * This class is the replacement of the previous MailSender.class
@@ -56,7 +55,7 @@ class FilteredMailSender(
     }
 
     private fun applyFilters(rawMailMessage: RawMailMessage): Optional<RawMailMessage> {
-        var filteredRawMailMessage = rawMailMessage;
+        var filteredRawMailMessage = rawMailMessage
         val filters = prioritizedFilters()
         filters.forEach {
             val filteredMailMessageOptional = it.doFilter(filteredRawMailMessage)
@@ -70,7 +69,7 @@ class FilteredMailSender(
     }
 
     private fun applyFilters(templatedMailMessage: TemplatedMailMessage): Optional<TemplatedMailMessage> {
-        var filteredTemplatedMailMessage = templatedMailMessage;
+        var filteredTemplatedMailMessage = templatedMailMessage
         val filters = prioritizedFilters()
         filters.forEach {
             val filteredMailMessageOptional = it.doFilter(filteredTemplatedMailMessage)

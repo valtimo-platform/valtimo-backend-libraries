@@ -38,22 +38,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.test.context.support.WithMockUser;
-
 import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
-
 import static com.ritense.document.domain.search.DatabaseSearchType.BETWEEN;
 import static com.ritense.document.domain.search.DatabaseSearchType.EQUAL;
 import static com.ritense.document.domain.search.DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO;
 import static com.ritense.document.domain.search.DatabaseSearchType.IN;
 import static com.ritense.document.domain.search.DatabaseSearchType.LESS_THAN_OR_EQUAL_TO;
 import static com.ritense.document.domain.search.DatabaseSearchType.LIKE;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

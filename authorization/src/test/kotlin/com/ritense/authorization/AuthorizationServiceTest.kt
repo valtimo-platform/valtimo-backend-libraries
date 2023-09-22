@@ -179,7 +179,7 @@ class AuthorizationServiceTest {
         whenever(factory2.canCreate(any(), any())).thenReturn(true)
         whenever(factory3.canCreate(any(), any())).thenReturn(true)
 
-        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), null)
+        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW))
         val authorizationSpecification = mock<AuthorizationSpecification<String>>()
         whenever(factory2.create(eq(context), any())).thenReturn(authorizationSpecification)
         val result = authorizationService.getAuthorizationSpecification(context,
@@ -205,7 +205,7 @@ class AuthorizationServiceTest {
         whenever(factory1.canCreate(any(), any())).thenReturn(true)
         whenever(factory2.canCreate(any(), any())).thenReturn(true)
 
-        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), null)
+        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW))
         val result = AuthorizationContext.runWithoutAuthorization {
             authorizationService.getAuthorizationSpecification(context)
         }
@@ -220,7 +220,7 @@ class AuthorizationServiceTest {
         whenever(factory1.canCreate(any(), any())).thenReturn(true)
         whenever(factory2.canCreate(any(), any())).thenReturn(true)
 
-        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.DENY), null)
+        val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.DENY))
         val result = authorizationService.getAuthorizationSpecification(context)
         assertEquals(true, result is DenyAuthorizationSpecification)
 
@@ -231,7 +231,7 @@ class AuthorizationServiceTest {
     @Test
     fun `should throw an error when no correct AuthorizationSpecification can be found`() {
         assertThrows<AccessDeniedException> {
-            val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW), null)
+            val context = EntityAuthorizationRequest(String::class.java, action = Action(Action.VIEW))
             authorizationService.getAuthorizationSpecification(context,
                 listOf(
                     Permission(
@@ -282,19 +282,19 @@ class AuthorizationServiceTest {
     }
 }
 
-class StringTestActionProvider(): ResourceActionProvider<String> {
+class StringTestActionProvider : ResourceActionProvider<String> {
     override fun getAvailableActions(): List<Action<String>> {
         return listOf(Action(Action.VIEW))
     }
 }
 
-class OtherStringTestActionProvider(): ResourceActionProvider<String> {
+class OtherStringTestActionProvider : ResourceActionProvider<String> {
     override fun getAvailableActions(): List<Action<String>> {
         return listOf(Action(Action.CLAIM))
     }
 }
 
-class IntTestActionProvider(): ResourceActionProvider<Int> {
+class IntTestActionProvider : ResourceActionProvider<Int> {
     override fun getAvailableActions(): List<Action<Int>> {
         return listOf(Action(Action.MODIFY))
     }

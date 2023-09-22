@@ -26,7 +26,7 @@ import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
     title = "Test plugin",
     description = "This is a test plugin only available in tests"
 )
-class TestPlugin() {
+class TestPlugin {
     @PluginAction(
         key = "test-action",
         title = "Test action",

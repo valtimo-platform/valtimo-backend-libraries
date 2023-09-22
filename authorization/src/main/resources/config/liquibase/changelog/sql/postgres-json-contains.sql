@@ -14,25 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.accessandentitlement.domain.event;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.ritense.valtimo.accessandentitlement.domain.Money;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-public class AuthorityCreatedEvent extends AuthorityEvent {
-
-    @JsonCreator
-    public AuthorityCreatedEvent(
-        UUID id,
-        String origin,
-        LocalDateTime occurredOn,
-        String user,
-        String name,
-        Boolean systemAuthority
-    ) {
-        super(id, origin, occurredOn, user, name, systemAuthority);
-    }
-
-}
+CREATE FUNCTION jsonb_contains_filter(a jsonb, b text)
+    RETURNS BOOLEAN AS $$
+        SELECT CASE
+       WHEN a ? b THEN TRUE
+       ELSE FALSE
+       END;
+    $$
+LANGUAGE SQL IMMUTABLE STRICT;

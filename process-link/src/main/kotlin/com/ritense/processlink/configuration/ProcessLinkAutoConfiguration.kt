@@ -65,9 +65,10 @@ class ProcessLinkAutoConfiguration {
     fun processLinkService(
         processLinkRepository: ProcessLinkRepository,
         processLinkMappers: List<ProcessLinkMapper>,
-        processLinkTypes: List<SupportedProcessLinkTypeHandler>
+        processLinkTypes: List<SupportedProcessLinkTypeHandler>,
+        camundaRepositoryService: CamundaRepositoryService
     ): ProcessLinkService {
-        return ProcessLinkService(processLinkRepository, processLinkMappers, processLinkTypes)
+        return ProcessLinkService(processLinkRepository, processLinkMappers, processLinkTypes, camundaRepositoryService)
     }
 
     @Bean

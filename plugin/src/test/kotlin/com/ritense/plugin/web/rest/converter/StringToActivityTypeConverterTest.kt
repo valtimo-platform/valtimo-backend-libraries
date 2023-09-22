@@ -28,7 +28,7 @@ internal class StringToActivityTypeConverterTest {
         assertEquals(ActivityType.SERVICE_TASK_START, ActivityType.fromValue("bpmn:ServiceTask:start"))
     }
 
-    @Test()
+    @Test
     fun `should return error on invalid value`() {
         assertThrows<IllegalStateException> { ActivityType.fromValue("invalidValue") }
     }

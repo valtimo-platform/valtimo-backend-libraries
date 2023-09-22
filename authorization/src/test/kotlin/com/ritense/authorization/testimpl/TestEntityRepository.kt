@@ -14,29 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.accessandentitlement.domain;
+package com.ritense.authorization.testimpl
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import java.util.UUID
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-
-public class AuthorityRequest {
-
-    @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9-_]+$")
-    private String name;
-
-    public AuthorityRequest(@JsonProperty("name") String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-}
+interface TestEntityRepository: JpaRepository<TestEntity, UUID>, JpaSpecificationExecutor<TestEntity>

@@ -19,11 +19,9 @@ package com.ritense.valtimo.contract.audit;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
-
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
@@ -71,14 +69,13 @@ public abstract class AuditMetaData {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof AuditMetaData)) {
+        if (!(o instanceof AuditMetaData that)) {
             return false;
         }
-        AuditMetaData that = (AuditMetaData) o;
-        return getId().equals(that.getId()) &&
-            getOrigin().equals(that.getOrigin()) &&
-            getOccurredOn().equals(that.getOccurredOn()) &&
-            getUser().equals(that.getUser());
+        return getId().equals(that.getId())
+            && getOrigin().equals(that.getOrigin())
+            && getOccurredOn().equals(that.getOccurredOn())
+            && getUser().equals(that.getUser());
     }
 
     @Override

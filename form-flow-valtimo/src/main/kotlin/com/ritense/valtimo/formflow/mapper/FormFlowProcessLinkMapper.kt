@@ -22,11 +22,13 @@ import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
+import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import com.ritense.valtimo.formflow.processlink.dto.FormFlowProcessLinkDeployDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
+import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkExportResponseDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkResponseDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkUpdateRequestDto
 import java.util.UUID
@@ -68,6 +70,15 @@ class FormFlowProcessLinkMapper(
             formFlowDefinitionId = deployDto.formFlowDefinitionId
         )
 
+    }
+
+    override fun toProcessLinkExportResponseDto(processLink: ProcessLink): ProcessLinkExportResponseDto {
+        processLink as FormFlowProcessLink
+        return FormFlowProcessLinkExportResponseDto(
+            activityId = processLink.activityId,
+            activityType = processLink.activityType,
+            formFlowDefinitionId = processLink.formFlowDefinitionId
+        )
     }
 
     override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink {

@@ -89,8 +89,7 @@ public class AuditSearchServiceImpl implements AuditSearchService {
         authorizationService.requirePermission(
             new EntityAuthorizationRequest<>(
                 AuditRecord.class,
-                Action.deny(),
-                null
+                Action.deny()
             )
         );
     }

@@ -142,7 +142,7 @@
             <message key="name.invalidPattern" value="Parameter name ''{0}'' must match pattern ''{1}''."/>
         </module>
         <module name="CatchParameterName">
-            <property name="format" value="config"/>
+            <property name="format" value="^(e|t|ex|[a-z][a-z][a-zA-Z]+)$"/>
             <message key="name.invalidPattern" value="Catch parameter name ''{0}'' must match pattern ''{1}''."/>
         </module>
         <module name="LocalVariableName">

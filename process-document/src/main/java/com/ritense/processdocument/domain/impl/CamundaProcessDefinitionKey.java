@@ -19,12 +19,13 @@ package com.ritense.processdocument.domain.impl;
 import com.ritense.processdocument.domain.ProcessDefinitionKey;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 import java.util.Objects;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
-public class CamundaProcessDefinitionKey implements ProcessDefinitionKey {
+public class CamundaProcessDefinitionKey implements ProcessDefinitionKey, Serializable {
 
     @Column(name = "camunda_process_definition_key", columnDefinition = "VARCHAR(255)")
     private String key;
@@ -48,10 +49,9 @@ public class CamundaProcessDefinitionKey implements ProcessDefinitionKey {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof CamundaProcessDefinitionKey)) {
+        if (!(o instanceof CamundaProcessDefinitionKey that)) {
             return false;
         }
-        CamundaProcessDefinitionKey that = (CamundaProcessDefinitionKey) o;
         return key.equals(that.key);
     }
 

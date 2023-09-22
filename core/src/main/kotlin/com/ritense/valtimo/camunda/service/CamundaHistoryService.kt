@@ -58,8 +58,7 @@ open class CamundaHistoryService(
         authorizationService.requirePermission(
             EntityAuthorizationRequest(
                 CamundaProcessDefinition::class.java,
-                deny(),
-                null
+                deny()
             )
         )
     }

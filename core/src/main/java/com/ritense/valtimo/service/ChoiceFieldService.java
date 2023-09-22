@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -64,7 +63,7 @@ public class ChoiceFieldService {
     public ChoiceField update(ChoiceFieldUpdateRequestDTO choiceFieldUpdateRequestDTO) {
         logger.debug("Request to update ChoiceField : {}", choiceFieldUpdateRequestDTO);
 
-        ChoiceField choiceField = choiceFieldRepository.findById(choiceFieldUpdateRequestDTO.getId()).get();
+        ChoiceField choiceField = choiceFieldRepository.findById(choiceFieldUpdateRequestDTO.getId()).orElseThrow();
         choiceField.setTitle(choiceFieldUpdateRequestDTO.getTitle());
         choiceField.setKeyName(choiceFieldUpdateRequestDTO.getKeyName());
 

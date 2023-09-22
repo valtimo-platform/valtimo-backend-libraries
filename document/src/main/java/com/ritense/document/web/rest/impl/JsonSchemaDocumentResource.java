@@ -18,6 +18,7 @@ package com.ritense.document.web.rest.impl;
 
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
+import com.ritense.document.domain.impl.request.GetDocumentCandidateUsersRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
@@ -45,6 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -145,6 +147,18 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         @PathVariable(name = "document-id") UUID documentId
     ) {
         List<NamedUser> users = documentService.getCandidateUsers(JsonSchemaDocumentId.existingId(documentId));
+        return ResponseEntity.ok(users);
+    }
+
+    @Override
+    @PostMapping("/v1/document/candidate-user")
+    public ResponseEntity<List<NamedUser>> getCandidateUsersForMultipleDocuments(
+        @RequestBody @Valid GetDocumentCandidateUsersRequest request
+    ) {
+        var documentIds = request.documentIds().stream()
+            .map(documentId -> (Document.Id) JsonSchemaDocumentId.existingId(documentId))
+            .collect(Collectors.toList());
+        var users = documentService.getCandidateUsers(documentIds);
         return ResponseEntity.ok(users);
     }
 

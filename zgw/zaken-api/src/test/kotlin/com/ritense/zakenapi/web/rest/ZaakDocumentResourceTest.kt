@@ -20,6 +20,11 @@ import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.domain.RelatedFileDto
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zgw.Rsin
+import java.net.URI
+import java.nio.charset.StandardCharsets
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.UUID
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,12 +39,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.net.URI
-import java.net.URL
-import java.nio.charset.StandardCharsets
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.UUID
 
 class ZaakDocumentResourceTest : BaseIntegrationTest() {
 
@@ -81,7 +80,7 @@ class ZaakDocumentResourceTest : BaseIntegrationTest() {
             .andExpect(jsonPath("$.[0].pluginConfigurationId").value(relatedFile.pluginConfigurationId.toString()))
             .andExpect(jsonPath("$.[0].fileName").value(relatedFile.fileName))
             .andExpect(jsonPath("$.[0].sizeInBytes").value(relatedFile.sizeInBytes))
-            .andExpect(jsonPath("$.[0].createdOn").value(relatedFile.createdOn.toString()))
+            .andExpect(jsonPath("$.[0].createdOn").value("2023-01-01T12:10:01.000Z"))
             .andExpect(jsonPath("$.[0].createdBy").value(relatedFile.createdBy))
             .andExpect(jsonPath("$.[0].fileId").value(relatedFile.fileId.toString()))
     }

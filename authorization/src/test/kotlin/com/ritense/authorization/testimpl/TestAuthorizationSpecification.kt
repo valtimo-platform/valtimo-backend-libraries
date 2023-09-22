@@ -19,6 +19,7 @@ package com.ritense.authorization.testimpl
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
+import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
@@ -27,13 +28,28 @@ import javax.persistence.criteria.Root
 class TestAuthorizationSpecification(
         authContext: AuthorizationRequest<TestEntity>,
         permissions: List<Permission>,
+        val queryDialectHelper: QueryDialectHelper
 ): AuthorizationSpecification<TestEntity>(authContext, permissions) {
     override fun toPredicate(
         root: Root<TestEntity>,
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
-        return criteriaBuilder.isTrue(root.isNotNull)
+        val predicates = permissions.stream()
+            .filter { permission: Permission ->
+                TestEntity::class.java == permission.resourceType &&
+                    authRequest.action == permission.action
+            }
+            .map { permission: Permission ->
+                permission.toPredicate(
+                    root,
+                    query,
+                    criteriaBuilder,
+                    authRequest.resourceType,
+                    queryDialectHelper
+                )
+            }.toList()
+        return combinePredicates(criteriaBuilder, predicates)
     }
 
     override fun identifierToEntity(identifier: String): TestEntity {

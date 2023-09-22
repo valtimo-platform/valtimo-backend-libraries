@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.accessandentitlement.repository;
+package com.ritense.processlink.domain
 
-import com.ritense.valtimo.accessandentitlement.domain.Authority;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.fasterxml.jackson.annotation.JsonTypeName
+import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
+import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 
-@Repository
-public interface AuthorityRepository extends JpaRepository<Authority, String> {
+@JsonTypeName(PROCESS_LINK_TYPE_TEST)
+data class CustomProcessLinkExportResponseDto(
+    override val activityId: String,
+    override val activityType: ActivityTypeWithEventName,
+    val someValue: String = "test"
+) : ProcessLinkExportResponseDto {
+    override val processLinkType: String
+        get() = PROCESS_LINK_TYPE_TEST
 }

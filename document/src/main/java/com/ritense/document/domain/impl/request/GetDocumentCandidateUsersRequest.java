@@ -14,25 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.accessandentitlement.domain.event;
+package com.ritense.document.domain.impl.request;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.ritense.valtimo.accessandentitlement.domain.Money;
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.List;
 import java.util.UUID;
 
-public class AuthorityDeletedEvent extends AuthorityEvent {
-
-    @JsonCreator
-    public AuthorityDeletedEvent(
-        UUID id,
-        String origin,
-        LocalDateTime occurredOn,
-        String user,
-        String name,
-        Boolean systemAuthority
-    ) {
-        super(id, origin, occurredOn, user, name, systemAuthority);
-    }
-
+public record GetDocumentCandidateUsersRequest(@JsonProperty List<UUID> documentIds) {
 }

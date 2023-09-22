@@ -26,9 +26,9 @@ import com.ritense.objectsapi.domain.ProductAanvraag
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagConnector.Companion.PRODUCT_AANVRAGEN_CONNECTOR_NAME
 import com.ritense.objectsapi.service.ObjectsApiConnector
-import mu.KotlinLogging
 import java.net.URI
 import java.util.UUID
+import mu.KotlinLogging
 
 @ConnectorType(name = PRODUCT_AANVRAGEN_CONNECTOR_NAME)
 class ProductAanvraagConnector(
@@ -55,7 +55,7 @@ class ProductAanvraagConnector(
 
     fun getTypeMapping(type: String): ProductAanvraagTypeMapping {
         val typeMapping =
-            productAanvraagProperties.typeMapping.filter { it.productAanvraagType.equals(type) }.firstOrNull()
+            productAanvraagProperties.typeMapping.firstOrNull { it.productAanvraagType == type }
         if (typeMapping == null) {
             logger.error { "Requested productaanvraag type mapping $type could not be found. " +
                 "This should be set in the productaanvraag connnector properties" }

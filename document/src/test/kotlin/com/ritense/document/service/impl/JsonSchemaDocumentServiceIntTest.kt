@@ -19,18 +19,15 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.BaseIntegrationTest
+import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.JsonSchemaDocumentActionProvider
-import com.ritense.document.service.result.CreateDocumentResult
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.NamedUser
-import java.util.UUID
-import javax.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
@@ -39,24 +36,32 @@ import org.mockito.Mockito
 import org.mockito.Mockito.never
 import org.mockito.kotlin.whenever
 import org.springframework.security.test.context.support.WithMockUser
+import java.util.UUID
+import javax.transaction.Transactional
 
 @Tag("integration")
 @Transactional
 internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
     lateinit var definition: JsonSchemaDocumentDefinition
-    lateinit var originalDocument: CreateDocumentResult
+    lateinit var originalDocument: Document
+    lateinit var ashaMiller: NamedUser
+    lateinit var jamesVance: NamedUser
     @BeforeEach
     fun beforeEach() {
         definition = definition()
-        val content = JsonDocumentContent("{\"street\": \"Funenpark\"}")
-        originalDocument = runWithoutAuthorization {
-            documentService.createDocument(
-                NewDocumentRequest(
-                    definition.id().name(),
-                    content.asJson()
-                )
-            )
-        }
+        originalDocument = createDocument("""{"street": "Funenpark"}""")
+
+        ashaMiller = NamedUser("1", "Asha", "Miller")
+        jamesVance = NamedUser("2", "James ", "Vance")
+
+        whenever(userManagementService.findNamedUserByRoles(setOf(ADMIN, FULL_ACCESS_ROLE)))
+            .thenReturn(listOf(ashaMiller))
+
+        whenever(userManagementService.findNamedUserByRoles(setOf(USER, ADMIN, FULL_ACCESS_ROLE)))
+            .thenReturn(listOf(ashaMiller, jamesVance))
+
+        whenever(userManagementService.findNamedUserByRoles(setOf(USER)))
+            .thenReturn(listOf(ashaMiller, jamesVance))
     }
 
     @Test
@@ -84,14 +89,42 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         permissionRepository.deleteAll()
         permissionRepository.saveAllAndFlush(permissions)
 
-        val user = Mockito.mock(NamedUser::class.java)
-        whenever(userManagementService.findNamedUserByRoles(setOf(userRole.key)))
-            .thenReturn(listOf(user))
+        val candidateUsers = documentService.getCandidateUsers(originalDocument.id())
 
-        val candidateUsers = documentService.getCandidateUsers(originalDocument.resultingDocument().get().id())
-
-        assertThat(candidateUsers).contains(user)
+        assertThat(candidateUsers).contains(ashaMiller)
         Mockito.verify(userManagementService, never()).findByRole(ADMIN)
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = [ADMIN])
+    fun `should get all candidate users for 'public' documents`() {
+
+        val candidateUsers = documentService.getCandidateUsers(listOf(originalDocument.id()))
+
+        assertThat(candidateUsers).contains(jamesVance)
+        assertThat(candidateUsers).contains(ashaMiller)
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = [ADMIN])
+    fun `should get admin candidate users for multiple documents`() {
+        val document = createDocument("""{"street": "Admin street"}""")
+
+        val candidateUsers = documentService.getCandidateUsers(listOf(originalDocument.id(), document.id()))
+
+        assertThat(candidateUsers).doesNotContain(jamesVance)
+        assertThat(candidateUsers).contains(ashaMiller)
+    }
+
+    private fun createDocument(content: String): Document {
+        return runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    definition().id().name(),
+                    JsonDocumentContent(content).asJson()
+                )
+            )
+        }.resultingDocument().orElseThrow()
     }
 
     companion object {

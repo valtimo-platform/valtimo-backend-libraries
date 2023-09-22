@@ -16,15 +16,31 @@
 
 package com.ritense.authorization
 
+import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.runApplication
+import org.springframework.context.annotation.Bean
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
+import javax.sql.DataSource
 
-@SpringBootApplication(
-    //scanBasePackageClasses = [LiquibaseRunnerAutoConfiguration::class, HibernateJsonMapperConfiguration::class]
-)
+@SpringBootApplication
+@EntityScan("com.ritense.authorization.testimpl")
 class TestApplication {
 
     fun main(args: Array<String>) {
         runApplication<TestApplication>(*args)
+    }
+
+    // set up database for test entity
+    @Order(Ordered.HIGHEST_PRECEDENCE + 1)
+    @Bean
+    @ConditionalOnClass(DataSource::class)
+    @ConditionalOnMissingBean(name = ["authorizationLiquibaseTestChangeLogLocation"])
+    fun authorizationLiquibaseTestChangeLogLocation(): LiquibaseMasterChangeLogLocation {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/authorization-test-master.xml")
     }
 }

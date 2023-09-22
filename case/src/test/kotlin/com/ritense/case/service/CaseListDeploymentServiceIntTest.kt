@@ -17,13 +17,15 @@
 package com.ritense.case.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.service.CaseListDeploymentService.Companion.CASE_LIST_DEFINITIONS_PATH
 import com.ritense.case.service.CaseListDeploymentService.Companion.CASE_LIST_SCHEMA_PATH
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
@@ -32,9 +34,6 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.Resource
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
     @Autowired

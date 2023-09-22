@@ -109,6 +109,6 @@ class DocumentenService(
     companion object {
         val logger = KotlinLogging.logger {}
 
-        val DEFAULT_AUTEUR_NAME = "Valtimo"
+        const val DEFAULT_AUTEUR_NAME = "Valtimo"
     }
 }

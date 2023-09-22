@@ -19,7 +19,7 @@ package com.ritense.form.security.config;
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+
 import static org.springframework.http.HttpMethod.GET;
 
 public class FormHttpSecurityConfigurer implements HttpSecurityConfigurer {
@@ -32,9 +32,9 @@ public class FormHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/form").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/form/{formDefinitionName}").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/form/{formDefinitionName}/document/{documentId}").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/form").authenticated()
+                .antMatchers(GET, "/api/v1/form/{formDefinitionName}").authenticated()
+                .antMatchers(GET, "/api/v1/form/{formDefinitionName}/document/{documentId}").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

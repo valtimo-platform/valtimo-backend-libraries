@@ -1,7 +1,5 @@
 package com.ritense.exact.service
 
-import com.fasterxml.jackson.core.TreeNode
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
@@ -14,9 +12,10 @@ import com.ritense.exact.service.request.ExactExchangeRequest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
+import java.time.Duration
+import java.time.LocalDateTime
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
-import org.apache.coyote.http11.Constants.a
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -31,8 +30,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.web.reactive.function.client.WebClient
-import java.time.Duration
-import java.time.LocalDateTime
 
 @TestInstance(Lifecycle.PER_CLASS)
 internal class ExactServiceTest {
@@ -54,8 +51,8 @@ internal class ExactServiceTest {
 
     @BeforeAll
     fun setUpAll() {
-        mockWebServer = MockWebServer();
-        mockWebServer.start();
+        mockWebServer = MockWebServer()
+        mockWebServer.start()
     }
 
     @AfterAll
@@ -89,9 +86,9 @@ internal class ExactServiceTest {
 
         assertEquals("AccessToken", response.accessToken)
         assertEquals("RefreshToken", response.refreshToken)
-        val diffInSeconds = Duration.between(LocalDateTime.now(), response.accessTokenExpiresOn).seconds;
+        val diffInSeconds = Duration.between(LocalDateTime.now(), response.accessTokenExpiresOn).seconds
         assertTrue(diffInSeconds in 599..601)
-        val diffInDays = Duration.between(LocalDateTime.now(), response.refreshTokenExpiresOn).toDays();
+        val diffInDays = Duration.between(LocalDateTime.now(), response.refreshTokenExpiresOn).toDays()
         assertTrue(diffInDays in 29..31)
     }
 
@@ -182,7 +179,7 @@ internal class ExactServiceTest {
         whenever(pluginConfiguration.properties).thenReturn(objectNode)
         whenever(objectNode.get(eq("clientId"))).thenReturn(TextNode("ClientId"))
 
-        var configuration = exactService.getPluginConfiguration(plugin)
+        val configuration = exactService.getPluginConfiguration(plugin)
 
         assertEquals(pluginConfiguration, configuration)
     }

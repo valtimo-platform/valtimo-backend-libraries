@@ -18,8 +18,6 @@ package com.ritense.plugin
 
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
-import com.ritense.plugin.annotation.PluginActionProperty
-import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
 
 @Plugin(
@@ -27,7 +25,7 @@ import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
     title = "Test category plugin",
     description = "This is a test plugin used to verify category plugin framework functionality"
 )
-class TestCategoryPlugin(): TestPluginCategory {
+class TestCategoryPlugin : TestPluginCategory {
     @PluginAction(
         key = "test-category action",
         title = "Test category action",

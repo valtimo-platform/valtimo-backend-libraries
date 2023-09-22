@@ -16,13 +16,18 @@
 
 package com.ritense.authorization.testimpl
 
+import com.ritense.valtimo.contract.database.QueryDialectHelper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
 class TestAuthorizationAutoConfiguration {
     @Bean
-    fun testAuthorizationSpecificationFactory() = TestAuthorizationSpecificationFactory()
+    fun testAuthorizationSpecificationFactory(
+        queryDialectHelper: QueryDialectHelper
+    ) = TestAuthorizationSpecificationFactory(
+        queryDialectHelper
+    )
 
     @Bean
     fun relatedTestEntitySpecificationFactory() = RelatedTestEntitySpecificationFactory()

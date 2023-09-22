@@ -19,7 +19,6 @@ package com.ritense.valtimo.formflow.processlink.dto
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName
-import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM_FLOW
 
 @JsonTypeName(PROCESS_LINK_TYPE_FORM_FLOW)
