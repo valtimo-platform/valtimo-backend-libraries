@@ -1,0 +1,61 @@
+{
+    "changesetId": "testentity-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.authorization.testimpl.TestEntity",
+            "action": "view_list",
+            "roleKey": "EXPRESSION_CONTAINS_ROLE",
+            "conditions": [
+                {
+                    "type": "expression",
+                    "field": "child",
+                    "path": "$.property",
+                    "operator": "contains",
+                    "value": "two",
+                    "clazz": "java.util.Collection"
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.authorization.testimpl.TestEntity",
+            "action": "view",
+            "roleKey": "EXPRESSION_CONTAINS_ROLE",
+            "conditions": [
+                {
+                    "type": "expression",
+                    "field": "child",
+                    "path": "$.property",
+                    "operator": "contains",
+                    "value": "two",
+                    "clazz": "java.util.Collection"
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.authorization.testimpl.TestEntity",
+            "action": "view_list",
+            "roleKey": "FIELD_CONTAINS_ROLE",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "fruits",
+                    "operator": "contains",
+                    "value": "strawberry"
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.authorization.testimpl.TestEntity",
+            "action": "view",
+            "roleKey": "FIELD_CONTAINS_ROLE",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "fruits",
+                    "operator": "contains",
+                    "value": "strawberry"
+                }
+            ]
+        }
+    ]
+}

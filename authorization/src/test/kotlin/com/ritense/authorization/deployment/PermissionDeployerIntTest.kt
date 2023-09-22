@@ -53,9 +53,9 @@ internal class PermissionDeployerIntTest : BaseIntegrationTest() {
     @Test
     fun `should deploy permission from resource folder`() {
 
-        val permissions = permissionRepository.findAll()
+        val permissions = permissionRepository.findAllByRoleKeyInOrderByRoleKeyAscResourceTypeAsc(listOf("ROLE_USER"))
 
-        assertThat(permissions).hasSize(2)
+        assertThat(permissions).hasSize(1)
         assertThat(permissions[0].id).isNotNull()
         assertThat(permissions[0].resourceType).isEqualTo(TestDocument::class.java)
         assertThat(permissions[0].action).isEqualTo(Action<Any>(VIEW))

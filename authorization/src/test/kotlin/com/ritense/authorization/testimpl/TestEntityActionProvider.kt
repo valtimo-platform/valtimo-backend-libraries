@@ -25,6 +25,7 @@ class TestEntityActionProvider: ResourceActionProvider<TestEntity> {
     }
 
     companion object {
+        val view_list = Action<TestEntity>(Action.VIEW_LIST)
         val view = Action<TestEntity>(Action.VIEW)
         val complete = Action<TestEntity>(Action.COMPLETE)
     }

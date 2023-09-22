@@ -19,6 +19,7 @@ package com.ritense.authorization.permission.condition
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.authorization.permission.condition.PermissionConditionOperator.CONTAINS
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
@@ -99,6 +100,44 @@ class ExpressionPermissionConditionTest {
         val condition = conditionTemplate.copy(value = null)
         val result = condition.isValid(entity)
         assertEquals(true, result)
+    }
+
+    @Test
+    fun `should pass validation for CONTAINS operation`() {
+        val conditionTemplate = ExpressionPermissionCondition(
+            field = "child.property",
+            path = "value",
+            operator = CONTAINS,
+            value = "myValue",
+            clazz = String::class.java
+        )
+        val entity = TestEntity(TestChildEntity("""
+            {
+                "value": ["myValue","otherValue"]
+            }
+        """.trimIndent()))
+
+        val result = conditionTemplate.isValid(entity)
+        assertEquals(true, result)
+    }
+
+    @Test
+    fun `should fail validation for CONTAINS operation when value is not found`() {
+        val conditionTemplate = ExpressionPermissionCondition(
+            field = "child.property",
+            path = "value",
+            operator = CONTAINS,
+            value = "myValue",
+            clazz = String::class.java
+        )
+        val entity = TestEntity(TestChildEntity("""
+            {
+                "value": ["someValue","otherValue"]
+            }
+        """.trimIndent()))
+
+        val result = conditionTemplate.isValid(entity)
+        assertEquals(false, result)
     }
 
     @Test

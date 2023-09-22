@@ -41,6 +41,7 @@ include(
     "form-flow",
     "form-flow-valtimo",
     "form-link",
+    "gradle:cve-report",
     "gradle:license-report",
     "haalcentraal",
     "haalcentraal:haalcentraal-brp",

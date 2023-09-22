@@ -18,6 +18,7 @@ package com.ritense.valtimo.contract.database;
 
 import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
@@ -43,6 +44,8 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
                 .when(jsonValue.as(String.class).in("\"\""), cb.nullLiteral(type))
                 .otherwise(cb.trim('"', jsonValue.as(String.class)))
                 .as(type);
+        } else if (Collection.class.isAssignableFrom(type)) {
+            throw new UnsupportedOperationException("Failed to query '" + jsonPath + "'. Unsupported type '" + type + "'.");
         } else {
             return jsonValue.as(type);
         }
@@ -73,6 +76,23 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
                 getValueForPathText(cb, column, path)
             ),
             "%" + value.toLowerCase() + "%"
+        );
+    }
+
+    @Override
+    public Predicate getJsonArrayContainsExpression(CriteriaBuilder cb, Path column, String path, String value) {
+        return cb.isTrue(
+            cb.function(
+                "jsonb_contains_filter",
+                Boolean.class,
+                cb.function(
+                    "jsonb_path_query_first",
+                    Object.class,
+                    column,
+                    cb.function("jsonpath", String.class, cb.literal(path))
+                ),
+                cb.literal(value)
+            )
         );
     }
 

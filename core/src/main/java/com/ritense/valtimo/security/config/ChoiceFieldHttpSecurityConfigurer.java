@@ -19,8 +19,8 @@ package com.ritense.valtimo.security.config;
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -37,18 +37,18 @@ public class ChoiceFieldHttpSecurityConfigurer implements HttpSecurityConfigurer
                     "/api/v1/choice-fields",
                     "/api/v1/choice-fields/{id}",
                     "/api/v1/choice-fields/name/{name}"
-                ).hasAuthority(USER)
+                ).authenticated()
                 .antMatchers(POST, "/api/v1/choice-fields").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/v1/choice-fields").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/v1/choice-fields/{id}").hasAuthority(ADMIN)
                 //choice-field-values
-                .antMatchers(GET, "/api/v1/choice-field-values").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/choice-field-values").authenticated()
                 .antMatchers(POST, "/api/v1/choice-field-values").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/v1/choice-field-values").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/choice-field-values/{id}").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/choice-field-values/{id}").authenticated()
                 .antMatchers(DELETE, "/api/v1/choice-field-values/{id}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/choice-field-values/choice-field/{choicefield_name}/value/{value}").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/choice-field-values/{choice_field_name}/values").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/choice-field-values/choice-field/{choicefield_name}/value/{value}").authenticated()
+                .antMatchers(GET, "/api/v1/choice-field-values/{choice_field_name}/values").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

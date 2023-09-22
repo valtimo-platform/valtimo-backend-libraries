@@ -32,8 +32,7 @@ class TestBean(
         authorizationService.requirePermission(
             EntityAuthorizationRequest(
                 TestEntity::class.java,
-                Action.deny(),
-                null
+                Action.deny()
             )
         )
     }

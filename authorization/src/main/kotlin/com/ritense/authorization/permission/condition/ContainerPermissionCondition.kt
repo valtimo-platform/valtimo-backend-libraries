@@ -72,7 +72,7 @@ data class ContainerPermissionCondition<TO : Any>(
 
     private fun findChildSpecification(): AuthorizationSpecification<TO> {
         return AuthorizationServiceHolder.currentInstance.getAuthorizationSpecification(
-            EntityAuthorizationRequest(this.resourceType, Action(Action.IGNORE), null), //TODO: not sure if we need to pass in the child entity here or null
+            EntityAuthorizationRequest(this.resourceType, Action(Action.IGNORE)),
             listOf(
                 Permission(
                     resourceType = resourceType,
