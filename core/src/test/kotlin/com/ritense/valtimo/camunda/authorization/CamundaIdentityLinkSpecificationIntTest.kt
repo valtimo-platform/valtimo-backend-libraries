@@ -26,11 +26,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
-import org.springframework.security.access.AccessDeniedException
 
+@Transactional
 class CamundaIdentityLinkSpecificationIntTest @Autowired constructor(
     private val taskService: CamundaTaskService,
     private val authorizationService: AuthorizationService
@@ -62,7 +63,6 @@ class CamundaIdentityLinkSpecificationIntTest @Autowired constructor(
         assertThat(taskCount).isEqualTo(0)
     }
 
-    @Transactional
     @Test
     @WithMockUser(authorities = ["IDENTITY_LINK_ROLE"])
     fun `should have view access to task with groupId`() {
@@ -80,7 +80,6 @@ class CamundaIdentityLinkSpecificationIntTest @Autowired constructor(
         )
     }
 
-    @Transactional
     @Test
     @WithMockUser(authorities = ["SOME_OTHER_ROLE"])
     fun `should not have view access to task with groupId`() {
