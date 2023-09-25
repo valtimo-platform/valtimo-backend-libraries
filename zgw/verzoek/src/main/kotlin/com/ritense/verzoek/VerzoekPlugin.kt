@@ -41,9 +41,6 @@ class VerzoekPlugin(
     @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)
     lateinit var notificatiesApiPluginConfiguration: NotificatiesApiPlugin
 
-    @PluginProperty(key = "objectManagementId", secret = false)
-    lateinit var objectManagementId: UUID
-
     @PluginProperty(key = "processToStart", secret = false)
     lateinit var processToStart: String
 
