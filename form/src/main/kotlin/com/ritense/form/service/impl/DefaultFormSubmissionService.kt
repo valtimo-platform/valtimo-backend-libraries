@@ -98,33 +98,31 @@ open class DefaultFormSubmissionService(
                 )
             }
 
-            return AuthorizationContext.runWithoutAuthorization {
-                val processLink = processLinkService.getProcessLink(processLinkId, FormProcessLink::class.java)
-                val document = documentId
-                    ?.let { AuthorizationContext.runWithoutAuthorization { documentService.get(documentId) } }
-                val processDefinition = getProcessDefinition(processLink)
-                val documentDefinitionNameToUse = document?.definitionId()?.name()
-                    ?: documentDefinitionName
-                    ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId().documentDefinitionId().name()
-                val processVariables = getProcessVariables(taskInstanceId)
-                val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
-                val formFields = getFormFields(formDefinition, formData)
-                val submittedDocumentContent = getSubmittedDocumentContent(formFields, document)
-                val formDefinedProcessVariables = formDefinition.extractProcessVars(formData)
-                val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
-                val externalFormData = getExternalFormData(formDefinition, formData)
-                val request = getRequest(
-                    processLink,
-                    document,
-                    taskInstanceId,
-                    documentDefinitionNameToUse,
-                    processDefinition.key,
-                    submittedDocumentContent,
-                    formDefinedProcessVariables,
-                    preJsonPatch
-                )
-                dispatchRequest(request, formFields, externalFormData, documentDefinitionNameToUse)
-            }
+            val processLink = processLinkService.getProcessLink(processLinkId, FormProcessLink::class.java)
+            val document = documentId
+                ?.let { AuthorizationContext.runWithoutAuthorization { documentService.get(documentId) } }
+            val processDefinition = getProcessDefinition(processLink)
+            val documentDefinitionNameToUse = document?.definitionId()?.name()
+                ?: documentDefinitionName
+                ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId().documentDefinitionId().name()
+            val processVariables = getProcessVariables(taskInstanceId)
+            val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
+            val formFields = getFormFields(formDefinition, formData)
+            val submittedDocumentContent = getSubmittedDocumentContent(formFields, document)
+            val formDefinedProcessVariables = formDefinition.extractProcessVars(formData)
+            val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
+            val externalFormData = getExternalFormData(formDefinition, formData)
+            val request = getRequest(
+                processLink,
+                document,
+                taskInstanceId,
+                documentDefinitionNameToUse,
+                processDefinition.key,
+                submittedDocumentContent,
+                formDefinedProcessVariables,
+                preJsonPatch
+            )
+            return dispatchRequest(request, formFields, externalFormData, documentDefinitionNameToUse)
         } catch (notFoundException: DocumentNotFoundException) {
             logger.error("Document could not be found", notFoundException)
             FormSubmissionResultFailed(FromException(notFoundException))
