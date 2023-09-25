@@ -18,6 +18,7 @@
 package com.ritense.valtimo.autoconfiguration
 
 import com.ritense.authorization.AuthorizationService
+import com.ritense.valtimo.camunda.authorization.CamundaIdentityLinkSpecificationFactory
 import com.ritense.valtimo.camunda.authorization.CamundaTaskSpecificationFactory
 import com.ritense.valtimo.camunda.repository.CamundaBytearrayRepository
 import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository
@@ -26,6 +27,7 @@ import com.ritense.valtimo.camunda.repository.CamundaHistoricTaskInstanceReposit
 import com.ritense.valtimo.camunda.repository.CamundaHistoricVariableInstanceRepository
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionRepository
+import com.ritense.valtimo.camunda.repository.CamundaTaskIdentityLinkMapper
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
 import com.ritense.valtimo.camunda.service.CamundaContextService
@@ -94,9 +96,15 @@ class ValtimoCamundaAutoConfiguration {
     fun camundaRuntimeService(
         runtimeService: RuntimeService,
         camundaVariableInstanceRepository: CamundaVariableInstanceRepository,
+        camundaIdentityLinkRepository: CamundaIdentityLinkRepository,
         authorizationService: AuthorizationService
     ): CamundaRuntimeService {
-        return CamundaRuntimeService(runtimeService, camundaVariableInstanceRepository, authorizationService)
+        return CamundaRuntimeService(
+            runtimeService,
+            camundaVariableInstanceRepository,
+            camundaIdentityLinkRepository,
+            authorizationService
+        )
     }
 
     @Bean
@@ -107,6 +115,22 @@ class ValtimoCamundaAutoConfiguration {
         queryDialectHelper: QueryDialectHelper
     ): CamundaTaskSpecificationFactory {
         return CamundaTaskSpecificationFactory(camundaTaskService, queryDialectHelper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaIdentityLinkSpecificationFactory::class)
+    @ConditionalOnBean(AuthorizationService::class)
+    fun camundaIdentityLinkSpecificationFactory(
+        @Lazy camundaRuntimeService: CamundaRuntimeService,
+        queryDialectHelper: QueryDialectHelper
+    ): CamundaIdentityLinkSpecificationFactory {
+        return CamundaIdentityLinkSpecificationFactory(camundaRuntimeService, queryDialectHelper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaTaskIdentityLinkMapper::class)
+    fun camundaTaskIdentityLinkMapper(): CamundaTaskIdentityLinkMapper {
+        return CamundaTaskIdentityLinkMapper()
     }
 
 }

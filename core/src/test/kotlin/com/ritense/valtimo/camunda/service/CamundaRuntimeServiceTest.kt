@@ -19,6 +19,7 @@ package com.ritense.valtimo.camunda.service
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.valtimo.camunda.domain.CamundaVariableInstance
+import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.Test
@@ -32,6 +33,7 @@ class CamundaRuntimeServiceTest {
 
     val runtimeService: RuntimeService = mock()
     val camundaVariableInstanceRepository: CamundaVariableInstanceRepository = mock()
+    val camundaIdentityLinkRepository: CamundaIdentityLinkRepository = mock()
     val authorizationService: AuthorizationService = mock()
 
     @Test
@@ -39,6 +41,7 @@ class CamundaRuntimeServiceTest {
         val camundaRuntimeService = CamundaRuntimeService(
             runtimeService,
             camundaVariableInstanceRepository,
+            camundaIdentityLinkRepository,
             authorizationService
         )
         val variableInstances = listOf(
@@ -59,6 +62,7 @@ class CamundaRuntimeServiceTest {
         val camundaRuntimeService = CamundaRuntimeService(
             runtimeService,
             camundaVariableInstanceRepository,
+            camundaIdentityLinkRepository,
             authorizationService
         )
         val variableInstances = listOf(
