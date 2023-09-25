@@ -35,6 +35,44 @@
             "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
             "action": "view",
             "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "view_list",
+            "roleKey": "IDENTITY_LINK_ROLE",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaIdentityLink",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "groupId",
+                            "operator": "==",
+                            "value": "IDENTITY_LINK_ROLE"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "view",
+            "roleKey": "IDENTITY_LINK_ROLE",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaIdentityLink",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "groupId",
+                            "operator": "==",
+                            "value": "IDENTITY_LINK_ROLE"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
