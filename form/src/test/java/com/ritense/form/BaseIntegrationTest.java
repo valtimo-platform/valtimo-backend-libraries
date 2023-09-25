@@ -52,10 +52,6 @@ public abstract class BaseIntegrationTest extends BaseTest {
     @Inject
     public FormDefinitionRepository formDefinitionRepository;
 
-    // TODO: remove authorization service mocking when call to run without permissions is added
-    @MockBean
-    public AuthorizationService authorizationService;
-
     @BeforeAll
     static void beforeAll() {
     }

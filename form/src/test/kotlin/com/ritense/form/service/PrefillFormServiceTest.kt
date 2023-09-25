@@ -84,7 +84,7 @@ class PrefillFormServiceTest : BaseTest() {
 
     @Test
     fun shouldPrefillWithValueResolver() {
-        val formDefinition = formDefinitionOf("form-example-valueresolver-field")
+        val formDefinition = formDefinitionOf("form-example-various-prefill-fields")
         val document = document()
 
         whenever(formDefinitionService.getFormDefinitionById(formDefinition.id))
@@ -93,12 +93,12 @@ class PrefillFormServiceTest : BaseTest() {
             .thenReturn(document)
 
         whenever(valueResolverService.supportsValue(any())).then {
-            it.arguments.first().toString().startsWith("doc:")
+            it.arguments.first().toString().matches("(doc|pv):.*".toRegex())
         }
 
         val dataMap = mapOf(
             "doc:/person/firstName" to "John",
-            "doc:/person/lastName" to "Doe"
+            "pv:lastName" to "Doe"
         )
 
         whenever(valueResolverService.resolveValues(eq(document.id().toString()), any())).then {

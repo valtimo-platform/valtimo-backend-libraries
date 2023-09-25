@@ -39,12 +39,7 @@ public class FormDefinitionDeploymentServiceIntTest extends BaseIntegrationTest 
     @Inject
     private FormLoaderService formLoaderService;
 
-    /**
-     * Other tests delete the form definitions from the database, causing this test to fail depending on the order the tests are ran in.
-     * For now we disable this test, but we should fix this at some point, preferably by running this test in a new/different application instance.
-     */
     @Test
-    @Disabled("See JavaDoc")
     public void deployAllFromResourceFiles() throws IOException {
         Resource[] resources = loadResources();
         for (Resource resource : resources) {

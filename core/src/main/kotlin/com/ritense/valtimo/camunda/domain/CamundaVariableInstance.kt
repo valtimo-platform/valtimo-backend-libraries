@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.camunda.domain
 
+import com.ritense.valtimo.camunda.service.CamundaContextService
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -127,7 +128,11 @@ class CamundaVariableInstance(
 
     fun getTypedValue(): TypedValue? = getTypedValue(true)
 
-    fun getTypedValue(deserializeValue: Boolean): TypedValue? = findSerializer(serializerName).readValue(this, deserializeValue, false)
+    fun getTypedValue(deserializeValue: Boolean): TypedValue? {
+        return CamundaContextService.runWithCommandContext {
+            findSerializer(serializerName).readValue(this, deserializeValue, false)
+        }
+    }
 
     private fun findSerializer(serializerName: String?): TypedValueSerializer<*> {
         if (serializerName == null) {

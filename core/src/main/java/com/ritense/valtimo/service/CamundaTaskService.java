@@ -368,8 +368,7 @@ public class CamundaTaskService {
 
     @Transactional(readOnly = true)
     public Map<String, Object> getVariables(String taskInstanceId) {
-        var task = findTaskById(taskInstanceId);
-        return camundaContextService.runWithCommandContext(() -> task.getVariables());
+        return findTaskById(taskInstanceId).getVariables();
     }
 
     @Transactional(readOnly = true)

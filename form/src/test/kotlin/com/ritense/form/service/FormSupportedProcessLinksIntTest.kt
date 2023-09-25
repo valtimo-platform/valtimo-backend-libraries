@@ -21,23 +21,21 @@ import com.ritense.form.BaseIntegrationTest
 import com.ritense.form.domain.request.CreateFormDefinitionRequest
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @Transactional
-internal class FormSupportedProcessLinksIntTest : BaseIntegrationTest() {
-
-    @Autowired
-    lateinit var formSupportedProcessLinks: FormSupportedProcessLinksHandler
-
-    @Autowired
-    lateinit var formDefinitionService: FormIoFormDefinitionService
+internal class FormSupportedProcessLinksIntTest @Autowired constructor(
+    private val formSupportedProcessLinks: FormSupportedProcessLinksHandler,
+    private val formDefinitionService: FormIoFormDefinitionService
+): BaseIntegrationTest() {
 
     @Test
     fun `should return a form process link type for StartEventStart with enabled false`() {
+        formDefinitionRepository.deleteAll() // Ensure no forms are available
         val result = formSupportedProcessLinks.getProcessLinkType(ActivityTypeWithEventName.START_EVENT_START.value)
         assertEquals("form", result?.processLinkType)
         assertEquals(false, result?.enabled)

@@ -8,21 +8,30 @@
     },
     "components": [
         {
-            "label": "Naam",
-            "key": "lastName",
-            "type": "textfield",
-            "input": true,
-            "properties": {
-                "dataKey": "doc:/person/lastName"
-            }
-        },
-        {
-            "label": "Naam",
-            "key": "firstName",
+            "label": "Value resolver document field",
+            "key": "valueResolverDoc",
             "type": "textfield",
             "input": true,
             "properties": {
                 "dataKey": "doc:/person/firstName"
+            }
+        },
+        {
+            "label": "Value resolver processvar field",
+            "key": "valueResolverProcessVar",
+            "type": "textfield",
+            "input": true,
+            "properties": {
+                "dataKey": "pv:lastName"
+            }
+        },
+        {
+            "label": "Value resolver taskvar field",
+            "key": "valueResolverTaskVar",
+            "type": "textfield",
+            "input": true,
+            "properties": {
+                "dataKey": "pv:dateOfBirth"
             }
         },
         {

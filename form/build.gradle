@@ -63,6 +63,7 @@ dependencies {
 
     testImplementation project(':test-utils-common')
     testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "com.jayway.jsonpath:json-path-assert:${jaywayJsonpathVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {

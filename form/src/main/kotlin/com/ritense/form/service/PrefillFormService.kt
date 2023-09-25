@@ -40,7 +40,10 @@ import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import java.util.UUID
+import org.springframework.transaction.annotation.Transactional
 
+
+@Transactional(readOnly = true)
 class PrefillFormService(
     private val documentService: DocumentService,
     private val formDefinitionService: FormIoFormDefinitionService,
@@ -65,7 +68,7 @@ class PrefillFormService(
         val document = runWithoutAuthorization { documentService.get(documentId) }
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
-        prefillFormDefinition(formDefinition, document, processInstance, taskInstanceId)
+        prefillFormDefinition(formDefinition, document, processInstanceId, taskInstanceId)
         return formDefinition
     }
 
@@ -85,9 +88,16 @@ class PrefillFormService(
     fun prefillFormDefinition(
         formDefinition: FormIoFormDefinition,
         document: Document,
-        processInstance: CamundaExecution?,
+        processInstanceId: String?,
         taskInstanceId: String? = null,
     ) {
+        val processInstance = processInstanceId?.let {
+            runWithoutAuthorization {
+                camundaProcessService.findExecutionByProcessInstanceId(processInstanceId)
+                    ?: throw RuntimeException("Process instance not found by id $processInstanceId")
+            }
+        }
+
         prefillValueResolverFields(formDefinition, document.id(), processInstance, taskInstanceId)
 
         val extendedDocumentContent = document.content().asJson() as ObjectNode
@@ -126,13 +136,15 @@ class PrefillFormService(
             .filter {valueResolverService.supportsValue( it.value ) }
 
         // Resolve dataKeys into a Map<{dataKey}, {dataValue}>
-        val valueMap = if(taskInstanceId != null) {
-            val task = taskService.findTaskById(taskInstanceId)
-            valueResolverService.resolveValues(task.getProcessInstanceId(), task, inputDataKeyMap.values)
-        } else if(processInstance != null) {
-            valueResolverService.resolveValues(processInstance.id, processInstance, inputDataKeyMap.values)
-        } else {
-            valueResolverService.resolveValues(documentInstanceId.toString(), inputDataKeyMap.values)
+        val valueMap = runWithoutAuthorization {
+            if (taskInstanceId != null) {
+                val task = taskService.findTaskById(taskInstanceId)
+                valueResolverService.resolveValues(task.getProcessInstanceId(), task, inputDataKeyMap.values)
+            } else if (processInstance != null) {
+                valueResolverService.resolveValues(processInstance.id, processInstance, inputDataKeyMap.values)
+            } else {
+                valueResolverService.resolveValues(documentInstanceId.toString(), inputDataKeyMap.values)
+            }
         }
 
         // Create a Map<{input.key}, {resolvedValue}>
@@ -143,7 +155,7 @@ class PrefillFormService(
         formDefinition.preFill(keyValueMap)
     }
 
-    fun prefillProcessVariables(formDefinition: FormIoFormDefinition, document: Document) {
+    private fun prefillProcessVariables(formDefinition: FormIoFormDefinition, document: Document) {
         val processVarsNames = formDefinition.extractProcessVarNames()
         val processInstanceVariables = runWithoutAuthorization {
             processDocumentAssociationService.findProcessDocumentInstances(document.id())
@@ -156,7 +168,7 @@ class PrefillFormService(
         }
     }
 
-    fun prefillDataResolverFields(
+    private fun prefillDataResolverFields(
         formDefinition: FormIoFormDefinition,
         document: Document,
         extendedDocumentContent: JsonNode?
@@ -212,18 +224,18 @@ class PrefillFormService(
         formDefinition.preFill(extendedDocumentContent)
     }
 
-    fun prefillTaskVariables(
+    private fun prefillTaskVariables(
         formDefinition: FormIoFormDefinition,
         taskInstanceId: String,
         extendedDocumentContent: JsonNode
     ) {
-        val taskVariables = taskService.getVariables(taskInstanceId)
+        val taskVariables = runWithoutAuthorization { taskService.getVariables(taskInstanceId) }
         val placeholders = Mapper.INSTANCE.get().valueToTree<ObjectNode>(taskVariables)
         formDefinition.preFillWith("pv", taskVariables)
         prePreFillTransform(formDefinition, placeholders, extendedDocumentContent)
     }
 
-    fun prePreFillTransform(formDefinition: FormIoFormDefinition, placeholders: JsonNode, source: JsonNode) {
+    internal fun prePreFillTransform(formDefinition: FormIoFormDefinition, placeholders: JsonNode, source: JsonNode) {
         val dataToPreFill = JsonNodeFactory.instance.objectNode()
         formDefinition.inputFields.forEach { field ->
             val container = field.at("/$CUSTOM_PROPERTIES/$CONTAINER_KEY").asText()
