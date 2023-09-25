@@ -166,13 +166,13 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             """
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
-              "objectManagementId": "${objectManagement.id}",
               "processToStart": "verzoek-process",
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
                 "caseDefinitionName": "${documentDefinition.id().name()}",
                 "processDefinitionKey": "objection-process",
+                "objectManagementId": "${objectManagement.id}",
                 "initiatorRoltypeUrl": "$initiatoRolType",
                 "initiatorRolDescription": "Initiator",
                 "copyStrategy": "specified",
@@ -223,13 +223,13 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             """
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
-              "objectManagementId": "${objectManagement.id}",
               "processToStart": "verzoek-process",
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
                 "caseDefinitionName": "${documentDefinition.id().name()}",
                 "processDefinitionKey": "objection-process",
+                "objectManagementId": "${objectManagement.id}",
                 "initiatorRoltypeUrl": "$initiatoRolType",
                 "initiatorRolDescription": "Initiator",
                 "copyStrategy": "full"
@@ -259,13 +259,13 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             """
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
-              "objectManagementId": "${objectManagement.id}",
               "processToStart": "verzoek-process",
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
                 "caseDefinitionName": "${documentDefinition.id().name()}",
                 "processDefinitionKey": "objection-process",
+                "objectManagementId": "${objectManagement.id}",
                 "initiatorRoltypeUrl": "$initiatoRolType",
                 "initiatorRolDescription": "Initiator",
                 "copyStrategy": "full"
@@ -295,13 +295,13 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             """
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
-              "objectManagementId": "${objectManagement.id}",
               "processToStart": "verzoek-process",
               "rsin": "$rsin",
               "verzoekProperties": [{
                 "type": "objection",
                 "caseDefinitionName": "${documentDefinition.id().name()}",
                 "processDefinitionKey": "objection-process",
+                "objectManagementId": "${objectManagement.id}",
                 "initiatorRoltypeUrl": "$initiatoRolType",
                 "initiatorRolDescription": "Initiator",
                 "copyStrategy": "full"
