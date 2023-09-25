@@ -88,6 +88,7 @@ import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHel
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.EXECUTION;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.ID;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.PROCESS_DEFINITION;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.PROCESS_INSTANCE;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.all;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssignee;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCandidateGroups;
@@ -292,7 +293,7 @@ public class CamundaTaskService {
         var query = cb.createTupleQuery();
         var taskRoot = query.from(CamundaTask.class);
         var executionIdPath = taskRoot.get(EXECUTION).get(ID);
-        var businessKeyPath = taskRoot.get(EXECUTION).get(BUSINESS_KEY);
+        var businessKeyPath = taskRoot.get(PROCESS_INSTANCE).get(BUSINESS_KEY);
         var processDefinitionIdPath = taskRoot.get(PROCESS_DEFINITION).get(ID);
         var processDefinitionKeyPath = taskRoot.get(PROCESS_DEFINITION).get(KEY);
 
