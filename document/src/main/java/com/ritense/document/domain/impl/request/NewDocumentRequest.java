@@ -27,9 +27,11 @@ import java.util.Set;
 public class NewDocumentRequest {
 
     @JsonProperty("definition")
+    @NotNull
     private final String documentDefinitionName;
 
     @JsonProperty
+    @NotNull
     private final JsonNode content;
 
     private DocumentRelationRequest documentRelation;
@@ -38,8 +40,8 @@ public class NewDocumentRequest {
 
     @JsonCreator
     public NewDocumentRequest(
-        @JsonProperty(value = "definition", required = true) @NotNull String documentDefinitionName,
-        @JsonProperty(value = "content", required = true) @NotNull JsonNode content
+        @JsonProperty(value = "definition", required = true) String documentDefinitionName,
+        @JsonProperty(value = "content", required = true) JsonNode content
     ) {
         this.documentDefinitionName = documentDefinitionName;
         this.content = content;
