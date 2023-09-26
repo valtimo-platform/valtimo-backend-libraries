@@ -18,6 +18,7 @@ package com.ritense.processdocument.resolver
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.InvalidPathException
 import com.jayway.jsonpath.JsonPath
@@ -122,7 +123,7 @@ class DocumentJsonValueResolverFactory(
         }
     }
 
-    override fun preProcessValuesForNewCase(values: Map<String, Any>): Any {
+    override fun preProcessValuesForNewCase(values: Map<String, Any>): ObjectNode {
         val emptyDocumentContent = jacksonObjectMapper().createObjectNode()
         buildJsonPatch(emptyDocumentContent, values)
         return emptyDocumentContent

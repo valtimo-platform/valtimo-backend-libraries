@@ -80,6 +80,14 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final Predicate<JsonNode> HAS_PREFILL_ENABLED = objectNode ->
         !objectNode.has(PREFILL_KEY) || objectNode.get(PREFILL_KEY).asBoolean();
 
+    public static final Predicate<JsonNode> NOT_IGNORED = objectNode ->
+        !(
+            FormAutoConfiguration.isIgnoreDisabledFields()
+                && objectNode.has(DISABLED_KEY)
+                && objectNode.get(DISABLED_KEY).asBoolean()
+        );
+
+
     public static final Function<JsonNode, Optional<String>> GET_DATA_KEY = objectNode -> {
         JsonNode dataKeyNode = objectNode.at(DATAKEY_POINTER);
         return Optional.ofNullable(dataKeyNode.isTextual() ? dataKeyNode.textValue() : null);
@@ -211,11 +219,11 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     public Map<String, List<ExternalContentItem>> buildExternalFormFieldsMapForSubmission() {
-        return buildExternalFormFieldsMapFiltered(this::shouldNotIgnoreField);
+        return buildExternalFormFieldsMapFiltered(NOT_IGNORED);
     }
 
-    private Map<String, List<ExternalContentItem>> buildExternalFormFieldsMapFiltered(
-            @Nullable Predicate<ObjectNode> predicate
+    public Map<String, List<ExternalContentItem>> buildExternalFormFieldsMapFiltered(
+            @Nullable Predicate<JsonNode> predicate
     ) {
         var map = new HashMap<String, List<ExternalContentItem>>();
         getInputFields()
@@ -236,7 +244,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         final Map<String, Object> processVarFormData = new HashMap<>();
         getInputFields()
                 .stream()
-                .filter(this::shouldNotIgnoreField)
+                .filter(NOT_IGNORED)
                 .forEach(field -> getProcessVar(field)
                         .ifPresent(contentItem -> getValueBy(formData, contentItem.getJsonPointer())
                                 .ifPresent(valueNode -> processVarFormData.put(contentItem.getName(),
@@ -298,7 +306,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     public List<ObjectNode> getDocumentMappedFieldsForSubmission() {
-        return getDocumentMappedFieldsFiltered(this::shouldNotIgnoreField);
+        return getDocumentMappedFieldsFiltered(NOT_IGNORED);
     }
 
     private List<ObjectNode> getDocumentMappedFieldsFiltered(@Nullable Predicate<JsonNode> predicate) {
@@ -334,14 +342,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             throw new IllegalArgumentException("The formDefinition argument could not be parsed as JSON.", e);
         }
         this.formDefinition = formDefinition;
-    }
-
-    private boolean shouldNotIgnoreField(JsonNode fieldNode) {
-        return !(
-                FormAutoConfiguration.isIgnoreDisabledFields()
-                        && fieldNode.has(DISABLED_KEY)
-                        && fieldNode.get(DISABLED_KEY).asBoolean()
-        );
     }
 
 

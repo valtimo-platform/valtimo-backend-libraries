@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
 
+import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -376,6 +377,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
 
     @Override
     @JsonIgnore
+    @Nonnull
     public JsonSchemaDocumentId getId() {
         return id;
     }

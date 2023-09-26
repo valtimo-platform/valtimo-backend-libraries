@@ -32,6 +32,7 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valueresolver.ValueResolverService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
@@ -79,6 +80,7 @@ class FormAutoConfigurationKotlin {
         applicationEventPublisher: ApplicationEventPublisher,
         prefillFormService: PrefillFormService,
         authorizationService: AuthorizationService,
+        valueResolverService: ValueResolverService
     ) = DefaultFormSubmissionService(
         processLinkService,
         formDefinitionService,
@@ -89,7 +91,8 @@ class FormAutoConfigurationKotlin {
         repositoryService,
         applicationEventPublisher,
         prefillFormService,
-        authorizationService
+        authorizationService,
+        valueResolverService
     )
 
 }

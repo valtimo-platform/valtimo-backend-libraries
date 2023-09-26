@@ -51,6 +51,7 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valueresolver.ValueResolverService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -81,6 +82,8 @@ class DefaultFormSubmissionServiceTest {
     lateinit var prefillFormService: PrefillFormService
     lateinit var documentSequenceGeneratorService: DocumentSequenceGeneratorService
     lateinit var authorizationService: AuthorizationService
+    lateinit var valueResolverService: ValueResolverService
+
 
     lateinit var formProcessLink: FormProcessLink
     lateinit var processDefinition: CamundaProcessDefinition
@@ -98,6 +101,7 @@ class DefaultFormSubmissionServiceTest {
         applicationEventPublisher = mock()
         prefillFormService = mock()
         authorizationService = mock()
+        valueResolverService = mock()
         defaultFormSubmissionService = DefaultFormSubmissionService(
             processLinkService,
             formDefinitionService,
@@ -108,7 +112,8 @@ class DefaultFormSubmissionServiceTest {
             repositoryService,
             applicationEventPublisher,
             prefillFormService,
-            authorizationService
+            authorizationService,
+            valueResolverService
         )
 
         documentSequenceGeneratorService = mock()

@@ -124,10 +124,10 @@ class PrefillFormService(
         val inputDataKeyMap = formDefinition.inputFields
             .filter { FormIoFormDefinition.HAS_PREFILL_ENABLED.test(it) }
             .mapNotNull {
-                val inputKey = FormIoFormDefinition.GET_KEY.apply(it).orElseThrow()
+                val inputKey = FormIoFormDefinition.GET_KEY.apply(it)
                 val dataKey = FormIoFormDefinition.GET_DATA_KEY.apply(it)
-                if(dataKey.isPresent) {
-                    Pair(inputKey, dataKey.get())
+                if(inputKey.isPresent && dataKey.isPresent) {
+                    Pair(inputKey.get(), dataKey.get())
                 } else {
                     null
                 }

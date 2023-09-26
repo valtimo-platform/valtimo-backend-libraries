@@ -136,7 +136,7 @@ open class ValueResolverServiceImpl(
             resolverFactory.handleValues(
                 processInstanceId,
                 variableScope,
-                propertyPaths.associate { propertyPath -> trimPrefix(propertyPath) to values[propertyPath]!! }
+                mapPropertyPaths(propertyPaths, values)
             )
         }
     }
@@ -149,7 +149,7 @@ open class ValueResolverServiceImpl(
 
             resolverFactory.handleValues(
                 documentId,
-                propertyPaths.associate { propertyPath -> trimPrefix(propertyPath) to values[propertyPath]!! }
+                mapPropertyPaths(propertyPaths, values)
             )
         }
     }
@@ -159,12 +159,17 @@ open class ValueResolverServiceImpl(
     ): Map<String, Any> {
         return toResolverFactoryMap(values.keys).mapValues { (resolverFactory, propertyPaths) ->
             resolverFactory.preProcessValuesForNewCase(
-                propertyPaths.associate { propertyPath -> trimPrefix(propertyPath) to values[propertyPath]!! }
+                mapPropertyPaths(propertyPaths, values)
             )
         }.mapKeys { (resolverFactory, _) ->
             resolverFactory.supportedPrefix()
         }
     }
+
+    private fun mapPropertyPaths(
+        propertyPaths: List<String>,
+        values: Map<String, Any>
+    ) = propertyPaths.associate { propertyPath -> trimPrefix(propertyPath) to values[propertyPath]!! }
 
     private fun toResolverFactoryMap(requestedValues: Collection<String>): Map<ValueResolverFactory, List<String>> {
         //Group by prefix
@@ -177,6 +182,7 @@ open class ValueResolverServiceImpl(
                 resolverFactory to requestedValues
             }.toMap()
     }
+
 
     private fun getPrefix(value:String) = value.substringBefore(DELIMITER, missingDelimiterValue = "")
     private fun trimPrefix(value:String) = value.substringAfter(DELIMITER)
