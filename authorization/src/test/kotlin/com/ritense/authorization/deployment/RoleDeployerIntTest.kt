@@ -22,6 +22,8 @@ import com.ritense.valtimo.changelog.repository.ChangesetRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import java.time.Instant
 
 internal class RoleDeployerIntTest : BaseIntegrationTest() {
@@ -41,17 +43,17 @@ internal class RoleDeployerIntTest : BaseIntegrationTest() {
         assertThat(changeset.get().filename).endsWith("/all.role.json")
         assertThat(changeset.get().dateExecuted).isBetween(Instant.parse("2023-06-13T00:00:00Z"), Instant.now())
         assertThat(changeset.get().orderExecuted).isBetween(0, 1000)
-        assertThat(changeset.get().md5sum).isEqualTo("a54b14b5b9542b7d9d2f98ee7a4c9707")
+        assertThat(changeset.get().md5sum).isEqualTo("b7f53876c91a6daed435dc41f001a940")
     }
 
     @Test
     fun `should deploy role from resource folder`() {
 
-        val roles = roleRepository.findAll()
+        val roles = roleRepository.findAll(PageRequest.of(0, 10, Sort.by("key"))).content
 
-        assertThat(roles).hasSize(5)
-        assertThat(roles[0].key).isEqualTo("ROLE_USER")
-        assertThat(roles[1].key).isEqualTo("ROLE_ADMIN")
-        assertThat(roles[2].key).isEqualTo("ROLE_UPDATE")
+        assertThat(roles).hasSizeGreaterThan(3)
+        assertThat(roles[0].key).isEqualTo("EXPRESSION_CONTAINS_ROLE")
+        assertThat(roles[1].key).isEqualTo("FIELD_CONTAINS_ROLE")
+        assertThat(roles[2].key).isEqualTo("ROLE_ADMIN")
     }
 }

@@ -16,7 +16,6 @@
 
 package com.ritense.resource.security
 
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.DELETE
@@ -29,10 +28,10 @@ class LocalResourceHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/resource/pre-signed-url/{fileName}").hasAuthority(USER)
-                .antMatchers(GET, "/api/v1/resource/{resourceId}").hasAuthority(USER)
-                .antMatchers(DELETE, "/api/v1/resource/{resourceId}").hasAuthority(USER)
-                .antMatchers(PUT, "/api/v1/resource").hasAuthority(USER)
+                .antMatchers(GET, "/api/v1/resource/pre-signed-url/{fileName}").authenticated()
+                .antMatchers(GET, "/api/v1/resource/{resourceId}").authenticated()
+                .antMatchers(DELETE, "/api/v1/resource/{resourceId}").authenticated()
+                .antMatchers(PUT, "/api/v1/resource").authenticated()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

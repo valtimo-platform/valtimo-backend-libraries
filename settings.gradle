@@ -18,7 +18,6 @@ rootProject.name = projectName
 include(
     "app",
     "app:gzac",
-    "app:valtimo-core",
     "audit",
     "authorization",
     "besluit",
@@ -41,6 +40,7 @@ include(
     "form-flow",
     "form-flow-valtimo",
     "form-link",
+    "gradle:cve-report",
     "gradle:license-report",
     "haalcentraal",
     "haalcentraal:haalcentraal-brp",

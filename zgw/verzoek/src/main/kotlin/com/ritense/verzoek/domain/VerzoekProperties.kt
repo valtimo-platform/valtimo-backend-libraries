@@ -19,11 +19,13 @@ package com.ritense.verzoek.domain
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.valtimo.contract.validation.Url
 import java.net.URI
+import java.util.UUID
 
 data class VerzoekProperties(
     val type: String,
     val caseDefinitionName: String,
     val processDefinitionKey: String,
+    val objectManagementId: UUID,
     @field:Url val initiatorRoltypeUrl: URI,
     val initiatorRolDescription: String,
     val copyStrategy: CopyStrategy,

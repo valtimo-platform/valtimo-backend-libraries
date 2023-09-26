@@ -16,7 +16,6 @@
 
 package com.ritense.resource.security.config
 
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.POST
@@ -27,7 +26,7 @@ class TemporaryResourceStorageHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(POST, "/api/v1/resource/temp").hasAuthority(USER)
+                .antMatchers(POST, "/api/v1/resource/temp").authenticated()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

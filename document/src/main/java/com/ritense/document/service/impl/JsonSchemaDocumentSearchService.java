@@ -190,8 +190,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .getAuthorizationSpecification(
                     new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        VIEW_LIST,
-                        null
+                        VIEW_LIST
                     ),
                     null
                 ).toPredicate(documentRoot, query, cb));
@@ -217,8 +216,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .getAuthorizationSpecification(
                     new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
-                        VIEW_LIST,
-                        null
+                        VIEW_LIST
                     ),
                     null
                 ).toPredicate(documentRoot, query, cb));

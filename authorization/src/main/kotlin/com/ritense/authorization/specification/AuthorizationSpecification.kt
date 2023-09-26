@@ -44,12 +44,15 @@ abstract class AuthorizationSpecification<T : Any>(
         }
     }
 
-    // TODO: See EntityAuthorizationRequest
     private fun isAuthorizedForEntity(entityAuthorizationRequest: EntityAuthorizationRequest<T>): Boolean {
-        return entityAuthorizationRequest.entity != null && permissions.filter { permission ->
+        if (entityAuthorizationRequest.entities.isEmpty()) {
+            return false
+        }
+        val permissions = permissions.filter { permission ->
             entityAuthorizationRequest.resourceType == permission.resourceType && entityAuthorizationRequest.action == permission.action
-        }.any { permission ->
-            permission.appliesTo(entityAuthorizationRequest.resourceType, entityAuthorizationRequest.entity)
+        }
+        return entityAuthorizationRequest.entities.all { entity ->
+            permissions.any { permission -> permission.appliesTo(entityAuthorizationRequest.resourceType, entity) }
         }
     }
 

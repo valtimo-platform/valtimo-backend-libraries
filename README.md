@@ -53,14 +53,14 @@ The environment consists of 3 components:
 #### Docker containers for supporting services
 * Make sure docker is running. 
 * Clone the Git repository **valtimo-docker-profiles** repository: [Valtimo docker git repository](https://github.com/valtimo-platform/valtimo-docker-profiles).
-* Open a terminal, go to the `valtimo-platform` folder and run command
+* Open a terminal, go to the `gzac-platform` folder and run command
     ```
     docker compose up -d
     ``` 
 
 #### Valtimo Backend
 * Make sure this repository (the one where this README is a part of) is cloned to your workstation.  
-* The application can be started with the gradle task ```:app:valtimo-core:bootRun```. 
+* The application can be started with the gradle task ```:app:gzac:bootRun```. 
 
 The Valtimo backend api is now available at http://localhost:8080 . In order to work with it, you will need a running frontend implementation. See the next step.
 

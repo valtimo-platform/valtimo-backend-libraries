@@ -22,6 +22,6 @@ import static java.util.Set.of;
 public class WebDefaults {
 
     public static final class Cors {
-        public static final Set<String> paths = of("/api/**", "management/**", "/v2/api-docs");
+        public static final Set<String> paths = of("/api/**", "management/**", "/v3/api-docs");
     }
 }

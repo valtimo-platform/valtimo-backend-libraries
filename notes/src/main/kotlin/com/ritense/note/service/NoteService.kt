@@ -51,8 +51,7 @@ class NoteService(
         val spec = authorizationService.getAuthorizationSpecification(
             EntityAuthorizationRequest(
                 Note::class.java,
-                NoteActionProvider.VIEW_LIST,
-                null
+                NoteActionProvider.VIEW_LIST
             ),
             null
         )

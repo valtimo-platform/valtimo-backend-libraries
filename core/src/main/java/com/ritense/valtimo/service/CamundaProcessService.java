@@ -282,8 +282,7 @@ public class CamundaProcessService {
         authorizationService.requirePermission(
             new EntityAuthorizationRequest(
                 CamundaProcessDefinition.class,
-            Action.deny(),
-            null
+                Action.deny()
             )
         );
     }

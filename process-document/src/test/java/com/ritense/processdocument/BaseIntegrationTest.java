@@ -82,7 +82,7 @@ public abstract class BaseIntegrationTest extends BaseTest {
     @BeforeEach
     public void beforeEach() {
         var noopAuthSpec = noopAuthorizationSpecificationFactory.create(
-            new EntityAuthorizationRequest<>(CamundaTask.class, CamundaTaskActionProvider.VIEW, null),
+            new EntityAuthorizationRequest<>(CamundaTask.class, CamundaTaskActionProvider.VIEW),
             List.of()
         );
         when(authorizationService.getAuthorizationSpecification(ArgumentMatchers.<AuthorizationRequest<CamundaTask>>any(), eq(null)))

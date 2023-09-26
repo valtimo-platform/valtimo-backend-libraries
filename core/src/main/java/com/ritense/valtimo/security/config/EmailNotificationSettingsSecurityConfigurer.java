@@ -19,7 +19,7 @@ package com.ritense.valtimo.security.config;
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PUT;
 
@@ -29,8 +29,8 @@ public class EmailNotificationSettingsSecurityConfigurer implements HttpSecurity
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/email-notification-settings").hasAuthority(USER)
-                .antMatchers(PUT, "/api/v1/email-notification-settings").hasAuthority(USER);
+                .antMatchers(GET, "/api/v1/email-notification-settings").authenticated()
+                .antMatchers(PUT, "/api/v1/email-notification-settings").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }
