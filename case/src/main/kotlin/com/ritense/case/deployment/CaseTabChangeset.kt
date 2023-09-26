@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.deployment
+package com.ritense.case.deployment
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.ritense.case.web.rest.dto.CaseTabDto
 
 class CaseTabChangeset(
     val changesetId: String,

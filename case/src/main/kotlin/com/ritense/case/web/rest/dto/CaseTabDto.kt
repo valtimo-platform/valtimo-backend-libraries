@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.deployment
+package com.ritense.case.web.rest.dto
 
 data class CaseTabDto(
     val key: String,

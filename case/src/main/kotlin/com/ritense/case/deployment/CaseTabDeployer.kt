@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.deployment
+package com.ritense.case.deployment
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue

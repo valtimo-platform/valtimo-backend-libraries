@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard.deployment
+package com.ritense.case.deployment
 
 class DeploymentFailedException(message: String): RuntimeException(message)

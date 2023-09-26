@@ -33,7 +33,7 @@ import com.ritense.case.service.CaseListDeploymentService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.web.rest.CaseDefinitionResource
 import com.ritense.case.web.rest.CaseInstanceResource
-import com.ritense.dashboard.deployment.CaseTabDeployer
+import com.ritense.case.deployment.CaseTabDeployer
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.valtimo.changelog.service.ChangelogService
