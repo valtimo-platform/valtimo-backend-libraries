@@ -25,14 +25,16 @@ import java.util.UUID;
 
 public class AssignToDocumentsRequest {
     @JsonProperty
+    @NotNull
     private final List<UUID> documentIds;
 
     @JsonProperty
+    @NotNull
     private final String assigneeId;
 
     @JsonCreator
-    public AssignToDocumentsRequest(@JsonProperty(value = "documentIds", required = true) @NotNull List<UUID> documentIds,
-                                    @JsonProperty(value = "assigneeId", required = true) @NotNull String assigneeId
+    public AssignToDocumentsRequest(@JsonProperty(value = "documentIds", required = true) List<UUID> documentIds,
+                                    @JsonProperty(value = "assigneeId", required = true) String assigneeId
     ) {
         this.documentIds = documentIds;
         this.assigneeId = assigneeId;

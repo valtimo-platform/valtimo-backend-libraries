@@ -28,7 +28,6 @@ import com.ritense.valtimo.contract.authentication.NamedUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,7 +65,7 @@ public interface DocumentService {
 
     void assignUserToDocument(UUID documentId, String assigneeId);
 
-    void assignUserToDocuments(@NotNull List<UUID> documentIds, @NotNull String assigneeId);
+    void assignUserToDocuments(List<UUID> documentIds, String assigneeId);
 
     void unassignUserFromDocument(UUID documentId);
 

@@ -59,7 +59,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -624,7 +623,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         return userManagementService.findNamedUserByRoles(authorizedRoles);
     }
 
-    public void assignUserToDocuments(@NotNull List<UUID> documentIds, @NotNull String assigneeId) {
+    public void assignUserToDocuments(List<UUID> documentIds, String assigneeId) {
         var documentIdObjects = documentIds.stream()
             .map(documentId -> (Document.Id) JsonSchemaDocumentId.existingId(documentId))
             .toList();

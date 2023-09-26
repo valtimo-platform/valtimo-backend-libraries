@@ -17,8 +17,8 @@
 package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.Document;
-import com.ritense.document.domain.impl.request.GetDocumentCandidateUsersRequest;
 import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
+import com.ritense.document.domain.impl.request.GetDocumentCandidateUsersRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
@@ -27,6 +27,7 @@ import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import org.springframework.http.ResponseEntity;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,21 +35,21 @@ public interface DocumentResource {
 
     ResponseEntity<? extends Document> getDocument(UUID id);
 
-    ResponseEntity<CreateDocumentResult> createNewDocument(NewDocumentRequest request);
+    ResponseEntity<CreateDocumentResult> createNewDocument(@Valid NewDocumentRequest request);
 
-    ResponseEntity<ModifyDocumentResult> modifyDocumentContent(ModifyDocumentRequest request);
+    ResponseEntity<ModifyDocumentResult> modifyDocumentContent(@Valid ModifyDocumentRequest request);
 
     ResponseEntity<Void> assignResource(UUID documentId, UUID resourceId);
 
     ResponseEntity<Void> removeRelatedFile(UUID documentId, UUID resourceId);
 
-    ResponseEntity<Void> assignHandlerToDocument(UUID documentId, UpdateAssigneeRequest request);
+    ResponseEntity<Void> assignHandlerToDocument(UUID documentId, @Valid UpdateAssigneeRequest request);
 
-    ResponseEntity<Void> assignHandlerToDocuments(AssignToDocumentsRequest request);
+    ResponseEntity<Void> assignHandlerToDocuments(@Valid AssignToDocumentsRequest request);
 
     ResponseEntity<Void> unassignHandlerFromDocument(UUID documentId);
 
     ResponseEntity<List<NamedUser>> getCandidateUsers(UUID documentId);
 
-    ResponseEntity<List<NamedUser>> getCandidateUsersForMultipleDocuments(GetDocumentCandidateUsersRequest request);
+    ResponseEntity<List<NamedUser>> getCandidateUsersForMultipleDocuments(@Valid GetDocumentCandidateUsersRequest request);
 }
