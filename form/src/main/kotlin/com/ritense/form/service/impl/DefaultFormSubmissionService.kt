@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
@@ -55,14 +56,17 @@ import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
+import com.ritense.valtimo.contract.json.JsonMerger
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromException
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valueresolver.ValueResolverService
+import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 
 open class DefaultFormSubmissionService(
     private val processLinkService: ProcessLinkService,
@@ -75,6 +79,7 @@ open class DefaultFormSubmissionService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val prefillFormService: PrefillFormService,
     private val authorizationService: AuthorizationService,
+    private val valueResolverService: ValueResolverService
 ) : FormSubmissionService {
 
     @Transactional
@@ -107,11 +112,24 @@ open class DefaultFormSubmissionService(
                 ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId().documentDefinitionId().name()
             val processVariables = getProcessVariables(taskInstanceId)
             val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
+
+            val dataKeyValueMap = formDefinition.inputFields
+                .mapNotNull {field ->
+                    getDataKeyValuePair(field, formData)
+                }.toMap()
+
+            val resolvedValueMap = valueResolverService.preProcessValuesForNewCase(dataKeyValueMap)
+
             val formFields = getFormFields(formDefinition, formData)
-            val submittedDocumentContent = getSubmittedDocumentContent(formFields, document)
-            val formDefinedProcessVariables = formDefinition.extractProcessVars(formData)
+            val submittedDocumentContent = JsonMerger.merge(
+                getSubmittedDocumentContent(formFields, document),
+                (resolvedValueMap["doc"]?.let { it as? ObjectNode })?: Mapper.INSTANCE.get().createObjectNode()
+            )
+
+            val formDefinedProcessVariables = formDefinition.extractProcessVars(formData) +
+                (resolvedValueMap["pv"]?.let { it as? Map<String, Any> } ?: mapOf())
+
             val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
-            val externalFormData = getExternalFormData(formDefinition, formData)
             val request = getRequest(
                 processLink,
                 document,
@@ -122,7 +140,11 @@ open class DefaultFormSubmissionService(
                 formDefinedProcessVariables,
                 preJsonPatch
             )
-            return dispatchRequest(request, formFields, externalFormData, documentDefinitionNameToUse)
+            val externalFormData = getExternalFormData(formDefinition, formData)
+            val remainingValueResolverValues = resolvedValueMap.filter {
+                !listOf("doc", "pv").contains(it.key)
+            }.toMap()
+            return dispatchRequest(request, formFields, externalFormData, documentDefinitionNameToUse, remainingValueResolverValues)
         } catch (notFoundException: DocumentNotFoundException) {
             logger.error("Document could not be found", notFoundException)
             FormSubmissionResultFailed(FromException(notFoundException))
@@ -136,6 +158,27 @@ open class DefaultFormSubmissionService(
                 OperationError.FromString("Unexpected error occurred, please contact support - referenceId: $referenceId")
             )
         }
+    }
+
+    private fun getDataKeyValuePair(
+        field: ObjectNode,
+        formData: JsonNode
+    ): Pair<String, Any>? {
+        return FormIoFormDefinition.GET_DATA_KEY.apply(field).getOrNull()?.let { dataKey ->
+            FormIoFormDefinition.GET_KEY.apply(field).getOrNull()?.let { inputKey ->
+                convertNodeValue(formData.at("/$inputKey"))
+            }?.let { value ->
+                Pair(dataKey, value)
+            }
+        }
+    }
+
+    private fun convertNodeValue(node: JsonNode) : Any? {
+        if(node.isMissingNode) {
+            return null
+        }
+
+        return Mapper.INSTANCE.get().treeToValue<Any>(node)
     }
 
     private fun getProcessDefinition(
@@ -209,7 +252,9 @@ open class DefaultFormSubmissionService(
         formDefinition: FormIoFormDefinition,
         formData: JsonNode
     ): Map<String, Map<String, JsonNode>> {
-        return formDefinition.buildExternalFormFieldsMapForSubmission().map { entry ->
+        return formDefinition.buildExternalFormFieldsMapFiltered(
+            FormIoFormDefinition.NOT_IGNORED.and { t -> FormIoFormDefinition.GET_DATA_KEY.apply(t).isEmpty }
+        ).map { entry ->
             entry.key to entry.value.associate {
                 it.name to formData.at(it.jsonPointer)
             }
@@ -310,6 +355,7 @@ open class DefaultFormSubmissionService(
         formFields: List<FormField>,
         externalFormData: Map<String, Map<String, JsonNode>>,
         documentDefinitionName: String,
+        remainingValueResolverValues: Map<String, Any>,
     ): FormSubmissionResult {
         return try {
             val result = processDocumentService.dispatch(request)
@@ -319,6 +365,7 @@ open class DefaultFormSubmissionService(
                 val submittedDocument = result.resultingDocument().orElseThrow()
                 formFields.forEach { it.postProcess(submittedDocument) }
                 publishExternalDataSubmittedEvent(externalFormData, documentDefinitionName, submittedDocument)
+                valueResolverService.handleValues(submittedDocument.id.id, remainingValueResolverValues)
                 FormSubmissionResultSucceeded(submittedDocument.id().toString())
             }
         } catch (ex: RuntimeException) {
