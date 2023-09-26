@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.treeToValue
-import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.Document
@@ -67,6 +67,8 @@ import kotlin.jvm.optionals.getOrNull
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.transaction.annotation.Transactional
+import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
+import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 
 open class DefaultFormSubmissionService(
     private val processLinkService: ProcessLinkService,
@@ -105,7 +107,7 @@ open class DefaultFormSubmissionService(
 
             val processLink = processLinkService.getProcessLink(processLinkId, FormProcessLink::class.java)
             val document = documentId
-                ?.let { AuthorizationContext.runWithoutAuthorization { documentService.get(documentId) } }
+                ?.let { runWithoutAuthorization { documentService.get(documentId) } }
             val processDefinition = getProcessDefinition(processLink)
             val documentDefinitionNameToUse = document?.definitionId()?.name()
                 ?: documentDefinitionName
@@ -123,11 +125,11 @@ open class DefaultFormSubmissionService(
             val formFields = getFormFields(formDefinition, formData)
             val submittedDocumentContent = JsonMerger.merge(
                 getSubmittedDocumentContent(formFields, document),
-                (resolvedValueMap["doc"]?.let { it as? ObjectNode })?: Mapper.INSTANCE.get().createObjectNode()
+                (resolvedValueMap[DOC_PREFIX]?.let { it as? ObjectNode })?: Mapper.INSTANCE.get().createObjectNode()
             )
 
             val formDefinedProcessVariables = formDefinition.extractProcessVars(formData) +
-                (resolvedValueMap["pv"]?.let { it as? Map<String, Any> } ?: mapOf())
+                (resolvedValueMap[PV_PREFIX]?.let { it as? Map<String, Any> } ?: mapOf())
 
             val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
             val request = getRequest(
@@ -142,7 +144,7 @@ open class DefaultFormSubmissionService(
             )
             val externalFormData = getExternalFormData(formDefinition, formData)
             val remainingValueResolverValues = resolvedValueMap.filter {
-                !listOf("doc", "pv").contains(it.key)
+                !listOf(DOC_PREFIX, PV_PREFIX).contains(it.key)
             }.toMap()
             return dispatchRequest(request, formFields, externalFormData, documentDefinitionNameToUse, remainingValueResolverValues)
         } catch (notFoundException: DocumentNotFoundException) {
@@ -184,7 +186,7 @@ open class DefaultFormSubmissionService(
     private fun getProcessDefinition(
         processLink: ProcessLink
     ): CamundaProcessDefinition {
-        return AuthorizationContext.runWithoutAuthorization {
+        return runWithoutAuthorization {
             repositoryService.findProcessDefinitionById(processLink.processDefinitionId)!!
         }
     }
@@ -194,7 +196,7 @@ open class DefaultFormSubmissionService(
         document: Document?
     ): ProcessDocumentDefinition {
         val processDefinitionKey = CamundaProcessDefinitionKey(processDefinition.key)
-        return AuthorizationContext.runWithoutAuthorization {
+        return runWithoutAuthorization {
             if (document == null) {
                 processDocumentAssociationService.getProcessDocumentDefinition(processDefinitionKey)
             } else {
@@ -218,8 +220,9 @@ open class DefaultFormSubmissionService(
         formDefinition: FormIoFormDefinition,
         formData: JsonNode
     ): List<FormField> {
-        return formDefinition.documentMappedFieldsForSubmission
-            .mapNotNull { objectNode -> FormField.getFormField(formData, objectNode, applicationEventPublisher) }
+        return formDefinition.getDocumentMappedFieldsFiltered(
+            FormIoFormDefinition.NOT_IGNORED.and { t -> FormIoFormDefinition.GET_DATA_KEY.apply(t).isEmpty }
+        ).mapNotNull { objectNode -> FormField.getFormField(formData, objectNode, applicationEventPublisher) }
     }
 
     private fun getSubmittedDocumentContent(formFields: List<FormField>, document: Document?): ObjectNode {

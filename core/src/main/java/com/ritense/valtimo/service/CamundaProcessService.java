@@ -141,6 +141,12 @@ public class CamundaProcessService {
         return camundaExecutionRepository.findById(processInstanceId).orElse(null);
     }
 
+    @Nullable
+    public CamundaExecution findExecutionByBusinessKey(String businessKey) {
+        denyAuthorization();
+        return camundaExecutionRepository.findByBusinessKey(businessKey).orElse(null);
+    }
+
     public void deleteProcessInstanceById(String processInstanceId, String reason) {
         denyAuthorization();
         runtimeService.deleteProcessInstance(processInstanceId, reason);

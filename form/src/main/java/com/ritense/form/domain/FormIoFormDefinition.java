@@ -309,7 +309,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         return getDocumentMappedFieldsFiltered(NOT_IGNORED);
     }
 
-    private List<ObjectNode> getDocumentMappedFieldsFiltered(@Nullable Predicate<JsonNode> predicate) {
+    public List<ObjectNode> getDocumentMappedFieldsFiltered(@Nullable Predicate<JsonNode> predicate) {
         final List<ObjectNode> inputFields = new LinkedList<>();
         List<ArrayNode> components = getComponents(this.asJson());
         components.forEach(componentsNode -> componentsNode.forEach(fieldNode -> {

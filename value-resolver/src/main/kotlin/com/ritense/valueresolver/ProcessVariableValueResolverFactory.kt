@@ -30,7 +30,7 @@ class ProcessVariableValueResolverFactory(
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
-        return "pv"
+        return PREFIX
     }
 
     override fun createResolver(
@@ -71,5 +71,9 @@ class ProcessVariableValueResolverFactory(
         values: Map<String, Any>
     ) {
         runtimeService.setVariables(processInstanceId, values)
+    }
+
+    companion object {
+        const val PREFIX = "pv"
     }
 }

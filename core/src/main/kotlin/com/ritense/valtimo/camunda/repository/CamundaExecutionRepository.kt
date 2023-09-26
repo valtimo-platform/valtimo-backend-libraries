@@ -18,7 +18,10 @@ package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.repository.ReadOnlyJpaSpecificationRepository
+import java.util.Optional
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CamundaExecutionRepository : ReadOnlyJpaSpecificationRepository<CamundaExecution, String>
+interface CamundaExecutionRepository : ReadOnlyJpaSpecificationRepository<CamundaExecution, String> {
+    fun findByBusinessKey(businessKey: String): Optional<CamundaExecution>
+}

@@ -54,7 +54,7 @@ class DocumentJsonValueResolverFactory(
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
-        return "doc"
+        return PREFIX
     }
 
     override fun createResolver(
@@ -199,6 +199,10 @@ class DocumentJsonValueResolverFactory(
 
     private fun toValueNode(value: Any): JsonNode {
         return Mapper.INSTANCE.get().valueToTree(value)
+    }
+
+    companion object {
+        const val PREFIX = "doc"
     }
 
 }
