@@ -56,7 +56,7 @@ dependencies {
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     testImplementation project(":test-utils-common")
-    testImplementation("org.camunda.community.mockito:camunda-platform-7-mockito:6.18.0")
+    testImplementation("org.camunda.community.mockito:camunda-platform-7-mockito:6.19.0")
 
 
     jar {
