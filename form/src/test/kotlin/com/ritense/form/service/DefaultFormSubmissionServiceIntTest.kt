@@ -25,7 +25,6 @@ import com.ritense.form.BaseIntegrationTest
 import com.ritense.form.service.impl.DefaultFormSubmissionService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.service.CamundaProcessService
-import org.camunda.bpm.engine.RuntimeService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
@@ -36,7 +35,6 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
     private val defaultFormSubmissionService: DefaultFormSubmissionService,
     private val processLinkService: ProcessLinkService,
     private val documentService: JsonSchemaDocumentService,
-    private val runtimeService: RuntimeService,
     private val processService: CamundaProcessService
 ) : BaseIntegrationTest() {
 
