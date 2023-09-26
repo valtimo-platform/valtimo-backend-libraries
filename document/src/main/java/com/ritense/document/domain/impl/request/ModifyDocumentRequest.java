@@ -28,12 +28,15 @@ import java.util.Objects;
 public class ModifyDocumentRequest {
 
     @JsonProperty
+    @NotNull
     private final String documentId;
 
     @JsonProperty
+    @NotNull
     private final JsonNode content;
 
     @JsonProperty
+    @NotNull
     private final String versionBasedOn;
 
     @JsonIgnore
@@ -41,9 +44,9 @@ public class ModifyDocumentRequest {
 
     @JsonCreator
     public ModifyDocumentRequest(
-        @JsonProperty(value = "documentId", required = true) @NotNull String documentId,
-        @JsonProperty(value = "content", required = true) @NotNull JsonNode content,
-        @JsonProperty(value = "versionBasedOn", required = true) @NotNull String versionBasedOn
+        @JsonProperty(value = "documentId", required = true) String documentId,
+        @JsonProperty(value = "content", required = true) JsonNode content,
+        @JsonProperty(value = "versionBasedOn", required = true) String versionBasedOn
     ) {
         this.documentId = documentId;
         this.content = content;
