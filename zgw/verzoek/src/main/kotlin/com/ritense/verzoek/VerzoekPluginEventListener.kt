@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -41,7 +42,7 @@ import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import java.net.URI
 
-class VerzoekPluginEventListener(
+open class VerzoekPluginEventListener(
     private val pluginService: PluginService,
     private val objectManagementService: ObjectManagementService,
     private val documentService: DocumentService,
@@ -49,8 +50,9 @@ class VerzoekPluginEventListener(
     private val processDocumentService: ProcessDocumentService
 ) {
 
+    @RunWithoutAuthorization
     @EventListener(NotificatiesApiNotificationReceivedEvent::class)
-    fun createZaakFromNotificatie(event: NotificatiesApiNotificationReceivedEvent) {
+    open fun createZaakFromNotificatie(event: NotificatiesApiNotificationReceivedEvent) {
         val objectType = event.kenmerken["objectType"]
 
         if (!event.kanaal.equals("objecten", ignoreCase = true) ||
@@ -64,7 +66,7 @@ class VerzoekPluginEventListener(
         val objectManagement = objectManagementService.findByObjectTypeId(objectType.substringAfterLast("/")) ?: return
 
         pluginService.createInstance(VerzoekPlugin::class.java) { properties: JsonNode ->
-            properties.get("objectManagementId").textValue().equals(objectManagement.id.toString())
+            properties.get("verzoekProperties").any { it.get("objectManagementId").textValue().equals(objectManagement.id.toString()) }
         }?.run {
             val verzoekObjectData = getVerzoekObjectData(objectManagement, event)
             val verzoekTypeProperties = getVerzoekTypeProperties(verzoekObjectData)

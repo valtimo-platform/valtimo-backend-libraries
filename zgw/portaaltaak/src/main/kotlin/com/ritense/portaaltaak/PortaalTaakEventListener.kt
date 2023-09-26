@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
 import com.ritense.notificatiesapi.exception.NotificatiesNotificationEventException
 import com.ritense.objectenapi.ObjectenApiPlugin
@@ -44,7 +45,7 @@ import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.context.event.EventListener
 
-class PortaalTaakEventListener(
+open class PortaalTaakEventListener(
     private val objectManagementService: ObjectManagementService,
     private val pluginService: PluginService,
     private val processDocumentService: ProcessDocumentService,
@@ -55,8 +56,9 @@ class PortaalTaakEventListener(
     private val objectMapper: ObjectMapper
 ) {
 
+    @RunWithoutAuthorization
     @EventListener(NotificatiesApiNotificationReceivedEvent::class)
-    fun processCompletePortaalTaakEvent(event: NotificatiesApiNotificationReceivedEvent) {
+    open fun processCompletePortaalTaakEvent(event: NotificatiesApiNotificationReceivedEvent) {
         val objectType = event.kenmerken["objectType"]
 
         if (!event.kanaal.equals("objecten", ignoreCase = true) ||

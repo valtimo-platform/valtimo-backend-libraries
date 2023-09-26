@@ -289,11 +289,11 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
                 processInstanceWithDefinition.getProcessInstanceDto().getId()
             );
 
-            processDocumentAssociationService.createProcessDocumentInstance(
+            runWithoutAuthorization(() -> processDocumentAssociationService.createProcessDocumentInstance(
                 camundaProcessInstanceId.toString(),
                 UUID.fromString(document.id().toString()),
                 processInstanceWithDefinition.getProcessDefinition().getName()
-            );
+            ));
             return new ModifyDocumentAndStartProcessResultSucceeded(document, camundaProcessInstanceId);
         } catch (RuntimeException ex) {
             return new ModifyDocumentAndStartProcessResultFailed(parseAndLogException(ex));
@@ -326,11 +326,11 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
                 processInstanceWithDefinition.getProcessInstanceDto().getId()
             );
 
-            processDocumentAssociationService.createProcessDocumentInstance(
+            runWithoutAuthorization(() -> processDocumentAssociationService.createProcessDocumentInstance(
                 camundaProcessInstanceId.toString(),
                 document.id().getId(),
                 processInstanceWithDefinition.getProcessDefinition().getName()
-            );
+            ));
             return new StartProcessForDocumentResultSucceeded(document, camundaProcessInstanceId);
         } catch (RuntimeException ex) {
             return new StartProcessForDocumentResultFailed(parseAndLogException(ex));
