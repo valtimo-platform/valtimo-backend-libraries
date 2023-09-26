@@ -42,7 +42,6 @@ class PrefillFormServiceIntTest @Autowired constructor(
     @Test
     @Transactional
     fun `should prefill using the dataKey properties`() {
-        val xxx = formDefinitionRepository.findByName("form-example-nested-components").get()
         val formDefinition = formDefinitionRepository.findByName("form-example-various-prefill-fields").get()
         val document = createDocument("person", """
             {
@@ -56,7 +55,9 @@ class PrefillFormServiceIntTest @Autowired constructor(
             processService.startProcess(
                 "form-one-task-process",
                 document.id().toString(),
-                mapOf("lastName" to "Doe")
+                mapOf(
+                    "lastName" to "Doe"
+                )
             )
         }
 
@@ -78,6 +79,42 @@ class PrefillFormServiceIntTest @Autowired constructor(
         assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "valueResolverDoc")].defaultValue""", hasItem("John")));
         assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "valueResolverProcessVar")].defaultValue""", hasItem("Doe")));
         assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "valueResolverTaskVar")].defaultValue""", hasItem(now.toString())));
+    }
+
+    @Test
+    @Transactional
+    fun `should prefill using legacy resolvers`() {
+        val formDefinition = formDefinitionRepository.findByName("form-example-various-prefill-fields").get()
+        val document = createDocument("person", """
+            {
+                "person": {
+                    "firstName": "John"
+                }
+            }
+        """.trimIndent())
+
+        val instance = runWithoutAuthorization {
+            processService.startProcess(
+                "form-one-task-process",
+                document.id().toString(),
+                mapOf(
+                    "lastName" to "Doe"
+                )
+            )
+        }
+
+        val task = taskService.createTaskQuery()
+            .processInstanceId(instance.processInstanceDto.id)
+            .taskDefinitionKey("do-something")
+            .singleResult() ?: throw NullPointerException("Task was null")
+
+        val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(formDefinition.id!!, task.processInstanceId, task.id)
+
+        val json = prefilledFormDefinition.asJson().toString()
+        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "person.firstName")].defaultValue""", hasItem("John")));
+        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "pv.lastName")].defaultValue""", hasItem("Doe")));
+        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test:separatedByColon")].defaultValue""", hasItem("MySeparatedByColonValue")));
+        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test.separatedByDot")].defaultValue""", hasItem("MySeparatedByDotValue")));
     }
 
     private fun createDocument(definitionName: String, content: String): Document {

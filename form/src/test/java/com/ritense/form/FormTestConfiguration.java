@@ -41,6 +41,11 @@ public class FormTestConfiguration {
         return mock(MailSender.class);
     }
 
+    @Bean
+    public TestFormFieldDataResolver testFormFieldDataResolver() {
+        return new TestFormFieldDataResolver();
+    }
+
     @TestConfiguration
     public static class TestConfig {
     }

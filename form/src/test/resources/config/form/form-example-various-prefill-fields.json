@@ -35,6 +35,36 @@
             }
         },
         {
+            "label": "Legacy",
+            "key": "legacy",
+            "components": [
+                {
+                    "label": "Firstname",
+                    "key": "person.firstName",
+                    "type": "textfield",
+                    "input": true
+                },
+                {
+                    "label": "Lastname",
+                    "key": "pv.lastName",
+                    "type": "textfield",
+                    "input": true
+                },
+                {
+                    "label": "Separated by colon",
+                    "key": "test:separatedByColon",
+                    "type": "textfield",
+                    "input": true
+                },
+                {
+                    "label": "Separated by dot",
+                    "key": "test.separatedByDot",
+                    "type": "textfield",
+                    "input": true
+                }
+            ]
+        },
+        {
             "type": "button",
             "label": "Submit",
             "key": "submit",
