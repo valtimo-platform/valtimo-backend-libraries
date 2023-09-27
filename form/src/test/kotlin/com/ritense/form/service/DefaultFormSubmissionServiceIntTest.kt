@@ -73,8 +73,8 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
     private fun createFormData(): JsonNode {
         return jacksonObjectMapper().readTree("""
             {
-                "valueResolverDoc": "John",
-                "valueResolverProcessVar": "Doe"
+                "vrDocFirstName": "John",
+                "vrPvLastName": "Doe"
             }
         """.trimIndent())
     }

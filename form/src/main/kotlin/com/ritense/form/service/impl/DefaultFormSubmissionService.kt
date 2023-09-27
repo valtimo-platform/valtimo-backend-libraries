@@ -115,12 +115,12 @@ open class DefaultFormSubmissionService(
             val processVariables = getProcessVariables(taskInstanceId)
             val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
 
-            val dataKeyValueMap = formDefinition.inputFields
+            val sourceKeyValueMap = formDefinition.inputFields
                 .mapNotNull {field ->
-                    getDataKeyValuePair(field, formData)
+                    getSourceKeyValuePair(field, formData)
                 }.toMap()
 
-            val resolvedValueMap = valueResolverService.preProcessValuesForNewCase(dataKeyValueMap)
+            val resolvedValueMap = valueResolverService.preProcessValuesForNewCase(sourceKeyValueMap)
 
             val formFields = getFormFields(formDefinition, formData)
             val submittedDocumentContent = JsonMerger.merge(
@@ -162,15 +162,15 @@ open class DefaultFormSubmissionService(
         }
     }
 
-    private fun getDataKeyValuePair(
+    private fun getSourceKeyValuePair(
         field: ObjectNode,
         formData: JsonNode
     ): Pair<String, Any>? {
-        return FormIoFormDefinition.GET_DATA_KEY.apply(field).getOrNull()?.let { dataKey ->
+        return FormIoFormDefinition.GET_SOURCE_KEY.apply(field).getOrNull()?.let { sourceKey ->
             FormIoFormDefinition.GET_KEY.apply(field).getOrNull()?.let { inputKey ->
                 convertNodeValue(formData.at("/$inputKey"))
             }?.let { value ->
-                Pair(dataKey, value)
+                Pair(sourceKey, value)
             }
         }
     }
@@ -221,7 +221,7 @@ open class DefaultFormSubmissionService(
         formData: JsonNode
     ): List<FormField> {
         return formDefinition.getDocumentMappedFieldsFiltered(
-            FormIoFormDefinition.NOT_IGNORED.and { t -> FormIoFormDefinition.GET_DATA_KEY.apply(t).isEmpty }
+            FormIoFormDefinition.NOT_IGNORED.and { t -> FormIoFormDefinition.GET_SOURCE_KEY.apply(t).isEmpty }
         ).mapNotNull { objectNode -> FormField.getFormField(formData, objectNode, applicationEventPublisher) }
     }
 
@@ -256,7 +256,7 @@ open class DefaultFormSubmissionService(
         formData: JsonNode
     ): Map<String, Map<String, JsonNode>> {
         return formDefinition.buildExternalFormFieldsMapFiltered(
-            FormIoFormDefinition.NOT_IGNORED.and { t -> FormIoFormDefinition.GET_DATA_KEY.apply(t).isEmpty }
+            FormIoFormDefinition.NOT_IGNORED.and { t -> FormIoFormDefinition.GET_SOURCE_KEY.apply(t).isEmpty }
         ).map { entry ->
             entry.key to entry.value.associate {
                 it.name to formData.at(it.jsonPointer)

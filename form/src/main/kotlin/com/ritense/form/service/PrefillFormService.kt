@@ -120,14 +120,14 @@ class PrefillFormService(
         processInstance: CamundaExecution?,
         taskInstanceId: String?
     ) {
-        // Map input fields to Map<{input.key}, {input.properties.dataKey}>
-        val inputDataKeyMap = formDefinition.inputFields
+        // Map input fields to Map<{input.key}, {input.properties.sourceKey}>
+        val inputSourceKeyMap = formDefinition.inputFields
             .filter { FormIoFormDefinition.HAS_PREFILL_ENABLED.test(it) }
             .mapNotNull {
                 val inputKey = FormIoFormDefinition.GET_KEY.apply(it)
-                val dataKey = FormIoFormDefinition.GET_DATA_KEY.apply(it)
-                if(inputKey.isPresent && dataKey.isPresent) {
-                    Pair(inputKey.get(), dataKey.get())
+                val sourceKey = FormIoFormDefinition.GET_SOURCE_KEY.apply(it)
+                if(inputKey.isPresent && sourceKey.isPresent) {
+                    Pair(inputKey.get(), sourceKey.get())
                 } else {
                     null
                 }
@@ -135,20 +135,20 @@ class PrefillFormService(
             .toMap()
             .filter {valueResolverService.supportsValue( it.value ) }
 
-        // Resolve dataKeys into a Map<{dataKey}, {dataValue}>
+        // Resolve sourceKeys into a Map<{sourceKey}, {dataValue}>
         val valueMap = runWithoutAuthorization {
             if (taskInstanceId != null) {
                 val task = taskService.findTaskById(taskInstanceId)
-                valueResolverService.resolveValues(task.getProcessInstanceId(), task, inputDataKeyMap.values)
+                valueResolverService.resolveValues(task.getProcessInstanceId(), task, inputSourceKeyMap.values)
             } else if (processInstance != null) {
-                valueResolverService.resolveValues(processInstance.id, processInstance, inputDataKeyMap.values)
+                valueResolverService.resolveValues(processInstance.id, processInstance, inputSourceKeyMap.values)
             } else {
-                valueResolverService.resolveValues(documentInstanceId.toString(), inputDataKeyMap.values)
+                valueResolverService.resolveValues(documentInstanceId.toString(), inputSourceKeyMap.values)
             }
         }
 
         // Create a Map<{input.key}, {resolvedValue}>
-        val keyValueMap = inputDataKeyMap.entries.mapNotNull { entry ->
+        val keyValueMap = inputSourceKeyMap.entries.mapNotNull { entry ->
             valueMap[entry.value]?.let { resolvedValue -> Pair(entry.key, resolvedValue) }
         }.toMap()
 

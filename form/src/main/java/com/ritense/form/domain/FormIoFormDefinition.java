@@ -42,7 +42,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -75,7 +74,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String DISABLED_KEY = "disabled";
     public static final String PREFILL_KEY = "prefill";
 
-    public static final String DATAKEY_POINTER = "/properties/dataKey";
+    public static final String SOURCE_KEY_POINTER = "/properties/sourceKey";
 
     public static final Predicate<JsonNode> HAS_PREFILL_ENABLED = objectNode ->
         !objectNode.has(PREFILL_KEY) || objectNode.get(PREFILL_KEY).asBoolean();
@@ -88,9 +87,9 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         );
 
 
-    public static final Function<JsonNode, Optional<String>> GET_DATA_KEY = objectNode -> {
-        JsonNode dataKeyNode = objectNode.at(DATAKEY_POINTER);
-        return Optional.ofNullable(dataKeyNode.isTextual() ? dataKeyNode.textValue() : null);
+    public static final Function<JsonNode, Optional<String>> GET_SOURCE_KEY = objectNode -> {
+        JsonNode sourceKeyNode = objectNode.at(SOURCE_KEY_POINTER);
+        return Optional.ofNullable(sourceKeyNode.isTextual() ? sourceKeyNode.textValue() : null);
     };
 
     public static final Function<JsonNode, Optional<String>> GET_KEY = objectNode -> {
@@ -348,7 +347,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     private void fill(ObjectNode field, JsonNode content) {
         assertArgumentNotNull(field, "field is required");
         assertArgumentNotNull(content, "content is required");
-        if(GET_DATA_KEY.apply(field).isEmpty()) { // Only prefill when the properties.dataKey is not set
+        if(GET_SOURCE_KEY.apply(field).isEmpty()) { // Only prefill when the properties.sourceKey is not set
             getContentItem(field)
                 .flatMap(
                     contentItem -> getValueBy(content, contentItem.getJsonPointer())

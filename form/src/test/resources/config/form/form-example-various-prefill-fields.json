@@ -9,29 +9,32 @@
     "components": [
         {
             "label": "Value resolver document field",
-            "key": "valueResolverDoc",
+            "key": "vrDocFirstName",
             "type": "textfield",
             "input": true,
+            "defaultValue": "Jane",
             "properties": {
-                "dataKey": "doc:/person/firstName"
+                "sourceKey": "doc:/person/firstName"
             }
         },
         {
             "label": "Value resolver processvar field",
-            "key": "valueResolverProcessVar",
+            "key": "vrPvLastName",
             "type": "textfield",
             "input": true,
+            "defaultValue": "Don't",
             "properties": {
-                "dataKey": "pv:lastName"
+                "sourceKey": "pv:lastName"
             }
         },
         {
             "label": "Value resolver taskvar field",
-            "key": "valueResolverTaskVar",
+            "key": "vrPvTaskDateOfBirth",
             "type": "textfield",
             "input": true,
+            "defaultValue": "1970-01-01",
             "properties": {
-                "dataKey": "pv:dateOfBirth"
+                "sourceKey": "pv:dateOfBirth"
             }
         },
         {
@@ -42,12 +45,14 @@
                     "label": "Firstname",
                     "key": "person.firstName",
                     "type": "textfield",
+                    "defaultValue": "Jane",
                     "input": true
                 },
                 {
                     "label": "Lastname",
                     "key": "pv.lastName",
                     "type": "textfield",
+                    "defaultValue": "Don't",
                     "input": true
                 },
                 {
@@ -61,7 +66,22 @@
                     "key": "test.separatedByDot",
                     "type": "textfield",
                     "input": true
+                },
+                {
+                    "label": "Separated by colon",
+                    "key": "test:!separatedByColon",
+                    "type": "textfield",
+                    "defaultValue": "::",
+                    "input": true
+                },
+                {
+                    "label": "Separated by dot",
+                    "key": "test.!separatedByDot",
+                    "type": "textfield",
+                    "defaultValue": "..",
+                    "input": true
                 }
+
             ]
         },
         {

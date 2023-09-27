@@ -29,6 +29,7 @@ import org.camunda.bpm.engine.TaskService
 import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test
+import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
@@ -41,7 +42,7 @@ class PrefillFormServiceIntTest @Autowired constructor(
 
     @Test
     @Transactional
-    fun `should prefill using the dataKey properties`() {
+    fun `should prefill a form`() {
         val formDefinition = formDefinitionRepository.findByName("form-example-various-prefill-fields").get()
         val document = createDocument("person", """
             {
@@ -76,30 +77,29 @@ class PrefillFormServiceIntTest @Autowired constructor(
         val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(formDefinition.id!!, task.processInstanceId, task.id)
 
         val json = prefilledFormDefinition.asJson().toString()
-        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "valueResolverDoc")].defaultValue""", hasItem("John")));
-        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "valueResolverProcessVar")].defaultValue""", hasItem("Doe")));
-        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "valueResolverTaskVar")].defaultValue""", hasItem(now.toString())));
+        //value resolver prefill
+        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "vrDocFirstName")].defaultValue""", hasItem("John")))
+        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "vrPvLastName")].defaultValue""", hasItem("Doe")))
+        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "vrPvTaskDateOfBirth")].defaultValue""", hasItem(now.toString())))
+
+        //legacy prefill
+        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "person.firstName")].defaultValue""", hasItem("John")))
+        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "pv.lastName")].defaultValue""", hasItem("Doe")))
+        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test:separatedByColon")].defaultValue""", hasItem("MySeparatedByColonValue")))
+        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test.separatedByDot")].defaultValue""", hasItem("MySeparatedByDotValue")))
     }
 
     @Test
     @Transactional
-    fun `should prefill using legacy resolvers`() {
+    fun `should only overwrite defaultValue when value can be resolved`() {
         val formDefinition = formDefinitionRepository.findByName("form-example-various-prefill-fields").get()
-        val document = createDocument("person", """
-            {
-                "person": {
-                    "firstName": "John"
-                }
-            }
-        """.trimIndent())
+        val document = createDocument("person", "{}")
 
         val instance = runWithoutAuthorization {
             processService.startProcess(
                 "form-one-task-process",
                 document.id().toString(),
-                mapOf(
-                    "lastName" to "Doe"
-                )
+                mapOf()
             )
         }
 
@@ -108,13 +108,27 @@ class PrefillFormServiceIntTest @Autowired constructor(
             .taskDefinitionKey("do-something")
             .singleResult() ?: throw NullPointerException("Task was null")
 
+        val originalJson = formDefinition.asJson().toString()
+        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "vrDocFirstName")].defaultValue""", hasItem("Jane")))
+        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "vrPvLastName")].defaultValue""", hasItem("Don't")))
+        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "vrPvTaskDateOfBirth")].defaultValue""", hasItem("1970-01-01")))
+        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "person.firstName")].defaultValue""", hasItem("Jane")))
+        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "pv.lastName")].defaultValue""", hasItem("Don't")))
+        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test:!separatedByColon")].defaultValue""", hasItem("::")))
+        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test.!separatedByDot")].defaultValue""", hasItem("..")))
+
         val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(formDefinition.id!!, task.processInstanceId, task.id)
 
-        val json = prefilledFormDefinition.asJson().toString()
-        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "person.firstName")].defaultValue""", hasItem("John")));
-        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "pv.lastName")].defaultValue""", hasItem("Doe")));
-        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test:separatedByColon")].defaultValue""", hasItem("MySeparatedByColonValue")));
-        assertThat(json, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test.separatedByDot")].defaultValue""", hasItem("MySeparatedByDotValue")));
+        val prefilled = prefilledFormDefinition.asJson().toString()
+
+        JSONAssert.assertEquals(originalJson, prefilled, false)
+        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "vrDocFirstName")].defaultValue""", hasItem("Jane")))
+        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "vrPvLastName")].defaultValue""", hasItem("Don't")))
+        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "vrPvTaskDateOfBirth")].defaultValue""", hasItem("1970-01-01")))
+        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "person.firstName")].defaultValue""", hasItem("Jane")))
+        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "pv.lastName")].defaultValue""", hasItem("Don't")))
+        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test:!separatedByColon")].defaultValue""", hasItem("::")))
+        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test.!separatedByDot")].defaultValue""", hasItem("..")))
     }
 
     private fun createDocument(definitionName: String, content: String): Document {

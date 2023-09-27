@@ -28,6 +28,7 @@ class TestFormFieldDataResolver: FormFieldDataResolver {
                      vararg varNames: String?): Map<String, Any> {
         return varNames
             .filterNotNull()
+            .filterNot { it.startsWith("!") } //Indicates not to resolve this value
             .associateWith { varName -> "My${varName.replaceFirstChar { c -> c.uppercase() }}Value" }
     }
 }
