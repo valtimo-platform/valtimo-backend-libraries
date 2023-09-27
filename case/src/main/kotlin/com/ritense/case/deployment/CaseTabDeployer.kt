@@ -21,6 +21,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
 import com.ritense.case.repository.CaseTabRepository
+import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionName
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
@@ -54,11 +55,12 @@ class CaseTabDeployer(
 
     fun deploy(caseDefinitions: List<CaseDefinitionsTabCollection>) {
         caseDefinitions.forEach {
-            caseTabRepository.deleteByIdCaseDefinitionName(it.key)
-            val tabs = it.tabs.map { caseTabDto ->
+            caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionName(it.key)))
+            val tabs = it.tabs.mapIndexed { index, caseTabDto ->
                 CaseTab(
                     CaseTabId(it.key, caseTabDto.key),
                     caseTabDto.name,
+                    index,
                     caseTabDto.type,
                     caseTabDto.content
                 )

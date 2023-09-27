@@ -5,10 +5,10 @@
             "key": "other-case-type",
             "tabs": [
                 {
-                    "name": "Summary",
-                    "key": "summary",
-                    "type": "system",
-                    "content": "summary"
+                    "name": "Standard",
+                    "key": "standard",
+                    "type": "standard",
+                    "content": "standard"
                 }
             ]
         }

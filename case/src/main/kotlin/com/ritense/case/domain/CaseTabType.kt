@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.case.repository
+package com.ritense.case.domain
 
-import com.ritense.case.domain.CaseTab
-import com.ritense.case.domain.CaseTabId
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import com.fasterxml.jackson.annotation.JsonValue
 
-interface CaseTabRepository : JpaRepository<CaseTab, CaseTabId>, JpaSpecificationExecutor<CaseTab>
+enum class CaseTabType {
+    STANDARD,
+    FORMIO,
+    CUSTOM;
+
+    val value: String
+        @JsonValue get() = name.lowercase()
+}

@@ -16,9 +16,11 @@
 
 package com.ritense.case.web.rest.dto
 
+import com.ritense.case.domain.CaseTabType
+
 data class CaseTabDto(
     val key: String,
     val name: String,
-    val type: String,
+    val type: CaseTabType,
     val content: String,
 )

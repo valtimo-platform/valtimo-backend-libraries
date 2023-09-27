@@ -28,7 +28,12 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(256)"/>
-            <column name="type" type="varchar(20)"/>
+            <column name="tab_order" type="${intType}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
             <column name="content" type="varchar(256)"/>
         </createTable>
     </changeSet>

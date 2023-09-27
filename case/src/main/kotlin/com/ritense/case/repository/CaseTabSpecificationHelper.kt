@@ -14,6 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.case.deployment
+package com.ritense.case.repository
 
-class DeploymentFailedException(message: String): RuntimeException(message)
+import com.ritense.case.domain.CaseTab
+import org.springframework.data.jpa.domain.Specification
+
+class CaseTabSpecificationHelper {
+
+    companion object {
+
+        const val ID: String = "id"
+        const val CASE_DEFINITION_NAME: String = "caseDefinitionName"
+        const val TAB_ORDER: String = "tabOrder"
+
+        @JvmStatic
+        fun byCaseDefinitionName(caseDefinitionName: String) = Specification<CaseTab> { root, _, cb ->
+            cb.equal(root.get<Any>(ID).get<Any>(CASE_DEFINITION_NAME), caseDefinitionName)
+        }
+
+    }
+}

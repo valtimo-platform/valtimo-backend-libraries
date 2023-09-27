@@ -19,6 +19,7 @@ package com.ritense.case.configuration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.authorization.AuthorizationService
+import com.ritense.case.deployment.CaseTabDeployer
 import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
@@ -33,7 +34,6 @@ import com.ritense.case.service.CaseListDeploymentService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.web.rest.CaseDefinitionResource
 import com.ritense.case.web.rest.CaseInstanceResource
-import com.ritense.case.deployment.CaseTabDeployer
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.valtimo.changelog.service.ChangelogService
@@ -83,7 +83,7 @@ class CaseAutoConfiguration {
         documentDefinitionService: DocumentDefinitionService,
         valueResolverService: ValueResolverService,
         authorizationService: AuthorizationService,
-        ): CaseDefinitionService {
+    ): CaseDefinitionService {
         return CaseDefinitionService(
             repository,
             caseDefinitionListColumnRepository,

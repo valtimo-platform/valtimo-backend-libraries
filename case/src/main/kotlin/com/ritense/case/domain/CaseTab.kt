@@ -18,14 +18,23 @@ package com.ritense.case.domain
 
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.Table
 
 @Entity
 @Table(name = "case_tab")
 class CaseTab(
+
     @EmbeddedId
     val id: CaseTabId,
+
     val name: String,
-    val type: String,
+
+    val tabOrder: Int,
+
+    @Enumerated(EnumType.STRING)
+    val type: CaseTabType,
+
     val content: String,
 )
