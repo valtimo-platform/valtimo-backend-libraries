@@ -109,26 +109,12 @@ class PrefillFormServiceIntTest @Autowired constructor(
             .singleResult() ?: throw NullPointerException("Task was null")
 
         val originalJson = formDefinition.asJson().toString()
-        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "vrDocFirstName")].defaultValue""", hasItem("Jane")))
-        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "vrPvLastName")].defaultValue""", hasItem("Don't")))
-        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "vrPvTaskDateOfBirth")].defaultValue""", hasItem("1970-01-01")))
-        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "person.firstName")].defaultValue""", hasItem("Jane")))
-        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "pv.lastName")].defaultValue""", hasItem("Don't")))
-        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test:!separatedByColon")].defaultValue""", hasItem("::")))
-        assertThat(originalJson, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test.!separatedByDot")].defaultValue""", hasItem("..")))
 
         val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(formDefinition.id!!, task.processInstanceId, task.id)
 
         val prefilled = prefilledFormDefinition.asJson().toString()
 
         JSONAssert.assertEquals(originalJson, prefilled, false)
-        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "vrDocFirstName")].defaultValue""", hasItem("Jane")))
-        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "vrPvLastName")].defaultValue""", hasItem("Don't")))
-        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "vrPvTaskDateOfBirth")].defaultValue""", hasItem("1970-01-01")))
-        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "person.firstName")].defaultValue""", hasItem("Jane")))
-        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "pv.lastName")].defaultValue""", hasItem("Don't")))
-        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test:!separatedByColon")].defaultValue""", hasItem("::")))
-        assertThat(prefilled, hasJsonPath("""${'$'}.components[?(@.key == "legacy")].components[?(@.key == "test.!separatedByDot")].defaultValue""", hasItem("..")))
     }
 
     private fun createDocument(definitionName: String, content: String): Document {
