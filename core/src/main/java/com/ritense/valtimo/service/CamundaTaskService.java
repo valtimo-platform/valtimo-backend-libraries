@@ -285,7 +285,7 @@ public class CamundaTaskService {
     @Transactional(readOnly = true)
     public Page<TaskExtended> findTasksFiltered(
         TaskFilter taskFilter, Pageable pageable
-    ) throws IllegalAccessException {
+    ) {
         var spec = getAuthorizationSpecification(VIEW_LIST);
         var specification = spec.and(buildTaskFilterSpecification(taskFilter));
 
@@ -300,6 +300,7 @@ public class CamundaTaskService {
         query.multiselect(taskRoot, executionIdPath, businessKeyPath, processDefinitionIdPath, processDefinitionKeyPath);
         query.distinct(true);
         query.where(specification.toPredicate(taskRoot, query, cb));
+        query.groupBy(taskRoot, executionIdPath, businessKeyPath, processDefinitionIdPath, processDefinitionKeyPath);
         query.orderBy(getOrderBy(taskRoot, pageable.getSort()));
 
         var typedQuery = entityManager.createQuery(query);
@@ -342,7 +343,7 @@ public class CamundaTaskService {
             })
             .toList();
 
-        var total = camundaTaskRepository.count(spec.and(specification));
+        var total = camundaTaskRepository.count(specification);
         return new PageImpl<>(tasks, pageable, total);
     }
 
@@ -444,7 +445,7 @@ public class CamundaTaskService {
         );
     }
 
-    private Specification<CamundaTask> buildTaskFilterSpecification(TaskFilter taskFilter) throws IllegalAccessException {
+    private Specification<CamundaTask> buildTaskFilterSpecification(TaskFilter taskFilter) {
         String currentUserLogin = SecurityUtils.getCurrentUserLogin();
         List<String> userRoles = SecurityUtils.getCurrentUserRoles();
         var filterSpec = all();
