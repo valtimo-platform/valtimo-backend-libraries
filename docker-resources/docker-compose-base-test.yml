@@ -1,7 +1,7 @@
 version: '3.9'
 services:
     db:
-        image: postgres:14.1
+        image: postgres:14.9
         #ports:
            # - "5432:5432" #needs overriding "XXXX:5432" XXXX=your-own-port-per-module-test
         environment:
