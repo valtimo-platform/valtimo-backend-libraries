@@ -24,17 +24,19 @@ open class ValueResolverServiceImpl(
 ) : ValueResolverService {
 
     private lateinit var resolverFactoryMap: Map<String, ValueResolverFactory>
-    fun getResolverFactoryMap() = if (this::resolverFactoryMap.isInitialized) {
-        resolverFactoryMap
-    } else {
-        valueResolverFactories.groupBy { it.supportedPrefix() }
-            .onEach { (key, value) ->
-                if(value.size != 1) {
-                    throw RuntimeException("Expected 1 resolver for prefix '$key'. Found: ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")
-                }
-            }.map { (key, value) ->
-                key to value.first()
-            }.toMap()
+    private fun getResolverFactoryMap(): Map<String, ValueResolverFactory> {
+        if (!this::resolverFactoryMap.isInitialized) {
+            resolverFactoryMap = valueResolverFactories.groupBy { it.supportedPrefix() }
+                .onEach { (key, value) ->
+                    if(value.size != 1) {
+                        throw RuntimeException("Expected 1 resolver for prefix '$key'. Found: ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")
+                    }
+                }.map { (key, value) ->
+                    key to value.first()
+                }.toMap()
+        }
+
+        return resolverFactoryMap
     }
 
     override fun supportsValue(value: String) : Boolean {

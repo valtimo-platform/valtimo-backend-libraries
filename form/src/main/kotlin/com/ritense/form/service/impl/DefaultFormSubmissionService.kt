@@ -62,6 +62,7 @@ import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromException
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
+import com.ritense.valueresolver.ValueResolverServiceImpl
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 import mu.KotlinLogging
@@ -115,21 +116,24 @@ open class DefaultFormSubmissionService(
             val processVariables = getProcessVariables(taskInstanceId)
             val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
 
-            val sourceKeyValueMap = formDefinition.inputFields
+            //Create a Map<"doc", Map<"doc:xyz", "submittedValue">>
+            val sourceKeyValueMappedByPrefixMap = formDefinition.inputFields
                 .mapNotNull {field ->
                     getSourceKeyValuePair(field, formData)
-                }.toMap()
-
-            val resolvedValueMap = valueResolverService.preProcessValuesForNewCase(sourceKeyValueMap)
+                }.groupBy{ (key, _) ->
+                    key.substringBefore(ValueResolverServiceImpl.DELIMITER, missingDelimiterValue = "")
+                }.mapValues { it.value.toMap() }
 
             val formFields = getFormFields(formDefinition, formData)
+            val resolvedDocumentValueMap = valueResolverService.preProcessValuesForNewCase(sourceKeyValueMappedByPrefixMap.getOrDefault(DOC_PREFIX, mapOf()))
             val submittedDocumentContent = JsonMerger.merge(
                 getSubmittedDocumentContent(formFields, document),
-                (resolvedValueMap[DOC_PREFIX]?.let { it as? ObjectNode })?: Mapper.INSTANCE.get().createObjectNode()
+                (resolvedDocumentValueMap[DOC_PREFIX]?.let { it as? ObjectNode })?: Mapper.INSTANCE.get().createObjectNode()
             )
 
+            val resolvedPvValueMap = valueResolverService.preProcessValuesForNewCase(sourceKeyValueMappedByPrefixMap.getOrDefault(PV_PREFIX, mapOf()))
             val formDefinedProcessVariables = formDefinition.extractProcessVars(formData) +
-                (resolvedValueMap[PV_PREFIX]?.let { it as? Map<String, Any> } ?: mapOf())
+                (resolvedPvValueMap[PV_PREFIX]?.let { it as? Map<String, Any> } ?: mapOf())
 
             val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
             val request = getRequest(
@@ -143,9 +147,11 @@ open class DefaultFormSubmissionService(
                 preJsonPatch
             )
             val externalFormData = getExternalFormData(formDefinition, formData)
-            val remainingValueResolverValues = resolvedValueMap.filter {
-                !listOf(DOC_PREFIX, PV_PREFIX).contains(it.key)
-            }.toMap()
+            val remainingValueResolverValues = sourceKeyValueMappedByPrefixMap.filterKeys {
+                !listOf(DOC_PREFIX, PV_PREFIX).contains(it)
+            }.flatMap { it.value.entries }
+                .associate { (key, value) -> key to value }
+
             return dispatchRequest(request, formFields, externalFormData, documentDefinitionNameToUse, remainingValueResolverValues)
         } catch (notFoundException: DocumentNotFoundException) {
             logger.error("Document could not be found", notFoundException)

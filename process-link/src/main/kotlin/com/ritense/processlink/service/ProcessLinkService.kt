@@ -61,19 +61,6 @@ open class ProcessLinkService(
             .flatMap { processLinkRepository.findByProcessDefinitionId(it.id) }
     }
 
-    //TODO: remove. This is only used in a test, and the required parameters do not include a process definition name or form
-    fun getProcessLinks(
-        activityId: String,
-        activityType: ActivityTypeWithEventName,
-        processLinkType: String
-    ): List<ProcessLink> {
-        return processLinkRepository.findByActivityIdAndActivityTypeAndProcessLinkType(
-            activityId,
-            activityType,
-            processLinkType
-        )
-    }
-
     fun getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId: String, activityType: ActivityTypeWithEventName): ProcessLink? {
         return processLinkRepository.findByProcessDefinitionIdAndActivityType(processDefinitionId, activityType)
     }

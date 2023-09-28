@@ -22,12 +22,16 @@ import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.BaseIntegrationTest
+import com.ritense.form.TestValueResolverFactory
 import com.ritense.form.service.impl.DefaultFormSubmissionService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.service.CamundaProcessService
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
@@ -35,8 +39,11 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
     private val defaultFormSubmissionService: DefaultFormSubmissionService,
     private val processLinkService: ProcessLinkService,
     private val documentService: JsonSchemaDocumentService,
-    private val processService: CamundaProcessService
+    private val processService: CamundaProcessService,
+    private val testValueResolverFactory: TestValueResolverFactory
 ) : BaseIntegrationTest() {
+
+
 
     @Test
     @Transactional
@@ -68,13 +75,19 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         val lastName = processExecution?.getVariable("lastName")
 
         assertThat(lastName, equalTo("Doe"))
+
+        val argumentCaptor = argumentCaptor<Map<String, Any>>()
+        verify(testValueResolverFactory).handleValues(any(), argumentCaptor.capture())
+
+        assertThat(argumentCaptor.firstValue["gender"], equalTo("M"))
     }
 
     private fun createFormData(): JsonNode {
         return jacksonObjectMapper().readTree("""
             {
                 "vrDocFirstName": "John",
-                "vrPvLastName": "Doe"
+                "vrPvLastName": "Doe",
+                "vrTestGender": "M"
             }
         """.trimIndent())
     }

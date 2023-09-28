@@ -34,17 +34,27 @@
             "input": true,
             "defaultValue": "1970-01-01",
             "properties": {
-                "sourceKey": "test:gender"
+                "sourceKey": "pv:dateOfBirth"
             }
         },
         {
-            "label": "Value resolver taskvar field",
+            "label": "Value resolver test field",
             "key": "vrTestGender",
             "type": "textfield",
             "input": true,
             "defaultValue": "X",
             "properties": {
-                "sourceKey": "pv:dateOfBirth"
+                "sourceKey": "test:gender"
+            }
+        },
+        {
+            "label": "Value resolver test field",
+            "key": "vrTestGenderUnresolved",
+            "type": "textfield",
+            "input": true,
+            "defaultValue": "X",
+            "properties": {
+                "sourceKey": "test:!gender"
             }
         },
         {
