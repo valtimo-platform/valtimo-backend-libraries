@@ -37,9 +37,7 @@ class CamundaTaskIdentityLinkMapper : AuthorizationEntityMapper<CamundaTask, Cam
         criteriaBuilder: CriteriaBuilder
     ): AuthorizationEntityMapperResult<CamundaIdentityLink> {
         val ilRoot: Root<CamundaIdentityLink> = query.from(CamundaIdentityLink::class.java)
-        val groupList = query.groupList.toMutableList()
-        groupList.add(root.get<Any>(ID))
-        query.groupBy(groupList)
+        query.groupBy(query.groupList + root.get<Any>(ID))
 
         return AuthorizationEntityMapperResult(
             ilRoot,
