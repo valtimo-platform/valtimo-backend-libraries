@@ -31,9 +31,11 @@ import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.service.CaseListDeploymentService
+import com.ritense.case.service.CaseTabService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.web.rest.CaseDefinitionResource
 import com.ritense.case.web.rest.CaseInstanceResource
+import com.ritense.case.web.rest.CaseTabResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.valtimo.changelog.service.ChangelogService
@@ -76,6 +78,14 @@ class CaseAutoConfiguration {
         return CaseInstanceResource(service)
     }
 
+    @ConditionalOnMissingBean(CaseTabResource::class)
+    @Bean
+    fun caseTabResource(
+        caseTabService: CaseTabService
+    ): CaseTabResource {
+        return CaseTabResource(caseTabService)
+    }
+
     @Bean
     fun caseDefinitionService(
         repository: CaseDefinitionSettingsRepository,
@@ -91,6 +101,14 @@ class CaseAutoConfiguration {
             valueResolverService,
             authorizationService
         )
+    }
+
+    @ConditionalOnMissingBean(CaseTabService::class)
+    @Bean
+    fun caseTabService(
+        caseTabRepository: CaseTabRepository
+    ): CaseTabService {
+        return CaseTabService(caseTabRepository)
     }
 
     @Bean

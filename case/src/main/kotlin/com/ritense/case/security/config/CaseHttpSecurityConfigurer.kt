@@ -36,6 +36,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                 .antMatchers(PUT, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN) // Deprecated
                 .antMatchers(DELETE, "/api/v1/case/{caseDefinitionName}/list-column/{columnKey}").hasAuthority(ADMIN) // Deprecated
                 .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/settings").authenticated()
+                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/tab").authenticated()
                 .antMatchers(PATCH, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(ADMIN) // Deprecated
                 .antMatchers(POST, "/api/v1/case/{caseDefinitionName}/search").authenticated()
                 .antMatchers(GET, "/api/management/v1/case/{caseDefinitionName}/settings").hasAuthority(ADMIN)

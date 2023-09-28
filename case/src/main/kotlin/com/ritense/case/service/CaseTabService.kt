@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.case.web.rest.dto
+package com.ritense.case.service
 
 import com.ritense.case.domain.CaseTab
-import com.ritense.case.domain.CaseTabType
+import com.ritense.case.repository.CaseTabRepository
+import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.TAB_ORDER
+import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionName
+import org.springframework.data.domain.Sort
 
-data class CaseTabDto(
-    val key: String,
-    val name: String,
-    val type: CaseTabType,
-    val content: String,
+class CaseTabService(
+    private val caseTabRepository: CaseTabRepository
 ) {
-    companion object {
-        fun of(caseTab: CaseTab) = CaseTabDto(
-            caseTab.id.key,
-            caseTab.name,
-            caseTab.type,
-            caseTab.content
-        )
+
+    fun getCaseTabs(caseDefinitionName: String): List<CaseTab> {
+        return caseTabRepository.findAll(byCaseDefinitionName(caseDefinitionName), Sort.by(TAB_ORDER))
     }
+
 }
