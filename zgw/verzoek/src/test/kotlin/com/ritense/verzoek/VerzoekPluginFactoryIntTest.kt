@@ -120,13 +120,13 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
             "verzoek", """
             {
               "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
-              "objectManagementId": "0b993a22-aa70-49a8-934a-79b17a70df6f",
               "processToStart": "verzoek-process",
               "rsin": "637549971",
               "verzoekProperties": [{
                 "type": "objection",
                 "caseDefinitionName": "profile",
                 "processDefinitionKey": "objection-process",
+                "objectManagementId": "0b993a22-aa70-49a8-934a-79b17a70df6f",
                 "initiatorRoltypeUrl": "https://example.com/my-role-type",
                 "initiatorRolDescription": "Initiator",
                 "copyStrategy": "specified",

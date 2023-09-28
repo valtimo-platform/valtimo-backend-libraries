@@ -20,8 +20,10 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.valtimo.camunda.domain.CamundaIdentityLink
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.domain.CamundaVariableInstance
+import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.Companion.NAME
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceSpecificationHelper.Companion.byNameIn
@@ -35,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional
 open class CamundaRuntimeService(
     private val runtimeService: RuntimeService,
     private val camundaVariableInstanceRepository: CamundaVariableInstanceRepository,
+    private val camundaIdentityLinkRepository: CamundaIdentityLinkRepository,
     private val authorizationService: AuthorizationService
 ) {
 
@@ -69,6 +72,12 @@ open class CamundaRuntimeService(
             .createProcessInstanceQuery()
             .processInstanceId(processInstanceId)
             .singleResult()
+    }
+
+    @Transactional(readOnly = true)
+    open fun getIdentityLink(identityLinkId: String): CamundaIdentityLink? {
+        denyAuthorization()
+        return camundaIdentityLinkRepository.findById(identityLinkId).orElse(null)
     }
 
     private fun denyAuthorization() {

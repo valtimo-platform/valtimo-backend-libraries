@@ -18,6 +18,7 @@ package com.ritense.document.web.rest.impl;
 
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
+import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
 import com.ritense.document.domain.impl.request.GetDocumentCandidateUsersRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
@@ -41,7 +42,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -50,7 +50,6 @@ import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
-@RestController
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class JsonSchemaDocumentResource implements DocumentResource {
 
@@ -114,22 +113,23 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     @Override
     @PostMapping("/v1/document/{documentId}/assign")
     public ResponseEntity<Void> assignHandlerToDocument(
-        @PathVariable(name = "documentId")UUID documentId,
+        @PathVariable(name = "documentId") UUID documentId,
         @RequestBody @Valid UpdateAssigneeRequest request) {
         logger.debug(String.format("REST call /api/v1/document/%s/assign", documentId));
+        documentService.assignUserToDocument(documentId, request.getAssigneeId());
+        return ResponseEntity.ok().build();
+    }
 
-        try {
-            documentService.assignUserToDocument(documentId, request.getAssigneeId());
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            logger.error("Failed to assign a user to a document", e);
-            return ResponseEntity.badRequest().build();
-        }
+    @Override
+    @PostMapping("/v1/document/assign")
+    public ResponseEntity<Void> assignHandlerToDocuments(@RequestBody @Valid AssignToDocumentsRequest request) {
+        documentService.assignUserToDocuments(request.getDocumentIds(), request.getAssigneeId());
+        return ResponseEntity.ok().build();
     }
 
     @Override
     @PostMapping("/v1/document/{documentId}/unassign")
-    public ResponseEntity<Void> unassignHandlerFromDocument(@PathVariable(name = "documentId")UUID documentId) {
+    public ResponseEntity<Void> unassignHandlerFromDocument(@PathVariable(name = "documentId") UUID documentId) {
         logger.debug(String.format("REST call /api/v1/document/%s/unassign", documentId));
 
         try {

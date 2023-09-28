@@ -20,6 +20,7 @@ import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +31,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static com.ritense.valtimo.contract.utils.TestUtil.convertObjectToJsonBytes;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -80,9 +86,9 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var postContent = "{ \"assigneeId\": \"" + user.getId() + "\"}";
 
         mockMvc.perform(
-            post("/api/v1/document/{documentId}/assign", document.id().getId().toString())
-                .content(postContent)
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                post("/api/v1/document/{documentId}/assign", document.id().getId().toString())
+                    .content(postContent)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
 
@@ -97,6 +103,106 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         assertEquals(user.getId(), savedDocument.assigneeId());
         assertNotNull(savedDocument.assigneeFullName());
         assertEquals(user.getFullName(), savedDocument.assigneeFullName());
+    }
+
+    @Test
+    @WithMockUser(username = USER_EMAIL, authorities = {FULL_ACCESS_ROLE})
+    void shouldAssignUserToMultipleCases() throws Exception {
+        var content = new JsonDocumentContent("{\"street\": \"Park\"}");
+        final JsonSchemaDocument.CreateDocumentResultImpl resultDoc = JsonSchemaDocument.create(
+            definition(),
+            content,
+            USERNAME,
+            documentSequenceGeneratorService,
+            null
+        );
+        var document2 = resultDoc.resultingDocument().orElseThrow();
+        documentRepository.save(document2);
+
+        var user = mockUser("John", "Doe");
+        var loggedInUser = mockUser("Henk", "de Vries");
+        when(userManagementService.findById(user.getId())).thenReturn(user);
+        when(userManagementService.getCurrentUser()).thenReturn(loggedInUser);
+
+        AssignToDocumentsRequest assignToDocumentsRequest = new AssignToDocumentsRequest(List.of(document.id().getId(), document2.id().getId()), user.getId());
+
+        mockMvc.perform(
+                post("/api/v1/document/assign")
+                    .characterEncoding(UTF_8)
+                    .content(convertObjectToJsonBytes(assignToDocumentsRequest))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        // Assert that the assignee is saved in the document
+        var result1 = documentRepository.findById(document.id());
+        var result2 = documentRepository.findById(document2.id());
+
+        assertTrue(result1.isPresent());
+        assertTrue(result1.get() instanceof JsonSchemaDocument);
+        assertTrue(result2.isPresent());
+        assertTrue(result2.get() instanceof JsonSchemaDocument);
+
+        var savedDocument = (JsonSchemaDocument) result1.get();
+        assertNotNull(savedDocument.assigneeId());
+        assertEquals(user.getId(), savedDocument.assigneeId());
+        assertNotNull(savedDocument.assigneeFullName());
+        assertEquals(user.getFullName(), savedDocument.assigneeFullName());
+
+        var savedDocument2 = (JsonSchemaDocument) result2.get();
+        assertNotNull(savedDocument2.assigneeId());
+        assertEquals(user.getId(), savedDocument2.assigneeId());
+        assertNotNull(savedDocument2.assigneeFullName());
+        assertEquals(user.getFullName(), savedDocument2.assigneeFullName());
+    }
+
+    @Test
+    @WithMockUser(username = USER_EMAIL, authorities = {FULL_ACCESS_ROLE})
+    void shouldAssignUserToSingleCasesWithMultipleCasesPresent() throws Exception {
+        var content = new JsonDocumentContent("{\"street\": \"Park\"}");
+        final JsonSchemaDocument.CreateDocumentResultImpl resultDoc = JsonSchemaDocument.create(
+            definition(),
+            content,
+            USERNAME,
+            documentSequenceGeneratorService,
+            null
+        );
+        var document2 = resultDoc.resultingDocument().orElseThrow();
+        documentRepository.save(document2);
+
+        var user = mockUser("John", "Doe");
+        var loggedInUser = mockUser("Henk", "de Vries");
+        when(userManagementService.findById(user.getId())).thenReturn(user);
+        when(userManagementService.getCurrentUser()).thenReturn(loggedInUser);
+
+        AssignToDocumentsRequest assignToDocumentsRequest = new AssignToDocumentsRequest(List.of(document.id().getId()), user.getId());
+
+        mockMvc.perform(
+                post("/api/v1/document/assign")
+                    .characterEncoding(UTF_8)
+                    .content(convertObjectToJsonBytes(assignToDocumentsRequest))
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        // Assert that the assignee is saved in the document
+        var result1 = documentRepository.findById(document.id());
+        var result2 = documentRepository.findById(document2.id());
+
+        assertTrue(result1.isPresent());
+        assertTrue(result1.get() instanceof JsonSchemaDocument);
+        assertTrue(result2.isPresent());
+        assertTrue(result2.get() instanceof JsonSchemaDocument);
+
+        var savedDocument = (JsonSchemaDocument) result1.get();
+        assertNotNull(savedDocument.assigneeId());
+        assertEquals(user.getId(), savedDocument.assigneeId());
+        assertNotNull(savedDocument.assigneeFullName());
+        assertEquals(user.getFullName(), savedDocument.assigneeFullName());
+
+        var savedDocument2 = (JsonSchemaDocument) result2.get();
+        assertNull(savedDocument2.assigneeId());
+        assertNull(savedDocument2.assigneeFullName());
     }
 
     @Test
