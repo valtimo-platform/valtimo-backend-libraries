@@ -93,13 +93,14 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public JsonSchemaDocumentService(JsonSchemaDocumentRepository documentRepository,
-                                     JsonSchemaDocumentDefinitionService documentDefinitionService,
-                                     JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
-                                     ResourceService resourceService,
-                                     UserManagementService userManagementService,
-                                     AuthorizationService authorizationService,
-                                     ApplicationEventPublisher applicationEventPublisher
+    public JsonSchemaDocumentService(
+        JsonSchemaDocumentRepository documentRepository,
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
+        ResourceService resourceService,
+        UserManagementService userManagementService,
+        AuthorizationService authorizationService,
+        ApplicationEventPublisher applicationEventPublisher
     ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
@@ -252,9 +253,9 @@ public class JsonSchemaDocumentService implements DocumentService {
         final var version = JsonSchemaDocumentVersion.from(request.versionBasedOn());
         final var document = runWithoutAuthorization(
             () -> findBy(documentId)
-            .orElseThrow(
-                () -> new DocumentNotFoundException("Document not found with id " + request.documentId())
-            )
+                .orElseThrow(
+                    () -> new DocumentNotFoundException("Document not found with id " + request.documentId())
+                )
         );
 
         authorizationService.requirePermission(
@@ -303,7 +304,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 documentRelation.relationType()
             )
         );
-        runWithoutAuthorization(() ->findBy(documentId))
+        runWithoutAuthorization(() -> findBy(documentId))
             .ifPresent(document -> documentRepository.save(document.addRelatedDocument(jsonSchemaDocumentRelation)));
     }
 
@@ -357,7 +358,8 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
 
         final Resource resource = resourceService.getResource(resourceId);
-        document.addRelatedFile(JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin()), metadata);
+        document.addRelatedFile(
+            JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin()), metadata);
         documentRepository.save(document);
     }
 
@@ -400,15 +402,15 @@ public class JsonSchemaDocumentService implements DocumentService {
                 () -> getAllByDocumentDefinitionName(Pageable.unpaged(), documentDefinitionName).toList());
         if (!documents.isEmpty()) {
             documents.forEach(document -> {
-                    authorizationService.requirePermission(
-                        new EntityAuthorizationRequest<>(
-                            JsonSchemaDocument.class,
-                            DELETE,
-                            document
-                        )
-                    );
-                    document.removeAllRelatedFiles();
-                });
+                authorizationService.requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        DELETE,
+                        document
+                    )
+                );
+                document.removeAllRelatedFiles();
+            });
             documentRepository.saveAll(documents);
             documentRepository.deleteAll(documents);
             documentSequenceGeneratorService.deleteSequenceRecordBy(documentDefinitionName);
@@ -463,10 +465,10 @@ public class JsonSchemaDocumentService implements DocumentService {
     @Override
     public void assignUserToDocument(UUID documentId, String assigneeId) {
         JsonSchemaDocument document = runWithoutAuthorization(
-                () -> getDocumentBy(
-                    JsonSchemaDocumentId.existingId(documentId)
-                )
-            );
+            () -> getDocumentBy(
+                JsonSchemaDocumentId.existingId(documentId)
+            )
+        );
 
         var assignee = runWithoutAuthorization(() -> userManagementService.findById(assigneeId));
         if (assignee == null) {

@@ -19,15 +19,14 @@ package com.ritense.authorization
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionRepository
 import com.ritense.authorization.request.AuthorizationRequest
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.role.Role
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.utils.SecurityUtils
+import java.lang.reflect.ParameterizedType
 import mu.KotlinLogging
 import org.springframework.security.access.AccessDeniedException
-import java.lang.reflect.ParameterizedType
 
 class ValtimoAuthorizationService(
     private val authorizationSpecificationFactories: List<AuthorizationSpecificationFactory<*>>,

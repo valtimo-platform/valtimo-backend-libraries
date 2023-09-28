@@ -25,7 +25,6 @@ import com.ritense.plugin.domain.EventType
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import com.ritense.zgw.Rsin
-import java.util.UUID
 import javax.validation.Valid
 import javax.validation.ValidationException
 

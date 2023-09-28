@@ -63,7 +63,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     /**
-     * This keeps the API backwards compatible with old jpa entity columns in the sort
+     * This keeps the API backwards compatible with old jpa entity columns in the sort.
      * @param pageable
      * @return
      */

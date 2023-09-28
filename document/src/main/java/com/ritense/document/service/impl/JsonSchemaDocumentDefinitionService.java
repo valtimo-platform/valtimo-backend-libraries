@@ -105,10 +105,10 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     @Override
     public Page<JsonSchemaDocumentDefinition> findAllForManagement(Pageable pageable) {
         authorizationService.requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocumentDefinition.class,
-                    Action.deny()
-                ));
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                Action.deny()
+            ));
 
         final var spec = JsonSchemaDocumentDefinitionSpecificationHelper.byLatestVersion();
         return documentDefinitionRepository.findAll(spec, pageable);
@@ -125,7 +125,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     public Optional<JsonSchemaDocumentDefinition> findBy(DocumentDefinition.Id id) {
         final var definition = documentDefinitionRepository.findById(id).orElse(null);
 
-        if(definition != null) {
+        if (definition != null) {
             authorizationService
                 .requirePermission(
                     new EntityAuthorizationRequest<>(
@@ -145,7 +145,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
             documentDefinitionName
         ).orElse(null);
 
-        if(definition != null) {
+        if (definition != null) {
             authorizationService
                 .requirePermission(
                     new EntityAuthorizationRequest<>(
@@ -230,13 +230,19 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                 }
 
                 if (existingDocumentDefinition.getSchema().equals(jsonSchema)) {
-                    logger.info("Schema already deployed - {} - {} ", existingDocumentDefinition.getId(), jsonSchema.getSchema().getId());
+                    logger.info(
+                        "Schema already deployed - {} - {} ", existingDocumentDefinition.getId(),
+                        jsonSchema.getSchema().getId()
+                    );
                     DocumentDefinitionError error = () -> "This exact schema is already deployed";
                     return new DeployDocumentDefinitionResultFailed(List.of(error));
                 } else {
                     // Definition changed increase version
                     documentDefinitionId = JsonSchemaDocumentDefinitionId.nextVersion(existingDocumentDefinition.id());
-                    logger.info("Schema changed. Deploying next version - {} - {} ", documentDefinitionId, jsonSchema.getSchema().getId());
+                    logger.info(
+                        "Schema changed. Deploying next version - {} - {} ", documentDefinitionId,
+                        jsonSchema.getSchema().getId()
+                    );
                 }
             } else {
                 documentDefinitionId = JsonSchemaDocumentDefinitionId.newId(documentDefinitionName);
@@ -262,10 +268,11 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public void store(JsonSchemaDocumentDefinition documentDefinition) {
-        assertArgumentNotNull(documentDefinition,   "documentDefinition is required");
+        assertArgumentNotNull(documentDefinition, "documentDefinition is required");
 
-        final var existingDocumentDefinition = documentDefinitionRepository.findById(documentDefinition.id()).orElse(null);
-        if (existingDocumentDefinition!=null) {
+        final var existingDocumentDefinition = documentDefinitionRepository.findById(documentDefinition.id()).orElse(
+            null);
+        if (existingDocumentDefinition != null) {
             if (!existingDocumentDefinition.equals(documentDefinition)) {
                 throw new UnsupportedOperationException("Schema already deployed, will cannot redeploy");
             }
@@ -301,7 +308,6 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         documentDefinitionRepository.deleteByIdName(documentDefinitionName);
     }
 
-
     @Override
     public boolean currentUserCanAccessDocumentDefinition(String documentDefinitionName) {
         return findLatestByName(documentDefinitionName)
@@ -326,10 +332,14 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         try {
             PathCompiler.compile(jsonPathExpression);
         } catch (InvalidPathException e) {
-            throw new ValidationException("Failed to compile JsonPath '" + jsonPathExpression + "' for document definition '" + documentDefinitionName + "'", e);
+            throw new ValidationException(
+                "Failed to compile JsonPath '" + jsonPathExpression + "' for document definition '" + documentDefinitionName + "'",
+                e
+            );
         }
         if (!isValidJsonPath(definition, jsonPathExpression)) {
-            throw new ValidationException("JsonPath '" + jsonPathExpression + "' doesn't point to any property inside document definition '" + documentDefinitionName + "'");
+            throw new ValidationException(
+                "JsonPath '" + jsonPathExpression + "' doesn't point to any property inside document definition '" + documentDefinitionName + "'");
         }
     }
 
@@ -339,7 +349,10 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         try {
             compiledJsonPath = (CompiledPath) PathCompiler.compile(jsonPathExpression);
         } catch (InvalidPathException e) {
-            logger.error("Failed to compile JsonPath '{}' for document definition '{}'", jsonPathExpression, definition.id().name(), e);
+            logger.error(
+                "Failed to compile JsonPath '{}' for document definition '{}'", jsonPathExpression,
+                definition.id().name(), e
+            );
             return false;
         }
         var jsonPointer = toJsonPointerRecursive(compiledJsonPath.getRoot());
@@ -351,7 +364,8 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         var definition = findLatestByName(documentDefinitionName)
             .orElseThrow(() -> new UnknownDocumentDefinitionException(documentDefinitionName));
         if (!isValidJsonPointer(definition, jsonPointer)) {
-            throw new ValidationException("JsonPointer '" + jsonPointer + "' doesn't point to any property inside document definition '" + documentDefinitionName + "'");
+            throw new ValidationException(
+                "JsonPointer '" + jsonPointer + "' doesn't point to any property inside document definition '" + documentDefinitionName + "'");
         }
     }
 

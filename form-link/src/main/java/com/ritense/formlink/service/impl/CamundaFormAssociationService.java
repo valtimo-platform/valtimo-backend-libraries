@@ -357,7 +357,7 @@ public class CamundaFormAssociationService implements FormAssociationService {
     @Deprecated(since = "10.6.0", forRemoval = true)
     public void prefillProcessVariables(FormIoFormDefinition formDefinition, Document document) {
         final List<String> processVarsNames = formDefinition.extractProcessVarNames();
-        if (processVarsNames.size() > 0) {
+        if (!processVarsNames.isEmpty()) {
             final Map<String, Object> processInstanceVariables = new HashMap<>();
             AuthorizationContext.runWithoutAuthorization(() -> processDocumentAssociationService.findProcessDocumentInstances(document.id()))
                 .forEach(processDocumentInstance -> processInstanceVariables.putAll(
