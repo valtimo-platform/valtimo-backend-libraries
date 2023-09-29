@@ -25,6 +25,7 @@ class CaseTabSpecificationHelper {
 
         const val ID: String = "id"
         const val CASE_DEFINITION_NAME: String = "caseDefinitionName"
+        const val KEY: String = "key"
         const val TAB_ORDER: String = "tabOrder"
 
         @JvmStatic
@@ -32,5 +33,10 @@ class CaseTabSpecificationHelper {
             cb.equal(root.get<Any>(ID).get<Any>(CASE_DEFINITION_NAME), caseDefinitionName)
         }
 
+        @JvmStatic
+        fun byCaseDefinitionNameAndTabKey(caseDefinitionName: String, tabKey: String) =
+            byCaseDefinitionName(caseDefinitionName).and { root, _, cb ->
+                cb.equal(root.get<Any>(ID).get<Any>(KEY), tabKey)
+            }
     }
 }

@@ -45,6 +45,9 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                 .antMatchers(POST, "/api/management/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
                 .antMatchers(PUT, "/api/management/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/management/v1/case/{caseDefinitionName}/list-column/{columnKey}").hasAuthority(ADMIN)
+                .antMatchers(POST, "/api/management/v1/case/{caseDefinitionName}/tab").hasAuthority(ADMIN)
+                .antMatchers(PUT, "/api/management/v1/case/{caseDefinitionName}/tab/{tabKey}").hasAuthority(ADMIN)
+                .antMatchers(DELETE, "/api/management/v1/case/{caseDefinitionName}/tab/{tabKey}").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
