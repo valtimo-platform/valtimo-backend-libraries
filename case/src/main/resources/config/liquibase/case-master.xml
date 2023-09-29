@@ -31,5 +31,4 @@
     <include file="changelog/20221206-add-case-list-column.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20221214-add-column-order-to-list-column.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20230526-add-column-auto-assign-tasks-to-case-definition.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20230926-add-case-tabs.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
