@@ -8,43 +8,43 @@
                     "name": "Summary",
                     "key": "summary",
                     "type": "standard",
-                    "content": "bezwaar.summary"
+                    "contentKey": "bezwaar.summary"
                 },
                 {
                     "name": "Progress",
                     "key": "progress",
                     "type": "standard",
-                    "content": "progress"
+                    "contentKey": "progress"
                 },
                 {
                     "name": "Audit",
                     "key": "audit",
                     "type": "standard",
-                    "content": "audit"
+                    "contentKey": "audit"
                 },
                 {
                     "name": "Documents",
                     "key": "documents",
                     "type": "standard",
-                    "content": "documents"
+                    "contentKey": "documents"
                 },
                 {
                     "name": "Contact moments",
                     "key": "contact-moments",
                     "type": "standard",
-                    "content": "contact-moments"
+                    "contentKey": "contact-moments"
                 },
                 {
                     "name": "Zaak objects",
                     "key": "zaak-object",
                     "type": "standard",
-                    "content": "zaak-object"
+                    "contentKey": "zaak-object"
                 },
                 {
                     "name": "Notes",
                     "key": "notes",
                     "type": "standard",
-                    "content": "notes"
+                    "contentKey": "notes"
                 }
             ]
         }

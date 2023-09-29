@@ -54,10 +54,10 @@ class CaseTabResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Standard"))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].key").value("standard"))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].type").value("standard"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value("standard"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].contentKey").value("standard"))
             .andExpect(MockMvcResultMatchers.jsonPath("$[1].name").value("Custom tab"))
             .andExpect(MockMvcResultMatchers.jsonPath("$[1].key").value("custom-tab"))
             .andExpect(MockMvcResultMatchers.jsonPath("$[1].type").value("custom"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[1].content").value("some-custom-component"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[1].contentKey").value("some-custom-component"))
     }
 }
