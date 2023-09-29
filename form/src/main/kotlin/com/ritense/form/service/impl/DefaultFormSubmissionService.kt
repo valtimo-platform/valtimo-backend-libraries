@@ -95,16 +95,7 @@ open class DefaultFormSubmissionService(
     ): FormSubmissionResult {
         return try {
             // TODO: Implement else, done by verifying what the processLink contains
-            if (taskInstanceId != null) {
-                camundaTaskService.findTaskById(taskInstanceId)
-                authorizationService.requirePermission(
-                    EntityAuthorizationRequest(
-                        CamundaTask::class.java,
-                        COMPLETE,
-                        camundaTaskService.findTaskById(taskInstanceId)
-                    )
-                )
-            }
+            requireCompleteTaskPermission(taskInstanceId)
 
             val processLink = processLinkService.getProcessLink(processLinkId, FormProcessLink::class.java)
             val document = documentId
@@ -112,28 +103,22 @@ open class DefaultFormSubmissionService(
             val processDefinition = getProcessDefinition(processLink)
             val documentDefinitionNameToUse = document?.definitionId()?.name()
                 ?: documentDefinitionName
-                ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId().documentDefinitionId().name()
+                ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId()
+                    .documentDefinitionId().name()
             val processVariables = getProcessVariables(taskInstanceId)
             val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
 
-            //Create a Map<"doc", Map<"doc:xyz", "submittedValue">>
-            val sourceKeyValueMappedByPrefixMap = formDefinition.inputFields
-                .mapNotNull {field ->
-                    getSourceKeyValuePair(field, formData)
-                }.groupBy{ (key, _) ->
-                    key.substringBefore(ValueResolverServiceImpl.DELIMITER, missingDelimiterValue = "")
-                }.mapValues { it.value.toMap() }
-
+            val categorizedKeyValues = getCategorizedSubmitValues(formDefinition, formData)
             val formFields = getFormFields(formDefinition, formData)
-            val resolvedDocumentValueMap = valueResolverService.preProcessValuesForNewCase(sourceKeyValueMappedByPrefixMap.getOrDefault(DOC_PREFIX, mapOf()))
+            // Merge the document results from 'legacy' mapping and value-resolvers.
             val submittedDocumentContent = JsonMerger.merge(
                 getSubmittedDocumentContent(formFields, document),
-                (resolvedDocumentValueMap[DOC_PREFIX]?.let { it as? ObjectNode })?: Mapper.INSTANCE.get().createObjectNode()
+                categorizedKeyValues.documentValues
             )
 
-            val resolvedPvValueMap = valueResolverService.preProcessValuesForNewCase(sourceKeyValueMappedByPrefixMap.getOrDefault(PV_PREFIX, mapOf()))
+            // Merge the process-variable results from 'legacy' mapping and value-resolvers.
             val formDefinedProcessVariables = formDefinition.extractProcessVars(formData) +
-                (resolvedPvValueMap[PV_PREFIX]?.let { it as? Map<String, Any> } ?: mapOf())
+                categorizedKeyValues.processVariables
 
             val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
             val request = getRequest(
@@ -146,13 +131,15 @@ open class DefaultFormSubmissionService(
                 formDefinedProcessVariables,
                 preJsonPatch
             )
-            val externalFormData = getExternalFormData(formDefinition, formData)
-            val remainingValueResolverValues = sourceKeyValueMappedByPrefixMap.filterKeys {
-                !listOf(DOC_PREFIX, PV_PREFIX).contains(it)
-            }.flatMap { it.value.entries }
-                .associate { (key, value) -> key to value }
 
-            return dispatchRequest(request, formFields, externalFormData, documentDefinitionNameToUse, remainingValueResolverValues)
+            val externalFormData = getExternalFormData(formDefinition, formData)
+            return dispatchRequest(
+                request,
+                formFields,
+                externalFormData,
+                documentDefinitionNameToUse,
+                categorizedKeyValues.otherValues
+            )
         } catch (notFoundException: DocumentNotFoundException) {
             logger.error("Document could not be found", notFoundException)
             FormSubmissionResultFailed(FromException(notFoundException))
@@ -168,6 +155,60 @@ open class DefaultFormSubmissionService(
         }
     }
 
+    private fun requireCompleteTaskPermission(taskInstanceId: String?) {
+        if (taskInstanceId != null) {
+            camundaTaskService.findTaskById(taskInstanceId)
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    CamundaTask::class.java,
+                    COMPLETE,
+                    camundaTaskService.findTaskById(taskInstanceId)
+                )
+            )
+        }
+    }
+
+    /**
+     * This method categorizes the submitted values which are processed by the value-resolvers.
+     * It preprocesses the values for document and process-variables, and leaves the rest as-is.
+     */
+    private fun getCategorizedSubmitValues(
+        formDefinition: FormIoFormDefinition,
+        formData: JsonNode
+    ): CategorizedSubmitValues {
+        val categorizedMap = formDefinition.inputFields
+            .mapNotNull { field ->
+                getSourceKeyValuePair(field, formData)
+            }.groupBy { (key, _) ->
+                val prefix = key.substringBefore(ValueResolverServiceImpl.DELIMITER, missingDelimiterValue = "")
+                when (prefix) {
+                    DOC_PREFIX -> DOC_PREFIX
+                    PV_PREFIX -> PV_PREFIX
+                    else -> OTHER
+                }
+            }.mapValues { it.value.toMap() }
+
+        // Preprocess the document paths & values. The result is an ObjectNode.
+        val documentValues = categorizedMap[DOC_PREFIX]
+            ?.let { valueResolverService.preProcessValuesForNewCase(it) as? ObjectNode }
+            ?: Mapper.INSTANCE.get().createObjectNode()
+
+        // After pre-processing process-variables we have a key-value map where the prefix is stripped from the keys.
+        val processVariables = categorizedMap[PV_PREFIX]
+            ?.let { valueResolverService.preProcessValuesForNewCase(it) }
+            ?: mapOf()
+
+        // Do not process/handle other values yet.
+        // This has to be done when we are certain the process and document could be created.
+        val otherValues = categorizedMap[OTHER] ?: mapOf()
+
+        return CategorizedSubmitValues(
+            documentValues,
+            processVariables,
+            otherValues
+        )
+    }
+
     private fun getSourceKeyValuePair(
         field: ObjectNode,
         formData: JsonNode
@@ -181,8 +222,8 @@ open class DefaultFormSubmissionService(
         }
     }
 
-    private fun convertNodeValue(node: JsonNode) : Any? {
-        if(node.isMissingNode) {
+    private fun convertNodeValue(node: JsonNode): Any? {
+        if (node.isMissingNode) {
             return null
         }
 
@@ -402,7 +443,14 @@ open class DefaultFormSubmissionService(
         }
     }
 
+    private data class CategorizedSubmitValues(
+        val documentValues: ObjectNode,
+        val processVariables: Map<String, Any>,
+        val otherValues: Map<String, Any>
+    )
+
     companion object {
         val logger = KotlinLogging.logger {}
+        const val OTHER = "other"
     }
 }
