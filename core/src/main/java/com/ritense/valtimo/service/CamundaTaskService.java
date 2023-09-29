@@ -341,7 +341,13 @@ public class CamundaTaskService {
             })
             .toList();
 
-        var total = camundaTaskRepository.count(specification);
+        var cbCount = entityManager.getCriteriaBuilder();
+        var queryCount = cbCount.createQuery();
+        var taskCountRoot = queryCount.from(CamundaTask.class);
+        queryCount.select(cbCount.countDistinct(taskCountRoot));
+        queryCount.where(specification.toPredicate(taskCountRoot, queryCount, cbCount));
+        var results = entityManager.createQuery(queryCount).getResultList();
+        long total = results.isEmpty() ? 0 : (long) results.get(0);
         return new PageImpl<>(tasks, pageable, total);
     }
 
