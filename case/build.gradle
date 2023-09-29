@@ -29,7 +29,6 @@ dependencies {
     implementation project(':value-resolver')
     implementation project(':web')
     implementation project(':authorization')
-    implementation project(':changelog')
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
