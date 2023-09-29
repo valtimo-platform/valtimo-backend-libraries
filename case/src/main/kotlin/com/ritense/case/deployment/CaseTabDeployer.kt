@@ -62,7 +62,7 @@ class CaseTabDeployer(
                     caseTabDto.name,
                     index,
                     caseTabDto.type,
-                    caseTabDto.content
+                    caseTabDto.contentKey
                 )
             }
             caseTabRepository.saveAll(tabs)

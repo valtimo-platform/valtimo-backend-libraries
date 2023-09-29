@@ -8,7 +8,7 @@
                     "name": "Custom tab",
                     "key": "custom-tab",
                     "type": "custom",
-                    "content": "some-custom-component"
+                    "contentKey": "some-custom-component"
                 }
             ]
         }

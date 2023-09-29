@@ -8,7 +8,7 @@
                     "name": "Standard",
                     "key": "standard",
                     "type": "standard",
-                    "content": "standard"
+                    "contentKey": "standard"
                 }
             ]
         }

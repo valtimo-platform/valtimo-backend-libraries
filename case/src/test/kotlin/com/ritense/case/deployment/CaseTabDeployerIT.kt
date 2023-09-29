@@ -64,12 +64,12 @@ class CaseTabDeployerIT @Autowired constructor(
         assertThat(tabs[0].name).isEqualTo("Standard")
         assertThat(tabs[0].id.key).isEqualTo("standard")
         assertThat(tabs[0].type).isEqualTo(CaseTabType.STANDARD)
-        assertThat(tabs[0].content).isEqualTo("standard")
+        assertThat(tabs[0].contentKey).isEqualTo("standard")
 
         assertThat(tabs[1].name).isEqualTo("Custom tab")
         assertThat(tabs[1].id.key).isEqualTo("custom-tab")
         assertThat(tabs[1].type).isEqualTo(CaseTabType.CUSTOM)
-        assertThat(tabs[1].content).isEqualTo("some-custom-component")
+        assertThat(tabs[1].contentKey).isEqualTo("some-custom-component")
     }
 
     @Test
@@ -84,7 +84,7 @@ class CaseTabDeployerIT @Autowired constructor(
         assertThat(tabs[0].name).isEqualTo("Standard")
         assertThat(tabs[0].id.key).isEqualTo("standard")
         assertThat(tabs[0].type).isEqualTo(CaseTabType.STANDARD)
-        assertThat(tabs[0].content).isEqualTo("standard")
+        assertThat(tabs[0].contentKey).isEqualTo("standard")
     }
 
     @Test
