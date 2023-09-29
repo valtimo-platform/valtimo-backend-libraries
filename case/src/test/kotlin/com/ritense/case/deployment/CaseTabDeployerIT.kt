@@ -33,15 +33,11 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
 @Transactional
-class CaseTabDeployerIT : BaseIntegrationTest() {
-    @Autowired
-    lateinit var changesetRepository: ChangesetRepository
-
-    @Autowired
-    lateinit var caseTabRepository: CaseTabRepository
-
-    @Autowired
-    lateinit var changelogDeployer: ChangelogDeployer
+class CaseTabDeployerIT @Autowired constructor(
+    private val changesetRepository: ChangesetRepository,
+    private val caseTabRepository: CaseTabRepository,
+    private val changelogDeployer: ChangelogDeployer
+) : BaseIntegrationTest() {
 
     @BeforeEach
     fun setUp() {
