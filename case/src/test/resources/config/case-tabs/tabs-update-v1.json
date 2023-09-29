@@ -1,0 +1,16 @@
+{
+    "changesetId": "case-tabs-deploy-update-v1",
+    "case-definitions": [
+        {
+            "key": "some-case-type",
+            "tabs": [
+                {
+                    "name": "Custom tab",
+                    "key": "custom-tab",
+                    "type": "custom",
+                    "content": "some-custom-component"
+                }
+            ]
+        }
+    ]
+}

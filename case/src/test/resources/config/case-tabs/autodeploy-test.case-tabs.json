@@ -1,0 +1,22 @@
+{
+    "changesetId": "case-tabs-deploy-test",
+    "case-definitions": [
+        {
+            "key": "some-case-type",
+            "tabs": [
+                {
+                    "name": "Standard",
+                    "key": "standard",
+                    "type": "standard",
+                    "content": "standard"
+                },
+                {
+                    "name": "Custom tab",
+                    "key": "custom-tab",
+                    "type": "custom",
+                    "content": "some-custom-component"
+                }
+            ]
+        }
+    ]
+}
