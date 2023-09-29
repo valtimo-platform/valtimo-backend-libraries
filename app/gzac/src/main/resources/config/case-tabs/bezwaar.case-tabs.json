@@ -8,7 +8,7 @@
                     "name": "Summary",
                     "key": "summary",
                     "type": "standard",
-                    "contentKey": "bezwaar.summary"
+                    "contentKey": "summary"
                 },
                 {
                     "name": "Progress",
