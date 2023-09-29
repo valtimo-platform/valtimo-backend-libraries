@@ -36,5 +36,5 @@ class CaseTab(
     @Enumerated(EnumType.STRING)
     val type: CaseTabType,
 
-    val content: String,
+    val contentKey: String,
 )

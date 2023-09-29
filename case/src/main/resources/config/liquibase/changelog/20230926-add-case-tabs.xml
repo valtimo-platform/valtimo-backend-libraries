@@ -34,7 +34,7 @@
             <column name="type" type="varchar(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="content" type="varchar(256)"/>
+            <column name="content_key" type="varchar(256)"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>

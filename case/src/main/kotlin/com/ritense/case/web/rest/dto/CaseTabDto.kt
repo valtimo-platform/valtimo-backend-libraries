@@ -22,5 +22,5 @@ data class CaseTabDto(
     val key: String,
     val name: String,
     val type: CaseTabType,
-    val content: String,
+    val contentKey: String,
 )
