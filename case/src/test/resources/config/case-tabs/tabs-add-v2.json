@@ -1,0 +1,16 @@
+{
+    "changesetId": "case-tabs-deploy-add-v2",
+    "case-definitions": [
+        {
+            "key": "other-case-type",
+            "tabs": [
+                {
+                    "name": "Standard",
+                    "key": "standard",
+                    "type": "standard",
+                    "contentKey": "standard"
+                }
+            ]
+        }
+    ]
+}

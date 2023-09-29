@@ -19,11 +19,13 @@ package com.ritense.case.configuration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.authorization.AuthorizationService
+import com.ritense.case.deployment.CaseTabDeployer
 import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
+import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionService
@@ -34,8 +36,10 @@ import com.ritense.case.web.rest.CaseDefinitionResource
 import com.ritense.case.web.rest.CaseInstanceResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
+import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valueresolver.ValueResolverService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
@@ -79,7 +83,7 @@ class CaseAutoConfiguration {
         documentDefinitionService: DocumentDefinitionService,
         valueResolverService: ValueResolverService,
         authorizationService: AuthorizationService,
-        ): CaseDefinitionService {
+    ): CaseDefinitionService {
         return CaseDefinitionService(
             repository,
             caseDefinitionListColumnRepository,
@@ -172,5 +176,20 @@ class CaseAutoConfiguration {
         displayTypeParameterTypes: Collection<NamedType>
     ): ObjectMapperConfigurer {
         return ObjectMapperConfigurer(objectMapper, displayTypeParameterTypes)
+    }
+
+    @Bean
+    fun caseTabDeployer(
+        objectMapper: ObjectMapper,
+        caseTabRepository: CaseTabRepository,
+        changelogService: ChangelogService,
+        @Value("\${valtimo.changelog.case-tabs.clear-tables:false}") clearTables: Boolean
+    ): CaseTabDeployer {
+        return CaseTabDeployer(
+            objectMapper,
+            caseTabRepository,
+            changelogService,
+            clearTables
+        )
     }
 }

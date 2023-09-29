@@ -16,6 +16,7 @@
 
 package com.ritense.case
 
+import com.ritense.case.deployment.CaseTabDeployer
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
@@ -41,5 +42,7 @@ class BaseIntegrationTest {
     @SpyBean
     lateinit var resourcePatternResolver: ResourcePatternResolver
 
+    @SpyBean
+    lateinit var caseTabDeployer: CaseTabDeployer
 }
 
