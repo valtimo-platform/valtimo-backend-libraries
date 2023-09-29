@@ -1,0 +1,52 @@
+{
+    "changesetId": "bezwaar-tabs-v1",
+    "case-definitions": [
+        {
+            "key": "bezwaar",
+            "tabs": [
+                {
+                    "name": "Summary",
+                    "key": "summary",
+                    "type": "standard",
+                    "contentKey": "summary"
+                },
+                {
+                    "name": "Progress",
+                    "key": "progress",
+                    "type": "standard",
+                    "contentKey": "progress"
+                },
+                {
+                    "name": "Audit",
+                    "key": "audit",
+                    "type": "standard",
+                    "contentKey": "audit"
+                },
+                {
+                    "name": "Documents",
+                    "key": "documents",
+                    "type": "standard",
+                    "contentKey": "documents"
+                },
+                {
+                    "name": "Contact moments",
+                    "key": "contact-moments",
+                    "type": "standard",
+                    "contentKey": "contact-moments"
+                },
+                {
+                    "name": "Zaak objects",
+                    "key": "zaak-object",
+                    "type": "standard",
+                    "contentKey": "zaak-object"
+                },
+                {
+                    "name": "Notes",
+                    "key": "notes",
+                    "type": "standard",
+                    "contentKey": "notes"
+                }
+            ]
+        }
+    ]
+}
