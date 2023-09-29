@@ -53,7 +53,7 @@ class CaseTabDeployer(
         )
     }
 
-    fun deploy(caseDefinitions: List<CaseDefinitionsTabCollection>) {
+    private fun deploy(caseDefinitions: List<CaseDefinitionsTabCollection>) {
         caseDefinitions.forEach {
             caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionName(it.key)))
             val tabs = it.tabs.mapIndexed { index, caseTabDto ->
