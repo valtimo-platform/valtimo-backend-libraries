@@ -190,12 +190,12 @@ open class DefaultFormSubmissionService(
 
         // Preprocess the document paths & values. The result is an ObjectNode.
         val documentValues = categorizedMap[DOC_PREFIX]
-            ?.let { valueResolverService.preProcessValuesForNewCase(it) as? ObjectNode }
+            ?.let { valueResolverService.preProcessValuesForNewCase(it)[DOC_PREFIX] as? ObjectNode }
             ?: Mapper.INSTANCE.get().createObjectNode()
 
         // After pre-processing process-variables we have a key-value map where the prefix is stripped from the keys.
         val processVariables = categorizedMap[PV_PREFIX]
-            ?.let { valueResolverService.preProcessValuesForNewCase(it) }
+            ?.let { valueResolverService.preProcessValuesForNewCase(it)[PV_PREFIX] as? Map<String, Any>}
             ?: mapOf()
 
         // Do not process/handle other values yet.
