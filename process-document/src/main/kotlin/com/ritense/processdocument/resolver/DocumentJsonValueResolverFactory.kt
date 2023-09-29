@@ -18,6 +18,7 @@ package com.ritense.processdocument.resolver
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.InvalidPathException
 import com.jayway.jsonpath.JsonPath
@@ -53,7 +54,7 @@ class DocumentJsonValueResolverFactory(
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
-        return "doc"
+        return PREFIX
     }
 
     override fun createResolver(
@@ -77,9 +78,9 @@ class DocumentJsonValueResolverFactory(
         }
     }
 
-    override fun createResolver(documentInstanceId: String): Function<String, Any?> {
+    override fun createResolver(documentId: String): Function<String, Any?> {
         return createResolver(
-            AuthorizationContext.runWithoutAuthorization { documentService.get(documentInstanceId) }
+            AuthorizationContext.runWithoutAuthorization { documentService.get(documentId) }
         )
     }
 
@@ -122,11 +123,11 @@ class DocumentJsonValueResolverFactory(
         }
     }
 
-    override fun preProcessValuesForNewCase(values: Map<String, Any>): Any {
+    override fun preProcessValuesForNewCase(values: Map<String, Any>): ObjectNode {
         val emptyDocumentContent = jacksonObjectMapper().createObjectNode()
         buildJsonPatch(emptyDocumentContent, values)
         return emptyDocumentContent
-   }
+    }
 
     private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any>) {
         val jsonPatchBuilder = JsonPatchBuilder()
@@ -191,13 +192,17 @@ class DocumentJsonValueResolverFactory(
     private fun resolveForJsonPath(document: Document, jsonPathPostfix: String): Any? {
         return try {
             JsonPath.read<Any?>(document.content().asJson().toString(), "$.$jsonPathPostfix")
-        } catch (ignore: PathNotFoundException){
+        } catch (ignore: PathNotFoundException) {
             null
         }
     }
 
     private fun toValueNode(value: Any): JsonNode {
         return Mapper.INSTANCE.get().valueToTree(value)
+    }
+
+    companion object {
+        const val PREFIX = "doc"
     }
 
 }

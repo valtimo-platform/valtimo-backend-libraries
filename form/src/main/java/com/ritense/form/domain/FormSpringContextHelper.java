@@ -20,18 +20,23 @@ import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import java.util.Map;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import javax.annotation.Nonnull;
 
 public class FormSpringContextHelper implements ApplicationContextAware {
 
-    private static ApplicationContext context;
+    private static ApplicationContext applicationContext;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        context = applicationContext;
+    public void setApplicationContext(@Nonnull ApplicationContext applicationContext) {
+        setContext(applicationContext);
+    }
+
+    public static void setContext(@Nonnull ApplicationContext applicationContext) {
+        FormSpringContextHelper.applicationContext = applicationContext;
     }
 
     static Map<String, FormFieldDataResolver> getFormFieldDataResolver() {
-        return context.getBeansOfType(FormFieldDataResolver.class);
+        return applicationContext.getBeansOfType(FormFieldDataResolver.class);
     }
 
 }

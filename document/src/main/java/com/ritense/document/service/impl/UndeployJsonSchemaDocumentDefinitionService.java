@@ -38,11 +38,13 @@ public class UndeployJsonSchemaDocumentDefinitionService implements UndeployDocu
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
     private final DocumentService documentService;
     private final ApplicationEventPublisher applicationEventPublisher;
-
     private final AuthorizationService authorizationService;
 
-    public UndeployJsonSchemaDocumentDefinitionService(JsonSchemaDocumentDefinitionService documentDefinitionService, DocumentService documentService, ApplicationEventPublisher applicationEventPublisher,
-                                                       AuthorizationService authorizationService
+    public UndeployJsonSchemaDocumentDefinitionService(
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        DocumentService documentService,
+        ApplicationEventPublisher applicationEventPublisher,
+        AuthorizationService authorizationService
     ) {
         this.documentDefinitionService = documentDefinitionService;
         this.documentService = documentService;
@@ -54,7 +56,8 @@ public class UndeployJsonSchemaDocumentDefinitionService implements UndeployDocu
     @Transactional
     public UndeployDocumentDefinitionResult undeploy(String documentDefinitionName) {
         try {
-            Optional<JsonSchemaDocumentDefinition> documentDefinition = documentDefinitionService.findLatestByName(documentDefinitionName);
+            Optional<JsonSchemaDocumentDefinition> documentDefinition = documentDefinitionService.findLatestByName(
+                documentDefinitionName);
             return documentDefinition.map(definition -> {
                 authorizationService.requirePermission(new EntityAuthorizationRequest<>(
                     JsonSchemaDocumentDefinition.class,
@@ -62,7 +65,7 @@ public class UndeployJsonSchemaDocumentDefinitionService implements UndeployDocu
                     definition
                 ));
 
-                if(definition.isReadOnly()) {
+                if (definition.isReadOnly()) {
                     return new UndeployDocumentDefinitionResultFailed(List.of(
                         () -> "The document definition is marked read-only and therefore not deletable")
                     );

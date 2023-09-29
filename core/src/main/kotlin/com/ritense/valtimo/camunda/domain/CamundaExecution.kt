@@ -97,8 +97,8 @@ class CamundaExecution(
     val tenantId: String?,
 
     @OneToMany(mappedBy = "execution", fetch = FetchType.LAZY)
-    val variables: Set<CamundaVariableInstance>
-) : AbstractVariableScope() {
+    val variableInstances: Set<CamundaVariableInstance>
+) : CamundaVariableScope() {
 
     @Transient
     fun getProcessDefinitionId() = processDefinition!!.id
@@ -106,18 +106,9 @@ class CamundaExecution(
     @Transient
     fun getProcessInstanceId() = processInstance!!.id
 
-    override fun getVariable(variableName: String): Any? {
-        val variableInstance = variables.find { it.name == variableName }
+    override fun getVariableInstancesLocal(): Collection<CamundaVariableInstance> = variableInstances
 
-        if (variableInstance != null) {
-            return variableInstance.getValue()
-        }
+    override fun getParentVariableScope(): CamundaVariableScope? = parent
 
-        return getParentVariableScope()?.getVariable(variableName)
-    }
-
-    override fun getVariableInstancesLocal(variableNames: Collection<String>?) = variables
-
-    override fun getParentVariableScope() = parent
-
+    override fun getVariableScopeKey() = "execution"
 }

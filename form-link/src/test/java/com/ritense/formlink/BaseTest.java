@@ -71,8 +71,7 @@ public abstract class BaseTest {
         var formFieldDataResolver = mock(FormFieldDataResolver.class);
         when(formFieldDataResolver.supports(eq("oz"))).thenReturn(true);
         when(applicationContext.getBeansOfType(FormFieldDataResolver.class)).thenReturn(Map.of("Test", formFieldDataResolver));
-        var springContextHelper = new FormSpringContextHelper();
-        springContextHelper.setApplicationContext(applicationContext);
+        FormSpringContextHelper.setContext(applicationContext);
     }
 
     protected CamundaProcessFormAssociation processFormAssociation(UUID id, UUID formId) {

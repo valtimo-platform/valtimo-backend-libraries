@@ -27,6 +27,7 @@ import com.ritense.externalevent.messaging.`in`.CreateExternalCaseMessage
 import com.ritense.externalevent.messaging.`in`.ExternalIdUpdatedConfirmationMessage
 import com.ritense.externalevent.service.ExternalCaseService
 import com.ritense.externalevent.service.ExternalTaskService
+import com.ritense.form.service.PrefillFormService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.config.ValtimoProperties
@@ -141,9 +142,10 @@ class ExternalEventAutoConfiguration {
         documentService: JsonSchemaDocumentService,
         processDocumentService: ProcessDocumentService,
         formDefinitionService: FormIoFormDefinitionService,
-        sink: Sinks.Many<ExternalDomainMessage>
+        sink: Sinks.Many<ExternalDomainMessage>,
+        prefillFormService: PrefillFormService
     ): ExternalTaskService {
-        return ExternalTaskService(documentService, processDocumentService, formDefinitionService, sink)
+        return ExternalTaskService(documentService, processDocumentService, formDefinitionService, sink, prefillFormService)
     }
 
     companion object {

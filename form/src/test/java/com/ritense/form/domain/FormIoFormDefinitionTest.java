@@ -26,14 +26,14 @@ import com.ritense.form.BaseTest;
 import com.ritense.form.autoconfigure.FormAutoConfiguration;
 import com.ritense.valtimo.contract.form.DataResolvingContext;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -81,7 +81,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
         Map<String, FormFieldDataResolver> resolvers = new HashMap<>();
         resolvers.put("some-bean", new FormFieldDataResolverImpl("externalPrefix"));
         ApplicationContext context = mock(ApplicationContext.class);
-        new FormSpringContextHelper().setApplicationContext(context);
+        FormSpringContextHelper.setContext(context);
         when(context.getBeansOfType(FormFieldDataResolver.class)).thenReturn(resolvers);
         final var formDefinition = formDefinitionOf("process-variables-multi-level-key-form-example");
 
@@ -101,7 +101,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
         Map<String, FormFieldDataResolver> resolvers = new HashMap<>();
         resolvers.put("some-bean", new FormFieldDataResolverImpl("externalPrefix"));
         ApplicationContext context = mock(ApplicationContext.class);
-        new FormSpringContextHelper().setApplicationContext(context);
+        FormSpringContextHelper.setContext(context);
         when(context.getBeansOfType(FormFieldDataResolver.class)).thenReturn(resolvers);
         final var formDefinition = formDefinitionOf("process-variables-multi-level-key-form-example");
 
@@ -203,10 +203,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
     public void shouldGetInputFieldsOnly() throws IOException {
         final var formDefinition = formDefinitionOf("form-example-nested-components");
 
-        JsonNode definition = formDefinition.getFormDefinition();
-        List<ObjectNode> components = FormIoFormDefinition.getInputFields(definition);
-
-        assertThat(components).hasSize(7);
+        assertThat(formDefinition.getInputFields()).hasSize(7);
     }
 
     @Test
@@ -266,7 +263,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
         resolvers.put("some-bean", new FormFieldDataResolverImpl("test"));
         resolvers.put("some-other-bean", new FormFieldDataResolverImpl("other"));
         ApplicationContext context = mock(ApplicationContext.class);
-        new FormSpringContextHelper().setApplicationContext(context);
+        FormSpringContextHelper.setContext(context);
         when(context.getBeansOfType(FormFieldDataResolver.class)).thenReturn(resolvers);
 
         Map<String, List<FormIoFormDefinition.ExternalContentItem>> externalContent
@@ -285,7 +282,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
         resolvers.put("some-bean", new FormFieldDataResolverImpl("test"));
         resolvers.put("some-other-bean", new FormFieldDataResolverImpl("other"));
         ApplicationContext context = mock(ApplicationContext.class);
-        new FormSpringContextHelper().setApplicationContext(context);
+        FormSpringContextHelper.setContext(context);
         when(context.getBeansOfType(FormFieldDataResolver.class)).thenReturn(resolvers);
 
         Map<String, List<FormIoFormDefinition.ExternalContentItem>> externalContent
@@ -304,7 +301,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
         resolvers.put("some-bean", new FormFieldDataResolverImpl("test"));
         resolvers.put("some-other-bean", new FormFieldDataResolverImpl("other"));
         ApplicationContext context = mock(ApplicationContext.class);
-        new FormSpringContextHelper().setApplicationContext(context);
+        FormSpringContextHelper.setContext(context);
         when(context.getBeansOfType(FormFieldDataResolver.class)).thenReturn(resolvers);
 
         Map<String, List<FormIoFormDefinition.ExternalContentItem>> externalContent
@@ -323,7 +320,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
         resolvers.put("some-bean", new FormFieldDataResolverImpl("test"));
         resolvers.put("some-other-bean", new FormFieldDataResolverImpl("other"));
         ApplicationContext context = mock(ApplicationContext.class);
-        new FormSpringContextHelper().setApplicationContext(context);
+        FormSpringContextHelper.setContext(context);
         when(context.getBeansOfType(FormFieldDataResolver.class)).thenReturn(resolvers);
 
         Map<String, List<FormIoFormDefinition.ExternalContentItem>> externalContent
@@ -368,7 +365,7 @@ public class FormIoFormDefinitionTest extends BaseTest {
 
     private static class FormFieldDataResolverImpl implements FormFieldDataResolver {
 
-        private String prefix;
+        private final String prefix;
 
         public FormFieldDataResolverImpl(String prefix) {
             this.prefix = prefix;

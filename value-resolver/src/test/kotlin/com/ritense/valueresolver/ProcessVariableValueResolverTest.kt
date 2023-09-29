@@ -16,6 +16,8 @@
 
 package com.ritense.valueresolver
 
+import java.time.LocalDate
+import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.variable.Variables
@@ -27,7 +29,6 @@ import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.UUID
 
 internal class ProcessVariableValueResolverTest {
     private val runtimeService: RuntimeService = mock(defaultAnswer = RETURNS_DEEP_STUBS)
@@ -36,20 +37,23 @@ internal class ProcessVariableValueResolverTest {
     @Test
     fun `should resolve requestedValue from process variables`() {
         val somePropertyName = "somePropertyName"
+        val now = LocalDate.now()
         val variableScope = DelegateTaskFake()
             .withVariable("firstName", "John")
             .withVariable(somePropertyName, true)
             .withVariable("lastName", "Doe")
+            .withVariable("dateTime", now)
         val processInstanceId = UUID.randomUUID().toString()
 
-        val resolvedValue = processVariableValueResolver.createResolver(
+        val resolver = processVariableValueResolver.createResolver(
             processInstanceId = processInstanceId,
             variableScope = variableScope
-        ).apply(
-            somePropertyName
         )
+        val somePropertyValue = resolver.apply(somePropertyName)
+        val serializedValue = resolver.apply("dateTime")
 
-        Assertions.assertThat(resolvedValue).isEqualTo(true)
+        Assertions.assertThat(somePropertyValue).isEqualTo(true)
+        Assertions.assertThat(serializedValue).isEqualTo(now)
     }
 
     @Test
@@ -90,7 +94,7 @@ internal class ProcessVariableValueResolverTest {
             somePropertyName
         )
 
-        Assertions.assertThat(resolvedValue).isEqualTo(listOf(true))
+        Assertions.assertThat(resolvedValue).isEqualTo(true)
     }
 
     @Test

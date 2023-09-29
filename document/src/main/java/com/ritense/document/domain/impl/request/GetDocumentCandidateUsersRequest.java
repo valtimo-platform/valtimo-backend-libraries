@@ -17,7 +17,6 @@
 package com.ritense.document.domain.impl.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 import java.util.UUID;
 

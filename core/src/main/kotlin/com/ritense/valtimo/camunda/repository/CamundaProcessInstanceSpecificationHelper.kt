@@ -40,7 +40,7 @@ class CamundaProcessInstanceSpecificationHelper {
         const val CACHED_ENTITY_STATE: String = "cachedEntityState"
         const val SEQUENCE_COUNTER: String = "sequenceCounter"
         const val TENANT_ID: String = "tenantId"
-        const val VARIABLES: String = "variables"
+        const val VARIABLES: String = "variableInstances"
 
     }
 }

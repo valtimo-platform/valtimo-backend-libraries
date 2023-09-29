@@ -16,9 +16,9 @@
 
 package com.ritense.valueresolver
 
+import java.util.function.Function
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
-import java.util.function.Function
 
 /**
  * This resolver can resolve requestedValues against the variables of a process or task.
@@ -30,7 +30,7 @@ class ProcessVariableValueResolverFactory(
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
-        return "pv"
+        return PREFIX
     }
 
     override fun createResolver(
@@ -51,12 +51,17 @@ class ProcessVariableValueResolverFactory(
             .toTypedArray()
 
         return Function { requestedValue ->
-            runtimeService.createVariableInstanceQuery()
+            val values = runtimeService.createVariableInstanceQuery()
                 .processInstanceIdIn(*processInstanceIds)
                 .variableName(requestedValue)
                 .list()
                 .map { it.value }
                 .distinct()
+            if (values.size > 1) {
+                throw RuntimeException("Cannot infer a unique process variable value for key `$requestedValue` using the document id as businessKey. " +
+                    "Please provide a variable scope, use a unique key, or use a different value resolver.")
+            }
+            values.singleOrNull()
         }
     }
 
@@ -66,5 +71,9 @@ class ProcessVariableValueResolverFactory(
         values: Map<String, Any>
     ) {
         runtimeService.setVariables(processInstanceId, values)
+    }
+
+    companion object {
+        const val PREFIX = "pv"
     }
 }

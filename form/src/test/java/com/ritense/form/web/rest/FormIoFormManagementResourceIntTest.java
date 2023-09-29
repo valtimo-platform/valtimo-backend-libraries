@@ -29,13 +29,20 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -48,13 +55,11 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
 
     @Inject
     private FormManagementResource resource;
+
     private MockMvc mockMvc;
-    private FormIoFormDefinition formDefinition;
 
     @BeforeEach
     void setUp() {
-        formDefinitionRepository.deleteAll();
-        formDefinition = formDefinition();
         mockMvc = MockMvcBuilders
             .standaloneSetup(resource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -62,6 +67,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Transactional
     void shouldReturn200WithForm() throws Exception {
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "form1"));
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "form2"));
@@ -69,33 +75,38 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
 
         mockMvc.perform(
                 get("/api/v1/form-management")
+                    .param("size", "1000")
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isOk())
             .andDo(print())
             .andExpect(jsonPath("$.content").isArray())
-            .andExpect(jsonPath("$.content", hasSize(3)));
+            .andExpect(jsonPath("$.content[*].name", hasItems("form1","form2", "form3")));
     }
 
     @Test
+    @Transactional
     void shouldReturn200WithSearch() throws Exception {
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "abcd"));
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "bcde"));
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "cdef"));
 
         mockMvc.perform(get("/api/v1/form-management")
+                .param("size", "1000")
                 .param("searchTerm", "BC"))
             .andExpect(status().isOk())
             .andDo(print())
             .andExpect(jsonPath("$.content").isArray())
-            .andExpect(jsonPath("$.content", hasSize(2)));
+            .andExpect(jsonPath("$.content[*].name", hasItems("abcd", "bcde")))
+            .andExpect(jsonPath("$.content[*].name", not(hasItem("cdef"))));
     }
 
     @Test
+    @Transactional
     void shouldReturn200WithInvalidSearch() throws Exception {
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), "abcd"));
 
         mockMvc.perform(get("/api/v1/form-management")
-                .param("searchTerm", "e"))
+                .param("searchTerm", "_nonexistent_"))
             .andExpect(status().isOk())
             .andDo(print())
             .andExpect(jsonPath("$.content").isArray())
@@ -103,6 +114,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Transactional
     void shouldReturn200WithFormCreated() throws Exception {
         final var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false);
         mockMvc.perform(
@@ -118,6 +130,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Transactional
     void shouldReturn200WithFormModified() throws Exception {
         final var request = new CreateFormDefinitionRequest(DEFAULT_FORM_DEFINITION_NAME, "{}", false);
         final MvcResult result = mockMvc.perform(
@@ -149,7 +162,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
 
     @Test
     void shouldReturn204WithFormDeleted() throws Exception {
-        FormIoFormDefinition savedFormDefinition = formDefinitionRepository.save(formDefinition);
+        FormIoFormDefinition savedFormDefinition = formDefinitionRepository.save(formDefinition());
 
         assertThat(formDefinitionRepository.existsById(savedFormDefinition.getId())).isTrue();
 
@@ -163,6 +176,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Transactional
     void shouldGetFormExistsByName() throws Exception {
         var name = "abcd";
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), name));
@@ -175,6 +189,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Transactional
     void shouldNotGetFormExistsByName() throws Exception {
         mockMvc.perform(get("/api/v1/form-management/exists/does-not-exist"))
             .andExpect(status().isOk())
