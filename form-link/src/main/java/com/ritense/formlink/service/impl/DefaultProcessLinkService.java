@@ -27,12 +27,10 @@ import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
-
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byActive;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byId;
 import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;

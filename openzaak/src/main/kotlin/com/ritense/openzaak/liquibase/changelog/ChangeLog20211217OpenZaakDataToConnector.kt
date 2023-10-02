@@ -2,16 +2,16 @@ package com.ritense.openzaak.liquibase.changelog
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import java.nio.ByteBuffer
+import java.sql.ResultSet
+import java.sql.Types
+import java.util.UUID
 import liquibase.change.custom.CustomTaskChange
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
 import liquibase.exception.ValidationErrors
 import liquibase.resource.ResourceAccessor
 import mu.KotlinLogging
-import java.nio.ByteBuffer
-import java.sql.ResultSet
-import java.sql.Types
-import java.util.UUID
 
 class ChangeLog20211217OpenZaakDataToConnector : CustomTaskChange {
 

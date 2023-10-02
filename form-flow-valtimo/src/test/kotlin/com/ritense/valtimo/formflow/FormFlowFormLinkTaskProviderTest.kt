@@ -26,6 +26,8 @@ import com.ritense.formlink.domain.FormLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
 import com.ritense.formlink.service.FormAssociationService
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import java.util.Optional
+import java.util.UUID
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -37,8 +39,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.Optional
-import java.util.UUID
 
 internal class FormFlowFormLinkTaskProviderTest {
 

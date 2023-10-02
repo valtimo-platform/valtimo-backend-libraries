@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.plugin.service.PluginService
+import java.io.IOException
 import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -32,7 +33,6 @@ import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.transaction.annotation.Transactional
-import java.io.IOException
 
 @Transactional
 class PluginAutoDeploymentEventListener(

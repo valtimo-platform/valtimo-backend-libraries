@@ -21,8 +21,8 @@ import com.ritense.openzaak.service.impl.OpenZaakRequestBuilder
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.BesluitType
-import org.springframework.web.client.RestTemplate
 import java.net.URI
+import org.springframework.web.client.RestTemplate
 
 class CatalogiClient(
     private val restTemplate: RestTemplate,

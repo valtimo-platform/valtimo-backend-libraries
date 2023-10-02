@@ -20,8 +20,8 @@ import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.domain.ConnectorTypeId
 import com.ritense.connector.repository.ConnectorTypeRepository
-import mu.KotlinLogging
 import java.util.UUID
+import mu.KotlinLogging
 
 class ConnectorDeploymentService(
     private val connectorTypeRepository: ConnectorTypeRepository

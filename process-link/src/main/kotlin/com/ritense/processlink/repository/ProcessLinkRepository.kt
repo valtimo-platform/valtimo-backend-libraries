@@ -18,8 +18,8 @@ package com.ritense.processlink.repository
 
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
-import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
+import org.springframework.data.jpa.repository.JpaRepository
 
 interface ProcessLinkRepository : JpaRepository<ProcessLink, UUID> {
     fun findByProcessDefinitionId(processDefinitionId: String): List<ProcessLink>

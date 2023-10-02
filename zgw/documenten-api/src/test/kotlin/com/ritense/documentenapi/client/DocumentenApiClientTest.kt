@@ -19,6 +19,10 @@ package com.ritense.documentenapi.client
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.zgw.Rsin
 import com.ritense.zgw.domain.Vertrouwelijkheid
+import java.net.URI
+import java.time.LocalDate
+import java.time.LocalDateTime
+import kotlin.test.assertEquals
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
@@ -30,10 +34,6 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
-import java.net.URI
-import java.time.LocalDate
-import java.time.LocalDateTime
-import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class DocumentenApiClientTest {

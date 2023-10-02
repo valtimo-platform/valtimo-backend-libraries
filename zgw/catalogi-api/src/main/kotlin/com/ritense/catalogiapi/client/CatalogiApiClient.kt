@@ -25,9 +25,9 @@ import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
+import java.net.URI
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
-import java.net.URI
 
 class CatalogiApiClient(
     private val webclientBuilder: WebClient.Builder

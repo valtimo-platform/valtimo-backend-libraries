@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.resource.domain.TemporaryResourceSubmittedEvent
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent
-import org.springframework.context.ApplicationEventPublisher
 import java.util.UUID
+import org.springframework.context.ApplicationEventPublisher
 
 /**
  * Upload field class to perform additional processing when submission has files.

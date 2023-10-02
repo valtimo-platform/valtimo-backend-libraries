@@ -19,8 +19,8 @@ package com.ritense.openzaak.service.impl
 import com.ritense.openzaak.service.EigenschapService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.EigenschapType
-import org.springframework.web.client.RestTemplate
 import java.net.URI
+import org.springframework.web.client.RestTemplate
 
 class EigenschapService(
     private val restTemplate: RestTemplate,

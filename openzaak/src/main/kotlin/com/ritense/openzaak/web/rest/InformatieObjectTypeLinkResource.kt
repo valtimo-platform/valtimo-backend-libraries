@@ -20,6 +20,7 @@ import com.ritense.openzaak.domain.mapping.impl.InformatieObjectTypeLink
 import com.ritense.openzaak.service.result.CreateInformatieObjectTypeLinkResult
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import javax.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -28,7 +29,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])

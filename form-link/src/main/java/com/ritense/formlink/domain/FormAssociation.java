@@ -18,7 +18,6 @@ package com.ritense.formlink.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import java.util.UUID;
 
 @Deprecated(since = "10.6.0", forRemoval = true)

@@ -26,6 +26,13 @@ import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zgw.domain.Vertrouwelijkheid
+import java.io.InputStream
+import java.net.URI
+import java.time.LocalDate
+import java.time.LocalDateTime
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -34,13 +41,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
-import java.io.InputStream
-import java.net.URI
-import java.time.LocalDate
-import java.time.LocalDateTime
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 internal class DocumentenApiPluginTest {
 

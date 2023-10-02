@@ -18,10 +18,10 @@ package com.ritense.processlink.service
 
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
+import java.util.UUID
 import mu.KotlinLogging
 import org.camunda.bpm.model.bpmn.instance.FlowNode
 import org.springframework.context.event.EventListener
-import java.util.UUID
 
 class CopyProcessLinkOnProcessDeploymentListener(
     private val processLinkRepository: ProcessLinkRepository

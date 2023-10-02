@@ -28,12 +28,12 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.json.Mapper
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
+import mu.KotlinLogging
+import org.camunda.bpm.engine.delegate.DelegateExecution
 
 class DocumentDelegateService(
     private val processDocumentService: ProcessDocumentService,

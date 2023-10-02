@@ -36,14 +36,14 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.contract.resource.Resource
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpMethod
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpMethod
 
 class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
 

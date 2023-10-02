@@ -18,9 +18,9 @@ package com.ritense.documentenapi.client
 
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zgw.domain.Vertrouwelijkheid
+import java.time.LocalDate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 internal class CreateDocumentRequestTest {
     @Test

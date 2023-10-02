@@ -18,7 +18,6 @@ package com.ritense.document.domain.impl.snapshot;
 
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.valtimo.contract.domain.AbstractId;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;

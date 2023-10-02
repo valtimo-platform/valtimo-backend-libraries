@@ -20,11 +20,11 @@ import com.ritense.document.domain.RelatedFile
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.service.ZaakDocumentService
+import java.util.UUID
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 
 @RestController
 @RequestMapping(value = ["/api/v1/zaken-api/document/{documentId}"], produces = [APPLICATION_JSON_UTF8_VALUE])

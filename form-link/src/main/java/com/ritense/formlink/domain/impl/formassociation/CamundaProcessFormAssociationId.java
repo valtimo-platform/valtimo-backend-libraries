@@ -20,9 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.formlink.domain.ProcessFormAssociation;
 import com.ritense.valtimo.contract.domain.AbstractId;
-
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Deprecated(since = "10.6.0", forRemoval = true)

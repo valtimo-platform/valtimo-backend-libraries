@@ -19,10 +19,8 @@ package com.ritense.formlink.service.impl.result;
 import com.ritense.formlink.service.result.FormSubmissionResult;
 import com.ritense.processdocument.service.result.TransactionalResult;
 import com.ritense.valtimo.contract.result.OperationError;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 

@@ -16,8 +16,6 @@
 
 package com.ritense.resource.service
 
-import mu.KotlinLogging
-import org.springframework.scheduling.annotation.Scheduled
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.Duration
@@ -25,6 +23,8 @@ import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.listDirectoryEntries
+import mu.KotlinLogging
+import org.springframework.scheduling.annotation.Scheduled
 
 open class TemporaryResourceStorageDeletionService(
     private val retentionInMinutes: Long,

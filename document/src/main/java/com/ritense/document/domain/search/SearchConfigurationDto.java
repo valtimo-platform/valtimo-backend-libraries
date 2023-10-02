@@ -21,7 +21,6 @@ import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldFieldType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
 import com.ritense.document.domain.impl.searchfield.SearchFieldMatchType;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;

@@ -17,8 +17,8 @@
 package com.ritense.dashboard.datasource
 
 import com.ritense.valtimo.contract.annotation.AnnotatedClassResolver
-import com.ritense.valtimo.contract.dashboard.feature.WidgetDataFeature
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
+import com.ritense.valtimo.contract.dashboard.feature.WidgetDataFeature
 import java.lang.reflect.Method
 import mu.KLogger
 import mu.KotlinLogging

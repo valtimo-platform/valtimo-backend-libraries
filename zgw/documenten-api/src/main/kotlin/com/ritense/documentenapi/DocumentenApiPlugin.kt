@@ -33,12 +33,12 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.domain.Vertrouwelijkheid
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.hibernate.validator.constraints.Length
-import org.springframework.context.ApplicationEventPublisher
 import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.hibernate.validator.constraints.Length
+import org.springframework.context.ApplicationEventPublisher
 
 @Plugin(
     key = "documentenapi",

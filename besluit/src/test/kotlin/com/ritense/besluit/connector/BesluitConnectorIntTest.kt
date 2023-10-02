@@ -17,11 +17,11 @@
 package com.ritense.besluit.connector
 
 import com.ritense.besluit.BaseIntegrationTest
+import java.net.URI
+import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
-import java.net.URI
-import java.util.UUID
 
 class BesluitConnectorIntTest : BaseIntegrationTest() {
 

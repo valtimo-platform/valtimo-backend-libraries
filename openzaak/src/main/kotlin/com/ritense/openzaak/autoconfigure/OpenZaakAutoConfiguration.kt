@@ -56,6 +56,7 @@ import com.ritense.openzaak.web.rest.impl.ZaakTypeResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import kotlin.contracts.ExperimentalContracts
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -66,7 +67,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.web.client.RestTemplate
-import kotlin.contracts.ExperimentalContracts
 
 @Configuration
 @EnableJpaRepositories(basePackages = ["com.ritense.openzaak.repository"])

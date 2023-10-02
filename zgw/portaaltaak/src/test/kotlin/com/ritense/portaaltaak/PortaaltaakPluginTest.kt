@@ -35,6 +35,10 @@ import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import java.net.URI
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.junit.jupiter.api.BeforeEach
@@ -45,10 +49,6 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.net.URI
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 
 internal class PortaaltaakPluginTest {

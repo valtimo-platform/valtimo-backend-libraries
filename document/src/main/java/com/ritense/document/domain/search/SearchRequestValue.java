@@ -17,12 +17,10 @@
 package com.ritense.document.domain.search;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-
 import java.time.temporal.Temporal;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentFalse;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 

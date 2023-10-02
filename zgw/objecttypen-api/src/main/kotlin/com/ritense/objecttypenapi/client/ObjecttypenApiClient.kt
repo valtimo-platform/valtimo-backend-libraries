@@ -17,8 +17,8 @@
 package com.ritense.objecttypenapi.client
 
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
-import org.springframework.web.reactive.function.client.WebClient
 import java.net.URI
+import org.springframework.web.reactive.function.client.WebClient
 
 class ObjecttypenApiClient(
     private val webclientBuilder: WebClient.Builder

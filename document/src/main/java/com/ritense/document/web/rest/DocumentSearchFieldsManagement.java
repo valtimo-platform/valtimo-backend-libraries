@@ -17,8 +17,8 @@
 package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
+import java.util.List;
 
 public interface DocumentSearchFieldsManagement {
     ResponseEntity<List<SearchFieldDto>> getAdminSearchFields(String documentDefinitionName);

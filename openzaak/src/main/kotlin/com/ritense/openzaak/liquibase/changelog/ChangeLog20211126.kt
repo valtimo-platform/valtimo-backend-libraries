@@ -17,15 +17,15 @@
 package com.ritense.openzaak.liquibase.changelog
 
 import com.ritense.document.domain.impl.Mapper
+import java.nio.ByteBuffer
+import java.sql.Types
+import java.util.UUID
 import liquibase.change.custom.CustomTaskChange
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
 import liquibase.exception.ValidationErrors
 import liquibase.resource.ResourceAccessor
 import mu.KotlinLogging
-import java.nio.ByteBuffer
-import java.sql.Types
-import java.util.UUID
 
 class ChangeLog20211126 : CustomTaskChange {
 

@@ -28,7 +28,6 @@ import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentSnapshotService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;

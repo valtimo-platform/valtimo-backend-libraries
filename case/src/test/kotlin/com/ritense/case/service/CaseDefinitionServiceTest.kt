@@ -16,7 +16,6 @@
 
 package com.ritense.case.service
 
-import com.ritense.authorization.AuthorizationService
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
@@ -33,6 +32,7 @@ import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.exception.ValueResolverValidationException
+import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -45,7 +45,6 @@ import org.mockito.kotlin.doNothing
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.Optional
 
 class CaseDefinitionServiceTest {
     lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository

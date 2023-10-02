@@ -20,9 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.formlink.domain.FormLink;
-
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 

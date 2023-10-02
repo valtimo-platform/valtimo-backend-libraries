@@ -33,7 +33,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -41,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;

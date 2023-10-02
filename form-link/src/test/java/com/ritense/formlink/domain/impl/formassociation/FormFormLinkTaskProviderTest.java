@@ -22,9 +22,7 @@ import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementForm
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import org.junit.jupiter.api.Test;
-
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

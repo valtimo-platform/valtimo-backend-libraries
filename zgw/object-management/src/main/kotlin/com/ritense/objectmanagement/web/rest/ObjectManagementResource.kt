@@ -21,6 +21,8 @@ import com.ritense.objectmanagement.domain.ObjectsListRowDto
 import com.ritense.objectmanagement.domain.search.SearchWithConfigRequest
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import java.util.UUID
+import javax.validation.Valid
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
@@ -32,8 +34,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import java.util.UUID
-import javax.validation.Valid
 
 @RequestMapping("/api/v1/object/management/configuration", produces = [APPLICATION_JSON_UTF8_VALUE])
 class ObjectManagementResource(

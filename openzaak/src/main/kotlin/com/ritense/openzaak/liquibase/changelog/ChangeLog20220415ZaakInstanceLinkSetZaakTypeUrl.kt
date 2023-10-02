@@ -4,6 +4,8 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
+import java.nio.charset.Charset
+import java.util.Date
 import liquibase.change.custom.CustomTaskChange
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
@@ -11,8 +13,6 @@ import liquibase.exception.ValidationErrors
 import liquibase.resource.ResourceAccessor
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
-import java.nio.charset.Charset
-import java.util.Date
 
 class ChangeLog20220415ZaakInstanceLinkSetZaakTypeUrl : CustomTaskChange {
 

@@ -24,10 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.json.ObjectContent;
-
 import java.io.IOException;
 import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CamundaProcessFormAssociationJsonSerializingTest extends BaseTest {

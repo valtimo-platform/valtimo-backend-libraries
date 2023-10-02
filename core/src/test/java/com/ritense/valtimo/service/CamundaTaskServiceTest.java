@@ -35,13 +35,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.jpa.domain.Specification;
-
 import javax.persistence.EntityManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;

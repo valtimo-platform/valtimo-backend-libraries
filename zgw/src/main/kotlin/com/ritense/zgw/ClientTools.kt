@@ -16,10 +16,10 @@
 
 package com.ritense.zgw
 
+import java.net.URI
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.ResolvableType
 import org.springframework.web.util.UriBuilder
-import java.net.URI
 
 class ClientTools {
     companion object {

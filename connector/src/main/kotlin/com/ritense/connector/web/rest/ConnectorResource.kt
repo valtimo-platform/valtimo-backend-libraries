@@ -23,6 +23,8 @@ import com.ritense.connector.web.rest.request.ModifyConnectorInstanceRequest
 import com.ritense.connector.web.rest.result.CreateConnectorInstanceResult
 import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import java.util.UUID
+import javax.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -37,8 +39,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
-import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])

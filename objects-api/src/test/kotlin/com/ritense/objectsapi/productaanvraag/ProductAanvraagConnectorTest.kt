@@ -30,6 +30,8 @@ import com.ritense.objectsapi.domain.ProductAanvraag
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.repository.AbonnementLinkRepository
 import com.ritense.objectsapi.service.ObjectsApiConnector
+import java.net.URI
+import java.util.UUID
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -40,8 +42,6 @@ import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.whenever
 import org.springframework.core.ParameterizedTypeReference
-import java.net.URI
-import java.util.UUID
 
 class ProductAanvraagConnectorTest : BaseTest() {
     lateinit var productAanvraagProperties: ProductAanvraagProperties

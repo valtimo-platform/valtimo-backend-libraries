@@ -27,7 +27,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
 import com.ritense.document.domain.relation.DocumentRelation;
 import org.hibernate.annotations.Type;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;

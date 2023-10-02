@@ -19,7 +19,6 @@ package com.ritense.valtimo.milestones.domain;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.Range;
 import org.jvnet.hk2.annotations.Optional;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

@@ -24,6 +24,7 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginCategoryRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import kotlin.test.assertFailsWith
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,7 +34,6 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import kotlin.test.assertFailsWith
 
 internal class PluginDeploymentListenerTest {
 

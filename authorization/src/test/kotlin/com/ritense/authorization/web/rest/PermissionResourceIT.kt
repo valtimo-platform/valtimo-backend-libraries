@@ -18,19 +18,21 @@ package com.ritense.authorization.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.BaseIntegrationTest
-import com.ritense.authorization.permission.PermissionRepository
-import com.ritense.authorization.role.Role
-import com.ritense.authorization.role.RoleRepository
 import com.ritense.authorization.permission.ConditionContainer
+import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.PermissionRepository
 import com.ritense.authorization.permission.condition.ContainerPermissionCondition
 import com.ritense.authorization.permission.condition.FieldPermissionCondition
-import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.condition.PermissionConditionOperator
+import com.ritense.authorization.role.Role
+import com.ritense.authorization.role.RoleRepository
 import com.ritense.authorization.testimpl.RelatedTestEntity
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityActionProvider
 import com.ritense.authorization.web.request.PermissionAvailableRequest
 import com.ritense.authorization.web.request.PermissionContext
+import java.util.UUID
+import javax.transaction.Transactional
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,8 +45,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.util.UUID
-import javax.transaction.Transactional
 
 @Transactional
 class PermissionResourceIT: BaseIntegrationTest() {

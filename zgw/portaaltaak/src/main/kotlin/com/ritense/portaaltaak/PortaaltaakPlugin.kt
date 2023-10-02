@@ -46,11 +46,11 @@ import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.engine.delegate.DelegateTask
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.camunda.bpm.engine.delegate.DelegateTask
 
 @Plugin(
     key = "portaaltaak",

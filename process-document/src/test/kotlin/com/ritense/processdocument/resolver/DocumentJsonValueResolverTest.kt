@@ -28,6 +28,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.BeforeEach
@@ -37,7 +38,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.UUID
 
 internal class DocumentJsonValueResolverTest {
 

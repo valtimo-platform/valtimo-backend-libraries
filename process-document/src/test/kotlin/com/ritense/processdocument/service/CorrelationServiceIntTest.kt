@@ -29,16 +29,16 @@ import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Com
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byName
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import java.util.function.Consumer
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import java.util.function.Consumer
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 @Transactional
 class CorrelationServiceIntTest: BaseIntegrationTest() {

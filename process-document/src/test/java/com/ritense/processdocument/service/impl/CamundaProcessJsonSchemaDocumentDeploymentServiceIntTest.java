@@ -19,9 +19,7 @@ package com.ritense.processdocument.service.impl;
 import com.ritense.processdocument.BaseIntegrationTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
 import javax.transaction.Transactional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")

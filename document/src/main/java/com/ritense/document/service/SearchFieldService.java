@@ -31,13 +31,11 @@ import com.ritense.document.web.rest.impl.SearchFieldMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.zalando.problem.Status;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
 import static com.ritense.document.repository.SearchFieldRepository.byIdDocumentDefinitionName;
 import static com.ritense.document.service.SearchFieldActionProvider.VIEW_LIST;
 

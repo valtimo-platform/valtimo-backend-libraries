@@ -26,13 +26,13 @@ import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.service.PluginService
+import java.net.URI
+import java.time.LocalDate
+import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.data.domain.PageRequest
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.util.UriComponentsBuilder
-import java.net.URI
-import java.time.LocalDate
-import java.util.UUID
 
 class ObjectManagementFacade(
     private val objectManagementRepository: ObjectManagementRepository,

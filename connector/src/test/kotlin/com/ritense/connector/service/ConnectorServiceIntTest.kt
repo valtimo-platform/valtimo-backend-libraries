@@ -28,6 +28,9 @@ import com.ritense.connector.impl.ObjectApiProperties
 import com.ritense.connector.repository.ConnectorTypeRepository
 import com.ritense.connector.web.rest.request.ModifyConnectorInstanceRequest
 import com.ritense.connector.web.rest.result.CreateConnectorInstanceResultFailed
+import java.util.UUID
+import javax.inject.Inject
+import javax.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeAll
@@ -37,9 +40,6 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.domain.Pageable
-import java.util.UUID
-import javax.inject.Inject
-import javax.transaction.Transactional
 
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

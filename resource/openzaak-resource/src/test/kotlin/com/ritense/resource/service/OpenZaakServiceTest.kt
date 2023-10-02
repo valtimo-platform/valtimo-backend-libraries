@@ -24,7 +24,6 @@ import java.io.InputStream
 import java.net.URI
 import java.net.URL
 import java.time.LocalDateTime
-import java.util.Arrays
 import java.util.UUID
 import javax.servlet.http.HttpServletRequest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -33,9 +32,9 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.springframework.web.multipart.MultipartFile
 
 internal class OpenZaakServiceTest {

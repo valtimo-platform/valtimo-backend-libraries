@@ -22,13 +22,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-
 import javax.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.valtimo.keycloak.service.KeycloakUserManagementService.MAX_USERS;

@@ -22,9 +22,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.document.domain.Document
 import com.ritense.resource.domain.TemporaryResourceSubmittedEvent
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileSubmittedEvent
+import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
-import java.util.UUID
 
 /**
  * Upload field class to perform additional processing when submission has files.

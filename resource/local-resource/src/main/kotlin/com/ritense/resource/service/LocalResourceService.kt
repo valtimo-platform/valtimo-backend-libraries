@@ -22,9 +22,9 @@ import com.ritense.resource.web.ObjectUrlDTO
 import com.ritense.resource.web.ResourceDTO
 import com.ritense.valtimo.contract.resource.FileStatus
 import com.ritense.valtimo.contract.resource.Resource
-import org.springframework.web.multipart.MultipartFile
 import java.net.URL
 import java.util.UUID
+import org.springframework.web.multipart.MultipartFile
 
 class LocalResourceService : ResourceService {
 

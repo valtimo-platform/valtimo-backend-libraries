@@ -17,8 +17,6 @@
 package com.ritense.formflow.domain.instance
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
-import org.hibernate.annotations.Type
-import org.json.JSONObject
 import java.util.Objects
 import javax.persistence.AttributeOverride
 import javax.persistence.CascadeType
@@ -33,6 +31,8 @@ import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 import javax.persistence.OrderBy
 import javax.persistence.Table
+import org.hibernate.annotations.Type
+import org.json.JSONObject
 
 
 @Entity

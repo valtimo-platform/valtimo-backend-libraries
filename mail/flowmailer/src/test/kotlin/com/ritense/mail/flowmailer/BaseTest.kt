@@ -33,6 +33,8 @@ import com.ritense.valtimo.contract.mail.model.value.Recipient
 import com.ritense.valtimo.contract.mail.model.value.RecipientCollection
 import com.ritense.valtimo.contract.mail.model.value.Sender
 import com.ritense.valtimo.contract.mail.model.value.Subject
+import java.net.URI
+import java.util.Optional
 import org.mockito.ArgumentCaptor
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
@@ -40,8 +42,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
-import java.net.URI
-import java.util.Optional
 
 abstract class BaseTest {
 

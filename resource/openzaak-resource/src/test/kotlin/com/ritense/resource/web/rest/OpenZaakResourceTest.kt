@@ -20,6 +20,9 @@ import com.ritense.resource.service.ResourceService
 import com.ritense.resource.web.ObjectContentDTO
 import com.ritense.resource.web.ObjectUrlDTO
 import com.ritense.resource.web.ResourceDTO
+import java.net.URL
+import java.util.Arrays
+import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -28,9 +31,6 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.verify
 import org.springframework.http.HttpStatus
-import java.net.URL
-import java.util.Arrays
-import java.util.UUID
 
 internal class OpenZaakResourceTest {
 

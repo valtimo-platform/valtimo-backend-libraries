@@ -17,10 +17,10 @@
 package com.ritense.valtimo.contract.validation
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import mu.KotlinLogging
 import javax.validation.ConstraintViolationException
 import javax.validation.Validation
 import javax.validation.Validator
+import mu.KotlinLogging
 
 interface Validatable {
 

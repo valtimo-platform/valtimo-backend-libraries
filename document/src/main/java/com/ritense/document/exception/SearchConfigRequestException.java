@@ -17,7 +17,6 @@
 package com.ritense.document.exception;
 
 import com.ritense.document.domain.impl.searchfield.SearchField;
-
 import javax.validation.ValidationException;
 
 public class SearchConfigRequestException extends ValidationException {

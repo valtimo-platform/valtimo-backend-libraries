@@ -23,6 +23,8 @@ import com.ritense.processlink.exception.ProcessLinkNotFoundException
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
+import java.nio.charset.StandardCharsets
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
@@ -36,8 +38,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.nio.charset.StandardCharsets
-import java.util.UUID
 
 internal class ProcessLinkTaskResourceTest {
 

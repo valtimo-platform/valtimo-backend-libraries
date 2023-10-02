@@ -22,13 +22,13 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.service.ZaakTypeLinkService
+import java.util.UUID
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.ExecutionListener
 import org.camunda.bpm.extension.reactor.bus.CamundaSelector
 import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListener
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 
 @CamundaSelector(type = "serviceTask", event = ExecutionListener.EVENTNAME_START)
 open class BaseServiceTaskListener(

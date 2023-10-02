@@ -17,7 +17,6 @@
 package com.ritense.dashboard.domain
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import org.hibernate.annotations.Type
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -25,6 +24,7 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.Table
+import org.hibernate.annotations.Type
 
 @Entity
 @Table(name = "dashboard_widget_configuration")

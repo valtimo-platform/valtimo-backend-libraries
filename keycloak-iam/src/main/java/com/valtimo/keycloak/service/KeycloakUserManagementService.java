@@ -32,14 +32,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import javax.ws.rs.NotFoundException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;

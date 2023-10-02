@@ -17,11 +17,11 @@
 package com.ritense.valtimo.web.sse.service
 
 import com.ritense.valtimo.web.sse.event.BaseSseEvent
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.mockito.kotlin.mock
-import java.util.UUID
 
 class SseSubscriptionServiceTest {
 

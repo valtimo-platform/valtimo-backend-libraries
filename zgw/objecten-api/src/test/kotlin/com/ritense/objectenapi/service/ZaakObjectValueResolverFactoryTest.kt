@@ -16,11 +16,13 @@
 
 package com.ritense.objectenapi.service
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.Mapper
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.mock
@@ -28,9 +30,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 internal class ZaakObjectValueResolverFactoryTest {
 

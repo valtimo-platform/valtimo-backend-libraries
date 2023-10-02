@@ -24,6 +24,9 @@ import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
+import java.net.URI
+import java.util.Optional
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -32,9 +35,6 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.whenever
-import java.net.URI
-import java.util.Optional
-import java.util.UUID
 
 class ZaakInstanceLinkServiceTest: BaseTest() {
 

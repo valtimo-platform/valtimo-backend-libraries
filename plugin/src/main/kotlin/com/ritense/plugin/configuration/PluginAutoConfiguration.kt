@@ -38,6 +38,8 @@ import com.ritense.plugin.web.rest.PluginConfigurationResource
 import com.ritense.plugin.web.rest.PluginDefinitionResource
 import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
 import com.ritense.valueresolver.ValueResolverService
+import javax.persistence.EntityManager
+import javax.validation.Validator
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -48,8 +50,6 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import javax.persistence.EntityManager
-import javax.validation.Validator
 
 @Configuration
 @EnableJpaRepositories(

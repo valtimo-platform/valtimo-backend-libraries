@@ -28,7 +28,6 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.json.ObjectContent;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;

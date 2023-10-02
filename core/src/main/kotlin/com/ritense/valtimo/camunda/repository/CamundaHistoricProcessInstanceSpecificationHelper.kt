@@ -17,8 +17,8 @@
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance
-import org.springframework.data.jpa.domain.Specification
 import java.time.LocalDateTime
+import org.springframework.data.jpa.domain.Specification
 
 class CamundaHistoricProcessInstanceSpecificationHelper {
 

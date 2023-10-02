@@ -5,8 +5,8 @@ import com.ritense.openzaak.service.impl.model.zaak.betrokkene.RolNietNatuurlijk
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import org.camunda.bpm.engine.delegate.DelegateTask
 import kotlin.contracts.ExperimentalContracts
+import org.camunda.bpm.engine.delegate.DelegateTask
 
 @OptIn(ExperimentalContracts::class)
 class ZaakKvkProvider(

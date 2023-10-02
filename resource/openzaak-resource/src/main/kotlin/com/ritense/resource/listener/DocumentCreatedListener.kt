@@ -19,8 +19,8 @@ package com.ritense.resource.listener
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
 import com.ritense.resource.service.OpenZaakService
-import org.springframework.context.event.EventListener
 import java.net.URI
+import org.springframework.context.event.EventListener
 
 class DocumentCreatedListener(
     private val openZaakService: OpenZaakService

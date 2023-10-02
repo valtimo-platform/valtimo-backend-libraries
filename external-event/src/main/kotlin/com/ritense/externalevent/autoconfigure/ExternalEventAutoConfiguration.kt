@@ -32,6 +32,8 @@ import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.config.ValtimoProperties
 import com.ritense.valtimo.contract.mail.MailSender
+import java.util.function.Consumer
+import java.util.function.Supplier
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
@@ -42,8 +44,6 @@ import org.springframework.messaging.Message
 import org.springframework.messaging.support.MessageBuilder
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Sinks
-import java.util.function.Consumer
-import java.util.function.Supplier
 
 @Configuration
 class ExternalEventAutoConfiguration {

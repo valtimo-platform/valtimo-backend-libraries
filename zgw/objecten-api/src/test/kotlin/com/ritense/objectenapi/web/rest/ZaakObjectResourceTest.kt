@@ -25,6 +25,10 @@ import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.json.Mapper
+import java.net.URI
+import java.nio.charset.StandardCharsets
+import java.time.LocalDate
+import java.util.UUID
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -35,18 +39,14 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.net.URI
-import java.nio.charset.StandardCharsets
-import java.time.LocalDate
-import java.util.UUID
 
 
 internal class ZaakObjectResourceTest {

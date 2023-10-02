@@ -16,8 +16,6 @@
 
 package com.ritense.formflow.domain.definition.configuration
 
-import com.ritense.formflow.domain.definition.FormFlowDefinition as FormFlowDefinitionEntity
-import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
@@ -26,6 +24,8 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import com.ritense.formflow.domain.definition.FormFlowDefinition as FormFlowDefinitionEntity
+import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 
 class FormFlowDefinitionTest {
     @Test

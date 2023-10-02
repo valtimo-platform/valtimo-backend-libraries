@@ -6,10 +6,10 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.connector.BaseIntegrationTest
 import com.ritense.connector.impl.NestedObject
 import com.ritense.connector.impl.ObjectApiProperties
+import javax.inject.Inject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.http.converter.json.SpringHandlerInstantiator
-import javax.inject.Inject
 
 internal class ConnectorEncryptionIntTest : BaseIntegrationTest() {
 

@@ -17,6 +17,7 @@
 package com.ritense.authorization
 
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import javax.sql.DataSource
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -25,7 +26,6 @@ import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import javax.sql.DataSource
 
 @SpringBootApplication
 @EntityScan("com.ritense.authorization.testimpl")

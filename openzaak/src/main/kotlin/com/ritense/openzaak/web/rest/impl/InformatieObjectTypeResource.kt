@@ -19,10 +19,10 @@ package com.ritense.openzaak.web.rest.impl
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
 import com.ritense.openzaak.web.rest.InformatieObjectTypeResource
+import java.util.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.notFound
 import org.springframework.http.ResponseEntity.ok
-import java.util.UUID
 
 class InformatieObjectTypeResource(val zaakService: ZaakService) : InformatieObjectTypeResource {
 

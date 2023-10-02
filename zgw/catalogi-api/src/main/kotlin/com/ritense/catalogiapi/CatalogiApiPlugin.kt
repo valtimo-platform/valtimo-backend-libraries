@@ -40,9 +40,9 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.Page
+import java.net.URI
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
-import java.net.URI
 
 @Plugin(
     key = "catalogiapi",

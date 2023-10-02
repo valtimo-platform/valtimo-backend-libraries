@@ -25,6 +25,7 @@ import com.ritense.processlink.service.ProcessLinkExistsException
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import java.io.IOException
 import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -34,7 +35,6 @@ import org.springframework.core.annotation.Order
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
-import java.io.IOException
 
 open class ProcessLinkDeploymentApplicationReadyEventListener(
     private val resourceLoader: ResourceLoader,

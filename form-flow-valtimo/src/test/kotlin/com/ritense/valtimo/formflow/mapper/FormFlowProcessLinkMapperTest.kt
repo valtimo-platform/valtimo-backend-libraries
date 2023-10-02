@@ -23,6 +23,9 @@ import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkResponseDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkUpdateRequestDto
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -30,9 +33,6 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 internal class FormFlowFlowProcessLinkMapperTest {
 

@@ -16,9 +16,9 @@
 
 package com.ritense.smartdocuments.io
 
-import org.apache.commons.lang3.math.NumberUtils.min
 import java.io.IOException
 import java.io.InputStream
+import org.apache.commons.lang3.math.NumberUtils.min
 
 /*
  * A limited input stream. Only reads a section of the given input stream.

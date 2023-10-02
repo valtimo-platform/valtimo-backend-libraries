@@ -19,8 +19,8 @@ package com.ritense.openzaak.service.impl
 import com.ritense.openzaak.service.ZaakResultaatService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.ResultaatType
-import org.springframework.web.client.RestTemplate
 import java.net.URI
+import org.springframework.web.client.RestTemplate
 
 class ZaakResultaatService(
     private val restTemplate: RestTemplate,

@@ -26,7 +26,6 @@ import com.ritense.processdocument.repository.DocumentDefinitionProcessLinkRepos
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 

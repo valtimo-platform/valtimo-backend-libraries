@@ -39,6 +39,11 @@ import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Com
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.CamundaTaskService
+import java.net.URI
+import java.util.Optional
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -63,11 +68,6 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
-import java.net.URI
-import java.util.Optional
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @Transactional
 internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {

@@ -47,16 +47,16 @@ import com.ritense.search.domain.FieldType.TEXT_CONTAINS
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.service.SearchFieldV2Service
 import com.ritense.search.service.SearchListColumnService
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZonedDateTime
+import java.util.UUID
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.ZonedDateTime
-import java.util.UUID
 
 @Transactional(readOnly = true)
 class ObjectManagementService(

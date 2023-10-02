@@ -18,7 +18,6 @@ package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import org.springframework.http.ResponseEntity;
-
 import java.util.List;
 
 public interface DocumentSearchFields {

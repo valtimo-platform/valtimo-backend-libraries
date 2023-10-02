@@ -22,8 +22,8 @@ import com.ritense.objecttypenapi.client.ObjecttypenApiClient
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.valtimo.contract.validation.Url
-import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
+import org.springframework.web.util.UriComponentsBuilder
 
 @Plugin(
    key = "objecttypenapi",

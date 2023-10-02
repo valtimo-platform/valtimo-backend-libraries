@@ -23,6 +23,8 @@ import com.ritense.objectenapi.web.rest.result.ObjectDto
 import com.ritense.objectenapi.web.rest.result.ObjecttypeDto
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import java.net.URI
+import java.util.UUID
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -33,8 +35,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
-import java.net.URI
-import java.util.UUID
 
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class ZaakObjectResource(

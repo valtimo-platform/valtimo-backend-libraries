@@ -19,8 +19,8 @@ package com.ritense.document.service;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.ResourceActionProvider;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import java.util.List;
 
 public class JsonSchemaDocumentActionProvider implements ResourceActionProvider<JsonSchemaDocument> {
 

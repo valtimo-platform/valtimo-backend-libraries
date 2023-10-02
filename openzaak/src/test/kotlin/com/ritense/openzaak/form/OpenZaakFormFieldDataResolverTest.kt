@@ -27,6 +27,8 @@ import com.ritense.valtimo.contract.form.DataResolvingContext
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
+import java.net.URI
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -37,8 +39,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import java.net.URI
-import java.util.UUID
 
 internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
 

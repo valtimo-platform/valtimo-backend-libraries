@@ -20,7 +20,6 @@ import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.exception.SearchConfigRequestException;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-
 import javax.validation.ValidationException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -28,7 +27,6 @@ import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.DATE;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.DATETIME;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TIME;

@@ -22,11 +22,11 @@ import com.ritense.openzaak.domain.mapping.impl.ServiceTaskHandler
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
 import java.net.URI
 import javax.inject.Inject
 import javax.transaction.Transactional
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 
 @Transactional
 class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {

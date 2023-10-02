@@ -22,8 +22,8 @@ import com.ritense.openzaak.service.impl.model.zaak.BetrokkeneType
 import com.ritense.openzaak.service.impl.model.zaak.Rol
 import com.ritense.openzaak.service.impl.model.zaak.betrokkene.RolNatuurlijkPersoon
 import com.ritense.openzaak.service.impl.model.zaak.betrokkene.RolNietNatuurlijkPersoon
-import org.springframework.web.client.RestTemplate
 import java.net.URI
+import org.springframework.web.client.RestTemplate
 
 class ZaakRolService(
     private val restTemplate: RestTemplate,

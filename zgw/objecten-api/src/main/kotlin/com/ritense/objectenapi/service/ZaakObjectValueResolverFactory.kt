@@ -22,9 +22,9 @@ import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valueresolver.ValueResolverFactory
-import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.UUID
 import java.util.function.Function
+import org.camunda.bpm.engine.delegate.VariableScope
 
 class ZaakObjectValueResolverFactory(
     private val zaakObjectService: ZaakObjectService,

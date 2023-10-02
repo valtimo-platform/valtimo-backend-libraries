@@ -38,7 +38,6 @@ import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;

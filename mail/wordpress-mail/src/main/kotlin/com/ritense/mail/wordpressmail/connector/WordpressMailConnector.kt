@@ -19,17 +19,17 @@ package com.ritense.mail.wordpressmail.connector
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
+import com.ritense.mail.event.MailSendEvent
 import com.ritense.mail.wordpressmail.domain.EmailSendRequest
 import com.ritense.mail.wordpressmail.domain.NamedByteArrayResource
 import com.ritense.mail.wordpressmail.service.WordpressMailClient
-import com.ritense.mail.event.MailSendEvent
 import com.ritense.valtimo.contract.mail.model.MailMessageStatus
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.AttachmentCollection
+import kotlin.streams.toList
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.io.Resource
-import kotlin.streams.toList
 
 @ConnectorType(name = "WordpressMail")
 class WordpressMailConnector(

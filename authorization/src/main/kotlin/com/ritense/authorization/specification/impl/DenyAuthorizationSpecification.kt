@@ -16,8 +16,8 @@
 
 package com.ritense.authorization.specification.impl
 
-import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery

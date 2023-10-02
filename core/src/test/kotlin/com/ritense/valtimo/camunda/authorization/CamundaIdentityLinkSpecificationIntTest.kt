@@ -22,6 +22,7 @@ import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
 import com.ritense.valtimo.service.CamundaTaskService
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -29,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 
 @Transactional
 class CamundaIdentityLinkSpecificationIntTest @Autowired constructor(

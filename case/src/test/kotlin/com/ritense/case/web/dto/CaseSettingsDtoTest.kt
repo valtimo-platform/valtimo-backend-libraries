@@ -2,10 +2,10 @@ package com.ritense.case.web.dto
 
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.web.rest.dto.CaseSettingsDto
-import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.Test
 
 class CaseSettingsDtoTest {
     @Test

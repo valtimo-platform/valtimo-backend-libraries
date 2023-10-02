@@ -17,6 +17,7 @@
 package com.ritense.plugin.web.rest
 
 import com.ritense.plugin.BaseIntegrationTest
+import java.nio.charset.StandardCharsets
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -30,7 +31,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.nio.charset.StandardCharsets
 
 
 internal class PluginDefinitionResourceIT: BaseIntegrationTest() {

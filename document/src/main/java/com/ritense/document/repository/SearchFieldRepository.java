@@ -18,15 +18,15 @@ package com.ritense.document.repository;
 
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import java.util.List;
+import java.util.Optional;
 
 public interface SearchFieldRepository extends JpaRepository<SearchField, SearchFieldId>, JpaSpecificationExecutor<SearchField> {
 

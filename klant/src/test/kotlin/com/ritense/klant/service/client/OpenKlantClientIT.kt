@@ -22,12 +22,15 @@ import com.ritense.klant.domain.KlantCreationRequest
 import com.ritense.klant.domain.KlantSearchFilter
 import com.ritense.klant.domain.NatuurlijkPersoonSubjectIdentificatie
 import com.ritense.klant.service.BaseIntegrationTest
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.fail
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
-import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.hasItem
 import org.hamcrest.Matchers.hasProperty
@@ -37,9 +40,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.fail
 
 class OpenKlantClientIT : BaseIntegrationTest() {
 

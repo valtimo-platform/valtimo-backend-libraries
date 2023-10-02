@@ -16,9 +16,9 @@
 
 package com.ritense.note.repository
 
+import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
-import com.ritense.authorization.permission.Permission
 import com.ritense.note.domain.Note
 import com.ritense.note.service.NoteService
 import com.ritense.valtimo.contract.database.QueryDialectHelper

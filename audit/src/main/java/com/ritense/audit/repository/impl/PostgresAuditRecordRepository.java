@@ -19,9 +19,6 @@ package com.ritense.audit.repository.impl;
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.repository.AuditRecordRepository;
 import com.ritense.valtimo.contract.audit.AuditEvent;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
@@ -29,6 +26,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @NoRepositoryBean
 public interface PostgresAuditRecordRepository extends AuditRecordRepository<AuditRecord> {

@@ -24,6 +24,8 @@ import com.ritense.openzaak.service.result.ModifyServiceTaskHandlerResult
 import com.ritense.openzaak.service.result.RemoveServiceTaskHandlerResult
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import java.util.UUID
+import javax.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -33,8 +35,6 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
-import javax.validation.Valid
 
 @RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])

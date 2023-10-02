@@ -18,10 +18,6 @@ package com.ritense.plugin.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -30,9 +26,15 @@ import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
 import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
 import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
 import com.ritense.valtimo.contract.json.Mapper
+import java.nio.charset.StandardCharsets
+import java.util.UUID
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.format.support.FormattingConversionService
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
@@ -45,8 +47,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.nio.charset.StandardCharsets
-import java.util.UUID
 
 internal class PluginConfigurationResourceTest {
 

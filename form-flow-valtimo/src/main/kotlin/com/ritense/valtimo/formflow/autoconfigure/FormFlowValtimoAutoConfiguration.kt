@@ -26,7 +26,6 @@ import com.ritense.formlink.domain.FormLinkTaskProvider
 import com.ritense.formlink.repository.ProcessFormAssociationRepository
 import com.ritense.formlink.service.FormAssociationService
 import com.ritense.formlink.service.FormLinkNewProcessFormFlowProvider
-import com.ritense.formlink.service.impl.CamundaFormAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService

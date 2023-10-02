@@ -29,6 +29,10 @@ import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.Mapper
+import java.net.URI
+import java.time.LocalDate
+import java.util.UUID
+import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
@@ -36,10 +40,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.net.URI
-import java.time.LocalDate
-import java.util.UUID
-import kotlin.test.assertEquals
 
 class ZaakObjectListenerTest {
 

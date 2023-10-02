@@ -19,6 +19,7 @@ package com.ritense.plugin.web.rest
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
+import java.nio.charset.StandardCharsets
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -31,7 +32,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.nio.charset.StandardCharsets
 
 internal class PluginDefinitionResourceTest {
 

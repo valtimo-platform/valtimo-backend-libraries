@@ -28,11 +28,6 @@ import com.ritense.valtimo.contract.domain.AggregateRoot
 import com.ritense.valtimo.contract.domain.DomainEvent
 import com.ritense.valtimo.contract.validation.Validatable
 import com.ritense.zakenapi.domain.ZaakInstanceLink
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.hibernate.annotations.Type
-import org.hibernate.validator.constraints.Length
-import org.springframework.data.domain.Persistable
 import java.net.URI
 import javax.persistence.Column
 import javax.persistence.Convert
@@ -40,6 +35,11 @@ import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 import javax.persistence.Table
 import javax.validation.constraints.NotBlank
+import mu.KotlinLogging
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.hibernate.annotations.Type
+import org.hibernate.validator.constraints.Length
+import org.springframework.data.domain.Persistable
 
 @Entity
 @Table(name = "zaak_type_link")

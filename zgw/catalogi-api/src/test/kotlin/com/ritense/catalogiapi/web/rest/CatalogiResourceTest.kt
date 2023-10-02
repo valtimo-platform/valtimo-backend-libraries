@@ -22,6 +22,8 @@ import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.service.CatalogiService
+import java.net.URI
+import java.nio.charset.StandardCharsets
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,8 +35,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.net.URI
-import java.nio.charset.StandardCharsets
 
 internal class CatalogiResourceTest {
 

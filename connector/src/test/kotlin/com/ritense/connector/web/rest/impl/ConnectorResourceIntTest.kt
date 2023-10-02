@@ -32,11 +32,14 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.connector.web.rest.request.CreateConnectorInstanceRequest
 import com.ritense.connector.web.rest.result.CreateConnectorInstanceResultSucceeded
 import com.ritense.valtimo.contract.json.serializer.PageSerializer
+import java.nio.charset.StandardCharsets
+import java.util.UUID
+import javax.inject.Inject
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.anyString
+import org.mockito.Mockito.`when`
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -56,9 +59,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 import org.springframework.transaction.annotation.Transactional
-import java.nio.charset.StandardCharsets
-import java.util.UUID
-import javax.inject.Inject
 
 @Transactional
 internal class ConnectorResourceIntTest : BaseIntegrationTest() {

@@ -17,16 +17,26 @@
 package com.ritense.zakenapi.client
 
 import com.ritense.zakenapi.ZakenApiAuthentication
-import com.ritense.zakenapi.domain.*
+import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.CreateZaakResponse
+import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
+import com.ritense.zakenapi.domain.CreateZaakResultaatResponse
+import com.ritense.zakenapi.domain.CreateZaakStatusRequest
+import com.ritense.zakenapi.domain.CreateZaakStatusResponse
+import com.ritense.zakenapi.domain.ZaakInformatieObject
+import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.ZaakResponse
+import com.ritense.zakenapi.domain.ZaakopschortingRequest
+import com.ritense.zakenapi.domain.ZaakopschortingResponse
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
+import java.net.URI
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
-import java.net.URI
 
 class ZakenApiClient(
     private val webclientBuilder: WebClient.Builder

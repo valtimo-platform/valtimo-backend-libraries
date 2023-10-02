@@ -20,11 +20,11 @@ import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.DocumentSearchFieldsManagement;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.List;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RequestMapping(value = "/api/management", produces = APPLICATION_JSON_UTF8_VALUE)

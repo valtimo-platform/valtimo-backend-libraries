@@ -1,12 +1,12 @@
 package com.ritense.zakenapi.domain.rol
 
 import com.ritense.valtimo.contract.json.Mapper
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
 import java.net.URI
 import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 internal class RolTest {
 

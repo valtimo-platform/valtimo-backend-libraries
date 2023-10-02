@@ -29,6 +29,10 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.service.DocumentService
 import com.ritense.zgw.Page
+import java.net.URI
+import java.time.LocalDate
+import java.util.UUID
+import kotlin.test.assertEquals
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,10 +40,6 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.net.URI
-import java.time.LocalDate
-import java.util.UUID
-import kotlin.test.assertEquals
 
 internal class CatalogiApiPluginTest {
 

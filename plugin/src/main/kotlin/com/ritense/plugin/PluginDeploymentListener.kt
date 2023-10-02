@@ -16,7 +16,6 @@
 
 package com.ritense.plugin
 
-import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -31,13 +30,14 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginCategoryRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import java.lang.reflect.Field
+import java.lang.reflect.Method
+import java.lang.reflect.Parameter
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.annotation.Transactional
-import java.lang.reflect.Field
-import java.lang.reflect.Method
-import java.lang.reflect.Parameter
+import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 
 open class PluginDeploymentListener(
     private val pluginDefinitionResolver: PluginDefinitionResolver,

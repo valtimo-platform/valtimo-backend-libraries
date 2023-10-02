@@ -17,12 +17,12 @@
 package com.ritense.valtimo.camunda.command;
 
 import com.ritense.valtimo.contract.config.LiquibaseRunner;
-import java.sql.SQLException;
 import org.camunda.bpm.engine.SchemaOperationsCommand;
 import org.camunda.bpm.engine.impl.db.PersistenceSession;
 import org.camunda.bpm.engine.impl.db.sql.DbSqlSession;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.slf4j.Logger;
+import java.sql.SQLException;
 
 public class ValtimoSchemaOperationsCommand implements SchemaOperationsCommand {
 

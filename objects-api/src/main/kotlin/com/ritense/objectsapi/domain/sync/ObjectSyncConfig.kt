@@ -17,13 +17,13 @@
 package com.ritense.objectsapi.domain.sync
 
 import com.ritense.valtimo.contract.validation.Validatable
-import org.hibernate.validator.constraints.Length
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 import javax.persistence.Table
 import javax.validation.constraints.NotBlank
+import org.hibernate.validator.constraints.Length
 
 @Entity
 @Table(name = "object_sync_config")

@@ -16,7 +16,6 @@
 
 package com.ritense.connector.web.rest.impl
 
-import com.ritense.connector.web.rest.ConnectorResource as IConnectorResource
 import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
@@ -24,10 +23,11 @@ import com.ritense.connector.web.rest.request.CreateConnectorInstanceRequest
 import com.ritense.connector.web.rest.request.ModifyConnectorInstanceRequest
 import com.ritense.connector.web.rest.result.CreateConnectorInstanceResult
 import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResult
+import java.util.UUID
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
-import java.util.UUID
+import com.ritense.connector.web.rest.ConnectorResource as IConnectorResource
 
 class ConnectorResource(
     private val connectorService: ConnectorService

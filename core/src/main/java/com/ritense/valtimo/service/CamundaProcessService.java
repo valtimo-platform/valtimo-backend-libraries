@@ -44,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
@@ -55,7 +54,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byStartUserId;
 import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byUnfinished;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.NAME;

@@ -17,10 +17,8 @@
 package com.ritense.document.domain.search;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
 public class SearchWithConfigRequest {

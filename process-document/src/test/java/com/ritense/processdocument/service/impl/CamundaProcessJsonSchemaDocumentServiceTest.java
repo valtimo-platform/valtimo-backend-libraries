@@ -33,12 +33,10 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.junit.jupiter.api.Test;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;

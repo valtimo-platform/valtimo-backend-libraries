@@ -28,13 +28,13 @@ import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.valtimo.contract.validation.Url
+import java.net.URI
+import java.security.SecureRandom
+import java.util.Base64
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
-import java.net.URI
-import java.security.SecureRandom
-import java.util.Base64
 
 @Plugin(
     key = "notificatiesapi",

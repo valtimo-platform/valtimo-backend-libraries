@@ -25,6 +25,8 @@ import com.ritense.openzaak.service.impl.model.catalogi.EigenschapType
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import java.net.URI
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.InjectMocks
@@ -33,8 +35,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.net.URI
-import java.util.UUID
 
 internal class EigenschappenSubmittedListenerTest {
 

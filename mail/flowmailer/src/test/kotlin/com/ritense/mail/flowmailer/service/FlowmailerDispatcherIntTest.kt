@@ -17,9 +17,9 @@
 package com.ritense.mail.flowmailer.service
 
 import com.ritense.mail.flowmailer.BaseIntegrationTest
+import javax.inject.Inject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import javax.inject.Inject
 
 internal class FlowmailerDispatcherIntTest : BaseIntegrationTest() {
 

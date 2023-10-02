@@ -20,13 +20,13 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
+import java.util.UUID
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.instanceOf
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
-import java.util.UUID
 
 class CustomProcessLinkUpdateRequestDtoTest {
 

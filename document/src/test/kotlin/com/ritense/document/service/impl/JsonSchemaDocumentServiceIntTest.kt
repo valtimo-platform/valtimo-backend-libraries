@@ -28,6 +28,8 @@ import com.ritense.document.service.JsonSchemaDocumentActionProvider
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.NamedUser
+import java.util.UUID
+import javax.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
@@ -36,8 +38,6 @@ import org.mockito.Mockito
 import org.mockito.Mockito.never
 import org.mockito.kotlin.whenever
 import org.springframework.security.test.context.support.WithMockUser
-import java.util.UUID
-import javax.transaction.Transactional
 
 @Tag("integration")
 @Transactional

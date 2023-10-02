@@ -25,9 +25,9 @@ import java.net.URI
 import java.time.LocalDateTime
 import java.util.UUID
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 
 internal class DocumentRelatedFileAddedEventListenerTest {
 

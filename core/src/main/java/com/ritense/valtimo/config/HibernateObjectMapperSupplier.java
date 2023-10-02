@@ -17,8 +17,8 @@
 package com.ritense.valtimo.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.function.Supplier;
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.function.Supplier;
 
 /*
  * This class links the ObjectMapper from the spring context to the JPA type in order to use any global configuration

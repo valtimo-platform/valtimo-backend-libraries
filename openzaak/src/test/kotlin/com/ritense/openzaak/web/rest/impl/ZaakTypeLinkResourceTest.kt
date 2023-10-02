@@ -26,6 +26,9 @@ import com.ritense.openzaak.service.impl.result.CreateServiceTaskHandlerResultSu
 import com.ritense.openzaak.service.impl.result.ModifyServiceTaskHandlerResultSucceeded
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.valtimo.contract.json.Mapper
+import java.net.URI
+import java.nio.charset.StandardCharsets
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -41,9 +44,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.net.URI
-import java.nio.charset.StandardCharsets
-import java.util.UUID
 
 internal class ZaakTypeLinkResourceTest {
 

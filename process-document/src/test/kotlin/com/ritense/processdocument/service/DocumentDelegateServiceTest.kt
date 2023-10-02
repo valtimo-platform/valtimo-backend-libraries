@@ -26,6 +26,9 @@ import com.ritense.processdocument.BaseTest
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
+import java.time.LocalDateTime
+import java.util.Optional
+import java.util.UUID
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -36,9 +39,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.time.LocalDateTime
-import java.util.UUID
-import java.util.Optional
 
 
 internal class DocumentDelegateServiceTest : BaseTest() {

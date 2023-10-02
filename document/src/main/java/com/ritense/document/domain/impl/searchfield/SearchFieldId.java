@@ -17,9 +17,9 @@
 package com.ritense.document.domain.impl.searchfield;
 
 import com.ritense.valtimo.contract.domain.AbstractId;
-import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.UUID;
 
 @Embeddable
 public class SearchFieldId extends AbstractId<SearchFieldId> {

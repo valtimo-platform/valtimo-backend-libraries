@@ -1,10 +1,10 @@
 package com.ritense.formlink.domain.impl.submission
 
 import com.ritense.form.domain.FormIoFormDefinition
-import org.apache.commons.io.IOUtils
 import java.nio.charset.StandardCharsets
 import java.util.Objects
 import java.util.UUID
+import org.apache.commons.io.IOUtils
 
 abstract class BaseTest {
 

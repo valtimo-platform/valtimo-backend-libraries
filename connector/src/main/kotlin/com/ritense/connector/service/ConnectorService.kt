@@ -33,13 +33,13 @@ import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResult
 import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResultFailed
 import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResultSucceeded
 import com.ritense.valtimo.contract.result.OperationError
+import java.util.UUID
+import javax.validation.ConstraintViolationException
 import org.springframework.context.ApplicationContext
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.interceptor.TransactionAspectSupport
-import java.util.UUID
-import javax.validation.ConstraintViolationException
 
 open class ConnectorService(
     private val context: ApplicationContext,

@@ -29,8 +29,8 @@ import com.ritense.document.service.DocumentSequenceGeneratorService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.domain.FormProcessLink
-import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.service.impl.DefaultFormSubmissionService
+import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.web.rest.dto.FormSubmissionResultFailed
 import com.ritense.form.web.rest.dto.FormSubmissionResultSucceeded
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
@@ -52,6 +52,10 @@ import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
+import java.net.URI
+import java.util.Optional
+import java.util.UUID
+import java.util.stream.Collectors
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -63,10 +67,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
-import java.net.URI
-import java.util.Optional
-import java.util.UUID
-import java.util.stream.Collectors
 
 class DefaultFormSubmissionServiceTest {
 

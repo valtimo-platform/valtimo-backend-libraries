@@ -27,9 +27,7 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import javax.transaction.Transactional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")

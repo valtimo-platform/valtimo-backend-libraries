@@ -16,9 +16,9 @@
 
 package com.ritense.valtimo.camunda.authorization
 
+import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
-import com.ritense.authorization.permission.Permission
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaTaskService

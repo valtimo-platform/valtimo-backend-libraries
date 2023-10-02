@@ -24,6 +24,8 @@ import com.ritense.processlink.domain.CustomProcessLink
 import com.ritense.processlink.domain.CustomProcessLinkCreateRequestDto
 import com.ritense.processlink.domain.CustomProcessLinkUpdateRequestDto
 import com.ritense.processlink.repository.ProcessLinkRepository
+import java.nio.charset.StandardCharsets
+import java.util.UUID
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -39,8 +41,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
-import java.nio.charset.StandardCharsets
-import java.util.UUID
 
 
 internal class ProcessLinkResourceIT : BaseIntegrationTest() {

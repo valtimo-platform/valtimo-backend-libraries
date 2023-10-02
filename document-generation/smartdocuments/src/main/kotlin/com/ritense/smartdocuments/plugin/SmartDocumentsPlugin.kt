@@ -34,11 +34,11 @@ import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.utils.RequestHelper
 import com.ritense.valueresolver.ValueResolverService
+import java.time.LocalDateTime
+import java.util.UUID
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.URL
 import org.springframework.context.ApplicationEventPublisher
-import java.time.LocalDateTime
-import java.util.UUID
 
 @Plugin(
     key = "smartdocuments",

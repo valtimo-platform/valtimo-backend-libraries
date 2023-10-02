@@ -21,13 +21,13 @@ import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationServiceHolder
-import com.ritense.authorization.specification.AuthorizationSpecification
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionView
-import com.ritense.authorization.role.Role
 import com.ritense.authorization.permission.condition.ContainerPermissionCondition.Companion.CONTAINER
+import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.authorization.role.Role
+import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery

@@ -16,9 +16,9 @@
 
 package com.ritense.resource.service.request
 
+import java.io.InputStream
 import org.apache.commons.io.FilenameUtils
 import org.springframework.web.multipart.MultipartFile
-import java.io.InputStream
 
 class MultipartFileUploadRequest(
     private val name: String,

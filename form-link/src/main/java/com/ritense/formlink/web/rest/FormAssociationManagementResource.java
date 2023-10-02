@@ -20,7 +20,6 @@ import com.ritense.formlink.domain.FormAssociation;
 import com.ritense.formlink.domain.request.CreateFormAssociationRequest;
 import com.ritense.formlink.domain.request.ModifyFormAssociationRequest;
 import org.springframework.http.ResponseEntity;
-
 import java.util.Collection;
 
 @Deprecated(since = "10.6.0", forRemoval = true)

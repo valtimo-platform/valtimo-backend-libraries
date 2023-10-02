@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.web.rest.parameters;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ritense.valtimo.domain.util.Jsr310DateTimeSerializer;
@@ -37,6 +36,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ProcessInstanceSearchDTOTest {
 

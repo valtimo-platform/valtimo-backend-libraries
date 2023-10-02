@@ -24,8 +24,8 @@ import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.GeneratedSmartDocument
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
-import org.apache.commons.io.FilenameUtils
 import java.util.Base64
+import org.apache.commons.io.FilenameUtils
 
 @ConnectorType(name = "SmartDocuments")
 class SmartDocumentsConnector(

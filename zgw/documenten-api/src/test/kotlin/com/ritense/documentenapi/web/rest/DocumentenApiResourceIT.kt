@@ -22,6 +22,9 @@ import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.valtimo.contract.json.Mapper
+import java.util.Optional
+import java.util.UUID
+import javax.transaction.Transactional
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -47,9 +50,6 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
-import java.util.Optional
-import java.util.UUID
-import javax.transaction.Transactional
 
 @Transactional
 internal class DocumentenApiResourceIT : BaseIntegrationTest() {

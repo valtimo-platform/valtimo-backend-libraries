@@ -19,7 +19,6 @@ package com.ritense.form.autodeployment;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.form.BaseIntegrationTest;
 import com.ritense.form.service.FormLoaderService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;

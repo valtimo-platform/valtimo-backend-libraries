@@ -27,6 +27,9 @@ import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.service.PluginService
+import java.net.URI
+import java.time.LocalDate
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -38,9 +41,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.PageRequest
-import java.net.URI
-import java.time.LocalDate
-import java.util.UUID
 
 internal class ObjectManagementFacadeTest {
     val objectManagementRepository = mock<ObjectManagementRepository>()

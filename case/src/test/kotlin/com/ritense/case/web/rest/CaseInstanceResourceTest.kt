@@ -27,14 +27,14 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 
 class CaseInstanceResourceTest {
     lateinit var mockMvc: MockMvc

@@ -1,13 +1,13 @@
 package com.ritense.mail.domain.blacklist
 
 import com.ritense.valtimo.contract.validation.Validatable
-import org.hibernate.validator.constraints.Length
 import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
 import javax.validation.constraints.NotBlank
+import org.hibernate.validator.constraints.Length
 
 @Entity
 @Table(name = "blacklisted_email")

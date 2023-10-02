@@ -18,8 +18,6 @@ package com.ritense.connector.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.valtimo.contract.validation.Validatable
-import org.hibernate.annotations.Type
-import org.hibernate.validator.constraints.Length
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
@@ -29,6 +27,8 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.Table
 import javax.validation.constraints.NotBlank
+import org.hibernate.annotations.Type
+import org.hibernate.validator.constraints.Length
 
 @Entity
 @Table(name = "connector_instance", indexes = [Index(name = "ct_name_i", columnList = "name")])

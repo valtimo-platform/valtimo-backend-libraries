@@ -35,6 +35,8 @@ import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentD
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.result.DocumentFunctionResult
 import com.ritense.valtimo.service.CamundaTaskService
+import java.net.URI
+import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -44,8 +46,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
-import java.net.URI
-import java.util.Optional
 
 class FormIoSubmissionTest : BaseTest() {
 

@@ -27,13 +27,13 @@ import com.ritense.connector.domain.meta.ConnectorType
 import com.ritense.processdocument.event.BesluitAddedEvent
 import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.utils.RequestHelper
-import kotlinx.coroutines.runBlocking
-import mu.KotlinLogging
-import org.springframework.context.ApplicationEventPublisher
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 
 @ConnectorType(name = "Besluiten")
 class BesluitConnector(

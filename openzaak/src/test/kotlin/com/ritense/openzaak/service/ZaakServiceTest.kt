@@ -27,6 +27,8 @@ import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
+import java.net.URI
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.BeforeEach
@@ -40,8 +42,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import java.net.URI
-import java.util.UUID
 
 class ZaakServiceTest : BaseTest() {
 

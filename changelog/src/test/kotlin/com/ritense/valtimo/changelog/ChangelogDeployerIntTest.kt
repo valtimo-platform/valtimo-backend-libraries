@@ -19,11 +19,11 @@ package com.ritense.valtimo.changelog
 import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.changelog.repository.ChangesetRepository
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.Instant
 
 internal class ChangelogDeployerIntTest : BaseIntegrationTest() {
 

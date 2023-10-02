@@ -23,11 +23,11 @@ import com.ritense.processdocument.camunda.authorization.CamundaTaskDocumentMapp
 import com.ritense.processdocument.domain.impl.delegate.DocumentDelegate
 import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
+import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
 import com.ritense.processdocument.service.DocumentDelegateService
-import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService

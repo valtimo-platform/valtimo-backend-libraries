@@ -22,8 +22,8 @@ import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import org.springframework.context.event.EventListener
 import java.net.URI
+import org.springframework.context.event.EventListener
 
 class EigenschappenSubmittedListener(
     val zaakTypeLinkService: ZaakTypeLinkService,

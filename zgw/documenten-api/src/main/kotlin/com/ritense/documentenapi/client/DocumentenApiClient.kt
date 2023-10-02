@@ -18,6 +18,10 @@ package com.ritense.documentenapi.client
 
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.zgw.ClientTools
+import java.io.InputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
+import java.net.URI
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.MediaType
@@ -26,10 +30,6 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToFlux
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Flux
-import java.io.InputStream
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
-import java.net.URI
 
 class DocumentenApiClient(
     val webclientBuilder: WebClient.Builder

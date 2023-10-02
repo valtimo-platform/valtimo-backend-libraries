@@ -20,10 +20,10 @@ import com.ritense.openzaak.domain.event.EigenschappenSetEvent
 import com.ritense.openzaak.domain.event.ResultaatSetEvent
 import com.ritense.openzaak.domain.event.StatusSetEvent
 import com.ritense.openzaak.service.impl.ZaakService
-import org.springframework.context.event.EventListener
-import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import org.springframework.context.event.EventListener
 import org.springframework.core.annotation.Order
+import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class GlobalZaakEventListener(

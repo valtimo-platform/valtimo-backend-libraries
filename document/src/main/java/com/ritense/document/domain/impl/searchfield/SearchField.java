@@ -17,7 +17,6 @@
 package com.ritense.document.domain.impl.searchfield;
 
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;

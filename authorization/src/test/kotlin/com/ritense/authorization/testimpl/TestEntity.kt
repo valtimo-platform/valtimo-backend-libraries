@@ -16,7 +16,6 @@
 
 package com.ritense.authorization.testimpl
 
-import org.hibernate.annotations.Type
 import java.util.UUID
 import javax.persistence.CollectionTable
 import javax.persistence.Column
@@ -25,6 +24,7 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.Table
+import org.hibernate.annotations.Type
 
 @Entity
 @Table(name = "test_entity")

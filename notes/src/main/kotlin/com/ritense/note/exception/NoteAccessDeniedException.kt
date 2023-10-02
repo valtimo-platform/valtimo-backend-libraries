@@ -16,9 +16,9 @@
 
 package com.ritense.note.exception
 
+import java.util.UUID
 import org.zalando.problem.AbstractThrowableProblem
 import org.zalando.problem.Status
-import java.util.UUID
 
 class NoteAccessDeniedException(userName: String, noteId: UUID) : AbstractThrowableProblem(
     DEFAULT_TYPE,

@@ -25,12 +25,12 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
+import java.net.URI
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.net.URI
 
 internal class ObjectenApiPluginFactoryTest {
 

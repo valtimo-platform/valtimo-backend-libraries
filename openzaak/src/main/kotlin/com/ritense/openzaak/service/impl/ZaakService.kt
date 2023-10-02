@@ -34,12 +34,12 @@ import com.ritense.openzaak.service.impl.model.zaak.Resultaat
 import com.ritense.openzaak.service.impl.model.zaak.Status
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.springframework.web.client.RestTemplate
 import java.net.URI
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.springframework.web.client.RestTemplate
 
 class ZaakService(
     private val restTemplate: RestTemplate,

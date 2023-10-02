@@ -19,8 +19,8 @@ package com.ritense.processdocument.service.impl;
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.service.AuditService;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentCreatedEvent;
@@ -42,7 +42,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.UUID;
-
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
 
 public class CamundaProcessJsonSchemaDocumentAuditService implements ProcessDocumentAuditService {

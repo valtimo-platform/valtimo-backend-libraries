@@ -16,9 +16,9 @@
 
 package com.ritense.formflow.domain.definition.configuration
 
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.FormFlowDefinition as FormFlowDefinitionEntity
 import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
-import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 
 data class FormFlowDefinition(
     val startStep: String,

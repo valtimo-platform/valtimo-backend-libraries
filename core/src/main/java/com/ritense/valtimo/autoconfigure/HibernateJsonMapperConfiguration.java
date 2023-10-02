@@ -18,11 +18,11 @@ package com.ritense.valtimo.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.valtimo.config.HibernateObjectMapperSupplier;
-import java.util.function.Supplier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import java.util.function.Supplier;
 
 @Configuration
 public class HibernateJsonMapperConfiguration {

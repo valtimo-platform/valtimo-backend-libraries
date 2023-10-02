@@ -33,6 +33,11 @@ import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
+import java.net.URI
+import java.time.LocalDate
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -42,11 +47,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.net.URI
-import java.time.LocalDate
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 internal class ZakenApiPluginTest {
 

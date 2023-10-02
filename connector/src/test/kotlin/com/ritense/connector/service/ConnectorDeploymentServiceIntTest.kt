@@ -19,12 +19,12 @@ package com.ritense.connector.service
 import com.ritense.connector.BaseIntegrationTest
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
+import javax.inject.Inject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.transaction.annotation.Transactional
-import javax.inject.Inject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 internal class ConnectorDeploymentServiceIntTest : BaseIntegrationTest() {

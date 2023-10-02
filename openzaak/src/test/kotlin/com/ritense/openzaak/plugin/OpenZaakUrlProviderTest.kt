@@ -23,14 +23,14 @@ import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import java.net.URI
+import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.net.URI
-import java.util.UUID
 
 internal class OpenZaakUrlProviderTest {
 

@@ -23,6 +23,7 @@ import com.ritense.valtimo.changelog.repository.ChangesetRepository
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import javax.sql.DataSource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -32,7 +33,6 @@ import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import javax.sql.DataSource
 
 @EnableJpaRepositories(basePackageClasses = [ChangesetRepository::class])
 @EntityScan("com.ritense.valtimo.changelog.domain")

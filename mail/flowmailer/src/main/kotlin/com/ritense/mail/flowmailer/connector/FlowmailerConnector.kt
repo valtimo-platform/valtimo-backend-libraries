@@ -39,8 +39,8 @@ import com.ritense.valtimo.contract.mail.model.value.Subject
 import com.ritense.valtimo.contract.mail.model.value.attachment.Content
 import com.ritense.valtimo.contract.mail.model.value.attachment.Name
 import com.ritense.valtimo.contract.mail.model.value.attachment.Type
-import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.util.UUID
+import org.camunda.bpm.engine.delegate.DelegateExecution
 
 /**
  * Flowmailer connector:

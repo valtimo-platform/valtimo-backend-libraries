@@ -23,14 +23,14 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.valtimo.contract.json.Mapper
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 internal class PluginConfigurationEncryptionTest {
 

@@ -19,9 +19,9 @@ package com.ritense.objectsapi.productaanvraag
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector.Companion.OBJECTEN_KANAAL_NAME
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
+import javax.persistence.EntityNotFoundException
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
-import javax.persistence.EntityNotFoundException
 
 class ProductAanvraagListener(
     private val productAanvraagService: ProductAanvraagService,

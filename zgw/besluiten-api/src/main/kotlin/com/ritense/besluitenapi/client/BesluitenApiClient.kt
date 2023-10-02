@@ -18,12 +18,12 @@ package com.ritense.besluitenapi.client
 
 import com.ritense.besluitenapi.BesluitenApiAuthentication
 import com.ritense.zgw.ClientTools
+import java.net.URI
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.toEntity
-import java.net.URI
 
 class BesluitenApiClient(
     private val webclientBuilder: WebClient.Builder

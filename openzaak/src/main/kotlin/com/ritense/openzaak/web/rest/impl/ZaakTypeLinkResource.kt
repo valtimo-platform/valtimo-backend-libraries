@@ -26,10 +26,10 @@ import com.ritense.openzaak.service.result.ModifyServiceTaskHandlerResult
 import com.ritense.openzaak.service.result.RemoveServiceTaskHandlerResult
 import com.ritense.openzaak.web.rest.ZaakTypeLinkResource
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
+import java.util.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.http.ResponseEntity.noContent
 import org.springframework.http.ResponseEntity.ok
-import java.util.UUID
 
 class ZaakTypeLinkResource(
     private val zaakTypeLinkService: ZaakTypeLinkService

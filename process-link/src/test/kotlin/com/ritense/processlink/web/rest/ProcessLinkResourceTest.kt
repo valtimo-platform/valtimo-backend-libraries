@@ -26,6 +26,8 @@ import com.ritense.processlink.domain.CustomProcessLinkUpdateRequestDto
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.contract.json.Mapper
+import java.nio.charset.StandardCharsets
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -43,8 +45,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.nio.charset.StandardCharsets
-import java.util.UUID
 
 internal class ProcessLinkResourceTest {
 

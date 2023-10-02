@@ -22,6 +22,7 @@ import com.ritense.form.service.FormSubmissionService
 import com.ritense.form.service.PrefillFormService
 import com.ritense.form.web.rest.dto.FormSubmissionResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import java.util.UUID
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -31,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
 
 @RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])

@@ -25,6 +25,7 @@ import com.ritense.authorization.testimpl.TestEntityActionProvider.Companion.vie
 import com.ritense.authorization.testimpl.TestEntityActionProvider.Companion.view_list
 import com.ritense.authorization.testimpl.TestEntityRepository
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
+import kotlin.test.assertEquals
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -34,7 +35,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
-import kotlin.test.assertEquals
 
 @Transactional
 class ContainsIntTest : BaseIntegrationTest() {

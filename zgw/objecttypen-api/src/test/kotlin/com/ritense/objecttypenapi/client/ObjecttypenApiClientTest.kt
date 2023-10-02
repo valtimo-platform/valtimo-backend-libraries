@@ -17,6 +17,9 @@
 package com.ritense.objecttypenapi.client
 
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
+import java.net.URI
+import java.time.LocalDate
+import java.util.UUID
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterAll
@@ -29,9 +32,6 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
-import java.net.URI
-import java.time.LocalDate
-import java.util.UUID
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ObjecttypenApiClientTest {

@@ -21,13 +21,13 @@ import com.ritense.authorization.AuthorizationService
 import com.ritense.valtimo.camunda.domain.CamundaVariableInstance
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
+import kotlin.test.assertEquals
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.data.domain.Sort
-import kotlin.test.assertEquals
 
 class CamundaRuntimeServiceTest {
 

@@ -1,11 +1,11 @@
 package com.ritense.resource.service.request
 
-import org.springframework.http.MediaType
-import org.springframework.web.multipart.MultipartFile
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import org.springframework.http.MediaType
+import org.springframework.web.multipart.MultipartFile
 
 class ByteArrayMultipartFile(
     val content: ByteArray,

@@ -17,8 +17,8 @@
 package com.ritense.mail.config;
 
 import com.microtripit.mandrillapp.lutung.MandrillApi;
-import java.util.Optional;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import java.util.Optional;
 
 @ConfigurationProperties(prefix = "valtimo.mandrill")
 public class MandrillProperties {

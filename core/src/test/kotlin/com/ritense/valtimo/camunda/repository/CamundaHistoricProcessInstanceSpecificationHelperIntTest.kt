@@ -2,8 +2,9 @@ package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.service.CamundaTaskService
+import java.time.LocalDateTime
+import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.IdentityService
 import org.camunda.bpm.engine.runtime.ProcessInstance
@@ -13,8 +14,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
-import java.util.UUID
 
 class CamundaHistoricProcessInstanceSpecificationHelperIntTest @Autowired constructor(
     private val camundaHistoricProcessInstanceRepository: CamundaHistoricProcessInstanceRepository,

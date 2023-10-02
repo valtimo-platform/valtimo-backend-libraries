@@ -20,6 +20,7 @@ import com.ritense.besluit.BaseIntegrationTest
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.BesluitType
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import java.net.URI
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -33,7 +34,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.net.URI
 
 internal class BesluitResourceIntTest : BaseIntegrationTest() {
 

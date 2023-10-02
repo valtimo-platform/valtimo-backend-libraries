@@ -25,7 +25,6 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;

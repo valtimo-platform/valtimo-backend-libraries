@@ -18,9 +18,9 @@ package com.ritense.openzaak.service
 
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
 import io.jsonwebtoken.Jwts
+import java.nio.charset.Charset
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.nio.charset.Charset
 
 class TokenGeneratorServiceTest {
 

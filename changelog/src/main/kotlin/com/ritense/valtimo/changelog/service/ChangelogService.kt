@@ -19,6 +19,10 @@ package com.ritense.valtimo.changelog.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.valtimo.changelog.domain.Changeset
 import com.ritense.valtimo.changelog.repository.ChangesetRepository
+import java.io.IOException
+import java.text.Normalizer
+import java.time.Instant
+import kotlin.jvm.optionals.getOrElse
 import liquibase.util.MD5Util
 import liquibase.util.StringUtil
 import mu.KotlinLogging
@@ -26,10 +30,6 @@ import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.transaction.annotation.Transactional
-import java.io.IOException
-import java.text.Normalizer
-import java.time.Instant
-import kotlin.jvm.optionals.getOrElse
 
 @Transactional
 class ChangelogService(

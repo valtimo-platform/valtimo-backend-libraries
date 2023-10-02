@@ -19,7 +19,6 @@ package com.ritense.form.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
-import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormLoaderService;

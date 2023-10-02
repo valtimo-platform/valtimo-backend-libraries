@@ -19,7 +19,6 @@ package com.ritense.document.domain.search;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.exception.SearchConfigRequestException;
 import org.springframework.data.util.Pair;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,7 +32,6 @@ import java.time.temporal.TemporalQuery;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTIPLE;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTI_SELECT_DROPDOWN;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.RANGE;

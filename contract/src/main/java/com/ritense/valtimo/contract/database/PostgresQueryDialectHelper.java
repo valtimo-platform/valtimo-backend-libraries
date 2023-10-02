@@ -16,14 +16,14 @@
 
 package com.ritense.valtimo.contract.database;
 
-import java.time.temporal.TemporalAccessor;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import java.time.temporal.TemporalAccessor;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 public class PostgresQueryDialectHelper implements QueryDialectHelper {
 

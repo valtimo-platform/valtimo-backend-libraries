@@ -16,8 +16,8 @@
 
 package com.ritense.openzaak.plugin
 
-import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.link.ZaakInstanceLinkService

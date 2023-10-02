@@ -25,10 +25,10 @@ import com.ritense.valtimo.contract.mail.model.value.MailTemplateIdentifier
 import com.ritense.valtimo.contract.mail.model.value.Recipient
 import com.ritense.valtimo.contract.mail.model.value.Sender
 import com.ritense.valtimo.contract.mail.model.value.Subject
-import org.camunda.bpm.engine.delegate.DelegateExecution
-import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import java.util.Optional
 import java.util.regex.Pattern
+import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 
 class MailService(
     private val mailSender: MailSender

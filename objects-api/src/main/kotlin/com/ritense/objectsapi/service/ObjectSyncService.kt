@@ -30,10 +30,10 @@ import com.ritense.objectsapi.web.rest.result.ModifyObjectSyncConfigResult
 import com.ritense.objectsapi.web.rest.result.ModifyObjectSyncConfigResultFailed
 import com.ritense.objectsapi.web.rest.result.ModifyObjectSyncConfigResultSucceeded
 import com.ritense.valtimo.contract.result.OperationError
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
 import java.util.UUID
 import javax.validation.ConstraintViolationException
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 
 open class ObjectSyncService(
     private val objectSyncConfigRepository: ObjectSyncConfigRepository,

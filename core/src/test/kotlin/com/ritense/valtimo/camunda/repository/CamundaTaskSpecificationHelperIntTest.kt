@@ -7,9 +7,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
 import org.camunda.bpm.engine.runtime.ProcessInstance
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 

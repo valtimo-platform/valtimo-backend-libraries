@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginConfigurationEntityListener
-import org.hibernate.annotations.Type
 import javax.persistence.Column
 import javax.persistence.Embedded
 import javax.persistence.Entity
@@ -32,6 +31,7 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.Table
+import org.hibernate.annotations.Type
 
 @Entity
 @EntityListeners(PluginConfigurationEntityListener::class)

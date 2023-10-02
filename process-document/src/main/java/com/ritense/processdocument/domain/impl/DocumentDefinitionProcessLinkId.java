@@ -17,11 +17,9 @@
 package com.ritense.processdocument.domain.impl;
 
 import com.ritense.valtimo.contract.domain.AbstractId;
-
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Objects;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable

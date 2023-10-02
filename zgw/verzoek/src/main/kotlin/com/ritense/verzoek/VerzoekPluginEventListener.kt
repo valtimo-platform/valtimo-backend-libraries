@@ -38,9 +38,9 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
+import java.net.URI
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
-import java.net.URI
 
 open class VerzoekPluginEventListener(
     private val pluginService: PluginService,

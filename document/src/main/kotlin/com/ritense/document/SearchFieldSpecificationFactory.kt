@@ -16,10 +16,10 @@
 
 package com.ritense.document
 
+import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
-import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.searchfield.SearchField
 import com.ritense.document.service.SearchFieldSpecification
 import com.ritense.valtimo.contract.database.QueryDialectHelper

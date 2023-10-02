@@ -22,14 +22,14 @@ import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.web.rest.result.FormType
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import java.net.URI
+import java.util.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
-import java.net.URI
-import java.util.UUID
 
 @RequestMapping("/api/v1/object", produces = [APPLICATION_JSON_UTF8_VALUE])
 class ObjectResource(

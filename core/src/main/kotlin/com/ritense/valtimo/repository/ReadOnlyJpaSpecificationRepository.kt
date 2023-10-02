@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.repository
 
+import java.util.Optional
+import java.util.function.Function
 import org.springframework.data.domain.Example
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -25,8 +27,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.repository.NoRepositoryBean
 import org.springframework.data.repository.Repository
 import org.springframework.data.repository.query.FluentQuery.FetchableFluentQuery
-import java.util.Optional
-import java.util.function.Function
 
 @NoRepositoryBean
 interface ReadOnlyJpaSpecificationRepository<T, ID> : Repository<T, ID>, JpaSpecificationExecutor<T> {

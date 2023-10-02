@@ -19,6 +19,8 @@ package com.ritense.openzaak.service
 import com.ritense.openzaak.BaseTest
 import com.ritense.openzaak.service.impl.OpenZaakRequestBuilder
 import com.ritense.openzaak.service.impl.model.ResultWrapper
+import java.net.URI
+import kotlin.test.assertTrue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -31,8 +33,6 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import java.net.URI
-import kotlin.test.assertTrue
 
 class OpenZaakRequestBuilderTest : BaseTest() {
 

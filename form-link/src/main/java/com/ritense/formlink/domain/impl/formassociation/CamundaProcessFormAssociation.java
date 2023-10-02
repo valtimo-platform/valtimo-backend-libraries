@@ -17,9 +17,7 @@
 package com.ritense.formlink.domain.impl.formassociation;
 
 import com.ritense.formlink.domain.ProcessFormAssociation;
-
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;

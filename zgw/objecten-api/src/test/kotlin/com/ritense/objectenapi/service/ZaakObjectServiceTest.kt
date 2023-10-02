@@ -29,6 +29,13 @@ import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.ZaakObject
+import java.net.URI
+import java.util.Optional
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -37,13 +44,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.net.URI
-import java.util.Optional
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 internal class ZaakObjectServiceTest {
 

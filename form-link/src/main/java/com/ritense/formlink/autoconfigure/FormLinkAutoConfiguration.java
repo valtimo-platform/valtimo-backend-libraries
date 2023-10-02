@@ -58,7 +58,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-
 import java.util.List;
 
 @Deprecated(since = "10.6.0", forRemoval = true)

@@ -29,6 +29,12 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.Mapper
+import java.time.LocalDate
+import java.util.Optional
+import java.util.UUID
+import javax.transaction.Transactional
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -48,12 +54,6 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
-import java.time.LocalDate
-import java.util.Optional
-import java.util.UUID
-import javax.transaction.Transactional
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @Transactional
 internal class DocumentenApiPluginIT @Autowired constructor(

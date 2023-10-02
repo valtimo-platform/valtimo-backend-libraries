@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
-
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.all;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;

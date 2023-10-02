@@ -28,6 +28,9 @@ import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byName
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import org.camunda.bpm.engine.ProcessEngineException
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.BeforeEach
@@ -35,9 +38,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 @Transactional
 class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {

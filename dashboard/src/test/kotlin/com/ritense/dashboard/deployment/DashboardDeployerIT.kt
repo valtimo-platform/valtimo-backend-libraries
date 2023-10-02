@@ -4,12 +4,12 @@ import com.ritense.dashboard.BaseIntegrationTest
 import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.valtimo.changelog.repository.ChangesetRepository
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.Instant
 
 class DashboardDeployerIT: BaseIntegrationTest() {
     @Autowired

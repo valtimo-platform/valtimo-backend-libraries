@@ -23,10 +23,10 @@ import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
 import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
 import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
-import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 import java.time.LocalDateTime
 import java.util.UUID
+import org.camunda.bpm.engine.delegate.DelegateExecution
 
 interface ZaakService {
 

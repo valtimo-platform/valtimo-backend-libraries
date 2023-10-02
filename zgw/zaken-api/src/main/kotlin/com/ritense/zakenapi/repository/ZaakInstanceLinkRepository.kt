@@ -18,10 +18,10 @@ package com.ritense.zakenapi.repository
 
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.stereotype.Repository
 import java.net.URI
 import java.util.UUID
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
 @Repository
 interface ZaakInstanceLinkRepository : JpaRepository<ZaakInstanceLink, ZaakInstanceLinkId> {

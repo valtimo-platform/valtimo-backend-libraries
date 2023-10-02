@@ -16,7 +16,6 @@
 
 package com.ritense.form;
 
-import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.resource.service.ResourceService;

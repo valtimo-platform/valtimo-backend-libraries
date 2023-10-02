@@ -19,7 +19,6 @@ package com.ritense.processdocument.repository;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLink;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLinkId;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 import java.util.Optional;
 

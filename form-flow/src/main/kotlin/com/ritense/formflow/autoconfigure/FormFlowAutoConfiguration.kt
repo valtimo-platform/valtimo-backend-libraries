@@ -31,6 +31,7 @@ import com.ritense.formflow.repository.PostgresFormFlowAdditionalPropertiesSearc
 import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formflow.service.ObjectMapperConfigurer
+import javax.persistence.EntityManager
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -39,7 +40,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import javax.persistence.EntityManager
 
 @Configuration
 @EnableJpaRepositories(

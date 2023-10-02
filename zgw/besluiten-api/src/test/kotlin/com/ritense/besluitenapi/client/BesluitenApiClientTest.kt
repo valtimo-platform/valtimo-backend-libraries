@@ -19,6 +19,8 @@ package com.ritense.besluitenapi.client
 import com.jayway.jsonpath.matchers.JsonPathMatchers
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.ritense.besluitenapi.BesluitenApiAuthentication
+import java.net.URI
+import java.time.LocalDate
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.hamcrest.CoreMatchers
@@ -35,8 +37,6 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
-import java.net.URI
-import java.time.LocalDate
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BesluitenApiClientTest {

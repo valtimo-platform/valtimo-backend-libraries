@@ -17,8 +17,8 @@
 package com.ritense.note.service
 
 import com.ritense.authorization.Action
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.note.domain.Note
 import com.ritense.note.event.NoteCreatedEvent

@@ -17,7 +17,6 @@
 package com.ritense.formlink.service;
 
 import com.ritense.formlink.domain.TaskOpenResult;
-
 import java.util.UUID;
 
 @Deprecated(since = "10.6.0", forRemoval = true)

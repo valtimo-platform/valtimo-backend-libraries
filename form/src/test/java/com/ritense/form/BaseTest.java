@@ -24,14 +24,11 @@ import com.ritense.form.domain.FormSpringContextHelper;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import org.apache.commons.io.IOUtils;
 import org.springframework.context.ApplicationContext;
-
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
-
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

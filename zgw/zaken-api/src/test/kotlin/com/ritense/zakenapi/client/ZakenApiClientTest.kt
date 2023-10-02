@@ -18,7 +18,6 @@ package com.ritense.zakenapi.client
 
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.ZakenApiAuthentication
-import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.IndicatieMachtiging
 import com.ritense.zakenapi.domain.rol.Rol
@@ -26,9 +25,7 @@ import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.domain.rol.ZaakRolOmschrijving
-import com.ritense.zgw.Rsin
 import java.net.URI
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.UUID

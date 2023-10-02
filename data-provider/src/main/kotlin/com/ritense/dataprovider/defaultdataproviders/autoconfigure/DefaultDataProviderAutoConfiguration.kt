@@ -20,8 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.dataprovider.autoconfigure.DataProviderAutoConfiguration
 import com.ritense.dataprovider.defaultdataproviders.providers.dropdown.DropdownDatabaseDataProvider
 import com.ritense.dataprovider.defaultdataproviders.providers.dropdown.DropdownJsonFileDataProvider
-import com.ritense.dataprovider.defaultdataproviders.repository.DropdownListRepository
 import com.ritense.dataprovider.defaultdataproviders.providers.translation.TranslationJsonFileDataProvider
+import com.ritense.dataprovider.defaultdataproviders.repository.DropdownListRepository
 import org.springframework.boot.autoconfigure.AutoConfigureBefore
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan

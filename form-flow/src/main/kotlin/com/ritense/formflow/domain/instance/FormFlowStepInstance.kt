@@ -22,7 +22,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.formflow.domain.definition.FormFlowNextStep
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
-import org.hibernate.annotations.Type
 import java.util.Objects
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
@@ -31,6 +30,7 @@ import javax.persistence.FetchType
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.Table
+import org.hibernate.annotations.Type
 
 @Entity
 @Table(name = "form_flow_step_instance")

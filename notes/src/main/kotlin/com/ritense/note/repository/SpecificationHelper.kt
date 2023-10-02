@@ -17,11 +17,11 @@
 package com.ritense.note.repository
 
 import com.ritense.note.domain.Note
-import org.springframework.data.jpa.domain.Specification
 import java.util.UUID
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Root
+import org.springframework.data.jpa.domain.Specification
 
 class SpecificationHelper {
     companion object {

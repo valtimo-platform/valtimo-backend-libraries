@@ -25,6 +25,8 @@ import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -39,8 +41,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @Transactional
 class CaseDefinitionResourceIntTest : BaseIntegrationTest() {

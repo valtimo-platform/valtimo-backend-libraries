@@ -18,6 +18,7 @@ package com.ritense.objecttypenapi
 
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.objecttypenapi.client.ObjecttypenApiClient
+import java.net.URI
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,7 +26,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.net.URI
 
 internal class ObjecttypenApiPluginTest{
 

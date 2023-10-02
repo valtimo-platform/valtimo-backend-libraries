@@ -30,6 +30,8 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import com.ritense.valtimo.service.CamundaTaskService
+import java.util.UUID
+import kotlin.test.assertEquals
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -39,8 +41,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
-import kotlin.test.assertEquals
 
 @Transactional
 class CaseAssigneeListenerIntTest : BaseIntegrationTest() {

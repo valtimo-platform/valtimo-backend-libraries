@@ -26,7 +26,6 @@ import com.ritense.valtimo.repository.camunda.dto.InstanceCount;
 import com.ritense.valtimo.repository.camunda.dto.InstanceCountChart;
 import com.ritense.valtimo.repository.camunda.dto.Serie;
 import org.apache.ibatis.session.SqlSession;
-
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -36,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
 

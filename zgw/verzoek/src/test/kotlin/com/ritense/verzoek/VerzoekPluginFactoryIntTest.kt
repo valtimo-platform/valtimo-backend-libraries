@@ -22,6 +22,7 @@ import com.ritense.notificatiesapiauthentication.NotificatiesApiAuthenticationPl
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.Mapping
+import java.net.URI
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.AfterEach
@@ -31,7 +32,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.springframework.beans.factory.annotation.Autowired
-import java.net.URI
 
 internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
 
