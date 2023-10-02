@@ -16,18 +16,73 @@
 
 package com.ritense.case.service
 
+import com.ritense.authorization.Action.Companion.deny
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.case.domain.CaseTab
+import com.ritense.case.domain.CaseTabId
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.TAB_ORDER
 import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionName
+import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionNameAndTabKey
+import com.ritense.case.web.rest.dto.CaseTabDto
+import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import org.springframework.data.domain.Sort
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class CaseTabService(
-    private val caseTabRepository: CaseTabRepository
+    private val caseTabRepository: CaseTabRepository,
+    private val authorizationService: AuthorizationService
 ) {
 
+    @Transactional(readOnly = true)
     fun getCaseTabs(caseDefinitionName: String): List<CaseTab> {
         return caseTabRepository.findAll(byCaseDefinitionName(caseDefinitionName), Sort.by(TAB_ORDER))
     }
 
+    fun createCaseTab(caseDefinitionName: String, caseTab: CaseTabDto): CaseTabDto {
+        denyAuthorization()
+
+        val savedTab = caseTabRepository.save(
+            CaseTab(
+                CaseTabId(caseDefinitionName, caseTab.key),
+                caseTab.name,
+                getCaseTabs(caseDefinitionName).size, // Add it to the end
+                caseTab.type,
+                caseTab.contentKey
+            )
+        )
+        return CaseTabDto.of(savedTab)
+    }
+
+    fun updateCaseTab(caseDefinitionName: String, tabKey: String, caseTab: CaseTabUpdateDto) {
+        denyAuthorization()
+
+        val existingTab = caseTabRepository.findOne(byCaseDefinitionNameAndTabKey(caseDefinitionName, tabKey)).get()
+
+        caseTabRepository.save(existingTab.copy(
+            name = caseTab.name,
+            type = caseTab.type,
+            contentKey = caseTab.contentKey
+        ))
+    }
+
+    fun deleteCaseTab(caseDefinitionName: String, tabKey: String) {
+        denyAuthorization()
+
+        caseTabRepository.findOne(byCaseDefinitionNameAndTabKey(caseDefinitionName, tabKey))
+            .ifPresent {
+                caseTabRepository.delete(it)
+            }
+    }
+
+    private fun denyAuthorization() {
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CaseTab::class.java,
+                deny()
+            )
+        )
+    }
 }

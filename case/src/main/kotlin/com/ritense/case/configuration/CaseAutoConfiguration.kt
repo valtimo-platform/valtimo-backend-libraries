@@ -35,6 +35,7 @@ import com.ritense.case.service.CaseTabService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.web.rest.CaseDefinitionResource
 import com.ritense.case.web.rest.CaseInstanceResource
+import com.ritense.case.web.rest.CaseTabManagementResource
 import com.ritense.case.web.rest.CaseTabResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
@@ -86,6 +87,14 @@ class CaseAutoConfiguration {
         return CaseTabResource(caseTabService)
     }
 
+    @ConditionalOnMissingBean(CaseTabManagementResource::class)
+    @Bean
+    fun caseTabManagementResource(
+        caseTabService: CaseTabService
+    ): CaseTabManagementResource {
+        return CaseTabManagementResource(caseTabService)
+    }
+
     @Bean
     fun caseDefinitionService(
         repository: CaseDefinitionSettingsRepository,
@@ -106,9 +115,10 @@ class CaseAutoConfiguration {
     @ConditionalOnMissingBean(CaseTabService::class)
     @Bean
     fun caseTabService(
-        caseTabRepository: CaseTabRepository
+        caseTabRepository: CaseTabRepository,
+        authorizationService: AuthorizationService
     ): CaseTabService {
-        return CaseTabService(caseTabRepository)
+        return CaseTabService(caseTabRepository, authorizationService)
     }
 
     @Bean

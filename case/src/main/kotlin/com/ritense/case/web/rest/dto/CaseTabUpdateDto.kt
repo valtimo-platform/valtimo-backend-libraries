@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.case.domain
+package com.ritense.case.web.rest.dto
 
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.Table
+import com.ritense.case.domain.CaseTabType
 
-@Entity
-@Table(name = "case_tab")
-data class CaseTab(
-
-    @EmbeddedId
-    val id: CaseTabId,
-
+data class CaseTabUpdateDto(
     val name: String,
-
-    val tabOrder: Int,
-
-    @Enumerated(EnumType.STRING)
     val type: CaseTabType,
-
     val contentKey: String,
 )
