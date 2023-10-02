@@ -27,6 +27,7 @@ import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDe
 import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionNameAndTabKey
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
+import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import org.springframework.data.domain.Sort
 import org.springframework.transaction.annotation.Transactional
 
@@ -61,11 +62,35 @@ class CaseTabService(
 
         val existingTab = caseTabRepository.findOne(byCaseDefinitionNameAndTabKey(caseDefinitionName, tabKey)).get()
 
-        caseTabRepository.save(existingTab.copy(
-            name = caseTab.name,
-            type = caseTab.type,
-            contentKey = caseTab.contentKey
-        ))
+        caseTabRepository.save(
+            existingTab.copy(
+                name = caseTab.name,
+                type = caseTab.type,
+                contentKey = caseTab.contentKey
+            )
+        )
+    }
+
+    fun updateCaseTabs(caseDefinitionName: String, caseTabDtos: List<CaseTabUpdateOrderDto>): List<CaseTab> {
+        denyAuthorization()
+
+        val existingTabs = caseTabRepository.findAll(byCaseDefinitionName(caseDefinitionName))
+        if (existingTabs.size != caseTabDtos.size) {
+            throw IllegalStateException("Failed to update tabs. Reason: the number of tabs in the update request doesn't match the number of existing tabs.")
+        }
+
+        val updatedTabs = caseTabDtos.mapIndexed { index, caseTabDto ->
+            val existingTab = existingTabs.find { it.id.key == caseTabDto.key }
+                ?: throw IllegalStateException("Failed to update tabs. Reason: tab with key '${caseTabDto.key}' doesn't exist.")
+            existingTab.copy(
+                name = caseTabDto.name,
+                tabOrder = index,
+                type = caseTabDto.type,
+                contentKey = caseTabDto.contentKey
+            )
+        }
+
+        return caseTabRepository.saveAll(updatedTabs)
     }
 
     fun deleteCaseTab(caseDefinitionName: String, tabKey: String) {
