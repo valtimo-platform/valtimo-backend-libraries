@@ -25,8 +25,8 @@ import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationHelper
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
+import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
-import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -38,10 +38,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delet
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import kotlin.jvm.optionals.getOrNull
 
 class CaseTabManagementResourceIntTest @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
@@ -68,24 +70,80 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
             contentKey = "some-content-key"
         )
 
-        assertThat(caseTabRepository.findOne(CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(caseDefinitionName, dto.key)).getOrNull()).isNull()
+        assertThat(
+            caseTabRepository.findOne(
+                CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(
+                    caseDefinitionName,
+                    dto.key
+                )
+            ).getOrNull()
+        ).isNull()
 
         mockMvc.perform(
             post("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(jacksonObjectMapper().writeValueAsString(dto))
         ).andExpect(status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.key").value(dto.key))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(dto.name))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.type").value(dto.type.value))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.contentKey").value(dto.contentKey))
+            .andExpect(jsonPath("$").isNotEmpty)
+            .andExpect(jsonPath("$.key").value(dto.key))
+            .andExpect(jsonPath("$.name").value(dto.name))
+            .andExpect(jsonPath("$.type").value(dto.type.value))
+            .andExpect(jsonPath("$.contentKey").value(dto.contentKey))
 
         val createdTab = caseTabRepository.findOne(
             CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(caseDefinitionName, dto.key)
         ).getOrNull()
 
         assertThat(createdTab).isNotNull()
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
+    fun `should update tab order`() {
+        val caseDefinitionName = "test-case-type"
+
+        caseTabRepository.saveAll(
+            listOf(
+                CaseTab(
+                    id = CaseTabId(caseDefinitionName, "tab-1"),
+                    name = "Tab 1",
+                    type = CaseTabType.STANDARD,
+                    tabOrder = 0,
+                    contentKey = "some-content-key"
+                ),
+                CaseTab(
+                    id = CaseTabId(caseDefinitionName, "tab-2"),
+                    name = "Tab 2",
+                    type = CaseTabType.STANDARD,
+                    tabOrder = 1,
+                    contentKey = "some-content-key"
+                )
+            )
+        )
+
+        val updateDto = listOf(
+            CaseTabUpdateOrderDto(
+                key = "tab-2",
+                name = "Tab 2",
+                type = CaseTabType.STANDARD,
+                contentKey = "some-content-key"
+            ), CaseTabUpdateOrderDto(
+                key = "tab-1",
+                name = "Tab 1",
+                type = CaseTabType.STANDARD,
+                contentKey = "some-content-key"
+            )
+        )
+
+        mockMvc.perform(
+            put("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jacksonObjectMapper().writeValueAsString(updateDto))
+        )
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].key").value("tab-2"))
+            .andExpect(jsonPath("$[1].key").value("tab-1"))
     }
 
     @Test
@@ -151,6 +209,13 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         ).andExpect(status().isNoContent)
 
-        assertThat(caseTabRepository.findOne(CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(caseDefinitionName, key)).getOrNull()).isNull()
+        assertThat(
+            caseTabRepository.findOne(
+                CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(
+                    caseDefinitionName,
+                    key
+                )
+            ).getOrNull()
+        ).isNull()
     }
 }

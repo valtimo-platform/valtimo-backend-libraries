@@ -17,9 +17,11 @@
 package com.ritense.case.web.rest
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
+import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -30,12 +32,12 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
-class CaseTabManagementResource(
+open class CaseTabManagementResource(
     private val caseTabService: CaseTabService
 ) {
 
     @PostMapping("/v1/case-definition/{caseDefinitionName}/tab")
-    fun createCaseTab(
+    open fun createCaseTab(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseTab: CaseTabDto
     ): ResponseEntity<CaseTabDto> {
@@ -44,8 +46,19 @@ class CaseTabManagementResource(
         })
     }
 
+    @RunWithoutAuthorization
+    @PutMapping("/v1/case-definition/{caseDefinitionName}/tab")
+    open fun updateOrderCaseTab(
+        @PathVariable caseDefinitionName: String,
+        @RequestBody caseTabDtos: List<CaseTabUpdateOrderDto>
+    ): ResponseEntity<List<CaseTabDto>> {
+        val caseTabs = caseTabService.updateCaseTabs(caseDefinitionName, caseTabDtos)
+            .map { CaseTabDto.of(it) }
+        return ResponseEntity.ok(caseTabs)
+    }
+
     @PutMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
-    fun updateCaseTab(
+    open fun updateCaseTab(
         @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String,
         @RequestBody caseTab: CaseTabUpdateDto
@@ -55,7 +68,7 @@ class CaseTabManagementResource(
     }
 
     @DeleteMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
-    fun deleteCaseTab(
+    open fun deleteCaseTab(
         @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String
     ): ResponseEntity<Unit> {
