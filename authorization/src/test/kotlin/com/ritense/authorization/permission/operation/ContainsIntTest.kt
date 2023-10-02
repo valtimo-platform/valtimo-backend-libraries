@@ -24,14 +24,19 @@ import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityActionProvider.Companion.view
 import com.ritense.authorization.testimpl.TestEntityActionProvider.Companion.view_list
 import com.ritense.authorization.testimpl.TestEntityRepository
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.transaction.annotation.Transactional
 import kotlin.test.assertEquals
 
+@Transactional
 class ContainsIntTest : BaseIntegrationTest() {
 
     @Autowired
@@ -213,5 +218,51 @@ class ContainsIntTest : BaseIntegrationTest() {
         )
 
         assertFalse(hasPermission)
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = ["PLACEHOLDER_CONTAINS_ROLE"])
+    fun `should replace placeholder for permission with contains operator for type expression`() {
+        whenever(userManagementService.currentUser).thenReturn(ValtimoUserBuilder().email("user@ritense.com").build())
+        val testEntity = TestEntity(
+            TestChildEntity(listOf("user@ritense.com", "other-user@ritense.com"))
+        )
+        repository.save(testEntity)
+
+        val spec = authorizationService.getAuthorizationSpecification(
+            EntityAuthorizationRequest(
+                TestEntity::class.java,
+                view_list,
+                null
+            )
+        )
+
+        val entities = repository.findAll(spec)
+
+        assertThat(entities).hasSize(1)
+        assertThat(entities[0].id).isEqualTo(testEntity.id)
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = ["PLACEHOLDER_CONTAINS_ROLE"])
+    fun `should replace placeholder for permission with contains operator for type field`() {
+        whenever(userManagementService.currentUser).thenReturn(ValtimoUserBuilder().email("user@ritense.com").build())
+        val testEntity = TestEntity(
+            fruits = mutableListOf("user@ritense.com", "other-user@ritense.com")
+        )
+        repository.save(testEntity)
+
+        val spec = authorizationService.getAuthorizationSpecification(
+            EntityAuthorizationRequest(
+                TestEntity::class.java,
+                view_list,
+                null
+            )
+        )
+
+        val entities = repository.findAll(spec)
+
+        assertThat(entities).hasSize(1)
+        assertThat(entities[0].id).isEqualTo(testEntity.id)
     }
 }
