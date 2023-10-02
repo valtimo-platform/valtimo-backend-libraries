@@ -63,6 +63,7 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
 import java.net.URI
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -378,6 +379,8 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
             status = TaakStatus.INGEDIEND,
             formulier = TaakForm(TaakFormType.ID, "anId"),
             verwerkerTaakId = getTaskId(),
+            URI.create("aZaakInstanceUrl"),
+            LocalDateTime.now(),
             verzondenData = mapOf(
                 "documenten" to listOf(URI.create("/some-document"), URI.create("/some-document-array")),
                 "name" to "Luis",
