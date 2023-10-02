@@ -56,6 +56,34 @@
                     "value": "strawberry"
                 }
             ]
+        },
+        {
+            "resourceType": "com.ritense.authorization.testimpl.TestEntity",
+            "action": "view_list",
+            "roleKey": "PLACEHOLDER_CONTAINS_ROLE",
+            "conditions": [
+                {
+                    "type": "expression",
+                    "field": "child",
+                    "path": "$.property",
+                    "operator": "contains",
+                    "value": "${currentUserEmail}",
+                    "clazz": "java.util.Collection"
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.authorization.testimpl.TestEntity",
+            "action": "view_list",
+            "roleKey": "PLACEHOLDER_CONTAINS_ROLE",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "fruits",
+                    "operator": "contains",
+                    "value": "${currentUserEmail}"
+                }
+            ]
         }
     ]
 }
