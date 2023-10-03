@@ -16,7 +16,10 @@
 
 package com.ritense.document.autoconfiguration
 
+import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.ritense.document.domain.event.CaseCreatedEvent
 import com.ritense.document.listener.DocumentEventListener
+import com.ritense.valtimo.web.sse.messaging.RedisMessagePublisher
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -27,7 +30,12 @@ class DocumentEventAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(DocumentEventListener::class)
-    fun documentCreatedEventListener(sseSubscritionService: SseSubscriptionService): DocumentEventListener {
-        return DocumentEventListener(sseSubscritionService)
+    fun documentCreatedEventListener(redisMessagePublisher: RedisMessagePublisher): DocumentEventListener {
+        return DocumentEventListener(redisMessagePublisher)
+    }
+
+    @Bean
+    fun dateFormatDisplayTypeParameterType(): NamedType {
+        return NamedType(CaseCreatedEvent::class.java, "caseCreatedEvent")
     }
 }

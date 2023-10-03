@@ -17,16 +17,20 @@
 package com.ritense.valtimo.web.sse.web.rest
 
 import com.ritense.valtimo.web.sse.domain.Subscriber
+import com.ritense.valtimo.web.sse.messaging.RedisMessagePublisher
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
 class SseResource(
-    private val sseSubscriptionService: SseSubscriptionService
+    private val sseSubscriptionService: SseSubscriptionService,
+    private val redisMessagePublisher: RedisMessagePublisher
 ) {
 
     @GetMapping("/api/v1/sse")
@@ -40,6 +44,11 @@ class SseResource(
             logger.info { "subscribe (re-use ${subscriptionId})" }
         } ?: logger.info { "SSE Subscribe (new subscription)" }
         return sseSubscriptionService.subscribe(subscriptionId)
+    }
+
+    @PostMapping("/api/v1/sse/test-event")
+    fun sendTestMessage(@RequestBody message: String) {
+        redisMessagePublisher.publish(message);
     }
 
     companion object {

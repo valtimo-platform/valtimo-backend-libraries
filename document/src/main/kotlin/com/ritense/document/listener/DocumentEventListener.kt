@@ -16,33 +16,39 @@
 
 package com.ritense.document.listener
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.jsonMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.document.domain.event.CaseAssignedEvent
 import com.ritense.document.domain.event.CaseCreatedEvent
 import com.ritense.document.domain.event.CaseUnassignedEvent
 import com.ritense.document.domain.event.DocumentCreatedEvent
 import com.ritense.document.event.DocumentAssigneeChangedEvent
 import com.ritense.document.event.DocumentUnassignedEvent
+import com.ritense.valtimo.web.sse.messaging.RedisMessagePublisher
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.event.TransactionalEventListener
 
 class DocumentEventListener(
-    private val subscriptionService: SseSubscriptionService
+    private val redisMessagePublisher: RedisMessagePublisher
 ) {
 
     @TransactionalEventListener(DocumentCreatedEvent::class)
-    fun handleDocumentCreatedEvent() {
-        subscriptionService.notifySubscribers(CaseCreatedEvent())
+    fun handleDocumentCreatedEvent(event: DocumentCreatedEvent) {
+        val caseCreatedEvent = CaseCreatedEvent(event.documentId().id)
+        val caseCreatedEventJson = jsonMapper().writeValueAsString(caseCreatedEvent)
+        redisMessagePublisher.publish(caseCreatedEventJson)
     }
 
     @EventListener(DocumentUnassignedEvent::class)
     fun handleDocumentUnassignedEvent() {
-        subscriptionService.notifySubscribers(CaseUnassignedEvent())
+        //redisMessagePublisher.publish(CaseUnassignedEvent().eventType)
     }
 
     @EventListener(DocumentAssigneeChangedEvent::class)
     fun handleDocumentAssignedEvent() {
-        subscriptionService.notifySubscribers(CaseAssignedEvent())
+        //redisMessagePublisher.publish(CaseAssignedEvent().eventType)
     }
-
 }

@@ -16,13 +16,12 @@
 
 package com.ritense.valtimo.web.sse.event
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 abstract class BaseSseEvent(
-    @JsonProperty("_t")
-    val eventType: String
+    val eventName: String
 ) {
-
-
 
 }
