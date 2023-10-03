@@ -34,10 +34,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -217,5 +218,33 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
                 )
             ).getOrNull()
         ).isNull()
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
+    fun `should get tabs`() {
+        val caseDefinitionName = "my-case-type"
+
+        val key = "some-key"
+        val caseTab = CaseTab(
+            id = CaseTabId(caseDefinitionName, key),
+            name = "Some tab name",
+            type = CaseTabType.STANDARD,
+            tabOrder = Integer.MAX_VALUE,
+            contentKey = "some-content-key"
+        )
+
+        caseTabRepository.save(caseTab)
+
+        mockMvc.perform(
+            get("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$[0].key").value(caseTab.id.key))
+            .andExpect(jsonPath("$[0].name").value(caseTab.name))
+            .andExpect(jsonPath("$[0].type").value(caseTab.type.value))
+            .andExpect(jsonPath("$[0].contentKey").value(caseTab.contentKey))
     }
 }

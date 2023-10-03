@@ -25,6 +25,7 @@ import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -76,4 +77,12 @@ open class CaseTabManagementResource(
         return ResponseEntity.noContent().build()
     }
 
+    @RunWithoutAuthorization
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/tab")
+    open fun getCaseTabs(
+        @PathVariable caseDefinitionName: String
+    ): ResponseEntity<List<CaseTabDto>> {
+        val caseTabs = caseTabService.getCaseTabs(caseDefinitionName).map { CaseTabDto.of(it) }
+        return ResponseEntity.ok(caseTabs)
+    }
 }
