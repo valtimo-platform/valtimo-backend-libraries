@@ -80,6 +80,7 @@ class DocumentTableValueResolver(
                 "assigneeFullName" -> document.assigneeFullName()
                 "version" -> document.version()
                 "sequence" -> document.sequence()
+                "relatedFiles.size" -> document.relatedFiles().size
                 else -> throw IllegalArgumentException("Unknown document column with name: $requestedValue")
             }
         }
@@ -97,7 +98,8 @@ class DocumentTableValueResolver(
             "assigneeId",
             "assigneeFullName",
             "version",
-            "sequence"
+            "sequence",
+            "relatedFiles.size"
         )
     }
 }
