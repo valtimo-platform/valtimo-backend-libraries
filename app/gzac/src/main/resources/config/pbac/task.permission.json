@@ -8,18 +8,84 @@
         },
         {
             "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "view_list",
+            "roleKey": "ROLE_ADMIN",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaIdentityLink",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "groupId",
+                            "operator": "==",
+                            "value": "ROLE_ADMIN"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "view",
+            "roleKey": "ROLE_ADMIN",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaIdentityLink",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "groupId",
+                            "operator": "==",
+                            "value": "ROLE_ADMIN"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
             "action": "assignable",
             "roleKey": "ROLE_USER"
         },
         {
             "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
             "action": "view_list",
-            "roleKey": "ROLE_USER"
+            "roleKey": "ROLE_USER",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaIdentityLink",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "groupId",
+                            "operator": "==",
+                            "value": "ROLE_USER"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
             "action": "view",
-            "roleKey": "ROLE_USER"
+            "roleKey": "ROLE_USER",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.valtimo.camunda.domain.CamundaIdentityLink",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "groupId",
+                            "operator": "==",
+                            "value": "ROLE_USER"
+                        }
+                    ]
+                }
+            ]
         },
         {
             "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",

@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -44,8 +45,7 @@ public abstract class BaseTest {
         var formFieldDataResolver = mock(FormFieldDataResolver.class);
         when(formFieldDataResolver.supports(eq("oz"))).thenReturn(true);
         when(applicationContext.getBeansOfType(FormFieldDataResolver.class)).thenReturn(Map.of("Test", formFieldDataResolver));
-        var springContextHelper = new FormSpringContextHelper();
-        springContextHelper.setApplicationContext(applicationContext);
+        FormSpringContextHelper.setContext(applicationContext);
     }
 
     protected FormIoFormDefinition formDefinition() {
@@ -73,5 +73,4 @@ public abstract class BaseTest {
     public URI path(String name) {
         return URI.create(String.format("config/document/definition/%s.json", name + ".schema"));
     }
-
 }

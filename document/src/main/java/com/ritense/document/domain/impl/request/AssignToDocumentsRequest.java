@@ -18,7 +18,6 @@ package com.ritense.document.domain.impl.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;

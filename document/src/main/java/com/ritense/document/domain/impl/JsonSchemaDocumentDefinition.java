@@ -28,6 +28,7 @@ import com.ritense.document.exception.DocumentDefinitionNameMismatchException;
 import org.everit.json.schema.ValidationException;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
+import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -159,6 +160,7 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
 
     @Override
     @JsonIgnore
+    @Nonnull
     public JsonSchemaDocumentDefinitionId getId() {
         return id;
     }

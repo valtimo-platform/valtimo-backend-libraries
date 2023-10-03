@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.web.rest.parameters;
+package com.ritense.valtimo.camunda.domain
 
-import java.util.Map;
+import org.camunda.bpm.engine.variable.Variables
+import org.camunda.bpm.engine.variable.context.VariableContext
+import org.camunda.bpm.engine.variable.value.TypedValue
 
-public class ProcessVariables {
+class CamundaVariableContext(
+    private val typedMap: Map<String, TypedValue?>
+): VariableContext {
 
-    Map<String, String> variables;
+    override fun resolve(variableName: String): TypedValue? =
+        typedMap[variableName] ?: Variables.untypedNullValue()
 
+    override fun containsVariable(variableName: String) =
+        typedMap.containsKey(variableName)
 
-    public ProcessVariables(Map<String, String> vars) {
-        this.variables = vars;
-    }
-
-    public Map<String, String> getVariables() {
-        return variables;
-    }
+    override fun keySet(): Set<String> = typedMap.keys
 }

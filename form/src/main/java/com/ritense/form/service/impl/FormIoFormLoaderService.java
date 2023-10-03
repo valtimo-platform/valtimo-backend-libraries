@@ -23,20 +23,21 @@ import com.ritense.document.service.DocumentService;
 import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormLoaderService;
+import com.ritense.form.service.PrefillFormService;
 import java.util.Optional;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class FormIoFormLoaderService implements FormLoaderService {
-
-    private final DocumentService documentService;
     private final FormDefinitionRepository formDefinitionRepository;
 
+    private final PrefillFormService prefillFormService;
+
     public FormIoFormLoaderService(
-        final DocumentService documentService,
-        final FormDefinitionRepository formDefinitionRepository
+        final FormDefinitionRepository formDefinitionRepository,
+        final PrefillFormService prefillFormService
     ) {
-        this.documentService = documentService;
         this.formDefinitionRepository = formDefinitionRepository;
+        this.prefillFormService = prefillFormService;
     }
 
     @Override
@@ -46,15 +47,20 @@ public class FormIoFormLoaderService implements FormLoaderService {
     }
 
     @Override
-    public Optional<JsonNode> getFormDefinitionByNamePreFilled(final String formDefinitionName, final Document.Id documentId) {
+    public Optional<JsonNode> getFormDefinitionByNamePreFilled(
+        final String formDefinitionName,
+        final Document.Id documentId
+    ) {
         assertArgumentNotNull(documentId, "documentId is required");
-        return AuthorizationContext.runWithoutAuthorization(() -> documentService.findBy(documentId))
-            .flatMap(jsonSchemaDocument -> formDefinitionRepository.findByName(formDefinitionName)
+        return AuthorizationContext.runWithoutAuthorization(
+            () -> formDefinitionRepository.findByName(formDefinitionName)
                 .map(formIoFormDefinition -> {
-                    formIoFormDefinition.preFill(jsonSchemaDocument.content().asJson());
-                    return formIoFormDefinition.asJson();
+                    FormIoFormDefinition prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(
+                        formIoFormDefinition.getId(), documentId.getId());
+
+                    return prefilledFormDefinition.asJson();
                 })
-            );
+        );
     }
 
 }

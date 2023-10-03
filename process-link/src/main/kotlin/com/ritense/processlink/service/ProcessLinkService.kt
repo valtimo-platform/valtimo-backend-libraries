@@ -27,11 +27,11 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import java.util.UUID
+import kotlin.jvm.optionals.getOrElse
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
-import kotlin.jvm.optionals.getOrElse
 
 @Transactional(readOnly = true)
 open class ProcessLinkService(
@@ -59,18 +59,6 @@ open class ProcessLinkService(
     fun getProcessLinksByProcessDefinitionKey(processDefinitionKey: String): List<ProcessLink> {
         return camundaRepositoryService.findProcessDefinitions(byKey(processDefinitionKey))
             .flatMap { processLinkRepository.findByProcessDefinitionId(it.id) }
-    }
-
-    fun getProcessLinks(
-        activityId: String,
-        activityType: ActivityTypeWithEventName,
-        processLinkType: String
-    ): List<ProcessLink> {
-        return processLinkRepository.findByActivityIdAndActivityTypeAndProcessLinkType(
-            activityId,
-            activityType,
-            processLinkType
-        )
     }
 
     fun getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId: String, activityType: ActivityTypeWithEventName): ProcessLink? {

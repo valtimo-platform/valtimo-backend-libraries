@@ -17,15 +17,17 @@
 package com.ritense.valtimo.mapper
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.BaseIntegrationTest
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 internal class PluginProcessLinkAutodeploymentIntTest : BaseIntegrationTest() {
 
@@ -34,15 +36,12 @@ internal class PluginProcessLinkAutodeploymentIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should deploy plugin process link on startup`() {
-        val processLinks = processLinkService.getProcessLinks(
-            "TestTask",
-            SERVICE_TASK_START,
-            PROCESS_LINK_TYPE_PLUGIN
-        )
+        val pluginProcessLink = runWithoutAuthorization {
+            processLinkService.getProcessLinksByProcessDefinitionKey("simple-process")
+        }.firstOrNull()
 
-        assertEquals(1, processLinks.size)
-        assertTrue(processLinks[0] is PluginProcessLink)
-        val pluginProcessLink = processLinks[0] as PluginProcessLink
+        assertNotNull(pluginProcessLink)
+        assertTrue(pluginProcessLink is PluginProcessLink)
         assertEquals("TestTask", pluginProcessLink.activityId)
         assertEquals(SERVICE_TASK_START, pluginProcessLink.activityType)
         assertEquals(PROCESS_LINK_TYPE_PLUGIN, pluginProcessLink.processLinkType)

@@ -18,6 +18,7 @@
 package com.ritense.form.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.form.BaseIntegrationTest
@@ -27,11 +28,11 @@ import com.ritense.form.processlink.FormProcessLinkActivityHandler
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
+import java.util.UUID
+import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
-import kotlin.test.assertEquals
 
 @Transactional
 internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
@@ -57,12 +58,12 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
                 false
             )
         )
-        val documentId = documentService.createDocument(
+        val documentId = runWithoutAuthorization { documentService.createDocument(
             NewDocumentRequest(
                 "person",
                 objectMapper.readTree(getDocument())
             )
-        ).resultingDocument().get().id()
+        ).resultingDocument().get().id() }
         val processDefinitionId: String = UUID.randomUUID().toString()
         val processLinkId = UUID.randomUUID()
         val processLink: ProcessLink = FormProcessLink(

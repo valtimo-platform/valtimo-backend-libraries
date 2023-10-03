@@ -18,14 +18,21 @@ package com.ritense.form.domain;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.kotlin.KotlinModule;
+import com.fasterxml.jackson.module.kotlin.KotlinModuleKt;
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 public enum Mapper {
     INSTANCE;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper()
+        .registerModule(new JavaTimeModule())
+        .registerModule(new KotlinModule());
 
     Mapper() {
         // Perform any configuration on the ObjectMapper here.
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.disable(WRITE_DATES_AS_TIMESTAMPS);
     }
 
     public ObjectMapper get() {

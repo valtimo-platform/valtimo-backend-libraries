@@ -19,9 +19,9 @@ package com.ritense.valtimo.camunda.repository
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.KEY
 import com.ritense.valtimo.camunda.repository.CamundaProcessInstanceSpecificationHelper.Companion.BUSINESS_KEY
+import java.time.LocalDateTime
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
 import org.springframework.data.jpa.domain.Specification
-import java.time.LocalDateTime
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.ID as PROCESS_DEFINITION_ID
 import com.ritense.valtimo.camunda.repository.CamundaProcessInstanceSpecificationHelper.Companion.ID as PROCESS_INSTANCE_ID
 
@@ -52,7 +52,7 @@ class CamundaTaskSpecificationHelper {
         const val FOLLOW_UPDATE: String = "followUpDate"
         const val SUSPENSION_STATE: String = "suspensionState"
         const val TENANT_ID: String = "tenantId"
-        const val VARIABLES: String = "variables"
+        const val VARIABLES: String = "variableInstances";
 
         @JvmStatic
         fun all() = Specification<CamundaTask> { _, _, cb ->

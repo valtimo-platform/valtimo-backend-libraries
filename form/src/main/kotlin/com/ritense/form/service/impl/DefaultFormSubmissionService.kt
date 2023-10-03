@@ -20,7 +20,8 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ritense.authorization.AuthorizationContext
+import com.fasterxml.jackson.module.kotlin.treeToValue
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.Document
@@ -55,14 +56,20 @@ import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
+import com.ritense.valtimo.contract.json.JsonMerger
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.result.OperationError
 import com.ritense.valtimo.contract.result.OperationError.FromException
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valueresolver.ValueResolverService
+import com.ritense.valueresolver.ValueResolverServiceImpl
+import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
+import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 
 open class DefaultFormSubmissionService(
     private val processLinkService: ProcessLinkService,
@@ -75,6 +82,7 @@ open class DefaultFormSubmissionService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val prefillFormService: PrefillFormService,
     private val authorizationService: AuthorizationService,
+    private val valueResolverService: ValueResolverService
 ) : FormSubmissionService {
 
     @Transactional
@@ -87,31 +95,32 @@ open class DefaultFormSubmissionService(
     ): FormSubmissionResult {
         return try {
             // TODO: Implement else, done by verifying what the processLink contains
-            if (taskInstanceId != null) {
-                camundaTaskService.findTaskById(taskInstanceId)
-                authorizationService.requirePermission(
-                    EntityAuthorizationRequest(
-                        CamundaTask::class.java,
-                        COMPLETE,
-                        camundaTaskService.findTaskById(taskInstanceId)
-                    )
-                )
-            }
+            requireCompleteTaskPermission(taskInstanceId)
 
             val processLink = processLinkService.getProcessLink(processLinkId, FormProcessLink::class.java)
             val document = documentId
-                ?.let { AuthorizationContext.runWithoutAuthorization { documentService.get(documentId) } }
+                ?.let { runWithoutAuthorization { documentService.get(documentId) } }
             val processDefinition = getProcessDefinition(processLink)
             val documentDefinitionNameToUse = document?.definitionId()?.name()
                 ?: documentDefinitionName
-                ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId().documentDefinitionId().name()
+                ?: getProcessDocumentDefinition(processDefinition, document).processDocumentDefinitionId()
+                    .documentDefinitionId().name()
             val processVariables = getProcessVariables(taskInstanceId)
             val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
+
+            val categorizedKeyValues = getCategorizedSubmitValues(formDefinition, formData)
             val formFields = getFormFields(formDefinition, formData)
-            val submittedDocumentContent = getSubmittedDocumentContent(formFields, document)
-            val formDefinedProcessVariables = formDefinition.extractProcessVars(formData)
+            // Merge the document results from 'legacy' mapping and value-resolvers.
+            val submittedDocumentContent = JsonMerger.merge(
+                getSubmittedDocumentContent(formFields, document),
+                categorizedKeyValues.documentValues
+            )
+
+            // Merge the process-variable results from 'legacy' mapping and value-resolvers.
+            val formDefinedProcessVariables = formDefinition.extractProcessVars(formData) +
+                categorizedKeyValues.processVariables
+
             val preJsonPatch = getPreJsonPatch(formDefinition, submittedDocumentContent, processVariables, document)
-            val externalFormData = getExternalFormData(formDefinition, formData)
             val request = getRequest(
                 processLink,
                 document,
@@ -122,7 +131,15 @@ open class DefaultFormSubmissionService(
                 formDefinedProcessVariables,
                 preJsonPatch
             )
-            return dispatchRequest(request, formFields, externalFormData, documentDefinitionNameToUse)
+
+            val externalFormData = getExternalFormData(formDefinition, formData)
+            return dispatchRequest(
+                request,
+                formFields,
+                externalFormData,
+                documentDefinitionNameToUse,
+                categorizedKeyValues.otherValues
+            )
         } catch (notFoundException: DocumentNotFoundException) {
             logger.error("Document could not be found", notFoundException)
             FormSubmissionResultFailed(FromException(notFoundException))
@@ -138,10 +155,85 @@ open class DefaultFormSubmissionService(
         }
     }
 
+    private fun requireCompleteTaskPermission(taskInstanceId: String?) {
+        if (taskInstanceId != null) {
+            camundaTaskService.findTaskById(taskInstanceId)
+            authorizationService.requirePermission(
+                EntityAuthorizationRequest(
+                    CamundaTask::class.java,
+                    COMPLETE,
+                    camundaTaskService.findTaskById(taskInstanceId)
+                )
+            )
+        }
+    }
+
+    /**
+     * This method categorizes the submitted values which are processed by the value-resolvers.
+     * It preprocesses the values for document and process-variables, and leaves the rest as-is.
+     */
+    private fun getCategorizedSubmitValues(
+        formDefinition: FormIoFormDefinition,
+        formData: JsonNode
+    ): CategorizedSubmitValues {
+        val categorizedMap = formDefinition.inputFields
+            .mapNotNull { field ->
+                getSourceKeyValuePair(field, formData)
+            }.groupBy { (key, _) ->
+                val prefix = key.substringBefore(ValueResolverServiceImpl.DELIMITER, missingDelimiterValue = "")
+                when (prefix) {
+                    DOC_PREFIX -> DOC_PREFIX
+                    PV_PREFIX -> PV_PREFIX
+                    else -> OTHER
+                }
+            }.mapValues { it.value.toMap() }
+
+        // Preprocess the document paths & values. The result is an ObjectNode.
+        val documentValues = categorizedMap[DOC_PREFIX]
+            ?.let { valueResolverService.preProcessValuesForNewCase(it)[DOC_PREFIX] as? ObjectNode }
+            ?: Mapper.INSTANCE.get().createObjectNode()
+
+        // After pre-processing process-variables we have a key-value map where the prefix is stripped from the keys.
+        val processVariables = categorizedMap[PV_PREFIX]
+            ?.let { valueResolverService.preProcessValuesForNewCase(it)[PV_PREFIX] as? Map<String, Any>}
+            ?: mapOf()
+
+        // Do not process/handle other values yet.
+        // This has to be done when we are certain the process and document could be created.
+        val otherValues = categorizedMap[OTHER] ?: mapOf()
+
+        return CategorizedSubmitValues(
+            documentValues,
+            processVariables,
+            otherValues
+        )
+    }
+
+    private fun getSourceKeyValuePair(
+        field: ObjectNode,
+        formData: JsonNode
+    ): Pair<String, Any>? {
+        return FormIoFormDefinition.GET_SOURCE_KEY.apply(field).getOrNull()?.let { sourceKey ->
+            FormIoFormDefinition.GET_KEY.apply(field).getOrNull()?.let { inputKey ->
+                convertNodeValue(formData.at("/$inputKey"))
+            }?.let { value ->
+                Pair(sourceKey, value)
+            }
+        }
+    }
+
+    private fun convertNodeValue(node: JsonNode): Any? {
+        if (node.isMissingNode) {
+            return null
+        }
+
+        return Mapper.INSTANCE.get().treeToValue<Any>(node)
+    }
+
     private fun getProcessDefinition(
         processLink: ProcessLink
     ): CamundaProcessDefinition {
-        return AuthorizationContext.runWithoutAuthorization {
+        return runWithoutAuthorization {
             repositoryService.findProcessDefinitionById(processLink.processDefinitionId)!!
         }
     }
@@ -151,7 +243,7 @@ open class DefaultFormSubmissionService(
         document: Document?
     ): ProcessDocumentDefinition {
         val processDefinitionKey = CamundaProcessDefinitionKey(processDefinition.key)
-        return AuthorizationContext.runWithoutAuthorization {
+        return runWithoutAuthorization {
             if (document == null) {
                 processDocumentAssociationService.getProcessDocumentDefinition(processDefinitionKey)
             } else {
@@ -175,8 +267,9 @@ open class DefaultFormSubmissionService(
         formDefinition: FormIoFormDefinition,
         formData: JsonNode
     ): List<FormField> {
-        return formDefinition.documentMappedFieldsForSubmission
-            .mapNotNull { objectNode -> FormField.getFormField(formData, objectNode, applicationEventPublisher) }
+        return formDefinition.getDocumentMappedFieldsFiltered(
+            FormIoFormDefinition.NOT_IGNORED.and { t -> FormIoFormDefinition.GET_SOURCE_KEY.apply(t).isEmpty }
+        ).mapNotNull { objectNode -> FormField.getFormField(formData, objectNode, applicationEventPublisher) }
     }
 
     private fun getSubmittedDocumentContent(formFields: List<FormField>, document: Document?): ObjectNode {
@@ -209,7 +302,9 @@ open class DefaultFormSubmissionService(
         formDefinition: FormIoFormDefinition,
         formData: JsonNode
     ): Map<String, Map<String, JsonNode>> {
-        return formDefinition.buildExternalFormFieldsMapForSubmission().map { entry ->
+        return formDefinition.buildExternalFormFieldsMapFiltered(
+            FormIoFormDefinition.NOT_IGNORED.and { t -> FormIoFormDefinition.GET_SOURCE_KEY.apply(t).isEmpty }
+        ).map { entry ->
             entry.key to entry.value.associate {
                 it.name to formData.at(it.jsonPointer)
             }
@@ -310,6 +405,7 @@ open class DefaultFormSubmissionService(
         formFields: List<FormField>,
         externalFormData: Map<String, Map<String, JsonNode>>,
         documentDefinitionName: String,
+        remainingValueResolverValues: Map<String, Any>,
     ): FormSubmissionResult {
         return try {
             val result = processDocumentService.dispatch(request)
@@ -319,6 +415,7 @@ open class DefaultFormSubmissionService(
                 val submittedDocument = result.resultingDocument().orElseThrow()
                 formFields.forEach { it.postProcess(submittedDocument) }
                 publishExternalDataSubmittedEvent(externalFormData, documentDefinitionName, submittedDocument)
+                valueResolverService.handleValues(submittedDocument.id.id, remainingValueResolverValues)
                 FormSubmissionResultSucceeded(submittedDocument.id().toString())
             }
         } catch (ex: RuntimeException) {
@@ -346,7 +443,14 @@ open class DefaultFormSubmissionService(
         }
     }
 
+    private data class CategorizedSubmitValues(
+        val documentValues: ObjectNode,
+        val processVariables: Map<String, Any>,
+        val otherValues: Map<String, Any>
+    )
+
     companion object {
         val logger = KotlinLogging.logger {}
+        const val OTHER = "other"
     }
 }

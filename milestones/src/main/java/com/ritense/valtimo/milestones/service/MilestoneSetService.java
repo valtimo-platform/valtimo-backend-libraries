@@ -41,7 +41,7 @@ public class MilestoneSetService {
     public MilestoneSet saveMilestoneSet(MilestoneSetSaveDTO dto) {
         logger.debug("Service request to save milestone set {}", dto.getTitle());
         MilestoneSet milestoneSet;
-        if(dto.getId() != null) {
+        if (dto.getId() != null) {
             milestoneSet = milestoneSetRepository.findById(dto.getId()).orElseThrow();
         } else {
             milestoneSet = new MilestoneSet();

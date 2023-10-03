@@ -19,5 +19,4 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.ritense.valtimo.actuator.health.ActuatorHealthAutoConfiguration, \
   com.ritense.valtimo.config.CustomFailedJobConfiguration, \
   com.ritense.valtimo.config.JacksonConfiguration, \
-  com.ritense.valtimo.config.ProcessVariablesArgumentResolver, \
   com.ritense.valtimo.config.ValtimoDatabaseConfiguration

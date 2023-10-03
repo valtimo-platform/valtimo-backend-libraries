@@ -22,7 +22,9 @@ import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.valtimo.contract.form.DataResolvingContext
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import java.lang.Deprecated
 
+@Deprecated(since = "11.0", forRemoval = true)
 class OpenZaakFormFieldDataResolver(
     private val zaakService: ZaakService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService

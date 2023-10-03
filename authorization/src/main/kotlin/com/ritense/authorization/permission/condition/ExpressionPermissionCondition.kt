@@ -74,12 +74,13 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
         queryDialectHelper: QueryDialectHelper
     ): Predicate {
         val path: Path<Any>? = createDatabaseObjectPath(field, root)
+        val resolvedValue = PermissionConditionValueResolver.resolveValue(value)
 
         // we need an exception for json contains
         if (operator == PermissionConditionOperator.CONTAINS) {
             if (Collection::class.java.isAssignableFrom(clazz)) {
                 return queryDialectHelper.getJsonArrayContainsExpression(
-                    criteriaBuilder, path, this.path, value.toString()
+                    criteriaBuilder, path, this.path, resolvedValue.toString()
                 )
             } else {
                 throw IllegalStateException("PBAC: Unsupported 'contains' for clazz '$clazz'")
@@ -89,7 +90,7 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
         return operator.toPredicate<Comparable<Any>>(
             criteriaBuilder,
             queryDialectHelper.getJsonValueExpression(criteriaBuilder, path, this.path, clazz),
-            PermissionConditionValueResolver.resolveValue(value)
+            resolvedValue
         )
     }
 

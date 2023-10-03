@@ -17,8 +17,8 @@
 package com.ritense.case
 
 import com.ritense.valueresolver.ValueResolverFactory
-import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.function.Function
+import org.camunda.bpm.engine.delegate.VariableScope
 
 /**
  * This resolver returns the requestedValue as the value.
@@ -29,7 +29,7 @@ import java.util.function.Function
  * These requestedValues do not have a prefix
  */
 class TestResolverFactory(
-    val prefix: String = "test"
+    private val prefix: String = "test"
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
@@ -43,7 +43,7 @@ class TestResolverFactory(
         return createResolver()
     }
 
-    override fun createResolver(documentInstanceId: String): Function<String, Any?> {
+    override fun createResolver(documentId: String): Function<String, Any?> {
         return createResolver()
     }
 
