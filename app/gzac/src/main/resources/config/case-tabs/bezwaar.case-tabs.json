@@ -36,9 +36,9 @@
                 },
                 {
                     "name": "Zaak objects",
-                    "key": "zaak-object",
+                    "key": "zaakobjecten",
                     "type": "standard",
-                    "contentKey": "zaak-object"
+                    "contentKey": "zaakobjecten"
                 },
                 {
                     "name": "Notes",
