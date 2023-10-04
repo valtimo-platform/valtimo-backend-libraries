@@ -212,7 +212,7 @@ internal class DocumentJsonValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "value": true, "lastName": "Doe"}}}"""))
 
         val resolvedValue = documentValueResolver.createResolver(
-            documentInstanceId = documentInstanceId
+            documentId = documentInstanceId
         ).apply(
             "root.child.value"
         )
@@ -225,7 +225,7 @@ internal class DocumentJsonValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "lastName": "Doe"}}}"""))
 
         val resolvedValue = documentValueResolver.createResolver(
-            documentInstanceId = documentInstanceId
+            documentId = documentInstanceId
         ).apply(
             "root.child.firstName"
         )
@@ -238,7 +238,7 @@ internal class DocumentJsonValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "lastName": "Doe", "age": 5}}}"""))
 
         val resolvedValue = documentValueResolver.createResolver(
-            documentInstanceId = documentInstanceId
+            documentId = documentInstanceId
         ).apply(
             "root.child.age"
         )
@@ -251,7 +251,7 @@ internal class DocumentJsonValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{"child":{"firstName":"John", "lastName": "Doe"}}}"""))
 
         val resolvedValue = documentValueResolver.createResolver(
-            documentInstanceId = documentInstanceId
+            documentId = documentInstanceId
         ).apply(
             "root.child.value"
         )
@@ -264,7 +264,7 @@ internal class DocumentJsonValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"profile":{"firstName":"John"}}"""))
 
         val resolvedValue = documentValueResolver.createResolver(
-            documentInstanceId = documentInstanceId
+            documentId = documentInstanceId
         ).apply(
             "profile"
         )
@@ -277,7 +277,7 @@ internal class DocumentJsonValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"cities":[{"name":"Amsterdam"},{"name":"Utrecht"}]}"""))
 
         val resolvedValue = documentValueResolver.createResolver(
-            documentInstanceId = documentInstanceId
+            documentId = documentInstanceId
         ).apply(
             "cities"
         )
@@ -290,7 +290,7 @@ internal class DocumentJsonValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":{}}"""))
 
         val resolvedValue = documentValueResolver.createResolver(
-            documentInstanceId = documentInstanceId
+            documentId = documentInstanceId
         ).apply(
             "root"
         )
@@ -303,7 +303,7 @@ internal class DocumentJsonValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":[]}"""))
 
         val resolvedValue = documentValueResolver.createResolver(
-            documentInstanceId = documentInstanceId
+            documentId = documentInstanceId
         ).apply(
             "root"
         )
@@ -316,7 +316,7 @@ internal class DocumentJsonValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{"root":null}"""))
 
         val resolvedValue = documentValueResolver.createResolver(
-            documentInstanceId = documentInstanceId
+            documentId = documentInstanceId
         ).apply(
             "root"
         )
@@ -329,7 +329,7 @@ internal class DocumentJsonValueResolverTest {
         whenever(document.content()).thenReturn(JsonDocumentContent("""{}"""))
 
         val resolvedValue = documentValueResolver.createResolver(
-            documentInstanceId = documentInstanceId
+            documentId = documentInstanceId
         ).apply(
             "root"
         )

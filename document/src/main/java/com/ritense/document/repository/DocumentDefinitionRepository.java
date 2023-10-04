@@ -29,8 +29,7 @@ import java.util.Optional;
 @NoRepositoryBean
 public interface DocumentDefinitionRepository<T extends DocumentDefinition> extends
     JpaRepository<T, DocumentDefinition.Id>,
-    JpaSpecificationExecutor<T>
-{
+    JpaSpecificationExecutor<T> {
 
     Optional<T> findFirstByIdNameOrderByIdVersionDesc(String documentDefinitionName);
 

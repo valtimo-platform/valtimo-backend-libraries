@@ -18,6 +18,7 @@ package com.ritense.valtimo.formflow.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.service.DocumentService
+import com.ritense.form.service.PrefillFormService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.autoconfigure.FormLinkAutoConfiguration
@@ -126,13 +127,13 @@ class FormFlowValtimoAutoConfiguration {
     @ConditionalOnMissingBean(FormFlowStepTypeFormHandler::class)
     fun formFlowStepTypeFormHandler(
         formIoFormDefinitionService: FormIoFormDefinitionService,
-        camundaFormAssociationService: CamundaFormAssociationService,
+        prefillFormService: PrefillFormService,
         documentService: DocumentService,
         objectMapper: ObjectMapper
     ): FormFlowStepTypeFormHandler {
         return FormFlowStepTypeFormHandler(
             formIoFormDefinitionService,
-            camundaFormAssociationService,
+            prefillFormService,
             documentService,
             objectMapper
         )

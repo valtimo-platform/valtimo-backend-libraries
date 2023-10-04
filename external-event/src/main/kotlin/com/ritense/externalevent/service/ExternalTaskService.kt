@@ -25,23 +25,25 @@ import com.ritense.externalevent.messaging.ExternalDomainMessage
 import com.ritense.externalevent.messaging.`in`.CompleteTaskMessage
 import com.ritense.externalevent.messaging.out.CreatePortalTaskMessage
 import com.ritense.externalevent.messaging.out.DeletePortalTaskMessage
+import com.ritense.form.service.PrefillFormService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.camunda.processaudit.DeletePortalTaskEvent
+import java.util.UUID
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Sinks
-import java.util.UUID
 
 @Transactional
 class ExternalTaskService(
     private val documentService: JsonSchemaDocumentService,
     private val processDocumentService: ProcessDocumentService,
     private val formIoFormDefinitionService: FormIoFormDefinitionService,
-    private val sink: Sinks.Many<ExternalDomainMessage>
+    private val sink: Sinks.Many<ExternalDomainMessage>,
+    private val prefillFormService: PrefillFormService
 ) {
 
     /**
@@ -51,13 +53,13 @@ class ExternalTaskService(
         val formDefinition = formIoFormDefinitionService.getFormDefinitionByName(formDefinitionName).orElseThrow()
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(task.execution.processBusinessKey))
         val document = AuthorizationContext.runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
-        formDefinition.preFill(document.content().asJson())
+        val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(formDefinition.id, task.processInstanceId, task.id)
 
         sink.tryEmitNext(
             CreatePortalTaskMessage(
                 taskId = task.id,
                 externalCaseId = document.id().id.toString(),
-                formDefinition = formDefinition.asJson(),
+                formDefinition = prefilledFormDefinition.asJson(),
                 taskDefinitionKey = task.taskDefinitionKey
             )
         )
@@ -70,12 +72,12 @@ class ExternalTaskService(
         isPublic: Boolean
     ) {
         val formDefinition = formIoFormDefinitionService.getFormDefinitionByName(formDefinitionName).orElseThrow()
-        formDefinition.preFill(document.content().asJson())
+        val prefilledFormDefinition = prefillFormService.getPrefilledFormDefinition(formDefinition.id, task.processInstanceId, task.id)
         sink.tryEmitNext(
             CreatePortalTaskMessage(
                 taskId = task.id,
                 externalCaseId = document.id().toString(),
-                formDefinition = formDefinition.asJson(),
+                formDefinition = prefilledFormDefinition.asJson(),
                 taskDefinitionKey = task.taskDefinitionKey,
                 isPublic = isPublic
             )

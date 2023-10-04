@@ -1,0 +1,115 @@
+{
+    "display": "form",
+    "settings": {
+        "pdf": {
+            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
+            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
+        }
+    },
+    "components": [
+        {
+            "label": "Value resolver document field",
+            "key": "vrDocFirstName",
+            "type": "textfield",
+            "input": true,
+            "defaultValue": "Jane",
+            "properties": {
+                "sourceKey": "doc:/person/firstName"
+            }
+        },
+        {
+            "label": "Value resolver processvar field",
+            "key": "vrPvLastName",
+            "type": "textfield",
+            "input": true,
+            "defaultValue": "Don't",
+            "properties": {
+                "sourceKey": "pv:lastName"
+            }
+        },
+        {
+            "label": "Value resolver taskvar field",
+            "key": "vrPvTaskDateOfBirth",
+            "type": "textfield",
+            "input": true,
+            "defaultValue": "1970-01-01",
+            "properties": {
+                "sourceKey": "pv:dateOfBirth"
+            }
+        },
+        {
+            "label": "Value resolver test field",
+            "key": "vrTestGender",
+            "type": "textfield",
+            "input": true,
+            "defaultValue": "X",
+            "properties": {
+                "sourceKey": "test:gender"
+            }
+        },
+        {
+            "label": "Value resolver test field",
+            "key": "vrTestGenderUnresolved",
+            "type": "textfield",
+            "input": true,
+            "defaultValue": "X",
+            "properties": {
+                "sourceKey": "test:!gender"
+            }
+        },
+        {
+            "label": "Legacy",
+            "key": "legacy",
+            "components": [
+                {
+                    "label": "Firstname",
+                    "key": "person.firstName",
+                    "type": "textfield",
+                    "defaultValue": "Jane",
+                    "input": true
+                },
+                {
+                    "label": "Lastname",
+                    "key": "pv.lastName",
+                    "type": "textfield",
+                    "defaultValue": "Don't",
+                    "input": true
+                },
+                {
+                    "label": "Separated by colon",
+                    "key": "test:separatedByColon",
+                    "type": "textfield",
+                    "input": true
+                },
+                {
+                    "label": "Separated by dot",
+                    "key": "test.separatedByDot",
+                    "type": "textfield",
+                    "input": true
+                },
+                {
+                    "label": "Separated by colon",
+                    "key": "test:!separatedByColon",
+                    "type": "textfield",
+                    "defaultValue": "::",
+                    "input": true
+                },
+                {
+                    "label": "Separated by dot",
+                    "key": "test.!separatedByDot",
+                    "type": "textfield",
+                    "defaultValue": "..",
+                    "input": true
+                }
+
+            ]
+        },
+        {
+            "type": "button",
+            "label": "Submit",
+            "key": "submit",
+            "disableOnInvalid": true,
+            "input": true
+        }
+    ]
+}

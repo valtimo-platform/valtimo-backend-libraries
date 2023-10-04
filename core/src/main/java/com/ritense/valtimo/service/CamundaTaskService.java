@@ -60,7 +60,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Order;
@@ -72,7 +71,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGN;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGNABLE;
@@ -343,7 +341,13 @@ public class CamundaTaskService {
             })
             .toList();
 
-        var total = camundaTaskRepository.count(specification);
+        var cbCount = entityManager.getCriteriaBuilder();
+        var queryCount = cbCount.createQuery();
+        var taskCountRoot = queryCount.from(CamundaTask.class);
+        queryCount.select(cbCount.countDistinct(taskCountRoot));
+        queryCount.where(specification.toPredicate(taskCountRoot, queryCount, cbCount));
+        var results = entityManager.createQuery(queryCount).getResultList();
+        long total = results.isEmpty() ? 0 : (long) results.get(0);
         return new PageImpl<>(tasks, pageable, total);
     }
 
@@ -372,8 +376,7 @@ public class CamundaTaskService {
 
     @Transactional(readOnly = true)
     public Map<String, Object> getVariables(String taskInstanceId) {
-        var task = findTaskById(taskInstanceId);
-        return camundaContextService.runWithCommandContext(() -> task.getVariables(null));
+        return findTaskById(taskInstanceId).getVariables();
     }
 
     @Transactional(readOnly = true)

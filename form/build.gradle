@@ -29,6 +29,7 @@ dependencies {
     implementation project(":process-link")
     implementation project(":resource")
     implementation project(":resource:temporary-resource-storage")
+    implementation project(":value-resolver")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -62,6 +63,7 @@ dependencies {
 
     testImplementation project(':test-utils-common')
     testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "com.jayway.jsonpath:json-path-assert:${jaywayJsonpathVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 
     jar {

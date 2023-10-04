@@ -16,7 +16,7 @@
 
 package com.ritense.processdocument.listener
 
-import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.domain.Document
@@ -43,14 +43,16 @@ open class CaseAssigneeTaskCreatedListener(
 
     override fun notify(delegateTask: DelegateTask) {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(delegateTask.execution.businessKey))
-        val document: Document? = AuthorizationContext.runWithoutAuthorization {
+        val document: Document? = runWithoutAuthorization {
             documentService.findBy(documentId).getOrNull()
         }
 
         document?.run {
-            val caseSettings: CaseDefinitionSettings = caseDefinitionService.getCaseSettings(
-                this.definitionId().name()
-            )
+            val caseSettings: CaseDefinitionSettings = runWithoutAuthorization {
+                caseDefinitionService.getCaseSettings(
+                    this.definitionId().name()
+                )
+            }
 
             if (
                 caseSettings.canHaveAssignee &&

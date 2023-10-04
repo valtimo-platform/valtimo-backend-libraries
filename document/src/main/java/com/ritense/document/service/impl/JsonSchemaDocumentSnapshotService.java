@@ -54,7 +54,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     @Override
     public Optional<JsonSchemaDocumentSnapshot> findById(DocumentSnapshot.Id id) {
         final var snapshot = documentSnapshotRepository.findById(id).orElse(null);
-        if(snapshot != null) {
+        if (snapshot != null) {
             authorizationService
                 .requirePermission(
                     new EntityAuthorizationRequest<>(
@@ -76,8 +76,7 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
         @Nullable LocalDateTime toDateTime,
         Pageable pageable
     ) {
-
-        var spec = (Specification<JsonSchemaDocumentSnapshot>) authorizationService.getAuthorizationSpecification(
+        var spec = authorizationService.getAuthorizationSpecification(
             new EntityAuthorizationRequest<>(
                 JsonSchemaDocumentSnapshot.class,
                 VIEW_LIST

@@ -16,26 +16,33 @@
 
 package com.ritense.valtimo.camunda.service
 
+import java.util.concurrent.Callable
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
 import org.camunda.bpm.engine.impl.context.Context
 import org.camunda.bpm.engine.impl.context.ProcessEngineContextImpl
-import java.util.concurrent.Callable
 
 class CamundaContextService(
-    private val processEngineConfiguration: ProcessEngineConfigurationImpl
+    processEngineConfiguration: ProcessEngineConfigurationImpl
 ) {
+    init {
+        Companion.processEngineConfiguration = processEngineConfiguration
+    }
 
-    fun <T> runWithCommandContext(callable: Callable<T>): T {
-        val isNew = ProcessEngineContextImpl.consume()
-        try {
-            val context = processEngineConfiguration.commandContextFactory.createCommandContext()
-            Context.setCommandContext(context)
-            Context.setProcessEngineConfiguration(processEngineConfiguration)
-            return callable.call()
-        } finally {
-            Context.removeCommandContext()
-            Context.removeProcessEngineConfiguration()
-            ProcessEngineContextImpl.set(isNew)
+    companion object {
+        private lateinit var processEngineConfiguration: ProcessEngineConfigurationImpl
+
+        internal fun <T> runWithCommandContext(callable: Callable<T>): T {
+            val isNew = ProcessEngineContextImpl.consume()
+            try {
+                val context = processEngineConfiguration.commandContextFactory.createCommandContext()
+                Context.setCommandContext(context)
+                Context.setProcessEngineConfiguration(processEngineConfiguration)
+                return callable.call()
+            } finally {
+                Context.removeCommandContext()
+                Context.removeProcessEngineConfiguration()
+                ProcessEngineContextImpl.set(isNew)
+            }
         }
     }
 }

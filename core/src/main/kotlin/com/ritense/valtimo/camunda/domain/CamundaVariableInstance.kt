@@ -16,10 +16,7 @@
 
 package com.ritense.valtimo.camunda.domain
 
-import org.camunda.bpm.engine.impl.variable.serializer.DefaultVariableSerializers
-import org.camunda.bpm.engine.impl.variable.serializer.TypedValueSerializer
-import org.camunda.bpm.engine.impl.variable.serializer.ValueFields
-import org.camunda.bpm.engine.variable.value.TypedValue
+import com.ritense.valtimo.camunda.service.CamundaContextService
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -28,6 +25,10 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.OneToOne
 import javax.persistence.Table
+import org.camunda.bpm.engine.impl.variable.serializer.DefaultVariableSerializers
+import org.camunda.bpm.engine.impl.variable.serializer.TypedValueSerializer
+import org.camunda.bpm.engine.impl.variable.serializer.ValueFields
+import org.camunda.bpm.engine.variable.value.TypedValue
 
 @Entity
 @Table(name = "ACT_RU_VARIABLE")
@@ -125,7 +126,13 @@ class CamundaVariableInstance(
 
     fun getValue(): Any? = getTypedValue()?.value
 
-    fun getTypedValue(): TypedValue? = findSerializer(serializerName).readValue(this, true, false)
+    fun getTypedValue(): TypedValue? = getTypedValue(true)
+
+    fun getTypedValue(deserializeValue: Boolean): TypedValue? {
+        return CamundaContextService.runWithCommandContext {
+            findSerializer(serializerName).readValue(this, deserializeValue, false)
+        }
+    }
 
     private fun findSerializer(serializerName: String?): TypedValueSerializer<*> {
         if (serializerName == null) {

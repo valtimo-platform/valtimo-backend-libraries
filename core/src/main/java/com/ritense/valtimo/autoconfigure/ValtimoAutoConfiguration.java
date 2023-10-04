@@ -21,6 +21,7 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.ProcessApplicationStartedEventListener;
 import com.ritense.valtimo.camunda.ProcessDefinitionPropertyListener;
 import com.ritense.valtimo.camunda.TaskCompletedListener;
+import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository;
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
@@ -142,7 +143,8 @@ public class ValtimoAutoConfiguration {
         final CamundaHistoryService historyService,
         final ProcessPropertyService processPropertyService,
         final ValtimoProperties valtimoProperties,
-        final AuthorizationService authorizationService
+        final AuthorizationService authorizationService,
+        CamundaExecutionRepository camundaExecutionRepository
     ) {
         return new CamundaProcessService(
             runtimeService,
@@ -153,7 +155,8 @@ public class ValtimoAutoConfiguration {
             historyService,
             processPropertyService,
             valtimoProperties,
-            authorizationService
+            authorizationService,
+            camundaExecutionRepository
         );
     }
 

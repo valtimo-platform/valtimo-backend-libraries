@@ -18,6 +18,7 @@ package com.ritense.valtimo.contract.form;
 
 import java.util.Map;
 
+@Deprecated(since = "11.0", forRemoval = true)
 public interface FormFieldDataResolver {
 
     boolean supports(String externalFormFieldType);

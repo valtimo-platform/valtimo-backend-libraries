@@ -26,7 +26,10 @@ import com.ritense.form.domain.FormIoFormDefinition;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormLoaderService;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
+import com.ritense.form.service.PrefillFormService;
+import io.jsonwebtoken.lang.Maps;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,19 +39,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class FormIoFormLoaderServiceTest extends BaseTest {
-
-    private JsonSchemaDocumentService documentService;
     private FormLoaderService formLoaderService;
     private DocumentSequenceGeneratorService documentSequenceGeneratorService;
     private FormDefinitionRepository formDefinitionRepository;
 
+    private PrefillFormService prefillFormService;
+
     @BeforeEach
     public void setUp() {
-        documentService = mock(JsonSchemaDocumentService.class);
         documentSequenceGeneratorService = mock(DocumentSequenceGeneratorService.class);
         formDefinitionRepository = mock(FormDefinitionRepository.class);
+        prefillFormService = mock(PrefillFormService.class);
         when(documentSequenceGeneratorService.next(any())).thenReturn(1L);
-        formLoaderService = new FormIoFormLoaderService(documentService, formDefinitionRepository);
+        formLoaderService = new FormIoFormLoaderService(formDefinitionRepository, prefillFormService);
         mockSpringContextHelper();
     }
 
@@ -66,13 +69,19 @@ public class FormIoFormLoaderServiceTest extends BaseTest {
     @Test
     public void shouldGetFormDefinitionPreFilled() throws IOException {
         final Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any())).thenReturn(jsonSchemaDocument);
 
         final String formDefinitionName = "form-example";
 
         final var formIoFormDefinition = formDefinitionOf(formDefinitionName);
         when(formDefinitionRepository.findByName(eq(formDefinitionName))).thenReturn(Optional.of(formIoFormDefinition));
-
+        when(prefillFormService.getPrefilledFormDefinition(any(), any())).then(invocation -> {
+            formIoFormDefinition.preFill(
+                Map.of(
+                    "person.firstName", "John"
+                )
+            );
+            return formIoFormDefinition;
+        });
         final var formDefinition = formLoaderService.getFormDefinitionByNamePreFilled(
             formDefinitionName,
             jsonSchemaDocument.orElseThrow().id()
@@ -84,13 +93,19 @@ public class FormIoFormLoaderServiceTest extends BaseTest {
     @Test
     public void shouldGetFormDefinitionPreFilledWithNestedComponents() throws IOException {
         final Optional<JsonSchemaDocument> jsonSchemaDocument = documentOptional();
-        when(documentService.findBy(any())).thenReturn(jsonSchemaDocument);
 
         String formDefinitionId = "form-example-nested-components";
 
         FormIoFormDefinition formIoFormDefinition = formDefinitionOf(formDefinitionId);
         when(formDefinitionRepository.findByName(eq(formDefinitionId))).thenReturn(Optional.of(formIoFormDefinition));
-
+        when(prefillFormService.getPrefilledFormDefinition(any(), any())).then(invocation -> {
+            formIoFormDefinition.preFill(
+                Map.of(
+                    "person.firstName", "John"
+                )
+            );
+            return formIoFormDefinition;
+        });
         final Optional<JsonNode> formDefinition = formLoaderService
             .getFormDefinitionByNamePreFilled(formDefinitionId, jsonSchemaDocument.orElseThrow().id());
         assertThat(formDefinition).isPresent();

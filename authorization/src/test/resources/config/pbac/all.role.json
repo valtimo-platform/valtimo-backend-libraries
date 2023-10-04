@@ -7,6 +7,7 @@
         "TO_REMOVE_ROLE_1",
         "TO_REMOVE_ROLE_2",
         "EXPRESSION_CONTAINS_ROLE",
-        "FIELD_CONTAINS_ROLE"
+        "FIELD_CONTAINS_ROLE",
+        "PLACEHOLDER_CONTAINS_ROLE"
     ]
 }
