@@ -134,10 +134,6 @@ class CorrelationServiceImpl(
         }
     }
 
-    private fun associationExists(processInstanceId: String): Boolean {
-        return associationService.findProcessDocumentInstance(CamundaProcessInstanceId(processInstanceId)).isPresent
-    }
-
     private fun associateDocumentToProcess(
         processInstanceId: String?,
         processName: String?,
