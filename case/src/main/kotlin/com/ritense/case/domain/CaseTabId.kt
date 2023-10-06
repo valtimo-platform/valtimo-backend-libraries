@@ -26,4 +26,9 @@ data class CaseTabId(
     val caseDefinitionName: String,
     @Column(name = "tab_key")
     val key: String
-) : AbstractId<CaseTabId>()
+) : AbstractId<CaseTabId>() {
+    init {
+        require(caseDefinitionName.isNotBlank()) { "caseDefinitionName was blank!" }
+        require(key.isNotBlank()) { "key was blank!"}
+    }
+}
