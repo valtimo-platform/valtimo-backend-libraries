@@ -20,18 +20,23 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
+import com.ritense.case.domain.CaseTabType
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionName
+import com.ritense.case.web.rest.dto.CaseTabDto
+import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
 import com.ritense.valtimo.changelog.service.ChangelogService
+import org.springframework.context.event.EventListener
+import org.springframework.transaction.annotation.Transactional
 
-class CaseTabDeployer(
+open class CaseTabDeploymentService(
     private val objectMapper: ObjectMapper,
     private val caseTabRepository: CaseTabRepository,
     private val changelogService: ChangelogService,
     private val clearTables: Boolean
-): ChangesetDeployer {
+) : ChangesetDeployer {
     override fun getPath() = "classpath*:**/*.case-tabs.json"
 
     override fun before() {
@@ -53,6 +58,14 @@ class CaseTabDeployer(
         )
     }
 
+    @Transactional
+    @EventListener(DocumentDefinitionDeployedEvent::class)
+    open fun createCaseTabs(event: DocumentDefinitionDeployedEvent) {
+        if (event.documentDefinition().id().version() == 1L) {
+            deploy(listOf(CaseDefinitionsTabCollection(event.documentDefinition().id().name(), STANDARD_CASE_TABS)))
+        }
+    }
+
     private fun deploy(caseDefinitions: List<CaseDefinitionsTabCollection>) {
         caseDefinitions.forEach {
             caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionName(it.key)))
@@ -71,5 +84,13 @@ class CaseTabDeployer(
 
     companion object {
         private const val KEY = "case-tab"
+
+        private val STANDARD_CASE_TABS = listOf(
+            CaseTabDto("summary", "Summary", CaseTabType.STANDARD, "summary"),
+            CaseTabDto("progress", "Progress", CaseTabType.STANDARD, "progress"),
+            CaseTabDto("audit", "Audit", CaseTabType.STANDARD, "audit"),
+            CaseTabDto("documents", "Documents", CaseTabType.STANDARD, "documents"),
+            CaseTabDto("notes", "Notes", CaseTabType.STANDARD, "notes")
+        )
     }
 }

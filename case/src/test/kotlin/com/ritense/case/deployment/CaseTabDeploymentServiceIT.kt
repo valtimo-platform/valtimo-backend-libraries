@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.Instant
 
 @Transactional
-class CaseTabDeployerIT @Autowired constructor(
+class CaseTabDeploymentServiceIT @Autowired constructor(
     private val changesetRepository: ChangesetRepository,
     private val caseTabRepository: CaseTabRepository,
     private val changelogDeployer: ChangelogDeployer
@@ -41,12 +41,12 @@ class CaseTabDeployerIT @Autowired constructor(
 
     @BeforeEach
     fun setUp() {
-        caseTabRepository.deleteAll()
     }
 
     @Test
     fun `should auto deploy tabs changeset from resource folder`() {
-        whenever(caseTabDeployer.getPath()).thenCallRealMethod()
+        caseTabRepository.deleteAll()
+        whenever(caseTabDeploymentService.getPath()).thenCallRealMethod()
         changesetRepository.deleteAllByKey("case-tab")
 
         changelogDeployer.deployAll()
@@ -74,7 +74,8 @@ class CaseTabDeployerIT @Autowired constructor(
 
     @Test
     fun `should replace tabs for case after deploying the same case definition`() {
-        whenever(caseTabDeployer.getPath()).thenReturn("classpath*:**/tabs-update-v*.json")
+        caseTabRepository.deleteAll()
+        whenever(caseTabDeploymentService.getPath()).thenReturn("classpath*:**/tabs-update-v*.json")
 
         changelogDeployer.deployAll()
 
@@ -89,11 +90,23 @@ class CaseTabDeployerIT @Autowired constructor(
 
     @Test
     fun `should add tabs for other case definition`() {
-        whenever(caseTabDeployer.getPath()).thenReturn("classpath*:**/tabs-add-v*.json")
+        caseTabRepository.deleteAll()
+        whenever(caseTabDeploymentService.getPath()).thenReturn("classpath*:**/tabs-add-v*.json")
 
         changelogDeployer.deployAll()
 
         val tabs = caseTabRepository.findAll()
         assertThat(tabs.size).isEqualTo(2)
+    }
+
+    @Test
+    fun `should add tabs for deployed case definition`() {
+        val tabs = caseTabRepository.findAll(byCaseDefinitionName("house"), Sort.by(TAB_ORDER))
+        assertThat(tabs.size).isEqualTo(5)
+        assertThat(tabs[0].name).isEqualTo("Summary")
+        assertThat(tabs[1].name).isEqualTo("Progress")
+        assertThat(tabs[2].name).isEqualTo("Audit")
+        assertThat(tabs[3].name).isEqualTo("Documents")
+        assertThat(tabs[4].name).isEqualTo("Notes")
     }
 }

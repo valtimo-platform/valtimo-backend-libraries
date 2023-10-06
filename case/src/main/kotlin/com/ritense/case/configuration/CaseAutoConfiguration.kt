@@ -19,7 +19,7 @@ package com.ritense.case.configuration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.authorization.AuthorizationService
-import com.ritense.case.deployment.CaseTabDeployer
+import com.ritense.case.deployment.CaseTabDeploymentService
 import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
@@ -213,8 +213,8 @@ class CaseAutoConfiguration {
         caseTabRepository: CaseTabRepository,
         changelogService: ChangelogService,
         @Value("\${valtimo.changelog.case-tabs.clear-tables:false}") clearTables: Boolean
-    ): CaseTabDeployer {
-        return CaseTabDeployer(
+    ): CaseTabDeploymentService {
+        return CaseTabDeploymentService(
             objectMapper,
             caseTabRepository,
             changelogService,

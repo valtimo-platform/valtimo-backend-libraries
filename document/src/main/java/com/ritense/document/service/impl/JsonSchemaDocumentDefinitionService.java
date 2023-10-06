@@ -229,7 +229,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
                     return new DeployDocumentDefinitionResultFailed(List.of(error));
                 }
 
-                if (existingDocumentDefinition.getSchema().equals(jsonSchema)) {
+                if (existingDocumentDefinition.getSchema().asJson().equals(jsonSchema.asJson())) {
                     logger.info(
                         "Schema already deployed - {} - {} ", existingDocumentDefinition.getId(),
                         jsonSchema.getSchema().getId()
