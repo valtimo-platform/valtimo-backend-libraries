@@ -28,12 +28,15 @@ import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDe
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
+import com.ritense.document.service.DocumentDefinitionService
+import kotlin.jvm.optionals.getOrNull
 import org.springframework.data.domain.Sort
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class CaseTabService(
     private val caseTabRepository: CaseTabRepository,
+    private val documentDefinitionService: DocumentDefinitionService,
     private val authorizationService: AuthorizationService
 ) {
 
@@ -42,18 +45,21 @@ class CaseTabService(
         return caseTabRepository.findAll(byCaseDefinitionName(caseDefinitionName), Sort.by(TAB_ORDER))
     }
 
-    fun createCaseTab(caseDefinitionName: String, caseTab: CaseTabDto): CaseTabDto {
+    fun createCaseTab(caseDefinitionName: String, caseTabDto: CaseTabDto): CaseTabDto {
         denyAuthorization()
 
-        val savedTab = caseTabRepository.save(
-            CaseTab(
-                CaseTabId(caseDefinitionName, caseTab.key),
-                caseTab.name,
-                getCaseTabs(caseDefinitionName).size, // Add it to the end
-                caseTab.type,
-                caseTab.contentKey
-            )
+        documentDefinitionService.findLatestByName(caseDefinitionName).getOrNull()
+            ?: throw NoSuchElementException("Case definition with name $caseDefinitionName does not exist!")
+
+        val caseTab = CaseTab(
+            CaseTabId(caseDefinitionName, caseTabDto.key),
+            caseTabDto.name,
+            getCaseTabs(caseDefinitionName).size, // Add it to the end
+            caseTabDto.type,
+            caseTabDto.contentKey
         )
+
+        val savedTab = caseTabRepository.save(caseTab)
         return CaseTabDto.of(savedTab)
     }
 
