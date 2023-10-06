@@ -116,9 +116,10 @@ class CaseAutoConfiguration {
     @Bean
     fun caseTabService(
         caseTabRepository: CaseTabRepository,
-        authorizationService: AuthorizationService
+        authorizationService: AuthorizationService,
+        documentDefinitionService: DocumentDefinitionService
     ): CaseTabService {
-        return CaseTabService(caseTabRepository, authorizationService)
+        return CaseTabService(caseTabRepository, documentDefinitionService, authorizationService)
     }
 
     @Bean
