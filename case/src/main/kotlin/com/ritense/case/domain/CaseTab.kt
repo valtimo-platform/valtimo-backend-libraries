@@ -37,4 +37,10 @@ data class CaseTab(
     val type: CaseTabType,
 
     val contentKey: String,
-)
+) {
+    init {
+        require(name.isNotBlank()) { "name was blank!" }
+        require(tabOrder >= 0) {"tabOrder was < 0"}
+        require(contentKey.isNotBlank()) { "contentKey was blank!" }
+    }
+}
