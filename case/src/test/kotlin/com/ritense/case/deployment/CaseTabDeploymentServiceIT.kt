@@ -26,6 +26,7 @@ import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
@@ -97,6 +98,19 @@ class CaseTabDeploymentServiceIT @Autowired constructor(
 
         val tabs = caseTabRepository.findAll()
         assertThat(tabs.size).isEqualTo(2)
+    }
+
+    @Test
+    fun `should fail deploying tabs for non existing case type`() {
+        caseTabRepository.deleteAll()
+        whenever(caseTabDeploymentService.getPath()).thenReturn("classpath*:**/tabs-fail.json")
+
+        assertThrows<NoSuchElementException> {
+            changelogDeployer.deployAll()
+        }
+
+        val tabs = caseTabRepository.findAll()
+        assertThat(tabs.size).isEqualTo(0)
     }
 
     @Test
