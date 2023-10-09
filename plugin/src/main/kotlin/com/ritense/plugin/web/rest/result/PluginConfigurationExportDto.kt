@@ -19,39 +19,37 @@ package com.ritense.plugin.web.rest.result
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.plugin.domain.PluginConfiguration
 import java.util.Locale
+import java.util.UUID
 
-class PluginConfigurationExportDto(
-    pluginConfiguration: PluginConfiguration
+data class PluginConfigurationExportDto(
+    val id: UUID,
+    val title: String,
+    val pluginDefinitionKey: String,
+    val properties: ObjectNode?
 ) {
-    val id: String
-    val title: String
-    val pluginDefinitionKey: String
-    var properties: ObjectNode? = null
-
-    init {
-        id = pluginConfiguration.id.id.toString()
-        title = pluginConfiguration.title
-        pluginDefinitionKey = pluginConfiguration.pluginDefinition.key
-
-        if (pluginConfiguration.properties != null) {
-            val configurationProperties: ObjectNode = pluginConfiguration.properties!!.deepCopy()
-
-            val secretDefinitionProperties = pluginConfiguration.pluginDefinition.properties
-                .filter { it.secret }
-                .map { it.fieldName }
-
-            configurationProperties.remove(secretDefinitionProperties)
-            secretDefinitionProperties.forEach {
-                val secretName = toSnakeUpperCase("${title}_$it")
-                configurationProperties.put(it, "\${$secretName}")
-            }
-
-            properties = configurationProperties
-        }
-
-    }
-
     companion object {
+        fun of(pluginConfiguration: PluginConfiguration): PluginConfigurationExportDto {
+            return PluginConfigurationExportDto(
+                id = pluginConfiguration.id.id,
+                title = pluginConfiguration.title,
+                pluginDefinitionKey = pluginConfiguration.pluginDefinition.key,
+                properties = pluginConfiguration.properties?.let {
+                    val configurationProperties: ObjectNode = it.deepCopy()
+
+                    val secretDefinitionProperties = pluginConfiguration.pluginDefinition.properties
+                        .filter { it.secret }
+                        .map { it.fieldName }
+
+                    configurationProperties.remove(secretDefinitionProperties)
+                    secretDefinitionProperties.forEach {
+                        val secretName = toSnakeUpperCase("${pluginConfiguration.title}_$it")
+                        configurationProperties.put(it, "\${$secretName}")
+                    }
+
+                    configurationProperties
+                }
+            )
+        }
 
         private fun toSnakeUpperCase(camelCase: String): String {
             return camelCase
