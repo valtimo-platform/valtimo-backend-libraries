@@ -40,6 +40,8 @@ import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.instance.Process;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
+import org.camunda.bpm.model.dmn.Dmn;
+import org.camunda.bpm.model.dmn.DmnModelInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -84,8 +86,11 @@ public class CamundaProcessService {
     public CamundaProcessService(
         RuntimeService runtimeService,
         CamundaRuntimeService camundaRuntimeService,
-        RepositoryService repositoryService, CamundaRepositoryService camundaRepositoryService, FormService formService,
-        CamundaHistoryService historyService, ProcessPropertyService processPropertyService,
+        RepositoryService repositoryService,
+        CamundaRepositoryService camundaRepositoryService,
+        FormService formService,
+        CamundaHistoryService historyService,
+        ProcessPropertyService processPropertyService,
         ValtimoProperties valtimoProperties,
         AuthorizationService authorizationService,
         CamundaExecutionRepository camundaExecutionRepository
@@ -229,14 +234,24 @@ public class CamundaProcessService {
     }
 
     @Transactional
-    public void deploy(String processName, ByteArrayInputStream bpmn) throws ProcessNotUpdatableException {
+    public void deploy(String processName, ByteArrayInputStream fileInput) throws ProcessNotUpdatableException {
         denyAuthorization();
-        BpmnModelInstance model = Bpmn.readModelFromStream(bpmn);
-        if (!isDeployable(model)) {
-            throw new ProcessNotUpdatableException("Process is not eligible to be deployed.");
-        }
 
-        repositoryService.createDeployment().addModelInstance(processName, model).deploy();
+        if (processName.endsWith(".bpmn")) {
+            BpmnModelInstance bpmnModel = Bpmn.readModelFromStream(fileInput);
+
+            if (!isDeployable(bpmnModel)) {
+                throw new ProcessNotUpdatableException("Process is not eligible to be deployed.");
+            }
+
+            repositoryService.createDeployment().addModelInstance(processName, bpmnModel).deploy();
+        } else if (processName.endsWith(".dmn")) {
+            DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
+
+            repositoryService.createDeployment().addModelInstance(processName, dmnModel).deploy();
+        } else {
+            throw new IllegalArgumentException("File to deploy is not valid BPMN or DMN.");
+        }
     }
 
     private boolean isDeployable(BpmnModelInstance model) {
