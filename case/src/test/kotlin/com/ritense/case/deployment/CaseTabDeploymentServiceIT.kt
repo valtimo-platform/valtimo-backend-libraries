@@ -105,12 +105,15 @@ class CaseTabDeploymentServiceIT @Autowired constructor(
         caseTabRepository.deleteAll()
         whenever(caseTabDeploymentService.getPath()).thenReturn("classpath*:**/tabs-fail.json")
 
-        assertThrows<NoSuchElementException> {
+        val exception = assertThrows<IllegalStateException> {
             changelogDeployer.deployAll()
         }
 
         val tabs = caseTabRepository.findAll()
         assertThat(tabs.size).isEqualTo(0)
+        assertThat(exception.message).isEqualTo("Failed to execute changelog: test/config/case-tabs/tabs-fail.json")
+        assertThat(exception.cause).isInstanceOf(NoSuchElementException::class.java)
+        assertThat(exception.cause?.message).isEqualTo("Case definition with name some-case-type-that-does-not-exist does not exist!")
     }
 
     @Test
