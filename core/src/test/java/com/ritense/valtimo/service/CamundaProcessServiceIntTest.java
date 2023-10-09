@@ -21,6 +21,7 @@ import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.exception.ProcessNotUpdatableException;
 import org.camunda.bpm.engine.RepositoryService;
+import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,8 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
 
     @Value("classpath:examples/bpmn/*.xml")
     Resource[] bpmn;
+    @Value("classpath:examples/dmn/*.xml")
+    Resource[] dmn;
 
     @Autowired
     private RepositoryService repositoryService;
@@ -48,7 +51,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     private CamundaProcessService camundaProcessService;
 
     @Test
-    void shouldDeployNewProcess() throws IOException, ProcessNotUpdatableException {
+    void shouldDeployNewProcess() {
         List<Resource> processes = List.of(bpmn);
         AuthorizationContext.runWithoutAuthorization(() -> {
             camundaProcessService.deploy(
@@ -61,6 +64,21 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         List<CamundaProcessDefinition> definitions = AuthorizationContext
             .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
         Assertions.assertTrue(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("deployedProcess")));
+    }
+
+    @Test
+    void shouldDeployNewDmn() {
+        List<Resource> tables = List.of(dmn);
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            camundaProcessService.deploy(
+                "aDmnName.dmn",
+                new ByteArrayInputStream(tables.stream().filter(table -> Objects.equals(table.getFilename(), "sampleDecisionTable.xml"))
+                    .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+            );
+            return null;
+        });
+        List<DecisionDefinition> definitions = repositoryService.createDecisionDefinitionQuery().list();
+        Assertions.assertTrue(definitions.stream().anyMatch(decisionDefinition -> decisionDefinition.getKey().equals("Evenementenvergunning-risico")));
     }
 
     @Test
