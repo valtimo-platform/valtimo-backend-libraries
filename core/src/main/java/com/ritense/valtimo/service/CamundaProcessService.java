@@ -234,21 +234,21 @@ public class CamundaProcessService {
     }
 
     @Transactional
-    public void deploy(String processName, ByteArrayInputStream fileInput) throws ProcessNotUpdatableException {
+    public void deploy(String fileName, ByteArrayInputStream fileInput) throws ProcessNotUpdatableException {
         denyAuthorization();
 
-        if (processName.endsWith(".bpmn")) {
+        if (fileName.endsWith(".bpmn")) {
             BpmnModelInstance bpmnModel = Bpmn.readModelFromStream(fileInput);
 
             if (!isDeployable(bpmnModel)) {
                 throw new ProcessNotUpdatableException("Process is not eligible to be deployed.");
             }
 
-            repositoryService.createDeployment().addModelInstance(processName, bpmnModel).deploy();
-        } else if (processName.endsWith(".dmn")) {
+            repositoryService.createDeployment().addModelInstance(fileName, bpmnModel).deploy();
+        } else if (fileName.endsWith(".dmn")) {
             DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
 
-            repositoryService.createDeployment().addModelInstance(processName, dmnModel).deploy();
+            repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deploy();
         } else {
             throw new IllegalArgumentException("File to deploy is not valid BPMN or DMN.");
         }
