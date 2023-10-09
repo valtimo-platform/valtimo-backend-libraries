@@ -22,6 +22,7 @@ import static java.util.stream.Collectors.toSet;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
@@ -42,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.camunda.bpm.engine.AuthorizationException;
@@ -140,14 +142,17 @@ public class CamundaTaskService {
 
     public List<ManageableUser> getCandidateUsers(String taskId) {
         final Task task = findTaskById(taskId);
-        final Optional<IdentityLink> first = taskService
+        final Set<String> candidateGroups = taskService
             .getIdentityLinksForTask(task.getId())
             .stream()
             .filter(identityLink -> IdentityLinkType.CANDIDATE.equals(identityLink.getType()))
-            .findFirst();
+            .map(IdentityLink::getGroupId)
+            .collect(toSet());
 
-        if (first.isPresent()) {
-            return userManagementService.findByRole(first.get().getGroupId());
+        if (!candidateGroups.isEmpty()) {
+            final SearchByUserGroupsCriteria search = new SearchByUserGroupsCriteria();
+            search.addToOrUserGroups(candidateGroups);
+            return userManagementService.findByRoles(search);
         } else {
             return Collections.emptyList();
         }
