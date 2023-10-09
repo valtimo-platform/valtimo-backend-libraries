@@ -37,4 +37,12 @@
             <column name="content_key" type="varchar(256)"/>
         </createTable>
     </changeSet>
+
+    <!-- match the type of this column with json_schema_document_definition.document_definition_name -->
+    <changeSet id="2" author="Ritense">
+        <modifyDataType
+            tableName="case_tab"
+            columnName="case_definition_name"
+            newDataType="varchar(50)" />
+    </changeSet>
 </databaseChangeLog>

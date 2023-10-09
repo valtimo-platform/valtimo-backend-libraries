@@ -38,6 +38,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.Comparator.comparingInt
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
@@ -101,8 +103,7 @@ class PluginConfigurationResource(
     fun exportPluginConfiguration(): ResponseEntity<List<PluginConfigurationExportDto>> {
         val pluginConfigurations = pluginService.getPluginConfigurations(PluginConfigurationSearchParameters())
             .sortedWith(comparingInt<PluginConfiguration> { pluginConfiguration ->
-                pluginConfiguration.properties?.fieldNames()?.asSequence()?.count { it.contains("PluginConfiguration") }
-                    ?: 0
+                pluginConfiguration.properties?.fieldNames()?.asSequence()?.count { it.contains("PluginConfiguration") } ?: 0
             }
                 .thenBy { it.pluginDefinition.key }
                 .thenBy { it.title })

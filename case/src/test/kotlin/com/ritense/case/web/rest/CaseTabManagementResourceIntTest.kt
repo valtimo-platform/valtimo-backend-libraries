@@ -17,6 +17,7 @@
 package com.ritense.case.web.rest
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabId
@@ -26,7 +27,9 @@ import com.ritense.case.repository.CaseTabSpecificationHelper
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
+import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
+import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,8 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
@@ -44,11 +47,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
-import kotlin.jvm.optionals.getOrNull
 
 class CaseTabManagementResourceIntTest @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
-    private val caseTabRepository: CaseTabRepository
+    private val caseTabRepository: CaseTabRepository,
+    private val documentDefinitionService: DocumentDefinitionService
 ) : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
@@ -63,6 +66,15 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should create tab`() {
         val caseDefinitionName = "some-case-type"
+
+        runWithoutAuthorization {
+            documentDefinitionService.deploy("""
+                {
+                    "${'$'}id": "$caseDefinitionName.schema",
+                    "${'$'}schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """.trimIndent())
+        }
 
         val dto = CaseTabDto(
             key = "some-key",
