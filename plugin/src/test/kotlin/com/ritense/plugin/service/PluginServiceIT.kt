@@ -353,7 +353,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
         System.setProperty("MY_URL_PLACEHOLDER", "https://www.example.com/")
         System.setProperty("MY_FIRST_PLACEHOLDER", "first_value")
         System.setProperty("MY_SECOND_PLACEHOLDER", "second_value")
-        val nestedProperties = """
+        val properties = """
             {
                 "property1": "${'$'}{MY_URL_PLACEHOLDER}api/v1/something",
                 "property2": true,
@@ -370,7 +370,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
                 id = pluginConfigurationId,
                 title = "My test plugin",
                 pluginDefinitionKey = "auto-deployment-test-plugin",
-                properties = jacksonObjectMapper().readTree(nestedProperties) as ObjectNode
+                properties = jacksonObjectMapper().readTree(properties) as ObjectNode
             )
         )
 
