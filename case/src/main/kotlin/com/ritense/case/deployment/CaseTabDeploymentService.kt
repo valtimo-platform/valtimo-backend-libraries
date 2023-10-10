@@ -18,11 +18,11 @@ package com.ritense.case.deployment
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.case.domain.CaseTab
-import com.ritense.case.domain.CaseTabId
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionName
+import com.ritense.case.service.CaseTabService
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
@@ -35,6 +35,7 @@ open class CaseTabDeploymentService(
     private val objectMapper: ObjectMapper,
     private val caseTabRepository: CaseTabRepository,
     private val changelogService: ChangelogService,
+    private val caseTabService: CaseTabService,
     private val clearTables: Boolean
 ) : ChangesetDeployer {
     override fun getPath() = "classpath*:**/*.case-tabs.json"
@@ -67,18 +68,16 @@ open class CaseTabDeploymentService(
     }
 
     private fun deploy(caseDefinitions: List<CaseDefinitionsTabCollection>) {
-        caseDefinitions.forEach {
-            caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionName(it.key)))
-            val tabs = it.tabs.mapIndexed { index, caseTabDto ->
-                CaseTab(
-                    CaseTabId(it.key, caseTabDto.key),
-                    caseTabDto.name,
-                    index,
-                    caseTabDto.type,
-                    caseTabDto.contentKey
-                )
+        runWithoutAuthorization {
+            caseDefinitions.forEach {
+                caseTabRepository.deleteAll(caseTabRepository.findAll(byCaseDefinitionName(it.key)))
+                it.tabs.map { caseTabDto ->
+                    caseTabService.createCaseTab(
+                        it.key,
+                        caseTabDto
+                    )
+                }
             }
-            caseTabRepository.saveAll(tabs)
         }
     }
 
