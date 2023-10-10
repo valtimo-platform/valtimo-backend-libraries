@@ -81,10 +81,6 @@ abstract class BaseIntegrationTest {
     @MockBean
     lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
 
-    // TODO: remove authorization service mocking when call to run without permissions is added
-    @MockBean
-    lateinit var authorizationService: AuthorizationService
-
     @Autowired
     lateinit var noopAuthorizationSpecificationFactory: NoopAuthorizationSpecificationFactory<CamundaTask>
 
