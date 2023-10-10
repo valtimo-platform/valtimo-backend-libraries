@@ -68,25 +68,11 @@ public abstract class BaseIntegrationTest extends BaseTest {
     @MockBean
     protected ResourceService resourceService;
 
-    // TODO: remove authorization service mocking when call to run without permissions is added
-    @MockBean
-    public AuthorizationService authorizationService;
-
     @Autowired
     public NoopAuthorizationSpecificationFactory noopAuthorizationSpecificationFactory;
 
     @BeforeAll
     static void beforeAll() {
-    }
-
-    @BeforeEach
-    public void beforeEach() {
-        var noopAuthSpec = noopAuthorizationSpecificationFactory.create(
-            new EntityAuthorizationRequest<>(CamundaTask.class, CamundaTaskActionProvider.VIEW),
-            List.of()
-        );
-        when(authorizationService.getAuthorizationSpecification(ArgumentMatchers.<AuthorizationRequest<CamundaTask>>any(), eq(null)))
-            .thenReturn(noopAuthSpec);
     }
 
     @AfterEach
