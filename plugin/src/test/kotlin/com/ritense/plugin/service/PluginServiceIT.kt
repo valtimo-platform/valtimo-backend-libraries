@@ -21,6 +21,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.TestPlugin
+import com.ritense.plugin.autodeployment.AutoDeploymentTestPlugin
+import com.ritense.plugin.autodeployment.PluginAutoDeploymentDto
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -30,11 +32,6 @@ import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.valtimo.contract.json.Mapper
-import java.lang.reflect.InvocationTargetException
-import java.net.URI
-import java.util.UUID
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNotEquals
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.camunda.community.mockito.delegate.DelegateTaskFake
@@ -53,6 +50,11 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.lang.reflect.InvocationTargetException
+import java.net.URI
+import java.util.UUID
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotEquals
 
 
 internal class PluginServiceIT : BaseIntegrationTest() {
@@ -342,5 +344,38 @@ internal class PluginServiceIT : BaseIntegrationTest() {
                 "test-plugin",
             )
         }
+    }
+
+    @Test
+    @Transactional
+    fun `should deploy plugin with resolved properties`() {
+        val pluginConfigurationId = UUID.randomUUID()
+        System.setProperty("MY_URL_PLACEHOLDER", "https://www.example.com/")
+        System.setProperty("MY_FIRST_PLACEHOLDER", "first_value")
+        System.setProperty("MY_SECOND_PLACEHOLDER", "second_value")
+        val nestedProperties = """
+            {
+                "property1": "${'$'}{MY_URL_PLACEHOLDER}api/v1/something",
+                "property2": true,
+                "property3": 3,
+                "property4": [
+                    {
+                        "innerProperty": "start ${'$'}{MY_FIRST_PLACEHOLDER} middle ${'$'}{MY_SECOND_PLACEHOLDER} end"
+                    }
+                ]
+            }"""
+
+        pluginService.deployPluginConfigurations(
+            PluginAutoDeploymentDto(
+                id = pluginConfigurationId,
+                title = "My test plugin",
+                pluginDefinitionKey = "auto-deployment-test-plugin",
+                properties = jacksonObjectMapper().readTree(nestedProperties) as ObjectNode
+            )
+        )
+
+        val pluginConfiguration = pluginService.createInstance<AutoDeploymentTestPlugin>(pluginConfigurationId)
+        assertEquals(URI("https://www.example.com/api/v1/something"), pluginConfiguration.property1)
+        assertEquals("start first_value middle second_value end", pluginConfiguration.property4.single().innerProperty)
     }
 }
