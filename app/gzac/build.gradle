@@ -77,3 +77,17 @@ dependencies {
 }
 
 apply from: "gradle/publishing.gradle"
+
+bootRun {
+    doFirst {
+        File f = file(".env.properties")
+        if (f.isFile()) {
+            f.readLines().each() {
+                if (!it.isEmpty() && !it.startsWith("#")) {
+                    def (key, value) = it.tokenize('=')
+                    environment key.trim(), value.trim()
+                }
+            }
+        }
+    }
+}

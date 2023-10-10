@@ -52,7 +52,7 @@ class PluginAutoDeploymentEventListener(
                 try {
                     createPluginConfigurations(resource)
                 } catch (e: Exception) {
-                    logger.error(e) { "Error while deploying plugin configuration" }
+                    logger.error(e) { "Error while deploying plugin configuration file: '${resource.filename}'" }
                 }
             }
         } catch (e: Exception) {
