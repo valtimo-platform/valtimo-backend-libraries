@@ -29,8 +29,10 @@ import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
+import com.ritense.valtimo.exception.FileExtensionNotSupportedException;
+import com.ritense.valtimo.exception.NoFileExtensionFoundException;
 import com.ritense.valtimo.exception.ProcessDefinitionNotFoundException;
-import com.ritense.valtimo.exception.ProcessNotUpdatableException;
+import com.ritense.valtimo.exception.ProcessNotDeployableException;
 import com.ritense.valtimo.service.util.FormUtils;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
@@ -40,6 +42,8 @@ import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.instance.Process;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
+import org.camunda.bpm.model.dmn.Dmn;
+import org.camunda.bpm.model.dmn.DmnModelInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -84,8 +88,11 @@ public class CamundaProcessService {
     public CamundaProcessService(
         RuntimeService runtimeService,
         CamundaRuntimeService camundaRuntimeService,
-        RepositoryService repositoryService, CamundaRepositoryService camundaRepositoryService, FormService formService,
-        CamundaHistoryService historyService, ProcessPropertyService processPropertyService,
+        RepositoryService repositoryService,
+        CamundaRepositoryService camundaRepositoryService,
+        FormService formService,
+        CamundaHistoryService historyService,
+        ProcessPropertyService processPropertyService,
         ValtimoProperties valtimoProperties,
         AuthorizationService authorizationService,
         CamundaExecutionRepository camundaExecutionRepository
@@ -229,14 +236,33 @@ public class CamundaProcessService {
     }
 
     @Transactional
-    public void deploy(String processName, ByteArrayInputStream bpmn) throws ProcessNotUpdatableException {
+    public void deploy(String fileName, ByteArrayInputStream fileInput)
+            throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException
+    {
         denyAuthorization();
-        BpmnModelInstance model = Bpmn.readModelFromStream(bpmn);
-        if (!isDeployable(model)) {
-            throw new ProcessNotUpdatableException("Process is not eligible to be deployed.");
-        }
 
-        repositoryService.createDeployment().addModelInstance(processName, model).deploy();
+        if (fileName.endsWith(".bpmn")) {
+            BpmnModelInstance bpmnModel = Bpmn.readModelFromStream(fileInput);
+
+            if (!isDeployable(bpmnModel)) {
+                throw new ProcessNotDeployableException(fileName);
+            }
+
+            repositoryService.createDeployment().addModelInstance(fileName, bpmnModel).deploy();
+        } else if (fileName.endsWith(".dmn")) {
+            DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
+
+            repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deploy();
+        } else {
+            String[] splitFileName = fileName.split("\\.");
+
+            if (splitFileName.length > 1) {
+                String fileExtension = splitFileName[splitFileName.length - 1];
+                throw new FileExtensionNotSupportedException(fileExtension);
+            } else {
+                throw new NoFileExtensionFoundException(fileName);
+            }
+        }
     }
 
     private boolean isDeployable(BpmnModelInstance model) {
