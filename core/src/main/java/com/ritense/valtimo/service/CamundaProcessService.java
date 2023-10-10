@@ -29,8 +29,10 @@ import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
+import com.ritense.valtimo.exception.FileExtensionNotSupportedException;
+import com.ritense.valtimo.exception.NoFileExtensionFoundException;
 import com.ritense.valtimo.exception.ProcessDefinitionNotFoundException;
-import com.ritense.valtimo.exception.ProcessNotUpdatableException;
+import com.ritense.valtimo.exception.ProcessNotDeployableException;
 import com.ritense.valtimo.service.util.FormUtils;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
@@ -234,14 +236,16 @@ public class CamundaProcessService {
     }
 
     @Transactional
-    public void deploy(String fileName, ByteArrayInputStream fileInput) throws ProcessNotUpdatableException {
+    public void deploy(String fileName, ByteArrayInputStream fileInput)
+            throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException
+    {
         denyAuthorization();
 
         if (fileName.endsWith(".bpmn")) {
             BpmnModelInstance bpmnModel = Bpmn.readModelFromStream(fileInput);
 
             if (!isDeployable(bpmnModel)) {
-                throw new ProcessNotUpdatableException("Process is not eligible to be deployed.");
+                throw new ProcessNotDeployableException(fileName);
             }
 
             repositoryService.createDeployment().addModelInstance(fileName, bpmnModel).deploy();
@@ -250,7 +254,14 @@ public class CamundaProcessService {
 
             repositoryService.createDeployment().addModelInstance(fileName, dmnModel).deploy();
         } else {
-            throw new IllegalArgumentException("File to deploy is not valid BPMN or DMN.");
+            String[] splitFileName = fileName.split("\\.");
+
+            if (splitFileName.length > 1) {
+                String fileExtension = splitFileName[splitFileName.length - 1];
+                throw new FileExtensionNotSupportedException(fileExtension);
+            } else {
+                throw new NoFileExtensionFoundException(fileName);
+            }
         }
     }
 

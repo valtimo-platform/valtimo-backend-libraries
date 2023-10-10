@@ -19,6 +19,8 @@ package com.ritense.valtimo.service;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
+import com.ritense.valtimo.exception.FileExtensionNotSupportedException;
+import com.ritense.valtimo.exception.NoFileExtensionFoundException;
 import com.ritense.valtimo.exception.ProcessNotUpdatableException;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.DecisionDefinition;
@@ -43,6 +45,8 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     Resource[] bpmn;
     @Value("classpath:examples/dmn/*.xml")
     Resource[] dmn;
+    @Value("classpath:examples/test/*")
+    Resource[] test;
 
     @Autowired
     private RepositoryService repositoryService;
@@ -79,6 +83,48 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         });
         List<DecisionDefinition> definitions = repositoryService.createDecisionDefinitionQuery().list();
         Assertions.assertTrue(definitions.stream().anyMatch(decisionDefinition -> decisionDefinition.getKey().equals("Evenementenvergunning-risico")));
+    }
+
+    @Test
+    void shouldNotDeployFileWithInvalidExtension() {
+        List<Resource> testFiles = List.of(test);
+        String textFileName = "aTextFile.txt";
+        Assertions.assertThrows(FileExtensionNotSupportedException.class,
+            () -> AuthorizationContext.runWithoutAuthorization(() -> {
+                camundaProcessService.deploy(
+                        textFileName,
+                        new ByteArrayInputStream(testFiles.stream().filter(testFile -> Objects.equals(testFile.getFilename(), "sampleTextFile.txt"))
+                                .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+                );
+                return null;
+            }
+        ));
+        List<DecisionDefinition> dmnDefinitions = repositoryService.createDecisionDefinitionQuery().list();
+        List<CamundaProcessDefinition> bpmnDefinitions = AuthorizationContext
+                .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
+        Assertions.assertFalse(dmnDefinitions.stream().anyMatch(dmnDefinition -> dmnDefinition.getResourceName().equals(textFileName)));
+        Assertions.assertFalse(bpmnDefinitions.stream().anyMatch(bpmnDefinition -> bpmnDefinition.getResourceName().equals(textFileName)));
+    }
+
+    @Test
+    void shouldNotDeployFileWithoutExtension() {
+        List<Resource> testFiles = List.of(test);
+        String sampleFileName = "aFileName";
+        Assertions.assertThrows(NoFileExtensionFoundException.class,
+                () -> AuthorizationContext.runWithoutAuthorization(() -> {
+                            camundaProcessService.deploy(
+                                    sampleFileName,
+                                    new ByteArrayInputStream(testFiles.stream().filter(testFile -> Objects.equals(testFile.getFilename(), "sampleTestFile"))
+                                            .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+                            );
+                            return null;
+                        }
+                ));
+        List<DecisionDefinition> dmnDefinitions = repositoryService.createDecisionDefinitionQuery().list();
+        List<CamundaProcessDefinition> bpmnDefinitions = AuthorizationContext
+                .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
+        Assertions.assertFalse(dmnDefinitions.stream().anyMatch(dmnDefinition -> dmnDefinition.getResourceName().equals(sampleFileName)));
+        Assertions.assertFalse(bpmnDefinitions.stream().anyMatch(bpmnDefinition -> bpmnDefinition.getResourceName().equals(sampleFileName)));
     }
 
     @Test
