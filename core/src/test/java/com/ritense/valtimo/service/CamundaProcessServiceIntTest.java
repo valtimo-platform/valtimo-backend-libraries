@@ -111,15 +111,15 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
         List<Resource> testFiles = List.of(test);
         String sampleFileName = "aFileName";
         Assertions.assertThrows(NoFileExtensionFoundException.class,
-                () -> AuthorizationContext.runWithoutAuthorization(() -> {
-                            camundaProcessService.deploy(
-                                    sampleFileName,
-                                    new ByteArrayInputStream(testFiles.stream().filter(testFile -> Objects.equals(testFile.getFilename(), "sampleTestFile"))
-                                            .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
-                            );
-                            return null;
-                        }
-                ));
+            () -> AuthorizationContext.runWithoutAuthorization(() -> {
+                camundaProcessService.deploy(
+                        sampleFileName,
+                        new ByteArrayInputStream(testFiles.stream().filter(testFile -> Objects.equals(testFile.getFilename(), "sampleTestFile"))
+                                .findFirst().orElseGet(() -> new ByteArrayResource(new byte[]{})).getInputStream().readAllBytes())
+                );
+                return null;
+                }
+            ));
         List<DecisionDefinition> dmnDefinitions = repositoryService.createDecisionDefinitionQuery().list();
         List<CamundaProcessDefinition> bpmnDefinitions = AuthorizationContext
                 .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
