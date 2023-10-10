@@ -19,11 +19,7 @@ package com.ritense.valtimo.exception;
 public class FileExtensionNotSupportedException extends Exception {
 
     /**
-     * Constructs a new exception with the specified detail message.  The
-     * cause is not initialized, and may subsequently be initialized by
-     * a call to {@link #initCause}.
-     *
-     * @param   fileExtension   The name of the file extension that is not supported
+     * @param fileExtension The name of the file extension that is not supported
      */
 
     private static String BASE_MESSAGE = "The file extension '%s' is not supported for this operation.";

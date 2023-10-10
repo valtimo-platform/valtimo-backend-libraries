@@ -19,11 +19,7 @@ package com.ritense.valtimo.exception;
 public class ProcessNotDeployableException extends Exception {
 
     /**
-     * Constructs a new exception with the specified detail message.  The
-     * cause is not initialized, and may subsequently be initialized by
-     * a call to {@link #initCause}.
-     *
-     * @param   fileName   The name of the bpmn file that was to be deployed
+     * @param fileName The name of the bpmn file that was to be deployed
      */
 
     private static String BASE_MESSAGE = "Process with file name '%s' is not eligible to be deployed.";

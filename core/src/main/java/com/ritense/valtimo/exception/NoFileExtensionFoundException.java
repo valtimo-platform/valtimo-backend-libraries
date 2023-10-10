@@ -19,11 +19,7 @@ package com.ritense.valtimo.exception;
 public class NoFileExtensionFoundException extends Exception {
 
     /**
-     * Constructs a new exception with the specified detail message.  The
-     * cause is not initialized, and may subsequently be initialized by
-     * a call to {@link #initCause}.
-     *
-     * @param   fileName   The name of the file which has no extension
+     * @param fileName The name of the file which has no extension
      */
 
     private static String BASE_MESSAGE = "No file extension found for file with name '%s'.";

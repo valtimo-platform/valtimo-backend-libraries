@@ -21,7 +21,7 @@ import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.exception.FileExtensionNotSupportedException;
 import com.ritense.valtimo.exception.NoFileExtensionFoundException;
-import com.ritense.valtimo.exception.ProcessNotUpdatableException;
+import com.ritense.valtimo.exception.ProcessNotDeployableException;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.model.bpmn.Bpmn;
@@ -130,7 +130,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
     @Test
     void shouldNotDeployNewSystemProcess() {
         List<Resource> processes = List.of(bpmn);
-        Assertions.assertThrows(ProcessNotUpdatableException.class,
+        Assertions.assertThrows(ProcessNotDeployableException.class,
             () -> AuthorizationContext.runWithoutAuthorization(() -> {
                 camundaProcessService.deploy(
                     "aProcessName.bpmn",
@@ -155,7 +155,7 @@ class CamundaProcessServiceIntTest extends BaseIntegrationTest {
             .runWithoutAuthorization(() -> camundaProcessService.getDeployedDefinitions());
         Assertions.assertTrue(definitions.stream().anyMatch(processDefinition -> processDefinition.getKey().equals("secondProcess")));
 
-        Assertions.assertThrows(ProcessNotUpdatableException.class,
+        Assertions.assertThrows(ProcessNotDeployableException.class,
             () -> AuthorizationContext.runWithoutAuthorization(() -> {
                 camundaProcessService.deploy(
                     "aProcessName.bpmn",
