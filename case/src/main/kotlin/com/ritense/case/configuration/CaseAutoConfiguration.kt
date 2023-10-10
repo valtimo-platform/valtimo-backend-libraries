@@ -212,12 +212,14 @@ class CaseAutoConfiguration {
         objectMapper: ObjectMapper,
         caseTabRepository: CaseTabRepository,
         changelogService: ChangelogService,
+        caseTabService: CaseTabService,
         @Value("\${valtimo.changelog.case-tabs.clear-tables:false}") clearTables: Boolean
     ): CaseTabDeploymentService {
         return CaseTabDeploymentService(
             objectMapper,
             caseTabRepository,
             changelogService,
+            caseTabService,
             clearTables
         )
     }
