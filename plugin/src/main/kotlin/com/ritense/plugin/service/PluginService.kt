@@ -147,10 +147,22 @@ class PluginService(
     }
 
     private fun resolveValue(node: JsonNode?): JsonNode? {
-        if (node != null && node.isTextual) {
-            val value = node.textValue()
-            if (value?.startsWith("\${") == true && value.endsWith("}")) {
-                return TextNode(System.getenv()[value.substringAfterLast("\${").substringBeforeLast("}")])
+        if (node != null) {
+            if (node is ObjectNode) {
+                return resolveProperties(node)
+            } else if (node.isArray) {
+                return objectMapper.createArrayNode().addAll(node.map { resolveValue(it) })
+            } else if (node.isTextual) {
+                var value = node.textValue()
+                Regex("\\$\\{([^\\}]+)\\}").findAll(value)
+                    .map { it.groupValues }
+                    .forEach { (placeholder, placeholderValue) ->
+                        val resolvedValue = System.getenv(placeholderValue)
+                            ?: System.getProperty(placeholderValue)
+                            ?: throw IllegalStateException("Failed to find environment variable: '$placeholderValue'")
+                        value = value.replace(placeholder, resolvedValue)
+                    }
+                return TextNode(value)
             }
         }
         return node

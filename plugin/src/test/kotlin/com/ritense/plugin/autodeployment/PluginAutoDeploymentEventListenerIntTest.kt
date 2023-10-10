@@ -33,7 +33,7 @@ class PluginAutoDeploymentEventListenerIntTest: BaseIntegrationTest() {
     @Test
     fun `should deploy plugin configuration`(){
         val result = pluginService.getPluginConfigurations(
-            PluginConfigurationSearchParameters(pluginDefinitionKey = "auto-deployment-test-plugin")
+            PluginConfigurationSearchParameters(pluginConfigurationTitle = "auto deployment test plugin")
         )
         assertTrue { result.size == 1 }
         assertEquals("https://www.google.com", result[0].properties?.get("property1")?.textValue())
