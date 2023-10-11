@@ -26,6 +26,7 @@ import com.ritense.case.domain.EnumDisplayTypeParameter
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.case.repository.CaseTabRepository
+import com.ritense.case.repository.CaseTabSpecificationFactory
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionService
@@ -41,12 +42,14 @@ import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
@@ -116,7 +119,7 @@ class CaseAutoConfiguration {
     @Bean
     fun caseTabService(
         caseTabRepository: CaseTabRepository,
-        authorizationService: AuthorizationService,
+        @Lazy authorizationService: AuthorizationService,
         documentDefinitionService: DocumentDefinitionService
     ): CaseTabService {
         return CaseTabService(caseTabRepository, documentDefinitionService, authorizationService)
@@ -221,6 +224,18 @@ class CaseAutoConfiguration {
             changelogService,
             caseTabService,
             clearTables
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTabSpecificationFactory::class)
+    fun caseTabSpecificationFactory(
+        @Lazy caseTabService: CaseTabService,
+        queryDialectHelper: QueryDialectHelper
+    ): CaseTabSpecificationFactory {
+        return CaseTabSpecificationFactory(
+            caseTabService,
+            queryDialectHelper
         )
     }
 }

@@ -51,10 +51,6 @@ class BaseIntegrationTest {
     @MockBean
     lateinit var userManagementService: UserManagementService
 
-    // TODO: remove authorization service mocking when call to run without permissions is added
-    @MockBean
-    lateinit var authorizationService: AuthorizationService
-
     @TestComponent
     class Consumer {
         @EventListener

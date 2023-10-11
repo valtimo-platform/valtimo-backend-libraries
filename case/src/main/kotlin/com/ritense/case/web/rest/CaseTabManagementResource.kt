@@ -36,15 +36,13 @@ import org.springframework.web.bind.annotation.RequestMapping
 open class CaseTabManagementResource(
     private val caseTabService: CaseTabService
 ) {
-
+    @RunWithoutAuthorization
     @PostMapping("/v1/case-definition/{caseDefinitionName}/tab")
     open fun createCaseTab(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseTab: CaseTabDto
     ): ResponseEntity<CaseTabDto> {
-        return ResponseEntity.ok(runWithoutAuthorization {
-            caseTabService.createCaseTab(caseDefinitionName, caseTab)
-        })
+        return ResponseEntity.ok(caseTabService.createCaseTab(caseDefinitionName, caseTab))
     }
 
     @RunWithoutAuthorization
@@ -58,22 +56,24 @@ open class CaseTabManagementResource(
         return ResponseEntity.ok(caseTabs)
     }
 
+    @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
     open fun updateCaseTab(
         @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String,
         @RequestBody caseTab: CaseTabUpdateDto
     ): ResponseEntity<Unit> {
-        runWithoutAuthorization { caseTabService.updateCaseTab(caseDefinitionName, tabKey, caseTab) }
+        caseTabService.updateCaseTab(caseDefinitionName, tabKey, caseTab)
         return ResponseEntity.noContent().build()
     }
 
+    @RunWithoutAuthorization
     @DeleteMapping("/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")
     open fun deleteCaseTab(
         @PathVariable caseDefinitionName: String,
         @PathVariable tabKey: String
     ): ResponseEntity<Unit> {
-        runWithoutAuthorization { caseTabService.deleteCaseTab(caseDefinitionName, tabKey) }
+        caseTabService.deleteCaseTab(caseDefinitionName, tabKey)
         return ResponseEntity.noContent().build()
     }
 

@@ -39,10 +39,27 @@ class CaseTabService(
     private val documentDefinitionService: DocumentDefinitionService,
     private val authorizationService: AuthorizationService
 ) {
+    fun getCaseTab(caseDefinitionName: String, key: String): CaseTab {
+        val caseTab = caseTabRepository.getReferenceById(CaseTabId(caseDefinitionName, key))
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                CaseTab::class.java,
+                CaseTabActionProvider.VIEW,
+                caseTab
+            )
+        )
+        return caseTab
+    }
 
     @Transactional(readOnly = true)
     fun getCaseTabs(caseDefinitionName: String): List<CaseTab> {
-        return caseTabRepository.findAll(byCaseDefinitionName(caseDefinitionName), Sort.by(TAB_ORDER))
+        val spec = authorizationService.getAuthorizationSpecification(
+            EntityAuthorizationRequest(
+                CaseTab::class.java,
+                CaseTabActionProvider.VIEW
+            )
+        )
+        return caseTabRepository.findAll(spec.and(byCaseDefinitionName(caseDefinitionName)), Sort.by(TAB_ORDER))
     }
 
     fun createCaseTab(caseDefinitionName: String, caseTabDto: CaseTabDto): CaseTabDto {

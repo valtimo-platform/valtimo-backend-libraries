@@ -19,6 +19,7 @@ package com.ritense.verzoek
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.BaseIntegrationTest
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
@@ -125,9 +126,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             )
         )
 
-        pluginService
-
-        documentDefinition = documentDefinitionService.findLatestByName("profile").get()
+        documentDefinition = runWithoutAuthorization { documentDefinitionService.findLatestByName("profile").get() }
 
         objectManagement = objectManagementService.create(createObjectManagement())
 
@@ -209,7 +208,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
         assertEquals("bsn", processVariableMap["initiatorType"])
         assertEquals(bsn, processVariableMap["initiatorValue"])
 
-        val documentInstance = documentService.get(processList[0].businessKey)
+        val documentInstance = runWithoutAuthorization { documentService.get(processList[0].businessKey) }
         assertEquals(
             "John Doe",
             documentInstance.content().getValueBy(JsonPointer.valueOf("/fullname")).get().textValue()

@@ -16,6 +16,7 @@
 
 package com.ritense.objectsapi.productaanvraag
 
+import com.ritense.authorization.AuthorizationContext
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector.Companion.OBJECTEN_KANAAL_NAME
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
@@ -48,8 +49,9 @@ class ProductAanvraagListener(
                     val productAanvraag = connector.getProductAanvraag(productAanvraagId)
                     val typeMapping = connector.getTypeMapping(productAanvraag.type)
                     val aanvragerRolTypeUrl = connector.getAanvragerRolTypeUrl()
-
-                    productAanvraagService.createDossier(productAanvraag, typeMapping, aanvragerRolTypeUrl)
+                    AuthorizationContext.runWithoutAuthorization {
+                        productAanvraagService.createDossier(productAanvraag, typeMapping, aanvragerRolTypeUrl)
+                    }
                     connector.deleteProductAanvraag(productAanvraagId)
                 }
             } catch (e: Exception) {
