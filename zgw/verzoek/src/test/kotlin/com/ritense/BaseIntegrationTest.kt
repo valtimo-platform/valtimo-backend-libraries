@@ -52,8 +52,4 @@ abstract class BaseIntegrationTest {
 
     @SpyBean
     lateinit var pluginService: PluginService
-
-    // TODO: remove authorization service mocking when call to run without permissions is added
-    @MockBean
-    lateinit var authorizationService: AuthorizationService
 }

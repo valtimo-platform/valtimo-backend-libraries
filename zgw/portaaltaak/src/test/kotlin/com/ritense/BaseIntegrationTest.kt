@@ -81,24 +81,6 @@ abstract class BaseIntegrationTest {
     @MockBean
     lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
 
-    // TODO: remove authorization service mocking when call to run without permissions is added
-    @MockBean
-    lateinit var authorizationService: AuthorizationService
-
     @Autowired
     lateinit var noopAuthorizationSpecificationFactory: NoopAuthorizationSpecificationFactory<CamundaTask>
-
-    @BeforeEach
-    fun beforeEach() {
-        val noopAuthSpec: AuthorizationSpecification<CamundaTask> = noopAuthorizationSpecificationFactory.create(
-            EntityAuthorizationRequest(CamundaTask::class.java, CamundaTaskActionProvider.VIEW),
-            listOf()
-        )
-        whenever(
-            authorizationService.getAuthorizationSpecification(
-                any<AuthorizationRequest<CamundaTask>>(),
-                eq<List<Permission>?>(null)
-            )
-        ).thenReturn(noopAuthSpec)
-    }
 }

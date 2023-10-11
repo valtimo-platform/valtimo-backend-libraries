@@ -17,6 +17,7 @@
 package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
@@ -128,7 +129,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("localDocumentVariableName" to documentId))
 
-        processDocumentService.newDocumentAndStartProcess(request)
+        runWithoutAuthorization { processDocumentService.newDocumentAndStartProcess(request) }
 
         val resourceId = runtimeService.createVariableInstanceQuery()
             .variableName("storedDocumentVariableName")
@@ -181,7 +182,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("localDocumentVariableName" to documentId))
 
-        processDocumentService.newDocumentAndStartProcess(request)
+        runWithoutAuthorization { processDocumentService.newDocumentAndStartProcess(request) }
 
         val parsedOutput = Mapper.INSTANCE.get().readValue(server.takeRequest().body.readUtf8(), Map::class.java)
         assertEquals("my-document.pdf", parsedOutput["bestandsnaam"])
@@ -196,7 +197,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("documentUrl" to documentUrl))
 
-        processDocumentService.newDocumentAndStartProcess(request)
+        runWithoutAuthorization { processDocumentService.newDocumentAndStartProcess(request) }
 
         val resourceId = runtimeService.createVariableInstanceQuery()
             .variableName("resourceId")

@@ -5,7 +5,8 @@
         "properties": {
             "property1": "https://www.google.com",
             "property2": true,
-            "property3": 3
+            "property3": 3,
+            "property4": []
         }
     }
 ]

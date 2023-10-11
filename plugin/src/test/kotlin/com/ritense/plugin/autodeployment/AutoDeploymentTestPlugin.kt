@@ -39,6 +39,9 @@ class AutoDeploymentTestPlugin {
     @PluginProperty(key = "property3", secret = false)
     lateinit var property3: Number
 
+    @PluginProperty(key = "property4", secret = false)
+    lateinit var property4: List<NestedProperty>
+
     @PluginAction(
         key = "test-action-task",
         title = "Test action task",
@@ -50,3 +53,7 @@ class AutoDeploymentTestPlugin {
     }
 
 }
+
+data class NestedProperty(
+    val innerProperty: String
+)

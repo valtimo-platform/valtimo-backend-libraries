@@ -568,8 +568,11 @@ public class ProcessResource extends AbstractProcessResource {
     @PostMapping(value = "/v1/process/definition/deployment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Object> deployProcessDefinition(
             @RequestPart(name = "file") MultipartFile bpmn) {
-        if (!Objects.requireNonNull(bpmn.getOriginalFilename()).endsWith(".bpmn")) {
-            return ResponseEntity.badRequest().body("Invalid file name. Must have '.bpmn' suffix.");
+        boolean correctFileExtension = Objects.requireNonNull(bpmn.getOriginalFilename()).endsWith(".bpmn")
+            || Objects.requireNonNull(bpmn.getOriginalFilename()).endsWith(".dmn");
+
+        if (!correctFileExtension) {
+            return ResponseEntity.badRequest().body("Invalid file name. Must have '.bpmn' or '.dmn' suffix.");
         }
         try {
             AuthorizationContext.runWithoutAuthorization(() -> {

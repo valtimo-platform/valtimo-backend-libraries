@@ -16,6 +16,8 @@
 
 package com.ritense.zakenapi.uploadprocess
 
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
@@ -50,30 +52,34 @@ class ResourceUploadedToDocumentEventListenerIT @Autowired constructor(
 
     @BeforeEach
     fun beforeEach() {
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(
-                UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
+        runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                ProcessDocumentDefinitionRequest(
+                    UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
+                    DOCUMENT_DEFINITION_KEY,
+                    true
+                )
+            )
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
                 DOCUMENT_DEFINITION_KEY,
-                true
+                DocumentDefinitionProcessRequest(
+                    UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
+                    DOCUMENT_UPLOAD
+                )
             )
-        )
-        documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
-            DOCUMENT_DEFINITION_KEY,
-            DocumentDefinitionProcessRequest(
-                UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY,
-                DOCUMENT_UPLOAD
-            )
-        )
+        }
     }
 
     @Test
     fun `should not start upload process when missing documentId or taskId`() {
-        val documentId = documentService.createDocument(
-            NewDocumentRequest(
-                DOCUMENT_DEFINITION_KEY,
-                Mapper.INSTANCE.get().createObjectNode()
-            )
-        ).resultingDocument().get().id!!.id.toString()
+        val documentId = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    DOCUMENT_DEFINITION_KEY,
+                    Mapper.INSTANCE.get().createObjectNode()
+                )
+            ).resultingDocument().get().id!!.id.toString()
+        }
         val resourceId = temporaryResourceStorageService.store("My file data".byteInputStream())
 
         applicationEventPublisher.publishEvent(TemporaryResourceUploadedEvent(resourceId))
@@ -86,12 +92,14 @@ class ResourceUploadedToDocumentEventListenerIT @Autowired constructor(
 
     @Test
     fun `should start upload process after publishing TemporaryResourceUploadedEvent`() {
-        val documentId = documentService.createDocument(
-            NewDocumentRequest(
-                DOCUMENT_DEFINITION_KEY,
-                Mapper.INSTANCE.get().createObjectNode()
-            )
-        ).resultingDocument().get().id!!.id.toString()
+        val documentId = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    DOCUMENT_DEFINITION_KEY,
+                    Mapper.INSTANCE.get().createObjectNode()
+                )
+            ).resultingDocument().get().id!!.id.toString()
+        }
         val resourceId = temporaryResourceStorageService.store(
             "My file data".byteInputStream(),
             mapOf(MetadataType.DOCUMENT_ID.key to documentId)

@@ -102,7 +102,7 @@ class CaseTabServiceIntTest @Autowired constructor(
     @Transactional
     fun `should not create new tab when case definition does not exist`() {
 
-        val caseDefinitionName = "some-case-type"
+        val caseDefinitionName = "some-case-type-that-does-not-exist"
 
         val dto = CaseTabDto(
             key = "some-key",
