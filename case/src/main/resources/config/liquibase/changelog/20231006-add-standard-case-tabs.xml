@@ -24,46 +24,46 @@
     </changeSet>
 
     <changeSet id="1" author="Ritense">
-        <validCheckSum>8:93e221af270642f7f59c65be306beb0e</validCheckSum>
+        <validCheckSum>8:55ec1eec9524bbed6474028555a8f8dc</validCheckSum>
         <sql>
             INSERT INTO case_tab (case_definition_name, tab_key, name, tab_order, type, content_key)
-            SELECT DISTINCT document_definition_name, 'summary', 'Summary', 0, 'STANDARD', 'summary'
+            SELECT DISTINCT document_definition_name, 'summary', NULL, 0, 'STANDARD', 'summary'
             FROM json_schema_document_definition
         </sql>
     </changeSet>
 
     <changeSet id="2" author="Ritense">
-        <validCheckSum>8:50d0f79264923736cca7933180be102d</validCheckSum>
+        <validCheckSum>8:e2865d0af9ebe7e340594030e532d738</validCheckSum>
         <sql>
             INSERT INTO case_tab (case_definition_name, tab_key, name, tab_order, type, content_key)
-            SELECT DISTINCT document_definition_name, 'progress', 'Progress', 1, 'STANDARD', 'progress'
+            SELECT DISTINCT document_definition_name, 'progress', NULL, 1, 'STANDARD', 'progress'
             FROM json_schema_document_definition
         </sql>
     </changeSet>
 
     <changeSet id="3" author="Ritense">
-        <validCheckSum>8:4849a97a95b41fc22da070d4d500cbfe</validCheckSum>
+        <validCheckSum>8:655f1e67fb751ae7144ab03b2670c27d</validCheckSum>
         <sql>
             INSERT INTO case_tab (case_definition_name, tab_key, name, tab_order, type, content_key)
-            SELECT DISTINCT document_definition_name, 'audit', 'Audit', 2, 'STANDARD', 'audit'
+            SELECT DISTINCT document_definition_name, 'audit', NULL, 2, 'STANDARD', 'audit'
             FROM json_schema_document_definition
         </sql>
     </changeSet>
 
     <changeSet id="4" author="Ritense">
-        <validCheckSum>8:acec795cd7e223d851ec85c75cb323c8</validCheckSum>
+        <validCheckSum>8:c7b443bac72e647268c9c57b526a07b8</validCheckSum>
         <sql>
             INSERT INTO case_tab (case_definition_name, tab_key, name, tab_order, type, content_key)
-            SELECT DISTINCT document_definition_name, 'documents', 'Documents', 3, 'STANDARD', 'documents'
+            SELECT DISTINCT document_definition_name, 'documents', NULL, 3, 'STANDARD', 'documents'
             FROM json_schema_document_definition
         </sql>
     </changeSet>
 
     <changeSet id="5" author="Ritense">
-        <validCheckSum>8:f0bb5a06b9a2f12e65bff579b7ff907b</validCheckSum>
+        <validCheckSum>8:9f61aa14866fd3d19d3a132a01ccd1a6</validCheckSum>
         <sql>
             INSERT INTO case_tab (case_definition_name, tab_key, name, tab_order, type, content_key)
-            SELECT DISTINCT document_definition_name, 'notes', 'Notes', 4, 'STANDARD', 'notes'
+            SELECT DISTINCT document_definition_name, 'notes', NULL, 4, 'STANDARD', 'notes'
             FROM json_schema_document_definition
         </sql>
     </changeSet>

@@ -212,7 +212,7 @@ valtimo:
         pbac:
             clear-tables: true
         case-tabs:
-            clear-tables: true
+            clear-tables: false
 
 spring-actuator:
     username: admin
