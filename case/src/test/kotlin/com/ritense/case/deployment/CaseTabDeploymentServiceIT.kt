@@ -120,10 +120,10 @@ class CaseTabDeploymentServiceIT @Autowired constructor(
     fun `should add tabs for deployed case definition`() {
         val tabs = caseTabRepository.findAll(byCaseDefinitionName("house"), Sort.by(TAB_ORDER))
         assertThat(tabs.size).isEqualTo(5)
-        assertThat(tabs[0].name).isEqualTo("Summary")
-        assertThat(tabs[1].name).isEqualTo("Progress")
-        assertThat(tabs[2].name).isEqualTo("Audit")
-        assertThat(tabs[3].name).isEqualTo("Documents")
-        assertThat(tabs[4].name).isEqualTo("Notes")
+        assertThat(tabs[0].contentKey).isEqualTo("summary")
+        assertThat(tabs[1].contentKey).isEqualTo("progress")
+        assertThat(tabs[2].contentKey).isEqualTo("audit")
+        assertThat(tabs[3].contentKey).isEqualTo("documents")
+        assertThat(tabs[4].contentKey).isEqualTo("notes")
     }
 }
