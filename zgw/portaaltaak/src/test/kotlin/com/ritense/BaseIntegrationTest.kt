@@ -87,18 +87,4 @@ abstract class BaseIntegrationTest {
 
     @Autowired
     lateinit var noopAuthorizationSpecificationFactory: NoopAuthorizationSpecificationFactory<CamundaTask>
-
-    @BeforeEach
-    fun beforeEach() {
-        val noopAuthSpec: AuthorizationSpecification<CamundaTask> = noopAuthorizationSpecificationFactory.create(
-            EntityAuthorizationRequest(CamundaTask::class.java, CamundaTaskActionProvider.VIEW),
-            listOf()
-        )
-        whenever(
-            authorizationService.getAuthorizationSpecification(
-                any<AuthorizationRequest<CamundaTask>>(),
-                eq<List<Permission>?>(null)
-            )
-        ).thenReturn(noopAuthSpec)
-    }
 }

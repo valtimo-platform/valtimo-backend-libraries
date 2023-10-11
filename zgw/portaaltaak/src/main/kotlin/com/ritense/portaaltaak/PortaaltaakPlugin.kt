@@ -19,6 +19,7 @@ package com.ritense.portaaltaak
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.convertValue
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.objectenapi.ObjectenApiPlugin
@@ -157,8 +158,7 @@ class PortaaltaakPlugin(
                 ?: throw CompleteTaakProcessVariableNotFoundException("portaalTaakObjectUrl is required but was not provided")) as String
         )
 
-
-        taskService.complete(verwerkerTaakId)
+        runWithoutAuthorization { taskService.complete(verwerkerTaakId) }
         val objectenApiPlugin =
             pluginService.createInstance(PluginConfigurationId(UUID.fromString(objectenApiPluginId))) as ObjectenApiPlugin
         val portaalTaakMetaDataObject = objectenApiPlugin.getObject(portaalTaakObjectUrl)

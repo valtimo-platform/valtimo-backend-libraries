@@ -1,6 +1,7 @@
 package com.ritense.zakenapi
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.domain.ActivityType
@@ -133,7 +134,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         whenever(resourceProvider.getResource(any())).thenReturn(resource)
 
         // Start the process
-        val response = procesDocumentService.newDocumentAndStartProcess(request)
+        val response = runWithoutAuthorization { procesDocumentService.newDocumentAndStartProcess(request) }
         assertTrue(response is NewDocumentAndStartProcessResultSucceeded)
 
         // Check the request that was sent to the open zaak api
@@ -151,7 +152,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         assertNotNull(response.resultingDocument())
         assertTrue(response.resultingDocument().isPresent)
         val processDocumentId = response.resultingDocument().get().id().id
-        assertNotNull(documentService.get(processDocumentId.toString()))
+        assertNotNull(runWithoutAuthorization { documentService.get(processDocumentId.toString()) })
     }
 
     @Test
@@ -171,7 +172,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         whenever(resourceProvider.getResource(any())).thenReturn(resource)
 
         // Start the process
-        val response = procesDocumentService.newDocumentAndStartProcess(request)
+        val response = runWithoutAuthorization { procesDocumentService.newDocumentAndStartProcess(request) }
         assertTrue(response is NewDocumentAndStartProcessResultSucceeded)
 
         // Check the request that was sent to the open zaak api
@@ -189,7 +190,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         assertNotNull(response.resultingDocument())
         assertTrue(response.resultingDocument().isPresent)
         val processDocumentId = response.resultingDocument().get().id().id
-        assertNotNull(documentService.get(processDocumentId.toString()))
+        assertNotNull(runWithoutAuthorization { documentService.get(processDocumentId.toString()) })
     }
 
     private fun setupMockZakenApiServer() {

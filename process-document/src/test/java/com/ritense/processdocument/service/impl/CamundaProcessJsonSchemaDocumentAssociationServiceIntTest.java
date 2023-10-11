@@ -19,6 +19,7 @@ package com.ritense.processdocument.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.annotation.RunWithoutAuthorization;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
@@ -38,6 +39,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.List;
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -65,7 +67,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
 
     @Test
     public void findProcessDocumentDefinitionByProcessDefinitionKey() {
-        final var processDocumentDefinitions = AuthorizationContext.runWithoutAuthorization(() ->
+        final var processDocumentDefinitions = runWithoutAuthorization(() ->
             camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinitionsByProcessDefinitionKey(PROCESS_DEFINITION_KEY)
         );
 
@@ -83,8 +85,8 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             true
         );
 
-        final var optionalProcessDocumentDefinition = camundaProcessJsonSchemaDocumentAssociationService
-            .createProcessDocumentDefinition(request);
+        final var optionalProcessDocumentDefinition = runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
+            .createProcessDocumentDefinition(request));
 
         assertThat(optionalProcessDocumentDefinition).isPresent();
     }
@@ -97,8 +99,10 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             true,
             true
         );
-        camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(request);
-        assertThrows(IllegalStateException.class, () -> camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(request));
+        runWithoutAuthorization(() -> {
+            camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(request);
+            return assertThrows(IllegalStateException.class, () -> camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(request));
+        });
     }
 
     @Test
@@ -112,7 +116,9 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             true,
             true
         );
-        camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(processDocumentRequest);
+        runWithoutAuthorization(() ->
+            camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(processDocumentRequest)
+        );
 
         final JsonNode jsonContent = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
         var newDocumentRequest = new NewDocumentRequest(
@@ -123,48 +129,51 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             DOCUMENT_DEFINITION_NAME2,
             jsonContent
         );
-        var request = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest);
-        var request2 = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest2);
+        runWithoutAuthorization(() -> {
+            var request = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest);
+            var request2 = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest2);
 
-        final NewDocumentAndStartProcessResult newDocumentAndStartProcessResult = camundaProcessJsonSchemaDocumentService
-            .newDocumentAndStartProcess(request);
+            final NewDocumentAndStartProcessResult newDocumentAndStartProcessResult = camundaProcessJsonSchemaDocumentService
+                .newDocumentAndStartProcess(request);
 
-        camundaProcessJsonSchemaDocumentService.newDocumentAndStartProcess(request2);
+            camundaProcessJsonSchemaDocumentService.newDocumentAndStartProcess(request2);
 
-        final List<TaskInstanceWithIdentityLink> processInstanceTasks = camundaTaskService.getProcessInstanceTasks(
-            newDocumentAndStartProcessResult.resultingProcessInstanceId().orElseThrow().toString(),
-            newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id().toString()
-        );
+            final List<TaskInstanceWithIdentityLink> processInstanceTasks = camundaTaskService.getProcessInstanceTasks(
+                newDocumentAndStartProcessResult.resultingProcessInstanceId().orElseThrow().toString(),
+                newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id().toString()
+            );
 
-        final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstancesBeforeComplete =
-            AuthorizationContext.runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
-                .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id()));
+            final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstancesBeforeComplete =
+                runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
+                    .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id()));
 
-        assertThat(processDocumentInstancesBeforeComplete).hasSize(1);
-        assertThat(processDocumentInstancesBeforeComplete.get(0).isActive()).isEqualTo(true);
+            assertThat(processDocumentInstancesBeforeComplete).hasSize(1);
+            assertThat(processDocumentInstancesBeforeComplete.get(0).isActive()).isEqualTo(true);
 
-        final Document document = newDocumentAndStartProcessResult.resultingDocument().orElseThrow();
+            final Document document = newDocumentAndStartProcessResult.resultingDocument().orElseThrow();
 
-        final JsonNode jsonDataUpdate = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
-        var modifyRequest = new ModifyDocumentAndCompleteTaskRequest(
-            new ModifyDocumentRequest(
-                document.id().toString(),
-                jsonDataUpdate,
-                document.version().toString()
-            ),
-            processInstanceTasks.iterator().next().getTaskDto().getId()
-        );
+            final JsonNode jsonDataUpdate = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
+            var modifyRequest = new ModifyDocumentAndCompleteTaskRequest(
+                new ModifyDocumentRequest(
+                    document.id().toString(),
+                    jsonDataUpdate,
+                    document.version().toString()
+                ),
+                processInstanceTasks.iterator().next().getTaskDto().getId()
+            );
 
-        final ModifyDocumentAndCompleteTaskResult modifyDocumentAndCompleteTaskResult = camundaProcessJsonSchemaDocumentService
-            .modifyDocumentAndCompleteTask(modifyRequest);
+            final ModifyDocumentAndCompleteTaskResult modifyDocumentAndCompleteTaskResult = camundaProcessJsonSchemaDocumentService
+                .modifyDocumentAndCompleteTask(modifyRequest);
 
-        assertThat(modifyDocumentAndCompleteTaskResult.errors()).isEmpty();
-        final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstances =
-            AuthorizationContext.runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
-                .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id()));
-        assertThat(processDocumentInstances).hasSize(2);
-        assertThat(processDocumentInstances.get(0).isActive()).isEqualTo(false);
-        assertThat(processDocumentInstances.get(1).isActive()).isEqualTo(false);
+            assertThat(modifyDocumentAndCompleteTaskResult.errors()).isEmpty();
+            final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstances =
+                runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
+                    .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id()));
+            assertThat(processDocumentInstances).hasSize(2);
+            assertThat(processDocumentInstances.get(0).isActive()).isEqualTo(false);
+            assertThat(processDocumentInstances.get(1).isActive()).isEqualTo(false);
+            return null;
+        });
     }
 
     @Test
@@ -172,50 +181,54 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
     public void shouldStartMainProcessAndNotAssociateSubProcess() throws JsonProcessingException {
         String processDocumentDefinitionKey = "embedded-subprocess-example";
 
-        final var processDocumentRequest = new ProcessDocumentDefinitionRequest(
-            processDocumentDefinitionKey,
-            DOCUMENT_DEFINITION_NAME,
-            true,
-            true
-        );
-        camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(processDocumentRequest);
+        runWithoutAuthorization(() -> {
 
-        final JsonNode jsonContent = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
-        var newDocumentRequest = new NewDocumentRequest(
-            DOCUMENT_DEFINITION_NAME,
-            jsonContent
-        );
-        var request = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest);
+            final var processDocumentRequest = new ProcessDocumentDefinitionRequest(
+                processDocumentDefinitionKey,
+                DOCUMENT_DEFINITION_NAME,
+                true,
+                true
+            );
+            camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(processDocumentRequest);
 
-        final NewDocumentAndStartProcessResult newDocumentAndStartProcessResult = camundaProcessJsonSchemaDocumentService
-            .newDocumentAndStartProcess(request);
+            final JsonNode jsonContent = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
+            var newDocumentRequest = new NewDocumentRequest(
+                DOCUMENT_DEFINITION_NAME,
+                jsonContent
+            );
+            var request = new NewDocumentAndStartProcessRequest(processDocumentDefinitionKey, newDocumentRequest);
+
+            final NewDocumentAndStartProcessResult newDocumentAndStartProcessResult = camundaProcessJsonSchemaDocumentService
+                .newDocumentAndStartProcess(request);
 
 
-        final List<TaskInstanceWithIdentityLink> processInstanceTasks = camundaTaskService.getProcessInstanceTasks(
-            newDocumentAndStartProcessResult.resultingProcessInstanceId().orElseThrow().toString(),
-            newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id().toString()
-        );
+            final List<TaskInstanceWithIdentityLink> processInstanceTasks = camundaTaskService.getProcessInstanceTasks(
+                newDocumentAndStartProcessResult.resultingProcessInstanceId().orElseThrow().toString(),
+                newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id().toString()
+            );
 
-        final Document document = newDocumentAndStartProcessResult.resultingDocument().orElseThrow();
+            final Document document = newDocumentAndStartProcessResult.resultingDocument().orElseThrow();
 
-        final JsonNode jsonDataUpdate = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
-        var modifyRequest = new ModifyDocumentAndCompleteTaskRequest(
-            new ModifyDocumentRequest(
-                document.id().toString(),
-                jsonDataUpdate,
-                document.version().toString()
-            ),
-            processInstanceTasks.iterator().next().getTaskDto().getId()
-        );
+            final JsonNode jsonDataUpdate = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
+            var modifyRequest = new ModifyDocumentAndCompleteTaskRequest(
+                new ModifyDocumentRequest(
+                    document.id().toString(),
+                    jsonDataUpdate,
+                    document.version().toString()
+                ),
+                processInstanceTasks.iterator().next().getTaskDto().getId()
+            );
 
-        final ModifyDocumentAndCompleteTaskResult modifyDocumentAndCompleteTaskResult = camundaProcessJsonSchemaDocumentService
-            .modifyDocumentAndCompleteTask(modifyRequest);
+            final ModifyDocumentAndCompleteTaskResult modifyDocumentAndCompleteTaskResult = camundaProcessJsonSchemaDocumentService
+                .modifyDocumentAndCompleteTask(modifyRequest);
 
-        assertThat(modifyDocumentAndCompleteTaskResult.errors()).isEmpty();
-        final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstances =
-            AuthorizationContext.runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
-            .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id()));
-        assertThat(processDocumentInstances).hasSize(1);
+            assertThat(modifyDocumentAndCompleteTaskResult.errors()).isEmpty();
+            final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstances =
+                runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
+                .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id()));
+            assertThat(processDocumentInstances).hasSize(1);
+            return null;
+        });
     }
 
 }

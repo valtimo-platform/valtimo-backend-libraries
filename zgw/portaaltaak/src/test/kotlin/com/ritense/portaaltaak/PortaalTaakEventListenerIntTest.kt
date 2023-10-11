@@ -19,6 +19,7 @@ package com.ritense.portaaltaak
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.BaseIntegrationTest
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
@@ -395,14 +396,17 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     }
 
     private fun startPortaalTaakProcess(content: String): CamundaTask {
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().readTree(content))
-        val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
-        val processResult = processDocumentService.newDocumentAndStartProcess(request)
-        documentId = processResult.resultingDocument().get().id().id
-        return taskService.findTask(
-            byActive()
-                .and(byProcessInstanceId(processResult.resultingProcessInstanceId().get().toString()))
-        )
+        return runWithoutAuthorization {
+            val newDocumentRequest =
+                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().readTree(content))
+            val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
+            val processResult = processDocumentService.newDocumentAndStartProcess(request)
+            documentId = processResult.resultingDocument().get().id().id
+            taskService.findTask(
+                byActive()
+                    .and(byProcessInstanceId(processResult.resultingProcessInstanceId().get().toString()))
+            )
+        }
     }
 
     private fun createProcessLink(propertiesConfig: String) {

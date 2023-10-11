@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")
@@ -48,8 +49,9 @@ class CamundaProcessJsonSchemaDocumentServiceIntTest extends BaseIntegrationTest
             PROCESS_DEFINITION_KEY,
             new NewDocumentRequest(DOCUMENT_DEFINITION_NAME, Mapper.INSTANCE.get().readTree("{}"))
         );
-
-        var result = camundaProcessJsonSchemaDocumentService.newDocumentAndStartProcess(startRequest);
+        var result = runWithoutAuthorization(() ->
+            camundaProcessJsonSchemaDocumentService.newDocumentAndStartProcess(startRequest)
+        );
 
         var optAssociation = AuthorizationContext.runWithoutAuthorization(() ->
             camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinition(new CamundaProcessDefinitionKey(PROCESS_DEFINITION_KEY))
