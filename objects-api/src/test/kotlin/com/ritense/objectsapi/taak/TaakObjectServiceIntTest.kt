@@ -17,6 +17,7 @@
 package com.ritense.objectsapi.taak
 
 import com.jayway.jsonpath.JsonPath
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
 import com.ritense.document.domain.impl.Mapper
@@ -89,9 +90,11 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
     @Test
     fun `should create task object`() {
         // given
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(PROCESS_DEFINITION_KEY, DOCUMENT_DEFINITION_KEY, true, true)
-        )
+        runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                ProcessDocumentDefinitionRequest(PROCESS_DEFINITION_KEY, DOCUMENT_DEFINITION_KEY, true, true)
+            )
+        }
         setupOpenZaakConnector()
         zaakTypeLinkService.createZaakTypeLink(
             CreateZaakTypeLinkRequest(
@@ -106,7 +109,9 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
             .withProcessVars(mapOf("age" to 38))
 
         // when
-        processDocumentService.newDocumentAndStartProcess(request)
+        runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(request)
+        }
 
         // then
         val createRequest = findRequest(HttpMethod.POST, "/api/v2/objects")

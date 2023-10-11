@@ -22,6 +22,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath
 import com.ritense.BaseIntegrationTest
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.objectenapi.ObjectenApiAuthentication
@@ -199,7 +200,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
                 "lastname": "test"
             }
         """.trimIndent())
-        assertNotNull(taskService.findTaskById(task.id))
+        assertNotNull( runWithoutAuthorization { taskService.findTaskById(task.id) })
 
         val portaaltaakPlugin = spy(pluginService.createInstance(portaalTaakPluginDefinition.id) as PortaaltaakPlugin)
         val delegateExecution = DelegateExecutionFake()
@@ -288,10 +289,19 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     }
 
     private fun startPortaalTaakProcess(content: String): CamundaTask {
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().readTree(content))
-        val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
-        val processResult = procesDocumentService.newDocumentAndStartProcess(request)
-        return taskService.findTask(byActive().and(byProcessInstanceId(processResult.resultingProcessInstanceId().get().toString())))
+        return runWithoutAuthorization {
+            val newDocumentRequest =
+                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().readTree(content))
+            val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
+            val processResult = procesDocumentService.newDocumentAndStartProcess(request)
+            taskService.findTask(
+                byActive().and(
+                    byProcessInstanceId(
+                        processResult.resultingProcessInstanceId().get().toString()
+                    )
+                )
+            )
+        }
     }
 
     private fun createObjectManagement(
