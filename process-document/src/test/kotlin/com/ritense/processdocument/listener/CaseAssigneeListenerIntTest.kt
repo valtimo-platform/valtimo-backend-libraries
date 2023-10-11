@@ -18,6 +18,7 @@ package com.ritense.processdocument.listener
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.document.domain.Document
@@ -95,19 +96,23 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
             }
             """.trimIndent()
 
-        testDocument = documentService.createDocument(
-            NewDocumentRequest(
-                "house", objectMapper.readTree(documentJson)
-            )
-        ).resultingDocument().orElseThrow()
+        testDocument = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    "house", objectMapper.readTree(documentJson)
+                )
+            ).resultingDocument().orElseThrow()
+        }
 
-        caseDefinitionService.updateCaseSettings(
-            caseDefinitionName = "house",
-            CaseSettingsDto(
-                canHaveAssignee = true,
-                autoAssignTasks = true
+        runWithoutAuthorization {
+            caseDefinitionService.updateCaseSettings(
+                caseDefinitionName = "house",
+                CaseSettingsDto(
+                    canHaveAssignee = true,
+                    autoAssignTasks = true
+                )
             )
-        )
+        }
     }
 
     @Test
@@ -116,12 +121,12 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         whenever(userManagementService.findById(any())).thenReturn(testUser)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
-        documentService.assignUserToDocument(testDocument.id().id, testUser.id)
+        runWithoutAuthorization { documentService.assignUserToDocument(testDocument.id().id, testUser.id) }
         val processInstance = runtimeService.startProcessInstanceByKey(
             "parent-process",
             testDocument.id().toString()
         )
-        AuthorizationContext.runWithoutAuthorization {
+        runWithoutAuthorization {
             processDocumentAssociationService.createProcessDocumentInstance(
                 processInstance.id,
                 testDocument.id().id,
@@ -129,7 +134,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
             )
         }
 
-        val task = AuthorizationContext.runWithoutAuthorization {
+        val task = runWithoutAuthorization {
             taskService.findTask(byName("child process user task"))
         }
         assertEquals(task.assignee, testUser.email)
@@ -137,32 +142,31 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should do nothing when and task is created and autoAssignTasks is off`() {
-
-        caseDefinitionService.updateCaseSettings(
-            caseDefinitionName = "house",
-            CaseSettingsDto(
-                canHaveAssignee = true,
-                autoAssignTasks = false
+        runWithoutAuthorization {
+            caseDefinitionService.updateCaseSettings(
+                caseDefinitionName = "house",
+                CaseSettingsDto(
+                    canHaveAssignee = true,
+                    autoAssignTasks = false
+                )
             )
-        )
+        }
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
-        documentService.assignUserToDocument(testDocument.id().id, testUser.id)
-        val processInstance = runtimeService.startProcessInstanceByKey(
-            "parent-process",
-            testDocument.id().toString()
-        )
-        AuthorizationContext.runWithoutAuthorization {
+        val task = runWithoutAuthorization {
+            documentService.assignUserToDocument(testDocument.id().id, testUser.id)
+            val processInstance = runtimeService.startProcessInstanceByKey(
+                "parent-process",
+                testDocument.id().toString()
+            )
             processDocumentAssociationService.createProcessDocumentInstance(
                 processInstance.id,
                 testDocument.id().id,
                 "parent process"
             )
-        }
 
-        val task = AuthorizationContext.runWithoutAuthorization {
             taskService.findTask(byName("child process user task"))
         }
 
@@ -175,26 +179,24 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         whenever(userManagementService.findById(any())).thenReturn(testUser, testUser2)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
-        documentService.assignUserToDocument(testDocument.id().id, testUser.id)
-        val processInstance = runtimeService.startProcessInstanceByKey(
-            "parent-process",
-            testDocument.id().toString()
-        )
-        AuthorizationContext.runWithoutAuthorization {
+        val updatedTask = runWithoutAuthorization {
+            documentService.assignUserToDocument(testDocument.id().id, testUser.id)
+            val processInstance = runtimeService.startProcessInstanceByKey(
+                "parent-process",
+                testDocument.id().toString()
+            )
+
             processDocumentAssociationService.createProcessDocumentInstance(
                 processInstance.id,
                 testDocument.id().id,
                 "parent process"
             )
-        }
 
-        documentService.assignUserToDocument(testDocument.id().id, testUser2.id)
+            documentService.assignUserToDocument(testDocument.id().id, testUser2.id)
 
-        val updatedTask = AuthorizationContext.runWithoutAuthorization {
             taskService.findTask(byName("child process user task"))
         }
         assertEquals(updatedTask.assignee, testUser2.email)
-
     }
 
     @Test
@@ -204,22 +206,21 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         whenever(userManagementService.findById(any())).thenReturn(testUser)
         whenever(userManagementService.currentUser).thenReturn(testUser)
 
-        documentService.assignUserToDocument(testDocument.id().id, testUser.id)
-        val processInstance = runtimeService.startProcessInstanceByKey(
-            "parent-process",
-            testDocument.id().toString()
-        )
-        AuthorizationContext.runWithoutAuthorization {
+        val task = runWithoutAuthorization {
+            documentService.assignUserToDocument(testDocument.id().id, testUser.id)
+            val processInstance = runtimeService.startProcessInstanceByKey(
+                "parent-process",
+                testDocument.id().toString()
+            )
+
             processDocumentAssociationService.createProcessDocumentInstance(
                 processInstance.id,
                 testDocument.id().id,
                 "parent process"
             )
-        }
 
-        documentService.unassignUserFromDocument(testDocument.id().id)
+            documentService.unassignUserFromDocument(testDocument.id().id)
 
-        val task = AuthorizationContext.runWithoutAuthorization {
             taskService.findTask(byName("child process user task"))
         }
         assertNull(task.assignee)

@@ -17,6 +17,7 @@
 package com.ritense.objectsapi.productaanvraag
 
 import com.jayway.jsonpath.JsonPath
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.connector.domain.ConnectorInstanceId
@@ -698,32 +699,36 @@ class ProductAanvraagIntTest : BaseIntegrationTest() {
     }
 
     fun prepareDocumentDefinitionSettings() {
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(
-                "test",
-                "testschema",
-                true
+        runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                ProcessDocumentDefinitionRequest(
+                    "test",
+                    "testschema",
+                    true
+                )
             )
-        )
+        }
     }
 
     fun prepareServiceTaskDocumentDefinitionSettings() {
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(
-                "test-service-task",
-                "testschema",
-                true
+        runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                ProcessDocumentDefinitionRequest(
+                    "test-service-task",
+                    "testschema",
+                    true
+                )
             )
-        )
-        zaakTypeLinkService.assignServiceTaskHandler(
-            zaakTypeLinkId,
-            ServiceTaskHandlerRequest(
-                "test-service-task",
-                "change-status",
-                Operation.SET_STATUS,
-                URI("http://example.com/catalogi/api/v1/statustypen/f8c938c1-e2ea-4cad-8025-f68248ad26ac")
+            zaakTypeLinkService.assignServiceTaskHandler(
+                zaakTypeLinkId,
+                ServiceTaskHandlerRequest(
+                    "test-service-task",
+                    "change-status",
+                    Operation.SET_STATUS,
+                    URI("http://example.com/catalogi/api/v1/statustypen/f8c938c1-e2ea-4cad-8025-f68248ad26ac")
+                )
             )
-        )
+        }
     }
 
     fun mockResponse(body: String): MockResponse {

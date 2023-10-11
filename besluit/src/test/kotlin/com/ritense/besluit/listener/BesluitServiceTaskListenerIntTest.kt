@@ -16,6 +16,7 @@
 
 package com.ritense.besluit.listener
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.besluit.BaseIntegrationTest
 import com.ritense.besluit.domain.request.BesluitInformatieobjectRelatieRequest
 import com.ritense.besluit.domain.request.CreateBesluitRequest
@@ -109,23 +110,27 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
             "testschema",
             Mapper.get().readTree(content)
         )
-        return processDocumentService.newDocumentAndStartProcess(
-            NewDocumentAndStartProcessRequest(
-                "CreateBesluitProcess",
-                newDocumentRequest
-            )
-        ).resultingDocument().get()
+        return runWithoutAuthorization {
+            processDocumentService.newDocumentAndStartProcess(
+                NewDocumentAndStartProcessRequest(
+                    "CreateBesluitProcess",
+                    newDocumentRequest
+                )
+            ).resultingDocument().get()
+        }
     }
 
     private fun createProcessDocumentDefinition() {
-        processDocumentAssociationService.createProcessDocumentDefinition(
-            ProcessDocumentDefinitionRequest(
-                "CreateBesluitProcess",
-                "testschema",
-                true,
-                true
+        runWithoutAuthorization {
+            processDocumentAssociationService.createProcessDocumentDefinition(
+                ProcessDocumentDefinitionRequest(
+                    "CreateBesluitProcess",
+                    "testschema",
+                    true,
+                    true
+                )
             )
-        )
+        }
     }
 
     private fun assignServiceTaskHandlerToCreateBesluit(zaakTypeLinkId: ZaakTypeLinkId): CreateServiceTaskHandlerResult {

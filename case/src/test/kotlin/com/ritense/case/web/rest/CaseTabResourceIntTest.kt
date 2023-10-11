@@ -17,6 +17,7 @@
 package com.ritense.case.web.rest
 
 import com.ritense.case.BaseIntegrationTest
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -59,5 +60,20 @@ class CaseTabResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$[1].key").value("custom-tab"))
             .andExpect(MockMvcResultMatchers.jsonPath("$[1].type").value("custom"))
             .andExpect(MockMvcResultMatchers.jsonPath("$[1].contentKey").value("some-custom-component"))
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = [ADMIN])
+    fun `should get case tabs filtered for role`() {
+        val caseDefinitionName = "some-case-type"
+        mockMvc.perform(
+            get("/api/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        ).andExpect(status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Custom tab"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].key").value("custom-tab"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].type").value("custom"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].contentKey").value("some-custom-component"))
     }
 }

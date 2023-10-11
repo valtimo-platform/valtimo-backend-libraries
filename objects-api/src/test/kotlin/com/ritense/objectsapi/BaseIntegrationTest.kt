@@ -66,10 +66,6 @@ abstract class BaseIntegrationTest {
     @Qualifier("openNotificatieConnector")
     lateinit var openNotificatieConnector: Connector
 
-    // TODO: remove authorization service mocking when call to run without permissions is added
-    @MockBean
-    lateinit var authorizationService: AuthorizationService
-
     fun setupObjectApiConnector(url: String) {
         val properties = ObjectsApiProperties(
             ServerAuthSpecification(url, UUID.randomUUID().toString()),

@@ -58,8 +58,4 @@ class BaseIntegrationTest {
 
     @SpyBean
     lateinit var zaakDocumentService: ZaakDocumentService
-
-    // TODO: remove authorization service mocking when call to run without permissions is added
-    @MockBean
-    lateinit var authorizationService: AuthorizationService
 }

@@ -1,0 +1,23 @@
+{
+    "changesetId": "case-tab-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.case.domain.CaseTab",
+            "action": "view",
+            "roleKey": "ROLE_USER"
+        },
+        {
+            "resourceType": "com.ritense.case.domain.CaseTab",
+            "action": "view",
+            "roleKey": "ROLE_ADMIN",
+            "conditions": [
+                {
+                    "type": "field",
+                    "field": "id.key",
+                    "operator": "==",
+                    "value": "custom-tab"
+                }
+            ]
+        }
+    ]
+}
