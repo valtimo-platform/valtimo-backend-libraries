@@ -105,7 +105,14 @@ class CaseTabService(
         caseTabRepository.findOne(byCaseDefinitionNameAndTabKey(caseDefinitionName, tabKey))
             .ifPresent {
                 caseTabRepository.delete(it)
+                reorderTabs(caseDefinitionName)
             }
+    }
+
+    private fun reorderTabs(caseDefinitionName: String) {
+        val caseTabs = caseTabRepository.findAll(byCaseDefinitionName(caseDefinitionName), Sort.by(TAB_ORDER))
+            .mapIndexed { index, caseTab -> caseTab.copy(tabOrder = index)  }
+        caseTabRepository.saveAll(caseTabs)
     }
 
     private fun denyAuthorization() {
