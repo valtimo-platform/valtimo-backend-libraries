@@ -85,7 +85,10 @@ bootRun {
             f.readLines().each() {
                 if (!it.isEmpty() && !it.startsWith("#")) {
                     def (key, value) = it.tokenize('=')
-                    environment key, value
+                    // check if notNullOrBlank for key and value
+                    if (key?.trim() && value?.trim()) {
+                        environment key.trim(), value.trim()
+                    }
                 }
             }
         }
