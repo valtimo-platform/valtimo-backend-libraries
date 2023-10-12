@@ -20,7 +20,7 @@ import com.ritense.case.domain.CaseTabType
 
 data class CaseTabUpdateOrderDto(
     val key: String,
-    val name: String,
+    val name: String?,
     val type: CaseTabType,
     val contentKey: String,
 )

@@ -85,11 +85,11 @@ open class CaseTabDeploymentService(
         private const val KEY = "case-tab"
 
         private val STANDARD_CASE_TABS = listOf(
-            CaseTabDto("summary", "Summary", CaseTabType.STANDARD, "summary"),
-            CaseTabDto("progress", "Progress", CaseTabType.STANDARD, "progress"),
-            CaseTabDto("audit", "Audit", CaseTabType.STANDARD, "audit"),
-            CaseTabDto("documents", "Documents", CaseTabType.STANDARD, "documents"),
-            CaseTabDto("notes", "Notes", CaseTabType.STANDARD, "notes")
+            CaseTabDto("summary", null, CaseTabType.STANDARD, "summary"),
+            CaseTabDto("progress", null, CaseTabType.STANDARD, "progress"),
+            CaseTabDto("audit", null, CaseTabType.STANDARD, "audit"),
+            CaseTabDto("documents", null, CaseTabType.STANDARD, "documents"),
+            CaseTabDto("notes", null, CaseTabType.STANDARD, "notes")
         )
     }
 }

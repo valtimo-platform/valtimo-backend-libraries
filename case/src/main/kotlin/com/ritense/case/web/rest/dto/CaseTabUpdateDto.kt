@@ -19,7 +19,7 @@ package com.ritense.case.web.rest.dto
 import com.ritense.case.domain.CaseTabType
 
 data class CaseTabUpdateDto(
-    val name: String,
+    val name: String?,
     val type: CaseTabType,
     val contentKey: String,
 )
