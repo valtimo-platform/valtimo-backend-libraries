@@ -118,6 +118,7 @@ public class TaskResource extends AbstractTaskResource {
         return ResponseEntity.ok().build();
     }
 
+    @Deprecated(since = "11.1.0", forRemoval = true)
     @GetMapping("/v1/task/{taskId}/comments")
     public ResponseEntity<List<Comment>> getProcessInstanceComments(@PathVariable String taskId) {
         final CamundaTask task = camundaTaskService.findTaskById(taskId);

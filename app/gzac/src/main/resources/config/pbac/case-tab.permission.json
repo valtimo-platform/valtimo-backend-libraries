@@ -1,0 +1,10 @@
+{
+    "changesetId": "case-tab-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.case.domain.CaseTab",
+            "action": "view",
+            "roleKey": "ROLE_USER"
+        }
+    ]
+}
