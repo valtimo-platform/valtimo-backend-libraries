@@ -94,12 +94,27 @@
         },
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "view",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
             "action": "view_list",
             "roleKey": "ROLE_ADMIN"
         },
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
-            "action": "view",
+            "action": "create",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "modify",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "delete",
             "roleKey": "ROLE_ADMIN"
         },
         {
@@ -116,24 +131,6 @@
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
             "action": "assignable",
             "roleKey": "ROLE_ADMIN"
-        },
-        {
-            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
-            "action": "create",
-            "roleKey": "ROLE_ADMIN"
-        },
-        {
-            "resourceType": "com.ritense.document.domain.impl.searchfield.SearchField",
-            "action": "view",
-            "roleKey": "ROLE_ADMIN",
-            "conditions": [
-                {
-                    "type": "field",
-                    "field": "id.documentDefinitionName",
-                    "operator": "==",
-                    "value": "leningen"
-                }
-            ]
         }
     ]
 }
