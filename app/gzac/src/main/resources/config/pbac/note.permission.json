@@ -8,54 +8,23 @@
         },
         {
             "resourceType": "com.ritense.note.domain.Note",
+            "action": "create",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.note.domain.Note",
+            "action": "modify",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.note.domain.Note",
+            "action": "delete",
+            "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.note.domain.Note",
             "action": "view_list",
-            "roleKey": "ROLE_USER",
-            "conditions": [
-                {
-                    "type": "field",
-                    "field": "createdByUserId",
-                    "operator": "==",
-                    "value": "${currentUserId}"
-                }
-            ]
-        },
-        {
-            "resourceType": "com.ritense.note.domain.Note",
-            "action": "view",
-            "roleKey": "ROLE_USER",
-            "conditions": [
-                {
-                    "type": "field",
-                    "field": "createdByUserId",
-                    "operator": "==",
-                    "value": "${currentUserId}"
-                }
-            ]
-        },
-        {
-            "resourceType": "com.ritense.note.domain.Note",
-            "action": "view",
-            "roleKey": "ROLE_USER",
-            "conditions": [
-                {
-                    "type": "container",
-                    "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
-                    "conditions": [
-                        {
-                            "type": "field",
-                            "field": "documentDefinitionId.name",
-                            "operator": "==",
-                            "value": "leningen"
-                        },
-                        {
-                            "type": "field",
-                            "field": "assigneeId",
-                            "operator": "==",
-                            "value": "${currentUserId}"
-                        }
-                    ]
-                }
-            ]
+            "roleKey": "ROLE_USER"
         },
         {
             "resourceType": "com.ritense.note.domain.Note",
