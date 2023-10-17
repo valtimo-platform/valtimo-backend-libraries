@@ -465,6 +465,7 @@ public class ProcessResource extends AbstractProcessResource {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Deprecated(since = "11.1.0", forRemoval = true)
     @GetMapping("/v1/process/{processInstanceId}/comments")
     public ResponseEntity<List<Comment>> getProcessInstanceComments(@PathVariable String processInstanceId) {
         List<Comment> processInstanceComments = camundaTaskService.getProcessInstanceComments(processInstanceId);
@@ -539,6 +540,7 @@ public class ProcessResource extends AbstractProcessResource {
         return new ResponseEntity<>(BatchDto.fromBatch(migrationBatch), HttpStatus.OK);
     }
 
+    @Deprecated(since = "11.1.0", forRemoval = true)
     @PostMapping("/v1/process/{processInstanceId}/comment")
     public ResponseEntity<Void> createComment(@PathVariable String processInstanceId, @RequestBody CommentDto comment) {
         camundaTaskService.createComment(null, processInstanceId, comment.getText());
