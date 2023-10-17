@@ -75,6 +75,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String PREFILL_KEY = "prefill";
 
     public static final String SOURCE_KEY_POINTER = "/properties/sourceKey";
+    public static final String TARGET_KEY_POINTER = "/properties/targetKey";
 
     public static final Predicate<JsonNode> HAS_PREFILL_ENABLED = objectNode ->
         !objectNode.has(PREFILL_KEY) || objectNode.get(PREFILL_KEY).asBoolean();
@@ -85,17 +86,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                 && objectNode.has(DISABLED_KEY)
                 && objectNode.get(DISABLED_KEY).asBoolean()
         );
-
-
-    public static final Function<JsonNode, Optional<String>> GET_SOURCE_KEY = objectNode -> {
-        JsonNode sourceKeyNode = objectNode.at(SOURCE_KEY_POINTER);
-        return Optional.ofNullable(sourceKeyNode.isTextual() ? sourceKeyNode.textValue() : null);
-    };
-
-    public static final Function<JsonNode, Optional<String>> GET_KEY = objectNode -> {
-        JsonNode keyNode = objectNode.path(PROPERTY_KEY);
-        return Optional.ofNullable(keyNode.isTextual() ? keyNode.textValue() : null);
-    };
 
     @Id
     @Column(name = "id", updatable = false)
@@ -347,7 +337,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     private void fill(ObjectNode field, JsonNode content) {
         assertArgumentNotNull(field, "field is required");
         assertArgumentNotNull(content, "content is required");
-        if(GET_SOURCE_KEY.apply(field).isEmpty()) { // Only prefill when the properties.sourceKey is not set
+        if (getSourceKey(field).isEmpty()) { // Only prefill when the properties.sourceKey is not set
             getContentItem(field)
                 .flatMap(
                     contentItem -> getValueBy(content, contentItem.getJsonPointer())
@@ -478,7 +468,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     }
 
     private String getFieldKey(JsonNode fieldNode) {
-        return GET_KEY.apply(fieldNode).orElseThrow();
+        return getKey(fieldNode).orElseThrow();
     }
 
     private static Optional<JsonNode> getValueBy(JsonNode rootNode, JsonPointer jsonPointer) {
@@ -538,6 +528,21 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         return jsonNode.has("type")
                 && jsonNode.get("type").textValue().equalsIgnoreCase("textfield")
                 && jsonNode.has(PROPERTY_KEY);
+    }
+
+    public static Optional<String> getSourceKey(JsonNode jsonNode) {
+        JsonNode sourceKeyNode = jsonNode.at(SOURCE_KEY_POINTER);
+        return Optional.ofNullable(sourceKeyNode.isTextual() ? sourceKeyNode.textValue() : null);
+    }
+
+    public static Optional<String> getTargetKey(JsonNode jsonNode) {
+        JsonNode sourceKeyNode = jsonNode.at(TARGET_KEY_POINTER);
+        return Optional.ofNullable(sourceKeyNode.isTextual() ? sourceKeyNode.textValue() : null);
+    }
+
+    public static Optional<String> getKey(JsonNode jsonNode) {
+        JsonNode keyNode = jsonNode.path(PROPERTY_KEY);
+        return Optional.ofNullable(keyNode.isTextual() ? keyNode.textValue() : null);
     }
 
     @Override

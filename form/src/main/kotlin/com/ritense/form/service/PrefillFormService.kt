@@ -124,16 +124,16 @@ class PrefillFormService(
         val inputSourceKeyMap = formDefinition.inputFields
             .filter { FormIoFormDefinition.HAS_PREFILL_ENABLED.test(it) }
             .mapNotNull {
-                val inputKey = FormIoFormDefinition.GET_KEY.apply(it)
-                val sourceKey = FormIoFormDefinition.GET_SOURCE_KEY.apply(it)
-                if(inputKey.isPresent && sourceKey.isPresent) {
+                val inputKey = FormIoFormDefinition.getKey(it)
+                val sourceKey = FormIoFormDefinition.getSourceKey(it)
+                if (inputKey.isPresent && sourceKey.isPresent) {
                     Pair(inputKey.get(), sourceKey.get())
                 } else {
                     null
                 }
             }
             .toMap()
-            .filter {valueResolverService.supportsValue( it.value ) }
+            .filter { valueResolverService.supportsValue(it.value) }
 
         // Resolve sourceKeys into a Map<{sourceKey}, {dataValue}>
         val valueMap = runWithoutAuthorization {
