@@ -385,6 +385,9 @@ public class CamundaTaskService {
         return camundaIdentityLinkRepository.findAll(byTaskId(task.getId()));
     }
 
+    /**
+     * @deprecated Task comments will be removed in the future.
+     */
     @Deprecated(since = "11.1.0", forRemoval = true)
     @Transactional(readOnly = true)
     public List<Comment> getTaskComments(String taskId) {
@@ -393,6 +396,9 @@ public class CamundaTaskService {
         return taskService.getTaskComments(task.getId());
     }
 
+    /**
+     * @deprecated Task comments will be removed in the future.
+     */
     @Deprecated(since = "11.1.0", forRemoval = true)
     @Transactional(readOnly = true)
     public List<Comment> getProcessInstanceComments(String processInstanceId) {
@@ -406,6 +412,9 @@ public class CamundaTaskService {
         return comments;
     }
 
+    /**
+     * @deprecated Task comments will be removed in the future.
+     */
     @Deprecated(since = "11.1.0", forRemoval = true)
     @Transactional
     public void createComment(@Nullable String taskId, @Nullable String processInstanceId, String message) {

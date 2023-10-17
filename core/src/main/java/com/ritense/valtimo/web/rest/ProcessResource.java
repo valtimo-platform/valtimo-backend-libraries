@@ -465,6 +465,9 @@ public class ProcessResource extends AbstractProcessResource {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * @deprecated Task comments will be removed in the future.
+     */
     @Deprecated(since = "11.1.0", forRemoval = true)
     @GetMapping("/v1/process/{processInstanceId}/comments")
     public ResponseEntity<List<Comment>> getProcessInstanceComments(@PathVariable String processInstanceId) {
@@ -540,6 +543,9 @@ public class ProcessResource extends AbstractProcessResource {
         return new ResponseEntity<>(BatchDto.fromBatch(migrationBatch), HttpStatus.OK);
     }
 
+    /**
+     * @deprecated Task comments will be removed in the future.
+     */
     @Deprecated(since = "11.1.0", forRemoval = true)
     @PostMapping("/v1/process/{processInstanceId}/comment")
     public ResponseEntity<Void> createComment(@PathVariable String processInstanceId, @RequestBody CommentDto comment) {
