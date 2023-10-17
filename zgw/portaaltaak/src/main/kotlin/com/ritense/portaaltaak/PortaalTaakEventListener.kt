@@ -20,8 +20,10 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.MissingNode
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
@@ -35,6 +37,7 @@ import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
@@ -135,15 +138,18 @@ open class PortaalTaakEventListener(
      * @return mapOf(doc:/streetName to "Funenpark")
      */
     private fun getResolvedValues(receiveData: List<DataBindingConfig>, data: JsonNode): Map<String, Any> {
-        return receiveData.associateBy({ it.key }, { getValue(data, it.value) })
+        return receiveData
+            .map { Pair(it.key, getValue(data, it.value)) }
+            .filter { it.second !is MissingNode }
+            .associate { it.first to it.second!! }
     }
 
-    private fun getValue(data: JsonNode, path: String): Any {
+    private fun getValue(data: JsonNode, path: String): Any? {
         val valueNode = data.at(JsonPointer.valueOf(path))
         if (valueNode.isMissingNode) {
-            throw RuntimeException("Failed to find path '$path' in data: \n${data.toPrettyString()}")
+            valueNode
         }
-        return objectMapper.treeToValue(valueNode, Object::class.java)
+        return Mapper.INSTANCE.get().treeToValue<Any?>(valueNode)
     }
 
     private fun handleTaakObjectData(

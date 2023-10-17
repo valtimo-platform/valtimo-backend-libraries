@@ -18,6 +18,8 @@ package com.ritense.objectsapi.taak
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.node.MissingNode
+import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile
@@ -167,18 +169,17 @@ class TaakObjectListener(
             .camundaProperties
             .filter { it.camundaName != null && it.camundaValue != null }
             .filter { it.camundaName.startsWith(prefix = "taskResult:", ignoreCase = true) }
-            .associateBy(
-                { it.camundaName.substringAfter(delimiter = ":") },
-                { getValue(data, it.camundaValue, it.camundaName, task) }
-            )
+            .map { Pair(it.camundaName.substringAfter(delimiter = ":"), getValue(data, it.camundaValue)) }
+            .filter { it.second !is MissingNode }
+            .associate { it.first to it.second!! }
     }
 
-    private fun getValue(data: JsonNode, path: String, camundaName: String, task: CamundaTask): Any {
+    private fun getValue(data: JsonNode, path: String): Any? {
         val valueNode = data.at(JsonPointer.valueOf(path))
         if (valueNode.isMissingNode) {
-            throw RuntimeException("Failed to do '$camundaName' for task '${task.taskDefinitionKey}'. Missing data on path '$path'")
+            valueNode
         }
-        return Mapper.INSTANCE.get().treeToValue(valueNode, Object::class.java)
+        return Mapper.INSTANCE.get().treeToValue<Any?>(valueNode)
     }
 
     private fun getVariableScope(task: CamundaTask): VariableScope {
