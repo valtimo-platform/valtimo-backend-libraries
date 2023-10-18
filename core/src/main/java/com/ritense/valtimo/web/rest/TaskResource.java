@@ -119,6 +119,7 @@ public class TaskResource extends AbstractTaskResource {
     }
 
     /**
+     * Retrieve a list of comments that are associated to the task and to the process instance.
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
