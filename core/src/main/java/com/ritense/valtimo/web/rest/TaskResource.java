@@ -118,6 +118,9 @@ public class TaskResource extends AbstractTaskResource {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * @deprecated Task comments will be removed in the future.
+     */
     @Deprecated(since = "11.1.0", forRemoval = true)
     @GetMapping("/v1/task/{taskId}/comments")
     public ResponseEntity<List<Comment>> getProcessInstanceComments(@PathVariable String taskId) {
