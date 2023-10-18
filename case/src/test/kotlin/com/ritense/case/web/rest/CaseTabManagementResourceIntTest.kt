@@ -113,6 +113,47 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
     @Test
     @Transactional
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
+    fun `should fail creating tab when tab with key already exists`() {
+        val caseDefinitionName = "some-case-type"
+
+        runWithoutAuthorization {
+            documentDefinitionService.deploy("""
+                {
+                    "${'$'}id": "$caseDefinitionName.schema",
+                    "${'$'}schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """.trimIndent())
+        }
+
+        val dto = CaseTabDto(
+            key = "some-key",
+            name = "Some name",
+            type = CaseTabType.STANDARD,
+            contentKey = "some-content-key"
+        )
+
+        mockMvc.perform(
+            post("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jacksonObjectMapper().writeValueAsString(dto))
+        ).andExpect(status().isOk)
+
+        mockMvc.perform(
+            post("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(jacksonObjectMapper().writeValueAsString(dto))
+        ).andExpect(status().isConflict)
+
+        val createdTab = caseTabRepository.findOne(
+            CaseTabSpecificationHelper.byCaseDefinitionNameAndTabKey(caseDefinitionName, dto.key)
+        ).getOrNull()
+
+        assertThat(createdTab).isNotNull()
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should update tab order`() {
         val caseDefinitionName = "test-case-type"
 

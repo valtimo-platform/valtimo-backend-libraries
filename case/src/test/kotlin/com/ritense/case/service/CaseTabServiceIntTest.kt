@@ -19,6 +19,7 @@ package com.ritense.case.service
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTabType
+import com.ritense.case.service.exception.TabAlreadyExistsException
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.document.service.DocumentDefinitionService
 import org.assertj.core.api.Assertions
@@ -59,6 +60,45 @@ class CaseTabServiceIntTest @Autowired constructor(
                 caseDefinitionName,
                 dto
             )
+        }
+
+        Assertions.assertThat(caseTab).isNotNull
+    }
+
+    @Test
+    @Transactional
+    fun `should fail creating new tab with existing key`() {
+
+        val caseTab = runWithoutAuthorization {
+            val caseDefinitionName = "some-case-type"
+
+            documentDefinitionService.deploy(
+                """
+                {
+                    "${'$'}id": "$caseDefinitionName.schema",
+                    "${'$'}schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """.trimIndent()
+            )
+
+            val dto = CaseTabDto(
+                key = "some-key",
+                name = "Some name",
+                type = CaseTabType.STANDARD,
+                contentKey = "some-content-key"
+            )
+
+            caseTabService.createCaseTab(
+                caseDefinitionName,
+                dto
+            )
+
+            assertThrows<TabAlreadyExistsException> {
+                caseTabService.createCaseTab(
+                    caseDefinitionName,
+                    dto
+                )
+            }
         }
 
         Assertions.assertThat(caseTab).isNotNull
