@@ -14,7 +14,8 @@
             "input": true,
             "defaultValue": "Jane",
             "properties": {
-                "sourceKey": "doc:/person/firstName"
+                "sourceKey": "doc:/person/firstName",
+                "targetKey": "doc:/personalInformation/firstName"
             }
         },
         {
@@ -24,7 +25,8 @@
             "input": true,
             "defaultValue": "Don't",
             "properties": {
-                "sourceKey": "pv:lastName"
+                "sourceKey": "pv:lastName",
+                "targetKey": "pv:userLastName"
             }
         },
         {

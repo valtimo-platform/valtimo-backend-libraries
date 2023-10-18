@@ -67,14 +67,16 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
         val document = runWithoutAuthorization { documentService.get(submissionResult.documentId()) }
         val businessKey = document.id.id.toString()
         val json = jacksonObjectMapper().writeValueAsString(document.content().asJson())
-        assertThat(json, hasJsonPath("""${'$'}.person.firstName""", equalTo("John")))
+        assertThat(json, hasJsonPath("""${'$'}.personalInformation.firstName""", equalTo("John")))
 
         val processExecution = runWithoutAuthorization {
             processService.findExecutionByBusinessKey(businessKey)
         }
-        val lastName = processExecution?.getVariable("lastName")
-
+        val lastName = processExecution?.getVariable("userLastName")
         assertThat(lastName, equalTo("Doe"))
+
+        val dateOfBirth = processExecution?.getVariable("dateOfBirth")
+        assertThat(dateOfBirth, equalTo("1980-02-03"))
 
         val argumentCaptor = argumentCaptor<Map<String, Any>>()
         verify(testValueResolverFactory).handleValues(any(), argumentCaptor.capture())
@@ -87,7 +89,8 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
             {
                 "vrDocFirstName": "John",
                 "vrPvLastName": "Doe",
-                "vrTestGender": "M"
+                "vrTestGender": "M",
+                "vrPvTaskDateOfBirth": "1980-02-03"
             }
         """.trimIndent())
     }
