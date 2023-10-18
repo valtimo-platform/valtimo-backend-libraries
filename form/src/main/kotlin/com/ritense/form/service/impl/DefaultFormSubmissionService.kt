@@ -178,7 +178,7 @@ open class DefaultFormSubmissionService(
     ): CategorizedSubmitValues {
         val categorizedMap = formDefinition.inputFields
             .mapNotNull { field ->
-                getSourceKeyValuePair(field, formData)
+                getTargetKeyValuePair(field, formData)
             }.groupBy { (key, _) ->
                 val prefix = key.substringBefore(ValueResolverServiceImpl.DELIMITER, missingDelimiterValue = "")
                 when (prefix) {
@@ -209,16 +209,20 @@ open class DefaultFormSubmissionService(
         )
     }
 
-    private fun getSourceKeyValuePair(
+    private fun getTargetKeyValuePair(
         field: ObjectNode,
         formData: JsonNode
     ): Pair<String, Any>? {
-        return FormIoFormDefinition.GET_SOURCE_KEY.apply(field).getOrNull()?.let { sourceKey ->
-            FormIoFormDefinition.GET_KEY.apply(field).getOrNull()?.let { inputKey ->
-                convertNodeValue(formData.at("/$inputKey"))
-            }?.let { value ->
-                Pair(sourceKey, value)
-            }
+        return FormIoFormDefinition.getTargetKey(field).getOrNull()?.let { targetKey ->
+            getFormValue(field, formData)?.let { value -> Pair(targetKey, value) }
+        } ?: FormIoFormDefinition.getSourceKey(field).getOrNull()?.let { sourceKey ->
+            getFormValue(field, formData)?.let { value -> Pair(sourceKey, value) }
+        }
+    }
+
+    private fun getFormValue(field: ObjectNode, formData: JsonNode): Any? {
+        return FormIoFormDefinition.getKey(field).getOrNull()?.let { inputKey ->
+            convertNodeValue(formData.at("/$inputKey"))
         }
     }
 
@@ -268,7 +272,8 @@ open class DefaultFormSubmissionService(
         formData: JsonNode
     ): List<FormField> {
         return formDefinition.getDocumentMappedFieldsFiltered(
-            FormIoFormDefinition.NOT_IGNORED.and { t -> FormIoFormDefinition.GET_SOURCE_KEY.apply(t).isEmpty }
+            FormIoFormDefinition.NOT_IGNORED
+                .and { t -> FormIoFormDefinition.getTargetKey(t).isEmpty && FormIoFormDefinition.getSourceKey(t).isEmpty }
         ).mapNotNull { objectNode -> FormField.getFormField(formData, objectNode, applicationEventPublisher) }
     }
 
@@ -303,7 +308,9 @@ open class DefaultFormSubmissionService(
         formData: JsonNode
     ): Map<String, Map<String, JsonNode>> {
         return formDefinition.buildExternalFormFieldsMapFiltered(
-            FormIoFormDefinition.NOT_IGNORED.and { t -> FormIoFormDefinition.GET_SOURCE_KEY.apply(t).isEmpty }
+            FormIoFormDefinition.NOT_IGNORED.and { t ->
+                FormIoFormDefinition.getTargetKey(t).isEmpty && FormIoFormDefinition.getSourceKey(t).isEmpty
+            }
         ).map { entry ->
             entry.key to entry.value.associate {
                 it.name to formData.at(it.jsonPointer)

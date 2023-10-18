@@ -111,7 +111,7 @@ class PrefillFormServiceTest : BaseTest() {
 
         val inputFields = prefilledFormDefinition.inputFields
         dataMap.map { (sourceKey, value) ->
-            val defaultValue = inputFields.first { FormIoFormDefinition.GET_SOURCE_KEY.apply(it).get() == sourceKey }
+            val defaultValue = inputFields.first { FormIoFormDefinition.getSourceKey(it).get() == sourceKey }
                 .path(FormIoFormDefinition.DEFAULT_VALUE_FIELD)
                 .textValue()
 
