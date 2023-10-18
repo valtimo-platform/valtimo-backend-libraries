@@ -16,6 +16,7 @@
 
 package com.ritense.portaaltaak
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
@@ -35,6 +36,7 @@ import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
+import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.junit.jupiter.api.BeforeEach
@@ -50,6 +52,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 
@@ -62,6 +65,7 @@ internal class PortaaltaakPluginTest {
     lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
     lateinit var portaaltaakPlugin: PortaaltaakPlugin
     lateinit var zakenApiPlugin: ZakenApiPlugin
+    lateinit var objectMapper: ObjectMapper
     val delegateTask = mock<DelegateTask>()
     val bsn = "688223436"
     val kvk = "12345678"
@@ -75,6 +79,8 @@ internal class PortaaltaakPluginTest {
         processDocumentService = mock()
         zaakInstanceLinkService = mock()
         zakenApiPlugin = mock()
+        objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
+        whenever(pluginService.getObjectMapper()).thenReturn(objectMapper)
         portaaltaakPlugin = PortaaltaakPlugin(
             objectManagementService,
             pluginService,
@@ -100,6 +106,74 @@ internal class PortaaltaakPluginTest {
         val objectenApiPlugin = mock<ObjectenApiPlugin>()
         val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
         val verloopDurationInDays = 5L
+
+        val objectManagement = getObjectManagement()
+        val objectTypeUrl = URI("https://example.com/")
+
+        whenever(objectManagementService.getById(any())).thenReturn(objectManagement)
+        whenever(pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId))).thenReturn(objectenApiPlugin)
+        whenever(pluginService.createInstance(PluginConfigurationId(objectManagement.objecttypenApiPluginConfigurationId))).thenReturn(objecttypenApiPlugin)
+        whenever(pluginService.createInstance(any<Class<ZakenApiPlugin>>(), any())).thenReturn(zakenApiPlugin)
+        whenever(objecttypenApiPlugin.getObjectTypeUrlById(any())).thenReturn(objectTypeUrl)
+        whenever(delegateTask.processInstanceId).thenReturn(UUID.randomUUID().toString())
+        whenever(zaakInstanceLinkService.getByDocumentId(any())).thenReturn(getZaakInstanceLink())
+        whenever(jsonSchemaDocumentId.id).thenReturn(UUID.randomUUID())
+        whenever(processDocumentService.getDocumentId(any(), any<DelegateTask>())).thenReturn(jsonSchemaDocumentId)
+        whenever(zakenApiPlugin.getZaakRollen(any(), any())).thenReturn(getRol(BetrokkeneType.NATUURLIJK_PERSOON))
+        whenever(zaakInstanceLinkService.getByDocumentId(jsonSchemaDocumentId.id)).thenReturn(getZaakInstanceLink())
+        whenever(delegateTask.name).thenReturn("delegateTaskName")
+        whenever(delegateTask.id).thenReturn("delegateTaskId")
+        whenever(jsonSchemaDocumentId.toString()).thenReturn("documentId")
+        whenever(valueResolverService.resolveValues(any(), any())).thenReturn(emptyMap())
+
+        portaaltaakPlugin.createPortaalTaak(
+            delegateTask,
+            formType,
+            formTypeId,
+            formTypeUrl,
+            sendData,
+            receiveData,
+            receiver,
+            identificationKey,
+            bsn,
+            verloopDurationInDays
+        )
+
+        val captor = argumentCaptor<ObjectRequest>()
+
+        verify(objectenApiPlugin).createObject(captor.capture())
+
+        val objectRequest = captor.firstValue
+        assertEquals(objectTypeUrl, objectRequest.type)
+        assertEquals(objectManagement.objecttypeVersion, objectRequest.record.typeVersion)
+
+        val taakObject = objectMapper.treeToValue(objectRequest.record.data, TaakObject::class.java)
+
+        assertNotNull(taakObject.identificatie)
+        assertNotNull(taakObject.data)
+        assertEquals(delegateTask.name, taakObject.title)
+        assertEquals(TaakStatus.OPEN, taakObject.status)
+        assertNotNull(taakObject.formulier)
+        assertEquals(delegateTask.id, taakObject.verwerkerTaakId)
+        assertNotNull(objectRequest.record.startAt)
+        assertTrue(taakObject.verloopdatum!!.isBefore(LocalDateTime.now().plusDays(5)))
+        assertTrue(taakObject.verloopdatum!!.isAfter(LocalDateTime.now().plusDays(5).minusMinutes(1)))
+        assertEquals(URI.create("aZaakInstanceUrl"), taakObject.zaakUrl)
+    }
+
+    @Test
+    fun `should create taak object in objects api without verloopdatum`() {
+        val formType = TaakFormType.ID
+        val formTypeId = "formTypeId"
+        val formTypeUrl = "formTypeUrl"
+        val sendData = emptyList<DataBindingConfig>()
+        val receiveData = emptyList<DataBindingConfig>()
+        val receiver = TaakReceiver.ZAAK_INITIATOR
+        val identificationKey = TaakIdentificatie.TYPE_BSN
+        val zakenApiPlugin = mock<ZakenApiPlugin>()
+        val objectenApiPlugin = mock<ObjectenApiPlugin>()
+        val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
+        val verloopDurationInDays = null
 
         val objectManagement = getObjectManagement()
         val objectTypeUrl = URI("https://example.com/")
@@ -153,9 +227,83 @@ internal class PortaaltaakPluginTest {
         assertNotNull(taakObject.formulier)
         assertEquals(delegateTask.id, taakObject.verwerkerTaakId)
         assertNotNull(objectRequest.record.startAt)
+        assertNull(taakObject.verloopdatum)
+        assertEquals(URI.create("aZaakInstanceUrl"), taakObject.zaakUrl)
+    }
+
+    @Test
+    fun `should create taak object in objects api without linked zaak`() {
+        val formType = TaakFormType.ID
+        val formTypeId = "formTypeId"
+        val formTypeUrl = "formTypeUrl"
+        val sendData = emptyList<DataBindingConfig>()
+        val receiveData = emptyList<DataBindingConfig>()
+        // this can't be zaak initiator if zaak is not linked
+        val receiver = TaakReceiver.OTHER
+        val identificationKey = "test"
+        val identificationValue = "123"
+        val zakenApiPlugin = mock<ZakenApiPlugin>()
+        val objectenApiPlugin = mock<ObjectenApiPlugin>()
+        val objecttypenApiPlugin = mock<ObjecttypenApiPlugin>()
+        val verloopDurationInDays = 5L
+
+        val objectManagement = getObjectManagement()
+        val objectTypeUrl = URI("https://example.com/")
+
+        val objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
+
+        whenever(objectManagementService.getById(any())).thenReturn(objectManagement)
+        whenever(pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId))).thenReturn(objectenApiPlugin)
+        whenever(pluginService.createInstance(PluginConfigurationId(objectManagement.objecttypenApiPluginConfigurationId))).thenReturn(objecttypenApiPlugin)
+        whenever(pluginService.createInstance(any<Class<ZakenApiPlugin>>(), any())).thenReturn(zakenApiPlugin)
+        whenever(objecttypenApiPlugin.getObjectTypeUrlById(any())).thenReturn(objectTypeUrl)
+        whenever(delegateTask.processInstanceId).thenReturn(UUID.randomUUID().toString())
+        whenever(zaakInstanceLinkService.getByDocumentId(any())).thenReturn(getZaakInstanceLink())
+        whenever(jsonSchemaDocumentId.id).thenReturn(UUID.randomUUID())
+        whenever(processDocumentService.getDocumentId(any(), any<DelegateTask>())).thenReturn(jsonSchemaDocumentId)
+        whenever(zakenApiPlugin.getZaakRollen(any(), any())).thenReturn(getRol(BetrokkeneType.NATUURLIJK_PERSOON))
+        whenever(zaakInstanceLinkService.getByDocumentId(jsonSchemaDocumentId.id)).thenThrow(
+            ZaakInstanceLinkNotFoundException("No ZaakInstanceLink found")
+        )
+        whenever(delegateTask.name).thenReturn("delegateTaskName")
+        whenever(delegateTask.id).thenReturn("delegateTaskId")
+        whenever(jsonSchemaDocumentId.toString()).thenReturn("documentId")
+        whenever(valueResolverService.resolveValues(any(), any())).thenReturn(emptyMap())
+        whenever(pluginService.getObjectMapper()).thenReturn(objectMapper)
+
+        portaaltaakPlugin.createPortaalTaak(
+            delegateTask,
+            formType,
+            formTypeId,
+            formTypeUrl,
+            sendData,
+            receiveData,
+            receiver,
+            identificationKey,
+            identificationValue,
+            verloopDurationInDays
+        )
+
+        val captor = argumentCaptor<ObjectRequest>()
+
+        verify(objectenApiPlugin).createObject(captor.capture())
+
+        val objectRequest = captor.firstValue
+        assertEquals(objectTypeUrl, objectRequest.type)
+        assertEquals(objectManagement.objecttypeVersion, objectRequest.record.typeVersion)
+
+        val taakObject = objectMapper.treeToValue(objectRequest.record.data, TaakObject::class.java)
+
+        assertNotNull(taakObject.identificatie)
+        assertNotNull(taakObject.data)
+        assertEquals(delegateTask.name, taakObject.title)
+        assertEquals(TaakStatus.OPEN, taakObject.status)
+        assertNotNull(taakObject.formulier)
+        assertEquals(delegateTask.id, taakObject.verwerkerTaakId)
+        assertNotNull(objectRequest.record.startAt)
         assertTrue(taakObject.verloopdatum!!.isBefore(LocalDateTime.now().plusDays(5)))
         assertTrue(taakObject.verloopdatum!!.isAfter(LocalDateTime.now().plusDays(5).minusMinutes(1)))
-        assertEquals(URI.create("aZaakInstanceUrl"), taakObject.zaakUrl)
+        assertNull(taakObject.zaakUrl)
     }
 
     @Test

@@ -43,6 +43,7 @@ import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.TaskService
 import org.camunda.bpm.engine.delegate.DelegateExecution
@@ -105,7 +106,12 @@ class PortaaltaakPlugin(
         val processInstanceId = CamundaProcessInstanceId(delegateTask.processInstanceId)
         val documentId = processDocumentService.getDocumentId(processInstanceId, delegateTask).id
 
-        val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+        val zaakUrl = try {
+            zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+        } catch (e: ZaakInstanceLinkNotFoundException) {
+            // this should set zaakUrl to null when no zaak has been linked for this case
+            null
+        }
         val verloopdatum = verloopDurationInDays?.let { LocalDateTime.now().plusDays(verloopDurationInDays) }
 
         val portaalTaak = TaakObject(
