@@ -25,6 +25,7 @@ import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.TAB_ORDER
 import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionName
 import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionNameAndTabKey
+import com.ritense.case.service.exception.TabAlreadyExistsException
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
@@ -68,10 +69,19 @@ class CaseTabService(
         documentDefinitionService.findLatestByName(caseDefinitionName).getOrNull()
             ?: throw NoSuchElementException("Case definition with name $caseDefinitionName does not exist!")
 
+        val currentTabs = getCaseTabs(caseDefinitionName)
+        val tabWithKeyExists = currentTabs.filter { tab ->
+            tab.id.key.equals(caseTabDto.key)
+        }.isNotEmpty()
+
+        if (tabWithKeyExists) {
+            throw TabAlreadyExistsException(caseTabDto.key)
+        }
+
         val caseTab = CaseTab(
             CaseTabId(caseDefinitionName, caseTabDto.key),
             caseTabDto.name,
-            getCaseTabs(caseDefinitionName).size, // Add it to the end
+            currentTabs.size, // Add it to the end
             caseTabDto.type,
             caseTabDto.contentKey
         )

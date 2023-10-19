@@ -18,10 +18,12 @@ package com.ritense.case.web.rest
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.service.CaseTabService
+import com.ritense.case.service.exception.TabAlreadyExistsException
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -41,7 +43,11 @@ open class CaseTabManagementResource(
         @PathVariable caseDefinitionName: String,
         @RequestBody caseTab: CaseTabDto
     ): ResponseEntity<CaseTabDto> {
-        return ResponseEntity.ok(caseTabService.createCaseTab(caseDefinitionName, caseTab))
+        return try {
+            ResponseEntity.ok(caseTabService.createCaseTab(caseDefinitionName, caseTab))
+        } catch (ex: TabAlreadyExistsException) {
+            ResponseEntity.status(HttpStatus.CONFLICT).build()
+        }
     }
 
     @RunWithoutAuthorization
