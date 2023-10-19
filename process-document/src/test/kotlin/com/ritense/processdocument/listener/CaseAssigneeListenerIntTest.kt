@@ -26,6 +26,8 @@ import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
+import java.util.UUID
+import kotlin.test.assertEquals
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertNull
@@ -37,7 +39,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import kotlin.test.assertEquals
-
 
 @Transactional
 class CaseAssigneeListenerIntTest : BaseIntegrationTest() {

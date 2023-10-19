@@ -122,4 +122,5 @@ class ProcessDocumentsAutoConfiguration {
             tenantResolver
         )
     }
+
 }

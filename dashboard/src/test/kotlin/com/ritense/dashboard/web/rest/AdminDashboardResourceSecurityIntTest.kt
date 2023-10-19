@@ -166,6 +166,18 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
 
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
+    fun `should have access to update widget configuration by key method without role_admin`() {
+        assertHttpStatus(GET, "/api/management/v1/dashboard/1/widget-configuration/1", INTERNAL_SERVER_ERROR)
+    }
+
+    @Test
+    @WithMockUser(authorities = [AuthoritiesConstants.USER])
+    fun `should not have access to update widget configuration by key method without role_admin`() {
+        assertHttpStatus(GET, "/api/management/v1/dashboard/1/widget-configuration/1", FORBIDDEN)
+    }
+
+    @Test
+    @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `should have access to delete widget configuration method with role_admin`() {
         val widgets = mutableListOf<WidgetConfiguration>()
         val dashboard = Dashboard(

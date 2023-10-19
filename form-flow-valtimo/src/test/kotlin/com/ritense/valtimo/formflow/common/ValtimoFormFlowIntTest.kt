@@ -155,8 +155,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
             getProcessDefinitionId(),
             null,
             "profile",
-            processLink,
-            "1"
+            processLink
         )
         val formFlowInstance = formFlowService
             .getInstanceById(FormFlowInstanceId.existingId(startEventResponse.properties.formFlowInstanceId))
@@ -205,15 +204,14 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
             getProcessDefinitionId(),
             document.id().id,
             null,
-            processLink,
-            "1"
+            processLink
         )
         val formFlowInstance = formFlowService
             .getInstanceById(FormFlowInstanceId.existingId(startEventResponse.properties.formFlowInstanceId))
 
         formFlowStepComplete(formFlowInstance, submission = """{"street":"Koningin Wilhelminaplein","approval":true}""")
 
-        val updatedDocument = docummentService.get(document.id().toString(), "1")
+        val updatedDocument = docummentService.get(document.id().toString())
 
         assertEquals(
             """{"address":{"streetName":"Koningin Wilhelminaplein"}}""",
@@ -293,7 +291,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
                 NewDocumentRequest(
                     "profile",
                     Mapper.INSTANCE.get().readTree("{}")
-                ).withTenantId("1")
+                )
             )
         )
     }

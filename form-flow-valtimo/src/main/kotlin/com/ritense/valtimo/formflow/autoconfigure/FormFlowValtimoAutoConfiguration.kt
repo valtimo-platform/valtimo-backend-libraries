@@ -31,9 +31,14 @@ import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.formflow.FormFlowFormLinkTaskProvider
 import com.ritense.valtimo.formflow.FormFlowProcessLinkActivityHandler
+import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.processlink.service.ProcessLinkActivityHandler
+import com.ritense.valtimo.formflow.FormFlowFormLinkTaskProvider
+import com.ritense.valtimo.formflow.FormFlowProcessLinkActivityHandler
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.FormLinkNewProcessFormFlowProviderImpl
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
+import com.ritense.valtimo.formflow.service.FormFlowSupportedProcessLinksHandler
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper
 import com.ritense.valtimo.formflow.repository.FormFlowProcessLinkRepository
@@ -75,6 +80,32 @@ class FormFlowValtimoAutoConfiguration {
             documentService,
             repositoryService,
             runtimeService
+        )
+    }
+
+    @Bean
+    fun formFlowProcessLinkTaskProvider(
+        formFlowService: FormFlowService,
+        repositoryService: RepositoryService,
+        documentService: DocumentService,
+        runtimeService: RuntimeService,
+    ): ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties> {
+        return FormFlowProcessLinkActivityHandler(
+            formFlowService,
+            repositoryService,
+            documentService,
+            runtimeService
+        )
+    }
+
+    @Bean
+    fun formLinkNewProcessFormFlowProvider(
+        formFlowService: FormFlowService,
+        processFormAssociationRepository: ProcessFormAssociationRepository
+    ): FormLinkNewProcessFormFlowProvider {
+        return FormLinkNewProcessFormFlowProviderImpl(
+            formFlowService,
+            processFormAssociationRepository
         )
     }
 

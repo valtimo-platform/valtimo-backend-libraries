@@ -79,16 +79,16 @@ class VerzoekPluginEventListener(
             val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
             val startProcessRequest = StartProcessForDocumentRequest(
                 document.id(), processToStart, mapOf(
-                "RSIN" to this.rsin.toString(),
-                "zaakTypeUrl" to zaakTypeUrl.toString(),
-                "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
-                "rolDescription" to verzoekTypeProperties.initiatorRolDescription,
-                "verzoekObjectUrl" to event.resourceUrl,
-                "initiatorType" to initiatorType,
-                "initiatorValue" to verzoekObjectData.get(initiatorType).textValue(),
-                "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
-                "documentUrls" to getDocumentUrls(verzoekObjectData)
-            )
+                    "RSIN" to this.rsin.toString(),
+                    "zaakTypeUrl" to zaakTypeUrl.toString(),
+                    "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
+                    "rolDescription" to verzoekTypeProperties.initiatorRolDescription,
+                    "verzoekObjectUrl" to event.resourceUrl,
+                    "initiatorType" to initiatorType,
+                    "initiatorValue" to verzoekObjectData.get(initiatorType).textValue(),
+                    "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
+                    "documentUrls" to getDocumentUrls(verzoekObjectData)
+                )
             )
 
             startProcess(startProcessRequest)
@@ -190,7 +190,6 @@ class VerzoekPluginEventListener(
             )
         }
     }
-
     companion object {
         val logger = KotlinLogging.logger {}
     }

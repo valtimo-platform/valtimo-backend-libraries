@@ -106,6 +106,18 @@ public class CamundaFormAssociationService implements FormAssociationService {
         );
     }
 
+    private static <T> Collector<T, ?, Optional<T>> singleElementCollector() {
+        return Collectors.collectingAndThen(
+            Collectors.toList(),
+            list -> {
+                if (list.size() == 1) {
+                    return Optional.of(list.get(0));
+                }
+                throw new IllegalStateException("Expected single result but found: " + list.size());
+            }
+        );
+    }
+
     @Override
     public Set<CamundaFormAssociation> getAllFormAssociations(String processDefinitionKey) {
         return processFormAssociationRepository.findAssociationsByProcessDefinitionKey(processDefinitionKey);

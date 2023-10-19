@@ -154,5 +154,4 @@ public class CamundaAutoConfiguration {
     ) {
         return new ProcessDefinitionDeployedEventPublisher(applicationEventPublisher);
     }
-
 }
