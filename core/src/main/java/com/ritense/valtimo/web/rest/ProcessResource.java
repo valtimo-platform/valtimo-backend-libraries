@@ -466,6 +466,7 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     /**
+     * Retrieve a list of comments that are associated to a process instance.
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
@@ -544,6 +545,7 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     /**
+     * Create a comment and associate that comment to either a task or a process instance.
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
