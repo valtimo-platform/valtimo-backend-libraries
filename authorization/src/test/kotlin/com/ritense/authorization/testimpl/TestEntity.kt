@@ -43,7 +43,7 @@ data class TestEntity(
         joinColumns = [JoinColumn(name = "test_entity_id", referencedColumnName = "id")]
     )
     @Column(name = "name")
-    val fruits: List<String?> = mutableListOf(),
+    val fruits: MutableList<String?> = mutableListOf(),
 
     @Id
     val id: UUID = UUID.randomUUID(),
