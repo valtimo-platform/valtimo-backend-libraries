@@ -16,7 +16,6 @@
 
 package com.ritense.authorization.testimpl
 
-import org.hibernate.annotations.Type
 import java.util.UUID
 import javax.persistence.CollectionTable
 import javax.persistence.Column
@@ -25,6 +24,7 @@ import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.Table
+import org.hibernate.annotations.Type
 
 @Entity
 @Table(name = "test_entity")
@@ -43,8 +43,11 @@ data class TestEntity(
         joinColumns = [JoinColumn(name = "test_entity_id", referencedColumnName = "id")]
     )
     @Column(name = "name")
-    val fruits: MutableList<String> = mutableListOf(),
+    val fruits: List<String?> = mutableListOf(),
 
     @Id
     val id: UUID = UUID.randomUUID(),
+
+    @Column(name = "some_number", columnDefinition = "int")
+    val someNumber: Int? = null
 )
