@@ -539,12 +539,15 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PostMapping(value = "/v1/process/definition/deployment", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Object> deployProcessDefinition(
-            @RequestPart(name = "file") MultipartFile bpmn) {
-        if (!Objects.requireNonNull(bpmn.getOriginalFilename()).endsWith(".bpmn")) {
-            return ResponseEntity.badRequest().body("Invalid file name. Must have '.bpmn' suffix.");
+        @RequestPart(name = "file") MultipartFile file) {
+        boolean correctFileExtension = Objects.requireNonNull(file.getOriginalFilename()).endsWith(".bpmn")
+            || Objects.requireNonNull(file.getOriginalFilename()).endsWith(".dmn");
+
+        if (!correctFileExtension) {
+            return ResponseEntity.badRequest().body("Invalid file name. Must have '.bpmn' or '.dmn' suffix.");
         }
         try {
-            camundaProcessService.deploy(bpmn.getOriginalFilename(), new ByteArrayInputStream(bpmn.getBytes()));
+            camundaProcessService.deploy(file.getOriginalFilename(), new ByteArrayInputStream(file.getBytes()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
