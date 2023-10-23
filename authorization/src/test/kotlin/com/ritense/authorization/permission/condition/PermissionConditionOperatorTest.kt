@@ -16,8 +16,8 @@
 
 package com.ritense.authorization.permission.condition
 
-import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import org.junit.jupiter.api.Test
 
 class PermissionConditionOperatorTest {
 
@@ -123,6 +123,8 @@ class PermissionConditionOperatorTest {
         assertEquals(false, op, listOf("a"), null)
         assertEquals(true, op, null, null)
         assertEquals(false, op, null, "a")
+        assertEquals(true, op, "a", "a") // TODO: is this intended behaviour? If so, match the predicate variant.
+        assertEquals(false, op, "b", "a")
     }
 
     private fun assertEquals(expected: Boolean, op: PermissionConditionOperator, left: Any?, right: Any?) {
