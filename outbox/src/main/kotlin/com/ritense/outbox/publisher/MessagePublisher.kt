@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.pollingpublisher
+package com.ritense.outbox.publisher
 
-import com.ritense.outbox.OutboxService
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import com.ritense.outbox.OutboxMessage
 
-@Configuration
-class PollingPublisherAutoConfiguration {
+interface MessagePublisher {
 
-    @Bean
-    @ConditionalOnMissingBean(PollingPublisherJob::class)
-    fun pollingPublisherJob(
-        outboxService: OutboxService
-    ): PollingPublisherJob {
-        return PollingPublisherJob(outboxService)
-    }
-
+    fun publish(message: OutboxMessage)
 }

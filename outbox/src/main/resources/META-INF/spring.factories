@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.outbox.OutboxAutoConfiguration, \
-  com.ritense.outbox.pollingpublisher.PollingPublisherAutoConfiguration
+  com.ritense.outbox.OutboxAutoConfiguration

@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.pollingpublisher
+package com.ritense.outbox.publisher
 
-import com.ritense.outbox.OutboxService
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.outbox.OutboxMessage
 import mu.KotlinLogging
-import org.springframework.scheduling.annotation.Scheduled
 
-class PollingPublisherJob(
-    private val outboxService: OutboxService
-) {
+open class LoggingMessagePublisher(
+    private val objectMapper: ObjectMapper
+) : MessagePublisher {
 
-    @Scheduled(cron = "\${valtimo.outbox.pollingpublisher.job:0 * * * * *}") // By default, runs every minute.
-    fun scheduledTaskPollMessage() {
-        logger.debug { "Running task - pollMessage" }
-        outboxService.publishAll()
-        logger.debug { "Completed task - pollMessage" }
+    override fun publish(message: OutboxMessage) {
+        val messageContent = objectMapper.writeValueAsString(message.message)
+        logger.info { "OutboxMessage id: '${message.id}', type: '${message.eventType}', content: $messageContent" }
     }
 
     companion object {
-        val logger = KotlinLogging.logger {}
+        private val logger = KotlinLogging.logger {}
     }
 }

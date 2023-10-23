@@ -17,6 +17,10 @@
 package com.ritense.outbox
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.outbox.publisher.LoggingMessagePublisher
+import com.ritense.outbox.publisher.MessagePublisher
+import com.ritense.outbox.publisher.PollingPublisherJob
+import com.ritense.outbox.publisher.PollingPublisherService
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -26,7 +30,10 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.Ordered.LOWEST_PRECEDENCE
+import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.springframework.transaction.PlatformTransactionManager
 import javax.sql.DataSource
 
 @Configuration
@@ -53,14 +60,43 @@ class OutboxAutoConfiguration {
     @ConditionalOnMissingBean(OutboxService::class)
     fun outboxService(
         outboxMessageRepository: OutboxMessageRepository,
-        messagePublisher: MessagePublisher,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
     ): OutboxService {
         return OutboxService(
             outboxMessageRepository,
-            messagePublisher,
             objectMapper
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PollingPublisherService::class)
+    fun pollingPublisherService(
+        outboxService: OutboxService,
+        messagePublisher: MessagePublisher,
+        platformTransactionManager: PlatformTransactionManager
+    ): PollingPublisherService {
+        return PollingPublisherService(
+            outboxService,
+            messagePublisher,
+            platformTransactionManager
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PollingPublisherJob::class)
+    fun pollingPublisherJob(
+        pollingPublisherService: PollingPublisherService
+    ): PollingPublisherJob {
+        return PollingPublisherJob(pollingPublisherService)
+    }
+
+    @Order(LOWEST_PRECEDENCE)
+    @Bean
+    @ConditionalOnMissingBean(MessagePublisher::class)
+    fun loggingMessagePublisher(
+        objectMapper: ObjectMapper
+    ): MessagePublisher {
+        return LoggingMessagePublisher(objectMapper)
     }
 
 }

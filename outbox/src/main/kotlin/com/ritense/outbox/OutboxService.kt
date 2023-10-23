@@ -18,17 +18,14 @@ package com.ritense.outbox
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 open class OutboxService(
     private val outboxMessageRepository: OutboxMessageRepository,
-    private val messagePublisher: MessagePublisher,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
 ) {
 
     @Transactional(propagation = Propagation.MANDATORY)
@@ -37,42 +34,32 @@ open class OutboxService(
     }
 
     /**
-     * Typical workflow
+     * Guarantee that the message is published using the transactional outbox pattern.
+     * See: https://microservices.io/patterns/data/transactional-outbox.html
+     *
+     * Typical workflow:
      * @Transactional
-     * service.doSomething(
+     * fun saveOrders() {
      *      orderRepo.save(order)
      *      order.events.forEach { outboxService.send(it) }
      *      order.events.clear()
-     * )
+     * }
      */
     @Transactional(propagation = Propagation.MANDATORY)
-    open fun send(message: ObjectNode, eventType: String = message::class.simpleName!!) {
+    open fun send(message: ObjectNode, eventType: String) {
         val outboxMessage = OutboxMessage(
             message = message,
             eventType = eventType
         )
         logger.debug { "Saving OutboxMessage '${outboxMessage.id}'" }
         outboxMessageRepository.save(outboxMessage)
-
-        // Fire and forget. All events are published in order. If it fails, the events still exists inside the outbox table.
-        @OptIn(DelicateCoroutinesApi::class)
-        GlobalScope.launch {
-            try {
-                publishAll()
-            } catch (e: Exception) {
-                logger.debug { e } //
-            }
-        }
     }
 
-    open fun publishAll() {
-        outboxMessageRepository.findByOrderByCreatedOnAsc().forEach { message ->
-            messagePublisher.publish(message)
-        }
-    }
+    open fun getOldestMessage() = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+
+    open fun deleteMessage(id: UUID) = outboxMessageRepository.deleteById(id)
 
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 }
-

@@ -8,10 +8,9 @@ spring:
         hikari:
             auto-commit: false
     liquibase:
-        enabled: true
-        change-log: classpath:/config/liquibase/outbox-master.xml
+        enabled: false
     jpa:
-        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database-platform: org.hibernate.dialect.PostgreSQL10Dialect
         database: postgresql
         show_sql: true
         open-in-view: false

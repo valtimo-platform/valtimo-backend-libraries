@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox
+package com.ritense.outbox.publisher
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.outbox.BaseIntegrationTest
+import com.ritense.outbox.OutboxMessage
+import com.ritense.outbox.OutboxMessageRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
-class OutboxServiceIntTest : BaseIntegrationTest() {
+class PollingPublisherJobIntTest : BaseIntegrationTest() {
 
     @Autowired
-    lateinit var outboxService: OutboxService
+    lateinit var pollingPublisherJob: PollingPublisherJob
 
     @Autowired
     lateinit var outboxMessageRepository: OutboxMessageRepository
@@ -36,26 +38,17 @@ class OutboxServiceIntTest : BaseIntegrationTest() {
 
     @Test
     @Transactional
-    fun `should create OutboxMessage`() {
+    fun `should publish messages`() {
         val event = OrderCreatedEvent("textBook")
+        val message = OutboxMessage(
+            message = objectMapper.valueToTree(event),
+            eventType = event::class.simpleName!!
+        )
+        outboxMessageRepository.save(message)
 
-        outboxService.send(event)
+        pollingPublisherJob.scheduledTaskPollMessage()
 
-        val messages = outboxMessageRepository.findAll()
-        assertThat(messages.size).isEqualTo(1)
-        assertThat(objectMapper.writeValueAsString(messages[0].message)).isEqualTo("""{"name":"textBook"}""")
-        assertThat(messages[0].eventType).isEqualTo("OrderCreatedEvent")
-    }
-
-    @Test
-    fun `should throw error when no transaction exists`() {
-        val event = OrderCreatedEvent("textBook")
-
-        val exception = assertThrows<RuntimeException> {
-            outboxService.send(event)
-        }
-
-        assertThat(exception.message).isEqualTo("No existing transaction found for transaction marked with propagation 'mandatory'")
+        assertThat(messagePublisher.publish(message))
     }
 
     data class OrderCreatedEvent(

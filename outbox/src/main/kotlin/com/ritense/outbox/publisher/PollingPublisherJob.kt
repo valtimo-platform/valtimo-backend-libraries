@@ -14,9 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox
+package com.ritense.outbox.publisher
 
-interface MessagePublisher {
+import mu.KotlinLogging
+import org.springframework.scheduling.annotation.Scheduled
 
-    fun publish(message: OutboxMessage)
+class PollingPublisherJob(
+    private val pollingPublisherService: PollingPublisherService
+) {
+
+    @Scheduled(cron = "\${valtimo.outbox.pollingpublisher.job:*/10 * * * * *}")
+    fun scheduledTaskPollMessage() {
+        logger.debug { "Running task - pollMessage" }
+        pollingPublisherService.pollAndPublishAll()
+        logger.debug { "Completed task - pollMessage" }
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
+    }
 }

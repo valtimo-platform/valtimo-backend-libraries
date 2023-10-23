@@ -16,18 +16,6 @@
 
 package com.ritense.outbox
 
-import com.ritense.outbox.publisher.MessagePublisher
-import org.junit.jupiter.api.Tag
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.SpyBean
-import org.springframework.test.context.junit.jupiter.SpringExtension
-
-@SpringBootTest
-@ExtendWith(SpringExtension::class)
-@Tag("integration")
-class BaseIntegrationTest {
-
-    @SpyBean
-    lateinit var messagePublisher: MessagePublisher
-}
+data class OutboxMessageSaved(
+    val outboxMessage: OutboxMessage
+)

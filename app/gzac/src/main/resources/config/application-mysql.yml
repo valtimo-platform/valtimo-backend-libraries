@@ -3,7 +3,7 @@ spring:
         driver-class-name: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://localhost:3306/gzac-core
     jpa:
-        database-platform: org.hibernate.dialect.MySQL57Dialect
+        database-platform: org.hibernate.dialect.MySQL8Dialect
 
 valtimo:
     database: mysql

@@ -24,6 +24,7 @@ import liquibase.exception.DatabaseException
 import liquibase.exception.LiquibaseException
 import liquibase.resource.ClassLoaderResourceAccessor
 import mu.KotlinLogging
+import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties
 import java.sql.SQLException
 import javax.sql.DataSource
@@ -31,19 +32,18 @@ import javax.sql.DataSource
 class OutboxLiquibaseRunner(
     liquibaseProperties: LiquibaseProperties,
     private val datasource: DataSource,
-) {
+) : InitializingBean {
     private val context: Contexts = Contexts(liquibaseProperties.contexts)
 
     @Throws(SQLException::class, DatabaseException::class)
-    fun run() {
+    override fun afterPropertiesSet() {
         val connection = datasource.connection
         val jdbcConnection = JdbcConnection(connection)
         val database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(jdbcConnection)
         try {
-            Liquibase(LIQUIBASE_CHANGE_LOG_LOCATION, ClassLoaderResourceAccessor(), database).use { liquibase ->
-                logger.info("Running liquibase master changelog: {}", liquibase.changeLogFile)
-                liquibase.update(context)
-            }
+            val liquibase = Liquibase(LIQUIBASE_CHANGE_LOG_LOCATION, ClassLoaderResourceAccessor(), database)
+            logger.info("Running liquibase master changelog: {}", liquibase.changeLogFile)
+            liquibase.update(context)
         } catch (liquibaseException: LiquibaseException) {
             throw DatabaseException(liquibaseException)
         } finally {
@@ -54,7 +54,6 @@ class OutboxLiquibaseRunner(
                 logger.error("Error closing connection ", sqlException)
             }
         }
-        logger.info("Finished running liquibase")
     }
 
     companion object {

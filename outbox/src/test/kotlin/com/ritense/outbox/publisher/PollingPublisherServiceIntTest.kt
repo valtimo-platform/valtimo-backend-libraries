@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.pollingpublisher
+package com.ritense.outbox.publisher
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.BaseIntegrationTest
-import com.ritense.outbox.MessagePublisher
 import com.ritense.outbox.OutboxMessage
 import com.ritense.outbox.OutboxMessageRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.any
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
-class PollingPublisherJobIntTest : BaseIntegrationTest() {
+class PollingPublisherServiceIntTest : BaseIntegrationTest() {
 
     @Autowired
-    lateinit var pollingPublisherJob: PollingPublisherJob
+    lateinit var pollingPublisherService: PollingPublisherService
 
     @Autowired
     lateinit var outboxMessageRepository: OutboxMessageRepository
@@ -39,26 +36,18 @@ class PollingPublisherJobIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    @Autowired
-    lateinit var messagePublisher: MessagePublisher
-
     @Test
     @Transactional
     fun `should publish messages`() {
-        val event = OrderCreatedEvent("textBook")
-        outboxMessageRepository.save(
-            OutboxMessage(
-                message = objectMapper.valueToTree(event),
-                eventType = event::class.simpleName!!
-            )
+        val event = PollingPublisherJobIntTest.OrderCreatedEvent("textBook")
+        val message = OutboxMessage(
+            message = objectMapper.valueToTree(event),
+            eventType = event::class.simpleName!!
         )
+        outboxMessageRepository.save(message)
 
-        pollingPublisherJob.scheduledTaskPollMessage()
+        pollingPublisherService.pollAndPublishAll()
 
-        assertThat(messagePublisher.publish(any()))
+        assertThat(messagePublisher.publish(message))
     }
-
-    data class OrderCreatedEvent(
-        val name: String
-    )
 }

@@ -22,7 +22,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
 
 @SpringBootApplication
@@ -40,9 +39,6 @@ class TestApplication {
         fun objectMapper(): ObjectMapper {
             return jacksonObjectMapper()
         }
-
-        @MockBean
-        lateinit var mockMessagePublisher: MessagePublisher
     }
 
 }
