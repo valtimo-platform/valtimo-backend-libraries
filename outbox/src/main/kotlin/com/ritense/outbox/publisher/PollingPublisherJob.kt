@@ -16,7 +16,6 @@
 
 package com.ritense.outbox.publisher
 
-import mu.KotlinLogging
 import org.springframework.scheduling.annotation.Scheduled
 
 class PollingPublisherJob(
@@ -25,12 +24,6 @@ class PollingPublisherJob(
 
     @Scheduled(cron = "\${valtimo.outbox.pollingpublisher.job:*/10 * * * * *}")
     fun scheduledTaskPollMessage() {
-        logger.debug { "Running task - pollMessage" }
         pollingPublisherService.pollAndPublishAll()
-        logger.debug { "Completed task - pollMessage" }
-    }
-
-    companion object {
-        val logger = KotlinLogging.logger {}
     }
 }
