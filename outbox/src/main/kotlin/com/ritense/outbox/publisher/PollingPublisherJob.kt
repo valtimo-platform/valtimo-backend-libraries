@@ -22,7 +22,7 @@ class PollingPublisherJob(
     private val pollingPublisherService: PollingPublisherService
 ) {
 
-    @Scheduled(cron = "\${valtimo.outbox.pollingpublisher.job:*/10 * * * * *}")
+    @Scheduled(fixedRateString = "\${valtimo.outbox.pollingpublisher.rate:PT10S}")
     fun scheduledTaskPollMessage() {
         pollingPublisherService.pollAndPublishAll()
     }

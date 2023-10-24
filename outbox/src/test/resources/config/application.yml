@@ -37,4 +37,4 @@ spring:
 
 valtimo:
     database: postgres
-    outbox.pollingpublisher.job: "-"
+    outbox.pollingpublisher.rate: "PT1H"

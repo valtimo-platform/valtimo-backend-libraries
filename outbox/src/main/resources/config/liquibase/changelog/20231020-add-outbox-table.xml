@@ -36,4 +36,10 @@
         </createTable>
     </changeSet>
 
+    <changeSet author="Ritense" id="2">
+        <createIndex tableName="outbox_message" indexName="outbox_message_created_on_index">
+            <column name="created_on"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

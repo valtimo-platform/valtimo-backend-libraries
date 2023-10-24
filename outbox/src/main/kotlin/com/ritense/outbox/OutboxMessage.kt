@@ -30,16 +30,16 @@ import javax.persistence.Table
 class OutboxMessage(
 
     @Id
-    @Column(name = "id", columnDefinition = "BINARY(16)", updatable = false)
+    @Column(name = "id")
     val id: UUID = UUID.randomUUID(),
 
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
-    @Column(name = "message", columnDefinition = "JSON", updatable = false)
+    @Column(name = "message")
     val message: ObjectNode,
 
-    @Column(name = "event_type", columnDefinition = "VARCHAR(1024)", updatable = false)
+    @Column(name = "event_type")
     val eventType: String,
 
-    @Column(name = "created_on", columnDefinition = "DATETIME", updatable = false)
+    @Column(name = "created_on")
     val createdOn: LocalDateTime = LocalDateTime.now()
 )
