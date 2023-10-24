@@ -18,6 +18,7 @@ package com.ritense.outbox
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.outbox.domain.BaseEvent
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -26,10 +27,13 @@ import java.util.UUID
 open class OutboxService(
     private val outboxMessageRepository: OutboxMessageRepository,
     private val objectMapper: ObjectMapper,
+    private val springApplicationName: String?,
+    private val valtimoSystemUserId: String?
 ) {
 
     @Transactional(propagation = Propagation.MANDATORY)
-    open fun send(message: Any) {
+    open fun send(message: BaseEvent) {
+        message.source = valtimoSystemUserId ?: springApplicationName
         send(objectMapper.valueToTree(message), message::class.simpleName!!)
     }
 
