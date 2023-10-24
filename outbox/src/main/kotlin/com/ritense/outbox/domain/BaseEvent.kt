@@ -15,17 +15,17 @@
  */
 
 package com.ritense.outbox.domain
-import java.util.UUID
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import java.time.LocalDateTime
+import java.util.*
 
 abstract class BaseEvent (
     open val id: UUID  = UUID.randomUUID(),
     open var source: String?,
     open val specversion: String,
     open val type: String,
-    open  val data: LocalDateTime = LocalDateTime.now(),
+    open val data: LocalDateTime = LocalDateTime.now(),
     open val userId: String = SecurityUtils.getCurrentUserLogin() ?: "System",
     open val roles: String = SecurityUtils.getCurrentUserRoles().joinToString(),
     open val resultType: String?,
