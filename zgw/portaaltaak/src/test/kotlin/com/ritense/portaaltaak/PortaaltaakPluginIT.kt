@@ -18,6 +18,7 @@ package com.ritense.portaaltaak
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath
@@ -41,6 +42,8 @@ import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundExce
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.zakenapi.domain.ZaakInstanceLink
+import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -53,6 +56,7 @@ import org.hamcrest.CoreMatchers.anyOf
 import org.hamcrest.CoreMatchers.endsWith
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.nullValue
+import org.hamcrest.CoreMatchers.startsWith
 import org.hamcrest.Matcher
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -62,6 +66,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
@@ -75,6 +80,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
 import kotlin.test.assertEquals
@@ -118,6 +124,8 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
 
     protected var executedRequests: MutableList<RecordedRequest> = mutableListOf()
 
+    private val objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
+
     @BeforeEach
     internal fun setUp() {
         server = MockWebServer()
@@ -136,11 +144,73 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         objectManagement = createObjectManagement(objectenPlugin.id.id, objecttypenPlugin.id.id)
         portaalTaakPluginDefinition = createPortaalTaakPlugin(notificatiesApiPlugin, objectManagement)
 
-        whenever(zaakUrlProvider.getZaakUrl(any())).thenReturn(ZAAK_URL)
+        val zaakInstanceLink = ZaakInstanceLink(
+            ZaakInstanceLinkId(UUID.randomUUID()),
+            ZAAK_URL,
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            URI.create("zaakTypeUrl"),
+        )
+
+        doReturn(zaakInstanceLink).whenever(zaakInstanceLinkService).getByDocumentId(any())
     }
 
     @Test
     fun `should create portaal taak`() {
+        val actionPropertiesJson = """
+            {
+                "formType" : "${TaakFormType.ID.key}",
+                "formTypeId": "some-form",
+                "sendData": [
+                    {
+                        "key": "/lastname",
+                        "value": "test"
+                    }
+                ],
+                "receiveData": [],
+                "receiver": "${TaakReceiver.OTHER.key}",
+                "identificationKey": "${TaakIdentificatie.TYPE_KVK}",
+                "identificationValue": "569312863",
+                "verloopDurationInDays": 3
+            }
+        """.trimIndent()
+
+        createProcessLink(actionPropertiesJson)
+
+        val documentContent = """
+            {
+                "lastname": "test"
+            }
+        """.trimIndent()
+
+
+        val task = startPortaalTaakProcess(documentContent)
+
+        val recordedRequest = findRequest(HttpMethod.POST, "/objects")!!
+        val body = recordedRequest.body.readUtf8()
+
+        assertThat(body, hasJsonPath("$.type", endsWith("/objecttypes/object-type-id")))
+        assertThat(body, jsonPathMissingOrNull("$.record.index"))
+        assertThat(body, hasJsonPath("$.record.typeVersion", equalTo(1)))
+        assertThat(body, hasJsonPath("$.record.data.identificatie.type", equalTo("kvk")))
+        assertThat(body, hasJsonPath("$.record.data.identificatie.value", equalTo("569312863")))
+        assertThat(body, hasJsonPath("$.record.data.data.lastname", equalTo("test")))
+        assertThat(body, hasJsonPath("$.record.data.title", equalTo("user_task")))
+        assertThat(body, hasJsonPath("$.record.data.status", equalTo("open")))
+        assertThat(body, hasJsonPath("$.record.data.formulier.type", equalTo("id")))
+        assertThat(body, hasJsonPath("$.record.data.formulier.value", equalTo("some-form")))
+        assertThat(body, hasJsonPath("$.record.data.verwerker_taak_id", equalTo(task.id)))
+        assertThat(body, hasJsonPath("$.record.data.zaak", equalTo(ZAAK_URL.toString())))
+        assertThat(body, hasJsonPath("$.record.data.verloopdatum", startsWith(LocalDate.now().plusDays(3).toString())))
+        assertThat(body, hasJsonPath("$.record.startAt", equalTo(LocalDate.now().toString())))
+        assertThat(body, jsonPathMissingOrNull("$.record.endAt"))
+        assertThat(body, jsonPathMissingOrNull("$.record.registrationAt"))
+        assertThat(body, jsonPathMissingOrNull("$.record.correctionFor"))
+        assertThat(body, jsonPathMissingOrNull("$.record.correctedBy"))
+    }
+
+    @Test
+    fun `should create portaal taak without verloopdatum`() {
         val actionPropertiesJson = """
             {
                 "formType" : "${TaakFormType.ID.key}",
@@ -183,6 +253,8 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         assertThat(body, hasJsonPath("$.record.data.formulier.type", equalTo("id")))
         assertThat(body, hasJsonPath("$.record.data.formulier.value", equalTo("some-form")))
         assertThat(body, hasJsonPath("$.record.data.verwerker_taak_id", equalTo(task.id)))
+        assertThat(body, hasJsonPath("$.record.data.zaak", equalTo(ZAAK_URL.toString())))
+        assertThat(body, hasJsonPath("$.record.data.verloopdatum", nullValue()))
         assertThat(body, hasJsonPath("$.record.startAt", equalTo(LocalDate.now().toString())))
         assertThat(body, jsonPathMissingOrNull("$.record.endAt"))
         assertThat(body, jsonPathMissingOrNull("$.record.registrationAt"))
@@ -217,7 +289,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
 
         verify(portaaltaakPlugin).changeDataInPortalTaakObject(objectWrapperCaptor.capture(),jsonNodeCaptor.capture())
 
-        val sentTaakObject: TaakObject = jacksonObjectMapper().treeToValue(jsonNodeCaptor.firstValue,TaakObject::class.java)
+        val sentTaakObject: TaakObject = objectMapper.treeToValue(jsonNodeCaptor.firstValue,TaakObject::class.java)
         assertEquals(TaakStatus.VERWERKT, sentTaakObject.status)
         assertNull(taskService.createTaskQuery().taskId(task.id).singleResult())
     }
@@ -229,7 +301,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
             URI.create("http://objectType/aType"),
             ObjectRecord(
                 typeVersion = 1,
-                data = jacksonObjectMapper().valueToTree(getTaakObject()),
+                data = objectMapper.valueToTree(getTaakObject()),
                 startAt = LocalDate.now()
             )
         )
@@ -500,6 +572,8 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
             status = TaakStatus.INGEDIEND,
             formulier = TaakForm(TaakFormType.ID, "anId"),
             verwerkerTaakId = UUID.randomUUID().toString(),
+            URI.create("aZaakInstanceUrl"),
+            LocalDateTime.now(),
             verzondenData = mapOf(
                 "documenten" to listOf(
                     URI.create("/name"), URI.create("/phone"),
