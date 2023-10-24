@@ -59,7 +59,7 @@ class FormFlowAutoConfiguration {
     }
 
     @Bean
-    fun angularComponentStepPropertiesType(): NamedType {
+    fun customComponentStepPropertiesType(): NamedType {
         return NamedType(CustomComponentStepTypeProperties::class.java, "custom-component")
     }
 
