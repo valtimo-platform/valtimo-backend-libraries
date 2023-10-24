@@ -62,8 +62,8 @@ class OutboxAutoConfiguration {
     fun outboxService(
         outboxMessageRepository: OutboxMessageRepository,
         objectMapper: ObjectMapper,
-        @Value("\${spring.application.name}") springApplicationName: String?,
-        @Value("\${valtimo.system.user-id}") valtimoSystemUserId: String?,
+        @Value("\${spring.application.name:application}") springApplicationName: String,
+        @Value("\${valtimo.system.user-id:#{null}}") valtimoSystemUserId: String?,
         ): OutboxService {
         return OutboxService(
             outboxMessageRepository,

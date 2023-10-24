@@ -31,6 +31,7 @@ dependencies {
     implementation "org.liquibase.ext:liquibase-hibernate5:$liquibaseVersion"
     implementation "com.vladmihalcea:hibernate-types-55:$hibernateTypesVersion"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     implementation "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
