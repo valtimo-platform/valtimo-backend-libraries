@@ -26,6 +26,7 @@ import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ResourceProvider
 import com.ritense.zakenapi.ZaakUrlProvider
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
@@ -49,6 +50,9 @@ abstract class BaseIntegrationTest {
 
     @SpyBean
     lateinit var camundaProcessService: CamundaProcessService
+
+    @SpyBean
+    lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
 
     @MockBean
     lateinit var resourceService: ResourceService
