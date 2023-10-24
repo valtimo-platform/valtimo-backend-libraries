@@ -34,7 +34,7 @@ open class OutboxService(
     @Transactional(propagation = Propagation.MANDATORY)
     open fun send(message: BaseEvent) {
         message.source = valtimoSystemUserId ?: springApplicationName
-        send(objectMapper.valueToTree(message))
+        send(objectMapper.valueToTree<ObjectNode>(message))
     }
 
     /**
