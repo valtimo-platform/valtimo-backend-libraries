@@ -37,9 +37,6 @@ class OutboxMessage(
     @Column(name = "message")
     val message: ObjectNode,
 
-    @Column(name = "event_type")
-    val eventType: String,
-
     @Column(name = "created_on")
     val createdOn: LocalDateTime = LocalDateTime.now()
 )

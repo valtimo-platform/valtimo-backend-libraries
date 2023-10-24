@@ -41,8 +41,7 @@ class PollingPublisherServiceIntTest : BaseIntegrationTest() {
     fun `should publish messages`() {
         val event = PollingPublisherJobIntTest.OrderCreatedEvent("textBook")
         val message = OutboxMessage(
-            message = objectMapper.valueToTree(event),
-            eventType = event::class.simpleName!!
+            message = objectMapper.valueToTree(event)
         )
         outboxMessageRepository.save(message)
 

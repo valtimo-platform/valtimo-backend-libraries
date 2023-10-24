@@ -48,6 +48,8 @@ open class PollingPublisherService(
                     }
                 } catch (e: Exception) {
                     logger.error("Failed to poll and publish outbox messages", e)
+                } finally {
+                    polling.set(false)
                 }
             } while (polling.get())
         }

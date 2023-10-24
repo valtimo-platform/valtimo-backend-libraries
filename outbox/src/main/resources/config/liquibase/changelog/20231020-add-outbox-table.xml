@@ -27,9 +27,6 @@
             <column name="message" type="${jsonType}">
                 <constraints nullable="false"/>
             </column>
-            <column name="event_type" type="VARCHAR(1024)">
-                <constraints nullable="false"/>
-            </column>
             <column name="created_on" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
