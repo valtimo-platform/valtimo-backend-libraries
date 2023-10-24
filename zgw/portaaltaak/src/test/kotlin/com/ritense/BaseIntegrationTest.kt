@@ -16,11 +16,11 @@
 
 package com.ritense
 
-import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.specification.AuthorizationSpecification
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.request.AuthorizationRequest
+import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.impl.NoopAuthorizationSpecificationFactory
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.plugin.repository.PluginConfigurationRepository
@@ -34,6 +34,7 @@ import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ResourceProvider
 import com.ritense.zakenapi.ZaakUrlProvider
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
@@ -62,6 +63,9 @@ abstract class BaseIntegrationTest {
 
     @SpyBean
     lateinit var camundaProcessService: CamundaProcessService
+
+    @SpyBean
+    lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
 
     @MockBean
     lateinit var resourceService: ResourceService
