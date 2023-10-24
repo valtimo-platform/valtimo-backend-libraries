@@ -46,7 +46,12 @@ data class FormFlowStepInstance(
     val order: Int,
     @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "submission_data")
-    var submissionData: String? = null
+    var submissionData: String? = null,
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Column(name = "temporary_submission_data")
+    var temporarySubmissionData: String? = null
+    // On complete, clear temporary submission from the current step
+    // We only use temporarySubmissionData of the current step when determining context
 ) {
 
     val definition: FormFlowStep
@@ -56,8 +61,8 @@ data class FormFlowStepInstance(
         processExpressions<Any>(definition.onBack)
     }
 
-    fun save(incompleteSubmissionData: String) {
-        this.submissionData = incompleteSubmissionData
+    fun saveTemporary(incompleteSubmissionData: String) {
+        this.temporarySubmissionData = incompleteSubmissionData
     }
 
     fun open() {
@@ -66,6 +71,7 @@ data class FormFlowStepInstance(
 
     fun complete(submissionData: String) {
         this.submissionData = submissionData
+        this.temporarySubmissionData = null
 
         processExpressions<Any>(definition.onComplete)
     }
@@ -131,5 +137,9 @@ data class FormFlowStepInstance(
 
     override fun hashCode(): Int {
         return Objects.hash(id, stepKey, order, submissionData)
+    }
+
+    fun getCurrentSubmissionData(): String? {
+        return temporarySubmissionData ?: submissionData
     }
 }
