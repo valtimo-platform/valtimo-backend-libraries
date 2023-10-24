@@ -307,6 +307,34 @@ internal class PluginServiceTest {
     }
 
     @Test
+    fun `should invoke delegateExecution method with optional argument not in properties`(){
+        val execution = mock<DelegateExecution>()
+        val processLink = PluginProcessLink(
+            PluginProcessLinkId.newId(),
+            "process",
+            "activity",
+            Mapper.INSTANCE.get().readTree("{}") as ObjectNode,
+            PluginConfigurationId.newId(),
+            "test-action-optional",
+            ActivityType.SERVICE_TASK_START
+        )
+
+        val pluginDefinition = newPluginDefinition()
+        val pluginConfiguration = newPluginConfiguration(pluginDefinition)
+        val testDependency = mock<TestDependency>()
+
+        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginFactory.canCreate(any())).thenReturn(true)
+        whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
+        whenever(execution.processInstanceId).thenReturn("test")
+        whenever(valueResolverService.resolveValues(any(), any(), any())).thenReturn(mapOf())
+
+        pluginService.invoke(execution, processLink)
+
+        verify(testDependency).processInt(null)
+    }
+
+    @Test
     fun `should throw exception when invoking delegateExecution method with resolved variable where result does not match argument type`(){
         val execution = mock<DelegateExecution>()
         val processLink = PluginProcessLink(
@@ -512,6 +540,16 @@ internal class PluginServiceTest {
         fun doThing2(@PluginActionProperty test: Int) {
             testDependency.processInt(test)
         }
+
+        @PluginAction(
+            key = "test-action-optional",
+            title = "Test action optional",
+            description = "This is an action used to verify plugin framework functionality",
+            activityTypes = [ActivityType.SERVICE_TASK_START]
+        )
+        fun doThing2(@PluginActionProperty test: Int?) {
+            testDependency.processInt(test)
+        }
     }
 
     class TestPlugin2 {
@@ -520,6 +558,6 @@ internal class PluginServiceTest {
     }
 
     interface TestDependency{
-        fun processInt(test: Int)
+        fun processInt(test: Int?)
     }
 }

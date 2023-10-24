@@ -18,6 +18,8 @@ package com.ritense.portaaltaak
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
+import java.net.URI
+import java.time.LocalDateTime
 
 class TaakObject(
     val identificatie: TaakIdentificatie,
@@ -27,8 +29,11 @@ class TaakObject(
     val formulier: TaakForm,
     @JsonProperty("verwerker_taak_id")
     val verwerkerTaakId: String,
+    @JsonProperty("zaak")
+    val zaakUrl: URI?,
+    val verloopdatum: LocalDateTime?,
     @JsonProperty("verzonden_data")
-    val verzondenData: Map<String, Any> = mapOf()
+    val verzondenData: Map<String, Any> = mapOf(),
 )
 
 class TaakIdentificatie(
