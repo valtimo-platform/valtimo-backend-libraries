@@ -44,7 +44,6 @@ class OutboxServiceIntTest : BaseIntegrationTest() {
         val messages = outboxMessageRepository.findAll()
         assertThat(messages.size).isEqualTo(1)
         assertThat(objectMapper.writeValueAsString(messages[0].message)).isEqualTo("""{"name":"textBook"}""")
-        assertThat(messages[0].eventType).isEqualTo("OrderCreatedEvent")
     }
 
     @Test

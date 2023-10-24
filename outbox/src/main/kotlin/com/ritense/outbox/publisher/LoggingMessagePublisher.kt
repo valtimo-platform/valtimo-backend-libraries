@@ -26,7 +26,7 @@ open class LoggingMessagePublisher(
 
     override fun publish(message: OutboxMessage) {
         val messageContent = objectMapper.writeValueAsString(message.message)
-        logger.info { "OutboxMessage id: '${message.id}', type: '${message.eventType}', content: $messageContent" }
+        logger.info { "OutboxMessage id: '${message.id}', content: $messageContent" }
     }
 
     companion object {
