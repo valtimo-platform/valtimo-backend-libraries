@@ -16,17 +16,14 @@
 
 package com.ritense.outbox.publisher
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.OutboxMessage
 import mu.KotlinLogging
 
-open class LoggingMessagePublisher(
-    private val objectMapper: ObjectMapper
-) : MessagePublisher {
+// TODO: Remove this MessagePublisher when Valtimo has another MessagePublisher out of the box.
+open class LoggingMessagePublisher : MessagePublisher {
 
     override fun publish(message: OutboxMessage) {
-        val messageContent = objectMapper.writeValueAsString(message.message)
-        logger.info { "OutboxMessage id: '${message.id}', content: $messageContent" }
+        logger.info { "OutboxMessage id: '${message.id}', content: ${message.message}" }
     }
 
     companion object {

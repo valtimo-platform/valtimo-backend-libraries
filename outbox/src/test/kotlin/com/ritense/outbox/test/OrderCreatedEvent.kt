@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox
+package com.ritense.outbox.test
 
-data class OutboxMessageSaved(
-    val outboxMessage: OutboxMessage
+data class OrderCreatedEvent(
+    val name: String
 )

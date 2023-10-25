@@ -17,7 +17,6 @@
 package com.ritense.outbox
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -30,7 +29,7 @@ open class OutboxService(
 
     @Transactional(propagation = Propagation.MANDATORY)
     open fun send(message: Any) {
-        send(objectMapper.valueToTree(message))
+        send(objectMapper.writeValueAsString(message))
     }
 
     /**
@@ -46,7 +45,7 @@ open class OutboxService(
      * }
      */
     @Transactional(propagation = Propagation.MANDATORY)
-    open fun send(message: ObjectNode) {
+    open fun send(message: String) {
         val outboxMessage = OutboxMessage(
             message = message
         )

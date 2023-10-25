@@ -16,8 +16,6 @@
 
 package com.ritense.outbox
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.persistence.Column
@@ -33,9 +31,8 @@ class OutboxMessage(
     @Column(name = "id")
     val id: UUID = UUID.randomUUID(),
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "message")
-    val message: ObjectNode,
+    val message: String,
 
     @Column(name = "created_on")
     val createdOn: LocalDateTime = LocalDateTime.now()

@@ -16,7 +16,7 @@
 
 package com.ritense.outbox
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.outbox.test.OrderCreatedEvent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -28,12 +28,6 @@ class OutboxServiceIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var outboxService: OutboxService
 
-    @Autowired
-    lateinit var outboxMessageRepository: OutboxMessageRepository
-
-    @Autowired
-    lateinit var objectMapper: ObjectMapper
-
     @Test
     @Transactional
     fun `should create OutboxMessage`() {
@@ -43,7 +37,7 @@ class OutboxServiceIntTest : BaseIntegrationTest() {
 
         val messages = outboxMessageRepository.findAll()
         assertThat(messages.size).isEqualTo(1)
-        assertThat(objectMapper.writeValueAsString(messages[0].message)).isEqualTo("""{"name":"textBook"}""")
+        assertThat(messages[0].message).isEqualTo("""{"name":"textBook"}""")
     }
 
     @Test
@@ -56,8 +50,4 @@ class OutboxServiceIntTest : BaseIntegrationTest() {
 
         assertThat(exception.message).isEqualTo("No existing transaction found for transaction marked with propagation 'mandatory'")
     }
-
-    data class OrderCreatedEvent(
-        val name: String
-    )
 }
