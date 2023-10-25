@@ -16,12 +16,12 @@
 
 package com.ritense.outbox.publisher
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.BaseIntegrationTest
-import com.ritense.outbox.OutboxMessage
-import com.ritense.outbox.OutboxMessageRepository
-import org.assertj.core.api.Assertions.assertThat
+import com.ritense.outbox.test.OrderCreatedEvent
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
@@ -30,27 +30,13 @@ class PollingPublisherJobIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var pollingPublisherJob: PollingPublisherJob
 
-    @Autowired
-    lateinit var outboxMessageRepository: OutboxMessageRepository
-
-    @Autowired
-    lateinit var objectMapper: ObjectMapper
-
     @Test
     @Transactional
     fun `should publish messages`() {
-        val event = OrderCreatedEvent("textBook")
-        val message = OutboxMessage(
-            message = objectMapper.valueToTree(event)
-        )
-        outboxMessageRepository.save(message)
+        insertOutboxMessage(OrderCreatedEvent("textBook"))
 
         pollingPublisherJob.scheduledTaskPollMessage()
 
-        assertThat(messagePublisher.publish(message))
+        verify(messagePublisher, times(1)).publish(any())
     }
-
-    data class OrderCreatedEvent(
-        val name: String
-    )
 }

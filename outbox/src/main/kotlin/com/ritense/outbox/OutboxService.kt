@@ -23,7 +23,7 @@ import io.cloudevents.core.builder.CloudEventBuilder
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
+import java.util.UUID
 
 open class OutboxService(
     private val outboxMessageRepository: OutboxMessageRepository,
@@ -55,7 +55,7 @@ open class OutboxService(
      * }
      */
     @Transactional(propagation = Propagation.MANDATORY)
-    open fun send(message: ObjectNode) {
+    open fun send(message: String) {
         val outboxMessage = OutboxMessage(
             message = message
         )

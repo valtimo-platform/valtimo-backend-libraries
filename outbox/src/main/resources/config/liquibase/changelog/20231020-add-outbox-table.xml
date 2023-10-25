@@ -24,7 +24,7 @@
             <column name="id" type="${uuidType}">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="outboxPK"/>
             </column>
-            <column name="message" type="${jsonType}">
+            <column name="message" type="TEXT">
                 <constraints nullable="false"/>
             </column>
             <column name="created_on" type="DATETIME">

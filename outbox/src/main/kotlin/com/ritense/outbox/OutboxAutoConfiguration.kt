@@ -31,8 +31,6 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.Ordered.LOWEST_PRECEDENCE
-import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
 import javax.sql.DataSource
@@ -95,13 +93,10 @@ class OutboxAutoConfiguration {
         return PollingPublisherJob(pollingPublisherService)
     }
 
-    @Order(LOWEST_PRECEDENCE)
     @Bean
     @ConditionalOnMissingBean(MessagePublisher::class)
-    fun loggingMessagePublisher(
-        objectMapper: ObjectMapper
-    ): MessagePublisher {
-        return LoggingMessagePublisher(objectMapper)
+    fun loggingMessagePublisher(): MessagePublisher {
+        return LoggingMessagePublisher()
     }
 
     @ConditionalOnMissingBean(UserProvider::class)
