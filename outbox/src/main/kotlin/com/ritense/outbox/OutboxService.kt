@@ -19,10 +19,11 @@ package com.ritense.outbox
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.outbox.domain.BaseEvent
+import io.cloudevents.core.builder.CloudEventBuilder
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.util.*
 
 open class OutboxService(
     private val outboxMessageRepository: OutboxMessageRepository,
@@ -33,8 +34,12 @@ open class OutboxService(
 
     @Transactional(propagation = Propagation.MANDATORY)
     open fun send(message: BaseEvent) {
-        message.source = valtimoSystemUserId ?: springApplicationName
-        send(objectMapper.valueToTree<ObjectNode>(message))
+//        message.source = valtimoSystemUserId ?: springApplicationName
+        // transform base event to cloud event
+        val cloudEvent = CloudEventBuilder.v1().withId(
+            message.id.toString()
+        ).build()
+        send(objectMapper.writeValueAsString(cloudEvent))
     }
 
     /**

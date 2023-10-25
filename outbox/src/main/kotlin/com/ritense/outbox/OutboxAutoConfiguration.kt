@@ -104,4 +104,10 @@ class OutboxAutoConfiguration {
         return LoggingMessagePublisher(objectMapper)
     }
 
+    @ConditionalOnMissingBean(UserProvider::class)
+    @Bean
+    fun userProvider(
+    ): UserProvider {
+        return UserProvider()
+    }
 }
