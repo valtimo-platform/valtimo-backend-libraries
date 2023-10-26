@@ -16,37 +16,68 @@
 
 package com.ritense.outbox.publisher
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.BaseIntegrationTest
-import com.ritense.outbox.OutboxMessage
-import com.ritense.outbox.OutboxMessageRepository
-import org.assertj.core.api.Assertions.assertThat
+import com.ritense.outbox.test.OrderCreatedEvent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.transaction.annotation.Transactional
 
 class PollingPublisherServiceIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var pollingPublisherService: PollingPublisherService
 
-    @Autowired
-    lateinit var outboxMessageRepository: OutboxMessageRepository
-
-    @Autowired
-    lateinit var objectMapper: ObjectMapper
-
     @Test
-    @Transactional
     fun `should publish messages`() {
-        val event = PollingPublisherJobIntTest.OrderCreatedEvent("textBook")
-        val message = OutboxMessage(
-            message = objectMapper.valueToTree(event)
-        )
-        outboxMessageRepository.save(message)
+        insertOutboxMessage(OrderCreatedEvent("textBook"))
 
         pollingPublisherService.pollAndPublishAll()
 
-        assertThat(messagePublisher.publish(message))
+        verify(messagePublisher, times(1)).publish(any())
+    }
+
+    @Test
+    fun `should not poll messages at the same time because of AtomicBoolean`(): Unit = runBlocking {
+        insertOutboxMessage(OrderCreatedEvent("event 1"))
+        insertOutboxMessage(OrderCreatedEvent("event 2"))
+        whenever(messagePublisher.publish(any())).then { Thread.sleep(1000) }
+        verify(outboxMessageRepository, times(0)).findTopByOrderByCreatedOnAsc()
+
+        listOf(
+            async(Dispatchers.IO) { pollingPublisherService.pollAndPublishAll() },
+            async(Dispatchers.IO) { pollingPublisherService.pollAndPublishAll() }
+        ).awaitAll()
+
+        // Number of database reads is 3 because:
+        // Poller 1: read database. Find event 1
+        // Poller 2: Polling is blocked. NO database read
+        // Poller 1: read database. Find event 2
+        // Poller 1: read database. Find NULL
+        verify(outboxMessageRepository, times(3)).findTopByOrderByCreatedOnAsc()
+    }
+
+    @Test
+    fun `should poll messages sequentially`() {
+        insertOutboxMessage(OrderCreatedEvent("event 1"))
+        insertOutboxMessage(OrderCreatedEvent("event 2"))
+        whenever(messagePublisher.publish(any())).then { Thread.sleep(1000) }
+        verify(outboxMessageRepository, times(0)).findTopByOrderByCreatedOnAsc()
+
+        pollingPublisherService.pollAndPublishAll()
+        pollingPublisherService.pollAndPublishAll()
+
+        // Number of database reads is 4 because:
+        // Poller 1: read database. Find event 1
+        // Poller 1: read database. Find event 2
+        // Poller 1: read database. Find NULL
+        // Poller 2: read database. Find NULL
+        verify(outboxMessageRepository, times(4)).findTopByOrderByCreatedOnAsc()
     }
 }

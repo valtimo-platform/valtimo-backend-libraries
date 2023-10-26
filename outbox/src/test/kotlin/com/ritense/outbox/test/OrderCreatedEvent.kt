@@ -14,26 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox
+package com.ritense.outbox.test
 
-import java.time.LocalDateTime
-import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
-
-@Entity
-@Table(name = "outbox_message")
-class OutboxMessage(
-
-    @Id
-    @Column(name = "id")
-    val id: UUID = UUID.randomUUID(),
-
-    @Column(name = "message")
-    val message: String,
-
-    @Column(name = "created_on")
-    val createdOn: LocalDateTime = LocalDateTime.now()
+data class OrderCreatedEvent(
+    val name: String
 )

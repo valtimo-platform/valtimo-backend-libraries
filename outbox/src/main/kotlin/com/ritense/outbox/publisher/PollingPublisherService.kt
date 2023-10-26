@@ -34,24 +34,24 @@ open class PollingPublisherService(
      */
     open fun pollAndPublishAll() {
         if (polling.compareAndSet(false, true)) {
-            do {
-                try {
+            try {
+                do {
                     TransactionTemplate(platformTransactionManager).executeWithoutResult {
                         val oldestMessage = outboxService.getOldestMessage()
                         if (oldestMessage != null) {
-                            logger.info("Sending message '${oldestMessage.id}'")
+                            logger.debug { "Sending OutboxMessage '${oldestMessage.id}'" }
                             messagePublisher.publish(oldestMessage)
                             outboxService.deleteMessage(oldestMessage.id)
                         } else {
                             polling.set(false)
                         }
                     }
-                } catch (e: Exception) {
-                    logger.error("Failed to poll and publish outbox messages", e)
-                } finally {
-                    polling.set(false)
-                }
-            } while (polling.get())
+                } while (polling.get())
+            } catch (e: Exception) {
+                throw RuntimeException("Failed to poll and publish outbox messages", e)
+            } finally {
+                polling.set(false)
+            }
         }
     }
 

@@ -16,10 +16,14 @@
 
 package com.ritense.outbox
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.publisher.MessagePublisher
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
@@ -28,6 +32,25 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @Tag("integration")
 class BaseIntegrationTest {
 
-    @SpyBean
+    @MockBean
     lateinit var messagePublisher: MessagePublisher
+
+    @SpyBean
+    lateinit var outboxMessageRepository: OutboxMessageRepository
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
+    @AfterEach
+    fun afterEach() {
+        outboxMessageRepository.deleteAll()
+    }
+
+    fun insertOutboxMessage(event: Any) {
+        val message = OutboxMessage(
+            message = objectMapper.writeValueAsString(event)
+        )
+        outboxMessageRepository.save(message)
+    }
+
 }

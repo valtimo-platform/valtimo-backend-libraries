@@ -21,7 +21,6 @@ import com.ritense.outbox.publisher.LoggingMessagePublisher
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.PollingPublisherJob
 import com.ritense.outbox.publisher.PollingPublisherService
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -31,8 +30,6 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.Ordered.LOWEST_PRECEDENCE
-import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
 import javax.sql.DataSource
@@ -62,14 +59,10 @@ class OutboxAutoConfiguration {
     fun outboxService(
         outboxMessageRepository: OutboxMessageRepository,
         objectMapper: ObjectMapper,
-        @Value("\${spring.application.name:application}") springApplicationName: String,
-        @Value("\${valtimo.system.user-id:#{null}}") valtimoSystemUserId: String?,
-        ): OutboxService {
+    ): OutboxService {
         return OutboxService(
             outboxMessageRepository,
-            objectMapper,
-            springApplicationName,
-            valtimoSystemUserId
+            objectMapper
         )
     }
 
@@ -95,13 +88,10 @@ class OutboxAutoConfiguration {
         return PollingPublisherJob(pollingPublisherService)
     }
 
-    @Order(LOWEST_PRECEDENCE)
     @Bean
     @ConditionalOnMissingBean(MessagePublisher::class)
-    fun loggingMessagePublisher(
-        objectMapper: ObjectMapper
-    ): MessagePublisher {
-        return LoggingMessagePublisher(objectMapper)
+    fun loggingMessagePublisher(): MessagePublisher {
+        return LoggingMessagePublisher()
     }
 
 }

@@ -22,7 +22,6 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':contract')
 
     /* DO NOT ADD DEPENDENCIES TO OTHER VALTIMO MODULES */
     implementation "org.springframework.boot:spring-boot-starter"
@@ -31,12 +30,12 @@ dependencies {
     implementation "org.liquibase.ext:liquibase-hibernate5:$liquibaseVersion"
     implementation "com.vladmihalcea:hibernate-types-55:$hibernateTypesVersion"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     implementation "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.postgresql:postgresql:$postgresqlDriverVersion"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
 
     jar {
         enabled = true
