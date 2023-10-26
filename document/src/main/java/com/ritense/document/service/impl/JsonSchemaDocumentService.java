@@ -44,6 +44,7 @@ import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentService;
+import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.authentication.NamedUser;
@@ -93,6 +94,8 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final OutboxService outboxService;
+
     public JsonSchemaDocumentService(
         JsonSchemaDocumentRepository documentRepository,
         JsonSchemaDocumentDefinitionService documentDefinitionService,
@@ -100,7 +103,8 @@ public class JsonSchemaDocumentService implements DocumentService {
         ResourceService resourceService,
         UserManagementService userManagementService,
         AuthorizationService authorizationService,
-        ApplicationEventPublisher applicationEventPublisher
+        ApplicationEventPublisher applicationEventPublisher,
+        OutboxService outboxService
     ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
@@ -109,6 +113,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         this.userManagementService = userManagementService;
         this.authorizationService = authorizationService;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.outboxService = outboxService;
     }
 
     @Override

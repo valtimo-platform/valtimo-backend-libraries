@@ -25,6 +25,7 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.result.CreateDocumentResult;
+import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.resource.Resource;
@@ -65,6 +66,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
 
     private UserManagementService userManagementService;
     private ApplicationEventPublisher applicationEventPublisher;
+    private OutboxService outboxService;
     private JsonSchemaDocument jsonSchemaDocument;
 
     private final String documentDefinitionName = "name";
@@ -78,6 +80,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         authorizationService = mock(AuthorizationService.class);
         userManagementService = mock(UserManagementService.class);
         applicationEventPublisher = mock(ApplicationEventPublisher.class);
+        outboxService = mock(OutboxService.class);
 
         jsonSchemaDocumentService = spy(new JsonSchemaDocumentService(
             documentRepository,
@@ -86,7 +89,9 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             resourceService,
             userManagementService,
             authorizationService,
-            applicationEventPublisher));
+            applicationEventPublisher,
+            outboxService
+        ));
 
         var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");
         jsonSchemaDocument = createDocument(definitionOf("person"), content).resultingDocument().orElseThrow();
