@@ -69,7 +69,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         document = result.resultingDocument().orElseThrow();
         documentRepository.save(document);
 
-        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService, documentDefinitionService);
+        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService, outboxService);
         mockMvc = MockMvcBuilders
             .standaloneSetup(jsonSchemaDocumentResource)
             .build();

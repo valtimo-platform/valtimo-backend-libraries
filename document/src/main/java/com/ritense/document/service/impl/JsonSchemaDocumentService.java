@@ -17,6 +17,7 @@
 package com.ritense.document.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
@@ -45,6 +46,8 @@ import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentService;
 import com.ritense.outbox.OutboxService;
+import com.ritense.outbox.domain.DocumentCreated;
+import com.ritense.outbox.domain.DocumentUpdated;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.authentication.NamedUser;
@@ -224,6 +227,13 @@ public class JsonSchemaDocumentService implements DocumentService {
                 );
 
                 documentRepository.save(jsonSchemaDocument);
+
+                outboxService.send(
+                    new DocumentCreated(
+                        jsonSchemaDocument.id().toString(),
+                        (ObjectNode) jsonSchemaDocument.content().asJson()
+                    )
+                );
             }
         );
         return result;
@@ -247,6 +257,13 @@ public class JsonSchemaDocumentService implements DocumentService {
         if (!modifyResult.errors().isEmpty()) {
             throw new ModifyDocumentException(modifyResult.errors());
         }
+
+        outboxService.send(
+            new DocumentUpdated(
+                jsonSchemaDocument.id().toString(),
+                (ObjectNode) jsonSchemaDocument.content().asJson()
+            )
+        );
     }
 
     @Override
@@ -285,7 +302,16 @@ public class JsonSchemaDocumentService implements DocumentService {
             version
         );
 
-        result.resultingDocument().ifPresent(documentRepository::save);
+        result.resultingDocument().ifPresent(modifiedDocument -> {
+            documentRepository.save(modifiedDocument);
+            outboxService.send(
+                new DocumentUpdated(
+                    modifiedDocument.id().toString(),
+                    (ObjectNode) modifiedDocument.content().asJson()
+                )
+            );
+        });
+
         return result;
     }
 

@@ -41,6 +41,7 @@ import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider;
 import com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider;
 import com.ritense.document.service.SearchFieldActionProvider;
 import com.ritense.document.service.SearchFieldService;
+import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
@@ -74,6 +75,9 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @Inject
     protected DocumentDefinitionService documentDefinitionService;
+
+    @Inject
+    protected OutboxService outboxService;
 
     @Inject
     protected DocumentService documentService;

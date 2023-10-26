@@ -16,6 +16,7 @@
 
 package com.ritense.document.web.rest.impl;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
@@ -29,12 +30,15 @@ import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.web.rest.DocumentResource;
+import com.ritense.outbox.OutboxService;
+import com.ritense.outbox.domain.DocumentCreated;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,22 +60,32 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentResource.class);
 
     private final DocumentService documentService;
-    private final DocumentDefinitionService documentDefinitionService;
+    private final OutboxService outboxService;
 
     public JsonSchemaDocumentResource(
         final DocumentService documentService,
-        final DocumentDefinitionService documentDefinitionService
+        final OutboxService outboxService
     ) {
         this.documentService = documentService;
-        this.documentDefinitionService = documentDefinitionService;
+        this.outboxService = outboxService;
     }
 
+    @Transactional
     @Override
     @GetMapping("/v1/document/{id}")
     public ResponseEntity<? extends Document> getDocument(@PathVariable(name = "id") UUID id) {
-        return documentService.findBy(JsonSchemaDocumentId.existingId(id))
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+        var document = documentService.findBy(JsonSchemaDocumentId.existingId(id)).orElse(null);
+        if (document != null) {
+            outboxService.send(
+                new DocumentCreated(
+                    document.id().toString(),
+                    (ObjectNode) document.content().asJson()
+                )
+            );
+            return ResponseEntity.ok(document);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Override

@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.contract.event
+package com.ritense.outbox.domain
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.document.domain.Document
-import com.ritense.outbox.domain.BaseEvent
 
-class DocumentCreatedEvent(document: Document) : BaseEvent(
+class DocumentUpdated(documentId: String, documentContent: ObjectNode) : BaseEvent(
     source = null,
     specversion = "1",
-    type = "DocumentCreatedEvent",
-    resultType = "",
-    resultId = "",
-    result = document.content().asJson() as ObjectNode
+    type = "com.ritense.outbox.domain.DocumentUpdated",
+    resultType = "com.ritense.document.domain.impl.JsonSchemaDocument",
+    resultId = documentId,
+    result = documentContent
 )
