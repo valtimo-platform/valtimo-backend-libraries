@@ -17,29 +17,48 @@
 package com.ritense.outbox
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.outbox.domain.BaseEvent
+import com.ritense.outbox.domain.CloudEventData
 import io.cloudevents.core.builder.CloudEventBuilder
+import io.cloudevents.core.provider.EventFormatProvider
+import io.cloudevents.jackson.JsonFormat
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.net.URI
+import java.time.ZonedDateTime
+import java.util.*
+import kotlin.text.Charsets.UTF_8
+
 
 open class OutboxService(
     private val outboxMessageRepository: OutboxMessageRepository,
     private val objectMapper: ObjectMapper,
+    private val userProvider: UserProvider,
     private val springApplicationName: String?,
-    private val valtimoSystemUserId: String?
+    private val valtimoSystemUserId: String?,
 ) {
 
     @Transactional(propagation = Propagation.MANDATORY)
-    open fun send(message: BaseEvent) {
-//        message.source = valtimoSystemUserId ?: springApplicationName
-        // transform base event to cloud event
-        val cloudEvent = CloudEventBuilder.v1().withId(
-            message.id.toString()
-        ).build()
-        send(objectMapper.writeValueAsString(cloudEvent))
+    open fun send(baseEvent: BaseEvent) {
+        val userId = baseEvent.userId ?: userProvider.getCurrentUserLogin() ?: "System"
+        val roles = baseEvent.roles ?: userProvider.getCurrentUserRoles().joinToString()
+        val cloudEventData = CloudEventData(userId, roles, baseEvent.resultType, baseEvent.resultId, baseEvent.result)
+        val cloudEvent = CloudEventBuilder.v1()
+            .withId(baseEvent.id.toString())
+            .withSource(URI(valtimoSystemUserId ?: springApplicationName))
+            .withTime(baseEvent.date.atOffset(ZonedDateTime.now().offset))
+            .withType(baseEvent.type)
+            .withDataContentType("application/json")
+            .withData(objectMapper.writeValueAsBytes(cloudEventData))
+            .build()
+        val serializedCloudEvent = EventFormatProvider
+            .getInstance()
+            .resolveFormat(JsonFormat.CONTENT_TYPE)
+            .serialize(cloudEvent)
+        val serializedCloudEventString = String(serializedCloudEvent, UTF_8)
+
+        send(serializedCloudEventString)
     }
 
     /**

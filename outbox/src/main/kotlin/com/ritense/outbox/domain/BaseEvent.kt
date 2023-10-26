@@ -21,11 +21,10 @@ import java.util.*
 
 abstract class BaseEvent (
     open val id: UUID  = UUID.randomUUID(),
-    open val specversion: String,
     open val type: String,
     open val date: LocalDateTime = LocalDateTime.now(),
-    open val userId: String? = null,
-    open val roles: String? = null,
+    open var userId: String? = null,
+    open var roles: String? = null,
     open val resultType: String?,
     open val resultId: String?,
     open val result: ObjectNode,

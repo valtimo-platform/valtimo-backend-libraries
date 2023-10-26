@@ -55,19 +55,28 @@ class OutboxAutoConfiguration {
         return OutboxLiquibaseRunner(liquibaseProperties, datasource)
     }
 
+    @ConditionalOnMissingBean(UserProvider::class)
+    @Bean
+    fun userProvider(
+    ): UserProvider {
+        return UserProvider()
+    }
+
     @Bean
     @ConditionalOnMissingBean(OutboxService::class)
     fun outboxService(
         outboxMessageRepository: OutboxMessageRepository,
         objectMapper: ObjectMapper,
+        userProvider: UserProvider,
         @Value("\${spring.application.name:application}") springApplicationName: String,
         @Value("\${valtimo.system.user-id:#{null}}") valtimoSystemUserId: String?,
         ): OutboxService {
         return OutboxService(
             outboxMessageRepository,
             objectMapper,
+            userProvider,
             springApplicationName,
-            valtimoSystemUserId
+            valtimoSystemUserId,
         )
     }
 
@@ -99,10 +108,4 @@ class OutboxAutoConfiguration {
         return LoggingMessagePublisher()
     }
 
-    @ConditionalOnMissingBean(UserProvider::class)
-    @Bean
-    fun userProvider(
-    ): UserProvider {
-        return UserProvider()
-    }
 }
