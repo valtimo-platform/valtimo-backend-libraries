@@ -18,7 +18,7 @@ package com.ritense.outbox.domain
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 abstract class BaseEvent(
     open val id: UUID = UUID.randomUUID(),
