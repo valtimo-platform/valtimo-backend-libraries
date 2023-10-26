@@ -24,14 +24,13 @@ import com.ritense.document.domain.impl.request.GetDocumentCandidateUsersRequest
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
-import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.web.rest.DocumentResource;
 import com.ritense.outbox.OutboxService;
-import com.ritense.outbox.domain.DocumentCreated;
+import com.ritense.outbox.domain.DocumentViewed;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +76,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
         var document = documentService.findBy(JsonSchemaDocumentId.existingId(id)).orElse(null);
         if (document != null) {
             outboxService.send(
-                new DocumentCreated(
+                new DocumentViewed(
                     document.id().toString(),
                     (ObjectNode) document.content().asJson()
                 )

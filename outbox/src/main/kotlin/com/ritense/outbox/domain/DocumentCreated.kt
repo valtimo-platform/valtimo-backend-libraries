@@ -19,8 +19,6 @@ package com.ritense.outbox.domain
 import com.fasterxml.jackson.databind.node.ObjectNode
 
 class DocumentCreated(documentId: String, documentContent: ObjectNode) : BaseEvent(
-    source = null,
-    specversion = "1",
     type = "com.ritense.outbox.domain.DocumentCreated",
     resultType = "com.ritense.document.domain.impl.JsonSchemaDocument",
     resultId = documentId,

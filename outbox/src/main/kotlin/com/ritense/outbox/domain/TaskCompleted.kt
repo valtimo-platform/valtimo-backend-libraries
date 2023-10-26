@@ -19,8 +19,6 @@ package com.ritense.outbox.domain
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 class TaskCompleted(taskId: String) : BaseEvent(
-    source = null,
-    specversion = "1",
     type = "com.ritense.outbox.domain.TaskCompleted",
     resultType = "com.ritense.valtimo.camunda.domain.CamundaTask",
     resultId = taskId,

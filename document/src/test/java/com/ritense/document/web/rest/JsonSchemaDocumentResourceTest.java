@@ -20,7 +20,6 @@ import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
-import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.outbox.OutboxService;

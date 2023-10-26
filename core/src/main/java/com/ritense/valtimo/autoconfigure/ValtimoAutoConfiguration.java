@@ -17,6 +17,7 @@
 package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.ProcessApplicationStartedEventListener;
 import com.ritense.valtimo.camunda.ProcessDefinitionPropertyListener;
@@ -174,7 +175,7 @@ public class ValtimoAutoConfiguration {
         final UserManagementService userManagementService,
         final EntityManager entityManager,
         final AuthorizationService authorizationService,
-        final CamundaContextService camundaContextService
+        final OutboxService outboxService
     ) {
         return new CamundaTaskService(
             taskService,
@@ -188,7 +189,7 @@ public class ValtimoAutoConfiguration {
             userManagementService,
             entityManager,
             authorizationService,
-            camundaContextService
+            outboxService
         );
     }
 

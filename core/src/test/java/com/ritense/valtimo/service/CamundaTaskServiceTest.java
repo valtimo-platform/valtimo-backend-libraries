@@ -18,6 +18,7 @@ package com.ritense.valtimo.service;
 
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.specification.AuthorizationSpecification;
+import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.camunda.service.CamundaContextService;
@@ -72,7 +73,7 @@ class CamundaTaskServiceTest {
     private UserManagementService userManagementService;
     private EntityManager entityManager;
     private AuthorizationService authorizationService;
-    private CamundaContextService camundaContextService;
+    private OutboxService outboxService;
 
     @BeforeEach
     void setUp() {
@@ -85,7 +86,7 @@ class CamundaTaskServiceTest {
         userManagementService = mock(UserManagementService.class);
         entityManager = mock(EntityManager.class);
         authorizationService = mock(AuthorizationService.class);
-        camundaContextService = mock(CamundaContextService.class);
+        outboxService = mock(OutboxService.class);
         task = new CamundaTask(TASK_ID, 0, null, null, null, List.of(), null, null, null, null, null, null, null, null, null, null, 0, null, null, null, null, 0, null, Set.of());
         camundaTaskService = spy(
             new CamundaTaskService(
@@ -100,7 +101,7 @@ class CamundaTaskServiceTest {
                 userManagementService,
                 entityManager,
                 authorizationService,
-                camundaContextService)
+                outboxService)
         );
         when(authorizationService.getAuthorizationSpecification(any(), any()))
             .thenReturn(mock(AuthorizationSpecification.class));
@@ -180,7 +181,7 @@ class CamundaTaskServiceTest {
             userManagementService,
             entityManager,
             authorizationService,
-            camundaContextService));
+            outboxService));
 
         when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doNothing().when(taskService).complete(TASK_ID);

@@ -22,6 +22,8 @@ import com.ritense.authorization.request.DelegateUserEntityAuthorizationRequest;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.role.Role;
 import com.ritense.authorization.specification.AuthorizationSpecification;
+import com.ritense.outbox.OutboxService;
+import com.ritense.outbox.domain.TaskCompleted;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
@@ -30,7 +32,6 @@ import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
 import com.ritense.valtimo.camunda.dto.TaskExtended;
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
-import com.ritense.valtimo.camunda.service.CamundaContextService;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
@@ -60,6 +61,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Order;
@@ -71,6 +73,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGN;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGNABLE;
@@ -114,7 +117,7 @@ public class CamundaTaskService {
     private final UserManagementService userManagementService;
     private final EntityManager entityManager;
     private final AuthorizationService authorizationService;
-    private final CamundaContextService camundaContextService;
+    private final OutboxService outboxService;
 
     public CamundaTaskService(
         TaskService taskService,
@@ -128,7 +131,7 @@ public class CamundaTaskService {
         UserManagementService userManagementService,
         EntityManager entityManager,
         AuthorizationService authorizationService,
-        CamundaContextService camundaContextService) {
+        OutboxService outboxService) {
         this.taskService = taskService;
         this.formService = formService;
         this.delegateTaskHelper = delegateTaskHelper;
@@ -140,7 +143,7 @@ public class CamundaTaskService {
         this.userManagementService = userManagementService;
         this.entityManager = entityManager;
         this.authorizationService = authorizationService;
-        this.camundaContextService = camundaContextService;
+        this.outboxService = outboxService;
     }
 
     @Transactional(readOnly = true)
@@ -224,6 +227,7 @@ public class CamundaTaskService {
         requirePermission(task, COMPLETE);
         taskService.complete(taskId);
         entityManager.detach(task);
+        outboxService.send(new TaskCompleted(taskId));
     }
 
     @Transactional
