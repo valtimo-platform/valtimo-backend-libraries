@@ -99,15 +99,14 @@ class OutboxServiceIntTest : BaseIntegrationTest() {
         assertThat(messages.size).isEqualTo(1)
         val result: ObjectNode = objectMapper.readValue(messages[0].message)
         assertThat(result["data"]["userId"].textValue()).isEqualTo("user@ritense.com")
-        assertThat(result["data"]["roles"].textValue()).isEqualTo("ADMIN, USER")
+        assertThat(result["data"]["roles"].textValue()).isEqualTo("ADMIN,USER")
     }
-
 
     data class OrderCreatedEvent(
         val name: String
     )
 
-    class TestEvent: BaseEvent(
+    class TestEvent : BaseEvent(
         type = "test",
         resultType = "test",
         resultId = "test",

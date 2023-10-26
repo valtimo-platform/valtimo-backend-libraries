@@ -42,7 +42,7 @@ open class OutboxService(
     @Transactional(propagation = Propagation.MANDATORY)
     open fun send(baseEvent: BaseEvent) {
         val userId = baseEvent.userId ?: userProvider.getCurrentUserLogin() ?: "System"
-        val roles = baseEvent.roles ?: userProvider.getCurrentUserRoles().joinToString()
+        val roles = baseEvent.roles ?: userProvider.getCurrentUserRoles().joinToString(",")
         val cloudEventData = CloudEventData(userId, roles, baseEvent.resultType, baseEvent.resultId, baseEvent.result)
         val cloudEvent = CloudEventBuilder.v1()
             .withId(baseEvent.id.toString())
