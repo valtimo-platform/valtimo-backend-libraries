@@ -17,6 +17,7 @@
 package com.ritense.outbox
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -37,7 +38,7 @@ class TestApplication {
         @Bean
         @ConditionalOnMissingBean(ObjectMapper::class)
         fun objectMapper(): ObjectMapper {
-            return jacksonObjectMapper()
+            return jacksonObjectMapper().registerModule(JavaTimeModule())
         }
     }
 

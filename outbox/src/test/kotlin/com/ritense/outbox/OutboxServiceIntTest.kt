@@ -16,11 +16,15 @@
 
 package com.ritense.outbox
 
-import com.ritense.outbox.test.OrderCreatedEvent
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.outbox.domain.BaseEvent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 
 class OutboxServiceIntTest : BaseIntegrationTest() {
@@ -33,7 +37,8 @@ class OutboxServiceIntTest : BaseIntegrationTest() {
     fun `should create OutboxMessage`() {
         val event = OrderCreatedEvent("textBook")
 
-        outboxService.send(event)
+        outboxService.send(objectMapper.writeValueAsString(event))
+
 
         val messages = outboxMessageRepository.findAll()
         assertThat(messages.size).isEqualTo(1)
@@ -45,9 +50,66 @@ class OutboxServiceIntTest : BaseIntegrationTest() {
         val event = OrderCreatedEvent("textBook")
 
         val exception = assertThrows<RuntimeException> {
-            outboxService.send(event)
+            outboxService.send(objectMapper.writeValueAsString(event))
         }
 
         assertThat(exception.message).isEqualTo("No existing transaction found for transaction marked with propagation 'mandatory'")
     }
+
+    @Test
+    @Transactional
+    fun `should save a cloud event if a base event is submitted`() {
+        outboxService.send(TestEvent())
+
+        val messages = outboxMessageRepository.findAll()
+        assertThat(messages.size).isEqualTo(1)
+        val result: ObjectNode = objectMapper.readValue(messages[0].message)
+        assertThat(result["specversion"].textValue()).isEqualTo("1.0")
+    }
+
+    @Test
+    @Transactional
+    fun `should set source to 'application' when no application name or system user id is provided`() {
+        outboxService.send(TestEvent())
+
+        val messages = outboxMessageRepository.findAll()
+        assertThat(messages.size).isEqualTo(1)
+        val result: ObjectNode = objectMapper.readValue(messages[0].message)
+        assertThat(result["source"].textValue()).isEqualTo("application")
+    }
+
+    @Test
+    @Transactional
+    fun `should set user id to "System" if no user is available`() {
+        outboxService.send(TestEvent())
+
+        val messages = outboxMessageRepository.findAll()
+        assertThat(messages.size).isEqualTo(1)
+        val result: ObjectNode = objectMapper.readValue(messages[0].message)
+        assertThat(result["data"]["userId"].textValue()).isEqualTo("System")
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = ["ADMIN", "USER"])
+    @Transactional
+    fun `should correctly set user id and roles for a cloud event`() {
+        outboxService.send(TestEvent())
+
+        val messages = outboxMessageRepository.findAll()
+        assertThat(messages.size).isEqualTo(1)
+        val result: ObjectNode = objectMapper.readValue(messages[0].message)
+        assertThat(result["data"]["userId"].textValue()).isEqualTo("user@ritense.com")
+        assertThat(result["data"]["roles"].textValue()).isEqualTo("ADMIN,USER")
+    }
+
+    data class OrderCreatedEvent(
+        val name: String
+    )
+
+    class TestEvent : BaseEvent(
+        type = "test",
+        resultType = "test",
+        resultId = "test",
+        result = jacksonObjectMapper().createObjectNode()
+    )
 }
