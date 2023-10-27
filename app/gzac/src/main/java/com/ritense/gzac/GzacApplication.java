@@ -17,7 +17,6 @@
 package com.ritense.gzac;
 
 import com.ritense.connector.service.ConnectorService;
-import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.gzac.listener.ApplicationReadyEventListener;
 import com.ritense.objectsapi.service.ObjectSyncService;
 import com.ritense.openzaak.service.InformatieObjectTypeLinkService;
@@ -68,7 +67,6 @@ public class GzacApplication {
         ObjectSyncService objectSyncService,
         ZaakTypeLinkService zaakTypeLinkService,
         InformatieObjectTypeLinkService informatieObjectTypeLinkService,
-        DocumentDefinitionService documentDefinitionService,
         DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService
     ) {
         return new ApplicationReadyEventListener(
@@ -76,7 +74,6 @@ public class GzacApplication {
             objectSyncService,
             zaakTypeLinkService,
             informatieObjectTypeLinkService,
-            documentDefinitionService,
             documentDefinitionProcessLinkService
         );
     }

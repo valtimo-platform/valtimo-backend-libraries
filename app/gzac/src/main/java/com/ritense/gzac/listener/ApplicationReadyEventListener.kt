@@ -21,7 +21,6 @@ import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.service.ConnectorService
 import com.ritense.contactmoment.connector.ContactMomentProperties
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent
-import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieProperties
 import com.ritense.objectsapi.productaanvraag.ProductAanvraagProperties
@@ -46,15 +45,12 @@ import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
-import org.springframework.stereotype.Component
 
-@Component
 class ApplicationReadyEventListener(
     private val connectorService: ConnectorService,
     private val objectSyncService: ObjectSyncService,
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
-    private val documentDefinitionService: DocumentDefinitionService,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {
     @EventListener(ApplicationReadyEvent::class)
@@ -67,7 +63,7 @@ class ApplicationReadyEventListener(
         connectZaakType(event)
     }
 
-    fun createConnectors() {
+    private fun createConnectors() {
         val connectorTypes = connectorService.getConnectorTypes()
 
         try {
@@ -84,12 +80,12 @@ class ApplicationReadyEventListener(
         }
     }
 
-    fun List<ConnectorType>.findId(connectorName: String): UUID {
+    private fun List<ConnectorType>.findId(connectorName: String): UUID {
         return this.first { it.name == connectorName }
             .id.id
     }
 
-    fun createHaalCentraalBrpConnector(id: UUID) {
+    private fun createHaalCentraalBrpConnector(id: UUID) {
         connectorService.createConnectorInstance(
             typeId = id,
             name = "HaalCentraalBrpInstance",
@@ -100,7 +96,7 @@ class ApplicationReadyEventListener(
         )
     }
 
-    fun createOpenZaakConnector(id: UUID) {
+    private fun createOpenZaakConnector(id: UUID) {
         connectorService.createConnectorInstance(
             typeId = id,
             name = "OpenZaakInstance",
@@ -116,7 +112,7 @@ class ApplicationReadyEventListener(
         )
     }
 
-    fun createContactMomentConnector(id: UUID) {
+    private fun createContactMomentConnector(id: UUID) {
         connectorService.createConnectorInstance(
             typeId = id,
             name = "ContactMomentInstance",
@@ -129,13 +125,13 @@ class ApplicationReadyEventListener(
         )
     }
 
-    fun createObjectApiConnectors(id: UUID) {
+    private fun createObjectApiConnectors(id: UUID) {
         createStraatverlichtingConnector(id)
         createTaakObjectsApiConnector(id)
         createProductAanvraagObjectsApiConnector(id)
     }
 
-    fun createStraatverlichtingConnector(id: UUID) {
+    private fun createStraatverlichtingConnector(id: UUID) {
         val result = connectorService.createConnectorInstance(
             typeId = id,
             name = "ObjectsApiInstance",
@@ -168,7 +164,7 @@ class ApplicationReadyEventListener(
         }
     }
 
-    fun createTaakObjectsApiConnector(id: UUID) {
+    private fun createTaakObjectsApiConnector(id: UUID) {
         connectorService.createConnectorInstance(
             typeId = id,
             name = TAAK_OBJECTAPI_CONNECTOR_NAME,
@@ -191,7 +187,7 @@ class ApplicationReadyEventListener(
         )
     }
 
-    fun createProductAanvraagObjectsApiConnector(id: UUID) {
+    private fun createProductAanvraagObjectsApiConnector(id: UUID) {
         connectorService.createConnectorInstance(
             typeId = id,
             name = PRODUCTAANVRAAG_OBJECTAPI_CONNECTOR_NAME,
@@ -214,7 +210,7 @@ class ApplicationReadyEventListener(
         )
     }
 
-    fun createTaakConnector(id: UUID) {
+    private fun createTaakConnector(id: UUID) {
         connectorService.createConnectorInstance(
             typeId = id,
             name = "TaakConnector",
@@ -225,7 +221,7 @@ class ApplicationReadyEventListener(
         )
     }
 
-    fun createProductAanvraagConnector(id: UUID) {
+    private fun createProductAanvraagConnector(id: UUID) {
         connectorService.createConnectorInstance(
             typeId = id,
             name = "ProductAanvragen",
@@ -244,7 +240,7 @@ class ApplicationReadyEventListener(
         )
     }
 
-    fun createOpenNotificatiesConnector(id: UUID) {
+    private fun createOpenNotificatiesConnector(id: UUID) {
         connectorService.createConnectorInstance(
             typeId = id,
             name = OPENNOTIFICATIES_CONNECTOR_NAME,
@@ -257,7 +253,7 @@ class ApplicationReadyEventListener(
         )
     }
 
-    fun createBesluitConnector(id: UUID) {
+    private fun createBesluitConnector(id: UUID) {
         connectorService.createConnectorInstance(
             typeId = id,
             name = "BesluitInstance",
@@ -307,14 +303,14 @@ class ApplicationReadyEventListener(
     }
 
     companion object {
-        val logger = KotlinLogging.logger {}
-        const val OPENNOTIFICATIES_CONNECTOR_NAME = "OpenNotificaties"
-        const val TAAK_OBJECTAPI_CONNECTOR_NAME = "TaakObjects"
-        const val PRODUCTAANVRAAG_OBJECTAPI_CONNECTOR_NAME = "ProductAanvraagObjects"
-        const val CLIENT_ID = "e09b8bc5-5831-4618-ab28-41411304309d"
-        const val OBJECTEN_API_URL = "http://localhost:8010"
-        const val OBJECTTYPEN_API_URL = "http://localhost:8011"
-        const val ZAAKTYPE_URL = "http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"
-        const val PORTAL_PERSON = "portal-person"
+        private val logger = KotlinLogging.logger {}
+        private const val OPENNOTIFICATIES_CONNECTOR_NAME = "OpenNotificaties"
+        private const val TAAK_OBJECTAPI_CONNECTOR_NAME = "TaakObjects"
+        private const val PRODUCTAANVRAAG_OBJECTAPI_CONNECTOR_NAME = "ProductAanvraagObjects"
+        private const val CLIENT_ID = "e09b8bc5-5831-4618-ab28-41411304309d"
+        private const val OBJECTEN_API_URL = "http://localhost:8010"
+        private const val OBJECTTYPEN_API_URL = "http://localhost:8011"
+        private const val ZAAKTYPE_URL = "http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"
+        private const val PORTAL_PERSON = "portal-person"
     }
 }
