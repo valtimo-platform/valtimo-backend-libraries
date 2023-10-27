@@ -21,6 +21,7 @@ import com.ritense.outbox.publisher.LoggingMessagePublisher
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.PollingPublisherJob
 import com.ritense.outbox.publisher.PollingPublisherService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -54,15 +55,28 @@ class OutboxAutoConfiguration {
         return OutboxLiquibaseRunner(liquibaseProperties, datasource)
     }
 
+    @ConditionalOnMissingBean(UserProvider::class)
+    @Bean
+    fun userProvider(
+    ): UserProvider {
+        return UserProvider()
+    }
+
     @Bean
     @ConditionalOnMissingBean(OutboxService::class)
     fun outboxService(
         outboxMessageRepository: OutboxMessageRepository,
         objectMapper: ObjectMapper,
-    ): OutboxService {
+        userProvider: UserProvider,
+        @Value("\${spring.application.name:application}") springApplicationName: String,
+        @Value("\${valtimo.system.user-id:#{null}}") valtimoSystemUserId: String?,
+        ): OutboxService {
         return OutboxService(
             outboxMessageRepository,
-            objectMapper
+            objectMapper,
+            userProvider,
+            springApplicationName,
+            valtimoSystemUserId,
         )
     }
 
