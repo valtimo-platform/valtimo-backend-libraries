@@ -82,10 +82,6 @@ class BaseIntegrationTest : BaseTest() {
     @MockBean
     lateinit var mailSender: MailSender
 
-    // TODO: remove authorization service mocking when call to run without permissions is added
-    @MockBean
-    lateinit var authorizationService: AuthorizationService
-
     lateinit var server: MockWebServer
     protected var executedRequests: MutableList<RecordedRequest> = mutableListOf()
 
