@@ -26,7 +26,6 @@ import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository;
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
-import com.ritense.valtimo.camunda.service.CamundaContextService;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService;

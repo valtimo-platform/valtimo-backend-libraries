@@ -15,6 +15,7 @@
  */
 package com.ritense.document.service.impl
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
@@ -23,17 +24,24 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
+import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.JsonSchemaDocumentActionProvider
+import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.NamedUser
+import com.ritense.valtimo.contract.json.Mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.never
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.security.test.context.support.WithMockUser
 import java.util.UUID
@@ -46,6 +54,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
     lateinit var originalDocument: Document
     lateinit var ashaMiller: NamedUser
     lateinit var jamesVance: NamedUser
+
     @BeforeEach
     fun beforeEach() {
         definition = definition()
@@ -114,6 +123,41 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
 
         assertThat(candidateUsers).doesNotContain(jamesVance)
         assertThat(candidateUsers).contains(ashaMiller)
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = [ADMIN])
+    fun `should send outboxMessage when creating document`() {
+        reset(outboxService)
+
+        val document = createDocument("""{"street": "Admin street"}""")
+
+        val eventCapture = argumentCaptor<BaseEvent>()
+        verify(outboxService, times(1)).send(eventCapture.capture())
+        val event = eventCapture.firstValue
+        assertThat(event.type).isEqualTo("com.ritense.outbox.domain.DocumentCreated")
+        assertThat(event.resultType).isEqualTo("com.ritense.document.domain.impl.JsonSchemaDocument")
+        assertThat(event.resultId).isEqualTo(document.id().toString())
+        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = [ADMIN])
+    fun `should send outboxMessage when updating document`() {
+        val document = createDocument("""{"street": "Admin street"}""")
+        val modifiedContent = jacksonObjectMapper().readTree("""{"street": "MODIFIED street"}""")
+        val documentRequest = ModifyDocumentRequest.create(document, modifiedContent)
+        reset(outboxService)
+
+        val modifiedDocument = documentService.modifyDocument(documentRequest).resultingDocument().orElseThrow()
+
+        val eventCapture = argumentCaptor<BaseEvent>()
+        verify(outboxService, times(1)).send(eventCapture.capture())
+        val event = eventCapture.firstValue
+        assertThat(event.type).isEqualTo("com.ritense.outbox.domain.DocumentUpdated")
+        assertThat(event.resultType).isEqualTo("com.ritense.document.domain.impl.JsonSchemaDocument")
+        assertThat(event.resultId).isEqualTo(document.id().toString())
+        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(modifiedDocument))
     }
 
     private fun createDocument(content: String): Document {

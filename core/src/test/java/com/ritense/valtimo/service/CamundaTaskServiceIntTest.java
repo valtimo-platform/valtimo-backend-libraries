@@ -21,14 +21,17 @@ import com.ritense.authorization.permission.ConditionContainer;
 import com.ritense.authorization.permission.Permission;
 import com.ritense.authorization.permission.PermissionRepository;
 import com.ritense.authorization.role.RoleRepository;
+import com.ritense.outbox.domain.BaseEvent;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.json.Mapper;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -47,6 +50,7 @@ import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.U
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -84,7 +88,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         final var processInstance = AuthorizationContext
             .runWithoutAuthorization(
                 () -> camundaProcessService
-            .findProcessInstanceById(processInstanceWithDefinition.getProcessInstanceDto().getId()).orElseThrow());
+                    .findProcessInstanceById(processInstanceWithDefinition.getProcessInstanceDto().getId()).orElseThrow());
         final var processInstanceTasks = camundaTaskService
             .getProcessInstanceTasks(processInstance.getId(), processInstance.getBusinessKey());
 
@@ -141,14 +145,14 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     void shouldFind10TasksFiltered() throws IllegalAccessException {
         AuthorizationContext.runWithoutAuthorization(() -> {
             for (int i = 0; i < 10; i++) {
-                    camundaProcessService.startProcess(
-                        processDefinitionKey,
-                        businessKey,
-                        Map.of()
-                    );
-                }
+                camundaProcessService.startProcess(
+                    processDefinitionKey,
+                    businessKey,
+                    Map.of()
+                );
+            }
             return null;
-            });
+        });
 
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
@@ -272,6 +276,30 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         var variables = camundaTaskService.getVariables(task.getId());
 
         assertThat(variables.get("serialized_var")).isNotNull();
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
+    void shouldSendOutboxEventWhenTaskCompleted() {
+        final var processInstance = AuthorizationContext.runWithoutAuthorization(() ->
+            camundaProcessService.startProcess(
+                processDefinitionKey,
+                businessKey,
+                Map.of()
+            ));
+        final var task = taskService.createTaskQuery()
+            .processInstanceId(processInstance.getProcessInstanceDto().getId())
+            .singleResult();
+
+        camundaTaskService.complete(task.getId());
+
+        var eventCapture = ArgumentCaptor.forClass(BaseEvent.class);
+        verify(outboxService, times(1)).send(eventCapture.capture());
+        var event = eventCapture.getValue();
+        assertThat(event.getType()).isEqualTo("com.ritense.outbox.domain.TaskCompleted");
+        assertThat(event.getResultType()).isEqualTo("com.ritense.valtimo.camunda.domain.CamundaTask");
+        assertThat(event.getResultId()).isEqualTo(task.getId());
+        assertThat(event.getResult()).isEqualTo(Mapper.INSTANCE.get().createObjectNode());
     }
 
     private void startProcessAndModifyTask(Consumer<Task> taskHandler) {

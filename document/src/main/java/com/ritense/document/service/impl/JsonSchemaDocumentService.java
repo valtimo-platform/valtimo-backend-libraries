@@ -17,7 +17,6 @@
 package com.ritense.document.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
@@ -52,6 +51,7 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.json.Mapper;
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
@@ -70,6 +70,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.byDocumentDefinitionIdName;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
@@ -231,7 +232,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 outboxService.send(
                     new DocumentCreated(
                         jsonSchemaDocument.id().toString(),
-                        (ObjectNode) jsonSchemaDocument.content().asJson()
+                        Mapper.INSTANCE.get().valueToTree(jsonSchemaDocument)
                     )
                 );
             }
@@ -257,13 +258,6 @@ public class JsonSchemaDocumentService implements DocumentService {
         if (!modifyResult.errors().isEmpty()) {
             throw new ModifyDocumentException(modifyResult.errors());
         }
-
-        outboxService.send(
-            new DocumentUpdated(
-                jsonSchemaDocument.id().toString(),
-                (ObjectNode) jsonSchemaDocument.content().asJson()
-            )
-        );
     }
 
     @Override
@@ -307,7 +301,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             outboxService.send(
                 new DocumentUpdated(
                     modifiedDocument.id().toString(),
-                    (ObjectNode) modifiedDocument.content().asJson()
+                    Mapper.INSTANCE.get().valueToTree(modifiedDocument)
                 )
             );
         });

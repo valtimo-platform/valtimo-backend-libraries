@@ -16,7 +16,6 @@
 
 package com.ritense.document.web.rest.impl;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
@@ -32,6 +31,7 @@ import com.ritense.document.web.rest.DocumentResource;
 import com.ritense.outbox.OutboxService;
 import com.ritense.outbox.domain.DocumentViewed;
 import com.ritense.valtimo.contract.authentication.NamedUser;
+import com.ritense.valtimo.contract.json.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -78,7 +78,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
             outboxService.send(
                 new DocumentViewed(
                     document.id().toString(),
-                    (ObjectNode) document.content().asJson()
+                    Mapper.INSTANCE.get().valueToTree(document)
                 )
             );
             return ResponseEntity.ok(document);
