@@ -19,7 +19,7 @@ package com.ritense.portaaltaak
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.convertValue
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.objectenapi.ObjectenApiPlugin
@@ -45,11 +45,13 @@ import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 import java.net.URI
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Plugin(
@@ -64,7 +66,8 @@ class PortaaltaakPlugin(
     private val processDocumentService: ProcessDocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
     private val taskService: CamundaTaskService
-    ) {
+) {
+    private val objectMapper = pluginService.getObjectMapper()
 
     @PluginProperty(key = "notificatiesApiPluginConfiguration", secret = false)
     lateinit var notificatiesApiPluginConfiguration: NotificatiesApiPlugin
@@ -91,6 +94,7 @@ class PortaaltaakPlugin(
         @PluginActionProperty receiver: TaakReceiver,
         @PluginActionProperty identificationKey: String?,
         @PluginActionProperty identificationValue: String?,
+        @PluginActionProperty verloopDurationInDays: Long?,
     ) {
         val objectManagement = objectManagementService.getById(objectManagementConfigurationId)
             ?: throw IllegalStateException("Object management not found for portaal taak")
@@ -100,13 +104,26 @@ class PortaaltaakPlugin(
                 .existingId(objectManagement.objectenApiPluginConfigurationId)
         ) as ObjectenApiPlugin
 
+        val processInstanceId = CamundaProcessInstanceId(delegateTask.processInstanceId)
+        val documentId = processDocumentService.getDocumentId(processInstanceId, delegateTask).id
+
+        val zaakUrl = try {
+            zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+        } catch (e: ZaakInstanceLinkNotFoundException) {
+            // this should set zaakUrl to null when no zaak has been linked for this case
+            null
+        }
+        val verloopdatum = verloopDurationInDays?.let { LocalDateTime.now().plusDays(verloopDurationInDays) }
+
         val portaalTaak = TaakObject(
             getTaakIdentification(delegateTask, receiver, identificationKey, identificationValue),
-            getTaakData(delegateTask, sendData),
+            getTaakData(delegateTask, sendData, documentId.toString()),
             delegateTask.name,
             TaakStatus.OPEN,
             getTaakForm(formType, formTypeId, formTypeUrl),
-            delegateTask.id
+            delegateTask.id,
+            zaakUrl,
+            verloopdatum
         )
 
         val objecttypenApiPlugin = pluginService
@@ -141,18 +158,17 @@ class PortaaltaakPlugin(
                 ?: throw CompleteTaakProcessVariableNotFoundException("portaalTaakObjectUrl is required but was not provided")) as String
         )
 
-
-        taskService.complete(verwerkerTaakId)
+        runWithoutAuthorization { taskService.complete(verwerkerTaakId) }
         val objectenApiPlugin =
             pluginService.createInstance(PluginConfigurationId(UUID.fromString(objectenApiPluginId))) as ObjectenApiPlugin
         val portaalTaakMetaDataObject = objectenApiPlugin.getObject(portaalTaakObjectUrl)
-        var taakObject: TaakObject = jacksonObjectMapper()
+        var taakObject: TaakObject = objectMapper
             .convertValue(
                 portaalTaakMetaDataObject.record.data ?: throw RuntimeException("Portaaltaak meta data was empty!")
             )
         taakObject = changeStatus(taakObject, TaakStatus.VERWERKT)
         val portaalTaakMetaObjectUpdated =
-            changeDataInPortalTaakObject(portaalTaakMetaDataObject, jacksonObjectMapper().convertValue(taakObject))
+            changeDataInPortalTaakObject(portaalTaakMetaDataObject, objectMapper.convertValue(taakObject))
         objectenApiPlugin.objectPatch(portaalTaakObjectUrl, portaalTaakMetaObjectUpdated)
     }
 
@@ -230,9 +246,11 @@ class PortaaltaakPlugin(
         )
     }
 
-    internal fun getTaakData(delegateTask: DelegateTask, sendData: List<DataBindingConfig>): Map<String, Any> {
-        val processInstanceId = CamundaProcessInstanceId(delegateTask.processInstanceId)
-        val documentId = processDocumentService.getDocumentId(processInstanceId, delegateTask).toString()
+    internal fun getTaakData(
+        delegateTask: DelegateTask,
+        sendData: List<DataBindingConfig>,
+        documentId: String
+    ): Map<String, Any> {
         val sendDataValuesResolvedMap = valueResolverService.resolveValues(documentId, sendData.map { it.value })
 
         if (sendData.size != sendDataValuesResolvedMap.size) {
@@ -246,17 +264,17 @@ class PortaaltaakPlugin(
 
         val sendDataResolvedMap = sendData.associate { it.key to sendDataValuesResolvedMap[it.value] }
         val jsonPatchBuilder = JsonPatchBuilder()
-        val taakData = jacksonObjectMapper().createObjectNode()
+        val taakData = objectMapper.createObjectNode()
 
         sendDataResolvedMap.forEach {
             val path = JsonPointer.valueOf(it.key)
-            val valueNode = jacksonObjectMapper().valueToTree<JsonNode>(it.value)
+            val valueNode = objectMapper.valueToTree<JsonNode>(it.value)
             jsonPatchBuilder.addJsonNodeValue(taakData, path, valueNode)
         }
 
         JsonPatchService.apply(jsonPatchBuilder.build(), taakData)
 
-        return jacksonObjectMapper().convertValue(taakData)
+        return objectMapper.convertValue(taakData)
     }
 
     internal fun changeStatus(taakObject: TaakObject, status: TaakStatus): TaakObject {
@@ -267,7 +285,9 @@ class PortaaltaakPlugin(
             status,
             taakObject.formulier,
             taakObject.verwerkerTaakId,
-            taakObject.verzondenData
+            taakObject.zaakUrl,
+            taakObject.verloopdatum,
+            taakObject.verzondenData,
         )
     }
 

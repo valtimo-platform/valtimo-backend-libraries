@@ -16,6 +16,7 @@
 
 package com.ritense.verzoek
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.plugin.annotation.Plugin
@@ -60,7 +61,9 @@ class VerzoekPlugin(
                         throw ValidationException("Failed to set mapping. Unknown prefix '${it.target.substringBefore(":")}:'.")
                     }
                     val documentPath = it.target.substringAfter(delimiter = ":")
-                    documentDefinitionService.validateJsonPointer(property.caseDefinitionName, documentPath)
+                    runWithoutAuthorization {
+                        documentDefinitionService.validateJsonPointer(property.caseDefinitionName, documentPath)
+                    }
                 }
             }
     }
