@@ -44,10 +44,14 @@ import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentService;
+import com.ritense.outbox.OutboxService;
+import com.ritense.document.event.DocumentCreated;
+import com.ritense.document.event.DocumentUpdated;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.json.Mapper;
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
@@ -66,6 +70,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.byDocumentDefinitionIdName;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
@@ -93,6 +98,8 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final OutboxService outboxService;
+
     public JsonSchemaDocumentService(
         JsonSchemaDocumentRepository documentRepository,
         JsonSchemaDocumentDefinitionService documentDefinitionService,
@@ -100,7 +107,8 @@ public class JsonSchemaDocumentService implements DocumentService {
         ResourceService resourceService,
         UserManagementService userManagementService,
         AuthorizationService authorizationService,
-        ApplicationEventPublisher applicationEventPublisher
+        ApplicationEventPublisher applicationEventPublisher,
+        OutboxService outboxService
     ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
@@ -109,6 +117,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         this.userManagementService = userManagementService;
         this.authorizationService = authorizationService;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.outboxService = outboxService;
     }
 
     @Override
@@ -219,6 +228,13 @@ public class JsonSchemaDocumentService implements DocumentService {
                 );
 
                 documentRepository.save(jsonSchemaDocument);
+
+                outboxService.send(
+                    new DocumentCreated(
+                        jsonSchemaDocument.id().toString(),
+                        Mapper.INSTANCE.get().valueToTree(jsonSchemaDocument)
+                    )
+                );
             }
         );
         return result;
@@ -280,7 +296,16 @@ public class JsonSchemaDocumentService implements DocumentService {
             version
         );
 
-        result.resultingDocument().ifPresent(documentRepository::save);
+        result.resultingDocument().ifPresent(modifiedDocument -> {
+            documentRepository.save(modifiedDocument);
+            outboxService.send(
+                new DocumentUpdated(
+                    modifiedDocument.id().toString(),
+                    Mapper.INSTANCE.get().valueToTree(modifiedDocument)
+                )
+            );
+        });
+
         return result;
     }
 

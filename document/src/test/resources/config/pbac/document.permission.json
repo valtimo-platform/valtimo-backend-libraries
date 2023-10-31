@@ -25,6 +25,11 @@
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
             "action": "assignable",
             "roleKey": "ROLE_ADMIN"
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "modify",
+            "roleKey": "ROLE_ADMIN"
         }
     ]
 }

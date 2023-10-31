@@ -45,6 +45,7 @@ import com.ritense.document.web.rest.error.DocumentModuleExceptionTranslator;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
+import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
@@ -73,7 +74,8 @@ public class DocumentAutoConfiguration {
         final ResourceService resourceService,
         final UserManagementService userManagementService,
         final AuthorizationService authorizationService,
-        final ApplicationEventPublisher applicationEventPublisher
+        final ApplicationEventPublisher applicationEventPublisher,
+        final OutboxService outboxService
     ) {
         return new JsonSchemaDocumentService(
             documentRepository,
@@ -82,7 +84,8 @@ public class DocumentAutoConfiguration {
             resourceService,
             userManagementService,
             authorizationService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            outboxService
         );
     }
 
@@ -185,9 +188,9 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentResource.class)
     public JsonSchemaDocumentResource documentResource(
         DocumentService documentService,
-        DocumentDefinitionService documentDefinitionService
+        OutboxService outboxService
     ) {
-        return new JsonSchemaDocumentResource(documentService, documentDefinitionService);
+        return new JsonSchemaDocumentResource(documentService, outboxService);
     }
 
     @Bean
