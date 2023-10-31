@@ -41,6 +41,7 @@ import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider;
 import com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider;
 import com.ritense.document.service.SearchFieldActionProvider;
 import com.ritense.document.service.SearchFieldService;
+import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
@@ -57,6 +58,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
@@ -110,6 +112,10 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @MockBean
     public SimpleApplicationEventMulticaster applicationEventMulticaster;
+
+    @SpyBean
+    protected OutboxService outboxService;
+
     protected static final String FULL_ACCESS_ROLE = "full access role";
 
     @BeforeAll

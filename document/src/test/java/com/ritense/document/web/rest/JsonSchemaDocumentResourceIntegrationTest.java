@@ -23,8 +23,11 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
+import com.ritense.outbox.domain.BaseEvent;
+import com.ritense.valtimo.contract.json.Mapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -40,7 +43,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -69,7 +75,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         document = result.resultingDocument().orElseThrow();
         documentRepository.save(document);
 
-        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService, documentDefinitionService);
+        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService, outboxService);
         mockMvc = MockMvcBuilders
             .standaloneSetup(jsonSchemaDocumentResource)
             .build();
@@ -242,5 +248,21 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var savedDocument = (JsonSchemaDocument) result.get();
         assertNull(savedDocument.assigneeId());
         assertNull(savedDocument.assigneeFullName());
+    }
+
+    @Test
+    @WithMockUser(username = USER_EMAIL, authorities = {FULL_ACCESS_ROLE})
+    void shouldSendOutboxEventWhenRetrievingDocument() throws Exception {
+        mockMvc.perform(get("/api/v1/document/{documentId}", document.id().getId().toString()))
+            .andDo(print())
+            .andExpect(status().isOk());
+
+        var eventCapture = ArgumentCaptor.forClass(BaseEvent.class);
+        verify(outboxService, times(1)).send(eventCapture.capture());
+        var event = eventCapture.getValue();
+        assertEquals("com.ritense.valtimo.document.viewed", event.getType());
+        assertEquals("com.ritense.document.domain.impl.JsonSchemaDocument", event.getResultType());
+        assertEquals(document.id().toString(), event.getResultId());
+        assertEquals(Mapper.INSTANCE.get().valueToTree(document), event.getResult());
     }
 }
