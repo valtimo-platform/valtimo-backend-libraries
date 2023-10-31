@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Primary
 
 
 @Configuration
-@ConditionalOnProperty("valtimo.outbox.publisher.rabbitmq.queueName", matchIfMissing = false)
+@ConditionalOnProperty("valtimo.outbox.publisher.rabbitmq.routingKey", matchIfMissing = false)
 @AutoConfigureBefore(value = [OutboxAutoConfiguration::class])
 @EnableConfigurationProperties(RabbitOutboxConfigurationProperties::class)
 class RabbitOutboxAutoconfiguration {
@@ -41,7 +41,7 @@ class RabbitOutboxAutoconfiguration {
     fun outboxPublisher(rabbitTemplate: RabbitTemplate, configurationProperties: RabbitOutboxConfigurationProperties) =
         RabbitMessagePublisher(
             rabbitTemplate,
-            configurationProperties.queueName,
+            configurationProperties.routingKey,
             configurationProperties.deliveryTimeout
         )
 }
