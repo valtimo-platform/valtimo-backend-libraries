@@ -17,6 +17,8 @@
 package com.ritense.outbox.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.ritense.outbox.publisher.DefaultMessagePublisher
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.PollingPublisherJob
 import com.ritense.outbox.publisher.PollingPublisherService
@@ -45,6 +47,11 @@ import javax.sql.DataSource
 @AutoConfigureAfter(DataSourceAutoConfiguration::class, HibernateJpaAutoConfiguration::class)
 @EnableConfigurationProperties(LiquibaseProperties::class)
 class OutboxAutoConfiguration {
+
+    @Bean
+    fun objectMapper(): ObjectMapper = ObjectMapper()
+        .findAndRegisterModules()
+        .registerModule(KotlinModule.Builder().build())
 
     @Bean
     @ConditionalOnMissingBean(OutboxLiquibaseRunner::class)
@@ -88,5 +95,9 @@ class OutboxAutoConfiguration {
     ): PollingPublisherJob {
         return PollingPublisherJob(pollingPublisherService)
     }
+
+    @Bean
+    @ConditionalOnMissingBean(MessagePublisher::class)
+    fun defaultMessagePublisher() = DefaultMessagePublisher()
 
 }

@@ -16,7 +16,6 @@
 
 package com.ritense.outbox.domain
 
-import com.fasterxml.jackson.databind.node.ObjectNode
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.persistence.Column
@@ -32,8 +31,8 @@ class OutboxMessage(
     @Column(name = "id", columnDefinition = "BINARY(16)", updatable = false)
     val id: UUID,
 
-    @Column(name = "message", columnDefinition = "JSON", updatable = false)
-    val message: ObjectNode,
+    @Column(name = "message", columnDefinition = "TEXT", updatable = false)
+    val message: String,
 
     @Column(name = "event_type", columnDefinition = "VARCHAR(1024)", updatable = false)
     val eventType: String,

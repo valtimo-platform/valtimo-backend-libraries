@@ -52,7 +52,7 @@ open class OutboxService(
     open fun send(message: ObjectNode, eventType: String) {
         val outboxMessage = OutboxMessage(
             id = UUID.randomUUID(),
-            message = message,
+            message = message.toPrettyString(),
             createdOn = LocalDateTime.now(),
             eventType = eventType
         )

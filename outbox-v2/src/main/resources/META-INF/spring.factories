@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.outbox.autoconfigure.OutboxAutoConfiguration,
+  com.ritense.outbox.autoconfigure.OutboxAutoConfiguration
