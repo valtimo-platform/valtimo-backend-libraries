@@ -17,6 +17,7 @@
 package com.ritense.outbox.rabbitmq
 
 import com.ritense.outbox.OutboxMessage
+import com.ritense.outbox.publisher.MessagePublishingFailed
 import com.ritense.outbox.rabbitmq.config.RabbitOutboxConfigurationProperties
 import java.util.UUID
 import org.assertj.core.api.Assertions
@@ -58,7 +59,7 @@ class RabbitMessagePublisherIntTest {
         @Test
         fun `should not send message to rabbitmq`() {
             val uuid = UUID.randomUUID().toString()
-            val ex = assertThrows<RuntimeException> {
+            val ex = assertThrows<MessagePublishingFailed> {
                 springCloudMessagePublisher.publish(
                     OutboxMessage(message = uuid)
                 )

@@ -223,7 +223,7 @@ valtimo:
             rabbitmq:
                 queueName: valtimo-audit
                 delivery-timeout: "PT0.5S"
-            polling.rate: "PT10M"
+            polling.rate: "PT1M"
 
 spring-actuator:
     username: admin

@@ -18,6 +18,7 @@ package com.ritense.outbox.rabbitmq
 
 import com.ritense.outbox.OutboxMessage
 import com.ritense.outbox.publisher.MessagePublisher
+import com.ritense.outbox.publisher.MessagePublishingFailed
 import java.time.Duration
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -43,23 +44,22 @@ class RabbitMessagePublisher(
     }
 
     override fun publish(message: OutboxMessage) {
-        logger.debug { "Sending message to RabbitMQ: queue=${queueName}, id=${message.id} " }
         val correlationData = CorrelationData(UUID.randomUUID().toString())
+        logger.trace { "Sending message to RabbitMQ: queue=${queueName}, msgId=${message.id}, correlationId= ${correlationData.id}" }
 
         val queueMessage = MessageBuilder.withBody(message.message.toByteArray()).build()
         rabbitTemplate.convertAndSend(queueName, queueMessage, correlationData)
 
         try {
-
             val result = correlationData.future.get(deliveryTimeout.toMillis(), TimeUnit.MILLISECONDS)
             if (!result!!.isAck) {
-                throw RuntimeException("Outbox message was not acknowledged. Reason: ${result.reason}")
+                throw MessagePublishingFailed("Outbox message was not acknowledged: reason=${result.reason}, queue=${queueName}, msgId=${message.id}, correlationId= ${correlationData.id}\"")
             } else if (correlationData.returned != null) {
                 val returned = correlationData.returned
-                throw RuntimeException("Could not deliver outbox message to ${returned.routingKey}: code=${returned.replyCode}, msg=${returned.replyText}")
+                throw MessagePublishingFailed("Could not deliver outbox message: routingKey=${returned.routingKey}, code=${returned.replyCode}, msg=${returned.replyText}, queue=${queueName}, msgId=${message.id}, correlationId= ${correlationData.id}\"")
             }
         } catch (timeoutException: TimeoutException) {
-            throw RuntimeException("Outbox message delivery was not confirmed in time.")
+            throw MessagePublishingFailed("Outbox message delivery was not confirmed in time: queue=${queueName}, msgId=${message.id}, correlationId= ${correlationData.id}")
         }
     }
 

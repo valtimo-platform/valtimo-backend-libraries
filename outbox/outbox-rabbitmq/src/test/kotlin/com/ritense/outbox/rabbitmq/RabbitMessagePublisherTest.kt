@@ -1,12 +1,18 @@
 package com.ritense.outbox.rabbitmq
 
+import com.ritense.outbox.OutboxMessage
+import com.ritense.outbox.publisher.MessagePublishingFailed
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.springframework.amqp.core.Message
+import org.springframework.amqp.core.ReturnedMessage
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
+import org.springframework.amqp.rabbit.connection.CorrelationData
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 
 class RabbitMessagePublisherTest {
@@ -16,7 +22,7 @@ class RabbitMessagePublisherTest {
         val rabbitTemplate = getMockedRabbitTemplate(publisherConfirms = false)
 
         val ex = assertThrows<RuntimeException> {
-            RabbitMessagePublisher(rabbitTemplate, "x")
+            RabbitMessagePublisher(rabbitTemplate, "test")
         }
         Assertions.assertThat(ex.message).contains("publisher-confirm-type")
     }
@@ -26,7 +32,7 @@ class RabbitMessagePublisherTest {
         val rabbitTemplate = getMockedRabbitTemplate(publisherReturns = false)
 
         val ex = assertThrows<RuntimeException> {
-            RabbitMessagePublisher(rabbitTemplate, "x")
+            RabbitMessagePublisher(rabbitTemplate, "test")
         }
         Assertions.assertThat(ex.message).contains("publisher-returns")
     }
@@ -36,9 +42,63 @@ class RabbitMessagePublisherTest {
         val rabbitTemplate = getMockedRabbitTemplate(mandatoryMessage = false)
 
         val ex = assertThrows<RuntimeException> {
-            RabbitMessagePublisher(rabbitTemplate, "x")
+            RabbitMessagePublisher(rabbitTemplate, "test")
         }
         Assertions.assertThat(ex.message).contains("mandatory")
+    }
+
+    @Test
+    fun `should fail when ack is false`() {
+        val rabbitTemplate = getMockedRabbitTemplate()
+
+        val publisher = RabbitMessagePublisher(rabbitTemplate, "test")
+
+        val ex = assertThrows<MessagePublishingFailed> {
+            whenever(rabbitTemplate.convertAndSend(eq("test"), any<Message>(), any<CorrelationData>())).thenAnswer { answer ->
+                val correlationData = answer.getArgument(2, CorrelationData::class.java)
+                correlationData.future.set(CorrelationData.Confirm(false, "reasons"))
+            }
+
+            publisher.publish(OutboxMessage(message = "test"))
+
+        }
+
+        Assertions.assertThat(ex.message).contains("not acknowledged")
+    }
+
+    @Test
+    fun `should fail when returned message is not null`() {
+        val rabbitTemplate = getMockedRabbitTemplate()
+
+        val publisher = RabbitMessagePublisher(rabbitTemplate, "test")
+
+        val ex = assertThrows<MessagePublishingFailed> {
+            whenever(rabbitTemplate.convertAndSend(eq("test"), any<Message>(), any<CorrelationData>())).thenAnswer { answer ->
+                val message = answer.getArgument(1, Message::class.java)
+                val correlationData = answer.getArgument(2, CorrelationData::class.java)
+                correlationData.returned = ReturnedMessage(
+                    message, 0, "returned_message_not_null", "", "")
+                correlationData.future.set(CorrelationData.Confirm(true, "reasons"))
+            }
+
+            publisher.publish(OutboxMessage(message = "test"))
+
+        }
+
+        Assertions.assertThat(ex.message).contains("returned_message_not_null")
+    }
+
+    @Test
+    fun `should fail when message is not confirmed in time`() {
+        val rabbitTemplate = getMockedRabbitTemplate()
+
+        val publisher = RabbitMessagePublisher(rabbitTemplate, "test")
+
+        val ex = assertThrows<MessagePublishingFailed> {
+            publisher.publish(OutboxMessage(message = "test"))
+        }
+
+        Assertions.assertThat(ex.message).contains("not confirmed in time")
     }
 
     private fun getMockedRabbitTemplate(
