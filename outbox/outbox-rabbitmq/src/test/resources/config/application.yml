@@ -48,7 +48,7 @@ valtimo:
     outbox:
         publisher:
             rabbitmq:
-                queueName: valtimo-audit
+                routingKey: valtimo-audit
                 delivery-timeout: "PT0.5S"
             polling.rate: "PT1H"
 

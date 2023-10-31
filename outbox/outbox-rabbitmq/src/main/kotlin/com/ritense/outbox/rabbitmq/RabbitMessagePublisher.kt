@@ -33,7 +33,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate
 
 class RabbitMessagePublisher(
     private val rabbitTemplate: RabbitTemplate,
-    private val queueName: String,
+    private val routingKey: String,
     private val deliveryTimeout: Duration = Duration.ofSeconds(1)
 ): MessagePublisher {
 
@@ -45,21 +45,21 @@ class RabbitMessagePublisher(
 
     override fun publish(message: OutboxMessage) {
         val correlationData = CorrelationData(UUID.randomUUID().toString())
-        logger.trace { "Sending message to RabbitMQ: queue=${queueName}, msgId=${message.id}, correlationId= ${correlationData.id}" }
+        logger.trace { "Sending message to RabbitMQ: routingKey=${routingKey}, msgId=${message.id}, correlationId= ${correlationData.id}" }
 
-        val queueMessage = MessageBuilder.withBody(message.message.toByteArray()).build()
-        rabbitTemplate.convertAndSend(queueName, queueMessage, correlationData)
+        val msg = MessageBuilder.withBody(message.message.toByteArray()).build()
+        rabbitTemplate.convertAndSend(routingKey, msg, correlationData)
 
         try {
             val result = correlationData.future.get(deliveryTimeout.toMillis(), TimeUnit.MILLISECONDS)
             if (!result!!.isAck) {
-                throw MessagePublishingFailed("Outbox message was not acknowledged: reason=${result.reason}, queue=${queueName}, msgId=${message.id}, correlationId= ${correlationData.id}\"")
+                throw MessagePublishingFailed("Outbox message was not acknowledged: reason=${result.reason}, routingKey=${routingKey}, msgId=${message.id}, correlationId= ${correlationData.id}\"")
             } else if (correlationData.returned != null) {
                 val returned = correlationData.returned
-                throw MessagePublishingFailed("Could not deliver outbox message: routingKey=${returned.routingKey}, code=${returned.replyCode}, msg=${returned.replyText}, queue=${queueName}, msgId=${message.id}, correlationId= ${correlationData.id}\"")
+                throw MessagePublishingFailed("Could not deliver outbox message: routingKey=${returned.routingKey}, code=${returned.replyCode}, msg=${returned.replyText}, routingKey=${routingKey}, msgId=${message.id}, correlationId= ${correlationData.id}\"")
             }
         } catch (timeoutException: TimeoutException) {
-            throw MessagePublishingFailed("Outbox message delivery was not confirmed in time: queue=${queueName}, msgId=${message.id}, correlationId= ${correlationData.id}")
+            throw MessagePublishingFailed("Outbox message delivery was not confirmed in time: routingKey=${routingKey}, msgId=${message.id}, correlationId= ${correlationData.id}")
         }
     }
 

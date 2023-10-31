@@ -2,4 +2,4 @@ valtimo:
     outbox:
         publisher:
             rabbitmq:
-                queueName: invalid
+                routingKey: invalid
