@@ -37,6 +37,7 @@ dependencies {
     implementation(project(":zgw:verzoek"))
     implementation(project(":zgw:zaken-api"))
     implementation(project(":zgw:besluiten-api"))
+    implementation(project(":outbox-v2"))
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

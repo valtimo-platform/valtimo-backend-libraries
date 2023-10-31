@@ -33,6 +33,7 @@ open class PollingPublisherService(
      * Poll messages from the outbox table and publishes them in the correct order.
      */
     open fun pollAndPublishAll() {
+        logger.trace { "Starting pollAndPublishAll" }
         if (polling.compareAndSet(false, true)) {
             try {
                 do {
