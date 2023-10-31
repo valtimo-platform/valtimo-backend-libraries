@@ -26,13 +26,13 @@ dockerCompose {
 dependencies {
     implementation project(':core')
     implementation project(':contract')
-    //implementation project(':connector')
+    implementation project(':connector')
     implementation project(':document')
     implementation project(':process-document')
     implementation project(':resource')
-    //implementation project(':openzaak')
-    //implementation project(':klant')
-    //implementation project(':resource:openzaak-resource')
+    implementation project(':openzaak')
+    implementation project(':klant')
+    implementation project(':resource:openzaak-resource')
     implementation project(':value-resolver')
 
     api "org.springframework.security:spring-security-core"
