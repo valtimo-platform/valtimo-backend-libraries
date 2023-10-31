@@ -24,12 +24,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.env.MockEnvironment;
-
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
@@ -88,7 +86,8 @@ class DocumentModifiedEventTest {
             LocalDateTime.now(),
             "some-user",
             JsonSchemaDocumentId.existingId(UUID.randomUUID()),
-            changes
+            changes,
+            "1"
         );
     }
 

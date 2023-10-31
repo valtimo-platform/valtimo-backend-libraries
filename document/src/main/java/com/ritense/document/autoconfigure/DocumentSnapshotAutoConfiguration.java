@@ -31,7 +31,6 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSnapshotService;
 import com.ritense.document.web.rest.DocumentSnapshotResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSnapshotResource;
-import com.ritense.tenancy.TenantResolver;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -50,14 +49,12 @@ public class DocumentSnapshotAutoConfiguration {
     public DocumentSnapshotService documentSnapshotService(
         final DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository,
         final JsonSchemaDocumentService documentService,
-        final JsonSchemaDocumentDefinitionService documentDefinitionService,
-        final TenantResolver tenantResolver
+        final JsonSchemaDocumentDefinitionService documentDefinitionService
     ) {
         return new JsonSchemaDocumentSnapshotService(
             documentSnapshotRepository,
             documentService,
-            documentDefinitionService,
-            tenantResolver
+            documentDefinitionService
         );
     }
 

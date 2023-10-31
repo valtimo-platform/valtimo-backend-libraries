@@ -16,13 +16,6 @@
 
 package com.ritense.gzac;
 
-import com.ritense.connector.service.ConnectorService;
-import com.ritense.document.service.DocumentDefinitionService;
-import com.ritense.gzac.listener.ApplicationReadyEventListener;
-import com.ritense.objectsapi.service.ObjectSyncService;
-import com.ritense.openzaak.service.InformatieObjectTypeLinkService;
-import com.ritense.openzaak.service.ZaakTypeLinkService;
-import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import com.ritense.valtimo.config.DefaultProfileUtil;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
@@ -30,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import java.net.InetAddress;
@@ -59,22 +51,4 @@ public class GzacApplication {
         );
     }
 
-    @Bean
-    public ApplicationReadyEventListener setupListener(
-        ConnectorService connectorService,
-        ObjectSyncService objectSyncService,
-        ZaakTypeLinkService zaakTypeLinkService,
-        InformatieObjectTypeLinkService informatieObjectTypeLinkService,
-        DocumentDefinitionService documentDefinitionService,
-        DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService
-    ) {
-        return new ApplicationReadyEventListener(
-            connectorService,
-            objectSyncService,
-            zaakTypeLinkService,
-            informatieObjectTypeLinkService,
-            documentDefinitionService,
-            documentDefinitionProcessLinkService
-        );
-    }
 }
