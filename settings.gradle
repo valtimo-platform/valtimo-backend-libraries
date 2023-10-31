@@ -55,6 +55,7 @@ include(
     "notes",
     "objects-api",
     "openzaak",
+    "outbox-v2",
     "plugin",
     "plugin-valtimo",
     "plugin-authentication:notificaties-api-authentication",
