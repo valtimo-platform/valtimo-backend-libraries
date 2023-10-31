@@ -20,6 +20,7 @@ javaPlatform {
 
 dependencies {
     api("com.ritense.valtimo:audit")
+    api("com.ritense.valtimo:authorization")
     api("com.ritense.valtimo:case")
     api("com.ritense.valtimo:connector")
     api("com.ritense.valtimo:contract")
@@ -42,6 +43,7 @@ dependencies {
 
     constraints {
         api("com.ritense.valtimo:audit:${projectVersion}!!")
+        api("com.ritense.valtimo:authorization:${projectVersion}!!")
         api("com.ritense.valtimo:case:${projectVersion}!!")
         api("com.ritense.valtimo:connector:${projectVersion}!!")
         api("com.ritense.valtimo:contract:${projectVersion}!!")
@@ -56,6 +58,8 @@ dependencies {
         api("com.ritense.valtimo:local-document-generation:${projectVersion}!!")
         api("com.ritense.valtimo:milestones:${projectVersion}")
         api("com.ritense.valtimo:notes:${projectVersion}!!")
+        api("com.ritense.valtimo:outbox:${projectVersion}!!")
+        api("com.ritense.valtimo:outbox-rabbitmq:${projectVersion}!!")
         api("com.ritense.valtimo:plugin-valtimo:${projectVersion}!!")
         api("com.ritense.valtimo:plugin:${projectVersion}!!")
         api("com.ritense.valtimo:process-document:${projectVersion}!!")

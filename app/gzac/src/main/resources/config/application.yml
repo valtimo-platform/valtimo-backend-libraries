@@ -85,8 +85,6 @@ spring:
     autoconfigure:
         exclude:
             - org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsAutoConfiguration
-            # RabbitAutoConfiguration disabled because we're not using the top level context. See https://stackoverflow.com/a/44687645
-            - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
     cloud:
         stream:
             function:
@@ -116,6 +114,13 @@ spring:
                                 password: guest
                                 virtual-host: /
             source: externalDomainMessageSupplier
+    rabbitmq:
+        host: localhost
+        port: 5672
+        username: guest
+        password: guest
+        publisher-confirm-type: correlated
+        publisher-returns: true
 
 logging:
     level:
@@ -213,6 +218,12 @@ valtimo:
             clear-tables: true
         case-tabs:
             clear-tables: true
+    outbox:
+        publisher:
+            rabbitmq:
+                queueName: valtimo-audit
+                delivery-timeout: "PT0.5S"
+            polling.rate: "PT1M"
 
 spring-actuator:
     username: admin

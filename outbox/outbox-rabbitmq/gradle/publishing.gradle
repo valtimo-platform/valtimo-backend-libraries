@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.publisher
-
-import org.springframework.scheduling.annotation.Scheduled
-
-class PollingPublisherJob(
-    private val pollingPublisherService: PollingPublisherService
-) {
-
-    @Scheduled(fixedRateString = "\${valtimo.outbox.publisher.polling.rate:PT10S}")
-    fun scheduledTaskPollMessage() {
-        pollingPublisherService.pollAndPublishAll()
+pluginManager.withPlugin('maven-publish') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                pom {
+                    name = 'Outbox RabbitMQ module'
+                    description = 'The outbox RabbitMQ module'
+                    developers {
+                        developer {
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
+                        }
+                    }
+                }
+            }
+        }
     }
 }

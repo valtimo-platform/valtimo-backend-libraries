@@ -1,8 +1,16 @@
 spring:
+    rabbitmq:
+        host: localhost
+        port: 55672
+        username: guest
+        password: guest
+        publisher-confirm-type: correlated
+        publisher-returns: true
+
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:3347/outbox-test
+        url: jdbc:postgresql://localhost:3348/outbox-rabbitmq-test
         username: valtimo
         password: password
         hikari:
@@ -37,4 +45,16 @@ spring:
 
 valtimo:
     database: postgres
-    outbox.publisher.polling.rate: "PT1H"
+    outbox:
+        publisher:
+            rabbitmq:
+                queueName: valtimo-audit
+                delivery-timeout: "PT0.5S"
+            polling.rate: "PT1H"
+
+logging:
+    level:
+        org:
+            springframework:
+                cloud: DEBUG
+                integration: DEBUG

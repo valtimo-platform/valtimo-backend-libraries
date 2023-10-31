@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.publisher
+package com.ritense.outbox.rabbitmq.config
 
-import org.springframework.scheduling.annotation.Scheduled
+import java.time.Duration
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.ConstructorBinding
 
-class PollingPublisherJob(
-    private val pollingPublisherService: PollingPublisherService
-) {
-
-    @Scheduled(fixedRateString = "\${valtimo.outbox.publisher.polling.rate:PT10S}")
-    fun scheduledTaskPollMessage() {
-        pollingPublisherService.pollAndPublishAll()
-    }
-}
+@ConfigurationProperties(prefix = "valtimo.outbox.publisher.rabbitmq")
+@ConstructorBinding
+data class RabbitOutboxConfigurationProperties(
+    val queueName: String,
+    val deliveryTimeout: Duration = Duration.ofSeconds(1)
+)

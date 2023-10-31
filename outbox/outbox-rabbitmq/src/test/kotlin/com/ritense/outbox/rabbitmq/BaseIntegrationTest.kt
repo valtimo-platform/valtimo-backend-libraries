@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.publisher
+package com.ritense.outbox.rabbitmq
 
-import org.springframework.scheduling.annotation.Scheduled
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
-class PollingPublisherJob(
-    private val pollingPublisherService: PollingPublisherService
-) {
+@SpringBootTest
+@ExtendWith(SpringExtension::class)
+@Tag("integration")
+class BaseIntegrationTest {
 
-    @Scheduled(fixedRateString = "\${valtimo.outbox.publisher.polling.rate:PT10S}")
-    fun scheduledTaskPollMessage() {
-        pollingPublisherService.pollAndPublishAll()
-    }
 }
