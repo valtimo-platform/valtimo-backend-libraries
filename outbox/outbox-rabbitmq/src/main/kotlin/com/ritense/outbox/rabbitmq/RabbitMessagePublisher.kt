@@ -43,7 +43,7 @@ class RabbitMessagePublisher(
     }
 
     override fun publish(message: OutboxMessage) {
-        logger.debug { "Sending message to RabbitMQ: ${message.id} " }
+        logger.debug { "Sending message to RabbitMQ: queue=${queueName}, id=${message.id} " }
         val correlationData = CorrelationData(UUID.randomUUID().toString())
 
         val queueMessage = MessageBuilder.withBody(message.message.toByteArray()).build()
