@@ -54,3 +54,5 @@ services:
 #   url: jdbc:postgresql://localhost:3345/changelog-test
 #   url: jdbc:postgresql://localhost:3346/contract-test
 #   url: jdbc:postgresql://localhost:3347/outbox-test
+#   url: jdbc:postgresql://localhost:3348/outbox-rabbitmq-test
+#   url: localhost:55672 <--rabbitmq
