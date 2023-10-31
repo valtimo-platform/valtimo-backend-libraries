@@ -29,7 +29,7 @@ import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.web.rest.DocumentResource;
 import com.ritense.outbox.OutboxService;
-import com.ritense.outbox.domain.DocumentViewed;
+import com.ritense.document.event.DocumentViewed;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.json.Mapper;
 import org.slf4j.Logger;

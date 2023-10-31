@@ -135,7 +135,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val eventCapture = argumentCaptor<BaseEvent>()
         verify(outboxService, times(1)).send(eventCapture.capture())
         val event = eventCapture.firstValue
-        assertThat(event.type).isEqualTo("com.ritense.outbox.domain.DocumentCreated")
+        assertThat(event.type).isEqualTo("com.ritense.valtimo.document.created")
         assertThat(event.resultType).isEqualTo("com.ritense.document.domain.impl.JsonSchemaDocument")
         assertThat(event.resultId).isEqualTo(document.id().toString())
         assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
@@ -154,7 +154,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val eventCapture = argumentCaptor<BaseEvent>()
         verify(outboxService, times(1)).send(eventCapture.capture())
         val event = eventCapture.firstValue
-        assertThat(event.type).isEqualTo("com.ritense.outbox.domain.DocumentUpdated")
+        assertThat(event.type).isEqualTo("com.ritense.valtimo.document.updated")
         assertThat(event.resultType).isEqualTo("com.ritense.document.domain.impl.JsonSchemaDocument")
         assertThat(event.resultId).isEqualTo(document.id().toString())
         assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(modifiedDocument))

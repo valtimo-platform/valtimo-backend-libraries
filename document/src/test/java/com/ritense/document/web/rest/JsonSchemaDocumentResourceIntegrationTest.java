@@ -260,7 +260,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var eventCapture = ArgumentCaptor.forClass(BaseEvent.class);
         verify(outboxService, times(1)).send(eventCapture.capture());
         var event = eventCapture.getValue();
-        assertEquals("com.ritense.outbox.domain.DocumentViewed", event.getType());
+        assertEquals("com.ritense.valtimo.document.viewed", event.getType());
         assertEquals("com.ritense.document.domain.impl.JsonSchemaDocument", event.getResultType());
         assertEquals(document.id().toString(), event.getResultId());
         assertEquals(Mapper.INSTANCE.get().valueToTree(document), event.getResult());

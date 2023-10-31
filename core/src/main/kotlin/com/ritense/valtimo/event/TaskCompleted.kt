@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.domain
+package com.ritense.valtimo.event
 
-import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.outbox.domain.BaseEvent
 
-class DocumentCreated(documentId: String, documentContent: ObjectNode) : BaseEvent(
-    type = "com.ritense.outbox.domain.DocumentCreated",
-    resultType = "com.ritense.document.domain.impl.JsonSchemaDocument",
-    resultId = documentId,
-    result = documentContent
+class TaskCompleted(taskId: String) : BaseEvent(
+    type = "com.ritense.valtimo.task.completed",
+    resultType = "com.ritense.valtimo.camunda.domain.CamundaTask",
+    resultId = taskId,
+    result = jacksonObjectMapper().createObjectNode()
 )

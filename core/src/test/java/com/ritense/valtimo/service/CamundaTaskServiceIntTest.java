@@ -296,7 +296,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         var eventCapture = ArgumentCaptor.forClass(BaseEvent.class);
         verify(outboxService, times(1)).send(eventCapture.capture());
         var event = eventCapture.getValue();
-        assertThat(event.getType()).isEqualTo("com.ritense.outbox.domain.TaskCompleted");
+        assertThat(event.getType()).isEqualTo("com.ritense.valtimo.task.completed");
         assertThat(event.getResultType()).isEqualTo("com.ritense.valtimo.camunda.domain.CamundaTask");
         assertThat(event.getResultId()).isEqualTo(task.getId());
         assertThat(event.getResult()).isEqualTo(Mapper.INSTANCE.get().createObjectNode());
