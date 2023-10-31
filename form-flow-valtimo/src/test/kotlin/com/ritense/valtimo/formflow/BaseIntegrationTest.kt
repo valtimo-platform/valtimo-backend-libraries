@@ -18,11 +18,14 @@ package com.ritense.valtimo.formflow
 
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
+import org.camunda.bpm.engine.IdentityService
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import javax.inject.Inject
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)
@@ -34,5 +37,13 @@ class BaseIntegrationTest : BaseTest() {
 
     @MockBean
     lateinit var userManagementService: UserManagementService
+
+    @Inject
+    lateinit var identityService: IdentityService
+
+    @BeforeEach
+    fun camundaTenantSetup() {
+        identityService.setAuthentication("John Doe", null, listOf("1"))
+    }
 }
 

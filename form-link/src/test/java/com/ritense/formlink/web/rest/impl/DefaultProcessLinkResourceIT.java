@@ -29,20 +29,18 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
+import com.ritense.testutilscommon.security.WithMockTenantUser;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -51,7 +49,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Disabled // Broken in auth for tennacy if turned on, missing enable tennacy prop
 @Transactional
 class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
 
@@ -92,7 +89,8 @@ class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = USER)
+    @WithMockTenantUser
+    //@WithMockUser(username = "john@ritense.com", authorities = USER)
     void getTaskShouldGetFormResult() throws Exception {
         var content = new JsonDocumentContent("{\"street\": \"Kalverstraat\"}");
 
@@ -109,8 +107,8 @@ class DefaultProcessLinkResourceIT extends BaseIntegrationTest {
         assertEquals(1, list.size());
 
         mockMvc.perform(
-            get("/api/v1/process-link/task/" + list.get(0).getId())
-                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                get("/api/v1/process-link/task/" + list.get(0).getId())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
