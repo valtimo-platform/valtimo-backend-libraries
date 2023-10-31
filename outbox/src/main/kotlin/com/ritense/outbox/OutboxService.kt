@@ -35,8 +35,7 @@ open class OutboxService(
     private val outboxMessageRepository: OutboxMessageRepository,
     private val objectMapper: ObjectMapper,
     private val userProvider: UserProvider,
-    private val springApplicationName: String?,
-    private val valtimoSystemUserId: String?,
+    private val cloudEventSource: String,
 ) {
 
     @Transactional(propagation = Propagation.MANDATORY)
@@ -46,7 +45,7 @@ open class OutboxService(
         val cloudEventData = CloudEventData(userId, roles, baseEvent.resultType, baseEvent.resultId, baseEvent.result)
         val cloudEvent = CloudEventBuilder.v1()
             .withId(baseEvent.id.toString())
-            .withSource(URI(valtimoSystemUserId ?: springApplicationName))
+            .withSource(URI(cloudEventSource))
             .withTime(baseEvent.date.atOffset(ZonedDateTime.now().offset))
             .withType(baseEvent.type)
             .withDataContentType("application/json")
