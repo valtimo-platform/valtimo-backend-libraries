@@ -220,6 +220,7 @@ valtimo:
             clear-tables: true
     outbox:
         publisher:
+            cloudevent-source: "com.ritense.gzac"
             rabbitmq:
                 routing-key: valtimo-audit
                 delivery-timeout: "PT0.5S"
