@@ -20,15 +20,13 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
-import com.ritense.tenancy.TenantResolver
 import com.ritense.valtimo.service.CamundaProcessService
 import java.util.UUID
 
 class ProcessDocumentsService(
     private val documentService: DocumentService,
     private val camundaProcessService: CamundaProcessService,
-    private val associationService: ProcessDocumentAssociationService,
-    private val tenantResolver: TenantResolver
+    private val associationService: ProcessDocumentAssociationService
 ) {
 
     fun startProcessByProcessDefinitionKey(processDefinitionKey: String, businessKey: String) {
@@ -40,22 +38,28 @@ class ProcessDocumentsService(
         businessKey: String,
         variables: Map<String, Any>?
     ) {
-        val processInstance = camundaProcessService.startProcess(processDefinitionKey, businessKey, variables)
+        val processInstanceWithDefinition = camundaProcessService.startProcess(
+            processDefinitionKey,
+            businessKey,
+            variables
+        )
         associateDocumentToProcess(
-            processInstance.processInstanceDto.id,
-            processInstance.processDefinition.name,
-            businessKey
+            processInstanceWithDefinition.processInstanceDto.id,
+            processInstanceWithDefinition.processDefinition.name,
+            businessKey,
+            processInstanceWithDefinition.processInstanceDto.tenantId
         )
     }
 
     private fun associateDocumentToProcess(
         processInstanceId: String?,
         processName: String?,
-        businessKey: String
+        businessKey: String,
+        tenantId: String
     ) {
         documentService.findBy(
             JsonSchemaDocumentId.existingId(UUID.fromString(businessKey)),
-            tenantResolver.getTenantId()
+            tenantId
         ).ifPresentOrElse(
             { document: Document ->
                 associationService.createProcessDocumentInstance(

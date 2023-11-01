@@ -37,7 +37,7 @@ class CaseAssigneeListener(
 
     @EventListener(DocumentAssigneeChangedEvent::class)
     fun updateAssigneeOnTasks(event: DocumentAssigneeChangedEvent) {
-        val document: Document = documentService.get(event.documentId.toString(), tenantResolver.getTenantId())
+        val document: Document = documentService.get(event.documentId.toString(), event.tenantId())
         val caseSettings: CaseDefinitionSettings = caseDefinitionService.getCaseSettings(
             document.definitionId().name()
         )

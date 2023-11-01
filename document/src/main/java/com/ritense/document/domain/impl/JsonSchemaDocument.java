@@ -324,7 +324,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
                 LocalDateTime.now(),
                 AuditHelper.getActor(),
                 this.id.getId(),
-                assigneeFullName
+                assigneeFullName,
+                tenantId
             )
         );
     }

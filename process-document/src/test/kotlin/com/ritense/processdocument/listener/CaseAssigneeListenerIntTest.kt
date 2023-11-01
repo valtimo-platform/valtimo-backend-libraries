@@ -24,6 +24,7 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.testutilscommon.security.WithMockTenantUser
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import org.camunda.bpm.engine.RuntimeService
@@ -37,7 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 import kotlin.test.assertEquals
-
 
 @Transactional
 class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
@@ -95,7 +95,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         testDocument = documentService.createDocument(
             NewDocumentRequest(
                 "house", objectMapper.readTree(documentJson)
-            )
+            ).withTenantId("1")
         ).resultingDocument().orElseThrow()
 
         caseDefinitionService.updateCaseSettings(
@@ -129,6 +129,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockTenantUser
     fun `should do nothing when and task is created and autoAssignTasks is off`() {
 
         caseDefinitionService.updateCaseSettings(

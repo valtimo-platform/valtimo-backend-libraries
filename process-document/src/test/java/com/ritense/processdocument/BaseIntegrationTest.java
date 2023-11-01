@@ -23,6 +23,7 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.ContextService;
+import org.camunda.bpm.engine.IdentityService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import javax.inject.Inject;
+import java.util.List;
 
 @SpringBootTest
 @Tag("integration")
@@ -59,12 +61,16 @@ public abstract class BaseIntegrationTest extends BaseTest {
     @MockBean
     protected ResourceService resourceService;
 
+    @Inject
+    protected IdentityService identityService;
+
     @BeforeAll
     static void beforeAll() {
     }
 
     @BeforeEach
-    public void beforeEach() {
+    public void camundaTenantSetup() {
+        identityService.setAuthentication("John Doe", null, List.of("1"));
     }
 
     @AfterEach

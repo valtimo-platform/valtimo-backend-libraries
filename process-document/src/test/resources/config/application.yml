@@ -68,3 +68,5 @@ valtimo:
         reminderTemplate: bpc-task-reminder
     plugin:
         encryption-secret: "abcdefghijklmnop"
+    app:
+        enable-tenancy: true

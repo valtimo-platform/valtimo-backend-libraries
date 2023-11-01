@@ -83,14 +83,12 @@ class ProcessDocumentsAutoConfiguration {
     fun processDocumentsService(
         documentService: DocumentService,
         processDocumentAssociationService: ProcessDocumentAssociationService,
-        camundaProcessService: CamundaProcessService,
-        tenantResolver: TenantResolver
+        camundaProcessService: CamundaProcessService
     ): ProcessDocumentsService {
         return ProcessDocumentsService(
             documentService = documentService,
             camundaProcessService = camundaProcessService,
-            associationService = processDocumentAssociationService,
-            tenantResolver = tenantResolver
+            associationService = processDocumentAssociationService
         )
     }
 
