@@ -42,11 +42,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
@@ -85,7 +83,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     public ResponseEntity<CreateDocumentResult> createNewDocument(
         @RequestBody @Valid NewDocumentRequest request
     ) {
-        var tenantId = tenantResolver.getTenantId();
+        var tenantId = request.tenantId();
         request.withTenantId(tenantId);
         if (!hasAccessToDefinitionName(request.documentDefinitionName())) {
             return ResponseEntity.badRequest().build();
@@ -98,7 +96,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     public ResponseEntity<ModifyDocumentResult> modifyDocumentContent(
         @RequestBody @Valid ModifyDocumentRequest request
     ) {
-        var tenantId = tenantResolver.getTenantId();
+        var tenantId = request.tenantId();
         request.withTenantId(tenantId);
         if (!hasAccessToDocumentId(request.documentId(), tenantId)) {
             return ResponseEntity.badRequest().build();

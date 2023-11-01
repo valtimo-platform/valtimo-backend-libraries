@@ -276,7 +276,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
                     id.getId(),
                     relatedFile.getFileId(),
                     relatedFile.getFileName(),
-                    metadata
+                    metadata,
+                    tenantId
                 )
             );
         } else {

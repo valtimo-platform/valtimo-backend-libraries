@@ -18,7 +18,6 @@ package com.ritense.valtimo.contract.document.event;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.UUID;
 
 public class DocumentRelatedFileSubmittedEvent {
@@ -26,12 +25,19 @@ public class DocumentRelatedFileSubmittedEvent {
     private final UUID documentId;
     private final UUID resourceId;
     private final String documentDefinitionName;
+    private final String tenantId;
 
     @JsonCreator
-    public DocumentRelatedFileSubmittedEvent(UUID documentId, UUID resourceId, String documentDefinitionName) {
+    public DocumentRelatedFileSubmittedEvent(
+        UUID documentId,
+        UUID resourceId,
+        String documentDefinitionName,
+        String tenantId
+    ) {
         this.documentId = documentId;
         this.resourceId = resourceId;
         this.documentDefinitionName = documentDefinitionName;
+        this.tenantId = tenantId;
     }
 
     @JsonIgnore(false)
@@ -45,5 +51,9 @@ public class DocumentRelatedFileSubmittedEvent {
 
     public String getDocumentDefinitionName() {
         return documentDefinitionName;
+    }
+
+    public String getTenantId() {
+        return tenantId;
     }
 }
