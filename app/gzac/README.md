@@ -22,7 +22,7 @@ Run in terminal: <code>app/gzac% ../../gradlew bootRun</code>
 
 ## Keycloak - Test users
 
-Keycloak management can be accessed on http://localhost:8082 with the default credentials of username <ins>admin</ins> and password <ins>admin</ins>.
+Keycloak management can be accessed on http://localhost:8081 with the default credentials of username <ins>admin</ins> and password <ins>admin</ins>.
 
 Keycloak comes preconfigured with the following users. 
 

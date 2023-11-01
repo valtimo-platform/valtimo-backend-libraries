@@ -21,8 +21,8 @@ spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:5444/gzac-core-db
-        username: gzac
+        url: jdbc:postgresql://localhost:54320/valtimo
+        username: valtimo
         password: password
         hikari:
             auto-commit: false
@@ -257,7 +257,7 @@ camunda:
 # ==================
 keycloak:
     realm: valtimo
-    auth-server-url: http://localhost:8082/auth
+    auth-server-url: http://localhost:8081/auth
     resource: valtimo-user-m2m-client
     credentials:
         secret: 6ef6ca16-6b86-482a-a3d9-0561704c1db9
