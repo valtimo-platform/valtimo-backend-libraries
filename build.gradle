@@ -178,6 +178,10 @@ subprojects { subproject ->
                 )
             }
         }
+
+        dockerCompose {
+            useDockerComposeV2 = false
+        }
     }
 
 }
