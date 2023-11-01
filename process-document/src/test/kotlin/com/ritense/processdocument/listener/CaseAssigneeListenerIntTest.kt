@@ -183,6 +183,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockTenantUser
     fun `should should remove task assignee when document assignee is removed`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)
