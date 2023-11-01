@@ -84,7 +84,12 @@ data class UploadField(
                 if (resourceId != null) {
                     logger.debug { "file $resourceId" }
                     applicationEventPublisher.publishEvent(
-                        DocumentRelatedFileSubmittedEvent(document.id()?.id, resourceId, document.definitionId().name())
+                        DocumentRelatedFileSubmittedEvent(
+                            document.id()?.id,
+                            resourceId,
+                            document.definitionId().name(),
+                            document.tenantId()
+                        )
                     )
                 }
 

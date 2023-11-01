@@ -83,7 +83,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     public ResponseEntity<CreateDocumentResult> createNewDocument(
         @RequestBody @Valid NewDocumentRequest request
     ) {
-        var tenantId = request.tenantId();
+        var tenantId = tenantResolver.getTenantId(); // FIXME should come from request?
         request.withTenantId(tenantId);
         if (!hasAccessToDefinitionName(request.documentDefinitionName())) {
             return ResponseEntity.badRequest().build();
@@ -96,7 +96,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     public ResponseEntity<ModifyDocumentResult> modifyDocumentContent(
         @RequestBody @Valid ModifyDocumentRequest request
     ) {
-        var tenantId = request.tenantId();
+        var tenantId = tenantResolver.getTenantId(); // FIXME should come from request?
         request.withTenantId(tenantId);
         if (!hasAccessToDocumentId(request.documentId(), tenantId)) {
             return ResponseEntity.badRequest().build();

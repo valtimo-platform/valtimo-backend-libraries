@@ -145,7 +145,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
             document.id().toString(),
             document.content().asJson(),
             document.version().toString()
-        );
+        ).withTenantId("1");
 
         mockMvc.perform(
                 put("/api/v1/document")
