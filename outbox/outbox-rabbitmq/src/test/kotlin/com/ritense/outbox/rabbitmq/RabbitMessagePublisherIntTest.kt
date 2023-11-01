@@ -39,21 +39,21 @@ class RabbitMessagePublisherIntTest {
     ) : BaseIntegrationTest() {
         @Test
         fun `should send message to rabbitmq`() {
-            rabbitAdmin.purgeQueue(configurationProperties.queueName)
+            rabbitAdmin.purgeQueue(configurationProperties.routingKey)
 
             val uuid = UUID.randomUUID().toString()
             springCloudMessagePublisher.publish(
                 OutboxMessage(message = uuid)
             )
 
-            val msg = rabbitTemplate.receive(configurationProperties.queueName)
+            val msg = rabbitTemplate.receive(configurationProperties.routingKey)
             Assertions.assertThat(msg.body.toString(Charsets.UTF_8)).isEqualTo(uuid)
         }
     }
 
     @Nested
-    @ActiveProfiles("invalidqueue")
-    inner class InvalidQueue @Autowired constructor(
+    @ActiveProfiles("invalidrouting")
+    inner class InvalidRouting @Autowired constructor(
         val springCloudMessagePublisher: RabbitMessagePublisher
     ) : BaseIntegrationTest() {
         @Test

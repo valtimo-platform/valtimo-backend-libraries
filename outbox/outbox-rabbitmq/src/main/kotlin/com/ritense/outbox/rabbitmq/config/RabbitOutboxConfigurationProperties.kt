@@ -23,6 +23,6 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConfigurationProperties(prefix = "valtimo.outbox.publisher.rabbitmq")
 @ConstructorBinding
 data class RabbitOutboxConfigurationProperties(
-    val queueName: String,
+    val routingKey: String,
     val deliveryTimeout: Duration = Duration.ofSeconds(1)
 )

@@ -22,26 +22,23 @@ import com.ritense.outbox.rabbitmq.RabbitMessagePublisher
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.boot.autoconfigure.AutoConfigureBefore
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Primary
 
 
 @Configuration
-@ConditionalOnProperty("valtimo.outbox.publisher.rabbitmq.queueName", matchIfMissing = false)
 @AutoConfigureBefore(value = [OutboxAutoConfiguration::class])
 @EnableConfigurationProperties(RabbitOutboxConfigurationProperties::class)
 class RabbitOutboxAutoconfiguration {
 
     @Bean
-    @Primary
     @ConditionalOnMissingBean(MessagePublisher::class)
-    fun outboxPublisher(rabbitTemplate: RabbitTemplate, configurationProperties: RabbitOutboxConfigurationProperties) =
-        RabbitMessagePublisher(
+    fun outboxPublisher(rabbitTemplate: RabbitTemplate, configurationProperties: RabbitOutboxConfigurationProperties): MessagePublisher {
+        return RabbitMessagePublisher(
             rabbitTemplate,
-            configurationProperties.queueName,
+            configurationProperties.routingKey,
             configurationProperties.deliveryTimeout
         )
+    }
 }
