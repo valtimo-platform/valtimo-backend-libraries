@@ -38,8 +38,6 @@ import com.ritense.document.service.DocumentService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.resource.Resource;
-import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +49,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
@@ -301,8 +298,8 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    public List<NamedUser> getCandidateUsers(Document.Id documentId) {
-        return userManagementService.findNamedUserByRoles(getDocumentRoles(documentId));
+    public List<NamedUser> getCandidateUsers(Document.Id documentId, String tenantId) {
+        return userManagementService.findNamedUserByRoles(getDocumentRoles(documentId, tenantId));
     }
 
 }
