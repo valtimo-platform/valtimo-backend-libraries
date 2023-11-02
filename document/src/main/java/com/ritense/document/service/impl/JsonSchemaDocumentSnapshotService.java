@@ -22,12 +22,10 @@ import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentSnapshotService;
-import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -37,18 +35,15 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     private final DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
     private final JsonSchemaDocumentService documentService;
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
-    private final TenantResolver tenantResolver;
 
     public JsonSchemaDocumentSnapshotService(
         DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository,
         JsonSchemaDocumentService documentService,
-        JsonSchemaDocumentDefinitionService documentDefinitionService,
-        TenantResolver tenantResolver
+        JsonSchemaDocumentDefinitionService documentDefinitionService
     ) {
         this.documentSnapshotRepository = documentSnapshotRepository;
         this.documentService = documentService;
         this.documentDefinitionService = documentDefinitionService;
-        this.tenantResolver = tenantResolver;
     }
 
     @Override
@@ -77,8 +72,13 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
 
     @Transactional
     @Override
-    public void makeSnapshot(Document.Id documentId, LocalDateTime createdOn, String createdBy) {
-        var document = documentService.getDocumentBy(documentId, tenantResolver.getTenantId());
+    public void makeSnapshot(
+        Document.Id documentId,
+        LocalDateTime createdOn,
+        String createdBy,
+        String tenantId
+    ) {
+        var document = documentService.getDocumentBy(documentId, tenantId);
         var documentDefinition = documentDefinitionService.findBy(document.definitionId())
             .orElseThrow();
         documentSnapshotRepository.saveAndFlush(

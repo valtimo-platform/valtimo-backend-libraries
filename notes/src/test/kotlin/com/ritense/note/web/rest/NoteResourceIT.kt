@@ -29,7 +29,7 @@ import com.ritense.note.repository.NoteRepository
 import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.dto.NoteCreateRequestDto
 import com.ritense.note.web.rest.dto.NoteUpdateRequestDto
-import com.ritense.tenancy.TenantResolver
+import com.ritense.testutilscommon.security.WithMockTenantUser
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
@@ -42,7 +42,6 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
-import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -75,9 +74,6 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     @Autowired
     lateinit var auditService: AuditService
 
-    @Autowired
-    lateinit var tenantResolver: TenantResolver
-
     lateinit var mockMvc: MockMvc
     lateinit var documentId: UUID
 
@@ -91,7 +87,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
             NewDocumentRequest(
                 PROFILE_DOCUMENT_DEFINITION_NAME,
                 Mapper.INSTANCE.get().createObjectNode()
-            ).withTenantId(tenantResolver.getTenantId())
+            ).withTenantId("1")
         ).resultingDocument().get().id()!!.id
         documentDefinitionService.putDocumentDefinitionRoles(PROFILE_DOCUMENT_DEFINITION_NAME, setOf(USER))
         whenever(userManagementService.currentUser)
@@ -99,7 +95,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser(TEST_USER)
+    @WithMockTenantUser
     fun `should create note`() {
         val note = NoteCreateRequestDto(content = "Test note")
 
@@ -119,7 +115,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser(TEST_USER)
+    @WithMockTenantUser
     fun `should audit note creation`() {
         val note = NoteCreateRequestDto(content = "Test note")
 
@@ -139,7 +135,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser(TEST_USER)
+    @WithMockTenantUser(username = TEST_USER, roles = [USER])
     fun `should not create note when user has no permission to the document`() {
         documentDefinitionService.putDocumentDefinitionRoles(PROFILE_DOCUMENT_DEFINITION_NAME, setOf(ADMIN))
         val note = NoteCreateRequestDto(content = "Test note")
@@ -154,7 +150,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser(TEST_USER)
+    @WithMockTenantUser
     fun `should get notes`() {
         val jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(documentId)
 
@@ -176,7 +172,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser(TEST_USER)
+    @WithMockTenantUser
     fun `should update note`() {
         val note = noteService.createNote(JsonSchemaDocumentId.existingId(documentId), "Test note")
         val noteUpdateRequestDto = NoteUpdateRequestDto(content = "Test note updated")
@@ -192,7 +188,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @WithMockUser(TEST_USER)
+    @WithMockTenantUser
     fun `should delete note`() {
         val note = noteService.createNote(JsonSchemaDocumentId.existingId(documentId), "Test note")
 

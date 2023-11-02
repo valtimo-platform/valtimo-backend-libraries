@@ -24,11 +24,8 @@ import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import com.ritense.valtimo.contract.domain.DomainEvent;
-
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class DocumentAssigneeChangedEvent extends AuditMetaData
@@ -36,6 +33,7 @@ public class DocumentAssigneeChangedEvent extends AuditMetaData
 
     private String assigneeName;
     private UUID documentId;
+    private String tenantId;
 
     @JsonCreator
     public DocumentAssigneeChangedEvent(
@@ -44,13 +42,15 @@ public class DocumentAssigneeChangedEvent extends AuditMetaData
         LocalDateTime occurredOn,
         String user,
         UUID documentId,
-        String assigneeName
+        String assigneeName,
+        String tenantId
     ) {
         super(id, origin, occurredOn, user);
         assertArgumentNotNull(documentId, "documentId is required");
         assertArgumentNotNull(assigneeName, "assignee name is required");
         this.documentId = documentId;
         this.assigneeName = assigneeName;
+        this.tenantId = tenantId;
     }
 
     public void setDocumentId(UUID documentId) {
@@ -64,32 +64,35 @@ public class DocumentAssigneeChangedEvent extends AuditMetaData
         return documentId;
     }
 
-
     @JsonProperty
     @JsonView(AuditView.Public.class)
     public String getAssigneeName() {
         return assigneeName;
     }
 
+    public String tenantId() {
+        return tenantId;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof DocumentAssigneeChangedEvent)) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         DocumentAssigneeChangedEvent that = (DocumentAssigneeChangedEvent) o;
-        return Objects.equals(assigneeName, that.assigneeName)
-            && Objects.equals(documentId, that.documentId);
+
+        if (!assigneeName.equals(that.assigneeName)) return false;
+        if (!documentId.equals(that.documentId)) return false;
+        return tenantId.equals(that.tenantId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), assigneeName, documentId);
+        int result = super.hashCode();
+        result = 31 * result + assigneeName.hashCode();
+        result = 31 * result + documentId.hashCode();
+        result = 31 * result + tenantId.hashCode();
+        return result;
     }
 }

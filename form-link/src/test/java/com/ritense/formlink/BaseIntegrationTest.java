@@ -22,6 +22,7 @@ import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.formlink.repository.ProcessFormAssociationRepository;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
+import org.camunda.bpm.engine.IdentityService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,9 +32,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.List;
 
 @SpringBootTest
 @Tag("integration")
@@ -58,12 +59,16 @@ public abstract class BaseIntegrationTest extends BaseTest {
     @MockBean
     public FormApplicationReadyEventListener formApplicationReadyEventListener;
 
+    @Inject
+    public IdentityService identityService;
+
     @BeforeAll
     public static void beforeAll() {
     }
 
     @BeforeEach
     public void beforeEach() throws IOException {
+        identityService.setAuthentication("John Doe", null, List.of("1"));
     }
 
     @AfterEach

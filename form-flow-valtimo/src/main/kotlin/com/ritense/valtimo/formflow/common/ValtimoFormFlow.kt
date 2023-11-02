@@ -29,6 +29,7 @@ import com.ritense.formflow.expression.FormFlowBean
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.tenancy.TenantResolver
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.TaskService
 import org.springframework.transaction.annotation.Transactional
@@ -42,7 +43,8 @@ open class ValtimoFormFlow(
     private val valueResolverService: ValueResolverService,
     private val formFlowService: FormFlowService,
     private val processDocumentService: ProcessDocumentService,
-    private val documentService: DocumentService
+    private val documentService: DocumentService,
+    private val tenantResolver: TenantResolver
 ) {
 
     /**
@@ -111,7 +113,7 @@ open class ValtimoFormFlow(
             NewDocumentRequest(
                 documentDefinitionName,
                 submittedByType["doc"] as JsonNode
-            )
+            ).withTenantId(tenantResolver.getTenantId())
         ).also { result ->
             if (result.errors().size > 0) {
                 throw RuntimeException(

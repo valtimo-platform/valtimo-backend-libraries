@@ -42,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
@@ -61,7 +60,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
@@ -156,7 +154,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
                 this.createdBy,
                 this.id,
                 this.documentDefinitionId,
-                version()
+                version(),
+                tenantId
             )
         );
     }
@@ -246,7 +245,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
                     LocalDateTime.now(),
                     AuditHelper.getActor(),
                     id(),
-                    changes
+                    changes,
+                    tenantId
                 )
             );
         }
@@ -276,7 +276,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
                     id.getId(),
                     relatedFile.getFileId(),
                     relatedFile.getFileName(),
-                    metadata
+                    metadata,
+                    tenantId
                 )
             );
         } else {
@@ -324,7 +325,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
                 LocalDateTime.now(),
                 AuditHelper.getActor(),
                 this.id.getId(),
-                assigneeFullName
+                assigneeFullName,
+                tenantId
             )
         );
     }

@@ -18,20 +18,25 @@ package com.ritense.document.domain.impl.event;
 
 import com.ritense.document.domain.event.DocumentSnapshotCapturedEvent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class JsonSchemaDocumentSnapshotCapturedEvent implements DocumentSnapshotCapturedEvent {
 
     private final JsonSchemaDocumentId documentId;
     private final LocalDateTime createdOn;
     private final String createdBy;
+    private final String tenantId;
 
-    public JsonSchemaDocumentSnapshotCapturedEvent(JsonSchemaDocumentId documentId, LocalDateTime createdOn, String createdBy) {
+    public JsonSchemaDocumentSnapshotCapturedEvent(
+        final JsonSchemaDocumentId documentId,
+        final LocalDateTime createdOn,
+        final String createdBy,
+        final String tenantId
+    ) {
         this.documentId = documentId;
         this.createdOn = createdOn;
         this.createdBy = createdBy;
+        this.tenantId = tenantId;
     }
 
     @Override
@@ -49,16 +54,29 @@ public class JsonSchemaDocumentSnapshotCapturedEvent implements DocumentSnapshot
         return createdBy;
     }
 
+    public String tenantId() {
+        return tenantId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         JsonSchemaDocumentSnapshotCapturedEvent that = (JsonSchemaDocumentSnapshotCapturedEvent) o;
-        return Objects.equals(documentId, that.documentId) && Objects.equals(createdOn, that.createdOn) && Objects.equals(createdBy, that.createdBy);
+
+        if (!documentId.equals(that.documentId)) return false;
+        if (!createdOn.equals(that.createdOn)) return false;
+        if (!createdBy.equals(that.createdBy)) return false;
+        return tenantId.equals(that.tenantId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(documentId, createdOn, createdBy);
+        int result = documentId.hashCode();
+        result = 31 * result + createdOn.hashCode();
+        result = 31 * result + createdBy.hashCode();
+        result = 31 * result + tenantId.hashCode();
+        return result;
     }
 }

@@ -34,7 +34,12 @@ public class DocumentSnapshotCapturedEventListener {
     @EventListener(JsonSchemaDocumentSnapshotCapturedEvent.class)
     public void handleDocumentCreatedEvent(JsonSchemaDocumentSnapshotCapturedEvent event) {
         logger.debug("{} - handle - JsonSchemaDocumentSnapshotEvent - {}", Thread.currentThread().getName(), event.documentId());
-        documentSnapshotService.makeSnapshot(event.documentId(), event.createdOn(), event.createdBy());
+        documentSnapshotService.makeSnapshot(
+            event.documentId(),
+            event.createdOn(),
+            event.createdBy(),
+            event.tenantId()
+        );
     }
 
 }

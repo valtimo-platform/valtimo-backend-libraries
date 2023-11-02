@@ -36,6 +36,7 @@ import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResu
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
+import com.ritense.testutilscommon.security.WithMockTenantUser
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.formflow.BaseIntegrationTest
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
@@ -94,6 +95,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     lateinit var processLinkActivityHandler: ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties>
 
     @Test
+    @WithMockTenantUser
     fun `should completeTask`() {
         deployFormFlow(onComplete = "\${valtimoFormFlow.completeTask(additionalProperties)}")
         linkFormFlowToUserTask()
@@ -107,6 +109,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockTenantUser
     fun `should completeTask and save submission in document`() {
         deployFormFlow(onComplete = "\${valtimoFormFlow.completeTask(additionalProperties, step.submissionData)}")
         linkFormFlowToUserTask()
@@ -124,6 +127,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockTenantUser
     fun `should completeTask and save submission in document and process`() {
         deployFormFlow(onComplete = "\${valtimoFormFlow.completeTask(additionalProperties, step.submissionData, {'doc:/address/streetName':'/street', 'pv:approved':'/approval'})}")
         linkFormFlowToUserTask()
@@ -147,6 +151,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockTenantUser
     fun `should start case and save submission in document and process`() {
         deployFormFlow(onComplete = "\${valtimoFormFlow.startCase(instance.id, {'doc:/address/streetName':'/street', 'pv:approved':'/approval'})}")
         val processLink = linkFormFlowToStartEvent()
@@ -189,6 +194,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockTenantUser
     fun `should process for existing case and save submission in document and process`() {
         deployFormFlow(onComplete = "\${valtimoFormFlow.startSupportingProcess(instance.id, {'doc:/address/streetName':'/street', 'pv:approved':'/approval'})}")
         val processLink = linkFormFlowToStartEvent()
@@ -197,7 +203,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
             NewDocumentRequest(
                 "profile",
                 Mapper.INSTANCE.get().readTree("{}")
-            )
+            ).withTenantId("1")
         ).resultingDocument().get()
 
         val startEventResponse = processLinkActivityHandler.getStartEventObject(

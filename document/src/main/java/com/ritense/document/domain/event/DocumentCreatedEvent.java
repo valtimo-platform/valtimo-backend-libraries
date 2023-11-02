@@ -32,4 +32,7 @@ public interface DocumentCreatedEvent {
     @JsonProperty
     DocumentVersion version();
 
+    @JsonProperty
+    String tenantId();
+
 }

@@ -61,7 +61,7 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
             NewDocumentRequest(
                 "person",
                 objectMapper.readTree(getDocument())
-            )
+            ).withTenantId("1")
         ).resultingDocument().get().id()
         val processDefinitionId: String = UUID.randomUUID().toString()
         val processLinkId = UUID.randomUUID()

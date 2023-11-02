@@ -91,6 +91,7 @@ class ZaakServiceTest : BaseTest() {
         //given
         val delegateExecutionFake = DelegateExecutionFake("id")
             .withProcessBusinessKey(document.id!!.id.toString())
+            .withTenantId("1")
 
         //when
         httpZaakCreated()

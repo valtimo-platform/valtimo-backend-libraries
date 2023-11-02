@@ -29,16 +29,14 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskResult;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
+import com.ritense.testutilscommon.security.WithMockTenantUser;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.test.context.support.WithMockUser;
-
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.List;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -101,7 +99,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = ADMIN)
+    @WithMockTenantUser(roles = ADMIN)
     public void shouldStartMainProcessAndAssociateCallActivityCalledProcess() throws JsonProcessingException {
         String processDocumentDefinitionKey = "call-activity-subprocess-example";
 
@@ -159,7 +157,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
     }
 
     @Test
-    @WithMockUser(username = "john@ritense.com", authorities = ADMIN)
+    @WithMockTenantUser
     public void shouldStartMainProcessAndNotAssociateSubProcess() throws JsonProcessingException {
         String processDocumentDefinitionKey = "embedded-subprocess-example";
 
@@ -180,7 +178,6 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
 
         final NewDocumentAndStartProcessResult newDocumentAndStartProcessResult = camundaProcessJsonSchemaDocumentService
             .newDocumentAndStartProcess(request);
-
 
         final List<TaskInstanceWithIdentityLink> processInstanceTasks = camundaTaskService.getProcessInstanceTasks(
             newDocumentAndStartProcessResult.resultingProcessInstanceId().orElseThrow().toString(),

@@ -36,7 +36,6 @@ import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.Comparator;
@@ -112,7 +111,9 @@ public class CamundaProcessService {
     }
 
     public ProcessInstanceWithDefinition startProcess(
-        String processDefinitionKey, String businessKey, Map<String, Object> variables
+        String processDefinitionKey,
+        String businessKey,
+        Map<String, Object> variables
     ) {
         final ProcessDefinition processDefinition = getProcessDefinition(processDefinitionKey);
         if (processDefinition == null) {

@@ -33,8 +33,8 @@ public class DocumentRelatedFileAddedEvent extends AuditMetaData implements Audi
     private final UUID documentId;
     private final UUID fileId;
     private final String fileName;
-
     private final Map<String, Object> metadata;
+    private final String tenantId;
 
     @JsonCreator
     public DocumentRelatedFileAddedEvent(
@@ -45,7 +45,8 @@ public class DocumentRelatedFileAddedEvent extends AuditMetaData implements Audi
         UUID documentId,
         UUID fileId,
         String fileName,
-        Map<String, Object> metadata
+        Map<String, Object> metadata,
+        String tenantId
     ) {
         super(id, origin, occurredOn, user);
         assertArgumentNotNull(documentId, "documentId is required");
@@ -55,6 +56,7 @@ public class DocumentRelatedFileAddedEvent extends AuditMetaData implements Audi
         this.fileId = fileId;
         this.fileName = fileName;
         this.metadata = metadata;
+        this.tenantId = tenantId;
     }
 
     @Override
@@ -74,5 +76,9 @@ public class DocumentRelatedFileAddedEvent extends AuditMetaData implements Audi
 
     public Map<String, Object> getMetadata() {
         return metadata;
+    }
+
+    public String getTenantId() {
+        return tenantId;
     }
 }

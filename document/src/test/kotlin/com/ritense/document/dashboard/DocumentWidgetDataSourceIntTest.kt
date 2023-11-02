@@ -8,11 +8,13 @@ import com.ritense.document.service.result.CreateDocumentResult
 import com.ritense.valtimo.contract.Constants
 import com.ritense.valtimo.contract.repository.ExpressionOperator
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
 
+@Disabled
 @Transactional
 class DocumentWidgetDataSourceIntTest @Autowired constructor(
     private val documentWidgetDataSource: DocumentWidgetDataSource

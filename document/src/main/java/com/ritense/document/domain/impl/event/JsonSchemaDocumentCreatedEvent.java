@@ -27,11 +27,8 @@ import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import com.ritense.valtimo.contract.domain.DomainEvent;
-
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.UUID;
-
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class JsonSchemaDocumentCreatedEvent extends AuditMetaData
@@ -40,6 +37,7 @@ public class JsonSchemaDocumentCreatedEvent extends AuditMetaData
     private final JsonSchemaDocumentId documentId;
     private final JsonSchemaDocumentDefinitionId definitionId;
     private final JsonSchemaDocumentVersion version;
+    private final String tenantId;
 
     @JsonCreator
     public JsonSchemaDocumentCreatedEvent(
@@ -49,7 +47,8 @@ public class JsonSchemaDocumentCreatedEvent extends AuditMetaData
         final String user,
         final JsonSchemaDocumentId documentId,
         final JsonSchemaDocumentDefinitionId definitionId,
-        final JsonSchemaDocumentVersion version
+        final JsonSchemaDocumentVersion version,
+        final String tenantId
     ) {
         super(id, origin, occurredOn, user);
         assertArgumentNotNull(documentId, "documentId is required");
@@ -58,6 +57,7 @@ public class JsonSchemaDocumentCreatedEvent extends AuditMetaData
         this.documentId = documentId;
         this.definitionId = definitionId;
         this.version = version;
+        this.tenantId = tenantId;
     }
 
     @Override
@@ -83,25 +83,31 @@ public class JsonSchemaDocumentCreatedEvent extends AuditMetaData
     }
 
     @Override
+    public String tenantId() {
+        return tenantId;
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof JsonSchemaDocumentCreatedEvent)) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
         JsonSchemaDocumentCreatedEvent that = (JsonSchemaDocumentCreatedEvent) o;
-        return documentId.equals(that.documentId) &&
-            definitionId.equals(that.definitionId) &&
-            version.equals(that.version);
+
+        if (!documentId.equals(that.documentId)) return false;
+        if (!definitionId.equals(that.definitionId)) return false;
+        if (!version.equals(that.version)) return false;
+        return tenantId.equals(that.tenantId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), documentId, definitionId, version);
+        int result = super.hashCode();
+        result = 31 * result + documentId.hashCode();
+        result = 31 * result + definitionId.hashCode();
+        result = 31 * result + version.hashCode();
+        result = 31 * result + tenantId.hashCode();
+        return result;
     }
-
 }

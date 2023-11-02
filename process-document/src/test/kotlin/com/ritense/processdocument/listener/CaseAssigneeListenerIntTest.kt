@@ -24,6 +24,7 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.testutilscommon.security.WithMockTenantUser
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import java.util.UUID
@@ -96,7 +97,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         testDocument = documentService.createDocument(
             NewDocumentRequest(
                 "house", objectMapper.readTree(documentJson)
-            )
+            ).withTenantId("1")
         ).resultingDocument().orElseThrow()
 
         caseDefinitionService.updateCaseSettings(
@@ -130,6 +131,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockTenantUser
     fun `should do nothing when and task is created and autoAssignTasks is off`() {
 
         caseDefinitionService.updateCaseSettings(
@@ -183,6 +185,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockTenantUser
     fun `should should remove task assignee when document assignee is removed`() {
 
         whenever(userManagementService.findById(any())).thenReturn(testUser)

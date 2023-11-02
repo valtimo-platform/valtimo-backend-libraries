@@ -40,7 +40,8 @@ public class DocumentSnapshotCapturedEventPublisher {
             new JsonSchemaDocumentSnapshotCapturedEvent(
                 event.documentId(),
                 event.getOccurredOn(),
-                event.getUser()
+                event.getUser(),
+                event.tenantId()
             )
         );
     }
@@ -52,7 +53,8 @@ public class DocumentSnapshotCapturedEventPublisher {
             new JsonSchemaDocumentSnapshotCapturedEvent(
                 event.documentId(),
                 event.getOccurredOn(),
-                event.getUser()
+                event.getUser(),
+                event.tenantId()
             )
         );
     }

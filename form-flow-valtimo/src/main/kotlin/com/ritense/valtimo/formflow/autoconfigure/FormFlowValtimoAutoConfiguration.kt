@@ -182,7 +182,8 @@ class FormFlowValtimoAutoConfiguration {
         valueResolverService: ValueResolverService,
         formFlowService: FormFlowService,
         processDocumentService: ProcessDocumentService,
-        documentService: DocumentService
+        documentService: DocumentService,
+        tenantResolver: TenantResolver
     ): ValtimoFormFlow {
         return ValtimoFormFlow(
             taskService,
@@ -190,7 +191,8 @@ class FormFlowValtimoAutoConfiguration {
             valueResolverService,
             formFlowService,
             processDocumentService,
-            documentService
+            documentService,
+            tenantResolver
         )
     }
 
