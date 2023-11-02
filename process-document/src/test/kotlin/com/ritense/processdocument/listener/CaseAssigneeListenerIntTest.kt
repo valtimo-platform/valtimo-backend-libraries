@@ -27,8 +27,6 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.testutilscommon.security.WithMockTenantUser
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
-import java.util.UUID
-import kotlin.test.assertEquals
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.junit.jupiter.api.Assertions.assertNull
