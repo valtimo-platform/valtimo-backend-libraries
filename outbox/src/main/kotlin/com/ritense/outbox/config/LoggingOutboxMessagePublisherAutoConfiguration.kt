@@ -16,6 +16,7 @@
 
 package com.ritense.outbox.config
 
+import com.ritense.outbox.config.condition.ConditionalOnOutboxEnabled
 import com.ritense.outbox.publisher.LoggingMessagePublisher
 import com.ritense.outbox.publisher.MessagePublisher
 import org.springframework.boot.autoconfigure.AutoConfigureOrder
@@ -25,6 +26,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.core.Ordered
 
 @Configuration
+@ConditionalOnOutboxEnabled
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 class LoggingOutboxMessagePublisherAutoConfiguration {
     @Bean

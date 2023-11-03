@@ -16,6 +16,7 @@
 
 package com.ritense.outbox.rabbitmq.config
 
+import com.ritense.outbox.config.condition.ConditionalOnOutboxEnabled
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.rabbitmq.RabbitMessagePublisher
 import org.springframework.amqp.rabbit.core.RabbitTemplate
@@ -26,6 +27,7 @@ import org.springframework.context.annotation.Configuration
 
 
 @Configuration
+@ConditionalOnOutboxEnabled
 @EnableConfigurationProperties(RabbitOutboxConfigurationProperties::class)
 class RabbitOutboxAutoconfiguration {
 

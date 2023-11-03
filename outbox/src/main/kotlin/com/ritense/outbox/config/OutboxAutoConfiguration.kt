@@ -21,6 +21,7 @@ import com.ritense.outbox.OutboxLiquibaseRunner
 import com.ritense.outbox.OutboxMessageRepository
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.UserProvider
+import com.ritense.outbox.config.condition.ConditionalOnOutboxEnabled
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.PollingPublisherJob
 import com.ritense.outbox.publisher.PollingPublisherService
@@ -39,6 +40,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
 
 @Configuration
+@ConditionalOnOutboxEnabled
 @EnableJpaRepositories(
     basePackageClasses = [
         OutboxMessageRepository::class
