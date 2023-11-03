@@ -97,27 +97,4 @@ bootRun {
     }
 }
 
-tasks.register("downloadValtimoDockerCompose") {
-    doFirst {
-        file(buildDir.absolutePath + "/docker").mkdirs()
-        File dockerFile = file(buildDir.absolutePath + "/docker/valtimo-docker-compose.zip")
-        new URL("https://codeload.github.com/valtimo-platform/valtimo-docker-compose/zip/refs/heads/feature/77820-docker-compose")
-            .withInputStream { i -> dockerFile.withOutputStream { it << i } }
-    }
-}
-
-tasks.register("downloadAndUnzipValtimoDockerCompose", Copy) {
-    dependsOn tasks.downloadValtimoDockerCompose
-    from zipTree(buildDir.absolutePath + "/docker/valtimo-docker-compose.zip")
-    into file(buildDir.absolutePath + "/docker/")
-}
-
-tasks.assemble {
-    dependsOn("downloadAndUnzipValtimoDockerCompose")
-}
-
-dockerCompose {
-    isRequiredBy(bootRun)
-    useComposeFiles.addAll(buildDir.absolutePath + "/docker/valtimo-docker-compose-feature-77820-docker-compose/docker-compose.yaml")
-    composeAdditionalArgs = ["--profile", "gzac"]
-}
+apply from: "$rootProject.projectDir/gradle/dockerComposeGzac.gradle"
