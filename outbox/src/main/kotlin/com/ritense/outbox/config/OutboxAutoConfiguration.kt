@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox
+package com.ritense.outbox.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.outbox.publisher.LoggingMessagePublisher
+import com.ritense.outbox.OutboxLiquibaseRunner
+import com.ritense.outbox.OutboxMessageRepository
+import com.ritense.outbox.OutboxService
+import com.ritense.outbox.UserProvider
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.PollingPublisherJob
 import com.ritense.outbox.publisher.PollingPublisherService
@@ -99,11 +102,4 @@ class OutboxAutoConfiguration {
     ): PollingPublisherJob {
         return PollingPublisherJob(pollingPublisherService)
     }
-
-    @Bean
-    @ConditionalOnMissingBean(MessagePublisher::class)
-    fun loggingMessagePublisher(): MessagePublisher {
-        return LoggingMessagePublisher()
-    }
-
 }
