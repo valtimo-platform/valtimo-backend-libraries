@@ -21,7 +21,7 @@ import com.ritense.outbox.domain.BaseEvent
 import java.util.function.Supplier
 
 class NoopOutboxService : OutboxService {
-    override fun send(baseEventSupplier: Supplier<BaseEvent>) {
+    override fun send(eventSupplier: Supplier<BaseEvent>) {
         // Nothing to do
     }
 }

@@ -21,5 +21,5 @@ import com.ritense.outbox.domain.BaseEvent
 import java.util.function.Supplier
 
 interface OutboxService {
-    fun send(baseEventSupplier: Supplier<BaseEvent>)
+    fun send(eventSupplier: Supplier<BaseEvent>)
 }
