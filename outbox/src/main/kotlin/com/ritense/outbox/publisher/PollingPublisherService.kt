@@ -16,14 +16,14 @@
 
 package com.ritense.outbox.publisher
 
-import com.ritense.outbox.OutboxService
+import com.ritense.outbox.DefaultOutboxService
 import java.util.concurrent.atomic.AtomicBoolean
 import mu.KotlinLogging
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 
 open class PollingPublisherService(
-    private val outboxService: OutboxService,
+    private val outboxService: DefaultOutboxService,
     private val messagePublisher: MessagePublisher,
     private val platformTransactionManager: PlatformTransactionManager
 ) {

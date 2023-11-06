@@ -16,76 +16,10 @@
 
 package com.ritense.outbox
 
-import com.fasterxml.jackson.databind.ObjectMapper
+
 import com.ritense.outbox.domain.BaseEvent
-import com.ritense.outbox.domain.CloudEventData
-import io.cloudevents.core.builder.CloudEventBuilder
-import io.cloudevents.core.provider.EventFormatProvider
-import io.cloudevents.jackson.JsonFormat
-import mu.KotlinLogging
-import org.springframework.transaction.annotation.Propagation
-import org.springframework.transaction.annotation.Transactional
-import java.net.URI
-import java.time.ZonedDateTime
-import java.util.UUID
-import kotlin.text.Charsets.UTF_8
+import java.util.function.Supplier
 
-
-open class OutboxService(
-    private val outboxMessageRepository: OutboxMessageRepository,
-    private val objectMapper: ObjectMapper,
-    private val userProvider: UserProvider,
-    private val cloudEventSource: String,
-) {
-
-    @Transactional(propagation = Propagation.MANDATORY)
-    open fun send(baseEvent: BaseEvent) {
-        val userId = baseEvent.userId ?: userProvider.getCurrentUserLogin() ?: "System"
-        val roles = baseEvent.roles ?: userProvider.getCurrentUserRoles().joinToString(",")
-        val cloudEventData = CloudEventData(userId, roles, baseEvent.resultType, baseEvent.resultId, baseEvent.result)
-        val cloudEvent = CloudEventBuilder.v1()
-            .withId(baseEvent.id.toString())
-            .withSource(URI(cloudEventSource))
-            .withTime(baseEvent.date.atOffset(ZonedDateTime.now().offset))
-            .withType(baseEvent.type)
-            .withDataContentType("application/json")
-            .withData(objectMapper.writeValueAsBytes(cloudEventData))
-            .build()
-        val serializedCloudEvent = EventFormatProvider
-            .getInstance()
-            .resolveFormat(JsonFormat.CONTENT_TYPE)
-            .serialize(cloudEvent)
-        val serializedCloudEventString = String(serializedCloudEvent, UTF_8)
-
-        send(serializedCloudEventString)
-    }
-
-    /**
-     * Guarantee that the message is published using the transactional outbox pattern.
-     * See: https://microservices.io/patterns/data/transactional-outbox.html
-     *
-     * Typical workflow:
-     * @Transactional
-     * fun saveOrders() {
-     *      orderRepo.save(order)
-     *      order.events.forEach { outboxService.send(it) }
-     *      order.events.clear()
-     * }
-     */
-    @Transactional(propagation = Propagation.MANDATORY)
-    open fun send(message: String) {
-        val outboxMessage = OutboxMessage(
-            message = message
-        )
-        logger.debug { "Saving OutboxMessage '${outboxMessage.id}'" }
-        outboxMessageRepository.save(outboxMessage)
-    }
-
-    open fun getOldestMessage() = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
-
-    open fun deleteMessage(id: UUID) = outboxMessageRepository.deleteById(id)
-
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+interface OutboxService {
+    fun send(baseEventSupplier: Supplier<BaseEvent>)
 }

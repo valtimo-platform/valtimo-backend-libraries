@@ -219,6 +219,7 @@ valtimo:
         case-tabs:
             clear-tables: true
     outbox:
+        enabled: false
         publisher:
             cloudevent-source: "com.ritense.gzac"
             rabbitmq:

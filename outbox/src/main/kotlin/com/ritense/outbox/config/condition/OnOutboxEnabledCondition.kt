@@ -21,10 +21,13 @@ import org.springframework.context.annotation.ConditionContext
 import org.springframework.core.type.AnnotatedTypeMetadata
 
 class OnOutboxEnabledCondition : Condition {
-    override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata) =
-        context.environment.getProperty(PROPERTY_NAME, "true").toBoolean()
+    override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
+        val annotationName = ConditionalOnOutboxEnabled::class.java.name
+        val value = (metadata.getAnnotationAttributes(annotationName)?.get("value") as? Boolean) ?: true
+        return context.environment.getProperty(PROPERTY_NAME, "true").toBoolean() == value
+    }
 
     companion object {
-        const val PROPERTY_NAME = "valtimo.outbox.enabled"
+        internal const val PROPERTY_NAME = "valtimo.outbox.enabled"
     }
 }

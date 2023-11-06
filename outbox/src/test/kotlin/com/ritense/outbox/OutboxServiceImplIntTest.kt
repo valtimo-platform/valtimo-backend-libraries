@@ -27,10 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 
-class OutboxServiceIntTest : BaseIntegrationTest() {
+class OutboxServiceImplIntTest : BaseIntegrationTest() {
 
     @Autowired
-    lateinit var outboxService: OutboxService
+    lateinit var outboxService: DefaultOutboxService
 
     @Test
     @Transactional
@@ -59,7 +59,7 @@ class OutboxServiceIntTest : BaseIntegrationTest() {
     @Test
     @Transactional
     fun `should save a cloud event if a base event is submitted`() {
-        outboxService.send(TestEvent())
+        outboxService.send { TestEvent() }
 
         val messages = outboxMessageRepository.findAll()
         assertThat(messages.size).isEqualTo(1)
@@ -70,7 +70,7 @@ class OutboxServiceIntTest : BaseIntegrationTest() {
     @Test
     @Transactional
     fun `should set source to 'application' when no application name or system user id is provided`() {
-        outboxService.send(TestEvent())
+        outboxService.send { TestEvent() }
 
         val messages = outboxMessageRepository.findAll()
         assertThat(messages.size).isEqualTo(1)
@@ -81,7 +81,7 @@ class OutboxServiceIntTest : BaseIntegrationTest() {
     @Test
     @Transactional
     fun `should set user id to "System" if no user is available`() {
-        outboxService.send(TestEvent())
+        outboxService.send { TestEvent() }
 
         val messages = outboxMessageRepository.findAll()
         assertThat(messages.size).isEqualTo(1)
@@ -93,7 +93,7 @@ class OutboxServiceIntTest : BaseIntegrationTest() {
     @WithMockUser(username = "user@ritense.com", authorities = ["ADMIN", "USER"])
     @Transactional
     fun `should correctly set user id and roles for a cloud event`() {
-        outboxService.send(TestEvent())
+        outboxService.send { TestEvent() }
 
         val messages = outboxMessageRepository.findAll()
         assertThat(messages.size).isEqualTo(1)

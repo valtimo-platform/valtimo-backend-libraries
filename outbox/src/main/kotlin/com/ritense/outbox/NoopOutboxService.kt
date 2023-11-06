@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.config.condition
-
-import org.springframework.context.annotation.Conditional
+package com.ritense.outbox
 
 
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-@MustBeDocumented
-@Conditional(
-    OnOutboxEnabledCondition::class
-)
-annotation class ConditionalOnOutboxEnabled(val value: Boolean = true)
+import com.ritense.outbox.domain.BaseEvent
+import java.util.function.Supplier
+
+class NoopOutboxService : OutboxService {
+    override fun send(baseEventSupplier: Supplier<BaseEvent>) {
+        // Nothing to do
+    }
+}

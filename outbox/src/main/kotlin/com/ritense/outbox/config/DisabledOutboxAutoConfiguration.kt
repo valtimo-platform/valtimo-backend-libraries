@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.config.condition
+package com.ritense.outbox.config
 
-import org.springframework.context.annotation.Conditional
+import com.ritense.outbox.NoopOutboxService
+import com.ritense.outbox.OutboxService
+import com.ritense.outbox.config.condition.ConditionalOnOutboxEnabled
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
 
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-@Retention(AnnotationRetention.RUNTIME)
-@MustBeDocumented
-@Conditional(
-    OnOutboxEnabledCondition::class
-)
-annotation class ConditionalOnOutboxEnabled(val value: Boolean = true)
+@Configuration
+@ConditionalOnOutboxEnabled(false)
+class DisabledOutboxAutoConfiguration {
+    @Bean
+    @ConditionalOnMissingBean(OutboxService::class)
+    fun noopOutboxService() = NoopOutboxService()
+}

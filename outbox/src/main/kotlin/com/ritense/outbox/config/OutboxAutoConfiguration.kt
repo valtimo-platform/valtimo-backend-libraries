@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.OutboxLiquibaseRunner
 import com.ritense.outbox.OutboxMessageRepository
 import com.ritense.outbox.OutboxService
+import com.ritense.outbox.DefaultOutboxService
 import com.ritense.outbox.UserProvider
 import com.ritense.outbox.config.condition.ConditionalOnOutboxEnabled
 import com.ritense.outbox.publisher.MessagePublisher
@@ -69,13 +70,13 @@ class OutboxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(OutboxService::class)
-    fun outboxService(
+    fun defaultOutboxService(
         outboxMessageRepository: OutboxMessageRepository,
         objectMapper: ObjectMapper,
         userProvider: UserProvider,
         @Value("\${valtimo.outbox.publisher.cloudevent-source:\${spring.application.name:application}}") cloudEventSource: String,
-        ): OutboxService {
-        return OutboxService(
+    ): OutboxService {
+        return DefaultOutboxService(
             outboxMessageRepository,
             objectMapper,
             userProvider,
@@ -86,7 +87,7 @@ class OutboxAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(PollingPublisherService::class)
     fun pollingPublisherService(
-        outboxService: OutboxService,
+        outboxService: DefaultOutboxService,
         messagePublisher: MessagePublisher,
         platformTransactionManager: PlatformTransactionManager
     ): PollingPublisherService {
