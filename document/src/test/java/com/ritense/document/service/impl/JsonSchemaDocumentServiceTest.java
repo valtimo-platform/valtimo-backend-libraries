@@ -28,6 +28,7 @@ import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.json.Mapper;
 import com.ritense.valtimo.contract.resource.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -90,7 +91,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             userManagementService,
             authorizationService,
             applicationEventPublisher,
-            outboxService
+            outboxService,
+            Mapper.INSTANCE.get()
         ));
 
         var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");

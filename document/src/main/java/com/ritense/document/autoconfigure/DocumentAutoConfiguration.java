@@ -16,6 +16,7 @@
 
 package com.ritense.document.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
@@ -75,8 +76,9 @@ public class DocumentAutoConfiguration {
         final UserManagementService userManagementService,
         final AuthorizationService authorizationService,
         final ApplicationEventPublisher applicationEventPublisher,
-        final OutboxService outboxService
-    ) {
+        final OutboxService outboxService,
+        final ObjectMapper objectMapper
+        ) {
         return new JsonSchemaDocumentService(
             documentRepository,
             documentDefinitionService,
@@ -85,7 +87,8 @@ public class DocumentAutoConfiguration {
             userManagementService,
             authorizationService,
             applicationEventPublisher,
-            outboxService
+            outboxService,
+            objectMapper
         );
     }
 

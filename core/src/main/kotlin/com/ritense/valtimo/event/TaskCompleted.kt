@@ -16,12 +16,11 @@
 
 package com.ritense.valtimo.event
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.outbox.domain.BaseEvent
 
 class TaskCompleted(taskId: String) : BaseEvent(
     type = "com.ritense.valtimo.task.completed",
     resultType = "com.ritense.valtimo.camunda.domain.CamundaTask",
     resultId = taskId,
-    result = jacksonObjectMapper().createObjectNode()
+    result = null
 )

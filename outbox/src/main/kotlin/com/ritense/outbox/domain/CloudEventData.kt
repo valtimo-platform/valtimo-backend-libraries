@@ -7,5 +7,5 @@ data class CloudEventData(
     val roles: String,
     val resultType: String?,
     val resultId: String?,
-    val result: ObjectNode
+    val result: ObjectNode?
 )

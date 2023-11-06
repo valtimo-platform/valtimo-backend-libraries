@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.domain
+package com.ritense.document.event
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import java.time.LocalDateTime
-import java.util.UUID
+import com.ritense.outbox.domain.BaseEvent
 
-abstract class BaseEvent(
-    open val id: UUID = UUID.randomUUID(),
-    open val type: String,
-    open val date: LocalDateTime = LocalDateTime.now(),
-    open var userId: String? = null,
-    open var roles: String? = null,
-    open val resultType: String?,
-    open val resultId: String?,
-    open val result: ObjectNode?,
+class DocumentDeleted(documentId: String) : BaseEvent(
+    type = "com.ritense.valtimo.document.deleted",
+    resultType = "com.ritense.document.domain.impl.JsonSchemaDocument",
+    resultId = documentId,
+    result = null
 )
