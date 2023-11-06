@@ -11,9 +11,9 @@ the [getting started guide](https://docs.valtimo.nl/getting-started/first-dive/c
 ### Prerequisites:
 
 - Java 17
-- [Git](https://git-scm.com/downloads)
-- An IDE like [IntelliJ](https://www.jetbrains.com/idea/download/) or [Eclipse](https://www.eclipse.org/downloads/)
 - [Docker (Desktop)](https://www.docker.com/products/docker-desktop/)
+- (Optional) An IDE like [IntelliJ](https://www.jetbrains.com/idea/download/) or [Eclipse](https://www.eclipse.org/downloads/)
+- (Optional) [Git](https://git-scm.com/downloads)
 
 ### Start docker containers for supporting services
 
