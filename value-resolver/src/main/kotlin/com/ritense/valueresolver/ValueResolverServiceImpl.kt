@@ -23,16 +23,16 @@ open class ValueResolverServiceImpl(
     private val valueResolverFactories: List<ValueResolverFactory>
 ) : ValueResolverService {
 
-    private lateinit var resolverFactoryMap: Map<String, ValueResolverFactory>
-    private fun getResolverFactoryMap(): Map<String, ValueResolverFactory> {
+    private lateinit var resolverFactoryMap: Map<Pair<String, Class<ValueResolvingContext>?>, ValueResolverFactory>
+    private fun getResolverFactoryMap(): Map<Pair<String, Class<ValueResolvingContext>?>, ValueResolverFactory> {
         if (!this::resolverFactoryMap.isInitialized) {
             resolverFactoryMap = valueResolverFactories.groupBy { it.supportedPrefix() }
                 .onEach { (key, value) ->
                     if(value.size != 1) {
                         throw RuntimeException("Expected 1 resolver for prefix '$key'. Found: ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")
                     }
-                }.map { (key, value) ->
-                    key to value.first()
+                }.flatMap { (key, value) ->
+                    value.map { Pair(key, it.supportedContext()) to it }
                 }.toMap()
         }
 

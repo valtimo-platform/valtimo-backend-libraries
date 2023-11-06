@@ -78,20 +78,24 @@ interface ValueResolverService {
      * @param variableScope An implementation of VariableScope.
      * @param values mapOf(doc:add:/firstname to John)
      */
+    @Deprecated("Since 11.2.0")
     fun handleValues(
         processInstanceId: String,
         variableScope: VariableScope?,
         values: Map<String, Any>
     )
 
+    @Deprecated("Since 11.2.0")
     fun handleValues(
         documentId: UUID,
         values: Map<String, Any>
     )
 
+
     fun preProcessValuesForNewCase(
         values: Map<String, Any>
     ): Map<String, Any>
 
+    @Deprecated("Since 11.2.0")
     fun supportsValue(value: String): Boolean
 }

@@ -34,6 +34,10 @@ interface ValueResolverFactory {
      */
     fun supportedPrefix(): String
 
+    fun supportedContext(): Class<ValueResolvingContext>? {
+        return null
+    }
+
     /**
      * This creates a requestedValue resolver within a certain context.
      * The returned resolver can be called multiple times within the same context for different requestedValues.
@@ -85,10 +89,29 @@ interface ValueResolverFactory {
     fun createResolver(documentId: String)
         : Function<String, Any?>
 
+
+    /**
+     * @param context TODO: this
+     * @param values The values to handle. i.e. mapOf(doc:add:/firstname to John)
+     */
+    fun handleValues(context: ValueResolvingContext, values: Map<String, Any>): Any {
+        // backwards compatibility
+        if (context is ProcessValueResolvingContext) {
+            handleValues(context.processInstanceId, context.variableScope, values)
+        } else if (context is DocumentValueResolvingContext) {
+            handleValues(context.documentId, values)
+        } else {
+            // for now, we can't assume that this method is implemented.
+        }
+        return emptyMap<String, Any>()
+    }
+
     /**
      * @param processInstanceId The Camunda processInstanceId these values belong to
      * @param variableScope An implementation of VariableScope.
      * @param values The values to handle. i.e. mapOf(doc:add:/firstname to John)
+     *
+     * @Deprecated replaced by
      */
     fun handleValues(processInstanceId: String, variableScope: VariableScope?, values: Map<String, Any>)
 
