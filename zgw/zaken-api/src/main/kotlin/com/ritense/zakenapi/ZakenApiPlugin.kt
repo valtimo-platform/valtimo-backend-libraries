@@ -26,14 +26,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
-import com.ritense.zakenapi.domain.CreateZaakRequest
-import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
-import com.ritense.zakenapi.domain.CreateZaakStatusRequest
-import com.ritense.zakenapi.domain.ZaakInformatieObject
-import com.ritense.zakenapi.domain.ZaakInstanceLink
-import com.ritense.zakenapi.domain.ZaakInstanceLinkId
-import com.ritense.zakenapi.domain.ZaakObject
-import com.ritense.zakenapi.domain.ZaakResponse
+import com.ritense.zakenapi.domain.*
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
@@ -273,6 +266,37 @@ class ZakenApiPlugin(
                 zaak = zaakUrl,
                 resultaattype = resultaattypeUrl,
                 toelichting = toelichting,
+            )
+        )
+    }
+
+    @PluginAction(
+        key = "set-zaakopschorting",
+        title = "Set case suspension",
+        description = "Suspends a case, sets the suspend status to true and adds a duration of time to the planned end date",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun setZaakOpschorting(
+        execution: DelegateExecution,
+        @PluginActionProperty verlengingsduur: String,
+        @PluginActionProperty toelichtingVerlenging: String,
+        @PluginActionProperty toelichtingOpschorting: String,
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+
+        client.setZaakOpschorting(
+            authenticationPluginConfiguration,
+            zaakUrl,
+            ZaakopschortingRequest(
+                verlenging = Verlenging(
+                    reden = toelichtingVerlenging,
+                    duur = "P$verlengingsduur"+"D"
+                ),
+                opschorting = Opschorting(
+                    indicatie = true.toString(),
+                    reden = toelichtingOpschorting
+                )
             )
         )
     }

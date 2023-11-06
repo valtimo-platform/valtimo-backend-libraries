@@ -299,7 +299,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
                 NewDocumentRequest(
                     "profile",
                     Mapper.INSTANCE.get().readTree("{}")
-                ).withTenantId("1")
+                )
             )
         )
     }

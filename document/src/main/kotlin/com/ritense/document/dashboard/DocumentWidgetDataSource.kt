@@ -35,9 +35,9 @@ class DocumentWidgetDataSource(
         val spec = byDocumentDefinitionIdName(caseCountDataSourceProperties.documentDefinition)
             .and { root, _, criteriaBuilder ->
                 criteriaBuilder.and(
-                    *caseCountDataSourceProperties.queryConditions.map {
+                    *caseCountDataSourceProperties.queryConditions?.map {
                         createConditionPredicate(root, it, criteriaBuilder)
-                    }.toTypedArray()
+                    }?.toTypedArray() ?: arrayOf()
                 )
             }
 

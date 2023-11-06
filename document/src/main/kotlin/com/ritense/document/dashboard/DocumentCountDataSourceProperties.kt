@@ -18,5 +18,5 @@ package com.ritense.document.dashboard
 
 data class DocumentCountDataSourceProperties(
     val documentDefinition: String,
-    val queryConditions: List<QueryCondition<*>> = listOf()
+    val queryConditions: List<QueryCondition<*>>? = listOf()
 )

@@ -107,7 +107,7 @@ class DocumentJsonValueResolverFactory(
         buildJsonPatch(documentContent, values)
 
         try {
-            documentService.modifyDocument(document, documentContent, tenantResolver.getTenantId())
+            documentService.modifyDocument(document, documentContent, document.tenantId())
         } catch (exception: ModifyDocumentException) {
             throw RuntimeException(
                 "Failed to handle values for document '$documentId'. Values: ${values}.",

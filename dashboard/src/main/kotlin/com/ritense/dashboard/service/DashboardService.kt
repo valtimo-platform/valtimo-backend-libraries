@@ -24,6 +24,7 @@ import com.ritense.dashboard.domain.WidgetConfiguration
 import com.ritense.dashboard.repository.DashboardRepository
 import com.ritense.dashboard.repository.WidgetConfigurationRepository
 import com.ritense.dashboard.web.rest.dto.DashboardUpdateRequestDto
+import com.ritense.dashboard.web.rest.dto.SingleWidgetConfigurationUpdateRequestDto
 import com.ritense.dashboard.web.rest.dto.WidgetConfigurationUpdateRequestDto
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import java.util.SortedSet
@@ -153,6 +154,27 @@ class DashboardService(
         }
 
         return widgetConfigurationRepository.saveAll(widgetConfigurations)
+    }
+
+    fun updateWidgetConfiguration(
+        dashboardKey: String,
+        widgetKey: String,
+        configUpdateRequest: SingleWidgetConfigurationUpdateRequestDto
+    ): WidgetConfiguration {
+
+        val widgetConfiguration = widgetConfigurationRepository.findByDashboardKeyAndKey(dashboardKey, widgetKey) ?:
+                throw RuntimeException("Failed to update widget configuration. Widget configuration with key '$widgetKey' and dashboard '$dashboardKey' doesn't exist.")
+
+
+        val updatedConfiguration = widgetConfiguration.copy(
+            title = configUpdateRequest.title,
+            dataSourceKey = configUpdateRequest.dataSourceKey,
+            dataSourceProperties = configUpdateRequest.dataSourceProperties,
+            displayTypeProperties = configUpdateRequest.displayTypeProperties,
+            displayType = configUpdateRequest.displayType,
+        )
+
+        return widgetConfigurationRepository.save(updatedConfiguration)
     }
 
     @Transactional(readOnly = true)
