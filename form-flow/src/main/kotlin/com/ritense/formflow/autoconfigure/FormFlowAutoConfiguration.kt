@@ -18,6 +18,7 @@ package com.ritense.formflow.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
+import com.ritense.formflow.domain.definition.configuration.step.CustomComponentStepTypeProperties
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.event.ApplicationEventPublisherHolder
 import com.ritense.formflow.handler.ApplicationReadyEventHandler
@@ -57,6 +58,11 @@ class FormFlowAutoConfiguration {
     @Bean
     fun formStepPropertiesType(): NamedType {
         return NamedType(FormStepTypeProperties::class.java, "form")
+    }
+
+    @Bean
+    fun customComponentStepPropertiesType(): NamedType {
+        return NamedType(CustomComponentStepTypeProperties::class.java, "custom-component")
     }
 
     @Bean

@@ -35,6 +35,7 @@ import com.ritense.valtimo.formflow.FormFlowProcessLinkActivityHandler
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.FormLinkNewProcessFormFlowProviderImpl
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
+import com.ritense.valtimo.formflow.handler.FormFlowStepTypeCustomComponentHandler
 import com.ritense.valtimo.formflow.event.FormFlowStepCompletedEventListener
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper
@@ -138,6 +139,12 @@ class FormFlowValtimoAutoConfiguration {
             documentService,
             objectMapper
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowStepTypeCustomComponentHandler::class)
+    fun formFlowStepTypeCustomComponentHandler(): FormFlowStepTypeCustomComponentHandler {
+        return FormFlowStepTypeCustomComponentHandler()
     }
 
     @Bean
