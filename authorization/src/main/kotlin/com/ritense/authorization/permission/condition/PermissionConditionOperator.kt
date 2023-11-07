@@ -50,10 +50,23 @@ enum class PermissionConditionOperator(@JsonValue val asText: String) {
     ): Predicate {
         return when (this) {
             NOT_EQUAL_TO ->
-                criteriaBuilder.notEqual(expression, value)
+                // Hibernate does not handle nulls very well in some configurations. This is a workaround
+                if (value == null) {
+                    expression.isNotNull
+                } else {
+                    criteriaBuilder.or(
+                        expression.isNull,
+                        criteriaBuilder.notEqual(expression, value)
+                    )
+                }
 
             EQUAL_TO ->
-                criteriaBuilder.equal(expression, value)
+                // Hibernate does not handle nulls very well in some configurations. This is a workaround
+                if (value == null) {
+                    expression.isNull
+                } else {
+                    criteriaBuilder.equal(expression, value)
+                }
 
             LESS_THAN -> {
                 criteriaBuilder.lessThan(expression as Expression<T>, value!! as T)
