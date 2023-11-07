@@ -21,8 +21,8 @@ spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:54320/valtimo
-        username: valtimo
+        url: jdbc:postgresql://localhost:54320/gzac
+        username: gzac
         password: password
         hikari:
             auto-commit: false
