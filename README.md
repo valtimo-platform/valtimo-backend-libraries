@@ -35,37 +35,8 @@ For more information check the following links.
 
 ## Running the Valtimo libraries from source
 
-⚠️ The following instructions are for running Valtimo from source code. Usually with the intention of improving the Valtimo libraries. If you want to get started with Valtimo for you own application, please consult the [getting started guide](https://docs.valtimo.nl/getting-started/first-dive/creating-your-own-valtimo-implementation).
+The environment consists of 3 components. The links below contain instructions on how to run each component:
 
-### Prerequisites:
-
-- Java 17
-- [Git](https://git-scm.com/downloads)
-- An IDE like [IntelliJ](https://www.jetbrains.com/idea/download/) or [Eclipse](https://www.eclipse.org/downloads/)
-- [Docker (Desktop)](https://www.docker.com/products/docker-desktop/)
- 
-### Setup the Valtimo environment:
-The environment consists of 3 components:
-* [Docker containers for supporting services](https://github.com/valtimo-platform/valtimo-docker-profiles)
-* Valtimo backend (this repository)
-* [Valtimo frontend](https://github.com/valtimo-platform/valtimo-frontend-template)
-
-#### Docker containers for supporting services
-* Make sure docker is running. 
-* Clone the Git repository **valtimo-docker-profiles** repository: [Valtimo docker git repository](https://github.com/valtimo-platform/valtimo-docker-profiles).
-* Open a terminal, go to the `gzac-platform` folder and run command
-    ```
-    docker compose up -d
-    ``` 
-
-#### Valtimo Backend
-* Make sure this repository (the one where this README is a part of) is cloned to your workstation.  
-* The application can be started with the gradle task ```:app:gzac:bootRun```. 
-
-The Valtimo backend api is now available at http://localhost:8080 . In order to work with it, you will need a running frontend implementation. See the next step.
-
-#### Valtimo Frontend
-
-The Git repository for running a frontend implementation can be found here: [Valtimo frontend template](https://github.com/valtimo-platform/valtimo-frontend-template). The repository includes the instructions for running the frontend. 
-
-
+* [Docker containers for supporting services](app/gzac/README.md#start-docker-containers-for-supporting-services)
+* [Valtimo backend](app/gzac/README.md#run-spring-boot-application)
+* [Valtimo frontend](https://github.com/valtimo-platform/valtimo-frontend-template/blob/main/README.md)
