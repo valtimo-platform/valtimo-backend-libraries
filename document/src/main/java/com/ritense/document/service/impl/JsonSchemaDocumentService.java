@@ -229,7 +229,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
                 documentRepository.save(jsonSchemaDocument);
 
-                outboxService.send(
+                outboxService.send(() ->
                     new DocumentCreated(
                         jsonSchemaDocument.id().toString(),
                         Mapper.INSTANCE.get().valueToTree(jsonSchemaDocument)
@@ -298,7 +298,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         result.resultingDocument().ifPresent(modifiedDocument -> {
             documentRepository.save(modifiedDocument);
-            outboxService.send(
+            outboxService.send(() ->
                 new DocumentUpdated(
                     modifiedDocument.id().toString(),
                     Mapper.INSTANCE.get().valueToTree(modifiedDocument)

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox
+package com.ritense.outbox.config.condition
+
+import org.springframework.context.annotation.Conditional
 
 
-import com.ritense.outbox.domain.BaseEvent
-import java.util.function.Supplier
-
-interface OutboxService {
-    fun send(eventSupplier: Supplier<BaseEvent>)
-}
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+@MustBeDocumented
+@Conditional(
+    OnOutboxEnabledCondition::class
+)
+annotation class ConditionalOnOutboxEnabled(val value: Boolean = true)

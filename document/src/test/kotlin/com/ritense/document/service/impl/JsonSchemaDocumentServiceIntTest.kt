@@ -32,6 +32,9 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.NamedUser
 import com.ritense.valtimo.contract.json.Mapper
+import java.util.UUID
+import java.util.function.Supplier
+import javax.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
@@ -44,8 +47,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.security.test.context.support.WithMockUser
-import java.util.UUID
-import javax.transaction.Transactional
 
 @Tag("integration")
 @Transactional
@@ -132,9 +133,9 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
 
         val document = createDocument("""{"street": "Admin street"}""")
 
-        val eventCapture = argumentCaptor<BaseEvent>()
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
         verify(outboxService, times(1)).send(eventCapture.capture())
-        val event = eventCapture.firstValue
+        val event = eventCapture.firstValue.get()
         assertThat(event.type).isEqualTo("com.ritense.valtimo.document.created")
         assertThat(event.resultType).isEqualTo("com.ritense.document.domain.impl.JsonSchemaDocument")
         assertThat(event.resultId).isEqualTo(document.id().toString())
@@ -151,9 +152,9 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
 
         val modifiedDocument = documentService.modifyDocument(documentRequest).resultingDocument().orElseThrow()
 
-        val eventCapture = argumentCaptor<BaseEvent>()
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
         verify(outboxService, times(1)).send(eventCapture.capture())
-        val event = eventCapture.firstValue
+        val event = eventCapture.firstValue.get()
         assertThat(event.type).isEqualTo("com.ritense.valtimo.document.updated")
         assertThat(event.resultType).isEqualTo("com.ritense.document.domain.impl.JsonSchemaDocument")
         assertThat(event.resultId).isEqualTo(document.id().toString())

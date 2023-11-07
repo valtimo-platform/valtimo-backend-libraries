@@ -75,7 +75,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     public ResponseEntity<? extends Document> getDocument(@PathVariable(name = "id") UUID id) {
         var document = documentService.findBy(JsonSchemaDocumentId.existingId(id)).orElse(null);
         if (document != null) {
-            outboxService.send(
+            outboxService.send(() ->
                 new DocumentViewed(
                     document.id().toString(),
                     Mapper.INSTANCE.get().valueToTree(document)

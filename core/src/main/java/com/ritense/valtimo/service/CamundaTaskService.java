@@ -227,7 +227,7 @@ public class CamundaTaskService {
         requirePermission(task, COMPLETE);
         taskService.complete(taskId);
         entityManager.detach(task);
-        outboxService.send(new TaskCompleted(taskId));
+        outboxService.send(() -> new TaskCompleted(taskId));
     }
 
     @Transactional

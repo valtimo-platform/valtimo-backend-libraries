@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
@@ -293,9 +294,9 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
         camundaTaskService.complete(task.getId());
 
-        var eventCapture = ArgumentCaptor.forClass(BaseEvent.class);
+        ArgumentCaptor<Supplier<BaseEvent>> eventCapture = ArgumentCaptor.forClass(Supplier.class);
         verify(outboxService, times(1)).send(eventCapture.capture());
-        var event = eventCapture.getValue();
+        var event = eventCapture.getValue().get();
         assertThat(event.getType()).isEqualTo("com.ritense.valtimo.task.completed");
         assertThat(event.getResultType()).isEqualTo("com.ritense.valtimo.camunda.domain.CamundaTask");
         assertThat(event.getResultId()).isEqualTo(task.getId());
