@@ -23,7 +23,7 @@ import mu.KotlinLogging
 open class LoggingMessagePublisher : MessagePublisher {
 
     override fun publish(message: OutboxMessage) {
-        logger.info { "OutboxMessage id: '${message.id}', content: ${message.message}" }
+        logger.info { "OutboxMessage id: '${message.id}'" }
     }
 
     companion object {

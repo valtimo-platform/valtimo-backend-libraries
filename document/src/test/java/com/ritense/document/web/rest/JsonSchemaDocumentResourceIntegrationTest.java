@@ -36,6 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import static com.ritense.valtimo.contract.utils.TestUtil.convertObjectToJsonBytes;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -257,9 +258,9 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
             .andDo(print())
             .andExpect(status().isOk());
 
-        var eventCapture = ArgumentCaptor.forClass(BaseEvent.class);
+        ArgumentCaptor<Supplier<BaseEvent>> eventCapture = ArgumentCaptor.forClass(Supplier.class);
         verify(outboxService, times(1)).send(eventCapture.capture());
-        var event = eventCapture.getValue();
+        var event = eventCapture.getValue().get();
         assertEquals("com.ritense.valtimo.document.viewed", event.getType());
         assertEquals("com.ritense.document.domain.impl.JsonSchemaDocument", event.getResultType());
         assertEquals(document.id().toString(), event.getResultId());
