@@ -96,3 +96,5 @@ bootRun {
         }
     }
 }
+
+apply from: "$rootProject.projectDir/gradle/dockerComposeGzac.gradle"
