@@ -25,10 +25,13 @@ import java.util.UUID;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import static org.springframework.data.domain.Sort.Direction.ASC;
 
 public class FormIoFormManagementResource implements FormManagementResource {
 
@@ -39,7 +42,9 @@ public class FormIoFormManagementResource implements FormManagementResource {
     }
 
     @Override
-    public ResponseEntity<Page<? extends FormDefinition>> getAll(Pageable pageable) {
+    public ResponseEntity<Page<? extends FormDefinition>> getAll(
+        @PageableDefault(sort = {"name"}, direction = ASC) Pageable pageable
+    ) {
         return ResponseEntity.ok(formDefinitionService.getAll(pageable));
     }
 
