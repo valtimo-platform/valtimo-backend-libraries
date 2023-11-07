@@ -30,6 +30,7 @@ import com.ritense.valtimo.web.rest.util.PaginationUtil;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.task.Comment;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,6 +47,7 @@ import java.beans.PropertyEditorSupport;
 import java.util.List;
 
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
@@ -62,7 +64,7 @@ public class TaskResource extends AbstractTaskResource {
     @GetMapping("/v1/task")
     public ResponseEntity<List<? extends TaskExtended>> getTasks(
         @RequestParam CamundaTaskService.TaskFilter filter,
-        Pageable pageable
+        @PageableDefault(sort = {"created"}, direction = DESC) Pageable pageable
     ) throws Exception {
         var page = camundaTaskService.findTasksFiltered(filter, pageable);
         var headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/task");
