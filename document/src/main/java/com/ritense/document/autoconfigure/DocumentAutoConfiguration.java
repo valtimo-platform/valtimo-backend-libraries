@@ -77,7 +77,7 @@ public class DocumentAutoConfiguration {
         final AuthorizationService authorizationService,
         final ApplicationEventPublisher applicationEventPublisher,
         final OutboxService outboxService
-        ) {
+    ) {
         return new JsonSchemaDocumentService(
             documentRepository,
             documentDefinitionService,
@@ -142,7 +142,8 @@ public class DocumentAutoConfiguration {
             queryDialectHelper,
             searchFieldService,
             userManagementService,
-            authorizationService);
+            authorizationService
+        );
     }
 
     @Bean
