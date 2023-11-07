@@ -45,3 +45,6 @@ valtimo:
   database: postgres
   plugin:
     encryption-secret: "abcdefghijklmnop"
+    outbox:
+        publisher:
+            polling.rate: "PT1H"

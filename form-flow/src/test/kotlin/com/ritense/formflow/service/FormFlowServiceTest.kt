@@ -24,6 +24,7 @@ import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstance
+import com.ritense.formflow.event.ApplicationEventPublisherHolder
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.spel.SpelExpressionProcessor
 import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
@@ -69,6 +70,7 @@ internal class FormFlowServiceTest : BaseTest() {
             expressionProcessor
         }
         ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory, mock(ApplicationContext::class.java))
+        ApplicationEventPublisherHolder.setInstance(org.mockito.kotlin.mock())
     }
 
     @Test

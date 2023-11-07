@@ -26,6 +26,7 @@ import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
+import com.ritense.formflow.event.ApplicationEventPublisherHolder
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import com.ritense.formflow.expression.FormFlowBeanTestHelper
 import com.ritense.formflow.expression.spel.SpelExpressionProcessorFactory
@@ -35,6 +36,7 @@ import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
@@ -43,6 +45,12 @@ import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationContext
 
 internal class FormFlowInstanceTest : BaseTest() {
+
+    @BeforeEach
+    fun beforeEach() {
+        ApplicationEventPublisherHolder.setInstance(mock())
+    }
+
     @Test
     fun `complete should return new step`() {
         val instance = FormFlowInstance(

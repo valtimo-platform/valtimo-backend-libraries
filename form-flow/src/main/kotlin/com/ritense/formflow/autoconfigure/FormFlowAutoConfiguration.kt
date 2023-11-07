@@ -19,6 +19,7 @@ package com.ritense.formflow.autoconfigure
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
+import com.ritense.formflow.event.ApplicationEventPublisherHolder
 import com.ritense.formflow.handler.ApplicationReadyEventHandler
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
@@ -35,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ResourceLoader
@@ -117,6 +119,16 @@ class FormFlowAutoConfiguration {
             resourceLoader,
             formFlowService,
             objectMapper
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ApplicationEventPublisherHolder::class)
+    fun applicationEventPublisherHolder(
+        applicationEventPublisher: ApplicationEventPublisher,
+    ): ApplicationEventPublisherHolder {
+        return ApplicationEventPublisherHolder(
+            applicationEventPublisher
         )
     }
 }

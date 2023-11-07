@@ -21,6 +21,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.formflow.domain.definition.FormFlowNextStep
 import com.ritense.formflow.domain.definition.FormFlowStep
+import com.ritense.formflow.event.ApplicationEventPublisherHolder
+import com.ritense.formflow.event.FormFlowStepCompletedEvent
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
 import org.hibernate.annotations.Type
 import java.util.Objects
@@ -68,6 +70,9 @@ data class FormFlowStepInstance(
         this.submissionData = submissionData
 
         processExpressions<Any>(definition.onComplete)
+        ApplicationEventPublisherHolder.getInstance().publishEvent(
+            FormFlowStepCompletedEvent(this)
+        )
     }
 
     fun determineNextStep(): FormFlowNextStep? {

@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow
 
+import com.ritense.outbox.OutboxService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag
@@ -34,5 +35,8 @@ class BaseIntegrationTest : BaseTest() {
 
     @MockBean
     lateinit var userManagementService: UserManagementService
+
+    @MockBean
+    lateinit var outboxService: OutboxService
 }
 
