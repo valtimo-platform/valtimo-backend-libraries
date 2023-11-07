@@ -38,6 +38,7 @@ import org.mockito.Mockito.any
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.isNull
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -70,7 +71,7 @@ internal class FormFlowServiceTest : BaseTest() {
             expressionProcessor
         }
         ExpressionProcessorFactoryHolder.setInstance(expressionProcessorFactory, mock(ApplicationContext::class.java))
-        ApplicationEventPublisherHolder.setInstance(org.mockito.kotlin.mock())
+        ApplicationEventPublisherHolder.setInstance(mock())
     }
 
     @Test

@@ -29,12 +29,12 @@ open class FormFlowStepCompletedEventListener(
     @EventListener(FormFlowStepCompletedEvent::class)
     open fun handleEvent(event: FormFlowStepCompletedEvent) {
         val result = FormFlowStepCompletedResult.of(event.formFlowStepInstance)
-        outboxService.send(
+        outboxService.send {
             FormFlowStepCompleted(
                 result.id.toString(),
                 objectMapper.valueToTree(result)
             )
-        )
+        }
     }
 
 }

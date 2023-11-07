@@ -6,7 +6,7 @@
             "nextSteps": [
                 {
                     "condition": null,
-                    "step": "end"
+                    "step": "loan-end"
                 }
             ],
             "type": {
@@ -17,7 +17,7 @@
             }
         },
         {
-            "key": "end",
+            "key": "loan-end",
             "type": {
                 "name": "form",
                 "properties": {

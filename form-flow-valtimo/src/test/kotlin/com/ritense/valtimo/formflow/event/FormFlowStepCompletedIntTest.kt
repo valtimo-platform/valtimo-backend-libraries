@@ -31,6 +31,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.util.function.Supplier
 
 @Transactional
 internal class FormFlowStepCompletedIntTest : BaseIntegrationTest() {
@@ -45,13 +46,13 @@ internal class FormFlowStepCompletedIntTest : BaseIntegrationTest() {
         val formFlowStepInstance = formFlowInstance.getCurrentStep()
         completeStep(formFlowInstance)
 
-        val eventCapture = argumentCaptor<BaseEvent>()
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
         verify(outboxService, times(1)).send(eventCapture.capture())
         val event = eventCapture.firstValue
-        assertThat(event.type).isEqualTo("com.ritense.valtimo.formflow.step.completed")
-        assertThat(event.resultType).isEqualTo("com.ritense.valtimo.formflow.event.FormFlowStepCompletedResult")
-        assertThat(event.resultId).isEqualTo(formFlowStepInstance.id.id.toString())
-        assertThat(event.result).isEqualTo(
+        assertThat(event.get().type).isEqualTo("com.ritense.valtimo.formflow.step.completed")
+        assertThat(event.get().resultType).isEqualTo("com.ritense.valtimo.formflow.event.FormFlowStepCompletedResult")
+        assertThat(event.get().resultId).isEqualTo(formFlowStepInstance.id.id.toString())
+        assertThat(event.get().result).isEqualTo(
             jacksonObjectMapper().valueToTree(
                 FormFlowStepCompletedResult.of(
                     formFlowStepInstance
