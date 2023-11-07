@@ -16,10 +16,10 @@
 
 package com.ritense.document.event
 
-import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.ritense.outbox.domain.BaseEvent
 
-class DocumentsViewed(documents: ObjectNode) : BaseEvent(
+class DocumentsViewed(documents: ArrayNode) : BaseEvent(
     type = "com.ritense.valtimo.document.listed",
     resultType = "List<com.ritense.document.domain.impl.JsonSchemaDocument>",
     resultId = null,

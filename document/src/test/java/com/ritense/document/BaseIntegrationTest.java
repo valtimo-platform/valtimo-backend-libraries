@@ -17,11 +17,11 @@
 package com.ritense.document;
 
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.permission.ConditionContainer;
+import com.ritense.authorization.permission.Permission;
 import com.ritense.authorization.permission.PermissionRepository;
 import com.ritense.authorization.role.Role;
 import com.ritense.authorization.role.RoleRepository;
-import com.ritense.authorization.permission.ConditionContainer;
-import com.ritense.authorization.permission.Permission;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -30,13 +30,11 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
-import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentService;
-import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider;
 import com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider;
 import com.ritense.document.service.SearchFieldActionProvider;
@@ -47,10 +45,6 @@ import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import javax.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,13 +55,17 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import javax.inject.Inject;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGNABLE;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CLAIM;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 
 @SpringBootTest
 @Tag("integration")
@@ -85,12 +83,6 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @Inject
     protected DocumentSearchService documentSearchService;
-
-    @Inject
-    protected DocumentSnapshotService documentSnapshotService;
-
-    @Inject
-    protected DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
 
     @Inject
     protected SearchFieldService searchFieldService;

@@ -26,6 +26,10 @@ import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.document.event.DocumentCreated
+import com.ritense.document.event.DocumentDeleted
+import com.ritense.document.event.DocumentUpdated
+import com.ritense.document.event.DocumentViewed
 import com.ritense.document.service.JsonSchemaDocumentActionProvider
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
@@ -42,8 +46,8 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.never
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.reset
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.security.test.context.support.WithMockUser
@@ -128,16 +132,78 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
 
     @Test
     @WithMockUser(username = "john@ritense.com", authorities = [ADMIN])
+    fun `should send outboxMessage when using findBy`() {
+        val document = createDocument("""{"street": "Admin street"}""")
+
+        reset(outboxService)
+        documentService.findBy(document.id())
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+        verify(outboxService).send(eventCapture.capture())
+        val event = eventCapture.allValues.map { it.get() }
+            .single { it is DocumentViewed }
+        assertThat(event.resultId).isEqualTo(document.id().toString())
+        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = [ADMIN])
+    fun `should send outboxMessage when using get`() {
+        val document = createDocument("""{"street": "Admin street"}""")
+
+        reset(outboxService)
+        documentService.get(document.id().toString())
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+        verify(outboxService, atLeastOnce()).send(eventCapture.capture())
+        val event = eventCapture.allValues.map { it.get() }
+            .single { it is DocumentViewed }
+        assertThat(event.resultId).isEqualTo(document.id().toString())
+        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = [ADMIN])
+    fun `should send outboxMessage when deleting documents`() {
+        val document = createDocument("""{"street": "Admin street"}""")
+
+        reset(outboxService)
+        documentService.removeDocuments(document.definitionId().name())
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+        verify(outboxService, atLeastOnce()).send(eventCapture.capture())
+        val event = eventCapture.allValues.map { it.get() }
+            .single { it is DocumentDeleted && it.resultId == document.id().toString() }
+        assertThat(event).isNotNull
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = [ADMIN])
+    fun `should send outboxMessage when using getDocumentBy`() {
+        val document = createDocument("""{"street": "Admin street"}""")
+
+        reset(outboxService)
+        (documentService as JsonSchemaDocumentService).getDocumentBy(document.id())
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+        verify(outboxService, atLeastOnce()).send(eventCapture.capture())
+        val event = eventCapture.allValues.map { it.get() }
+            .single { it is DocumentViewed }
+        assertThat(event.resultId).isEqualTo(document.id().toString())
+        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
+    }
+
+    @Test
+    @WithMockUser(username = "john@ritense.com", authorities = [ADMIN])
     fun `should send outboxMessage when creating document`() {
         reset(outboxService)
 
         val document = createDocument("""{"street": "Admin street"}""")
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
-        verify(outboxService, times(1)).send(eventCapture.capture())
-        val event = eventCapture.firstValue.get()
-        assertThat(event.type).isEqualTo("com.ritense.valtimo.document.created")
-        assertThat(event.resultType).isEqualTo("com.ritense.document.domain.impl.JsonSchemaDocument")
+        verify(outboxService, atLeastOnce()).send(eventCapture.capture())
+        val event = eventCapture.allValues.map { it.get() }
+            .single { it is DocumentCreated }
         assertThat(event.resultId).isEqualTo(document.id().toString())
         assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
     }
@@ -153,10 +219,9 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val modifiedDocument = documentService.modifyDocument(documentRequest).resultingDocument().orElseThrow()
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
-        verify(outboxService, times(1)).send(eventCapture.capture())
-        val event = eventCapture.firstValue.get()
-        assertThat(event.type).isEqualTo("com.ritense.valtimo.document.updated")
-        assertThat(event.resultType).isEqualTo("com.ritense.document.domain.impl.JsonSchemaDocument")
+        verify(outboxService, atLeastOnce()).send(eventCapture.capture())
+        val event = eventCapture.allValues.map { it.get() }
+            .single { it is DocumentUpdated }
         assertThat(event.resultId).isEqualTo(document.id().toString())
         assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(modifiedDocument))
     }

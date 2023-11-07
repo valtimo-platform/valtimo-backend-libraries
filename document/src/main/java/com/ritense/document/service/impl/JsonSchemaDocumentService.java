@@ -107,7 +107,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final OutboxService outboxService;
 
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = Mapper.INSTANCE.get();
 
     public JsonSchemaDocumentService(
         JsonSchemaDocumentRepository documentRepository,
@@ -117,8 +117,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         UserManagementService userManagementService,
         AuthorizationService authorizationService,
         ApplicationEventPublisher applicationEventPublisher,
-        OutboxService outboxService,
-        ObjectMapper objectMapper
+        OutboxService outboxService
     ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
@@ -128,7 +127,6 @@ public class JsonSchemaDocumentService implements DocumentService {
         this.authorizationService = authorizationService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.outboxService = outboxService;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -145,7 +143,7 @@ public class JsonSchemaDocumentService implements DocumentService {
                 )
             );
 
-            outboxService.send(
+            outboxService.send(() ->
                 new DocumentViewed(
                     document.id().toString(),
                     objectMapper.valueToTree(document)
@@ -172,13 +170,6 @@ public class JsonSchemaDocumentService implements DocumentService {
             )
         );
 
-        outboxService.send(
-            new DocumentViewed(
-                document.id().toString(),
-                objectMapper.valueToTree(document)
-            )
-        );
-
         return document;
     }
 
@@ -196,7 +187,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         Page<JsonSchemaDocument> documentPage = documentRepository.findAll(
             spec.and(byDocumentDefinitionIdName(definitionName)), pageable);
 
-        outboxService.send(
+        outboxService.send(() ->
             new DocumentsViewed(
                 objectMapper.valueToTree(documentPage.getContent())
             )
@@ -223,7 +214,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         ));
         Page<JsonSchemaDocument> documentPage = documentRepository.findAll(spec, pageable);
 
-        outboxService.send(
+        outboxService.send(() ->
             new DocumentsViewed(
                 objectMapper.valueToTree(documentPage.getContent())
             )
@@ -452,13 +443,6 @@ public class JsonSchemaDocumentService implements DocumentService {
                     document
                 )
             );
-
-            outboxService.send(
-                new DocumentViewed(
-                    document.id().toString(),
-                    objectMapper.valueToTree(document)
-                )
-            );
         });
 
         return optionalDocument
@@ -483,7 +467,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             });
             documentRepository.saveAll(documents);
             documentRepository.deleteAll(documents);
-            documents.forEach(document -> outboxService.send(
+            documents.forEach(document -> outboxService.send(() ->
                 new DocumentDeleted(
                     document.id().toString()
                 )
@@ -536,7 +520,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         // Publish an event to update the audit log
         publishDocumentAssigneeChangedEvent(documentId, assignee.getFullName());
 
-        outboxService.send(
+        outboxService.send(() ->
             new DocumentAssigned(
                 document.id().toString(),
                 objectMapper.valueToTree(document)
@@ -611,7 +595,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         // Publish an event to update the audit log
         publishDocumentAssigneeChangedEvent(documentId, assignee.getFullName());
 
-        outboxService.send(
+        outboxService.send(() ->
             new DocumentAssigned(
                 document.id().toString(),
                 objectMapper.valueToTree(document)
@@ -646,7 +630,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             )
         );
 
-        outboxService.send(
+        outboxService.send(() ->
             new DocumentUnassigned(
                 document.id().toString(),
                 objectMapper.valueToTree(document)
@@ -793,7 +777,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         documents.forEach(document -> {
             publishDocumentAssigneeChangedEvent(document.id().getId(), assignee.getFullName());
 
-            outboxService.send(
+            outboxService.send(() ->
                 new DocumentAssigned(
                     document.id().toString(),
                     objectMapper.valueToTree(document)

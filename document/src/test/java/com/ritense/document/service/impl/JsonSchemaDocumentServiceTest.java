@@ -47,6 +47,7 @@ import java.util.UUID;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -91,8 +92,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             userManagementService,
             authorizationService,
             applicationEventPublisher,
-            outboxService,
-            Mapper.INSTANCE.get()
+            outboxService
         ));
 
         var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");
@@ -112,7 +112,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 
         CreateDocumentResult result = jsonSchemaDocumentService.createDocument(documentRequest);
-        JsonSchemaDocument document = (JsonSchemaDocument)result.resultingDocument().get();
+        JsonSchemaDocument document = (JsonSchemaDocument)result.resultingDocument().orElseThrow();
 
         assertEquals(content.asJson(), document.content().asJson());
         assertEquals(definition.id(), document.definitionId());
@@ -149,7 +149,7 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
         when(documentSequenceGeneratorService.next(definition.id())).thenReturn(123L);
 
         CreateDocumentResult result = jsonSchemaDocumentService.createDocument(documentRequest);
-        JsonSchemaDocument document = (JsonSchemaDocument)result.resultingDocument().get();
+        JsonSchemaDocument document = (JsonSchemaDocument)result.resultingDocument().orElseThrow();
 
         assertEquals(content.asJson(), document.content().asJson());
         assertEquals(definition.id(), document.definitionId());
@@ -209,8 +209,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
 
         jsonSchemaDocumentService.unassignUserFromDocument(jsonSchemaDocument.id().getId());
 
-        assertEquals(null, jsonSchemaDocument.assigneeId());
-        assertEquals(null, jsonSchemaDocument.assigneeFullName());
+        assertNull(jsonSchemaDocument.assigneeId());
+        assertNull(jsonSchemaDocument.assigneeFullName());
         var captor = ArgumentCaptor.forClass(DocumentUnassignedEvent.class);
         verify(applicationEventPublisher, times(1)).publishEvent(captor.capture());
         assertEquals("Anonymous", captor.getValue().getUser());
