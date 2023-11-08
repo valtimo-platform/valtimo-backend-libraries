@@ -1,7 +1,7 @@
-package com.ritense.valtimo.formflow
+package com.ritense.valtimo.formflow.event
 
 
-data class AnonymousSchema_1(
+data class FormFlowStepCompleted(
     val id: String? = null,
     val instanceId: String? = null,
     val stepKey: String? = null,

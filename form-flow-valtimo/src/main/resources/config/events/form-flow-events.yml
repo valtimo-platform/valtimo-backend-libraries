@@ -5,34 +5,43 @@ info:
     description: sdfgqeriuhg
     version: '1.0.0'
     license:
-        name: Apache 2.0
-        url: https://www.apache.org/licenses/LICENSE-2.0.html
+        name: EUPL-1.2
+        url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
     contact:
         name: API Support
-        url: https://www.example.com/support
-        email: support@example.com
+        url: https://www.ritense.com/contact
+        email: support@ritense.com
 channels:
     valtimo-audit:
         publish:
             operationId: 'fweqr'
             message:
-                #schemaFormat: 'application/cloudevents+json; version=0.2; charset=utf-8'
-                messageId: 'asdf'
-                payload:
-                    type: object
-                    properties:
-                        id:
-                            type: string
-                            format: uuid
-                        instanceId:
-                            type: string
-                            format: uuid
-                        stepKey:
-                            type: string
-                        order:
-                            type: integer
-                        submissionData:
-                            type: string
+                $ref: '#/components/messages/formFlowStepCompleted'
+
+components:
+    messages:
+        formFlowStepCompleted:
+            #schemaFormat: 'application/cloudevents+json; version=0.2; charset=utf-8'
+            messageId: formFlowStepCompleted
+            payload:
+                $ref: "#/components/schemas/formFlowStepCompleted"
+
+    schemas:
+        formFlowStepCompleted:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                instanceId:
+                    type: string
+                    format: uuid
+                stepKey:
+                    type: string
+                order:
+                    type: integer
+                submissionData:
+                    type: string
 
 servers:
     production:
