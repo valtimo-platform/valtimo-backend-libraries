@@ -1,0 +1,14 @@
+{
+  "name": "form-flow-kotlin-events-generator",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node_modules/.bin/ts-node --cwd ./ ./index.ts"
+  },
+  "dependencies": {
+    "@types/js-yaml": "4.0.9",
+    "@asyncapi/modelina": "2.0.2"
+  },
+  "devDependencies": {
+  },
+  "keywords": []
+}
