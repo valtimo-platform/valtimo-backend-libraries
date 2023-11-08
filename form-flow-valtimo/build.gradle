@@ -23,6 +23,7 @@ dockerCompose {
 
 dependencies {
     api project(":form-flow")
+    implementation project(":outbox")
     implementation project(":process-link")
     implementation project(":process-document")
 
