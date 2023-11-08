@@ -18,7 +18,7 @@ tasks.register("downloadValtimoDockerCompose") {
     doFirst {
         file(buildDir.absolutePath + "/docker").mkdirs()
         File dockerFile = file(buildDir.absolutePath + "/docker/valtimo-docker-compose.zip")
-        new URL("https://codeload.github.com/valtimo-platform/valtimo-docker-compose/zip/refs/heads/main")
+        new URL("https://codeload.github.com/generiekzaakafhandelcomponent/gzac-docker-compose/zip/refs/heads/main")
             .withInputStream { i -> dockerFile.withOutputStream { it << i } }
     }
 }
@@ -45,6 +45,6 @@ composeUp {
 }
 
 dockerCompose {
-    useComposeFiles.addAll(buildDir.absolutePath + "/docker/extract/valtimo-docker-compose-main/docker-compose.yaml")
-    composeAdditionalArgs = ["--profile", "gzac"]
+    useComposeFiles.addAll(buildDir.absolutePath + "/docker/extract/gzac-docker-compose-main/docker-compose.yaml")
+    composeAdditionalArgs = ["--profile", "zgw"]
 }

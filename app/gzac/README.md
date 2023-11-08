@@ -30,7 +30,7 @@ Open a terminal and run command
 
 ### Run Spring-boot-application
 
-Run in IntellJ Gradle task: <code>app -> gzac -> Tasks -> application -> bootRun</code>
+Run IntellJ Gradle task: <code>app -> gzac -> Tasks -> application -> bootRun</code>
 
 Or
 
