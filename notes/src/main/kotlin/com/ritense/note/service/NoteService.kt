@@ -16,24 +16,31 @@
 
 package com.ritense.note.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.Action
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.note.domain.Note
+import com.ritense.note.event.NoteCreated
 import com.ritense.note.event.NoteCreatedEvent
+import com.ritense.note.event.NoteDeleted
 import com.ritense.note.event.NoteDeletedEvent
+import com.ritense.note.event.NoteUpdated
 import com.ritense.note.event.NoteUpdatedEvent
+import com.ritense.note.event.NotesViewed
 import com.ritense.note.exception.NoteNotFoundException
 import com.ritense.note.repository.NoteRepository
 import com.ritense.note.repository.SpecificationHelper
+import com.ritense.outbox.OutboxService
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
+
 
 @Transactional
 class NoteService(
@@ -41,6 +48,8 @@ class NoteService(
     private val userManagementService: UserManagementService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val authorizationService: AuthorizationService,
+    private val outboxService: OutboxService,
+    private val objectMapper: ObjectMapper
 ) {
 
     @Transactional(readOnly = true)
@@ -55,7 +64,16 @@ class NoteService(
             ),
             null
         )
-        return noteRepository.findAll(spec.and(SpecificationHelper.byDocumentId(documentId)), pageable)
+
+        val notesPage: Page<Note> = noteRepository.findAll(spec.and(SpecificationHelper.byDocumentId(documentId)), pageable)
+
+        outboxService.send {
+            NotesViewed(
+                objectMapper.valueToTree(notesPage.content)
+            )
+        }
+
+        return notesPage
     }
 
     fun createNote(
@@ -67,6 +85,14 @@ class NoteService(
         val note = noteRepository.save(Note(documentId, user, noteContent))
         requirePermission(note, NoteActionProvider.CREATE)
         applicationEventPublisher.publishEvent(NoteCreatedEvent(documentId.id, note.id))
+
+        outboxService.send {
+            NoteCreated(
+                note.id.toString(),
+                objectMapper.valueToTree(note)
+            )
+        }
+
         return note
     }
 
@@ -77,6 +103,14 @@ class NoteService(
         val copiedNote = note.copy(content = noteContent)
         val updatedNote = noteRepository.save(copiedNote)
         applicationEventPublisher.publishEvent(NoteUpdatedEvent(noteId))
+
+        outboxService.send {
+            NoteUpdated(
+                updatedNote.id.toString(),
+                objectMapper.valueToTree(updatedNote)
+            )
+        }
+
         return updatedNote
     }
 
@@ -86,6 +120,11 @@ class NoteService(
         requirePermission(note, NoteActionProvider.DELETE)
         noteRepository.deleteById(noteId)
         applicationEventPublisher.publishEvent(NoteDeletedEvent(noteId))
+        outboxService.send {
+            NoteDeleted(
+                noteId.toString()
+            )
+        }
     }
 
     fun getNoteById(noteId: UUID): Note {
