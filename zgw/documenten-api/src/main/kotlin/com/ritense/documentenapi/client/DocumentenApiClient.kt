@@ -16,7 +16,10 @@
 
 package com.ritense.documentenapi.client
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.documentenapi.event.DocumentStored
+import com.ritense.outbox.OutboxService
 import com.ritense.zgw.ClientTools
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
@@ -32,7 +35,9 @@ import java.io.PipedOutputStream
 import java.net.URI
 
 class DocumentenApiClient(
-    val webclientBuilder: WebClient.Builder
+    private val webclientBuilder: WebClient.Builder,
+    private val outboxService: OutboxService,
+    private val objectMapper: ObjectMapper
 ) {
     fun storeDocument(
         authentication: DocumentenApiAuthentication,
@@ -54,6 +59,13 @@ class DocumentenApiClient(
             .retrieve()
             .toEntity(CreateDocumentResult::class.java)
             .block()
+
+        outboxService.send {
+            DocumentStored(
+                result.body.url,
+                objectMapper.valueToTree(result.body)
+            )
+        }
 
         return result?.body!!
     }
