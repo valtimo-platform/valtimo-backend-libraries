@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.event
+package com.ritense.document.event
 
 import com.ritense.outbox.domain.BaseEvent
 
-class TaskCompleted(taskId: String) : BaseEvent(
-    type = "com.ritense.valtimo.task.completed",
-    resultType = "com.ritense.valtimo.camunda.domain.CamundaTask",
-    resultId = taskId,
+class DocumentDeleted(documentId: String) : BaseEvent(
+    type = "com.ritense.valtimo.document.deleted",
+    resultType = "com.ritense.document.domain.impl.JsonSchemaDocument",
+    resultId = documentId,
     result = null
 )

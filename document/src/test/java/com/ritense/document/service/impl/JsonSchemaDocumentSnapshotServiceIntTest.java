@@ -25,10 +25,12 @@ import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.repository.impl.PostgresJsonSchemaDocumentSnapshotRepository;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.document.service.DocumentSnapshotService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
 import javax.inject.Inject;
@@ -37,6 +39,7 @@ import static com.ritense.authorization.AuthorizationContext.runWithoutAuthoriza
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")
+@SpringBootTest(properties = {"valtimo.versioning.enabled=true"})
 public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTest {
 
     private JsonSchemaDocumentDefinition definition;
@@ -45,6 +48,8 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     private DocumentDefinitionService documentDefinitionService;
     @Inject
     private PostgresJsonSchemaDocumentSnapshotRepository documentSnapshotRepository;
+    @Inject
+    protected DocumentSnapshotService documentSnapshotService;
 
     @BeforeEach
     public void beforeEach() {

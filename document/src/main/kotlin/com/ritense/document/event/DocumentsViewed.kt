@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.event
+package com.ritense.document.event
 
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.ritense.outbox.domain.BaseEvent
 
-class TaskCompleted(taskId: String) : BaseEvent(
-    type = "com.ritense.valtimo.task.completed",
-    resultType = "com.ritense.valtimo.camunda.domain.CamundaTask",
-    resultId = taskId,
-    result = null
+class DocumentsViewed(documents: ArrayNode) : BaseEvent(
+    type = "com.ritense.valtimo.document.listed",
+    resultType = "List<com.ritense.document.domain.impl.JsonSchemaDocument>",
+    resultId = null,
+    result = documents
 )

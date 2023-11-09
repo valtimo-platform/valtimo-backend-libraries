@@ -16,7 +16,7 @@
 
 package com.ritense.outbox.domain
 
-import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.ContainerNode
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -28,5 +28,5 @@ abstract class BaseEvent(
     open var roles: String? = null,
     open val resultType: String?,
     open val resultId: String?,
-    open val result: ObjectNode,
+    open val result: ContainerNode<*>?,
 )

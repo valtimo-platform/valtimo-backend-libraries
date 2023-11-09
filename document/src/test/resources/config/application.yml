@@ -48,7 +48,7 @@ spring-actuator:
 
 valtimo:
     database: postgres
-    versioning.enabled: true
+    versioning.enabled: false
     plugin:
         encryption-secret: "abcdefghijklmnop"
 

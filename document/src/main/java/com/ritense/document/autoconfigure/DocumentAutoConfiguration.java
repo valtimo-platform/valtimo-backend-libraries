@@ -16,6 +16,7 @@
 
 package com.ritense.document.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
@@ -141,7 +142,8 @@ public class DocumentAutoConfiguration {
             queryDialectHelper,
             searchFieldService,
             userManagementService,
-            authorizationService);
+            authorizationService
+        );
     }
 
     @Bean

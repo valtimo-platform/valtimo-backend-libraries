@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.event
+package com.ritense.document.event
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.outbox.domain.BaseEvent
 
-class TaskCompleted(taskId: String) : BaseEvent(
-    type = "com.ritense.valtimo.task.completed",
-    resultType = "com.ritense.valtimo.camunda.domain.CamundaTask",
-    resultId = taskId,
-    result = null
+class DocumentAssigned(documentId: String, documentContent: ObjectNode) : BaseEvent(
+    type = "com.ritense.valtimo.document.assigned",
+    resultType = "com.ritense.document.domain.impl.JsonSchemaDocument",
+    resultId = documentId,
+    result = documentContent
 )
