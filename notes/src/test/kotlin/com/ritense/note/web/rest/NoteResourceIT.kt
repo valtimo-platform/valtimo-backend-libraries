@@ -33,7 +33,6 @@ import com.ritense.note.web.rest.dto.NoteUpdateRequestDto
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
 import io.kotest.matchers.ints.shouldBeExactly
 import io.kotest.matchers.shouldBe
-import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -52,6 +51,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import java.util.UUID
 
 internal class NoteResourceIT : BaseIntegrationTest() {
 

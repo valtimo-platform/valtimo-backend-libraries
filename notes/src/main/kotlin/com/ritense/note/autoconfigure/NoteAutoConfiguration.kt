@@ -16,6 +16,7 @@
 
 package com.ritense.note.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.document.service.DocumentService
 import com.ritense.note.repository.NoteDocumentMapper
@@ -24,6 +25,7 @@ import com.ritense.note.repository.NoteSpecificationFactory
 import com.ritense.note.security.config.NoteHttpSecurityConfigurer
 import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.NoteResource
+import com.ritense.outbox.OutboxService
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -46,13 +48,17 @@ class NoteAutoConfiguration {
         noteRepository: NoteRepository,
         userManagementService: UserManagementService,
         applicationEventPublisher: ApplicationEventPublisher,
-        authorizationService: AuthorizationService
+        authorizationService: AuthorizationService,
+        outboxService: OutboxService,
+        objectMapper: ObjectMapper
     ): NoteService {
         return NoteService(
             noteRepository,
             userManagementService,
             applicationEventPublisher,
-            authorizationService
+            authorizationService,
+            outboxService,
+            objectMapper
         )
     }
 
