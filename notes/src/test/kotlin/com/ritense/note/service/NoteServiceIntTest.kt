@@ -12,15 +12,20 @@ import com.ritense.note.domain.Note
 import com.ritense.note.event.NoteCreated
 import com.ritense.note.event.NoteDeleted
 import com.ritense.note.event.NoteUpdated
-import com.ritense.note.event.NotesViewed
+import com.ritense.note.event.NoteViewed
+import com.ritense.note.event.NotesListed
+import com.ritense.note.exception.NoteNotFoundException
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.reset
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
@@ -79,6 +84,42 @@ class NoteServiceIntTest() : BaseIntegrationTest() {
 
     @Test
     @WithMockUser(username = USERNAME, authorities = [ADMIN])
+    fun `should send outbox message when getting note by id`() {
+        val createdNote = AuthorizationContext.runWithoutAuthorization {
+            noteService.createNote(JsonSchemaDocumentId.newId(documentId), "test")
+        }
+
+        reset(outboxService)
+
+        val note = AuthorizationContext.runWithoutAuthorization {
+            noteService.getNoteById(createdNote.id)
+        }
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+        verify(outboxService).send(eventCapture.capture())
+        val firstEventValue = eventCapture.firstValue.get()
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(NoteViewed::class.java)
+        Assertions.assertThat(firstEventValue.resultId).isEqualTo(note.id.toString())
+        Assertions.assertThat(firstEventValue.result).isEqualTo(objectMapper.valueToTree(note))
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = [ADMIN])
+    fun `should not send outbox message when trying to get note that does not exist`() {
+        reset(outboxService)
+
+        assertThrows<NoteNotFoundException> {
+            AuthorizationContext.runWithoutAuthorization {
+                noteService.getNoteById(UUID.randomUUID())
+            }
+        }
+
+        verify(outboxService, times(0)).send(any());
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = [ADMIN])
     fun `should send outbox message when deleting note`() {
         val note = AuthorizationContext.runWithoutAuthorization {
             noteService.createNote(JsonSchemaDocumentId.newId(documentId), "test")
@@ -91,11 +132,11 @@ class NoteServiceIntTest() : BaseIntegrationTest() {
         }
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
-        verify(outboxService).send(eventCapture.capture())
-        val firstEventValue = eventCapture.firstValue.get()
+        verify(outboxService, times(2)).send(eventCapture.capture())
+        val lastEventValue = eventCapture.lastValue.get()
 
-        Assertions.assertThat(firstEventValue).isInstanceOf(NoteDeleted::class.java)
-        Assertions.assertThat(firstEventValue.resultId).isEqualTo(note.id.toString())
+        Assertions.assertThat(lastEventValue).isInstanceOf(NoteDeleted::class.java)
+        Assertions.assertThat(lastEventValue.resultId).isEqualTo(note.id.toString())
     }
 
     @Test
@@ -111,12 +152,12 @@ class NoteServiceIntTest() : BaseIntegrationTest() {
             noteService.editNote(createdNote.id, "test2")
         }
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
-        verify(outboxService).send(eventCapture.capture())
-        val firstEventValue = eventCapture.firstValue.get()
+        verify(outboxService, times(2)).send(eventCapture.capture())
+        val lastEventValue = eventCapture.lastValue.get()
 
-        Assertions.assertThat(firstEventValue).isInstanceOf(NoteUpdated::class.java)
-        Assertions.assertThat(firstEventValue.resultId).isEqualTo(updatedNote.id.toString())
-        Assertions.assertThat(firstEventValue.result).isEqualTo(objectMapper.valueToTree(updatedNote))
+        Assertions.assertThat(lastEventValue).isInstanceOf(NoteUpdated::class.java)
+        Assertions.assertThat(lastEventValue.resultId).isEqualTo(updatedNote.id.toString())
+        Assertions.assertThat(lastEventValue.result).isEqualTo(objectMapper.valueToTree(updatedNote))
     }
 
     @Test
@@ -137,9 +178,9 @@ class NoteServiceIntTest() : BaseIntegrationTest() {
         val firstEventValue = eventCapture.firstValue.get()
         val eventNoteList: List<Note> = objectMapper.readValue(firstEventValue.result.toString())
 
-        Assertions.assertThat(firstEventValue).isInstanceOf(NotesViewed::class.java)
+        Assertions.assertThat(firstEventValue).isInstanceOf(NotesListed::class.java)
         Assertions.assertThat(firstEventValue.resultId).isEqualTo(null)
-        Assertions.assertThat(eventNoteList.firstOrNull{it.id == note.id}).isNotNull
+        Assertions.assertThat(eventNoteList.firstOrNull { it.id == note.id }).isNotNull
     }
 
     companion object {

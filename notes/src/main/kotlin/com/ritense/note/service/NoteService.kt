@@ -28,7 +28,8 @@ import com.ritense.note.event.NoteDeleted
 import com.ritense.note.event.NoteDeletedEvent
 import com.ritense.note.event.NoteUpdated
 import com.ritense.note.event.NoteUpdatedEvent
-import com.ritense.note.event.NotesViewed
+import com.ritense.note.event.NoteViewed
+import com.ritense.note.event.NotesListed
 import com.ritense.note.exception.NoteNotFoundException
 import com.ritense.note.repository.NoteRepository
 import com.ritense.note.repository.SpecificationHelper
@@ -68,7 +69,7 @@ class NoteService(
         val notesPage: Page<Note> = noteRepository.findAll(spec.and(SpecificationHelper.byDocumentId(documentId)), pageable)
 
         outboxService.send {
-            NotesViewed(
+            NotesListed(
                 objectMapper.valueToTree(notesPage.content)
             )
         }
@@ -128,7 +129,16 @@ class NoteService(
     }
 
     fun getNoteById(noteId: UUID): Note {
-        return noteRepository.findById(noteId).orElseThrow { NoteNotFoundException(noteId) }
+        val note = noteRepository.findById(noteId)
+
+        if (note.isPresent) outboxService.send {
+            NoteViewed(
+                noteId.toString(),
+                objectMapper.valueToTree(note)
+            )
+        }
+
+        return note.orElseThrow { NoteNotFoundException(noteId) }
     }
 
     private fun requirePermission(note: Note, action: Action<Note>) {
