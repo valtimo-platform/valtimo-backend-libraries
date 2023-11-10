@@ -19,6 +19,7 @@ package com.ritense.documentenapi.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
 import com.ritense.documentenapi.event.DocumentStored
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
@@ -283,6 +284,67 @@ internal class DocumentenApiClientTest {
         assertEquals(LocalDate.of(2019, 8, 23), result.ontvangstdatum)
         assertEquals(LocalDate.of(2019, 8, 22), result.verzenddatum)
         assertEquals(true, result.indicatieGebruiksrecht)
+    }
+
+    @Test
+    fun `should send outbox message on retrieving document informatieobject`() {
+        reset(outboxService)
+
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper)
+        val documentInformatieObjectUrl = "http://example.com/informatie-object/123"
+        val responseBody = """
+            {
+              "url": "$documentInformatieObjectUrl",
+              "identificatie": "identificatie",
+              "bronorganisatie": "621248691",
+              "creatiedatum": "2019-08-24",
+              "titel": "titel",
+              "vertrouwelijkheidaanduiding": "openbaar",
+              "auteur": "auteur",
+              "status": "in_bewerking",
+              "formaat": "formaat",
+              "taal": "nl",
+              "versie": 4,
+              "beginRegistratie": "2019-08-24T14:15:22Z",
+              "bestandsnaam": "bestandsnaam",
+              "inhoud": "http://example.com/inhoud",
+              "bestandsomvang": 123,
+              "link": "http://example.com/link",
+              "beschrijving": "beschrijving",
+              "ontvangstdatum": "2019-08-23",
+              "verzenddatum": "2019-08-22",
+              "indicatieGebruiksrecht": true,
+              "ondertekening": {
+                "soort": "analoog",
+                "datum": "2019-08-21"
+              },
+              "integriteit": {
+                "algoritme": "crc_16",
+                "waarde": "waarde",
+                "datum": "2019-08-20"
+              },
+              "informatieobjecttype": "http://example.com",
+              "locked": true
+            }
+        """.trimIndent()
+
+        mockDocumentenApi.enqueue(mockResponse(responseBody))
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        client.getInformatieObject(
+            TestAuthentication(),
+            mockDocumentenApi.url("/zaakobjects").toUri(),
+        )
+
+        mockDocumentenApi.takeRequest()
+
+        verify(outboxService).send(eventCapture.capture())
+        val firstEventValue = eventCapture.firstValue.get()
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(DocumentInformatieObjectViewed::class.java)
+        Assertions.assertThat(firstEventValue.resultId).isEqualTo(documentInformatieObjectUrl)
     }
 
     private fun mockResponse(body: String): MockResponse {

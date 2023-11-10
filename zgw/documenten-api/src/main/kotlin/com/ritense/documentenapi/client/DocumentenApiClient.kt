@@ -18,6 +18,7 @@ package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
 import com.ritense.documentenapi.event.DocumentStored
 import com.ritense.outbox.OutboxService
 import com.ritense.zgw.ClientTools
@@ -82,19 +83,27 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): DocumentInformatieObject {
-        return checkNotNull(
-            webclientBuilder
-                .clone()
-                .filter(authentication)
-                .build()
-                .get()
-                .uri(objectUrl)
-                .retrieve()
-                .toEntity(DocumentInformatieObject::class.java)
-                .block()?.body
-        ) {
-            "Could not retrieve ${DocumentInformatieObject::class.simpleName} at $objectUrl"
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri(objectUrl)
+            .retrieve()
+            .toEntity(DocumentInformatieObject::class.java)
+            .block()?.body
+
+        if (result !== null) {
+            outboxService.send {
+                DocumentInformatieObjectViewed(
+                    result.url.toString(),
+                    objectMapper.valueToTree(result)
+                )
+            }
         }
+
+        return result
+            ?: throw IllegalStateException("Could not retrieve ${DocumentInformatieObject::class.simpleName} at $objectUrl")
     }
 
     fun downloadInformatieObjectContent(
