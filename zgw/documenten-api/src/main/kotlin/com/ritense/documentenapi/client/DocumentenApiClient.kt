@@ -18,6 +18,7 @@ package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
 import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
 import com.ritense.documentenapi.event.DocumentStored
 import com.ritense.outbox.OutboxService
@@ -118,6 +119,12 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): InputStream {
+        outboxService.send {
+            DocumentInformatieObjectDownloaded(
+                objectUrl.toString()
+            )
+        }
+
         return webclientBuilder
             .clone()
             .filter(authentication)

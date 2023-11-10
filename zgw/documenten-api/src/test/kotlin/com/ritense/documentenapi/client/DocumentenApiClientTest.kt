@@ -19,6 +19,7 @@ package com.ritense.documentenapi.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
 import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
 import com.ritense.documentenapi.event.DocumentStored
 import com.ritense.outbox.OutboxService
@@ -27,6 +28,7 @@ import com.ritense.zgw.Rsin
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okio.Buffer
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -347,10 +349,47 @@ internal class DocumentenApiClientTest {
         Assertions.assertThat(firstEventValue.resultId).isEqualTo(documentInformatieObjectUrl)
     }
 
+    @Test
+    fun `should send outbox message on download document informatieobject content`() {
+        reset(outboxService)
+
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper)
+        val documentInformatieObjectId = "123"
+        val buffer = Buffer()
+
+        buffer.writeUtf8("test")
+
+        mockDocumentenApi.enqueue(mockInputStreamResponse(buffer))
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        client.downloadInformatieObjectContent(
+            TestAuthentication(),
+            mockDocumentenApi.url("/").toUri(),
+            documentInformatieObjectId
+        )
+
+        mockDocumentenApi.takeRequest()
+
+        verify(outboxService).send(eventCapture.capture())
+
+        val firstEventValue = eventCapture.firstValue.get()
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(DocumentInformatieObjectDownloaded::class.java)
+        Assertions.assertThat(firstEventValue.resultId).contains(documentInformatieObjectId)
+    }
+
     private fun mockResponse(body: String): MockResponse {
         return MockResponse()
             .addHeader("Content-Type", "application/json")
             .setBody(body)
+    }
+
+    private fun mockInputStreamResponse(buffer: Buffer): MockResponse {
+        return MockResponse()
+            .addHeader("Content-Type", "application/octet-stream")
+            .setBody(buffer)
     }
 
     class TestAuthentication : DocumentenApiAuthentication {
