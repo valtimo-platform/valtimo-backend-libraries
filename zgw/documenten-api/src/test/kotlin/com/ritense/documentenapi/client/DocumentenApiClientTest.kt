@@ -18,6 +18,8 @@ package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
 import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
@@ -63,7 +65,7 @@ internal class DocumentenApiClientTest {
     fun setUp() {
         mockDocumentenApi = MockWebServer()
         mockDocumentenApi.start()
-        objectMapper = ObjectMapper()
+        objectMapper = jacksonObjectMapper()
         objectMapper.registerModule(JavaTimeModule())
         outboxService = Mockito.mock(OutboxService::class.java)
     }
@@ -200,7 +202,7 @@ internal class DocumentenApiClientTest {
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        client.storeDocument(
+        val result = client.storeDocument(
             TestAuthentication(),
             mockDocumentenApi.url("/").toUri(),
             request
@@ -211,9 +213,11 @@ internal class DocumentenApiClientTest {
         verify(outboxService).send(eventCapture.capture())
 
         val firstEventValue = eventCapture.firstValue.get()
+        val mappedFirstEventResult: CreateDocumentResult = objectMapper.readValue(firstEventValue.result.toString())
 
         Assertions.assertThat(firstEventValue).isInstanceOf(DocumentStored::class.java)
         Assertions.assertThat(firstEventValue.resultId.toString()).isEqualTo(documentURL)
+        Assertions.assertThat(mappedFirstEventResult.auteur).isEqualTo(result.auteur)
     }
 
     @Test
@@ -335,7 +339,7 @@ internal class DocumentenApiClientTest {
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        client.getInformatieObject(
+        val result = client.getInformatieObject(
             TestAuthentication(),
             mockDocumentenApi.url("/zaakobjects").toUri(),
         )
@@ -344,9 +348,11 @@ internal class DocumentenApiClientTest {
 
         verify(outboxService).send(eventCapture.capture())
         val firstEventValue = eventCapture.firstValue.get()
+        val mappedFirstEventResult: DocumentInformatieObject = objectMapper.readValue(firstEventValue.result.toString())
 
         Assertions.assertThat(firstEventValue).isInstanceOf(DocumentInformatieObjectViewed::class.java)
         Assertions.assertThat(firstEventValue.resultId).isEqualTo(documentInformatieObjectUrl)
+        Assertions.assertThat(mappedFirstEventResult.auteur).isEqualTo(result.auteur)
     }
 
     @Test

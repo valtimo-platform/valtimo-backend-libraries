@@ -16,10 +16,23 @@
 
 package com.ritense.zakenapi.client
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.outbox.OutboxService
 import com.ritense.zakenapi.ZakenApiAuthentication
-import com.ritense.zakenapi.domain.*
+import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.CreateZaakResponse
+import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
+import com.ritense.zakenapi.domain.CreateZaakResultaatResponse
+import com.ritense.zakenapi.domain.CreateZaakStatusRequest
+import com.ritense.zakenapi.domain.CreateZaakStatusResponse
+import com.ritense.zakenapi.domain.ZaakInformatieObject
+import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.ZaakResponse
+import com.ritense.zakenapi.domain.ZaakopschortingRequest
+import com.ritense.zakenapi.domain.ZaakopschortingResponse
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
 import org.springframework.http.HttpHeaders
@@ -29,7 +42,9 @@ import org.springframework.web.reactive.function.client.WebClient
 import java.net.URI
 
 class ZakenApiClient(
-    private val webclientBuilder: WebClient.Builder
+    private val webclientBuilder: WebClient.Builder,
+    private val outboxService: OutboxService,
+    private val objectMapper: ObjectMapper
 ) {
     fun linkDocument(
         authentication: ZakenApiAuthentication,
@@ -51,6 +66,15 @@ class ZakenApiClient(
             .retrieve()
             .toEntity(LinkDocumentResult::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                DocumentLinkedToZaak(
+                    result.body.uuid.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
 
         return result?.body!!
     }

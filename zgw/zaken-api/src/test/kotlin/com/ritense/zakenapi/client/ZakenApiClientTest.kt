@@ -16,9 +16,14 @@
 
 package com.ritense.zakenapi.client
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.outbox.OutboxService
+import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.ZakenApiAuthentication
-import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.IndicatieMachtiging
 import com.ritense.zakenapi.domain.rol.Rol
@@ -26,34 +31,46 @@ import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.domain.rol.ZaakRolOmschrijving
-import com.ritense.zgw.Rsin
-import java.net.URI
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
-import java.util.UUID
+import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.mockito.Mockito
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.verify
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import java.net.URI
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
+import java.util.UUID
+import java.util.function.Supplier
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ZakenApiClientTest {
 
     lateinit var mockApi: MockWebServer
 
+    lateinit var objectMapper: ObjectMapper
+
+    lateinit var outboxService: OutboxService
+
     @BeforeAll
     fun setUp() {
         mockApi = MockWebServer()
         mockApi.start()
+        objectMapper = jacksonObjectMapper()
+        objectMapper.registerModule(JavaTimeModule())
+        outboxService = Mockito.mock(OutboxService::class.java)
     }
 
     @AfterAll
@@ -64,7 +81,7 @@ internal class ZakenApiClientTest {
     @Test
     fun `should send link document request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = ZakenApiClient(webclientBuilder)
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
             {
@@ -114,9 +131,57 @@ internal class ZakenApiClientTest {
     }
 
     @Test
+    fun `should send outbox message on linking document`() {
+        reset(outboxService)
+
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
+        val uuid = "095be615-a8ad-4c33-8e9c-c7612fbf6c9f"
+        val responseBody = """
+            {
+              "url": "https://example.com",
+              "uuid": "$uuid",
+              "informatieobject": "https://example.com",
+              "zaak": "https://example.com",
+              "aardRelatieWeergave": "Hoort bij, omgekeerd: kent",
+              "titel": "string",
+              "beschrijving": "string",
+              "registratiedatum": "2019-08-24T14:15:22Z"
+            }
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        client.linkDocument(
+            TestAuthentication(),
+            URI(mockApi.url("/").toString()),
+            LinkDocumentRequest(
+                "https://example.com",
+                "https://example.com",
+                "title",
+                "description"
+            )
+        )
+
+        mockApi.takeRequest()
+
+        verify(outboxService).send(eventCapture.capture())
+
+        val firstEventValue = eventCapture.firstValue.get()
+        val mappedResult: LinkDocumentResult = objectMapper.readValue(firstEventValue.result.toString())
+        val mappedResponseBody: LinkDocumentResult = objectMapper.readValue(responseBody)
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(DocumentLinkedToZaak::class.java)
+        Assertions.assertThat(firstEventValue.resultId).isEqualTo(uuid)
+        Assertions.assertThat(mappedResult.beschrijving).isEqualTo(mappedResponseBody.beschrijving)
+    }
+
+    @Test
     fun `should send get zaakobjecten request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = ZakenApiClient(webclientBuilder)
+        val client = ZakenApiClient(webclientBuilder,outboxService, objectMapper)
 
         val responseBody = """
             {
@@ -168,7 +233,7 @@ internal class ZakenApiClientTest {
     @Test
     fun `should send get zaakinformatieobjecten request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = ZakenApiClient(webclientBuilder)
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val informatieObjectJson = """
             {
@@ -221,7 +286,7 @@ internal class ZakenApiClientTest {
     @Test
     fun `should send get zaakrollen request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = ZakenApiClient(webclientBuilder)
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
             {
@@ -275,7 +340,7 @@ internal class ZakenApiClientTest {
     @Test
     fun `should send create natuurlijk persoon zaakrol request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = ZakenApiClient(webclientBuilder)
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
             {
@@ -367,7 +432,7 @@ internal class ZakenApiClientTest {
     @Test
     fun `should send create niet-natuurlijk persoon zaakrol request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = ZakenApiClient(webclientBuilder)
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
             {
@@ -436,7 +501,7 @@ internal class ZakenApiClientTest {
     @Test
     fun `should send get zaak request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = ZakenApiClient(webclientBuilder)
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
             {
