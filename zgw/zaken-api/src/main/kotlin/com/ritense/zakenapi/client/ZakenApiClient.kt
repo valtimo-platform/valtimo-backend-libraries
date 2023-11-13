@@ -33,6 +33,7 @@ import com.ritense.zakenapi.domain.ZaakopschortingResponse
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.event.DocumentLinkedToZaak
+import com.ritense.zakenapi.event.ZaakCreated
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
 import com.ritense.zakenapi.event.ZaakObjectenListed
 import com.ritense.zakenapi.event.ZaakRolCreated
@@ -240,6 +241,15 @@ class ZakenApiClient(
             .retrieve()
             .toEntity(CreateZaakResponse::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakCreated(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
 
         return result?.body!!
     }

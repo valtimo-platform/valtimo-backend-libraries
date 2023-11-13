@@ -24,6 +24,8 @@ import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.ZakenApiAuthentication
+import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
@@ -34,10 +36,12 @@ import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.domain.rol.ZaakRolOmschrijving
 import com.ritense.zakenapi.event.DocumentLinkedToZaak
+import com.ritense.zakenapi.event.ZaakCreated
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
 import com.ritense.zakenapi.event.ZaakObjectenListed
 import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
+import com.ritense.zgw.Rsin
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions
@@ -57,7 +61,9 @@ import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import java.net.URI
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Month
 import java.time.ZonedDateTime
 import java.util.UUID
 import java.util.function.Supplier
@@ -709,7 +715,7 @@ internal class ZakenApiClientTest {
     }
 
     @Test
-    fun `should send get zaak request and parse response`() {
+    fun `should send outbox message on creating zaak`() {
         val webclientBuilder = WebClient.builder()
         val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
 
@@ -724,26 +730,31 @@ internal class ZakenApiClientTest {
             }
         """.trimIndent()
 
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
         mockApi.enqueue(mockResponse(responseBody))
 
-        val result = client.getZaak(
+        val result = client.createZaak(
             TestAuthentication(),
-            URI(mockApi.url("/").toString())
+            URI(mockApi.url("/").toString()),
+            CreateZaakRequest(
+                bronorganisatie = Rsin("002564440"),
+                zaaktype = URI("https://example.com"),
+                startdatum = LocalDate.of(2019, 8, 24),
+                verantwoordelijkeOrganisatie = Rsin("002564440")
+            )
         )
 
-        val recordedRequest = mockApi.takeRequest()
+        mockApi.takeRequest()
 
-        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+        verify(outboxService).send(eventCapture.capture())
 
-        assertEquals("https://example.com", result.url.toString())
-        assertEquals("095be615-a8ad-4c33-8e9c-c7612fbf6c9f", result.uuid.toString())
-        assertEquals("002564440", result.bronorganisatie.toString())
-        assertEquals("https://example.com", result.zaaktype.toString())
-        assertEquals("002564440", result.verantwoordelijkeOrganisatie.toString())
-        assertEquals("2019-08-24", result.startdatum.toString())
+        val firstEventValue = eventCapture.firstValue.get()
+        val mappedFirstEventResult: CreateZaakResponse = objectMapper.readValue(firstEventValue.result.toString())
 
+        Assertions.assertThat(firstEventValue).isInstanceOf(ZaakCreated::class.java)
+        Assertions.assertThat(result.url).isEqualTo(mappedFirstEventResult.url)
     }
-
     private fun mockResponse(body: String): MockResponse {
         return MockResponse()
             .addHeader("Content-Type", "application/json")
