@@ -35,12 +35,12 @@ import com.ritense.note.repository.NoteRepository
 import com.ritense.note.repository.SpecificationHelper
 import com.ritense.outbox.OutboxService
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 
 
 @Transactional
@@ -53,7 +53,6 @@ class NoteService(
     private val objectMapper: ObjectMapper
 ) {
 
-    @Transactional(readOnly = true)
     fun getNotes(
         documentId: UUID,
         pageable: Pageable = Pageable.unpaged(),
