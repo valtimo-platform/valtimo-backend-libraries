@@ -19,17 +19,26 @@ package com.ritense.objectenapi.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.IntNode
 import com.fasterxml.jackson.databind.node.TextNode
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.objectenapi.ObjectenApiAuthentication
-import java.net.URI
-import java.time.LocalDate
-import java.util.UUID
+import com.ritense.objectenapi.event.ObjectViewed
+import com.ritense.outbox.OutboxService
+import com.ritense.outbox.domain.BaseEvent
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.mockito.Mockito
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.reset
+import org.mockito.kotlin.verify
 import org.skyscreamer.jsonassert.JSONAssert
 import org.springframework.data.domain.PageRequest
 import org.springframework.web.reactive.function.client.ClientRequest
@@ -37,16 +46,32 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import java.net.URI
+import java.time.LocalDate
+import java.util.UUID
+import java.util.function.Supplier
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ObjectenApiClientTest {
 
     lateinit var mockApi: MockWebServer
 
+    lateinit var objectMapper: ObjectMapper
+
+    lateinit var outboxService: OutboxService
+
     @BeforeAll
     fun setUp() {
         mockApi = MockWebServer()
         mockApi.start()
+        objectMapper = jacksonObjectMapper()
+        objectMapper.registerModule(JavaTimeModule())
+        outboxService = Mockito.mock(OutboxService::class.java)
+    }
+
+    @BeforeEach
+    fun beforeEach() {
+        reset(outboxService)
     }
 
     @AfterAll
@@ -57,7 +82,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send get single object request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
             {
@@ -123,9 +148,65 @@ internal class ObjectenApiClientTest {
     }
 
     @Test
+    fun `should send outbox message on retrieving object`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        val responseBody = """
+            {
+              "url": "http://example.com",
+              "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+              "type": "http://example.com",
+              "record": {
+                "index": 0,
+                "typeVersion": 32767,
+                "data": {
+                  "property1": "henk",
+                  "property2": 123
+                },
+                "geometry": {
+                  "type": "string",
+                  "coordinates": [
+                    0,
+                    0
+                  ]
+                },
+                "startAt": "2019-08-24",
+                "endAt": "2019-08-25",
+                "registrationAt": "2019-08-26",
+                "correctionFor": "string",
+                "correctedBy": "string2"
+              }
+            }
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        val objectUrl = mockApi.url("/some-object").toString()
+
+        val result = client.getObject(
+            TestAuthentication(),
+            URI(objectUrl)
+        )
+
+        mockApi.takeRequest()
+
+        verify(outboxService).send(eventCapture.capture())
+
+        val firstEventValue = eventCapture.firstValue.get()
+        val mappedFirstEventResult: ObjectWrapper = objectMapper.readValue(firstEventValue.result.toString())
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(ObjectViewed::class.java)
+        Assertions.assertThat(result.url.toString()).isEqualTo(firstEventValue.resultId.toString())
+        Assertions.assertThat(result.type).isEqualTo(mappedFirstEventResult.type)
+    }
+
+    @Test
     fun `should get objectslist`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
             {
@@ -202,7 +283,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send patch request`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
             {
@@ -235,7 +316,7 @@ internal class ObjectenApiClientTest {
         mockApi.enqueue(mockResponse(responseBody))
 
         val objectUrl = mockApi.url("/some-object").toString()
-        val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString().replace("localhost","host")
+        val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString().replace("localhost", "host")
 
         val result = client.objectPatch(
             TestAuthentication(),
