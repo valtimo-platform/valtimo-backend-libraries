@@ -24,7 +24,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import com.ritense.objectenapi.event.ObjectViewed
-import com.ritense.objectenapi.event.ObjectsListedByObjectTypeUrl
+import com.ritense.objectenapi.event.ObjectsListed
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
 import okhttp3.mockwebserver.MockResponse
@@ -341,7 +341,72 @@ internal class ObjectenApiClientTest {
         val firstEventValue = eventCapture.firstValue.get()
         val mappedFirstEventResult: List<ObjectWrapper> = objectMapper.readValue(firstEventValue.result.toString())
 
-        Assertions.assertThat(firstEventValue).isInstanceOf(ObjectsListedByObjectTypeUrl::class.java)
+        Assertions.assertThat(firstEventValue).isInstanceOf(ObjectsListed::class.java)
+        Assertions.assertThat(result.results.first().type).isEqualTo(mappedFirstEventResult.first().type)
+    }
+
+    @Test
+    fun `should send outbox message when getting objects by object type url with search params`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        val responseBody = """
+            {
+              "count": 2,
+              "next": "next.url",
+              "previous": "previous.url",
+              "results": [{
+                  "url": "http://example.com",
+                  "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                  "type": "http://example.com",
+                  "record": {
+                    "index": 0,
+                    "typeVersion": 32767,
+                    "data": {
+                      "property1": "henk",
+                      "property2": 123
+                    },
+                    "geometry": {
+                      "type": "string",
+                      "coordinates": [
+                        0,
+                        0
+                      ]
+                    },
+                    "startAt": "2019-08-24",
+                    "endAt": "2019-08-25",
+                    "registrationAt": "2019-08-26",
+                    "correctionFor": "string",
+                    "correctedBy": "string2"
+                  }
+              }]
+            }
+        """.trimIndent()
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val objectUrl = mockApi.url("/some-object").toString()
+        val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString()
+
+        val result = client.getObjectsByObjecttypeUrlWithSearchParams(
+            TestAuthentication(),
+            URI(objectUrl),
+            URI(objectTypesApiUrl),
+            "typeId",
+            "test",
+            PageRequest.of(0, 10)
+        )
+
+        mockApi.takeRequest()
+
+        verify(outboxService).send(eventCapture.capture())
+
+        val firstEventValue = eventCapture.firstValue.get()
+        val mappedFirstEventResult: List<ObjectWrapper> = objectMapper.readValue(firstEventValue.result.toString())
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(ObjectsListed::class.java)
         Assertions.assertThat(result.results.first().type).isEqualTo(mappedFirstEventResult.first().type)
     }
 

@@ -19,7 +19,7 @@ package com.ritense.objectenapi.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import com.ritense.objectenapi.event.ObjectViewed
-import com.ritense.objectenapi.event.ObjectsListedByObjectTypeUrl
+import com.ritense.objectenapi.event.ObjectsListed
 import com.ritense.outbox.OutboxService
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -106,7 +106,7 @@ class ObjectenApiClient(
 
         if (result.hasBody()) {
             outboxService.send {
-                ObjectsListedByObjectTypeUrl(
+                ObjectsListed(
                     objectMapper.valueToTree(result.body.results)
                 )
             }
@@ -153,6 +153,14 @@ class ObjectenApiClient(
             .retrieve()
             .toEntity(ObjectsList::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ObjectsListed(
+                    objectMapper.valueToTree(result.body.results)
+                )
+            }
+        }
 
         return result?.body!!
     }
