@@ -36,6 +36,8 @@ import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import com.ritense.zakenapi.event.ZaakCreated
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
 import com.ritense.zakenapi.event.ZaakObjectenListed
+import com.ritense.zakenapi.event.ZaakOpschortingSet
+import com.ritense.zakenapi.event.ZaakResultaatCreated
 import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
 import com.ritense.zakenapi.event.ZaakStatusCreated
@@ -311,6 +313,15 @@ class ZakenApiClient(
             .toEntity(CreateZaakResultaatResponse::class.java)
             .block()
 
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakResultaatCreated(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
         return result?.body!!
     }
 
@@ -331,6 +342,15 @@ class ZakenApiClient(
             .retrieve()
             .toEntity(ZaakopschortingResponse::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakOpschortingSet(
+                    result.body.url,
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
 
         return result?.body!!
     }

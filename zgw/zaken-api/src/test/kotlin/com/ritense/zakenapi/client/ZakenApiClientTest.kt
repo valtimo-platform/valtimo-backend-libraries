@@ -26,10 +26,16 @@ import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.ZakenApiAuthentication
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResponse
+import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
+import com.ritense.zakenapi.domain.CreateZaakResultaatResponse
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusResponse
+import com.ritense.zakenapi.domain.Opschorting
+import com.ritense.zakenapi.domain.Verlenging
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.ZaakopschortingRequest
+import com.ritense.zakenapi.domain.ZaakopschortingResponse
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.IndicatieMachtiging
 import com.ritense.zakenapi.domain.rol.Rol
@@ -41,6 +47,8 @@ import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import com.ritense.zakenapi.event.ZaakCreated
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
 import com.ritense.zakenapi.event.ZaakObjectenListed
+import com.ritense.zakenapi.event.ZaakOpschortingSet
+import com.ritense.zakenapi.event.ZaakResultaatCreated
 import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
 import com.ritense.zakenapi.event.ZaakStatusCreated
@@ -799,6 +807,113 @@ internal class ZakenApiClientTest {
         Assertions.assertThat(firstEventValue).isInstanceOf(ZaakStatusCreated::class.java)
         Assertions.assertThat(result.url.toString()).isEqualTo(firstEventValue.resultId)
         Assertions.assertThat(result.statustoelichting).isEqualTo(mappedFirstEventResult.statustoelichting)
+    }
+
+    @Test
+    fun `should send outbox message on creating zaakresultaat`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        val responseBody = """
+            {
+                "url": "https://example.com",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "zaak": "https://example.com",
+                "resultaattype": "https://example.com",
+                "toelichting": "test"
+            }
+        """.trimIndent()
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val result = client.createZaakResultaat(
+            TestAuthentication(),
+            URI(mockApi.url("/").toString()),
+            CreateZaakResultaatRequest(
+                zaak = URI("https://example.com"),
+                resultaattype = URI("https://example.com"),
+            )
+        )
+
+        mockApi.takeRequest()
+
+        verify(outboxService).send(eventCapture.capture())
+
+        val firstEventValue = eventCapture.firstValue.get()
+        val mappedFirstEventResult: CreateZaakResultaatResponse = objectMapper.readValue(firstEventValue.result.toString())
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(ZaakResultaatCreated::class.java)
+        Assertions.assertThat(result.url.toString()).isEqualTo(firstEventValue.resultId)
+        Assertions.assertThat(result.toelichting).isEqualTo(mappedFirstEventResult.toelichting)
+    }
+
+    @Test
+    fun `should send outbox message on setting zaak opschorting`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        val responseBody = """
+            {
+                "url": "https://example.com",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "bronorganisatie": "002564440",
+                "zaaktype": "https://example.com",
+                "verantwoordelijkeOrganisatie": "002564440",
+                "omschrijving": "test",
+                "toelichting": "test",
+                "registratiedatum": "2019-08-24",
+                "startdatum": "2019-08-24",
+                "communicatiekanaal": "test",
+                "identificatie": "test",
+                "productenOfDiensten": ["test"],
+                "vertrouwelijkheidaanduiding": "test",
+                "betalingsindicatie": "test",
+                "betalingsindicatieWeergave": "test",
+                "selectielijstklasse": "test",
+                "deelzaken": ["test"],
+                "relevanteAndereZaken": ["test"],
+                "eigenschappen": ["test"],
+                "kenmerken": ["test"],
+                "archiefstatus": "test",
+                "opdrachtgevendeOrganisatie": "002564440",
+                "opschorting": {
+                    "indicatie": "test",
+                    "reden": "test"
+                }
+            }
+        """.trimIndent()
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val result = client.setZaakOpschorting(
+            TestAuthentication(),
+            URI(mockApi.url("/").toString()),
+            ZaakopschortingRequest(
+               verlenging = Verlenging(
+                   reden = "test",
+                   duur = "test"
+               ),
+                opschorting = Opschorting(
+                    indicatie = "test",
+                    reden = "test"
+                )
+            )
+        )
+
+        mockApi.takeRequest()
+
+        verify(outboxService).send(eventCapture.capture())
+
+        val firstEventValue = eventCapture.firstValue.get()
+        val mappedFirstEventResult: ZaakopschortingResponse = objectMapper.readValue(firstEventValue.result.toString())
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(ZaakOpschortingSet::class.java)
+        Assertions.assertThat(result.url).isEqualTo(firstEventValue.resultId)
+        Assertions.assertThat(result.opschorting?.reden).isEqualTo(mappedFirstEventResult.opschorting?.reden)
     }
 
     private fun mockResponse(body: String): MockResponse {
