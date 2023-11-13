@@ -135,14 +135,18 @@ public class DocumentAutoConfiguration {
         final QueryDialectHelper queryDialectHelper,
         final SearchFieldService searchFieldService,
         final UserManagementService userManagementService,
-        final AuthorizationService authorizationService
+        final AuthorizationService authorizationService,
+        final OutboxService outboxService,
+        final ObjectMapper objectMapper
     ) {
         return new JsonSchemaDocumentSearchService(
             entityManager,
             queryDialectHelper,
             searchFieldService,
             userManagementService,
-            authorizationService
+            authorizationService,
+            outboxService,
+            objectMapper
         );
     }
 

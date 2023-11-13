@@ -44,7 +44,7 @@ import com.ritense.document.event.DocumentDeleted;
 import com.ritense.document.event.DocumentUnassigned;
 import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.event.DocumentViewed;
-import com.ritense.document.event.DocumentsViewed;
+import com.ritense.document.event.DocumentsListed;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
@@ -188,7 +188,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             spec.and(byDocumentDefinitionIdName(definitionName)), pageable);
 
         outboxService.send(() ->
-            new DocumentsViewed(
+            new DocumentsListed(
                 objectMapper.valueToTree(documentPage.getContent())
             )
         );
@@ -215,7 +215,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         Page<JsonSchemaDocument> documentPage = documentRepository.findAll(spec, pageable);
 
         outboxService.send(() ->
-            new DocumentsViewed(
+            new DocumentsListed(
                 objectMapper.valueToTree(documentPage.getContent())
             )
         );
