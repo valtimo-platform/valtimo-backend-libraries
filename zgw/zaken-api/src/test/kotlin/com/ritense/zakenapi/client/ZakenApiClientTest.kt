@@ -34,6 +34,7 @@ import com.ritense.zakenapi.domain.Opschorting
 import com.ritense.zakenapi.domain.Verlenging
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
 import com.ritense.zakenapi.domain.ZaakopschortingResponse
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
@@ -52,6 +53,7 @@ import com.ritense.zakenapi.event.ZaakResultaatCreated
 import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
 import com.ritense.zakenapi.event.ZaakStatusCreated
+import com.ritense.zakenapi.event.ZaakViewed
 import com.ritense.zgw.Rsin
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -914,6 +916,63 @@ internal class ZakenApiClientTest {
         Assertions.assertThat(firstEventValue).isInstanceOf(ZaakOpschortingSet::class.java)
         Assertions.assertThat(result.url).isEqualTo(firstEventValue.resultId)
         Assertions.assertThat(result.opschorting?.reden).isEqualTo(mappedFirstEventResult.opschorting?.reden)
+    }
+
+    @Test
+    fun `should send outbox message on retrieving zaak`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        val responseBody = """
+            {
+                "url": "https://example.com",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "bronorganisatie": "002564440",
+                "zaaktype": "https://example.com",
+                "verantwoordelijkeOrganisatie": "002564440",
+                "omschrijving": "test",
+                "toelichting": "test",
+                "registratiedatum": "2019-08-24",
+                "startdatum": "2019-08-24",
+                "communicatiekanaal": "test",
+                "identificatie": "test",
+                "productenOfDiensten": ["test"],
+                "betalingsindicatie": "test",
+                "betalingsindicatieWeergave": "test",
+                "selectielijstklasse": "test",
+                "deelzaken": ["test"],
+                "relevanteAndereZaken": [{"url": "https://example.com", "aardRelatie": "test"}],
+                "eigenschappen": ["test"],
+                "kenmerken": [{"kenmerk": "test", "bron": "test"}],
+                "archiefstatus": "gearchiveerd",
+                "opdrachtgevendeOrganisatie": "002564440",
+                "vertrouwelijkheidaanduiding": "intern",
+                "opschorting": {
+                    "indicatie": "test",
+                    "reden": "test"
+                }
+            }
+        """.trimIndent()
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val result = client.getZaak(
+            TestAuthentication(),
+            URI(mockApi.url("/").toString()),
+        )
+
+        mockApi.takeRequest()
+
+        verify(outboxService).send(eventCapture.capture())
+
+        val firstEventValue = eventCapture.firstValue.get()
+        val mappedFirstEventResult: ZaakResponse = objectMapper.readValue(firstEventValue.result.toString())
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(ZaakViewed::class.java)
+        Assertions.assertThat(result.url.toString()).isEqualTo(firstEventValue.resultId)
+        Assertions.assertThat(result.toelichting).isEqualTo(mappedFirstEventResult.toelichting)
     }
 
     private fun mockResponse(body: String): MockResponse {

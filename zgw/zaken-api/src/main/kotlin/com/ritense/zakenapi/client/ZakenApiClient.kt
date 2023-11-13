@@ -41,6 +41,7 @@ import com.ritense.zakenapi.event.ZaakResultaatCreated
 import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
 import com.ritense.zakenapi.event.ZaakStatusCreated
+import com.ritense.zakenapi.event.ZaakViewed
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
 import org.springframework.http.HttpHeaders
@@ -366,6 +367,15 @@ class ZakenApiClient(
             .retrieve()
             .toEntity(ZaakResponse::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakViewed(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
 
         return result?.body!!
     }
