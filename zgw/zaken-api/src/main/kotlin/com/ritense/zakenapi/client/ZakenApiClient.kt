@@ -35,6 +35,7 @@ import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
 import com.ritense.zakenapi.event.ZaakObjectenListed
+import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
@@ -186,9 +187,11 @@ class ZakenApiClient(
         return result?.body!!
     }
 
-    fun createZaakRol(authentication: ZakenApiAuthentication,
-                      baseUrl: URI,
-                      rol: Rol): Rol {
+    fun createZaakRol(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        rol: Rol
+    ): Rol {
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -203,6 +206,15 @@ class ZakenApiClient(
             .retrieve()
             .toEntity(Rol::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakRolCreated(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
 
         return result?.body!!
     }

@@ -36,6 +36,7 @@ import com.ritense.zakenapi.domain.rol.ZaakRolOmschrijving
 import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
 import com.ritense.zakenapi.event.ZaakObjectenListed
+import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -646,6 +647,65 @@ internal class ZakenApiClientTest {
         assertEquals("statutaireNaam", betrokkeneIdentificatie.statutaireNaam)
         assertEquals("besloten_vennootschap", betrokkeneIdentificatie.innRechtsvorm)
         assertEquals("bezoekadres", betrokkeneIdentificatie.bezoekadres)
+    }
+
+    @Test
+    fun `should send outbox message on creating zaakrol`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        val responseBody = """
+            {
+              "url": "https://example.com/rol/d31cd83f-11da-4932-bde8-a9123c9821d3",
+              "uuid": "d31cd83f-11da-4932-bde8-a9123c9821d3",
+              "zaak": "https://example.com/zaak",
+              "betrokkene": "https://example.com/betrokkene",
+              "betrokkeneType": "niet_natuurlijk_persoon",
+              "roltype": "https://example.com/roltype",
+              "omschrijving": "omschrijving",
+              "omschrijvingGeneriek": "initiator",
+              "roltoelichting": "roltoelichting",
+              "registratiedatum": "2019-08-24T14:15:22Z",
+              "indicatieMachtiging": "gemachtigde",
+              "betrokkeneIdentificatie": {
+                "annIdentificatie": "annIdentificatie",
+                "innNnpId": "innNnpId",
+                "statutaireNaam": "statutaireNaam",
+                "innRechtsvorm": "besloten_vennootschap",
+                "bezoekadres": "bezoekadres"
+              }
+            }
+        """.trimIndent()
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val result = client.createZaakRol(
+            TestAuthentication(),
+            URI(mockApi.url("/").toString()),
+            Rol(
+                zaak = URI("https://example.com/zaak"),
+                betrokkeneType = BetrokkeneType.NIET_NATUURLIJK_PERSOON,
+                roltype = URI("https://example.com/roltype"),
+                roltoelichting = "test",
+                betrokkeneIdentificatie = RolNietNatuurlijkPersoon(
+                    annIdentificatie = "annIdentificatie"
+                )
+            )
+        )
+
+        mockApi.takeRequest()
+
+        verify(outboxService).send(eventCapture.capture())
+
+        val firstEventValue = eventCapture.firstValue.get()
+        val mappedFirstEventResult: Rol = objectMapper.readValue(firstEventValue.result.toString())
+
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(ZaakRolCreated::class.java)
+        Assertions.assertThat(result.url.toString()).isEqualTo(firstEventValue.resultId.toString())
+        Assertions.assertThat(result.omschrijving).isEqualTo(mappedFirstEventResult.omschrijving)
     }
 
     @Test
