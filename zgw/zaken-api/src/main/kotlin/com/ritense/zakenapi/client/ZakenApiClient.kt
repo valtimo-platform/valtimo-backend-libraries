@@ -35,6 +35,7 @@ import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
 import com.ritense.zakenapi.event.ZaakObjectenListed
+import com.ritense.zakenapi.event.ZaakRollenListed
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
 import org.springframework.http.HttpHeaders
@@ -146,11 +147,13 @@ class ZakenApiClient(
         return result?.body!!
     }
 
-    fun getZaakRollen(authentication: ZakenApiAuthentication,
-                      baseUrl: URI,
-                      zaakUrl: URI,
-                      page: Int,
-                      roleType: RolType? = null): Page<Rol> {
+    fun getZaakRollen(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        zaakUrl: URI,
+        page: Int,
+        roleType: RolType? = null
+    ): Page<Rol> {
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -162,7 +165,7 @@ class ZakenApiClient(
                     .queryParam("page", page)
                     .queryParam("zaak", zaakUrl)
                     .apply {
-                        if(roleType != null) {
+                        if (roleType != null) {
                             queryParam("omschrijvingGeneriek", roleType.getApiValue())
                         }
                     }
@@ -171,6 +174,14 @@ class ZakenApiClient(
             .retrieve()
             .toEntity(ClientTools.getTypedPage(Rol::class.java))
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakRollenListed(
+                    objectMapper.valueToTree(result.body.results)
+                )
+            }
+        }
 
         return result?.body!!
     }
