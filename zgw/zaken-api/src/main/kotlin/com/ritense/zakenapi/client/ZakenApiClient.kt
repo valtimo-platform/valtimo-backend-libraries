@@ -33,7 +33,8 @@ import com.ritense.zakenapi.domain.ZaakopschortingResponse
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.event.DocumentLinkedToZaak
-import com.ritense.zakenapi.event.ZaakobjectenListed
+import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
+import com.ritense.zakenapi.event.ZaakObjectenListed
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
 import org.springframework.http.HttpHeaders
@@ -105,7 +106,7 @@ class ZakenApiClient(
 
         if (result.hasBody()) {
             outboxService.send {
-                ZaakobjectenListed(
+                ZaakObjectenListed(
                     objectMapper.valueToTree(result.body.results)
                 )
             }
@@ -133,6 +134,14 @@ class ZakenApiClient(
             .retrieve()
             .toEntityList(ZaakInformatieObject::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakInformatieObjectenListed(
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
 
         return result?.body!!
     }

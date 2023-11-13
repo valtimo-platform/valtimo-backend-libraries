@@ -24,6 +24,7 @@ import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.ZakenApiAuthentication
+import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.IndicatieMachtiging
@@ -33,7 +34,8 @@ import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.domain.rol.ZaakRolOmschrijving
 import com.ritense.zakenapi.event.DocumentLinkedToZaak
-import com.ritense.zakenapi.event.ZaakobjectenListed
+import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
+import com.ritense.zakenapi.event.ZaakObjectenListed
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions
@@ -278,7 +280,7 @@ internal class ZakenApiClientTest {
         val firstEventValue = eventCapture.firstValue.get()
         val mappedFirstEventResult: List<ZaakObject> = objectMapper.readValue(firstEventValue.result.toString())
 
-        Assertions.assertThat(firstEventValue).isInstanceOf(ZaakobjectenListed::class.java)
+        Assertions.assertThat(firstEventValue).isInstanceOf(ZaakObjectenListed::class.java)
         Assertions.assertThat(result.results.first().relatieomschrijving).isEqualTo(mappedFirstEventResult.first().relatieomschrijving)
     }
 
@@ -333,6 +335,52 @@ internal class ZakenApiClientTest {
         assertEquals(ZonedDateTime.parse("2019-08-24T14:15:22Z").toLocalDateTime(), value.registratiedatum)
         assertEquals(ZonedDateTime.parse("2019-08-24T14:15:22Z").toLocalDateTime(), value.vernietigingsdatum)
         assertEquals(URI("http://example.com"), value.status)
+    }
+
+    @Test
+    fun `should send outbox message on retrieving zaakinformatieobjecten`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        val informatieObjectJson = """
+            {
+                "url": "http://example.com",
+                "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+                "informatieobject": "http://example.com",
+                "zaak": "http://example.com",
+                "aardRelatieWeergave": "Hoort bij, omgekeerd: kent",
+                "titel": "test",
+                "beschrijving": "test omschrijving",
+                "registratiedatum": "2019-08-24T14:15:22Z",
+                "vernietigingsdatum": "2019-08-24T14:15:22Z",
+                "status": "http://example.com"
+            }
+        """.trimIndent()
+        val responseBody = """
+            [
+                $informatieObjectJson, $informatieObjectJson
+            ]
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        val result = client.getZaakInformatieObjecten(
+            TestAuthentication(),
+            URI(mockApi.url("/").toString()),
+            URI("https://example.com")
+        )
+
+        mockApi.takeRequest()
+
+        verify(outboxService).send(eventCapture.capture())
+
+        val firstEventValue = eventCapture.firstValue.get()
+        val mappedFirstEventResult: List<ZaakInformatieObject> = objectMapper.readValue(firstEventValue.result.toString())
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(ZaakInformatieObjectenListed::class.java)
+        Assertions.assertThat(result.first().beschrijving).isEqualTo(mappedFirstEventResult.first().beschrijving)
     }
 
     @Test
