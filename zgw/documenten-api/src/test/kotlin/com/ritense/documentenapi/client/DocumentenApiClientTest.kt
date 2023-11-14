@@ -40,11 +40,13 @@ import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.reset
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.LocalDate
@@ -225,6 +227,40 @@ internal class DocumentenApiClientTest {
     }
 
     @Test
+    fun `should not send outbox message on error when saving document`() {
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        mockDocumentenApi.enqueue(mockResponse("").setResponseCode(400))
+
+        val request = CreateDocumentRequest(
+            auteur = "GZAC",
+            bronorganisatie = "123",
+            creatiedatum = LocalDate.of(2020, 5, 3),
+            titel = "titel",
+            bestandsnaam = "test",
+            taal = "taal",
+            inhoud = "test".byteInputStream(),
+            informatieobjecttype = "type",
+            status = DocumentStatusType.DEFINITIEF
+        )
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        try {
+            client.storeDocument(
+                TestAuthentication(),
+                mockDocumentenApi.url("/").toUri(),
+                request
+            )
+        } catch (_: WebClientResponseException) { }
+
+        mockDocumentenApi.takeRequest()
+
+        verify(outboxService, times(0)).send(eventCapture.capture())
+    }
+
+    @Test
     fun `should send get document request and parse response`() {
         val webclientBuilder = WebClient.builder()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper)
@@ -358,6 +394,27 @@ internal class DocumentenApiClientTest {
     }
 
     @Test
+    fun `should not send outbox message on error retrieving document informatieobject`() {
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        mockDocumentenApi.enqueue(mockResponse("").setResponseCode(400))
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        try {
+            client.getInformatieObject(
+                TestAuthentication(),
+                mockDocumentenApi.url("/zaakobjects").toUri(),
+            )
+        } catch (_: WebClientResponseException) { }
+
+        mockDocumentenApi.takeRequest()
+
+        verify(outboxService, times(0)).send(eventCapture.capture())
+    }
+
+    @Test
     fun `should send outbox message on download document informatieobject content`() {
         val webclientBuilder = WebClient.builder()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper)
@@ -378,12 +435,37 @@ internal class DocumentenApiClientTest {
 
         mockDocumentenApi.takeRequest()
 
+        Thread.sleep(1000)
+
         verify(outboxService).send(eventCapture.capture())
 
         val firstEventValue = eventCapture.firstValue.get()
 
         Assertions.assertThat(firstEventValue).isInstanceOf(DocumentInformatieObjectDownloaded::class.java)
         Assertions.assertThat(firstEventValue.resultId).contains(documentInformatieObjectId)
+    }
+
+    @Test
+    fun `should not send outbox message on error download document informatieobject content`() {
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper)
+        val documentInformatieObjectId = "123"
+
+        mockDocumentenApi.enqueue(mockResponse("").setResponseCode(400))
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        try {
+            client.downloadInformatieObjectContent(
+                TestAuthentication(),
+                mockDocumentenApi.url("/").toUri(),
+                documentInformatieObjectId
+            )
+        } catch (_: WebClientResponseException) { }
+
+        mockDocumentenApi.takeRequest()
+
+        verify(outboxService, times(0)).send(eventCapture.capture())
     }
 
     private fun mockResponse(body: String): MockResponse {

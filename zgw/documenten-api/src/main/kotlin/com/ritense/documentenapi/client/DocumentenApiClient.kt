@@ -86,27 +86,28 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): DocumentInformatieObject {
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
-            .get()
-            .uri(objectUrl)
-            .retrieve()
-            .toEntity(DocumentInformatieObject::class.java)
-            .block()?.body
+        val result = checkNotNull(
+            webclientBuilder
+                .clone()
+                .filter(authentication)
+                .build()
+                .get()
+                .uri(objectUrl)
+                .retrieve()
+                .toEntity(DocumentInformatieObject::class.java)
+                .block()?.body
+        ) {
+            "Could not retrieve ${DocumentInformatieObject::class.simpleName} at $objectUrl"
+        }
 
-        if (result !== null) {
-            outboxService.send {
-                DocumentInformatieObjectViewed(
-                    result.url.toString(),
-                    objectMapper.valueToTree(result)
-                )
-            }
+        outboxService.send {
+            DocumentInformatieObjectViewed(
+                result.url.toString(),
+                objectMapper.valueToTree(result)
+            )
         }
 
         return result
-            ?: throw IllegalStateException("Could not retrieve ${DocumentInformatieObject::class.simpleName} at $objectUrl")
     }
 
     fun downloadInformatieObjectContent(
@@ -121,12 +122,6 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): InputStream {
-        outboxService.send {
-            DocumentInformatieObjectDownloaded(
-                objectUrl.toString()
-            )
-        }
-
         return webclientBuilder
             .clone()
             .filter(authentication)
@@ -140,7 +135,13 @@ class DocumentenApiClient(
             .accept(MediaType.APPLICATION_OCTET_STREAM)
             .retrieve()
             .bodyToFlux<DataBuffer>()
-            .toInputStream()
+            .toInputStream {
+                outboxService.send {
+                    DocumentInformatieObjectDownloaded(
+                        objectUrl.toString()
+                    )
+                }
+            }
     }
 
     private fun toObjectUrl(baseUrl: URI, objectId: String): URI {
@@ -151,12 +152,13 @@ class DocumentenApiClient(
             .toUri()
     }
 
-    private fun Flux<DataBuffer>.toInputStream(): InputStream {
+    private fun Flux<DataBuffer>.toInputStream(doOnComplete: Runnable): InputStream {
         val osPipe = PipedOutputStream()
         val isPipe = PipedInputStream(osPipe)
         val flux = this
             .doOnError { isPipe.use {} }
             .doFinally { osPipe.use {} }
+            .doOnComplete(doOnComplete)
         DataBufferUtils.write(flux, osPipe).subscribe(DataBufferUtils.releaseConsumer())
         return isPipe
     }
