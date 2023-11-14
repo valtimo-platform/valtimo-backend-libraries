@@ -118,7 +118,7 @@ class ExternalEventAutoConfiguration {
     @Bean
     fun externalDomainMessageSupplier(sink: Sinks.Many<ExternalDomainMessage>): Supplier<Flux<Message<ExternalDomainMessage>?>> =
         Supplier {
-            sink.asFlux().map { message ->
+            sink.asFlux().doFinally {  }.map { message ->
                 MessageBuilder
                     .withPayload(message)
                     .setHeader("spring.cloud.stream.sendto.destination", message.destination)

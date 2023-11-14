@@ -50,8 +50,11 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.containsInAnyOrder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -67,6 +70,7 @@ import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.LocalDateTime
 import java.util.*
+import java.util.function.Supplier
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -202,6 +206,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
             "http://documenten-api.com/api/v1/documenten/205107b1-261f-4042-925a-e300cdc6d2ab",
             "http://documenten-api.com/api/v1/documenten/8c9dc2e4-db3b-4314-8e2e-76f38943d8fc"
         ))
+        verify(outboxService, atLeast(1)).send(any())
     }
 
     private fun getEvent(): NotificatiesApiNotificationReceivedEvent {

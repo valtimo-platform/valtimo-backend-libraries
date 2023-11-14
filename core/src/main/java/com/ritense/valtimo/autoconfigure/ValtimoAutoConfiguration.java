@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
@@ -174,8 +175,9 @@ public class ValtimoAutoConfiguration {
         final UserManagementService userManagementService,
         final EntityManager entityManager,
         final AuthorizationService authorizationService,
-        final OutboxService outboxService
-    ) {
+        final OutboxService outboxService,
+        final ObjectMapper objectMapper
+        ) {
         return new CamundaTaskService(
             taskService,
             formService,
@@ -188,8 +190,8 @@ public class ValtimoAutoConfiguration {
             userManagementService,
             entityManager,
             authorizationService,
-            outboxService
-        );
+            outboxService,
+            objectMapper);
     }
 
     @Bean
