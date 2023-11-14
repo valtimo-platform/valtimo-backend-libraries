@@ -16,7 +16,12 @@
 
 package com.ritense.documentenapi.client
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
+import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
+import com.ritense.documentenapi.event.DocumentStored
+import com.ritense.outbox.OutboxService
 import com.ritense.zgw.ClientTools
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
@@ -32,7 +37,9 @@ import java.io.PipedOutputStream
 import java.net.URI
 
 class DocumentenApiClient(
-    val webclientBuilder: WebClient.Builder
+    private val webclientBuilder: WebClient.Builder,
+    private val outboxService: OutboxService,
+    private val objectMapper: ObjectMapper
 ) {
     fun storeDocument(
         authentication: DocumentenApiAuthentication,
@@ -55,6 +62,15 @@ class DocumentenApiClient(
             .toEntity(CreateDocumentResult::class.java)
             .block()
 
+        if (result.hasBody()) {
+            outboxService.send {
+                DocumentStored(
+                    result.body.url,
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
         return result?.body!!
     }
 
@@ -70,7 +86,7 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): DocumentInformatieObject {
-        return checkNotNull(
+        val result = checkNotNull(
             webclientBuilder
                 .clone()
                 .filter(authentication)
@@ -83,6 +99,15 @@ class DocumentenApiClient(
         ) {
             "Could not retrieve ${DocumentInformatieObject::class.simpleName} at $objectUrl"
         }
+
+        outboxService.send {
+            DocumentInformatieObjectViewed(
+                result.url.toString(),
+                objectMapper.valueToTree(result)
+            )
+        }
+
+        return result
     }
 
     fun downloadInformatieObjectContent(
@@ -110,7 +135,13 @@ class DocumentenApiClient(
             .accept(MediaType.APPLICATION_OCTET_STREAM)
             .retrieve()
             .bodyToFlux<DataBuffer>()
-            .toInputStream()
+            .toInputStream {
+                outboxService.send {
+                    DocumentInformatieObjectDownloaded(
+                        objectUrl.toString()
+                    )
+                }
+            }
     }
 
     private fun toObjectUrl(baseUrl: URI, objectId: String): URI {
@@ -121,12 +152,13 @@ class DocumentenApiClient(
             .toUri()
     }
 
-    private fun Flux<DataBuffer>.toInputStream(): InputStream {
+    private fun Flux<DataBuffer>.toInputStream(doOnComplete: Runnable): InputStream {
         val osPipe = PipedOutputStream()
         val isPipe = PipedInputStream(osPipe)
         val flux = this
             .doOnError { isPipe.use {} }
             .doFinally { osPipe.use {} }
+            .doOnComplete(doOnComplete)
         DataBufferUtils.write(flux, osPipe).subscribe(DataBufferUtils.releaseConsumer())
         return isPipe
     }

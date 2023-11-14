@@ -16,6 +16,8 @@
 
 package com.ritense.zakenapi.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.ZaakUrlProvider
@@ -41,9 +43,11 @@ class ZakenApiAutoConfiguration {
 
     @Bean
     fun zakenApiClient(
-        webclientBuilder: WebClient.Builder
+        webclientBuilder: WebClient.Builder,
+        outboxService: OutboxService,
+        objectMapper: ObjectMapper
     ): ZakenApiClient {
-        return ZakenApiClient(webclientBuilder)
+        return ZakenApiClient(webclientBuilder, outboxService, objectMapper)
     }
 
     @Bean

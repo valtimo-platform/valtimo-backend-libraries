@@ -16,15 +16,26 @@
 
 package com.ritense.objectenapi.client
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.objectenapi.ObjectenApiAuthentication
-import java.net.URI
+import com.ritense.objectenapi.event.ObjectCreated
+import com.ritense.objectenapi.event.ObjectDeleted
+import com.ritense.objectenapi.event.ObjectPatched
+import com.ritense.objectenapi.event.ObjectUpdated
+import com.ritense.objectenapi.event.ObjectViewed
+import com.ritense.objectenapi.event.ObjectsListed
+import com.ritense.outbox.OutboxService
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
 
 class ObjectenApiClient(
-    private val webclientBuilder: WebClient.Builder
+    private val webclientBuilder: WebClient.Builder,
+    private val outboxService: OutboxService,
+    private val objectMapper: ObjectMapper
+
 ) {
 
     fun getObject(
@@ -43,15 +54,23 @@ class ObjectenApiClient(
 
         val responseBody = result?.body!!
 
-        return if (responseBody.type.host == HOST_DOCKER_INTERNAL) {
+        val response = if (responseBody.type.host == HOST_DOCKER_INTERNAL)
             responseBody.copy(
                 type = URI.create(
                     responseBody.type.toString().replace(HOST_DOCKER_INTERNAL, "localhost")
                 )
-            )
-        } else {
-            responseBody
+        ) else responseBody
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ObjectViewed(
+                    response.url.toString(),
+                    objectMapper.valueToTree(response)
+                )
+            }
         }
+
+        return response
     }
 
     fun getObjectsByObjecttypeUrl(
@@ -90,6 +109,14 @@ class ObjectenApiClient(
             .retrieve()
             .toEntity(ObjectsList::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ObjectsListed(
+                    objectMapper.valueToTree(result.body.results)
+                )
+            }
+        }
 
         return result?.body!!
     }
@@ -133,6 +160,14 @@ class ObjectenApiClient(
             .toEntity(ObjectsList::class.java)
             .block()
 
+        if (result.hasBody()) {
+            outboxService.send {
+                ObjectsListed(
+                    objectMapper.valueToTree(result.body.results)
+                )
+            }
+        }
+
         return result?.body!!
     }
 
@@ -166,6 +201,16 @@ class ObjectenApiClient(
             .retrieve()
             .toEntity(ObjectWrapper::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ObjectCreated(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
         return result?.body!!
     }
 
@@ -197,6 +242,16 @@ class ObjectenApiClient(
             .toEntity(ObjectWrapper::class.java)
             .block()
 
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ObjectPatched(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
         return result?.body!!
     }
 
@@ -217,6 +272,15 @@ class ObjectenApiClient(
             .toEntity(ObjectWrapper::class.java)
             .block()
 
+        if (result.hasBody()) {
+            outboxService.send {
+                ObjectUpdated(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
         return result?.body!!
     }
 
@@ -231,6 +295,14 @@ class ObjectenApiClient(
             .retrieve()
             .toBodilessEntity()
             .block()
+
+        if (result?.statusCode?.is2xxSuccessful == true) {
+            outboxService.send {
+                ObjectDeleted(
+                    objectUrl.toString()
+                )
+            }
+        }
 
         return result?.statusCode!!
     }
