@@ -25,7 +25,7 @@ abstract class BaseEvent(
     open val type: String,
     open val date: LocalDateTime = LocalDateTime.now(),
     open var userId: String? = null,
-    open var roles: String? = null,
+    open var roles: Set<String> = setOf(),
     open val resultType: String?,
     open val resultId: String?,
     open val result: ContainerNode<*>?,

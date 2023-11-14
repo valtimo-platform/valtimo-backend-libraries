@@ -44,8 +44,8 @@ open class DefaultOutboxService(
         val baseEvent = eventSupplier.get()
 
         val userId = baseEvent.userId ?: userProvider.getCurrentUserLogin() ?: "System"
-        val roles = baseEvent.roles ?: userProvider.getCurrentUserRoles().joinToString(",")
-        val cloudEventData = CloudEventData(userId, roles, baseEvent.resultType, baseEvent.resultId, baseEvent.result)
+        val roles = baseEvent.roles.ifEmpty { userProvider.getCurrentUserRoles() }
+        val cloudEventData = CloudEventData(userId, roles.toSet(), baseEvent.resultType, baseEvent.resultId, baseEvent.result)
         val cloudEvent = CloudEventBuilder.v1()
             .withId(baseEvent.id.toString())
             .withSource(URI(cloudEventSource))

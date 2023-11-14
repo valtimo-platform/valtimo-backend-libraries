@@ -99,7 +99,8 @@ class OutboxServiceImplIntTest : BaseIntegrationTest() {
         assertThat(messages.size).isEqualTo(1)
         val result: ObjectNode = objectMapper.readValue(messages[0].message)
         assertThat(result["data"]["userId"].textValue()).isEqualTo("user@ritense.com")
-        assertThat(result["data"]["roles"].textValue()).isEqualTo("ADMIN,USER")
+        val roles = result["data"]["roles"].toList().map { it.textValue() }
+        assertThat(roles).containsExactlyInAnyOrder("ADMIN", "USER")
     }
 
     data class OrderCreatedEvent(
