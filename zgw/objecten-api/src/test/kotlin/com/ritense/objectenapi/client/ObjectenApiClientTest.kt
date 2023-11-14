@@ -23,6 +23,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.objectenapi.ObjectenApiAuthentication
+import com.ritense.objectenapi.event.ObjectCreated
 import com.ritense.objectenapi.event.ObjectViewed
 import com.ritense.objectenapi.event.ObjectsListed
 import com.ritense.outbox.OutboxService
@@ -408,6 +409,72 @@ internal class ObjectenApiClientTest {
 
         Assertions.assertThat(firstEventValue).isInstanceOf(ObjectsListed::class.java)
         Assertions.assertThat(result.results.first().type).isEqualTo(mappedFirstEventResult.first().type)
+    }
+
+    @Test
+    fun `should send outbox message on creating object`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        val responseBody = """
+            {
+              "url": "http://example.com",
+              "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+              "type": "http://example.com",
+              "record": {
+                "index": 0,
+                "typeVersion": 32767,
+                "data": {
+                  "property1": "henk",
+                  "property2": 123
+                },
+                "geometry": {
+                  "type": "string",
+                  "coordinates": [
+                    0,
+                    0
+                  ]
+                },
+                "startAt": "2019-08-24",
+                "endAt": "2019-08-25",
+                "registrationAt": "2019-08-26",
+                "correctionFor": "string",
+                "correctedBy": "string2"
+              }
+            }
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        val objectUrl = mockApi.url("/some-object").toString()
+        val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString().replace("localhost", "host")
+
+        val result = client.createObject(
+            TestAuthentication(),
+            URI(objectUrl),
+            ObjectRequest(
+                URI(objectTypesApiUrl),
+                ObjectRecord(
+                    index = 1,
+                    typeVersion = 2,
+                    data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                    startAt = LocalDate.of(2000, 1, 2)
+                )
+            )
+        )
+
+        mockApi.takeRequest()
+
+        verify(outboxService).send(eventCapture.capture())
+
+        val firstEventValue = eventCapture.firstValue.get()
+        val mappedFirstEventResult: ObjectWrapper = objectMapper.readValue(firstEventValue.result.toString())
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(ObjectCreated::class.java)
+        Assertions.assertThat(result.url.toString()).isEqualTo(firstEventValue.resultId.toString())
+        Assertions.assertThat(result.type).isEqualTo(mappedFirstEventResult.type)
     }
 
     @Test
