@@ -34,6 +34,7 @@ import okio.Buffer
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito
@@ -68,6 +69,11 @@ internal class DocumentenApiClientTest {
         objectMapper = jacksonObjectMapper()
         objectMapper.registerModule(JavaTimeModule())
         outboxService = Mockito.mock(OutboxService::class.java)
+    }
+
+    @BeforeEach
+    fun beforeEach() {
+        reset(outboxService)
     }
 
     @AfterAll
@@ -144,8 +150,6 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send outbox message on saving document`() {
-        reset(outboxService)
-
         val webclientBuilder = WebClient.builder()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper)
         val documentURL = "http://example.com"
@@ -294,8 +298,6 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send outbox message on retrieving document informatieobject`() {
-        reset(outboxService)
-
         val webclientBuilder = WebClient.builder()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper)
         val documentInformatieObjectUrl = "http://example.com/informatie-object/123"
@@ -357,8 +359,6 @@ internal class DocumentenApiClientTest {
 
     @Test
     fun `should send outbox message on download document informatieobject content`() {
-        reset(outboxService)
-
         val webclientBuilder = WebClient.builder()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper)
         val documentInformatieObjectId = "123"
