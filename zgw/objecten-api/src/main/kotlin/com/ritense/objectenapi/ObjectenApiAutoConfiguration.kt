@@ -28,6 +28,7 @@ import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objectenapi.service.ZaakObjectValueResolverFactory
 import com.ritense.objectenapi.web.rest.ObjectResource
 import com.ritense.objectenapi.web.rest.ZaakObjectResource
+import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.zakenapi.ZaakUrlProvider
@@ -53,8 +54,12 @@ class ObjectenApiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ObjectenApiClient::class)
-    fun objectenApiClient(webclientBuilder: WebClient.Builder): ObjectenApiClient {
-        return ObjectenApiClient(webclientBuilder)
+    fun objectenApiClient(
+        webclientBuilder: WebClient.Builder,
+        outboxService: OutboxService,
+        objectMapper: ObjectMapper
+    ): ObjectenApiClient {
+        return ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
     }
 
     @Bean
