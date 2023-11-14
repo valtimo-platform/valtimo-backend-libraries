@@ -24,6 +24,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import com.ritense.objectenapi.event.ObjectCreated
+import com.ritense.objectenapi.event.ObjectDeleted
 import com.ritense.objectenapi.event.ObjectPatched
 import com.ritense.objectenapi.event.ObjectUpdated
 import com.ritense.objectenapi.event.ObjectViewed
@@ -701,6 +702,32 @@ internal class ObjectenApiClientTest {
         Assertions.assertThat(firstEventValue).isInstanceOf(ObjectUpdated::class.java)
         Assertions.assertThat(result.url.toString()).isEqualTo(firstEventValue.resultId.toString())
         Assertions.assertThat(result.type).isEqualTo(mappedFirstEventResult.type)
+    }
+
+    @Test
+    fun `should send outbox message on deleting object`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        mockApi.enqueue(mockResponse("").setResponseCode(200))
+
+        val objectUrl = mockApi.url("/some-object").toString()
+
+        client.deleteObject(
+            TestAuthentication(),
+            URI(objectUrl),
+        )
+
+        mockApi.takeRequest()
+
+        verify(outboxService).send(eventCapture.capture())
+
+        val firstEventValue = eventCapture.firstValue.get()
+
+        Assertions.assertThat(firstEventValue).isInstanceOf(ObjectDeleted::class.java)
+        Assertions.assertThat(objectUrl).isEqualTo(firstEventValue.resultId.toString())
     }
 
     private fun mockResponse(body: String): MockResponse {

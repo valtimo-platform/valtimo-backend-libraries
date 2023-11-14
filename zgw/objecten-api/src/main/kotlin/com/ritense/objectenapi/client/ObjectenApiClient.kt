@@ -19,6 +19,7 @@ package com.ritense.objectenapi.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import com.ritense.objectenapi.event.ObjectCreated
+import com.ritense.objectenapi.event.ObjectDeleted
 import com.ritense.objectenapi.event.ObjectPatched
 import com.ritense.objectenapi.event.ObjectUpdated
 import com.ritense.objectenapi.event.ObjectViewed
@@ -292,6 +293,14 @@ class ObjectenApiClient(
             .retrieve()
             .toBodilessEntity()
             .block()
+
+        if (result?.statusCode?.is2xxSuccessful == true) {
+            outboxService.send {
+                ObjectDeleted(
+                    objectUrl.toString()
+                )
+            }
+        }
 
         return result?.statusCode!!
     }
