@@ -31,7 +31,7 @@ import com.ritense.document.event.DocumentDeleted
 import com.ritense.document.event.DocumentUnassigned
 import com.ritense.document.event.DocumentUpdated
 import com.ritense.document.event.DocumentViewed
-import com.ritense.document.event.DocumentsViewed
+import com.ritense.document.event.DocumentsListed
 import com.ritense.document.service.JsonSchemaDocumentActionProvider
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
@@ -218,7 +218,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
         verify(outboxService, atLeastOnce()).send(eventCapture.capture())
         val event = eventCapture.allValues.map { it.get() }
-            .single() { it is DocumentsViewed }
+            .single() { it is DocumentsListed }
         val result = Mapper.INSTANCE.get().writeValueAsString(event.result)
         documents.forEach { document ->
             assertThat(result).contains("\"${document.id}\"")
@@ -239,7 +239,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
         verify(outboxService, atLeastOnce()).send(eventCapture.capture())
         val event = eventCapture.allValues.map { it.get() }
-            .single() { it is DocumentsViewed }
+            .single() { it is DocumentsListed }
         val result = Mapper.INSTANCE.get().writeValueAsString(event.result)
         documents.forEach { document ->
             assertThat(result).contains("\"${document.id}\"")
