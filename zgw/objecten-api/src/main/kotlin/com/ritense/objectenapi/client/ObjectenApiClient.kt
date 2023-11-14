@@ -19,6 +19,7 @@ package com.ritense.objectenapi.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import com.ritense.objectenapi.event.ObjectCreated
+import com.ritense.objectenapi.event.ObjectPatched
 import com.ritense.objectenapi.event.ObjectViewed
 import com.ritense.objectenapi.event.ObjectsListed
 import com.ritense.outbox.OutboxService
@@ -236,6 +237,16 @@ class ObjectenApiClient(
             .retrieve()
             .toEntity(ObjectWrapper::class.java)
             .block()
+
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ObjectPatched(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
 
         return result?.body!!
     }
