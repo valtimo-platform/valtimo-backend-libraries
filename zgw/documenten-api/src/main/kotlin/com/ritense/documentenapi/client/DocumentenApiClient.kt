@@ -62,11 +62,13 @@ class DocumentenApiClient(
             .toEntity(CreateDocumentResult::class.java)
             .block()
 
-        outboxService.send {
-            DocumentStored(
-                result.body.url,
-                objectMapper.valueToTree(result.body)
-            )
+        if (result.hasBody()) {
+            outboxService.send {
+                DocumentStored(
+                    result.body.url,
+                    objectMapper.valueToTree(result.body)
+                )
+            }
         }
 
         return result?.body!!

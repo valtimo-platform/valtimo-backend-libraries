@@ -61,11 +61,13 @@ class ObjectenApiClient(
                 )
         ) else responseBody
 
-        outboxService.send {
-            ObjectViewed(
-                response.url.toString(),
-                objectMapper.valueToTree(response)
-            )
+        if (result.hasBody()) {
+            outboxService.send {
+                ObjectViewed(
+                    response.url.toString(),
+                    objectMapper.valueToTree(response)
+                )
+            }
         }
 
         return response
