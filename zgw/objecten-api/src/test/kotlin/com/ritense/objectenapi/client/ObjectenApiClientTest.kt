@@ -226,7 +226,8 @@ internal class ObjectenApiClientTest {
                 TestAuthentication(),
                 URI(objectUrl)
             )
-        } catch (_: WebClientResponseException) { }
+        } catch (_: WebClientResponseException) {
+        }
 
         mockApi.takeRequest()
 
@@ -394,7 +395,8 @@ internal class ObjectenApiClientTest {
                 "typeId",
                 PageRequest.of(0, 10)
             )
-        } catch (_: WebClientResponseException) { }
+        } catch (_: WebClientResponseException) {
+        }
 
         mockApi.takeRequest()
 
@@ -487,7 +489,8 @@ internal class ObjectenApiClientTest {
                 "test",
                 PageRequest.of(0, 10)
             )
-        } catch (_: WebClientResponseException) { }
+        } catch (_: WebClientResponseException) {
+        }
 
         mockApi.takeRequest()
 
@@ -586,7 +589,8 @@ internal class ObjectenApiClientTest {
                     )
                 )
             )
-        } catch (_: WebClientResponseException) { }
+        } catch (_: WebClientResponseException) {
+        }
 
         mockApi.takeRequest()
 
@@ -777,7 +781,8 @@ internal class ObjectenApiClientTest {
                     )
                 )
             )
-        } catch (_: WebClientResponseException) { }
+        } catch (_: WebClientResponseException) {
+        }
 
         mockApi.takeRequest()
 
@@ -876,7 +881,8 @@ internal class ObjectenApiClientTest {
                     )
                 )
             )
-        } catch (_: WebClientResponseException) { }
+        } catch (_: WebClientResponseException) {
+        }
 
         mockApi.takeRequest()
 
@@ -925,7 +931,8 @@ internal class ObjectenApiClientTest {
                 TestAuthentication(),
                 URI(objectUrl),
             )
-        } catch (_: WebClientResponseException) { }
+        } catch (_: WebClientResponseException) {
+        }
 
         mockApi.takeRequest()
 

@@ -253,7 +253,8 @@ internal class DocumentenApiClientTest {
                 mockDocumentenApi.url("/").toUri(),
                 request
             )
-        } catch (_: WebClientResponseException) { }
+        } catch (_: WebClientResponseException) {
+        }
 
         mockDocumentenApi.takeRequest()
 
@@ -407,7 +408,8 @@ internal class DocumentenApiClientTest {
                 TestAuthentication(),
                 mockDocumentenApi.url("/zaakobjects").toUri(),
             )
-        } catch (_: WebClientResponseException) { }
+        } catch (_: WebClientResponseException) {
+        }
 
         mockDocumentenApi.takeRequest()
 
@@ -461,7 +463,8 @@ internal class DocumentenApiClientTest {
                 mockDocumentenApi.url("/").toUri(),
                 documentInformatieObjectId
             )
-        } catch (_: WebClientResponseException) { }
+        } catch (_: WebClientResponseException) {
+        }
 
         mockDocumentenApi.takeRequest()
 
