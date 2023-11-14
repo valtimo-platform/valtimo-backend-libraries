@@ -21,12 +21,12 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 abstract class BaseEvent(
-    open val id: UUID = UUID.randomUUID(),
-    open val type: String,
-    open val date: LocalDateTime = LocalDateTime.now(),
-    open var userId: String? = null,
-    open var roles: String? = null,
-    open val resultType: String?,
-    open val resultId: String?,
-    open val result: ContainerNode<*>?,
+    val id: UUID = UUID.randomUUID(),
+    val type: String,
+    val date: LocalDateTime = LocalDateTime.now(),
+    val userId: String? = null,
+    val roles: Set<String> = setOf(),
+    val resultType: String?,
+    val resultId: String?,
+    val result: ContainerNode<*>?,
 )
