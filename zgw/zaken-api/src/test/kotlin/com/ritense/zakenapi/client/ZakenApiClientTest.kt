@@ -48,7 +48,7 @@ import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import com.ritense.zakenapi.event.ZaakCreated
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
 import com.ritense.zakenapi.event.ZaakObjectenListed
-import com.ritense.zakenapi.event.ZaakOpschortingSet
+import com.ritense.zakenapi.event.ZaakOpschortingUpdated
 import com.ritense.zakenapi.event.ZaakResultaatCreated
 import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
@@ -1099,7 +1099,7 @@ internal class ZakenApiClientTest {
         val firstEventValue = eventCapture.firstValue.get()
         val mappedFirstEventResult: ZaakopschortingResponse = objectMapper.readValue(firstEventValue.result.toString())
 
-        Assertions.assertThat(firstEventValue).isInstanceOf(ZaakOpschortingSet::class.java)
+        Assertions.assertThat(firstEventValue).isInstanceOf(ZaakOpschortingUpdated::class.java)
         Assertions.assertThat(result.url).isEqualTo(firstEventValue.resultId)
         Assertions.assertThat(result.opschorting?.reden).isEqualTo(mappedFirstEventResult.opschorting?.reden)
     }

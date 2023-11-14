@@ -36,7 +36,7 @@ import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import com.ritense.zakenapi.event.ZaakCreated
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
 import com.ritense.zakenapi.event.ZaakObjectenListed
-import com.ritense.zakenapi.event.ZaakOpschortingSet
+import com.ritense.zakenapi.event.ZaakOpschortingUpdated
 import com.ritense.zakenapi.event.ZaakResultaatCreated
 import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
@@ -79,7 +79,7 @@ class ZakenApiClient(
         if (result.hasBody()) {
             outboxService.send {
                 DocumentLinkedToZaak(
-                    result.body.uuid.toString(),
+                    result.body.uuid,
                     objectMapper.valueToTree(result.body)
                 )
             }
@@ -346,7 +346,7 @@ class ZakenApiClient(
 
         if (result.hasBody()) {
             outboxService.send {
-                ZaakOpschortingSet(
+                ZaakOpschortingUpdated(
                     result.body.url,
                     objectMapper.valueToTree(result.body)
                 )
