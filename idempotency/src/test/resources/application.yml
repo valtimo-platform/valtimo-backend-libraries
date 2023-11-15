@@ -2,7 +2,7 @@ spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:3347/idempotency-test
+        url: jdbc:postgresql://localhost:3348/idempotency-test
         username: valtimo
         password: password
         hikari:

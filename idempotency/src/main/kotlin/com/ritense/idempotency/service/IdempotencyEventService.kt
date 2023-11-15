@@ -2,13 +2,16 @@ package com.ritense.idempotency.service
 
 import com.ritense.idempotency.domain.IdempotencyEvent
 import com.ritense.idempotency.repository.IdempotencyEventRepository
+import org.springframework.transaction.annotation.Transactional
 
-class IdempotencyEventService(
-    private val idempotencyEventRepository: IdempotencyEventRepository,
+open class IdempotencyEventService(
+    private val idempotencyEventRepository: IdempotencyEventRepository
 ) {
-    fun check(consumer: String, eventId: String) =
-        idempotencyEventRepository.existsByConsumerAndEventId(consumer, eventId)
+    @Transactional
+    open fun isProcessed(consumer: String, messageId: String) =
+        idempotencyEventRepository.existsByConsumerAndMessageId(consumer, messageId)
 
-    fun store(idempotencyEvent: IdempotencyEvent) =
-        idempotencyEventRepository.save(idempotencyEvent)
+    @Transactional
+    open fun store(idempotencyEvent: IdempotencyEvent): IdempotencyEvent =
+        idempotencyEventRepository.saveAndFlush(idempotencyEvent)
 }

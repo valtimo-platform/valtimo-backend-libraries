@@ -2,6 +2,6 @@ version: '3.9'
 services:
     db:
         ports:
-            - "3347:5432"
+            - "3348:5432"
         environment:
             - POSTGRES_DB=idempotency-test

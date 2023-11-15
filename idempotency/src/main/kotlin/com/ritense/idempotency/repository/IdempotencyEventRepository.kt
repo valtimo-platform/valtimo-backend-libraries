@@ -5,5 +5,5 @@ import java.util.UUID
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface IdempotencyEventRepository : JpaRepository<IdempotencyEvent, UUID> {
-    fun existsByConsumerAndEventId(consumer: String, eventId: String): Boolean
+    fun existsByConsumerAndMessageId(consumer: String, messageId: String): Boolean
 }

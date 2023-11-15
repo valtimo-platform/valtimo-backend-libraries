@@ -20,21 +20,21 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="Laurens van der Bilt" id="idempotency-1">
-        <createTable tableName="idempotency_event">
+        <createTable tableName="idempotency_message">
             <column name="id" type="${uuidType}">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="idempotencyPK"/>
             </column>
             <column name="consumer" type="VARCHAR(150)">
                 <constraints nullable="false"/>
             </column>
-            <column name="event_id" type="VARCHAR(150)">
+            <column name="message_id" type="VARCHAR(150)">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_on" type="DATETIME">
+            <column name="processed_on" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addUniqueConstraint tableName="idempotency_event" columnNames="consumer, event_id"/>
+        <addUniqueConstraint tableName="idempotency_message" columnNames="consumer, message_id"/>
     </changeSet>
 
 </databaseChangeLog>

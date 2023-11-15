@@ -16,8 +16,6 @@
 
 package com.ritense.idempotency.autoconfigure
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.ritense.idempotency.repository.IdempotencyEventRepository
 import com.ritense.idempotency.service.IdempotencyEventService
 import javax.sql.DataSource
@@ -35,7 +33,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @Configuration
 @EnableJpaRepositories(
     basePackageClasses = [
-        IdempotencyEventRepository::class,
+        IdempotencyEventRepository::class
     ],
 )
 @EntityScan(basePackages = ["com.ritense.idempotency"])
@@ -44,23 +42,19 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 class IdempotencyAutoConfiguration {
 
     @Bean
-    fun objectMapper(): ObjectMapper = ObjectMapper()
-        .findAndRegisterModules()
-        .registerModule(KotlinModule.Builder().build())
-
-    @Bean
     @ConditionalOnMissingBean(IdempotencyLiquibaseRunner::class)
     fun idempotencyLiquibaseRunner(
         liquibaseProperties: LiquibaseProperties,
         datasource: DataSource,
-    ): IdempotencyLiquibaseRunner {
-        return IdempotencyLiquibaseRunner(liquibaseProperties, datasource)
-    }
+    ) = IdempotencyLiquibaseRunner(
+        liquibaseProperties,
+        datasource
+    )
 
     @Bean
     fun idempotencyEventService(
         idempotencyEventRepository: IdempotencyEventRepository,
     ) = IdempotencyEventService(
-        idempotencyEventRepository,
+        idempotencyEventRepository
     )
 }

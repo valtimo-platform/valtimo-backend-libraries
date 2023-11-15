@@ -16,6 +16,8 @@
 
 package com.ritense.idempotency.autoconfigure
 
+import java.sql.SQLException
+import javax.sql.DataSource
 import liquibase.Contexts
 import liquibase.Liquibase
 import liquibase.database.DatabaseFactory
@@ -26,12 +28,10 @@ import liquibase.resource.ClassLoaderResourceAccessor
 import mu.KotlinLogging
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties
-import java.sql.SQLException
-import javax.sql.DataSource
 
 class IdempotencyLiquibaseRunner(
     liquibaseProperties: LiquibaseProperties,
-    private val datasource: DataSource,
+    private val datasource: DataSource
 ) : InitializingBean {
     private val context: Contexts = Contexts(liquibaseProperties.contexts)
 

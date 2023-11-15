@@ -22,9 +22,10 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Table
+import javax.persistence.UniqueConstraint
 
 @Entity
-@Table(name = "idempotency_event")
+@Table(name = "idempotency_message", uniqueConstraints = [UniqueConstraint(columnNames = ["consumer", "message_id"])])
 class IdempotencyEvent(
 
     @Id
@@ -34,9 +35,9 @@ class IdempotencyEvent(
     @Column(name = "consumer", columnDefinition = "VARCHAR(150)", updatable = false)
     val consumer: String,
 
-    @Column(name = "event_id", columnDefinition = "VARCHAR(150)", updatable = false)
-    val eventId: String,
+    @Column(name = "message_id", columnDefinition = "VARCHAR(150)", updatable = false)
+    val messageId: String,
 
-    @Column(name = "created_on", columnDefinition = "DATETIME", updatable = false)
-    val createdOn: LocalDateTime
+    @Column(name = "processed_on", columnDefinition = "DATETIME", updatable = false)
+    val processedOn: LocalDateTime
 )

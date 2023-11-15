@@ -16,7 +16,6 @@
 
 package com.ritense.idempotency
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.idempotency.service.IdempotencyEventService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
@@ -28,9 +27,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @ExtendWith(value = [SpringExtension::class])
 @Tag("integration")
 abstract class BaseIntegrationTest {
-
-    @Autowired
-    lateinit var objectMapper: ObjectMapper
 
     @Autowired
     lateinit var idempotencyEventService: IdempotencyEventService
