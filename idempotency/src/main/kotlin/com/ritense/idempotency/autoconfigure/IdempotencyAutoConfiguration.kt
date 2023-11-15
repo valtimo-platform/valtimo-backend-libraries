@@ -17,6 +17,7 @@
 package com.ritense.idempotency.autoconfigure
 
 import com.ritense.idempotency.repository.IdempotencyEventRepository
+import com.ritense.idempotency.service.IdempotencyEventDeletionService
 import com.ritense.idempotency.service.IdempotencyEventService
 import javax.sql.DataSource
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
@@ -29,12 +30,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.springframework.scheduling.annotation.EnableScheduling
 
 @Configuration
+@EnableScheduling
 @EnableJpaRepositories(
     basePackageClasses = [
         IdempotencyEventRepository::class
-    ],
+    ]
 )
 @EntityScan(basePackages = ["com.ritense.idempotency"])
 @AutoConfigureAfter(DataSourceAutoConfiguration::class, HibernateJpaAutoConfiguration::class)
@@ -45,7 +48,7 @@ class IdempotencyAutoConfiguration {
     @ConditionalOnMissingBean(IdempotencyLiquibaseRunner::class)
     fun idempotencyLiquibaseRunner(
         liquibaseProperties: LiquibaseProperties,
-        datasource: DataSource,
+        datasource: DataSource
     ) = IdempotencyLiquibaseRunner(
         liquibaseProperties,
         datasource
@@ -53,8 +56,15 @@ class IdempotencyAutoConfiguration {
 
     @Bean
     fun idempotencyEventService(
-        idempotencyEventRepository: IdempotencyEventRepository,
+        idempotencyEventRepository: IdempotencyEventRepository
     ) = IdempotencyEventService(
+        idempotencyEventRepository
+    )
+
+    @Bean
+    fun idempotencyEventDeletionService(
+        idempotencyEventRepository: IdempotencyEventRepository
+    ) = IdempotencyEventDeletionService(
         idempotencyEventRepository
     )
 }
