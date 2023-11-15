@@ -235,6 +235,7 @@ public class CamundaTaskService {
         requirePermission(task, COMPLETE);
         taskService.complete(taskId);
         Hibernate.initialize(task.getVariableInstances());
+        Hibernate.initialize(task.getIdentityLinks());
         entityManager.detach(task);
         outboxService.send(() -> new TaskCompleted(taskId, objectMapper.valueToTree(task)));
     }
