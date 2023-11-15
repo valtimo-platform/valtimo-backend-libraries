@@ -44,6 +44,7 @@ include(
     "gradle:cve-report",
     "gradle:license-report",
     //"haalcentraal",
+    "idempotency",
     //"haalcentraal:haalcentraal-brp",
     "keycloak-iam",
     //"klant",
