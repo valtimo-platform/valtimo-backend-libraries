@@ -28,10 +28,12 @@ dependencies {
     implementation project(':resource:temporary-resource-storage')
     implementation project(':zgw')
     implementation project(':zgw:catalogi-api')
+    implementation project(":outbox")
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     testImplementation project(':document')
     testImplementation project(':resource')
@@ -48,6 +50,7 @@ dependencies {
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     jar {
         enabled = true
