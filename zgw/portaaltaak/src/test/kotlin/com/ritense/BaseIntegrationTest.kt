@@ -23,6 +23,7 @@ import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.impl.NoopAuthorizationSpecificationFactory
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.outbox.OutboxService
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.ResourceService
@@ -66,6 +67,9 @@ abstract class BaseIntegrationTest {
 
     @SpyBean
     lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
+
+    @SpyBean
+    lateinit var outboxService: OutboxService
 
     @MockBean
     lateinit var resourceService: ResourceService

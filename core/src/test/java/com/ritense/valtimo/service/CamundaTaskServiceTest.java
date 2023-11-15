@@ -16,13 +16,16 @@
 
 package com.ritense.valtimo.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.specification.AuthorizationSpecification;
 import com.ritense.outbox.OutboxService;
+import com.ritense.outbox.domain.BaseEvent;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
-import com.ritense.valtimo.camunda.service.CamundaContextService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.json.Mapper;
+import com.ritense.valtimo.contract.utils.SecurityUtils;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import org.camunda.bpm.engine.AuthorizationException;
@@ -31,18 +34,27 @@ import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.MockedStatic;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -50,10 +62,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -74,6 +88,7 @@ class CamundaTaskServiceTest {
     private EntityManager entityManager;
     private AuthorizationService authorizationService;
     private OutboxService outboxService;
+    private final ObjectMapper objectMapper = Mapper.INSTANCE.get();
 
     @BeforeEach
     void setUp() {
@@ -87,7 +102,33 @@ class CamundaTaskServiceTest {
         entityManager = mock(EntityManager.class);
         authorizationService = mock(AuthorizationService.class);
         outboxService = mock(OutboxService.class);
-        task = new CamundaTask(TASK_ID, 0, null, null, null, List.of(), null, null, null, null, null, null, null, null, null, null, 0, null, null, null, null, 0, null, Set.of());
+        task = spy(
+            new CamundaTask(
+                TASK_ID,
+                0,
+                null,
+                null,
+                null,
+                List.of(),
+                null,
+                null,
+                null,
+                "Some task",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                0,
+                LocalDateTime.now(),
+                null,
+                null,
+                null,
+                0,
+                null,
+                Set.of())
+        );
         camundaTaskService = spy(
             new CamundaTaskService(
                 taskService,
@@ -101,7 +142,8 @@ class CamundaTaskServiceTest {
                 userManagementService,
                 entityManager,
                 authorizationService,
-                outboxService)
+                outboxService,
+                objectMapper)
         );
         when(authorizationService.getAuthorizationSpecification(any(), any()))
             .thenReturn(mock(AuthorizationSpecification.class));
@@ -113,46 +155,130 @@ class CamundaTaskServiceTest {
     }
 
     @Test
-    void claimTask_taskDoesNotExist() {
+    void assignTask_taskDoesNotExist() {
         when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.empty());
-        assertThrows(TaskNotFoundException.class, () -> camundaTaskService.findTaskById(TASK_ID));
+        assertThrows(TaskNotFoundException.class, () -> camundaTaskService.assign(TASK_ID, ASSIGNEE));
     }
 
     @Test
-    void claimTask_taskClaimedDoesntExist() {
+    void assignTask_taskExists() {
+        ProcessInstanceQuery processInstanceQueryMock = mock(ProcessInstanceQuery.class);
+        ProcessInstance processInstance = mock(ProcessInstance.class);
+
+        when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any()))
+            .thenReturn(Optional.of(task));
+        doReturn("1").when(task).getProcessInstanceId();
+        doReturn("2").when(task).getProcessDefinitionId();
+        doReturn(task).when(camundaTaskService).findTaskById(TASK_ID);
+
+        when(runtimeService.createProcessInstanceQuery()).thenReturn(processInstanceQueryMock);
+        when(processInstanceQueryMock.processInstanceId("1")).thenReturn(processInstanceQueryMock);
+        when(processInstanceQueryMock.singleResult()).thenReturn(processInstance);
+
+        when(processInstance.getBusinessKey()).thenReturn("123");
+
+        try (MockedStatic<SecurityUtils> securityUtils = mockStatic(SecurityUtils.class)) {
+            securityUtils.when(SecurityUtils::getCurrentUserLogin).thenReturn("Henk");
+
+            camundaTaskService.assign(TASK_ID, ASSIGNEE);
+        }
+
+        ArgumentCaptor<Supplier<BaseEvent>> eventCapture = ArgumentCaptor.forClass(Supplier.class);
+        verify(outboxService, times(1)).send(eventCapture.capture());
+        var event = eventCapture.getValue().get();
+        assertThat(event.getType()).isEqualTo("com.ritense.valtimo.task.assigned");
+        assertThat(event.getResultType()).isEqualTo("com.ritense.valtimo.camunda.domain.CamundaTask");
+        assertThat(event.getResultId()).isEqualTo(task.getId());
+        assertThat(event.getResult()).isNotNull();
+    }
+
+    @Test
+    void assignTask_taskExistsWithoutNewAssignee() {
+        ProcessInstanceQuery processInstanceQueryMock = mock(ProcessInstanceQuery.class);
+        ProcessInstance processInstance = mock(ProcessInstance.class);
+
+        when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any()))
+            .thenReturn(Optional.of(task));
+        doReturn("1").when(task).getProcessInstanceId();
+        doReturn("2").when(task).getProcessDefinitionId();
+        doReturn(task).when(camundaTaskService).findTaskById(TASK_ID);
+
+        when(runtimeService.createProcessInstanceQuery()).thenReturn(processInstanceQueryMock);
+        when(processInstanceQueryMock.processInstanceId("1")).thenReturn(processInstanceQueryMock);
+        when(processInstanceQueryMock.singleResult()).thenReturn(processInstance);
+
+        when(processInstance.getBusinessKey()).thenReturn("123");
+
+        try (MockedStatic<SecurityUtils> securityUtils = mockStatic(SecurityUtils.class)) {
+            securityUtils.when(SecurityUtils::getCurrentUserLogin).thenReturn("Henk");
+
+            camundaTaskService.assign(TASK_ID, null);
+        }
+
+        ArgumentCaptor<Supplier<BaseEvent>> eventCapture = ArgumentCaptor.forClass(Supplier.class);
+        verify(outboxService, times(1)).send(eventCapture.capture());
+        var event = eventCapture.getValue().get();
+        assertThat(event.getType()).isEqualTo("com.ritense.valtimo.task.unassigned");
+        assertThat(event.getResultType()).isEqualTo("com.ritense.valtimo.camunda.domain.CamundaTask");
+        assertThat(event.getResultId()).isEqualTo(task.getId());
+        assertThat(event.getResult()).isNotNull();
+    }
+
+    @Test
+    void assignTask_taskClaimedDoesntExist() {
         //when
         when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new ProcessEngineException()).when(taskService).setAssignee(eq(TASK_ID), eq(ASSIGNEE));
         doReturn(task).when(camundaTaskService).findTaskById(TASK_ID);
 
         assertThrows(IllegalStateException.class, () -> camundaTaskService.assign(TASK_ID, ASSIGNEE));
+        verify(outboxService, times(0)).send(any());
     }
 
     @Test
-    void claimTask_taskClaimedWithNoPermissions() {
+    void assignTask_taskClaimedWithNoPermissions() {
         when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new AuthorizationException("some reason")).when(taskService).setAssignee(eq(TASK_ID), eq(ASSIGNEE));
         assertThrows(IllegalStateException.class, () -> camundaTaskService.assign(TASK_ID, ASSIGNEE));
+        verify(outboxService, times(0)).send(any());
     }
 
     @Test
-    void unclaimTask_taskDoesNotExist() {
+    void unassignTask_taskDoesNotExist() {
         doThrow(new IllegalStateException()).when(camundaTaskService).findTaskById(TASK_ID);
         assertThrows(IllegalStateException.class, () -> camundaTaskService.unassign(TASK_ID));
+        verify(outboxService, times(0)).send(any());
     }
 
     @Test
-    void unclaimTask_taskUnclaimedDoesntExist() {
+    void unassignTask_taskUnclaimedDoesntExist() {
         when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new ProcessEngineException()).when(taskService).setAssignee(eq(TASK_ID), isNull());
         assertThrows(IllegalStateException.class, () -> camundaTaskService.unassign(TASK_ID));
+        verify(outboxService, times(0)).send(any());
     }
 
     @Test
-    void unclaimTask_taskClaimedWithNoPermissions() {
+    void unassignTask_taskClaimedWithNoPermissions() {
         when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new AuthorizationException("some reason")).when(taskService).setAssignee(eq(TASK_ID), isNull());
         assertThrows(IllegalStateException.class, () -> camundaTaskService.unassign(TASK_ID));
+        verify(outboxService, times(0)).send(any());
+    }
+
+    @Test
+    void unassignTask_taskExists() {
+        doReturn(task).when(camundaTaskService).findTaskById(TASK_ID);
+
+        camundaTaskService.unassign(TASK_ID);
+
+        ArgumentCaptor<Supplier<BaseEvent>> eventCapture = ArgumentCaptor.forClass(Supplier.class);
+        verify(outboxService, times(1)).send(eventCapture.capture());
+        var event = eventCapture.getValue().get();
+        assertThat(event.getType()).isEqualTo("com.ritense.valtimo.task.unassigned");
+        assertThat(event.getResultType()).isEqualTo("com.ritense.valtimo.camunda.domain.CamundaTask");
+        assertThat(event.getResultId()).isEqualTo(task.getId());
+        assertThat(event.getResult()).isNotNull();
     }
 
     @Test
@@ -164,6 +290,7 @@ class CamundaTaskServiceTest {
         doThrow(new FormFieldValidationException("a error")).when(formService).submitTaskForm(anyString(), anyMap());
 
         assertThrows(FormFieldValidationException.class, () -> camundaTaskService.completeTaskWithFormData(TASK_ID, variables));
+        verify(outboxService, times(0)).send(any());
     }
 
     @Test
@@ -181,7 +308,7 @@ class CamundaTaskServiceTest {
             userManagementService,
             entityManager,
             authorizationService,
-            outboxService));
+            outboxService, objectMapper));
 
         when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doNothing().when(taskService).complete(TASK_ID);
@@ -189,6 +316,14 @@ class CamundaTaskServiceTest {
         camundaTaskService.completeTaskWithFormData(TASK_ID, null);
         verify(camundaTaskService, times(1)).completeTaskWithFormData(TASK_ID, null);
         verify(taskService, times(1)).complete(TASK_ID);
+
+        ArgumentCaptor<Supplier<BaseEvent>> eventCapture = ArgumentCaptor.forClass(Supplier.class);
+        verify(outboxService, times(1)).send(eventCapture.capture());
+        var event = eventCapture.getValue().get();
+        assertThat(event.getType()).isEqualTo("com.ritense.valtimo.task.completed");
+        assertThat(event.getResultType()).isEqualTo("com.ritense.valtimo.camunda.domain.CamundaTask");
+        assertThat(event.getResultId()).isEqualTo(task.getId());
+        assertThat(event.getResult()).isNotNull();
     }
 
     @Test
@@ -196,6 +331,7 @@ class CamundaTaskServiceTest {
         when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new AuthorizationException("some reason")).when(taskService).complete(anyString());
         assertThrows(IllegalStateException.class, () -> camundaTaskService.completeTaskWithFormData(TASK_ID, null));
+        verify(outboxService, times(0)).send(any());
     }
 
     @Test
@@ -203,6 +339,7 @@ class CamundaTaskServiceTest {
         when(camundaTaskRepository.findOne(ArgumentMatchers.<Specification<CamundaTask>>any())).thenReturn(Optional.of(task));
         doThrow(new ProcessEngineException()).when(taskService).complete(anyString());
         assertThrows(IllegalStateException.class, () -> camundaTaskService.completeTaskWithFormData(TASK_ID, null));
+        verify(outboxService, times(0)).send(any());
     }
 
 }

@@ -43,6 +43,7 @@ dependencies {
     testImplementation project(":resource")
     testImplementation project(":zgw:catalogi-api")
     testImplementation project(':plugin-valtimo')
+    testImplementation project(':outbox')
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"

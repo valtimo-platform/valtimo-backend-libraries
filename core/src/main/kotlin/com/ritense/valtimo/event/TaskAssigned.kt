@@ -18,9 +18,10 @@ package com.ritense.valtimo.event
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.outbox.domain.BaseEvent
+import com.ritense.valtimo.camunda.domain.CamundaTask
 
-class TaskCompleted(taskId: String, task: ObjectNode) : BaseEvent(
-    type = "com.ritense.valtimo.task.completed",
+class TaskAssigned(taskId: String, task: ObjectNode) : BaseEvent(
+    type = "com.ritense.valtimo.task.assigned",
     resultType = "com.ritense.valtimo.camunda.domain.CamundaTask",
     resultId = taskId,
     result = task
