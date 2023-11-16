@@ -17,7 +17,7 @@
 package com.ritense.idempotency.service
 
 import com.ritense.idempotency.BaseIntegrationTest
-import com.ritense.idempotency.domain.IdempotencyEvent
+import com.ritense.idempotency.domain.IdempotencyMessage
 import java.time.LocalDateTime
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
@@ -27,57 +27,57 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class IdempotencyEventServiceIntTest : BaseIntegrationTest() {
+class IdempotencyMessageServiceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should store IdempotencyEvent`() {
-        val idempotencyEvent = IdempotencyEvent(
+        val idempotencyMessage = IdempotencyMessage(
             id = UUID.randomUUID(),
             consumer = "test-consumer.fifo",
             messageId = "hfksahdksbadk",
             processedOn = LocalDateTime.now()
         )
 
-        val savedEvent = idempotencyEventService.store(idempotencyEvent)
+        val savedEvent = idempotencyMessageService.store(idempotencyMessage)
 
         assertThat(savedEvent).isNotNull
     }
 
     @Test
     fun `should not double store IdempotencyEvent`() {
-        val idempotencyEvent = IdempotencyEvent(
+        val idempotencyMessage = IdempotencyMessage(
             id = UUID.randomUUID(),
             consumer = "test-consumer.fifo",
             messageId = "hfksahdksbadk",
             processedOn = LocalDateTime.now()
         )
 
-        val idempotencyEvent2 = IdempotencyEvent(
+        val idempotencyMessage2 = IdempotencyMessage(
             id = UUID.randomUUID(),
             consumer = "test-consumer.fifo",
             messageId = "hfksahdksbadk",
             processedOn = LocalDateTime.now()
         )
 
-        idempotencyEventService.store(idempotencyEvent)
+        idempotencyMessageService.store(idempotencyMessage)
 
         assertThrows<DataIntegrityViolationException> {
-            idempotencyEventService.store(idempotencyEvent2)
+            idempotencyMessageService.store(idempotencyMessage2)
         }
     }
 
     @Test
     fun `should check IdempotencyEvent`() {
-        val idempotencyEvent = IdempotencyEvent(
+        val idempotencyMessage = IdempotencyMessage(
             id = UUID.randomUUID(),
             consumer = "test-consumer.fifo",
             messageId = "hfksahdksbadk",
             processedOn = LocalDateTime.now()
         )
 
-        val savedEvent = idempotencyEventService.store(idempotencyEvent)
+        val savedEvent = idempotencyMessageService.store(idempotencyMessage)
 
-        val check = idempotencyEventService.isProcessed(savedEvent.consumer, savedEvent.messageId)
+        val check = idempotencyMessageService.isProcessed(savedEvent.consumer, savedEvent.messageId)
 
         assertThat(check).isTrue()
     }
