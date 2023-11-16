@@ -14,16 +14,16 @@ dependencies {
     implementation(project(":form-flow-valtimo"))
     //implementation(project(":haalcentraal:haalcentraal-brp"))
     implementation(project(":keycloak-iam"))
-    //implementation(project(":mail:local-mail"))
+    implementation(project(":mail:local-mail"))
     implementation(project(":notes"))
     //implementation(project(":objects-api"))
     //implementation(project(":openzaak"))
     //implementation(project(":plugin-authentication:notificaties-api-authentication"))
     //implementation(project(":plugin-authentication:objecten-api-authentication"))
-    implementation(project(":plugin-valtimo"))
+//    implementation(project(":plugin-valtimo"))
     implementation(project(":process-document"))
-    //implementation(project(":resource:openzaak-resource"))
-    implementation(project(":resource:temporary-resource-storage"))
+    implementation(project(":resource:local-resource"))
+//    implementation(project(":resource:temporary-resource-storage"))
     implementation(project(":tenancy"))
     implementation(project(":search"))
     implementation(project(":web"))
@@ -38,6 +38,7 @@ dependencies {
     //implementation(project(":zgw:zaken-api"))
     //implementation(project(":zgw:besluiten-api"))
     implementation(project(":outbox-v2"))
+    implementation(project(":idempotent"))
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
