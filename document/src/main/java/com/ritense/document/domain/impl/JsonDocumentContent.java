@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowArrayRemovalOperations;
+import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
@@ -56,7 +57,7 @@ public class JsonDocumentContent implements DocumentContent {
     public static JsonDocumentContent build(JsonNode currentContent, JsonNode modifiedContent, JsonPatch prePatch) {
         //Pre patching
         if (prePatch != null && !prePatch.patches().isEmpty()) {
-            JsonPatchService.apply(prePatch, currentContent);
+            JsonPatchService.apply(prePatch, currentContent, allowRemovalOperations());
         }
         return build(currentContent, modifiedContent);
     }
