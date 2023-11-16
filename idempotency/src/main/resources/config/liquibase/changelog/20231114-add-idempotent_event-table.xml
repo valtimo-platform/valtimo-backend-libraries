@@ -20,7 +20,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
     <changeSet author="Laurens van der Bilt" id="idempotency-1">
-        <createTable tableName="idempotency_message">
+        <createTable tableName="idempotent_message">
             <column name="id" type="${uuidType}">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="idempotencyPK"/>
             </column>
@@ -34,7 +34,7 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addUniqueConstraint tableName="idempotency_message" columnNames="consumer, message_id"/>
+        <addUniqueConstraint tableName="idempotent_message" columnNames="consumer, message_id"/>
     </changeSet>
 
 </databaseChangeLog>

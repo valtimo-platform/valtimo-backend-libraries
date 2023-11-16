@@ -16,7 +16,7 @@
 
 package com.ritense.idempotency
 
-import com.ritense.idempotency.service.IdempotencyMessageService
+import com.ritense.idempotency.service.IdempotentMessageService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,5 +29,5 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 abstract class BaseIntegrationTest {
 
     @Autowired
-    lateinit var idempotencyMessageService: IdempotencyMessageService
+    lateinit var IdempotentMessageService: IdempotentMessageService
 }

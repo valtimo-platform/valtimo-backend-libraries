@@ -16,9 +16,9 @@
 
 package com.ritense.idempotency.autoconfigure
 
-import com.ritense.idempotency.repository.IdempotencyMessageRepository
-import com.ritense.idempotency.service.IdempotencyMessageDeletionService
-import com.ritense.idempotency.service.IdempotencyMessageService
+import com.ritense.idempotency.repository.IdempotentMessageRepository
+import com.ritense.idempotency.service.IdempotentMessageDeletionService
+import com.ritense.idempotency.service.IdempotentMessageService
 import javax.sql.DataSource
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -36,7 +36,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EnableScheduling
 @EnableJpaRepositories(
     basePackageClasses = [
-        IdempotencyMessageRepository::class
+        IdempotentMessageRepository::class
     ]
 )
 @EntityScan(basePackages = ["com.ritense.idempotency"])
@@ -55,16 +55,16 @@ class IdempotencyAutoConfiguration {
     )
 
     @Bean
-    fun idempotencyMessageService(
-        idempotencyMessageRepository: IdempotencyMessageRepository
-    ) = IdempotencyMessageService(
-        idempotencyMessageRepository
+    fun idempotentMessageService(
+        idempotentMessageRepository: IdempotentMessageRepository
+    ) = IdempotentMessageService(
+        idempotentMessageRepository
     )
 
     @Bean
-    fun idempotencyMessageDeletionService(
-        idempotencyMessageRepository: IdempotencyMessageRepository
-    ) = IdempotencyMessageDeletionService(
-        idempotencyMessageRepository
+    fun idempotentMessageDeletionService(
+        idempotentMessageRepository: IdempotentMessageRepository
+    ) = IdempotentMessageDeletionService(
+        idempotentMessageRepository
     )
 }

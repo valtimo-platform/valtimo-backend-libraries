@@ -40,3 +40,4 @@ valtimo:
     outbox.pollingpublisher.rate: "PT1S"
 
 cron-deletion-timer: "0 0 3 1 1/6 ?"
+archive-message-after: 3

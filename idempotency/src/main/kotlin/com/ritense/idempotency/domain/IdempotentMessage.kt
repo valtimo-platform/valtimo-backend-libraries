@@ -25,8 +25,8 @@ import javax.persistence.Table
 import javax.persistence.UniqueConstraint
 
 @Entity
-@Table(name = "idempotency_message", uniqueConstraints = [UniqueConstraint(columnNames = ["consumer", "message_id"])])
-class IdempotencyMessage(
+@Table(name = "idempotent_message", uniqueConstraints = [UniqueConstraint(columnNames = ["consumer", "message_id"])])
+class IdempotentMessage(
 
     @Id
     @Column(name = "id", columnDefinition = "BINARY(16)", updatable = false)
