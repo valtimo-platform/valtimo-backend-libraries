@@ -5,7 +5,7 @@ import com.ritense.outbox.domain.BaseEvent
 
 class ObjectUpdated(objectUrl: String, updatedObject: ObjectNode) : BaseEvent(
     type = "com.ritense.gzac.objecten-api.object.updated",
-    resultType = "com.ritense.objecten-api.client.ObjectWrapper",
+    resultType = "com.ritense.objectenapi.client.ObjectWrapper",
     resultId = objectUrl,
     result = updatedObject
 )
