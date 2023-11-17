@@ -19,6 +19,7 @@ import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
@@ -28,7 +29,8 @@ import javax.persistence.criteria.Root
 class JsonSchemaDocumentDefinitionSpecification(
         authRequest: AuthorizationRequest<JsonSchemaDocumentDefinition>,
         permissions: List<Permission>,
-        private val queryDialectHelper: QueryDialectHelper
+        private val queryDialectHelper: QueryDialectHelper,
+        private val documentDefinitionService: JsonSchemaDocumentDefinitionService
 ) : AuthorizationSpecification<JsonSchemaDocumentDefinition>(authRequest, permissions) {
 
     override fun toPredicate(
@@ -60,6 +62,6 @@ class JsonSchemaDocumentDefinitionSpecification(
     }
 
     override fun identifierToEntity(identifier: String): JsonSchemaDocumentDefinition {
-        TODO("Not yet implemented")
+        return documentDefinitionService.findLatestByName(identifier).get()
     }
 }
