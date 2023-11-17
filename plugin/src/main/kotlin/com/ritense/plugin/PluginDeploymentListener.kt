@@ -16,7 +16,6 @@
 
 package com.ritense.plugin
 
-import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -31,13 +30,14 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginCategoryRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import java.lang.reflect.Field
+import java.lang.reflect.Method
+import java.lang.reflect.Parameter
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.annotation.Transactional
-import java.lang.reflect.Field
-import java.lang.reflect.Method
-import java.lang.reflect.Parameter
+import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 
 open class PluginDeploymentListener(
     private val pluginDefinitionResolver: PluginDefinitionResolver,
@@ -114,29 +114,30 @@ open class PluginDeploymentListener(
             pluginAnnotation.description,
             clazz.name,
             mutableSetOf(),
-            mutableSetOf()
+            listCategories(clazz)
         )
 
-        linkCategories(pluginDefinition, clazz)
         createProperties(pluginDefinition, clazz)
 
         return deployPluginDefinition(pluginDefinition)
     }
 
-    private fun linkCategories(pluginDefinition: PluginDefinition, clazz: Class<*>) {
+    private fun listCategories(clazz: Class<*>) : Set<com.ritense.plugin.domain.PluginCategory> {
+        val pluginCategories = mutableSetOf<com.ritense.plugin.domain.PluginCategory>()
         if (clazz.isAnnotationPresent(PluginCategory::class.java)) {
             val categoryAnnotation = clazz.getAnnotation(PluginCategory::class.java)
             val category = pluginCategoryRepository.findById(categoryAnnotation.key)
             category.map {
-                pluginDefinition.addCategory(it)
+                pluginCategories.add(it)
             }
         }
         clazz.superclass?.let {
-            linkCategories(pluginDefinition, it)
+            pluginCategories.addAll(listCategories(it));
         }
         clazz.interfaces.forEach {
-            linkCategories(pluginDefinition, it)
+            pluginCategories.addAll(listCategories(it))
         }
+        return pluginCategories
     }
 
     private fun createProperties(
