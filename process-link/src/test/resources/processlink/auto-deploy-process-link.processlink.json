@@ -10,5 +10,11 @@
         "activityType": "bpmn:ServiceTask:start",
         "processLinkType": "test",
         "someValue": "changed"
+    },
+    {
+        "activityId": "start-event",
+        "activityType": "bpmn:StartEvent:start",
+        "processLinkType": "test",
+        "someValue": "start-value"
     }
 ]

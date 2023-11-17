@@ -52,8 +52,12 @@ open class ProcessLinkService(
         }
     }
 
-    fun getProcessLinks(processDefinitionId: String, activityId: String): List<ProcessLink> {
-        return processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinitionId, activityId)
+    fun getProcessLinks(processDefinitionId: String, activityId: String?): List<ProcessLink> {
+        return if (activityId != null) {
+            processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinitionId, activityId)
+        } else {
+            processLinkRepository.findByProcessDefinitionId(processDefinitionId)
+        }
     }
 
     fun getProcessLinksByProcessDefinitionKey(processDefinitionKey: String): List<ProcessLink> {
