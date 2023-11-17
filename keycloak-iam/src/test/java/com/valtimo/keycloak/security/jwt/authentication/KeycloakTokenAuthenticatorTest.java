@@ -67,16 +67,16 @@ public class KeycloakTokenAuthenticatorTest {
     }
 
     @Test
-    public void shouldNotReturnAuthenticationWithUnknownRoleInToken() {
+    public void shouldReturnAuthenticationWithUnknownRoleInToken() {
         String jwt = Jwts.builder()
             .setClaims(claimsWithUnknownRealmAccessRoles())
             .signWith(keyPair.getPrivate())
             .compact();
 
-        var exception = Assertions.assertThrows(TokenAuthenticatorNotFoundException.class, () ->
-            tokenAuthenticationService.getAuthentication(jwt));
+        var authentication = tokenAuthenticationService.getAuthentication(jwt);
 
-        assertThat(exception.getMessage()).contains("No suitable token authenticator found");
+        assertThat(authentication).isNotNull();
+        assertThat(authentication).isInstanceOf(UsernamePasswordAuthenticationToken.class);
     }
 
     @Test
