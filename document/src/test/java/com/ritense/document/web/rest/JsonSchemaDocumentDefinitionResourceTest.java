@@ -181,6 +181,16 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
+    void shouldReturnNoDefinitionRecordByNameAndVersion() throws Exception {
+        String definitionName = definition.getId().name();
+        long definitionVersion = 5;
+        when(documentDefinitionService.findByNameAndVersion(definitionName, definition.getId().version())).thenReturn(Optional.of(definition));
+        mockMvc.perform(get("/api/v1/document-definition/{name}/version/{version}", definitionName, definitionVersion))
+            .andDo(print())
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
     void shouldReturnCreateSuccessResult() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest("{\n" +

@@ -32,7 +32,7 @@ public interface DocumentDefinitionRepository<T extends DocumentDefinition> exte
     JpaSpecificationExecutor<T> {
 
     Optional<T> findFirstByIdNameOrderByIdVersionDesc(String documentDefinitionName);
-    Optional<T> findByIdNameAndVersion(String documentDefinitionName, long version);
+    Optional<T> findByIdNameAndIdVersion(String documentDefinitionName, long version);
 
     List<T> findAllByIdName(String documentDefinitionName);
 

@@ -161,7 +161,7 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public Optional<JsonSchemaDocumentDefinition> findByNameAndVersion(String documentDefinitionName, long version) {
-        return documentDefinitionRepository.findByIdNameAndVersion(documentDefinitionName, version);
+        return documentDefinitionRepository.findByIdNameAndIdVersion(documentDefinitionName, version);
     }
 
     @Override
