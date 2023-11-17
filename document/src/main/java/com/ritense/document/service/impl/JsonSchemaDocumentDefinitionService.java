@@ -160,6 +160,11 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
+    public Optional<JsonSchemaDocumentDefinition> findByNameAndVersion(String documentDefinitionName, long version) {
+        return documentDefinitionRepository.findByIdNameAndVersion(documentDefinitionName, version);
+    }
+
+    @Override
     public void deployAll() {
         //Authorization check is delegated to the store() method
         deployAll(true, false);

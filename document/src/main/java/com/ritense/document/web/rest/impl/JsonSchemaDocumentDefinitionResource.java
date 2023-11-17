@@ -103,6 +103,11 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     }
 
     @Override
+    public ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionVersion(String name, long version) {
+        return ResponseEntity.of(documentDefinitionService.findByNameAndVersion(name, version));
+    }
+
+    @Override
     public ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount() {
         return ResponseEntity.ok(documentStatisticService.getUnassignedDocumentCountDtos());
     }

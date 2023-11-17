@@ -40,6 +40,8 @@ public interface DocumentDefinitionService {
 
     Optional<? extends DocumentDefinition> findLatestByName(String documentDefinitionName);
 
+    Optional<? extends DocumentDefinition> findByNameAndVersion(String documentDefinitionName, long version);
+
     void deployAll();
 
     DeployDocumentDefinitionResult deploy(String schema);

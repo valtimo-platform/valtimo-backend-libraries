@@ -62,8 +62,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
-
-    public static final String SOME_ROLE = "SOME_ROLE";
     private JsonSchemaDocumentDefinitionService documentDefinitionService;
     private DocumentDefinitionResource documentDefinitionResource;
     private UndeployDocumentDefinitionService undeployDocumentDefinitionService;
@@ -164,6 +162,18 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         String definitionName = definition.getId().name();
         when(documentDefinitionService.findLatestByName(anyString())).thenReturn(Optional.of(definition));
         mockMvc.perform(get("/api/v1/document-definition/{name}", definitionName))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$").isNotEmpty());
+    }
+
+    @Test
+    void shouldReturnSingleDefinitionRecordByNameAndVersion() throws Exception {
+        String definitionName = definition.getId().name();
+        long definitionVersion = definition.id().version();
+        when(documentDefinitionService.findByNameAndVersion(definitionName, definitionVersion)).thenReturn(Optional.of(definition));
+        mockMvc.perform(get("/api/v1/document-definition/{name}/version/{version}", definitionName, definitionVersion))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
