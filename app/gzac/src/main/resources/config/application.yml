@@ -139,6 +139,8 @@ mailing:
     sendRedirectedMailsTo:
 
 valtimo:
+    keycloak:
+        client: valtimo-console
     app:
         scheme: http
     database: postgres
