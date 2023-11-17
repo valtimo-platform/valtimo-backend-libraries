@@ -173,7 +173,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         String definitionName = definition.getId().name();
         long definitionVersion = definition.id().version();
         when(documentDefinitionService.findByNameAndVersion(definitionName, definitionVersion)).thenReturn(Optional.of(definition));
-        mockMvc.perform(get("/api/v1/document-definition/{name}/version/{version}", definitionName, definitionVersion))
+        mockMvc.perform(get("/api/management/v1/document-definition/{name}/version/{version}", definitionName, definitionVersion))
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
@@ -185,7 +185,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
         String definitionName = definition.getId().name();
         long definitionVersion = 5;
         when(documentDefinitionService.findByNameAndVersion(definitionName, definition.getId().version())).thenReturn(Optional.of(definition));
-        mockMvc.perform(get("/api/v1/document-definition/{name}/version/{version}", definitionName, definitionVersion))
+        mockMvc.perform(get("/api/management/v1/document-definition/{name}/version/{version}", definitionName, definitionVersion))
             .andDo(print())
             .andExpect(status().isNotFound());
     }

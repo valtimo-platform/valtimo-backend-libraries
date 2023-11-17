@@ -55,7 +55,7 @@ public interface DocumentDefinitionResource {
     @GetMapping("/v1/document-definition/{name}")
     ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(@PathVariable String name);
 
-    @GetMapping("/v1/document-definition/{name}/version/{version}")
+    @GetMapping("/management/v1/document-definition/{name}/version/{version}")
     ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionVersion(
         @PathVariable String name,
         @PathVariable long version
