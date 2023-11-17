@@ -8,7 +8,7 @@ class IdempotentMessageArchivingService(
     private val idempotentMessageRepository: IdempotentMessageRepository
 ) {
 
-    @Scheduled(cron = "\${cron-deletion-timer}")
+    @Scheduled(cron = "\${idempotent.cron-message-archive-deletion-timer}")
     fun deleteAll() =
-        idempotentMessageRepository.deleteAllOlderThan(LocalDateTime.now().minusMonths("\${archive-message-after}".toLong()))
+        idempotentMessageRepository.deleteAllOlderThan(LocalDateTime.now().minusMonths("\${idempotent.archive-message-after-months}".toLong()))
 }
