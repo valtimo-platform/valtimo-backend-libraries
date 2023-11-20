@@ -33,8 +33,6 @@ public interface DocumentDefinitionRepository<T extends DocumentDefinition> exte
 
     Optional<T> findFirstByIdNameOrderByIdVersionDesc(String documentDefinitionName);
 
-    Optional<T> findById(DocumentDefinition.Id documentDefinitionId);
-
     List<T> findAllByIdName(String documentDefinitionName);
 
     Page<T> findAll(Pageable pageable);
