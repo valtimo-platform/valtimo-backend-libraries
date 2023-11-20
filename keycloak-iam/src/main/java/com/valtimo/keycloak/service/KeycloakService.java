@@ -61,20 +61,21 @@ public class KeycloakService {
         return clientResource().roles();
     }
 
+    public String getClientId() {
+        var clients = keycloak().realm(properties.getRealm()).clients().findByClientId(clientName);
+        if (clients.size() == 1) {
+            return clients.get(0).getId();
+        } else {
+            throw new IllegalStateException("Expected exactly 1 client with name " + clientName + " but found: " + clients.size());
+        }
+    }
+
     private RealmResource realmResource() {
         return keycloak().realm(properties.getRealm());
     }
 
     private ClientResource clientResource() {
-        var clients = keycloak().realm(properties.getRealm()).clients().findByClientId(clientName);
-
-        if (clients.size() == 1) {
-            ClientResource clientResource = keycloak().realm(properties.getRealm()).clients().get(clients.get(0).getId());
-            return clientResource;
-        } else {
-            throw new IllegalStateException("Expected exactly 1 client with name " + clientName + " but found: " + clients.size());
-        }
-
+        return keycloak().realm(properties.getRealm()).clients().get(getClientId());
     }
 
 }
