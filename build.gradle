@@ -158,6 +158,7 @@ subprojects { subproject ->
         tasks.withType(KotlinCompile).configureEach {
             kotlinOptions {
                 jvmTarget = JavaVersion.VERSION_17
+                javaParameters = true
             }
         }
 

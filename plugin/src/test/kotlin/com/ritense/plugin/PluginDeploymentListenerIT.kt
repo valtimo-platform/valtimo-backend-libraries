@@ -25,6 +25,7 @@ import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import javax.transaction.Transactional
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.containsInAnyOrder
@@ -37,7 +38,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import javax.transaction.Transactional
 
 internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
 
@@ -72,6 +72,33 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
         assertPluginCategoryPresent(plugin.categories)
 
         val deployedActionProperties = pluginActionPropertyDefinitionRepository.findAll()
+            .filter { it.id.pluginActionDefinitionId.pluginDefinition.key == plugin.key}
+        assertThat(deployedActionProperties.size, `is`(2))
+    }
+
+    @Test
+    @Transactional
+    fun `should deploy immutable test plugin`() {
+        val deployedPlugins = pluginDefinitionRepository.findAll()
+        val deployedActions = pluginActionDefinitionRepository.findAll()
+
+        val plugin =
+            deployedPlugins.find { it.key == "immutable-test-plugin" } ?: fail { "test-plugin was not deployed!" }
+        assertEquals("Immutable test plugin", plugin.title)
+        assertEquals("This is a test plugin used to verify plugin framework functionality",
+            plugin.description)
+        assertEquals("com.ritense.plugin.ImmutableTestPlugin", plugin.fullyQualifiedClassName)
+
+        assertPluginPropertiesPresent(plugin.properties.toList(), plugin.key)
+        assertTestActionPresent(deployedActions)
+        assertOtherTestActionPresent(deployedActions)
+        assertInheritedActionPresent(deployedActions)
+        assertOverridingActionPresent(deployedActions)
+        assertOverriddenActionNotPresent(deployedActions)
+        assertPluginCategoryPresent(plugin.categories)
+
+        val deployedActionProperties = pluginActionPropertyDefinitionRepository.findAll()
+            .filter { it.id.pluginActionDefinitionId.pluginDefinition.key == plugin.key}
         assertThat(deployedActionProperties.size, `is`(2))
     }
 

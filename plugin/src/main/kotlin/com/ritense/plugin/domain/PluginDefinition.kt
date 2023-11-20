@@ -17,7 +17,6 @@
 package com.ritense.plugin.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import java.lang.reflect.Field
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -28,7 +27,6 @@ import javax.persistence.JoinTable
 import javax.persistence.ManyToMany
 import javax.persistence.OneToMany
 import javax.persistence.Table
-import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 
 @Entity
 @Table(name = "plugin_definition")
@@ -69,23 +67,5 @@ class PluginDefinition (
         } else {
             null
         }
-    }
-
-    fun addProperty(field: Field, propertyAnnotation: PluginPropertyAnnotation) {
-        (properties as MutableSet).add(
-            PluginProperty(
-                propertyAnnotation.key,
-                this,
-                propertyAnnotation.title,
-                propertyAnnotation.required,
-                propertyAnnotation.secret,
-                field.name,
-                field.type.typeName
-            )
-        )
-    }
-
-    fun addCategory(category: PluginCategory) {
-        (categories as MutableSet).add(category)
     }
 }

@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.annotation
+package com.ritense.plugin
 
-/**
- * Indicates a field is a plugin property, which is used to inject configuration properties when an action is executed
- */
-@Target(AnnotationTarget.FIELD, AnnotationTarget.VALUE_PARAMETER)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class PluginProperty(
-    val key: String,
-    val title: String = "",
-    val required: Boolean = true,
-    val secret: Boolean
+import com.ritense.plugin.annotation.PluginProperties
+import com.ritense.plugin.annotation.PluginProperty
+
+@PluginProperties
+class ImmutableTestPluginProperties(
+    @param:PluginProperty(key = "property1", secret = true)
+    val property1: String,
+    val property2: Boolean? = null,
+
+    val property3: Number,
+
+    val property4: TestPluginCategory
 )

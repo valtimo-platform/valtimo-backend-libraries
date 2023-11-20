@@ -19,24 +19,30 @@ package com.ritense.plugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
-import com.ritense.plugin.annotation.PluginCategory
+import com.ritense.plugin.annotation.PluginProperties
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.domain.PluginActionPropertyDefinition
 import com.ritense.plugin.domain.PluginActionPropertyDefinitionId
+import com.ritense.plugin.domain.PluginCategory
 import com.ritense.plugin.domain.PluginDefinition
+import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.exception.PluginDefinitionNotDeployedException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginCategoryRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
-import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
+import kotlin.reflect.full.findAnnotations
+import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.jvm.javaType
+import kotlin.reflect.jvm.jvmErasure
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationStartedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.annotation.Transactional
+import com.ritense.plugin.annotation.PluginCategory as PluginCategoryAnnotation
 import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 
 open class PluginDeploymentListener(
@@ -59,7 +65,7 @@ open class PluginDeploymentListener(
         logger.info { "Deploying plugin categories" }
 
         val duplicates = mutableMapOf<String, MutableList<String>>()
-        val allCategories = mutableMapOf<PluginCategory, Class<*>>()
+        val allCategories = mutableMapOf<PluginCategoryAnnotation, Class<*>>()
 
         val pluginCategoryClasses = pluginCategoryResolver.findPluginCategoryClasses()
 
@@ -83,7 +89,7 @@ open class PluginDeploymentListener(
             throw IllegalStateException(messageBuilder.toString())
         } else {
             allCategories.map {
-                com.ritense.plugin.domain.PluginCategory(it.key.key, it.value.name)
+                PluginCategory(it.key.key, it.value.name)
             }.forEach {
                 pluginCategoryRepository.save(it)
             }
@@ -108,24 +114,30 @@ open class PluginDeploymentListener(
     }
 
     private fun createPluginDefinition(clazz: Class<*>, pluginAnnotation: Plugin): PluginDefinition {
+        val properties = mutableSetOf<PluginProperty>()
         val pluginDefinition = PluginDefinition(
             pluginAnnotation.key,
             pluginAnnotation.title,
             pluginAnnotation.description,
             clazz.name,
-            mutableSetOf(),
+            properties,
             listCategories(clazz)
         )
 
-        createProperties(pluginDefinition, clazz)
+        val constructorProperties = createConstructorProperties(pluginDefinition, clazz)
+        if (constructorProperties.isNotEmpty()) {
+            properties.addAll(constructorProperties)
+        } else {
+            properties.addAll(createProperties(pluginDefinition, clazz))
+        }
 
         return deployPluginDefinition(pluginDefinition)
     }
 
-    private fun listCategories(clazz: Class<*>) : Set<com.ritense.plugin.domain.PluginCategory> {
-        val pluginCategories = mutableSetOf<com.ritense.plugin.domain.PluginCategory>()
-        if (clazz.isAnnotationPresent(PluginCategory::class.java)) {
-            val categoryAnnotation = clazz.getAnnotation(PluginCategory::class.java)
+    private fun listCategories(clazz: Class<*>) : Set<PluginCategory> {
+        val pluginCategories = mutableSetOf<PluginCategory>()
+        if (clazz.isAnnotationPresent(PluginCategoryAnnotation::class.java)) {
+            val categoryAnnotation = clazz.getAnnotation(PluginCategoryAnnotation::class.java)
             val category = pluginCategoryRepository.findById(categoryAnnotation.key)
             category.map {
                 pluginCategories.add(it)
@@ -140,14 +152,66 @@ open class PluginDeploymentListener(
         return pluginCategories
     }
 
+    private fun createConstructorProperties(pluginDefinition: PluginDefinition, pluginClass: Class<*>) :Set<PluginProperty> {
+        val constructors = pluginClass.kotlin.constructors
+        return constructors.singleOrNull()?.let { constructor ->
+            val parameters = constructor.parameters
+            parameters.firstOrNull { param ->
+                        param.hasAnnotation<PluginProperties>() ||
+                            param.type.hasAnnotation<PluginProperties>()
+                    }?.type?.let {
+                        it.jvmErasure
+                    }
+        }?.let { clazz ->
+            val propertiesConstructor = clazz.constructors.firstOrNull()
+            propertiesConstructor?.parameters?.map { parameter ->
+                val paramName = requireNotNull( parameter.name ) { "Could not get parameter name for constructor at index ${parameter.index}"}
+                val annotation = parameter.findAnnotations(PluginPropertyAnnotation::class).firstOrNull()
+
+                if(annotation != null) {
+                    PluginProperty(
+                        annotation.key,
+                        pluginDefinition,
+                        annotation.title,
+                        annotation.required,
+                        annotation.secret,
+                        paramName,
+                        parameter.type.javaType.typeName
+                    )
+                } else {
+                    PluginProperty(
+                        paramName,
+                        pluginDefinition,
+                        paramName,
+                        !parameter.isOptional,
+                        false,
+                        paramName,
+                        parameter.type.javaType.typeName
+                    )
+                }
+            }?.toSet()
+        }?: setOf()
+    }
+
     private fun createProperties(
         pluginDefinition: PluginDefinition,
         clazz: Class<*>
-    ) {
-        val properties = findPluginProperties(clazz)
-        properties.forEach { (field, propertyAnnotation) ->
-            pluginDefinition.addProperty(field, propertyAnnotation)
-        }
+    ) : Set<PluginProperty> {
+        return clazz.declaredFields.filter { field ->
+            field.isAnnotationPresent(PluginPropertyAnnotation::class.java)
+        }.map {field ->
+            val annotation = field.getAnnotation(PluginPropertyAnnotation::class.java)
+
+            PluginProperty(
+                annotation.key,
+                pluginDefinition,
+                annotation.title,
+                annotation.required,
+                annotation.secret,
+                field.name,
+                field.type.typeName
+            )
+        }.toSet()
     }
 
     private fun createActionDefinition(deployedPluginDefinition: PluginDefinition, clazz: Class<*>) {
@@ -187,12 +251,6 @@ open class PluginDeploymentListener(
         logger.info { "Deploying plugin ${pluginDefinition.key}" }
         logger.debug { "$pluginDefinition" }
         return pluginDefinitionRepository.save(pluginDefinition)
-    }
-
-    private fun findPluginProperties(pluginClass: Class<*>) : Map<Field, PluginPropertyAnnotation> {
-        return pluginClass.declaredFields.filter { field ->
-            field.isAnnotationPresent(PluginPropertyAnnotation::class.java)
-        }.associateWith { field -> field.getAnnotation(PluginPropertyAnnotation::class.java) }
     }
 
     private fun findPluginActions(pluginClass: Class<*>) : Map<Method, PluginAction> {

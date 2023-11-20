@@ -16,6 +16,6 @@
 
 package com.ritense.plugin.annotation
 
-@Target(AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class PluginProperties
