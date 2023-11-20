@@ -17,6 +17,7 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.DelegateUserEntityAuthorizationRequest;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
@@ -355,16 +356,17 @@ public class CamundaTaskService {
     public List<TaskInstanceWithIdentityLink> getProcessInstanceTasks(String processInstanceId, String businessKey) {
         return findTasks(byProcessInstanceId(processInstanceId), Sort.by(DESC, CREATE_TIME))
             .stream()
-            .map(task -> {
-                final var identityLinks = getIdentityLinks(task.getId());
-                return new TaskInstanceWithIdentityLink(
-                    businessKey,
-                    CamundaTaskDto.of(task),
-                    delegateTaskHelper.isTaskPublic(task),
-                    task.getProcessDefinition().getKey(),
-                    identityLinks
-                );
-            })
+            .map(task -> AuthorizationContext.runWithoutAuthorization(() -> {
+                    final var identityLinks = getIdentityLinks(task.getId());
+                    return new TaskInstanceWithIdentityLink(
+                        businessKey,
+                        CamundaTaskDto.of(task),
+                        delegateTaskHelper.isTaskPublic(task),
+                        task.getProcessDefinition().getKey(),
+                        identityLinks
+                    );
+                }
+            ))
             .collect(Collectors.toList());
     }
 
