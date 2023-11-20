@@ -162,7 +162,20 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     @Override
     public Optional<JsonSchemaDocumentDefinition> findByNameAndVersion(String documentDefinitionName, long version) {
         DocumentDefinition.Id documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(documentDefinitionName, version);
-        return documentDefinitionRepository.findById(documentDefinitionId);
+        final var definition = documentDefinitionRepository.findById(documentDefinitionId).orElse(null);
+
+        if (definition != null) {
+            authorizationService
+                .requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocumentDefinition.class,
+                        VIEW,
+                        definition
+                    )
+                );
+        }
+
+        return Optional.ofNullable(definition);
     }
 
     @Override
