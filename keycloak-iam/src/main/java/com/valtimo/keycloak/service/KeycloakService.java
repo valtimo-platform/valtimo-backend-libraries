@@ -62,6 +62,9 @@ public class KeycloakService {
     }
 
     public String getClientId() {
+        if (clientName.isBlank()) {
+            throw new IllegalStateException("Error. Missing property: 'valtimo.keycloak.client'");
+        }
         var clients = keycloak().realm(properties.getRealm()).clients().findByClientId(clientName);
         if (clients.size() == 1) {
             return clients.get(0).getId();
