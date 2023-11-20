@@ -179,6 +179,8 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
+
+        verify(documentDefinitionService).findLatestByName(definitionName);
     }
 
     @Test
