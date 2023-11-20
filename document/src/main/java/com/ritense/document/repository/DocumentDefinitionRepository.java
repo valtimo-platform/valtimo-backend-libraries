@@ -33,7 +33,7 @@ public interface DocumentDefinitionRepository<T extends DocumentDefinition> exte
 
     Optional<T> findFirstByIdNameOrderByIdVersionDesc(String documentDefinitionName);
 
-    Optional<T> findByIdNameAndIdVersion(String documentDefinitionName, long version);
+    Optional<T> findById(DocumentDefinition.Id documentDefinitionId);
 
     List<T> findAllByIdName(String documentDefinitionName);
 
