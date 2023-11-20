@@ -267,13 +267,14 @@ public class KeycloakUserManagementService implements UserManagementService {
                 .usersResource(keycloak)
                 .get(userRepresentation.getId())
                 .roles().realmLevel().listAll();
-            var clientRoles = keycloakService
-                .usersResource(keycloak)
-                .get(userRepresentation.getId())
-                .roles().clientLevel(keycloakService.getClientId(keycloak)).listAll();
-            var roles = new ArrayList<RoleRepresentation>();
-            roles.addAll(realmRoles);
-            roles.addAll(clientRoles);
+            var roles = new ArrayList<>(realmRoles);
+            if (!clientName.isBlank()) {
+                var clientRoles = keycloakService
+                    .usersResource(keycloak)
+                    .get(userRepresentation.getId())
+                    .roles().clientLevel(keycloakService.getClientId(keycloak)).listAll();
+                roles.addAll(clientRoles);
+            }
             return roles;
         }
     }
