@@ -29,6 +29,7 @@ import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationFactory
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
+import com.ritense.case.service.CaseDefinitionExportService
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.service.CaseListDeploymentService
@@ -237,5 +238,11 @@ class CaseAutoConfiguration {
             caseTabService,
             queryDialectHelper
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseDefinitionExportService::class)
+    fun caseDefinitionExportService(): CaseDefinitionExportService {
+        return CaseDefinitionExportService()
     }
 }

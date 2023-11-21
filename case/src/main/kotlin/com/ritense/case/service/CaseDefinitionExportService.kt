@@ -22,7 +22,7 @@ import java.io.ByteArrayOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-class CaseDefinitionExportService {
+open class CaseDefinitionExportService {
     fun createExport(caseDefinitionId: JsonSchemaDocumentDefinitionId): ByteArrayOutputStream {
         val exportList: List<ExportFile> = emptyList()
         val baos = ByteArrayOutputStream()
