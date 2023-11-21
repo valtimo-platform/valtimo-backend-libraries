@@ -89,6 +89,25 @@
         },
         {
             "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+            "action": "create",
+            "roleKey": "ROLE_USER",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocumentDefinition",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "id.name",
+                            "operator": "==",
+                            "value": "leningen"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
             "action": "modify",
             "roleKey": "ROLE_USER"
         },
