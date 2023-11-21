@@ -16,12 +16,13 @@
 
 package com.ritense.authorization
 
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
 class AuthorizationEntityMapperResult<T>(
     val root: Root<T>,
-    val query: CriteriaQuery<*>,
+    val query: AbstractQuery<*>,
     val joinPredicate: Predicate
 )

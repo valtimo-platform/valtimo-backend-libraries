@@ -29,8 +29,8 @@ import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.role.Role
 import com.ritense.authorization.permission.condition.ContainerPermissionCondition.Companion.CONTAINER
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
@@ -52,7 +52,7 @@ data class ContainerPermissionCondition<TO : Any>(
 
     override fun <T : Any> toPredicate(
         root: Root<T>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper
