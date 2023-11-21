@@ -102,7 +102,10 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
                 "tableView" : false,
                 "key" : "pv.something",
                 "type" : "hidden",
-                "input" : true
+                "input" : true,
+                "attributes" : {
+                  "data-testid" : "aName-pv.something"
+                }
               } ]
             }
         """.trimIndent()
