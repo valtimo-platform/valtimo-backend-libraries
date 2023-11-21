@@ -70,9 +70,10 @@ class CaseAutoConfiguration {
     @ConditionalOnMissingBean(name = ["caseDefinitionResource"])
     @Bean
     fun caseDefinitionResource(
-        service: CaseDefinitionService
+        service: CaseDefinitionService,
+        exportService: CaseDefinitionExportService,
     ): CaseDefinitionResource {
-        return CaseDefinitionResource(service)
+        return CaseDefinitionResource(service, exportService)
     }
 
     @Bean

@@ -31,6 +31,7 @@ open class CaseDefinitionExportService {
                 val zipEntry = ZipEntry(exportFile.path)
                 zos.putNextEntry(zipEntry)
                 zos.write(exportFile.content)
+                zos.closeEntry()
             }
         }
         return baos
