@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static org.springframework.http.ResponseEntity.of;
 import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.of;
 
 public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionResource {
 
@@ -105,12 +106,17 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
 
     @Override
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(String name) {
-        return ResponseEntity.of(documentDefinitionService.findLatestByName(name));
+        return of(documentDefinitionService.findLatestByName(name));
+    }
+
+    @Override
+    public ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionVersion(String name, long version) {
+        return of(runWithoutAuthorization(() -> documentDefinitionService.findByNameAndVersion(name, version)));
     }
 
     @Override
     public ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount() {
-        return ResponseEntity.ok(documentStatisticService.getUnassignedDocumentCountDtos());
+        return ok(documentStatisticService.getUnassignedDocumentCountDtos());
     }
 
     @Override
