@@ -54,6 +54,8 @@ public interface UserManagementService {
 
     List<NamedUser> findNamedUserByRoles(Set<String> roles);
 
+
+
     default ManageableUser getCurrentUser() {
         throw new NotImplementedException("Failed to get current user because method is not implemented.");
     }
