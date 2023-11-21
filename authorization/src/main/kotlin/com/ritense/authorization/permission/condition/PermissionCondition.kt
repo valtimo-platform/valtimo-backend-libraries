@@ -21,8 +21,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Path
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
@@ -41,7 +41,7 @@ abstract class PermissionCondition(
     abstract fun <T: Any> isValid(entity: T): Boolean
     abstract fun <T: Any> toPredicate(
         root: Root<T>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper

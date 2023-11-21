@@ -27,6 +27,7 @@ import com.ritense.authorization.permission.condition.ContainerPermissionConditi
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.condition.PermissionCondition
 import org.springframework.data.jpa.domain.Specification
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
@@ -136,4 +137,10 @@ abstract class AuthorizationSpecification<T : Any>(
         query: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate
+
+    open fun toPredicate(
+        root: Root<T>,
+        query: AbstractQuery<*>,
+        criteriaBuilder: CriteriaBuilder
+    ): Predicate { return toPredicate(root, query as CriteriaQuery<*>, criteriaBuilder)}
 }

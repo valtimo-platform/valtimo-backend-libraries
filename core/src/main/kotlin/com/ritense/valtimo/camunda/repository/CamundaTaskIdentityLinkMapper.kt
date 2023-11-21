@@ -22,8 +22,8 @@ import com.ritense.valtimo.camunda.domain.CamundaIdentityLink
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.Companion.ID
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.Companion.TASK
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Root
 
 class CamundaTaskIdentityLinkMapper : AuthorizationEntityMapper<CamundaTask, CamundaIdentityLink> {
@@ -33,16 +33,17 @@ class CamundaTaskIdentityLinkMapper : AuthorizationEntityMapper<CamundaTask, Cam
 
     override fun mapQuery(
         root: Root<CamundaTask>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): AuthorizationEntityMapperResult<CamundaIdentityLink> {
-        val ilRoot: Root<CamundaIdentityLink> = query.from(CamundaIdentityLink::class.java)
-        query.groupBy(query.groupList + root.get<Any>(ID))
+        val ilQuery = query.subquery(String::class.java)
+        val subRoot = ilQuery.from(CamundaIdentityLink::class.java)
+        ilQuery.select(subRoot.get<CamundaTask>(TASK).get(ID))
 
         return AuthorizationEntityMapperResult(
-            ilRoot,
-            query,
-            criteriaBuilder.equal(root.get<String>(ID), ilRoot.get<CamundaTask>(TASK).get<String>(ID))
+            subRoot,
+            ilQuery,
+            criteriaBuilder.`in`(root.get<Any>(ID)).value(ilQuery),
         )
     }
 
