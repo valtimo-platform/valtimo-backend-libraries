@@ -19,4 +19,17 @@ package com.ritense.valtimo.contract.domain
 class ExportFile(
     val path: String,
     val content: ByteArray
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ExportFile
+
+        return path == other.path
+    }
+
+    override fun hashCode(): Int {
+        return path.hashCode()
+    }
+}
