@@ -34,6 +34,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import javax.ws.rs.NotFoundException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -262,10 +263,19 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     private List<RoleRepresentation> getRolesFromUser(UserRepresentation userRepresentation) {
         try (Keycloak keycloak = keycloakService.keycloak()) {
-            return keycloakService
+            var realmRoles = keycloakService
                 .usersResource(keycloak)
                 .get(userRepresentation.getId())
                 .roles().realmLevel().listAll();
+            var roles = new ArrayList<>(realmRoles);
+            if (!clientName.isBlank()) {
+                var clientRoles = keycloakService
+                    .usersResource(keycloak)
+                    .get(userRepresentation.getId())
+                    .roles().clientLevel(keycloakService.getClientId(keycloak)).listAll();
+                roles.addAll(clientRoles);
+            }
+            return roles;
         }
     }
 

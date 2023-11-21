@@ -34,6 +34,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.stream.Collectors;
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static org.springframework.http.ResponseEntity.of;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.http.ResponseEntity.of;
 
@@ -61,6 +62,11 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     @Override
     public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(Pageable pageable) {
         return ok(runWithoutAuthorization(() -> documentDefinitionService.findAllForManagement(fixPageable(pageable))));
+    }
+
+    @Override
+    public ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionForManagement(String name) {
+        return of(runWithoutAuthorization(() -> documentDefinitionService.findLatestByName(name)));
     }
 
     /**

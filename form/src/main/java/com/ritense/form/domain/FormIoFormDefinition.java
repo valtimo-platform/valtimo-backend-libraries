@@ -72,6 +72,8 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public static final String LEGACY_EXTERNAL_FORM_FIELD_TYPE_SEPARATOR = ".";
     public static final String DISABLED_KEY = "disabled";
     public static final String PREFILL_KEY = "prefill";
+    private static final String PROPERTY_ATTRIBUTES = "attributes";
+    private static final String PROPERTY_TESTID = "data-testid";
 
     public static final String SOURCE_KEY_POINTER = "/properties/sourceKey";
     public static final String TARGET_KEY_POINTER = "/properties/targetKey";
@@ -270,7 +272,20 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                 throw new FormDefinitionParsingException(e);
             }
         }
+
+        appendFieldIds(workingCopy);
+
         return this.workingCopy;
+    }
+
+    private void appendFieldIds(JsonNode workingCopy) {
+        getInputFields(workingCopy).forEach(inputNode -> {
+            var attributes = inputNode.has(PROPERTY_ATTRIBUTES) ? (ObjectNode) inputNode.get(
+                PROPERTY_ATTRIBUTES) : Mapper.INSTANCE.get().createObjectNode();
+
+            inputNode.putIfAbsent(PROPERTY_ATTRIBUTES, attributes);
+            attributes.putIfAbsent(PROPERTY_TESTID, new TextNode(name + "-" + inputNode.get(PROPERTY_KEY).asText()));
+        });
     }
 
     public Optional<ContentItem> getDocumentContentVar(JsonNode field) {
