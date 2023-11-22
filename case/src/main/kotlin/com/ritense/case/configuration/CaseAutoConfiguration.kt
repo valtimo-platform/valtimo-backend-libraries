@@ -41,6 +41,7 @@ import com.ritense.case.web.rest.CaseTabManagementResource
 import com.ritense.case.web.rest.CaseTabResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
+import com.ritense.document.service.JsonSchemaDocumentDefinitionExportService
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -243,7 +244,9 @@ class CaseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(CaseDefinitionExportService::class)
-    fun caseDefinitionExportService(): CaseDefinitionExportService {
-        return CaseDefinitionExportService()
+    fun caseDefinitionExportService(documentDefinitionExportService: JsonSchemaDocumentDefinitionExportService): CaseDefinitionExportService {
+        return CaseDefinitionExportService(
+            documentDefinitionExportService
+        )
     }
 }
