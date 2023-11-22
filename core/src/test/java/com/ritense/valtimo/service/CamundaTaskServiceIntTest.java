@@ -162,6 +162,28 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(username = "user@ritense.com", authorities = "IDENTITY_LINK_ROLE")
+    void shouldGetCorrectTotalAmountWhenMoreThanPageSize() {
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            for (int i = 0; i < 10; i++) {
+                camundaProcessService.startProcess(
+                    "identity-link-mapper-test-process",
+                    businessKey,
+                    Map.of()
+                );
+            }
+            return null;
+        });
+
+        var pagedTasks = camundaTaskService.findTasksFiltered(
+            CamundaTaskService.TaskFilter.ALL,
+            PageRequest.of(0, 5)
+        );
+
+        assertThat(pagedTasks.getTotalElements()).isEqualTo(10);
+    }
+
+    @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldSortTasksByName() throws IllegalAccessException {
         startProcessAndModifyTask(task1 -> task1.setName("B"));
