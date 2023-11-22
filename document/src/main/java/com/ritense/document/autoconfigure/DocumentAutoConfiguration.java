@@ -33,6 +33,7 @@ import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.JsonSchemaDocumentDefinitionExportService;
+import com.ritense.document.service.SearchFieldExportService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionSequenceGeneratorService;
@@ -108,10 +109,12 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(JsonSchemaDocumentDefinitionExportService.class)
     public JsonSchemaDocumentDefinitionExportService documentDefinitionExportService(
-        final JsonSchemaDocumentDefinitionService documentDefinitionService
+        final JsonSchemaDocumentDefinitionService documentDefinitionService,
+        final SearchFieldExportService searchFieldExportService
     ) {
         return new JsonSchemaDocumentDefinitionExportService(
-            documentDefinitionService
+            documentDefinitionService,
+            searchFieldExportService
         );
     }
 

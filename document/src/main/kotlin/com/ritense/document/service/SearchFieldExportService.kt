@@ -18,34 +18,31 @@ package com.ritense.document.service
 
 import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.domain.impl.Mapper
-import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
+import com.ritense.document.domain.search.SearchConfigurationDto
 import com.ritense.valtimo.contract.domain.ExportFile
 import java.io.ByteArrayOutputStream
 
-open class JsonSchemaDocumentDefinitionExportService(
-    private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
-    private val searchFieldExportService: SearchFieldExportService,
+open class SearchFieldExportService(
+    private val searchFieldService: SearchFieldService,
 ) {
 
     open fun export(id: DocumentDefinition.Id): Set<ExportFile> {
-        val documentDefinition = documentDefinitionService.findBy(id).orElseThrow()
+        val searchFields = searchFieldService.getSearchFields(id.name())
 
         val exportFile = ByteArrayOutputStream().use {
-            MAPPER.writerWithDefaultPrettyPrinter().writeValue(it, documentDefinition.schema.asJson())
+            MAPPER.writerWithDefaultPrettyPrinter().writeValue(it, SearchConfigurationDto(searchFields))
 
             ExportFile(
-                PATH.format(documentDefinition.id.name()),
+                PATH.format(id.name()),
                 it.toByteArray()
             )
         }
 
-        val searchFields = searchFieldExportService.export(id)
-
-        return setOf(exportFile, *searchFields.toTypedArray())
+        return setOf(exportFile)
     }
 
     companion object {
-        const val PATH = "config/document/definition/%s.schema.json"
+        const val PATH = "config/search/%s.json"
         private val MAPPER = Mapper.INSTANCE.get()
 
     }
