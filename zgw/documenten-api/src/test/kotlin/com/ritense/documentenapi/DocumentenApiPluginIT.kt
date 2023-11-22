@@ -108,7 +108,8 @@ internal class DocumentenApiPluginIT @Autowired constructor(
 
     @Test
     fun `should store temp file in documenten api`() {
-        saveProcessLink("store-temp-document", """
+        saveProcessLink(
+            "store-temp-document", """
             {
                 "fileName": "test.ext",
                 "confidentialityLevel": "zaakvertrouwelijk",
@@ -120,7 +121,8 @@ internal class DocumentenApiPluginIT @Autowired constructor(
                 "taal": "nld",
                 "status": "in_bewerking"
             }
-        """.trimIndent())
+        """.trimIndent()
+        )
         val documentId = temporaryResourceStorageService.store(
             "test".byteInputStream()
         )
@@ -160,7 +162,8 @@ internal class DocumentenApiPluginIT @Autowired constructor(
 
     @Test
     fun `should store with meta-data-filename when process-link-filename is empty`() {
-        saveProcessLink("store-temp-document", """
+        saveProcessLink(
+            "store-temp-document", """
             {
                 "fileName": null,
                 "confidentialityLevel": "zaakvertrouwelijk",
@@ -172,7 +175,8 @@ internal class DocumentenApiPluginIT @Autowired constructor(
                 "taal": "nld",
                 "status": "in_bewerking"
             }
-        """.trimIndent())
+        """.trimIndent()
+        )
         val documentId = temporaryResourceStorageService.store(
             "test".byteInputStream(),
             mapOf(MetadataType.FILE_NAME.key to "my-document.pdf")
@@ -212,6 +216,36 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         assertEquals("My passport", documentMetadata["description"])
     }
 
+    @Test
+    fun `should download document to given process variable`() {
+        saveProcessLink(
+            "download-document", """
+            {
+               "processVariableName": "processVariableName"
+            }
+        """.trimIndent()
+        )
+        val documentUrl = "${server.url("/")}enkelvoudiginformatieobjecten/$DOCUMENT_ID"
+
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
+            .withProcessVars(mapOf("documentUrl" to documentUrl))
+
+        runWithoutAuthorization { processDocumentService.newDocumentAndStartProcess(request) }
+
+        val resourceId = runtimeService.createVariableInstanceQuery()
+            .variableName("processVariableName")
+            .singleResult()
+            .value as String
+        val documentInputStream = temporaryResourceStorageService.getResourceContentAsInputStream(resourceId)
+        val documentMetadata = temporaryResourceStorageService.getResourceMetadata(resourceId)
+        assertEquals("TEST_DOCUMENT_CONTENT", documentInputStream.bufferedReader().use { it.readText() })
+        assertNotNull(documentMetadata[MetadataType.DOCUMENT_ID.key])
+        assertEquals("passport.jpg", documentMetadata[MetadataType.FILE_NAME.key])
+        assertEquals("Passport", documentMetadata["title"])
+        assertEquals("My passport", documentMetadata["description"])
+    }
+
     private fun saveProcessLink(pluginActionDefinitionKey: String, generateDocumentActionProperties: String) {
         pluginProcessLinkRepository.save(
             PluginProcessLink(
@@ -234,8 +268,10 @@ internal class DocumentenApiPluginIT @Autowired constructor(
                 val response = when (path) {
                     "/enkelvoudiginformatieobjecten"
                     -> handleDocumentRequest()
+
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID"
                     -> handleDocumentRequest()
+
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID/download"
                     -> handleDocumentDownloadRequest()
 
