@@ -29,14 +29,14 @@ open class JsonSchemaDocumentDefinitionExportService(
     open fun export(id: DocumentDefinition.Id): Set<ExportFile> {
         val documentDefinition = documentDefinitionService.findBy(id).orElseThrow()
 
-        val baos = ByteArrayOutputStream()
+        val exportFile = ByteArrayOutputStream().use {
+            MAPPER.writerWithDefaultPrettyPrinter().writeValue(it, documentDefinition.schema.asJson())
 
-        MAPPER.writerWithDefaultPrettyPrinter().writeValue(baos, documentDefinition.schema.asJson())
-
-        val exportFile = ExportFile(
-            PATH.format(documentDefinition.id.name()),
-            baos.toByteArray()
-        )
+            ExportFile(
+                PATH.format(documentDefinition.id.name()),
+                it.toByteArray()
+            )
+        }
 
         return setOf(exportFile)
     }
