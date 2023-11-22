@@ -78,7 +78,7 @@ data class Permission(
     ): Predicate {
         return criteriaBuilder
             .and(
-                *conditionContainer.conditions.mapNotNull {
+                *conditionContainer.conditions.map {
                     it.toPredicate(
                         root,
                         query,

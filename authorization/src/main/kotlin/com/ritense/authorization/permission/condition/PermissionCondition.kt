@@ -45,7 +45,7 @@ abstract class PermissionCondition(
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper
-    ): Predicate?
+    ): Predicate
 
     fun <T> createDatabaseObjectPath(field: String, root: Root<T>): Path<Any>? {
         var path: Path<Any>? = null
