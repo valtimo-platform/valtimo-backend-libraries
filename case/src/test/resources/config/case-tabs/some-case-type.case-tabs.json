@@ -1,5 +1,5 @@
 {
-    "changesetId": "case-tabs-deploy-test",
+    "changesetId": "some-case-type.case-tabs",
     "case-definitions": [
         {
             "key": "some-case-type",

@@ -21,7 +21,9 @@ import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.valtimo.contract.domain.ExportFile
 import java.io.ByteArrayOutputStream
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional(readOnly = true)
 open class JsonSchemaDocumentDefinitionExportService(
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService
 ) {
@@ -42,7 +44,7 @@ open class JsonSchemaDocumentDefinitionExportService(
     }
 
     companion object {
-        const val PATH = "config/document/definition/%s.schema.json"
+        internal const val PATH = "config/document/definition/%s.schema.json"
         private val MAPPER = Mapper.INSTANCE.get()
 
     }

@@ -33,6 +33,7 @@ import com.ritense.case.service.CaseDefinitionExportService
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.service.CaseListDeploymentService
+import com.ritense.case.service.CaseTabExportService
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.web.rest.CaseDefinitionResource
@@ -249,4 +250,12 @@ class CaseAutoConfiguration {
             documentDefinitionExportService
         )
     }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTabExportService::class)
+    fun caseTabExportService(objectMapper: ObjectMapper, caseTabService: CaseTabService) =
+        CaseTabExportService(
+            objectMapper,
+            caseTabService
+        )
 }
