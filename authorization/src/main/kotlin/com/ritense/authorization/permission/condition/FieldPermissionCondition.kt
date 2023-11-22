@@ -27,6 +27,7 @@ import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
+import javax.persistence.criteria.Subquery
 
 @JsonTypeName(FIELD)
 data class FieldPermissionCondition<V : Comparable<V>>(
@@ -50,10 +51,16 @@ data class FieldPermissionCondition<V : Comparable<V>>(
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper
-    ): Predicate {
+    ): Predicate? {
         val path = createDatabaseObjectPath(field, root)!!
         val resolvedValue = PermissionConditionValueResolver.resolveValue(this.value)
-        return operator.toPredicate<Comparable<Any>>(criteriaBuilder, path, resolvedValue)
+        val predicate = operator.toPredicate<Comparable<Any>>(criteriaBuilder, path, resolvedValue)
+        if(query is Subquery) {
+            val predicates = listOfNotNull(query.restriction, predicate).toTypedArray()
+            query.where(*predicates)
+            return null
+        }
+        return predicate
     }
 
     companion object {
