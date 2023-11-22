@@ -1168,6 +1168,21 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             }
     }
 
+    @Test
+    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
+    fun `should export case definitions as an admin`() {
+        val caseDefinitionName = "resource-test-default"
+        val caseDefinitionVersion = 1
+        mockMvc.perform(
+            MockMvcRequestBuilders.get(
+                "/api/management/v1/case/{caseDefinitionName}/{caseDefinitionVersion}/export",
+                caseDefinitionName, caseDefinitionVersion
+            )
+        ).andExpect(status().isOk)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE))
+    }
+
     private fun createListColumn(caseDefinitionName: String, json: String, expectedStatus: ResultMatcher) {
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/management/v1/case/{caseDefinitionName}/list-column", caseDefinitionName)
