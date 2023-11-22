@@ -23,12 +23,12 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 
 
-class KeycloakRoleSecurityConfigurer: HttpSecurityConfigurer {
+class RoleSecurityConfigurer: HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/v1/keycloak/role").hasAnyAuthority(ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/v1/role").hasAnyAuthority(ADMIN)
         } catch (e: Exception)  {
             throw HttpConfigurerConfigurationException(e)
         }

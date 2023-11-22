@@ -18,17 +18,17 @@ package com.valtimo.keycloak.service
 
 class KeycloakRoleService(
     private val keycloakService: KeycloakService,
-) {
+): RoleService {
 
-    fun findRoles(roleNamePrefix: String?): List<String> {
+    override fun findRoles(roleNamePrefix: String?): List<String> {
         val keycloak = keycloakService.keycloak()
-        val roleResource = keycloakService.realmRolesResource(keycloak).list(false)
+        val roleRepresentations = keycloakService.realmRolesResource(keycloak).list(true)
         return if (roleNamePrefix != null) {
-            roleResource
+            roleRepresentations
                 .filter { it.name.startsWith(roleNamePrefix) }
                 .map { it.name }
         } else {
-            roleResource.map { it.name }
+            roleRepresentations.map { it.name }
         }
     }
 }

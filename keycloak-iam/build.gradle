@@ -50,7 +50,7 @@ dependencies {
 
     testImplementation project(":core")
     testImplementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
-
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
 }
 
 apply from: "gradle/publishing.gradle"

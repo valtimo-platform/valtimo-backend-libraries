@@ -16,7 +16,7 @@
 
 package com.valtimo.keycloak.web.rest
 
-import com.valtimo.keycloak.service.KeycloakRoleService
+import com.valtimo.keycloak.service.RoleService
 import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.RestController
 import javax.ws.rs.NotFoundException
 
 @RestController
-@RequestMapping(value = ["/api/v1/keycloak/role"])
-class KeycloakRoleResource(
-    private val keycloakRoleService: KeycloakRoleService
+@RequestMapping(value = ["/api/v1/role"])
+class RoleResource(
+    private val roleService: RoleService
 ) {
 
     @GetMapping
@@ -36,10 +36,9 @@ class KeycloakRoleResource(
         @RequestParam roleNamePrefix: String?
     ): ResponseEntity<Any> {
         return try {
-        val result = keycloakRoleService.findRoles(roleNamePrefix = roleNamePrefix)
-        ResponseEntity.ok(result)
+            ResponseEntity.ok(roleService.findRoles(roleNamePrefix))
         } catch (e: NotFoundException) {
-            logger.debug("Could not find realm roles: ${e.message}")
+            logger.debug("Could not find roles: ${e.message}")
             ResponseEntity.notFound().build()
         }
     }

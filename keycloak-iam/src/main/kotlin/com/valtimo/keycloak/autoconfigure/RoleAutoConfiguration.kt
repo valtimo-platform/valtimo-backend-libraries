@@ -16,36 +16,35 @@
 
 package com.valtimo.keycloak.autoconfigure
 
-import com.ritense.valtimo.contract.annotation.ProcessBean
-import com.valtimo.keycloak.security.config.KeycloakRoleSecurityConfigurer
+import com.valtimo.keycloak.security.config.RoleSecurityConfigurer
 import com.valtimo.keycloak.service.KeycloakRoleService
 import com.valtimo.keycloak.service.KeycloakService
-import com.valtimo.keycloak.web.rest.KeycloakRoleResource
+import com.valtimo.keycloak.service.RoleService
+import com.valtimo.keycloak.web.rest.RoleResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 
 @Configuration
-internal class KeycloakRoleAutoConfiguration {
+internal class RoleAutoConfiguration {
 
     @Bean
     @Order(408)
-    @ConditionalOnMissingBean(KeycloakRoleSecurityConfigurer::class)
-    fun keycloakRoleSecurityConfigurer(): KeycloakRoleSecurityConfigurer = KeycloakRoleSecurityConfigurer()
+    @ConditionalOnMissingBean(RoleSecurityConfigurer::class)
+    fun roleSecurityConfigurer(): RoleSecurityConfigurer = RoleSecurityConfigurer()
 
-    @ProcessBean
     @Bean
     fun keycloakRoleService(
         keycloakService: KeycloakService
-    ): KeycloakRoleService = KeycloakRoleService(
+    ): RoleService = KeycloakRoleService(
         keycloakService = keycloakService
     )
 
     @Bean
-    fun keycloakRoleResource(
-        keycloakRoleService: KeycloakRoleService
-    ): KeycloakRoleResource = KeycloakRoleResource(
-        keycloakRoleService = keycloakRoleService
+    fun roleResource(
+        roleService: RoleService
+    ): RoleResource = RoleResource(
+        roleService = roleService
     )
 }
