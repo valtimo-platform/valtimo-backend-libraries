@@ -17,14 +17,17 @@
 package com.ritense.case.service
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
+import com.ritense.document.service.JsonSchemaDocumentDefinitionExportService
 import com.ritense.valtimo.contract.domain.ExportFile
 import java.io.ByteArrayOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-open class CaseDefinitionExportService {
-    fun createExport(caseDefinitionId: JsonSchemaDocumentDefinitionId): ByteArrayOutputStream {
-        val exportList: List<ExportFile> = emptyList()
+open class CaseDefinitionExportService(
+    private val documentDefinitionExportService: JsonSchemaDocumentDefinitionExportService
+) {
+    open fun createExport(caseDefinitionId: JsonSchemaDocumentDefinitionId): ByteArrayOutputStream {
+        val exportList: Set<ExportFile> = documentDefinitionExportService.export(caseDefinitionId)
         val baos = ByteArrayOutputStream()
         ZipOutputStream(baos).use { zos ->
             exportList.forEach { exportFile ->
