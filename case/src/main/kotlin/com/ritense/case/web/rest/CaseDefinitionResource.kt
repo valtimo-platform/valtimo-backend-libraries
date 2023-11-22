@@ -169,7 +169,7 @@ class CaseDefinitionResource(
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_hh-mm-ss"))
         return ResponseEntity
             .ok()
-            .header("Content-Disposition", "attachment;filename=" + fileName + ".zip")
+            .header("Content-Disposition", "attachment;filename=" + fileName + ".valtimo.zip")
             .body(baos.toByteArray())
     }
 }
