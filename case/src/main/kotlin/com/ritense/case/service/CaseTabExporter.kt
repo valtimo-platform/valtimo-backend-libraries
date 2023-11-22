@@ -53,7 +53,7 @@ class CaseTabExporter(
         )
         val caseTabExport = ExportFile(
             "config/${caseName}.case-tabs.json",
-            objectMapper.writeValueAsBytes(caseTabChangeset)
+            objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(caseTabChangeset)
         )
 
         return setOf(caseTabExport, *exportFormDefinitions(caseTabs).toTypedArray())

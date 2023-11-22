@@ -18,7 +18,8 @@ package com.ritense.document.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.BaseIntegrationTest
-import com.ritense.document.service.SearchFieldExportService.Companion.PATH
+import com.ritense.document.service.SearchFieldExporter.Companion.PATH
+import com.ritense.export.request.DocumentDefinitionExportRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -28,15 +29,15 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.util.StreamUtils
 
-class SearchFieldExportServiceIntTest @Autowired constructor(
+class SearchFieldExporterIntTest @Autowired constructor(
     private val resourceLoader: ResourceLoader,
-    private val searchFieldExportService: SearchFieldExportService
+    private val searchFieldExporter: SearchFieldExporter
 ) : BaseIntegrationTest() {
 
     @Test
-    fun `should export document definition`(): Unit = runWithoutAuthorization {
+    fun `should export search fields for document definition`(): Unit = runWithoutAuthorization {
         val definition = documentDefinitionService.findLatestByName("person").orElseThrow()
-        val exportFiles = searchFieldExportService.export(definition.id())
+        val exportFiles = searchFieldExporter.export(DocumentDefinitionExportRequest(definition.id().name(), definition.id().version()))
 
         val path = PATH.format(definition.id().name())
         val export = exportFiles.singleOrNull {

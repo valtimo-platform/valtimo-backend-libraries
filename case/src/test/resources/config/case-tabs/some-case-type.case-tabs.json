@@ -15,6 +15,12 @@
                     "key": "custom-tab",
                     "type": "custom",
                     "contentKey": "some-custom-component"
+                },
+                {
+                    "name": "FormIO tab",
+                    "key": "formio-tab",
+                    "type": "formio",
+                    "contentKey": "test-form"
                 }
             ]
         }

@@ -1,6 +1,7 @@
 package com.ritense.form.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.export.request.FormExportRequest
 import com.ritense.form.BaseIntegrationTest
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
@@ -11,17 +12,17 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.util.StreamUtils
 
-class FormDefinitionExportServiceIntTest @Autowired constructor(
+class FormDefinitionExporterIntTest @Autowired constructor(
     private val resourceLoader: ResourceLoader,
-    private val formDefinitionExportService:FormDefinitionExportService
+    private val formDefinitionExportService:FormDefinitionExporter
 ): BaseIntegrationTest() {
 
     @Test
     fun `should export form`(): Unit = runWithoutAuthorization {
         val formName = "form-example"
-        val exportFiles = formDefinitionExportService.export(formName);
+        val exportFiles = formDefinitionExportService.export(FormExportRequest(formName));
 
-        val path = FormDefinitionExportService.PATH.format(formName)
+        val path = FormDefinitionExporter.PATH.format(formName)
         val formExport = exportFiles.singleOrNull {
             it.path == path
         }
@@ -40,5 +41,4 @@ class FormDefinitionExportServiceIntTest @Autowired constructor(
             JSONCompareMode.NON_EXTENSIBLE
         )
     }
-
 }

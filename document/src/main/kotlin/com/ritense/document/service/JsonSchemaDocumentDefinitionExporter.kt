@@ -46,14 +46,11 @@ class JsonSchemaDocumentDefinitionExporter(
             )
         }
 
-        val searchFields = searchFieldExportService.export(id)
-
-        return setOf(exportFile, *searchFields.toTypedArray())
+        return setOf(exportFile)
     }
 
     companion object {
         internal const val PATH = "config/document/definition/%s.schema.json"
         private val MAPPER = Mapper.INSTANCE.get()
-
     }
 }

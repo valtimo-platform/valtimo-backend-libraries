@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.form.service
+package com.ritense.case
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.valtimo.contract.domain.ExportFile
+import com.ritense.export.ExportFile
+import com.ritense.export.Exporter
+import com.ritense.export.request.FormExportRequest
+import org.springframework.stereotype.Component
 
-open class FormDefinitionExportService(
-    private val objectMapper: ObjectMapper,
-    private val formDefinitionService: FormDefinitionService
-) {
+class TestFormExporter : Exporter<FormExportRequest>{
+    override fun supports() = FormExportRequest::class.java
 
-    open fun export(formName: String) : Set<ExportFile> {
-        val formDefinition = formDefinitionService.getFormDefinitionByName(formName).orElseThrow()
-
+    override fun export(request: FormExportRequest): Set<ExportFile> {
         return setOf(ExportFile(
-            PATH.format(formDefinition.name),
-            objectMapper.writeValueAsBytes(formDefinition.formDefinition)
+            "${request.formName}.json",
+            "{}".toByteArray()
         ))
-    }
-
-    companion object {
-        internal const val PATH = "config/form/%s.json"
     }
 }

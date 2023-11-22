@@ -16,24 +16,33 @@
 
 package com.ritense.document.service
 
-import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.search.SearchConfigurationDto
-import com.ritense.valtimo.contract.domain.ExportFile
+import com.ritense.export.ExportFile
+import com.ritense.export.Exporter
+import com.ritense.export.request.DocumentDefinitionExportRequest
 import java.io.ByteArrayOutputStream
+import org.springframework.transaction.annotation.Transactional
 
-open class SearchFieldExportService(
+@Transactional(readOnly = true)
+class SearchFieldExporter(
     private val searchFieldService: SearchFieldService,
-) {
+) : Exporter<DocumentDefinitionExportRequest>{
 
-    open fun export(id: DocumentDefinition.Id): Set<ExportFile> {
-        val searchFields = searchFieldService.getSearchFields(id.name())
+    override fun supports() = DocumentDefinitionExportRequest::class.java
+
+    override fun export(request: DocumentDefinitionExportRequest): Set<ExportFile> {
+        val searchFields = searchFieldService.getSearchFields(request.name)
+
+        if(searchFields.isEmpty()) {
+            return setOf()
+        }
 
         val exportFile = ByteArrayOutputStream().use {
             MAPPER.writerWithDefaultPrettyPrinter().writeValue(it, SearchConfigurationDto(searchFields))
 
             ExportFile(
-                PATH.format(id.name()),
+                PATH.format(request.name),
                 it.toByteArray()
             )
         }
@@ -42,8 +51,7 @@ open class SearchFieldExportService(
     }
 
     companion object {
-        const val PATH = "config/search/%s.json"
+        internal const val PATH = "config/search/%s.json"
         private val MAPPER = Mapper.INSTANCE.get()
-
     }
 }

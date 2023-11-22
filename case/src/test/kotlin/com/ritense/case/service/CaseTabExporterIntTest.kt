@@ -19,7 +19,7 @@ package com.ritense.case.service
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.export.request.DocumentDefinitionExportRequest
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -43,7 +43,7 @@ class CaseTabExporterIntTest @Autowired constructor(
         val caseTabsExport = exportFiles.singleOrNull {
             it.path == path
         }
-        Assertions.assertThat(caseTabsExport).isNotNull
+        assertThat(caseTabsExport).isNotNull
         requireNotNull(caseTabsExport)
         val content = caseTabsExport.content.toString(Charsets.UTF_8)
         val expectedString = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
@@ -57,5 +57,7 @@ class CaseTabExporterIntTest @Autowired constructor(
             content,
             JSONCompareMode.NON_EXTENSIBLE
         )
+
+        assertThat(exportFiles.singleOrNull { it.path == "test-form.json" }).isNotNull
     }
 }

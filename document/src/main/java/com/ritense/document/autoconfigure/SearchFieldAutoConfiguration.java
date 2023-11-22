@@ -23,7 +23,7 @@ import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.SearchConfigurationDeploymentService;
-import com.ritense.document.service.SearchFieldExportService;
+import com.ritense.document.service.SearchFieldExporter;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.impl.SearchFieldResource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,11 +43,11 @@ public class SearchFieldAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(SearchFieldExportService.class)
-    public SearchFieldExportService searchFieldExportService(
+    @ConditionalOnMissingBean(SearchFieldExporter.class)
+    public SearchFieldExporter searchFieldExporter(
         final SearchFieldService searchFieldService
     ) {
-        return new SearchFieldExportService(searchFieldService);
+        return new SearchFieldExporter(searchFieldService);
     }
 
     @Bean
