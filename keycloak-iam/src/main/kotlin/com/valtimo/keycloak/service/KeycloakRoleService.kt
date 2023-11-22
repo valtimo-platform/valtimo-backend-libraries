@@ -1,13 +1,34 @@
-package com.valtimo.keycloak.service
+/*
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import org.keycloak.admin.client.resource.RolesResource
+package com.valtimo.keycloak.service
 
 class KeycloakRoleService(
     private val keycloakService: KeycloakService,
 ) {
 
-    fun findRoles(): RolesResource {
+    fun findRoles(roleNamePrefix: String?): List<String> {
         val keycloak = keycloakService.keycloak()
-        return keycloakService.realmRolesResource(keycloak)
+        val roleResource = keycloakService.realmRolesResource(keycloak).list(false)
+        return if (roleNamePrefix != null) {
+            roleResource
+                .filter { it.name.startsWith(roleNamePrefix) }
+                .map { it.name }
+        } else {
+            roleResource.map { it.name }
+        }
     }
 }
