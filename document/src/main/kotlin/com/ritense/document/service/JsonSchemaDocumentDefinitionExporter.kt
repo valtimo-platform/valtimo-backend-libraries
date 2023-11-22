@@ -46,7 +46,9 @@ class JsonSchemaDocumentDefinitionExporter(
             )
         }
 
-        return setOf(exportFile)
+        val searchFields = searchFieldExportService.export(id)
+
+        return setOf(exportFile, *searchFields.toTypedArray())
     }
 
     companion object {
