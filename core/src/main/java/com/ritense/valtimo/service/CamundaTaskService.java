@@ -452,7 +452,6 @@ public class CamundaTaskService {
 
     private Specification<CamundaTask> buildTaskFilterSpecification(TaskFilter taskFilter) {
         String currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        List<String> userRoles = SecurityUtils.getCurrentUserRoles();
         var filterSpec = all();
 
         if (taskFilter == TaskFilter.MINE) {
@@ -461,11 +460,9 @@ public class CamundaTaskService {
             }
             return filterSpec.and(byAssignee(currentUserLogin));
         } else if (taskFilter == TaskFilter.ALL) {
-            return filterSpec.and(byCandidateGroups(userRoles));
+            return filterSpec;
         } else if (taskFilter == TaskFilter.OPEN) {
-            return filterSpec
-                .and(byCandidateGroups(userRoles))
-                .and(byUnassigned());
+            return filterSpec.and(byUnassigned());
         }
 
         return filterSpec;
