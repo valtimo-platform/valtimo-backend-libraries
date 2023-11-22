@@ -19,6 +19,7 @@ package com.ritense.case.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.case.deployment.CaseDefinitionsTabCollection
 import com.ritense.case.deployment.CaseTabChangeset
+import com.ritense.case.domain.CaseTab
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.valtimo.contract.domain.ExportFile
@@ -27,7 +28,8 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 open class CaseTabExportService(
     private val objectMapper: ObjectMapper,
-    private val caseTabService: CaseTabService
+    private val caseTabService: CaseTabService,
+//    private val formDefinitionExportService: FormDefinitionExportService
 ) {
     open fun export(caseDefinitionId: JsonSchemaDocumentDefinitionId): Set<ExportFile> {
         val caseName = caseDefinitionId.name()
@@ -47,7 +49,18 @@ open class CaseTabExportService(
             objectMapper.writeValueAsBytes(caseTabChangeset)
         )
 
-        return setOf(caseTabExport)
+        return setOf(caseTabExport, *exportFormDefinitions(caseTabs).toTypedArray())
+    }
+
+    private fun exportFormDefinitions(caseTabs: List<CaseTab>): Set<ExportFile> {
+        return setOf()
+//        return caseTabs.filter {
+//            it.type == CaseTabType.FORMIO
+//        }.distinctBy {
+//            it.contentKey
+//        }.flatMap {
+//            formDefinitionExportService.export(it.contentKey)
+//        }.toSet()
     }
 
     companion object {

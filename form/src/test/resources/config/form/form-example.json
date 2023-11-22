@@ -11,7 +11,10 @@
             "label": "Naam",
             "key": "person.firstName",
             "type": "textfield",
-            "input": true
+            "input": true,
+            "attributes": {
+                "data-testid": "form-example-person.firstName"
+            }
         },
         {
             "type": "button",

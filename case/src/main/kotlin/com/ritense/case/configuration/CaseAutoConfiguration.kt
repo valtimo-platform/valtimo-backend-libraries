@@ -245,9 +245,13 @@ class CaseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(CaseDefinitionExportService::class)
-    fun caseDefinitionExportService(documentDefinitionExportService: JsonSchemaDocumentDefinitionExportService): CaseDefinitionExportService {
+    fun caseDefinitionExportService(
+        documentDefinitionExportService: JsonSchemaDocumentDefinitionExportService,
+        caseTabExportService: CaseTabExportService
+    ): CaseDefinitionExportService {
         return CaseDefinitionExportService(
-            documentDefinitionExportService
+            documentDefinitionExportService,
+            caseTabExportService
         )
     }
 

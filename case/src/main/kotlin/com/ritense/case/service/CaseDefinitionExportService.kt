@@ -24,10 +24,13 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 open class CaseDefinitionExportService(
-    private val documentDefinitionExportService: JsonSchemaDocumentDefinitionExportService
+    private val documentDefinitionExportService: JsonSchemaDocumentDefinitionExportService,
+    private val caseTabExportService: CaseTabExportService,
 ) {
     open fun createExport(caseDefinitionId: JsonSchemaDocumentDefinitionId): ByteArrayOutputStream {
-        val exportList: Set<ExportFile> = documentDefinitionExportService.export(caseDefinitionId)
+        val exportList: Set<ExportFile> = documentDefinitionExportService.export(caseDefinitionId) +
+            caseTabExportService.export(caseDefinitionId)
+
         val baos = ByteArrayOutputStream()
         ZipOutputStream(baos).use { zos ->
             exportList.forEach { exportFile ->

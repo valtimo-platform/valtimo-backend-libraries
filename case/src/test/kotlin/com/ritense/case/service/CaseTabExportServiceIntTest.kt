@@ -16,7 +16,7 @@
 
 package com.ritense.case.service
 
-import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import org.assertj.core.api.Assertions
@@ -30,11 +30,11 @@ import org.springframework.util.StreamUtils
 
 class CaseTabExportServiceIntTest @Autowired constructor(
     private val resourceLoader: ResourceLoader,
-    private val caseTabExportService:CaseTabExportService
+    private val caseTabExportService: CaseTabExportService
 ) : BaseIntegrationTest() {
 
     @Test
-    fun `should export tabs for case definition`(): Unit = AuthorizationContext.runWithoutAuthorization {
+    fun `should export tabs for case definition`(): Unit = runWithoutAuthorization {
         val caseDefinitionName = "some-case-type"
 
         val exportFiles = caseTabExportService.export(JsonSchemaDocumentDefinitionId.newId(caseDefinitionName))
@@ -47,7 +47,7 @@ class CaseTabExportServiceIntTest @Autowired constructor(
         requireNotNull(caseTabsExport)
         val content = caseTabsExport.content.toString(Charsets.UTF_8)
         val expectedString = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/case-tabs/some-case-type.case-tabs.json")
+            .getResource("classpath:config/case-tabs/$caseDefinitionName.case-tabs.json")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
