@@ -29,11 +29,10 @@ import com.ritense.case.repository.CaseTabRepository
 import com.ritense.case.repository.CaseTabSpecificationFactory
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
-import com.ritense.case.service.CaseDefinitionExportService
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.service.CaseListDeploymentService
-import com.ritense.case.service.CaseTabExportService
+import com.ritense.case.service.CaseTabExporter
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.web.rest.CaseDefinitionResource
@@ -42,7 +41,7 @@ import com.ritense.case.web.rest.CaseTabManagementResource
 import com.ritense.case.web.rest.CaseTabResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
-import com.ritense.document.service.JsonSchemaDocumentDefinitionExportService
+import com.ritense.export.ExportService
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -73,7 +72,7 @@ class CaseAutoConfiguration {
     @Bean
     fun caseDefinitionResource(
         service: CaseDefinitionService,
-        exportService: CaseDefinitionExportService,
+        exportService: ExportService
     ): CaseDefinitionResource {
         return CaseDefinitionResource(service, exportService)
     }
@@ -244,22 +243,14 @@ class CaseAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(CaseDefinitionExportService::class)
-    fun caseDefinitionExportService(
-        documentDefinitionExportService: JsonSchemaDocumentDefinitionExportService,
-        caseTabExportService: CaseTabExportService
-    ): CaseDefinitionExportService {
-        return CaseDefinitionExportService(
-            documentDefinitionExportService,
-            caseTabExportService
-        )
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(CaseTabExportService::class)
-    fun caseTabExportService(objectMapper: ObjectMapper, caseTabService: CaseTabService) =
-        CaseTabExportService(
-            objectMapper,
-            caseTabService
-        )
+    @ConditionalOnMissingBean(CaseTabExporter::class)
+    fun caseTabExporter(
+        objectMapper: ObjectMapper,
+        caseTabService: CaseTabService,
+        @Lazy exportService: ExportService
+    ) = CaseTabExporter(
+        objectMapper,
+        caseTabService,
+        exportService
+    )
 }

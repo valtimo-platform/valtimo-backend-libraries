@@ -16,20 +16,26 @@
 
 package com.ritense.document.service
 
-import com.ritense.document.domain.DocumentDefinition
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
-import com.ritense.valtimo.contract.domain.ExportFile
+import com.ritense.export.ExportFile
+import com.ritense.export.Exporter
+import com.ritense.export.request.DocumentDefinitionExportRequest
 import java.io.ByteArrayOutputStream
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
-open class JsonSchemaDocumentDefinitionExportService(
+class JsonSchemaDocumentDefinitionExporter(
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService
-) {
+) : Exporter<DocumentDefinitionExportRequest> {
 
-    open fun export(id: DocumentDefinition.Id): Set<ExportFile> {
-        val documentDefinition = documentDefinitionService.findBy(id).orElseThrow()
+    override fun supports(): Class<DocumentDefinitionExportRequest> =
+        DocumentDefinitionExportRequest::class.java
+
+    override fun export(request: DocumentDefinitionExportRequest): Set<ExportFile> {
+        val documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(request.name, request.version)
+        val documentDefinition = documentDefinitionService.findBy(documentDefinitionId).orElseThrow()
 
         val exportFile = ByteArrayOutputStream().use {
             MAPPER.writerWithDefaultPrettyPrinter().writeValue(it, documentDefinition.schema.asJson())

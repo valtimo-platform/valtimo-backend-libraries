@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.case.service
+package com.ritense.export
 
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
-import com.ritense.document.service.JsonSchemaDocumentDefinitionExportService
-import com.ritense.valtimo.contract.domain.ExportFile
+import com.ritense.export.request.ExportRequest
 import java.io.ByteArrayOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-open class CaseDefinitionExportService(
-    private val documentDefinitionExportService: JsonSchemaDocumentDefinitionExportService,
-    private val caseTabExportService: CaseTabExportService,
+open class ExportService (
+    private val exporters: List<Exporter<ExportRequest>>
 ) {
-    open fun createExport(caseDefinitionId: JsonSchemaDocumentDefinitionId): ByteArrayOutputStream {
-        val exportList: Set<ExportFile> = documentDefinitionExportService.export(caseDefinitionId) +
-            caseTabExportService.export(caseDefinitionId)
 
-        val baos = ByteArrayOutputStream()
-        ZipOutputStream(baos).use { zos ->
+    open fun export(request: ExportRequest): ByteArrayOutputStream {
+        val exportList: Set<ExportFile> = collectExportFiles(request)
+
+        val outputStream = ByteArrayOutputStream()
+        ZipOutputStream(outputStream).use { zos ->
             exportList.forEach { exportFile ->
                 val zipEntry = ZipEntry(exportFile.path)
                 zos.putNextEntry(zipEntry)
@@ -40,6 +37,15 @@ open class CaseDefinitionExportService(
                 zos.closeEntry()
             }
         }
-        return baos
+        return outputStream
+    }
+
+    open fun collectExportFiles(request: ExportRequest): Set<ExportFile> {
+        val exportList: Set<ExportFile> = exporters.filter { exporter ->
+            exporter.supports().isInstance(request)
+        }.flatMap { exporter ->
+            exporter.export(request)
+        }.toSet()
+        return exportList
     }
 }

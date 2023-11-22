@@ -30,7 +30,7 @@ dependencies {
     implementation project(':web')
     implementation project(':authorization')
     implementation project(':changelog')
-//    implementation project(':form')
+    implementation project(':export')
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"

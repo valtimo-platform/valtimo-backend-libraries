@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.case.service
+package com.ritense.document.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.case.BaseIntegrationTest
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
-import org.assertj.core.api.Assertions
+import com.ritense.document.BaseIntegrationTest
+import com.ritense.document.service.JsonSchemaDocumentDefinitionExporter.Companion.PATH
+import com.ritense.export.request.DocumentDefinitionExportRequest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -28,26 +29,27 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.util.StreamUtils
 
-class CaseTabExportServiceIntTest @Autowired constructor(
+class JsonSchemaDocumentDefinitionExporterIntTest @Autowired constructor(
     private val resourceLoader: ResourceLoader,
-    private val caseTabExportService: CaseTabExportService
+    private val documentDefinitionExportService: JsonSchemaDocumentDefinitionExporter
 ) : BaseIntegrationTest() {
 
     @Test
-    fun `should export tabs for case definition`(): Unit = runWithoutAuthorization {
-        val caseDefinitionName = "some-case-type"
+    fun `should export document definition`(): Unit = runWithoutAuthorization {
+        val definition = documentDefinitionService.findLatestByName("person").orElseThrow()
 
-        val exportFiles = caseTabExportService.export(JsonSchemaDocumentDefinitionId.newId(caseDefinitionName))
+        val request = DocumentDefinitionExportRequest(definition.id().name(), definition.id().version())
+        val exportFiles = documentDefinitionExportService.export(request)
 
-        val path = CaseTabExportService.PATH.format(caseDefinitionName)
-        val caseTabsExport = exportFiles.singleOrNull {
+        val path = PATH.format(definition.id().name())
+        val personDefinitionExport = exportFiles.singleOrNull {
             it.path == path
         }
-        Assertions.assertThat(caseTabsExport).isNotNull
-        requireNotNull(caseTabsExport)
-        val content = caseTabsExport.content.toString(Charsets.UTF_8)
+        assertThat(personDefinitionExport).isNotNull
+        requireNotNull(personDefinitionExport)
+        val content = personDefinitionExport.content.toString(Charsets.UTF_8)
         val expectedString = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/case-tabs/$caseDefinitionName.case-tabs.json")
+            .getResource("classpath:$path")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
