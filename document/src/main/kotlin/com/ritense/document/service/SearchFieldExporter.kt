@@ -28,14 +28,14 @@ import org.springframework.transaction.annotation.Transactional
 class SearchFieldExporter(
     private val objectMapper: ObjectMapper,
     private val searchFieldService: SearchFieldService,
-) : Exporter<DocumentDefinitionExportRequest>{
+) : Exporter<DocumentDefinitionExportRequest> {
 
     override fun supports() = DocumentDefinitionExportRequest::class.java
 
     override fun export(request: DocumentDefinitionExportRequest): Set<ExportFile> {
         val searchFields = searchFieldService.getSearchFields(request.name)
 
-        if(searchFields.isEmpty()) {
+        if (searchFields.isEmpty()) {
             return setOf()
         }
 
