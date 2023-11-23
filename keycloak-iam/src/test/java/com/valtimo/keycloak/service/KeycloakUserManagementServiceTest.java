@@ -57,9 +57,9 @@ class KeycloakUserManagementServiceTest {
         johnDoe = newUser("John", "Doe", List.of(USER, ADMIN));
         ashaMiller = newUser("Asha", "Miller", List.of(ADMIN));
 
-        when(keycloakService.realmRolesResource().get(USER).getRoleUserMembers(0, MAX_USERS))
+        when(keycloakService.realmRolesResource(any()).get(USER).getRoleUserMembers(0, MAX_USERS))
             .thenReturn(Set.of(johnDoe, jamesVance));
-        when(keycloakService.realmRolesResource().get(ADMIN).getRoleUserMembers(0, MAX_USERS))
+        when(keycloakService.realmRolesResource(any()).get(ADMIN).getRoleUserMembers(0, MAX_USERS))
             .thenReturn(Set.of(johnDoe, ashaMiller));
     }
 
@@ -117,11 +117,11 @@ class KeycloakUserManagementServiceTest {
         markUser.setFirstName("Mark");
         markUser.setLastName("Smit");
         var roleRepresentation = new RoleRepresentation(DEVELOPER, "developer", false);
-        when(keycloakService.usersResource().get(markUser.getId()).roles().realmLevel().listAll())
+        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().realmLevel().listAll())
             .thenReturn(List.of());
-        when(keycloakService.usersResource().get(markUser.getId()).roles().clientLevel(any()).listAll())
+        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().clientLevel(any()).listAll())
             .thenReturn(List.of(roleRepresentation));
-        when(keycloakService.clientRolesResource().get(DEVELOPER).getRoleUserMembers(0, MAX_USERS))
+        when(keycloakService.clientRolesResource(any()).get(DEVELOPER).getRoleUserMembers(0, MAX_USERS))
             .thenReturn(Set.of(markUser));
         var search = new SearchByUserGroupsCriteria();
         search.addToOrUserGroups(Set.of(DEVELOPER));
@@ -134,7 +134,7 @@ class KeycloakUserManagementServiceTest {
 
     @Test
     void findByRoleShouldReturnEmptyListWhenNotFoundExceptionIsThrown() {
-        when( keycloakService.realmRolesResource().get("some-role").getRoleUserMembers())
+        when( keycloakService.realmRolesResource(any()).get("some-role").getRoleUserMembers())
             .thenThrow(new NotFoundException());
 
         var users = userManagementService.findByRole("some-role");
@@ -151,9 +151,9 @@ class KeycloakUserManagementServiceTest {
         var roleRepresentations = roles.stream()
             .map(role -> new RoleRepresentation(role, role + " description", false))
             .collect(Collectors.toList());
-        when(keycloakService.usersResource().get(user.getId()).roles().realmLevel().listAll())
+        when(keycloakService.usersResource(any()).get(user.getId()).roles().realmLevel().listAll())
             .thenReturn(roleRepresentations);
-        when(keycloakService.usersResource().get(user.getId()).roles().clientLevel(any()).listAll())
+        when(keycloakService.usersResource(any()).get(user.getId()).roles().clientLevel(any()).listAll())
             .thenReturn(List.of());
         return user;
     }
