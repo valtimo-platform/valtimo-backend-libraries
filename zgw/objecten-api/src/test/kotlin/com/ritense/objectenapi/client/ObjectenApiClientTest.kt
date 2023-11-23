@@ -329,7 +329,7 @@ internal class ObjectenApiClientTest {
               "results": [{
                   "url": "http://example.com",
                   "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-                  "type":createObject "http://example.com",
+                  "type": "http://example.com",
                   "record": {
                     "index": 0,
                     "typeVersion": 32767,
