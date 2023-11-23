@@ -66,35 +66,18 @@ class OutboxAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(DefaultOutboxService::class)
+    @ConditionalOnMissingBean(OutboxService::class)
     fun defaultOutboxService(
         outboxMessageRepository: OutboxMessageRepository,
         objectMapper: ObjectMapper,
-    ): DefaultOutboxService {
-        return DefaultOutboxService(
-            outboxMessageRepository,
-            objectMapper
-        )
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(CloudEventOutboxService::class)
-    fun cloudEventOutboxService(
-        defaultOutboxService: DefaultOutboxService
-    ): CloudEventOutboxService {
-        return CloudEventOutboxService(
-            defaultOutboxService
-        )
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(DomainEventOutboxService::class)
-    fun domainEventOutboxService(
-        cloudEventOutboxService: CloudEventOutboxService,
-        objectMapper: ObjectMapper
-    ): DomainEventOutboxService {
+    ): OutboxService<*> {
         return DomainEventOutboxService(
-            cloudEventOutboxService,
+            CloudEventOutboxService(
+                DefaultOutboxService(
+                    outboxMessageRepository,
+                    objectMapper
+                )
+            ),
             objectMapper
         )
     }
@@ -102,12 +85,12 @@ class OutboxAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(PollingPublisherService::class)
     fun pollingPublisherService(
-        defaultOutboxService: DefaultOutboxService,
+        outboxService: OutboxService<*>,
         messagePublisher: MessagePublisher,
         platformTransactionManager: PlatformTransactionManager
     ): PollingPublisherService {
         return PollingPublisherService(
-            defaultOutboxService,
+            outboxService,
             messagePublisher,
             platformTransactionManager
         )

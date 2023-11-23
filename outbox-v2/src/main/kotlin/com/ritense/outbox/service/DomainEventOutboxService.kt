@@ -1,6 +1,7 @@
 package com.ritense.outbox.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.outbox.domain.DomainEvent
 import io.cloudevents.core.builder.CloudEventBuilder
 import org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE
 import java.net.URI
@@ -23,4 +24,8 @@ class DomainEventOutboxService(
             .build()
         cloudEventOutboxService.send(cloudEvent)
     }
+
+    override fun getOldestMessage() = cloudEventOutboxService.getOldestMessage()
+
+    override fun deleteMessage(id: UUID) = cloudEventOutboxService.deleteMessage(id)
 }
