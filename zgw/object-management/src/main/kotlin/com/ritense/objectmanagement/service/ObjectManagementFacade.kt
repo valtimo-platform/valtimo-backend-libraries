@@ -122,9 +122,9 @@ class ObjectManagementFacade(
     }
 
     fun createObject(
-        objectId: UUID? = null,
         objectName: String,
-        data: JsonNode
+        data: JsonNode,
+        objectId: UUID? = null
     ): ObjectWrapper {
         val accessObject = getAccessObject(objectName)
         val objectTypeUrl =
