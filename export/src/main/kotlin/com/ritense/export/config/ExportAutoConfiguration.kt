@@ -18,6 +18,7 @@ package com.ritense.export.config
 
 import com.ritense.export.ExportService
 import com.ritense.export.Exporter
+import com.ritense.export.ValtimoExportService
 import com.ritense.export.request.ExportRequest
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -29,7 +30,7 @@ class ExportAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ExportService::class)
     fun exportService(exporters: List<Exporter<*>>): ExportService {
-        return ExportService(
+        return ValtimoExportService(
             exporters as List<Exporter<ExportRequest>>
         )
     }

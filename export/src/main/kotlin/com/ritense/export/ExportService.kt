@@ -18,34 +18,9 @@ package com.ritense.export
 
 import com.ritense.export.request.ExportRequest
 import java.io.ByteArrayOutputStream
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 
-open class ExportService (
-    private val exporters: List<Exporter<ExportRequest>>
-) {
+interface ExportService {
+    fun export(request: ExportRequest): ByteArrayOutputStream
 
-    open fun export(request: ExportRequest): ByteArrayOutputStream {
-        val exportList: Set<ExportFile> = collectExportFiles(request)
-
-        val outputStream = ByteArrayOutputStream()
-        ZipOutputStream(outputStream).use { zos ->
-            exportList.forEach { exportFile ->
-                val zipEntry = ZipEntry(exportFile.path)
-                zos.putNextEntry(zipEntry)
-                zos.write(exportFile.content)
-                zos.closeEntry()
-            }
-        }
-        return outputStream
-    }
-
-    open fun collectExportFiles(request: ExportRequest): Set<ExportFile> {
-        val exportList: Set<ExportFile> = exporters.filter { exporter ->
-            exporter.supports().isInstance(request)
-        }.flatMap { exporter ->
-            exporter.export(request)
-        }.toSet()
-        return exportList
-    }
+    fun collectExportFiles(request: ExportRequest): Set<ExportFile>
 }
