@@ -35,6 +35,7 @@ internal class RoleAutoConfiguration {
     fun roleSecurityConfigurer(): RoleSecurityConfigurer = RoleSecurityConfigurer()
 
     @Bean
+    @ConditionalOnMissingBean(RoleService::class)
     fun keycloakRoleService(
         keycloakService: KeycloakService
     ): RoleService = KeycloakRoleService(
