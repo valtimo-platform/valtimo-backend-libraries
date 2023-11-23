@@ -16,14 +16,23 @@
 
 package com.ritense.outbox.service
 
-import com.ritense.outbox.domain.OutboxMessage
-import java.util.UUID
+import com.ritense.outbox.BaseIntegrationTest
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.springframework.transaction.annotation.Transactional
 
-interface OutboxService<T> {
+@Transactional
+class DefaultOutboxServiceIntTest : BaseIntegrationTest() {
 
-    fun send(message: T)
+    @Test
+    fun `should create OutboxMessage`() {
+        val event = "An event happened"
 
-    fun getOldestMessage(): OutboxMessage?
+        defaultOutboxService.send(event)
 
-    fun deleteMessage(id: UUID)
+        val message = defaultOutboxService.getOldestMessage()
+        assertThat(message?.message).isEqualTo(event)
+        assertThat(message?.eventType).isEqualTo("String")
+    }
+
 }

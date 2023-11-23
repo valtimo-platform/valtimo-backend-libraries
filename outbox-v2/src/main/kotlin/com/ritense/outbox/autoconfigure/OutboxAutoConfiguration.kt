@@ -18,11 +18,15 @@ package com.ritense.outbox.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.ritense.outbox.domain.DomainEvent
 import com.ritense.outbox.publisher.DefaultMessagePublisher
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.PollingPublisherJob
 import com.ritense.outbox.publisher.PollingPublisherService
 import com.ritense.outbox.repository.OutboxMessageRepository
+import com.ritense.outbox.service.CloudEventOutboxService
+import com.ritense.outbox.service.DefaultOutboxService
+import com.ritense.outbox.service.DomainEventOutboxService
 import com.ritense.outbox.service.OutboxService
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -65,19 +69,17 @@ class OutboxAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(OutboxService::class)
     fun outboxService(
-        outboxMessageRepository: OutboxMessageRepository,
-        objectMapper: ObjectMapper,
-    ): OutboxService {
-        return OutboxService(
-            outboxMessageRepository,
-            objectMapper
+        outboxMessageRepository: OutboxMessageRepository
+    ): OutboxService<Any> {
+        return DefaultOutboxService(
+            outboxMessageRepository
         )
     }
 
     @Bean
     @ConditionalOnMissingBean(PollingPublisherService::class)
     fun pollingPublisherService(
-        outboxService: OutboxService,
+        outboxService: OutboxService<*>,
         messagePublisher: MessagePublisher,
         platformTransactionManager: PlatformTransactionManager
     ): PollingPublisherService {

@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.service
+package com.ritense.outbox.domain
 
-import com.ritense.outbox.domain.OutboxMessage
-import java.util.UUID
+import java.io.Serializable
 
-interface OutboxService<T> {
-
-    fun send(message: T)
-
-    fun getOldestMessage(): OutboxMessage?
-
-    fun deleteMessage(id: UUID)
+interface DomainEvent: Serializable {
 }

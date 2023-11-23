@@ -23,7 +23,7 @@ import org.springframework.transaction.support.TransactionTemplate
 import java.util.concurrent.atomic.AtomicBoolean
 
 open class PollingPublisherService(
-    private val outboxService: OutboxService,
+    private val outboxService: OutboxService<*>,
     private val messagePublisher: MessagePublisher,
     private val platformTransactionManager: PlatformTransactionManager
 ) {

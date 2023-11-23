@@ -32,6 +32,9 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
 
+    implementation "io.cloudevents:cloudevents-spring:${cloudeventsSpring}"
+    implementation "io.cloudevents:cloudevents-json-jackson:${cloudeventsSpring}"
+
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.postgresql:postgresql:$postgresqlDriverVersion"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"

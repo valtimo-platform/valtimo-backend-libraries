@@ -41,14 +41,14 @@ class PollingPublisherServiceIntTest : BaseIntegrationTest() {
     fun `should send OutboxMessage`() {
         val event = OrderCreatedEvent("textBook")
 
-        assertThat(outboxService.getOldestMessage()).isNull()
+        assertThat(defaultOutboxService.getOldestMessage()).isNull()
 
-        outboxService.send(event)
-        assertThat(outboxService.getOldestMessage()).isNotNull()
+        defaultOutboxService.send(event)
+        assertThat(defaultOutboxService.getOldestMessage()).isNotNull()
 
         pollingPublisherService.pollAndPublishAll()
 
-        assertThat(outboxService.getOldestMessage()).isNull()
+        assertThat(defaultOutboxService.getOldestMessage()).isNull()
         verify(messagePublisher).publish(any())
     }
 
