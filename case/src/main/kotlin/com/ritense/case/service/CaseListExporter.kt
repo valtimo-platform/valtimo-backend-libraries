@@ -34,7 +34,7 @@ class CaseListExporter(
         val listColumns = caseDefinitionService.getListColumns(request.name)
 
         val exportFile = ByteArrayOutputStream().use {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(it, (listColumns))
+            mapper.writerWithDefaultPrettyPrinter().writeValue(it, listColumns)
 
             ExportFile(
                 PATH.format(request.name),
