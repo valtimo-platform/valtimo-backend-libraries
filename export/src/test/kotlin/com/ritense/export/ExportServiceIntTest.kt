@@ -17,5 +17,4 @@ class ExportServiceIntTest @Autowired constructor(
 
         assertThat(zipEntry).isNotNull
     }
-
 }

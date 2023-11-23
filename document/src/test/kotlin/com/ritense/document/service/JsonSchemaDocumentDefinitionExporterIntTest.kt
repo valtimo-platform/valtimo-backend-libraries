@@ -25,8 +25,10 @@ import org.skyscreamer.jsonassert.JSONCompareMode
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 
+@Transactional(readOnly = true)
 class JsonSchemaDocumentDefinitionExporterIntTest @Autowired constructor(
     private val resourceLoader: ResourceLoader,
     private val documentDefinitionExportService: JsonSchemaDocumentDefinitionExporter
