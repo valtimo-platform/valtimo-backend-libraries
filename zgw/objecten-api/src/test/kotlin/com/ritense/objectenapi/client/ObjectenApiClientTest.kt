@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
+import com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath
 import com.ritense.objectenapi.ObjectenApiAuthentication
 import com.ritense.objectenapi.event.ObjectCreated
 import com.ritense.objectenapi.event.ObjectDeleted
@@ -34,6 +36,8 @@ import com.ritense.outbox.domain.BaseEvent
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
@@ -325,7 +329,7 @@ internal class ObjectenApiClientTest {
               "results": [{
                   "url": "http://example.com",
                   "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
-                  "type": "http://example.com",
+                  "type":createObject "http://example.com",
                   "record": {
                     "index": 0,
                     "typeVersion": 32767,
@@ -495,6 +499,126 @@ internal class ObjectenApiClientTest {
         mockApi.takeRequest()
 
         verify(outboxService, times(0)).send(eventCapture.capture())
+    }
+
+    @Test
+    fun `should send post request when creating object`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        val responseBody = """
+            {
+              "url": "http://example.com",
+              "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+              "type": "http://example.com",
+              "record": {
+                "index": 0,
+                "typeVersion": 32767,
+                "data": {
+                  "property1": "henk",
+                  "property2": 123
+                },
+                "geometry": {
+                  "type": "string",
+                  "coordinates": [
+                    0,
+                    0
+                  ]
+                },
+                "startAt": "2019-08-24",
+                "endAt": "2019-08-25",
+                "registrationAt": "2019-08-26",
+                "correctionFor": "string",
+                "correctedBy": "string2"
+              }
+            }
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val objectUrl = mockApi.url("/some-object").toString()
+        val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString().replace("localhost", "host")
+
+        client.createObject(
+            TestAuthentication(),
+            URI(objectUrl),
+            ObjectRequest(
+                URI(objectTypesApiUrl),
+                ObjectRecord(
+                    index = 1,
+                    typeVersion = 2,
+                    data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                    startAt = LocalDate.of(2000, 1, 2)
+                )
+            )
+        )
+
+        val request = mockApi.takeRequest()
+        val requestJson = request.body.readUtf8()
+
+        //don't send null uuid when none has been set
+        assertThat(requestJson, hasNoJsonPath("$.uuid"))
+    }
+
+    @Test
+    fun `should send post request with uuid when uuid has been provided when creating object`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        val responseBody = """
+            {
+              "url": "http://example.com",
+              "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+              "type": "http://example.com",
+              "record": {
+                "index": 0,
+                "typeVersion": 32767,
+                "data": {
+                  "property1": "henk",
+                  "property2": 123
+                },
+                "geometry": {
+                  "type": "string",
+                  "coordinates": [
+                    0,
+                    0
+                  ]
+                },
+                "startAt": "2019-08-24",
+                "endAt": "2019-08-25",
+                "registrationAt": "2019-08-26",
+                "correctionFor": "string",
+                "correctedBy": "string2"
+              }
+            }
+        """.trimIndent()
+
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val objectUrl = mockApi.url("/some-object").toString()
+        val objectTypesApiUrl = mockApi.url("/some-objectTypesApi").toString().replace("localhost", "host")
+
+        val objectId = UUID.randomUUID()
+
+        client.createObject(
+            TestAuthentication(),
+            URI(objectUrl),
+            ObjectRequest(
+                objectId,
+                URI(objectTypesApiUrl),
+                ObjectRecord(
+                    index = 1,
+                    typeVersion = 2,
+                    data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                    startAt = LocalDate.of(2000, 1, 2)
+                )
+            )
+        )
+
+        val request = mockApi.takeRequest()
+        val requestJson = request.body.readUtf8()
+
+        assertThat(requestJson, hasJsonPath("$.uuid", equalTo(objectId.toString())))
     }
 
     @Test
