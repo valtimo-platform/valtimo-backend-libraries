@@ -4,6 +4,7 @@ import io.cloudevents.CloudEvent
 import io.cloudevents.core.format.EventFormat
 import io.cloudevents.core.provider.EventFormatProvider
 import io.cloudevents.jackson.JsonFormat
+import java.lang.RuntimeException
 import java.util.UUID
 
 class CloudEventOutboxService(private val outboxService: OutboxService<Any>): OutboxService<CloudEvent> {
@@ -23,6 +24,6 @@ class CloudEventOutboxService(private val outboxService: OutboxService<Any>): Ou
     companion object {
         val jsonFormat: EventFormat = EventFormatProvider
             .getInstance()
-            .resolveFormat(JsonFormat.CONTENT_TYPE)!!
+            .resolveFormat(JsonFormat.CONTENT_TYPE) ?: throw RuntimeException("Could not find JSON format")
     }
 }

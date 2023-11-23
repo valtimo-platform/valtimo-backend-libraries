@@ -20,17 +20,18 @@ import com.ritense.outbox.BaseIntegrationTest
 import com.ritense.outbox.domain.DomainEvent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class DomainEventOutboxServiceIntTest : BaseIntegrationTest() {
 
-    @Autowired
-    lateinit var domainEventOutboxService: DomainEventOutboxService
-
     @Test
     fun `should create OutboxMessage`() {
+        val domainEventOutboxService = DomainEventOutboxService(
+            CloudEventOutboxService(defaultOutboxService),
+            objectMapper
+        )
+
         val event = OrderCreatedEvent("textbook")
 
         domainEventOutboxService.send(event)

@@ -18,6 +18,7 @@ package com.ritense.outbox.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.ritense.outbox.domain.DomainEvent
 import com.ritense.outbox.publisher.DefaultMessagePublisher
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.PollingPublisherJob
@@ -67,18 +68,11 @@ class OutboxAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(OutboxService::class)
-    fun defaultOutboxService(
-        outboxMessageRepository: OutboxMessageRepository,
-        objectMapper: ObjectMapper,
-    ): OutboxService<*> {
-        return DomainEventOutboxService(
-            CloudEventOutboxService(
-                DefaultOutboxService(
-                    outboxMessageRepository,
-                    objectMapper
-                )
-            ),
-            objectMapper
+    fun outboxService(
+        outboxMessageRepository: OutboxMessageRepository
+    ): OutboxService<Any> {
+        return DefaultOutboxService(
+            outboxMessageRepository
         )
     }
 
