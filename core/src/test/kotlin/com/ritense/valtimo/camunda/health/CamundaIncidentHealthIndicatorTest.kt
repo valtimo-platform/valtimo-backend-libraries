@@ -38,12 +38,12 @@ class CamundaIncidentHealthIndicatorTest {
     @Test
     fun `should return up when no incidents exist`(){
         whenever(runtimeService.createIncidentQuery().count()).thenReturn(0L)
-        assertEquals(Health.up().build(), indicator.health())
+        assertEquals(Health.up().withDetail("incident count", 0L).build(), indicator.health())
     }
 
     @Test
     fun `should return unknown when incidents exist`(){
         whenever(runtimeService.createIncidentQuery().count()).thenReturn(2L)
-        assertEquals(Health.unknown().build(), indicator.health())
+        assertEquals(Health.unknown().withDetail("incident count", 2L).build(), indicator.health())
     }
 }
