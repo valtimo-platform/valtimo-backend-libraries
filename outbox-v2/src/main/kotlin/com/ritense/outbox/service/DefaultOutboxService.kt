@@ -16,7 +16,6 @@
 
 package com.ritense.outbox.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.domain.OutboxMessage
 import com.ritense.outbox.repository.OutboxMessageRepository
 import mu.KotlinLogging
