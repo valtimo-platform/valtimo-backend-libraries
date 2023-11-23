@@ -122,6 +122,7 @@ class ObjectManagementFacade(
     }
 
     fun createObject(
+        objectId: UUID? = null,
         objectName: String,
         data: JsonNode
     ): ObjectWrapper {
@@ -130,6 +131,7 @@ class ObjectManagementFacade(
             accessObject.objectTypenApiPlugin.getObjectTypeUrlById(accessObject.objectManagement.objecttypeId)
 
         val objectRequest = ObjectRequest(
+            objectId,
             objectTypeUrl,
             ObjectRecord(
                 typeVersion = accessObject.objectManagement.objecttypeVersion,
