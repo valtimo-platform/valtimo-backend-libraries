@@ -127,6 +127,24 @@ class PermissionConditionOperatorTest {
         assertEquals(false, op, "b", "a")
     }
 
+    @Test
+    fun `IN should evaluate correctly`() {
+        val op = PermissionConditionOperator.IN
+
+        assertEquals(true, op, "a", listOf("a", "b"))
+        assertEquals(true, op, "b", listOf("a", "b"))
+        assertEquals(false, op, "c", listOf("a", "b"))
+        assertEquals(false, op, 1.36, listOf(1.34, 1.35))
+        assertEquals(true, op, 1.35, listOf(1.34, 1.35))
+        assertEquals(true, op, null, listOf(null))
+        assertEquals(false, op, "a", listOf(null))
+        assertEquals(false, op, null, listOf("a"))
+        assertEquals(true, op, null, null)
+        assertEquals(false, op, "a", null)
+        assertEquals(true, op, "a", "a")
+        assertEquals(false, op, "a", "b")
+    }
+
     private fun assertEquals(expected: Boolean, op: PermissionConditionOperator, left: Any?, right: Any?) {
         assertEquals(expected, op.evaluate(left, right), "[ $left ${op.asText} $right ]")
     }

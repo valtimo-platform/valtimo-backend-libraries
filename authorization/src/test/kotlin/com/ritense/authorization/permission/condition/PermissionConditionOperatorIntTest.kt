@@ -21,6 +21,7 @@ import com.ritense.authorization.permission.condition.PermissionConditionOperato
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.GREATER_THAN
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.GREATER_THAN_OR_EQUAL_TO
+import com.ritense.authorization.permission.condition.PermissionConditionOperator.IN
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.LESS_THAN
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.LESS_THAN_OR_EQUAL_TO
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.NOT_EQUAL_TO
@@ -134,6 +135,27 @@ class PermissionConditionOperatorIntTest @Autowired constructor(
         Assertions.assertThat(results).containsOnly(fourEntity)
     }
 
+    @Test
+    fun `IN should not match`() {
+        val results = findMultipleByNumber(IN, listOf(1))
+
+        Assertions.assertThat(results).isEmpty()
+    }
+
+    @Test
+    fun `IN should match single value`() {
+        val results = findMultipleByNumber(IN, listOf(4))
+
+        Assertions.assertThat(results).containsOnly(fourEntity)
+    }
+
+    @Test
+    fun `IN should match multiple values`() {
+        val results = findMultipleByNumber(IN, listOf(1, 2, 4, 5))
+
+        Assertions.assertThat(results).containsOnly(fourEntity, fiveEntity)
+    }
+
     private fun findByFruits(op: PermissionConditionOperator, fruit: String?): MutableList<TestEntity> =
         testEntityRepository.findAll { root, _, criteriaBuilder ->
             op.toPredicate<Int>(
@@ -149,6 +171,15 @@ class PermissionConditionOperatorIntTest @Autowired constructor(
                 criteriaBuilder,
                 root.get<Int>("someNumber"),
                 number
+            )
+        }
+
+    private fun findMultipleByNumber(op: PermissionConditionOperator, numbers: List<Int?>?): MutableList<TestEntity> =
+        testEntityRepository.findAll { root, _, criteriaBuilder ->
+            op.toPredicate<Int>(
+                criteriaBuilder,
+                root.get<Int>("someNumber"),
+                numbers
             )
         }
 }
