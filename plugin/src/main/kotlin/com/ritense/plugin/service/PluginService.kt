@@ -310,6 +310,9 @@ class PluginService(
 
         val method = getActionMethod(instance, processLink)
         val methodArguments = resolveMethodArguments(method, task, processLink.actionProperties)
+
+        logger.debug { "Invoking method ${method.name} of class ${instance.javaClass.simpleName} for task ${task.taskDefinitionKey} of process-instance ${task.processInstanceId}" }
+
         return method.invoke(instance, *methodArguments)
     }
 
