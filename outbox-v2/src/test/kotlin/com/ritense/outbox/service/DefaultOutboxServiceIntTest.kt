@@ -26,18 +26,13 @@ class DefaultOutboxServiceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create OutboxMessage`() {
-        val event = OrderCreatedEvent("textBook")
+        val event = "An event happened"
 
         defaultOutboxService.send(event)
 
         val message = defaultOutboxService.getOldestMessage()
-        assertThat(message?.message).isEqualTo(
-            objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(event)
-        )
-        assertThat(message?.eventType).isEqualTo("OrderCreatedEvent")
+        assertThat(message?.message).isEqualTo(event)
+        assertThat(message?.eventType).isEqualTo("String")
     }
 
-    data class OrderCreatedEvent(
-        val name: String
-    )
 }
