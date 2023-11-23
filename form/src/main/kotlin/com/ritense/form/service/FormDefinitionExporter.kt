@@ -39,6 +39,6 @@ class FormDefinitionExporter(
     }
 
     companion object {
-        internal const val PATH = "config/form/%s.json"
+        private const val PATH = "config/form/%s.json"
     }
 }

@@ -108,9 +108,11 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(JsonSchemaDocumentDefinitionExporter.class)
     public JsonSchemaDocumentDefinitionExporter documentDefinitionExporter(
-        final JsonSchemaDocumentDefinitionService documentDefinitionService
+        final JsonSchemaDocumentDefinitionService documentDefinitionService,
+        ObjectMapper objectMapper
     ) {
         return new JsonSchemaDocumentDefinitionExporter(
+            objectMapper,
             documentDefinitionService
         );
     }

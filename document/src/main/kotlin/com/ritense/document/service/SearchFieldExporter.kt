@@ -16,7 +16,7 @@
 
 package com.ritense.document.service
 
-import com.ritense.document.domain.impl.Mapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.domain.search.SearchConfigurationDto
 import com.ritense.export.ExportFile
 import com.ritense.export.Exporter
@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
 class SearchFieldExporter(
+    private val objectMapper: ObjectMapper,
     private val searchFieldService: SearchFieldService,
 ) : Exporter<DocumentDefinitionExportRequest>{
 
@@ -39,7 +40,7 @@ class SearchFieldExporter(
         }
 
         val exportFile = ByteArrayOutputStream().use {
-            MAPPER.writerWithDefaultPrettyPrinter().writeValue(it, SearchConfigurationDto(searchFields))
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(it, SearchConfigurationDto(searchFields))
 
             ExportFile(
                 PATH.format(request.name),
@@ -51,7 +52,6 @@ class SearchFieldExporter(
     }
 
     companion object {
-        internal const val PATH = "config/search/%s.json"
-        private val MAPPER = Mapper.INSTANCE.get()
+        private const val PATH = "config/search/%s.json"
     }
 }

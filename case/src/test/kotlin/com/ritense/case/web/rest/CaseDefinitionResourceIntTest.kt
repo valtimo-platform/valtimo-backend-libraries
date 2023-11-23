@@ -25,8 +25,11 @@ import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
+import java.io.ByteArrayInputStream
+import java.util.zip.ZipInputStream
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -1173,14 +1176,19 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
     fun `should export case definitions as an admin`() {
         val caseDefinitionName = "house"
         val caseDefinitionVersion = 1
-        mockMvc.perform(
+        val result = mockMvc.perform(
             MockMvcRequestBuilders.get(
                 "/api/management/v1/case/{caseDefinitionName}/{caseDefinitionVersion}/export",
                 caseDefinitionName, caseDefinitionVersion
             )
         ).andExpect(status().isOk)
-            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM_VALUE))
             .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE))
+            .andReturn()
+
+        ZipInputStream(ByteArrayInputStream(result.response.contentAsByteArray)).use {
+            assertThat(it.nextEntry).isNotNull
+        }
     }
 
     private fun createListColumn(caseDefinitionName: String, json: String, expectedStatus: ResultMatcher) {

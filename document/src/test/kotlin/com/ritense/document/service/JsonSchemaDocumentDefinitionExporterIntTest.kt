@@ -18,9 +18,7 @@ package com.ritense.document.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.BaseIntegrationTest
-import com.ritense.document.service.JsonSchemaDocumentDefinitionExporter.Companion.PATH
 import com.ritense.export.request.DocumentDefinitionExportRequest
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -45,19 +43,22 @@ class JsonSchemaDocumentDefinitionExporterIntTest @Autowired constructor(
         val personDefinitionExport = exportFiles.singleOrNull {
             it.path == path
         }
-        assertThat(personDefinitionExport).isNotNull
         requireNotNull(personDefinitionExport)
-        val content = personDefinitionExport.content.toString(Charsets.UTF_8)
-        val expectedString = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+        val resultJson = personDefinitionExport.content.toString(Charsets.UTF_8)
+        val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:$path")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
             }
         JSONAssert.assertEquals(
-            expectedString,
-            content,
+            expectedJson,
+            resultJson,
             JSONCompareMode.NON_EXTENSIBLE
         )
+    }
+
+    companion object {
+        private const val PATH = "config/document/definition/%s.schema.json"
     }
 }

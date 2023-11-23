@@ -165,11 +165,11 @@ class CaseDefinitionResource(
     ): ResponseEntity<ByteArray> {
         val baos = exportService
             .export(DocumentDefinitionExportRequest(caseDefinitionName, caseDefinitionVersion))
-        val fileName = caseDefinitionName + "_" + caseDefinitionVersion + "_" +
-            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_hh-mm-ss"))
+        val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_hh-mm-ss"))
+        val fileName = "${caseDefinitionName}_${caseDefinitionVersion}_$timestamp.valtimo.zip"
         return ResponseEntity
             .ok()
-            .header("Content-Disposition", "attachment;filename=" + fileName + ".valtimo.zip")
+            .header("Content-Disposition", "attachment;filename=$fileName")
             .body(baos.toByteArray())
     }
 }

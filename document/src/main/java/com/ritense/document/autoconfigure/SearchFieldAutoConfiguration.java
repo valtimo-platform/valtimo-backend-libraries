@@ -45,9 +45,10 @@ public class SearchFieldAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(SearchFieldExporter.class)
     public SearchFieldExporter searchFieldExporter(
-        final SearchFieldService searchFieldService
+        final SearchFieldService searchFieldService,
+        ObjectMapper objectMapper
     ) {
-        return new SearchFieldExporter(searchFieldService);
+        return new SearchFieldExporter(objectMapper, searchFieldService);
     }
 
     @Bean

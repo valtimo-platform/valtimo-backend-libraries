@@ -18,9 +18,7 @@ package com.ritense.document.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.BaseIntegrationTest
-import com.ritense.document.service.SearchFieldExporter.Companion.PATH
 import com.ritense.export.request.DocumentDefinitionExportRequest
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -43,19 +41,22 @@ class SearchFieldExporterIntTest @Autowired constructor(
         val export = exportFiles.singleOrNull {
             it.path == path
         }
-        assertThat(export).isNotNull
         requireNotNull(export)
-        val content = export.content.toString(Charsets.UTF_8)
-        val expectedString = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+        val exportJson = export.content.toString(Charsets.UTF_8)
+        val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:$path")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
             }
         JSONAssert.assertEquals(
-            expectedString,
-            content,
+            expectedJson,
+            exportJson,
             JSONCompareMode.NON_EXTENSIBLE
         )
+    }
+
+    companion object {
+        private const val PATH = "config/search/%s.json"
     }
 }

@@ -16,8 +16,8 @@
 
 package com.ritense.document.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
-import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.export.ExportFile
 import com.ritense.export.Exporter
@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
 class JsonSchemaDocumentDefinitionExporter(
+    private val objectMapper: ObjectMapper,
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService
 ) : Exporter<DocumentDefinitionExportRequest> {
 
@@ -38,7 +39,7 @@ class JsonSchemaDocumentDefinitionExporter(
         val documentDefinition = documentDefinitionService.findBy(documentDefinitionId).orElseThrow()
 
         val exportFile = ByteArrayOutputStream().use {
-            MAPPER.writerWithDefaultPrettyPrinter().writeValue(it, documentDefinition.schema.asJson())
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(it, documentDefinition.schema.asJson())
 
             ExportFile(
                 PATH.format(documentDefinition.id.name()),
@@ -50,7 +51,6 @@ class JsonSchemaDocumentDefinitionExporter(
     }
 
     companion object {
-        internal const val PATH = "config/document/definition/%s.schema.json"
-        private val MAPPER = Mapper.INSTANCE.get()
+        private const val PATH = "config/document/definition/%s.schema.json"
     }
 }

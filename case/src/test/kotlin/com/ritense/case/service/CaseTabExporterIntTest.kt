@@ -39,25 +39,28 @@ class CaseTabExporterIntTest @Autowired constructor(
 
         val exportFiles = caseTabExportService.export(DocumentDefinitionExportRequest(caseDefinitionName, 1))
 
-        val path = CaseTabExporter.PATH.format(caseDefinitionName)
+        val path = PATH.format(caseDefinitionName)
         val caseTabsExport = exportFiles.singleOrNull {
             it.path == path
         }
-        assertThat(caseTabsExport).isNotNull
         requireNotNull(caseTabsExport)
-        val content = caseTabsExport.content.toString(Charsets.UTF_8)
-        val expectedString = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+        val exportJson = caseTabsExport.content.toString(Charsets.UTF_8)
+        val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:config/case-tabs/$caseDefinitionName.case-tabs.json")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
             }
         JSONAssert.assertEquals(
-            expectedString,
-            content,
+            expectedJson,
+            exportJson,
             JSONCompareMode.NON_EXTENSIBLE
         )
 
         assertThat(exportFiles.singleOrNull { it.path == "test-form.json" }).isNotNull
+    }
+
+    companion object {
+        private const val PATH = "config/%s.case-tabs.json"
     }
 }

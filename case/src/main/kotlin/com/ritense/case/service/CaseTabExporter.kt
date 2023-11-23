@@ -52,7 +52,7 @@ class CaseTabExporter(
             )
         )
         val caseTabExport = ExportFile(
-            "config/${caseName}.case-tabs.json",
+            PATH.format(caseName),
             objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(caseTabChangeset)
         )
 
@@ -70,6 +70,6 @@ class CaseTabExporter(
     }
 
     companion object {
-        internal const val PATH = "config/%s.case-tabs.json"
+        private const val PATH = "config/%s.case-tabs.json"
     }
 }
