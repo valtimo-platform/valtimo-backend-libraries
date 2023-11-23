@@ -16,6 +16,7 @@
 
 package com.ritense.outbox.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.domain.OutboxMessage
 import com.ritense.outbox.repository.OutboxMessageRepository
 import mu.KotlinLogging
@@ -25,7 +26,8 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 open class DefaultOutboxService(
-    private val outboxMessageRepository: OutboxMessageRepository
+    private val outboxMessageRepository: OutboxMessageRepository,
+    private val objectMapper: ObjectMapper,
 ): OutboxService<Any> {
 
     @Transactional(propagation = Propagation.MANDATORY)
@@ -57,9 +59,9 @@ open class DefaultOutboxService(
         outboxMessageRepository.save(outboxMessage)
     }
 
-    override fun getOldestMessage() = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+    open fun getOldestMessage() = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
 
-    override fun deleteMessage(id: UUID) = outboxMessageRepository.deleteById(id)
+    open fun deleteMessage(id: UUID) = outboxMessageRepository.deleteById(id)
 
     companion object {
         private val logger = KotlinLogging.logger {}

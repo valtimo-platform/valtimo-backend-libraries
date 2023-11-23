@@ -18,7 +18,6 @@ package com.ritense.outbox.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.ritense.outbox.domain.DomainEvent
 import com.ritense.outbox.publisher.DefaultMessagePublisher
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.PollingPublisherJob
@@ -67,24 +66,48 @@ class OutboxAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(OutboxService::class)
-    fun outboxService(
-        outboxMessageRepository: OutboxMessageRepository
-    ): OutboxService<Any> {
+    @ConditionalOnMissingBean(DefaultOutboxService::class)
+    fun defaultOutboxService(
+        outboxMessageRepository: OutboxMessageRepository,
+        objectMapper: ObjectMapper,
+    ): DefaultOutboxService {
         return DefaultOutboxService(
-            outboxMessageRepository
+            outboxMessageRepository,
+            objectMapper
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CloudEventOutboxService::class)
+    fun cloudEventOutboxService(
+        defaultOutboxService: DefaultOutboxService
+    ): CloudEventOutboxService {
+        return CloudEventOutboxService(
+            defaultOutboxService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DomainEventOutboxService::class)
+    fun domainEventOutboxService(
+        cloudEventOutboxService: CloudEventOutboxService,
+        objectMapper: ObjectMapper
+    ): DomainEventOutboxService {
+        return DomainEventOutboxService(
+            cloudEventOutboxService,
+            objectMapper
         )
     }
 
     @Bean
     @ConditionalOnMissingBean(PollingPublisherService::class)
     fun pollingPublisherService(
-        outboxService: OutboxService<*>,
+        defaultOutboxService: DefaultOutboxService,
         messagePublisher: MessagePublisher,
         platformTransactionManager: PlatformTransactionManager
     ): PollingPublisherService {
         return PollingPublisherService(
-            outboxService,
+            defaultOutboxService,
             messagePublisher,
             platformTransactionManager
         )

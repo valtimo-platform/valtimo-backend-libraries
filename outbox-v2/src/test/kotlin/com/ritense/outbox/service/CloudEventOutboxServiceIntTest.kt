@@ -30,10 +30,11 @@ import java.util.UUID
 @Transactional
 class CloudEventOutboxServiceIntTest : BaseIntegrationTest() {
 
+    @Autowired
+    lateinit var cloudEventOutboxService: CloudEventOutboxService
+
     @Test
     fun `should create OutboxMessage`() {
-        val cloudEventOutboxService = CloudEventOutboxService(defaultOutboxService)
-
         val cloudEvent = CloudEventBuilder.v1()
             .withId(UUID.randomUUID().toString())
             .withSource(URI("http://allnex"))

@@ -18,7 +18,6 @@ package com.ritense.outbox
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.service.DefaultOutboxService
-import com.ritense.outbox.service.OutboxService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,6 +33,6 @@ abstract class BaseIntegrationTest {
     lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    lateinit var defaultOutboxService: OutboxService<Any>
+    lateinit var defaultOutboxService: DefaultOutboxService
 
 }
