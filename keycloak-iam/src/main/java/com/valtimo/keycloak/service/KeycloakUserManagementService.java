@@ -24,6 +24,7 @@ import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCrite
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
@@ -90,15 +91,20 @@ public class KeycloakUserManagementService implements UserManagementService {
     }
 
     public Integer countUsers() {
-        return keycloakService.usersResource().count();
+        try (Keycloak keycloak = keycloakService.keycloak()) {
+            return keycloakService.usersResource(keycloak).count();
+        }
     }
 
     @Override
     public List<ManageableUser> getAllUsers() {
-        var users = keycloakService.usersResource().list(0, MAX_USERS).stream()
-            .filter(UserRepresentation::isEnabled)
-            .map(this::toManageableUserByRetrievingRoles)
-            .toList();
+        List<ManageableUser> users;
+        try (Keycloak keycloak = keycloakService.keycloak()) {
+            users = keycloakService.usersResource(keycloak).list(0, MAX_USERS).stream()
+                .filter(UserRepresentation::isEnabled)
+                .map(this::toManageableUserByRetrievingRoles)
+                .toList();
+        }
 
         if (users.size() >= MAX_USERS) {
             logger.warn(MAX_USERS_WARNING_MESSAGE);
@@ -114,15 +120,21 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public Optional<ManageableUser> findByEmail(String email) {
-        var userList = keycloakService
-            .usersResource()
-            .search(null, null, null, email, 0, 1, true, true);
+        List<UserRepresentation> userList;
+        try (Keycloak keycloak = keycloakService.keycloak()) {
+            userList = keycloakService
+                .usersResource(keycloak)
+                .search(null, null, null, email, 0, 1, true, true);
+        }
         return userList.isEmpty() ? Optional.empty() : Optional.of(toManageableUserByRetrievingRoles(userList.get(0)));
     }
 
     @Override
     public ValtimoUser findById(String userId) {
-        var user = keycloakService.usersResource().get(userId).toRepresentation();
+        UserRepresentation user;
+        try (Keycloak keycloak = keycloakService.keycloak()) {
+            user = keycloakService.usersResource(keycloak).get(userId).toRepresentation();
+        }
         return Boolean.TRUE.equals(user.isEnabled()) ? toValtimoUserByRetrievingRoles(user) : null;
     }
 
@@ -145,7 +157,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             .toList();
 
         return allUsers.stream()
-            .filter(user -> user.getRoles().containsAll(groupsCriteria.getRequiredUserGroups()))
+            .filter(user -> new HashSet<>(user.getRoles()).containsAll(groupsCriteria.getRequiredUserGroups()))
             .filter(user -> groupsCriteria.getOrUserGroups().stream()
                 .map(userGroups -> user.getRoles().stream().anyMatch(userGroups::contains))
                 .reduce(true, (orUserGroup1, orUserGroup2) -> orUserGroup1 && orUserGroup2))
@@ -181,7 +193,10 @@ public class KeycloakUserManagementService implements UserManagementService {
         boolean rolesFound = false;
 
         try {
-            var users = keycloakService.realmRolesResource().get(authority).getRoleUserMembers(0, MAX_USERS);
+            Set<UserRepresentation> users;
+            try (Keycloak keycloak = keycloakService.keycloak()) {
+                users = keycloakService.realmRolesResource(keycloak).get(authority).getRoleUserMembers(0, MAX_USERS);
+            }
             if (users.size() >= MAX_USERS) {
                 logger.warn(MAX_USERS_WARNING_MESSAGE);
             }
@@ -193,7 +208,10 @@ public class KeycloakUserManagementService implements UserManagementService {
 
         if (!clientName.isBlank()) {
             try {
-                var users = keycloakService.clientRolesResource().get(authority).getRoleUserMembers(0, MAX_USERS);
+                Set<UserRepresentation> users;
+                try (Keycloak keycloak = keycloakService.keycloak()) {
+                    users = keycloakService.clientRolesResource(keycloak).get(authority).getRoleUserMembers(0, MAX_USERS);
+                }
                 if (users.size() >= MAX_USERS) {
                     logger.warn(MAX_USERS_WARNING_MESSAGE);
                 }
@@ -240,19 +258,21 @@ public class KeycloakUserManagementService implements UserManagementService {
     }
 
     private List<RoleRepresentation> getRolesFromUser(UserRepresentation userRepresentation) {
-        var realmRoles = keycloakService
-            .usersResource()
-            .get(userRepresentation.getId())
-            .roles().realmLevel().listAll();
-        var roles = new ArrayList<>(realmRoles);
-        if (!clientName.isBlank()) {
-            var clientRoles = keycloakService
-                .usersResource()
+        try (Keycloak keycloak = keycloakService.keycloak()) {
+            var realmRoles = keycloakService
+                .usersResource(keycloak)
                 .get(userRepresentation.getId())
-                .roles().clientLevel(keycloakService.getClientId()).listAll();
-            roles.addAll(clientRoles);
+                .roles().realmLevel().listAll();
+            var roles = new ArrayList<>(realmRoles);
+            if (!clientName.isBlank()) {
+                var clientRoles = keycloakService
+                    .usersResource(keycloak)
+                    .get(userRepresentation.getId())
+                    .roles().clientLevel(keycloakService.getClientId(keycloak)).listAll();
+                roles.addAll(clientRoles);
+            }
+            return roles;
         }
-        return roles;
     }
 
     private ValtimoUser toValtimoUserByRetrievingRoles(UserRepresentation userRepresentation) {

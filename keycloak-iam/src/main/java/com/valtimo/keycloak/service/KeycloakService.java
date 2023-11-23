@@ -49,23 +49,23 @@ public class KeycloakService {
             .build();
     }
 
-    public UsersResource usersResource() {
-        return realmResource().users();
+    public UsersResource usersResource(Keycloak keycloak) {
+        return realmResource(keycloak).users();
     }
 
-    public RolesResource realmRolesResource() {
-        return realmResource().roles();
+    public RolesResource realmRolesResource(Keycloak keycloak) {
+        return realmResource(keycloak).roles();
     }
 
-    public RolesResource clientRolesResource() {
-        return clientResource().roles();
+    public RolesResource clientRolesResource(Keycloak keycloak) {
+        return clientResource(keycloak).roles();
     }
 
-    public String getClientId() {
+    public String getClientId(Keycloak keycloak) {
         if (clientName.isBlank()) {
             throw new IllegalStateException("Error. Missing property: 'valtimo.keycloak.client'");
         }
-        var clients = keycloak().realm(properties.getRealm()).clients().findByClientId(clientName);
+        var clients = keycloak.realm(properties.getRealm()).clients().findByClientId(clientName);
         if (clients.size() == 1) {
             return clients.get(0).getId();
         } else {
@@ -73,12 +73,12 @@ public class KeycloakService {
         }
     }
 
-    private RealmResource realmResource() {
-        return keycloak().realm(properties.getRealm());
+    private RealmResource realmResource(Keycloak keycloak) {
+        return keycloak.realm(properties.getRealm());
     }
 
-    private ClientResource clientResource() {
-        return keycloak().realm(properties.getRealm()).clients().get(getClientId());
+    private ClientResource clientResource(Keycloak keycloak) {
+        return keycloak.realm(properties.getRealm()).clients().get(getClientId(keycloak));
     }
 
 }
