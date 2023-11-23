@@ -5,13 +5,13 @@ import com.valtimo.keycloak.service.KeycloakService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.keycloak.admin.client.Keycloak
-import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.representations.idm.RoleRepresentation
 import org.mockito.Answers
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 
@@ -51,18 +51,9 @@ internal class KeycloakRoleServiceTest {
     }
 
     private fun defaultConditions() {
-        whenever(keycloakService.keycloak()).thenReturn(keycloak())
+        whenever(keycloakService.keycloak()).thenReturn(mock<Keycloak>())
         whenever(keycloakService.realmRolesResource(any()).list(any())).thenReturn(roleRepresentationList())
     }
-
-    private fun keycloak(): Keycloak = KeycloakBuilder.builder()
-        .serverUrl("")
-        .realm("")
-        .username("")
-        .authorization("")
-        .clientId("")
-        .clientSecret("")
-        .build()
 
     private fun roleRepresentationList(): List<RoleRepresentation> = listOf(
         RoleRepresentation("ROLE_TEAM_TEST", "", false),

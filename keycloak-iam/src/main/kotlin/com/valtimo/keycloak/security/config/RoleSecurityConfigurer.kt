@@ -20,6 +20,7 @@ import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 
 
@@ -28,7 +29,7 @@ class RoleSecurityConfigurer: HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/v1/role").hasAnyAuthority(ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/v1/role").hasAnyAuthority(USER, ADMIN)
         } catch (e: Exception)  {
             throw HttpConfigurerConfigurationException(e)
         }
