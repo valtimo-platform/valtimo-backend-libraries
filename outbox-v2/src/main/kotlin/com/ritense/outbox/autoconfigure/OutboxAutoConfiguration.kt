@@ -23,6 +23,9 @@ import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.PollingPublisherJob
 import com.ritense.outbox.publisher.PollingPublisherService
 import com.ritense.outbox.repository.OutboxMessageRepository
+import com.ritense.outbox.service.CloudEventOutboxService
+import com.ritense.outbox.service.DefaultOutboxService
+import com.ritense.outbox.service.DomainEventOutboxService
 import com.ritense.outbox.service.OutboxService
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -63,13 +66,35 @@ class OutboxAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(OutboxService::class)
-    fun outboxService(
+    @ConditionalOnMissingBean(DefaultOutboxService::class)
+    fun defaultOutboxService(
         outboxMessageRepository: OutboxMessageRepository,
         objectMapper: ObjectMapper,
-    ): OutboxService {
-        return OutboxService(
+    ): DefaultOutboxService {
+        return DefaultOutboxService(
             outboxMessageRepository,
+            objectMapper
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CloudEventOutboxService::class)
+    fun cloudEventOutboxService(
+        defaultOutboxService: DefaultOutboxService
+    ): CloudEventOutboxService {
+        return CloudEventOutboxService(
+            defaultOutboxService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DomainEventOutboxService::class)
+    fun domainEventOutboxService(
+        cloudEventOutboxService: CloudEventOutboxService,
+        objectMapper: ObjectMapper
+    ): DomainEventOutboxService {
+        return DomainEventOutboxService(
+            cloudEventOutboxService,
             objectMapper
         )
     }
@@ -77,12 +102,12 @@ class OutboxAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(PollingPublisherService::class)
     fun pollingPublisherService(
-        outboxService: OutboxService,
+        defaultOutboxService: DefaultOutboxService,
         messagePublisher: MessagePublisher,
         platformTransactionManager: PlatformTransactionManager
     ): PollingPublisherService {
         return PollingPublisherService(
-            outboxService,
+            defaultOutboxService,
             messagePublisher,
             platformTransactionManager
         )

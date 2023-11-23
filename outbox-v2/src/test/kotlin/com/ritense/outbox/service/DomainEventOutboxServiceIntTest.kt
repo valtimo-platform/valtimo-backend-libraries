@@ -17,27 +17,36 @@
 package com.ritense.outbox.service
 
 import com.ritense.outbox.BaseIntegrationTest
+import io.cloudevents.core.builder.CloudEventBuilder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.util.MimeTypeUtils
+import java.net.URI
+import java.time.OffsetDateTime
+import java.util.UUID
 
 @Transactional
-class OutboxServiceIntTest : BaseIntegrationTest() {
+class DomainEventOutboxServiceIntTest : BaseIntegrationTest() {
+
+    @Autowired
+    lateinit var domainEventOutboxService: DomainEventOutboxService
 
     @Test
     fun `should create OutboxMessage`() {
-        val event = OrderCreatedEvent("textBook")
+        val event = OrderCreatedEvent("textbook")
 
-        outboxService.send(event)
+        domainEventOutboxService.send(event)
 
-        val message = outboxService.getOldestMessage()
-        assertThat(message?.message).isEqualTo(
-            objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(event)
-        )
-        assertThat(message?.eventType).isEqualTo("OrderCreatedEvent")
+        val message = defaultOutboxService.getOldestMessage()
+        val jsonMessage = objectMapper.readTree(message?.message)
+        assertThat(jsonMessage.get("type").asText()).isEqualTo(OrderCreatedEvent::class.java.simpleName)
+        assertThat(jsonMessage.get("data").get("name").asText()).isEqualTo(event.name)
     }
 
     data class OrderCreatedEvent(
         val name: String
-    )
+    ): DomainEvent
+
 }
