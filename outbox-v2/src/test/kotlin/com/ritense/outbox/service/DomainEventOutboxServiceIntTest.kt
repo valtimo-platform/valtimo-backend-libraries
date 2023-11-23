@@ -17,15 +17,11 @@
 package com.ritense.outbox.service
 
 import com.ritense.outbox.BaseIntegrationTest
-import io.cloudevents.core.builder.CloudEventBuilder
+import com.ritense.outbox.domain.DomainEvent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.util.MimeTypeUtils
-import java.net.URI
-import java.time.OffsetDateTime
-import java.util.UUID
 
 @Transactional
 class DomainEventOutboxServiceIntTest : BaseIntegrationTest() {

@@ -1,4 +1,4 @@
-package com.ritense.outbox.service
+package com.ritense.outbox.domain
 
 import java.io.Serializable
 

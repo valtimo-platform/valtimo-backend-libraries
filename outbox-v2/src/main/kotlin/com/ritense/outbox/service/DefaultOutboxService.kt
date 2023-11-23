@@ -26,8 +26,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 open class DefaultOutboxService(
-    private val outboxMessageRepository: OutboxMessageRepository,
-    private val objectMapper: ObjectMapper,
+    private val outboxMessageRepository: OutboxMessageRepository
 ): OutboxService<Any> {
 
     @Transactional(propagation = Propagation.MANDATORY)
@@ -59,9 +58,9 @@ open class DefaultOutboxService(
         outboxMessageRepository.save(outboxMessage)
     }
 
-    open fun getOldestMessage() = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+    override fun getOldestMessage() = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
 
-    open fun deleteMessage(id: UUID) = outboxMessageRepository.deleteById(id)
+    override fun deleteMessage(id: UUID) = outboxMessageRepository.deleteById(id)
 
     companion object {
         private val logger = KotlinLogging.logger {}
