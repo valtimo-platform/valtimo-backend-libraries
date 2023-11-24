@@ -19,4 +19,4 @@ package com.ritense.export.request
 data class DocumentDefinitionExportRequest(
     val name: String,
     val version: Long
-) : ExportRequest
+) : ExportRequest()

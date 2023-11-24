@@ -18,4 +18,4 @@ package com.ritense.export.request
 
 data class FormExportRequest(
     val formName: String
-) : ExportRequest
+) : ExportRequest()

@@ -16,9 +16,18 @@
 
 package com.ritense.export
 
-import com.ritense.export.request.ExportRequest
-import java.io.ByteArrayOutputStream
+import org.springframework.stereotype.Component
 
-interface ExportService {
-    fun export(request: ExportRequest): ByteArrayOutputStream
+@Component
+class TestNestedExporter : Exporter<TestNestedExportRequest> {
+
+    override fun supports(): Class<TestNestedExportRequest> =
+        TestNestedExportRequest::class.java
+
+    override fun export(request: TestNestedExportRequest) = ExportResult(
+        ExportFile(
+            "${request.value}.txt",
+            request.value.toByteArray()
+        )
+    )
 }

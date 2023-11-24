@@ -16,9 +16,15 @@
 
 package com.ritense.export
 
-import com.ritense.export.request.ExportRequest
-import java.io.ByteArrayOutputStream
+import org.springframework.stereotype.Component
 
-interface ExportService {
-    fun export(request: ExportRequest): ByteArrayOutputStream
+@Component
+class TestStackOverflowExporter : Exporter<TestStackOverflowExportRequest> {
+
+    override fun supports(): Class<TestStackOverflowExportRequest> =
+        TestStackOverflowExportRequest::class.java
+
+    override fun export(request: TestStackOverflowExportRequest) = ExportResult(
+        null, setOf(TestStackOverflowExportRequest())
+    )
 }

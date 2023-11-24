@@ -16,4 +16,8 @@
 
 package com.ritense.export.request
 
-interface ExportRequest
+abstract class ExportRequest {
+    abstract override fun equals(other: Any?): Boolean
+
+    abstract override fun hashCode(): Int
+}

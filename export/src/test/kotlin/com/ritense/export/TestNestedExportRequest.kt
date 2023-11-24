@@ -17,8 +17,7 @@
 package com.ritense.export
 
 import com.ritense.export.request.ExportRequest
-import java.io.ByteArrayOutputStream
 
-interface ExportService {
-    fun export(request: ExportRequest): ByteArrayOutputStream
-}
+data class TestNestedExportRequest(
+    val value: String = "nested"
+) : ExportRequest()

@@ -18,6 +18,7 @@ package com.ritense.form.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.export.ExportFile
+import com.ritense.export.ExportResult
 import com.ritense.export.Exporter
 import com.ritense.export.request.FormExportRequest
 import org.springframework.transaction.annotation.Transactional
@@ -26,16 +27,18 @@ import org.springframework.transaction.annotation.Transactional
 class FormDefinitionExporter(
     private val objectMapper: ObjectMapper,
     private val formDefinitionService: FormDefinitionService
-) : Exporter<FormExportRequest>{
+) : Exporter<FormExportRequest> {
     override fun supports() = FormExportRequest::class.java
 
-    override fun export(request: FormExportRequest): Set<ExportFile> {
+    override fun export(request: FormExportRequest): ExportResult {
         val formDefinition = formDefinitionService.getFormDefinitionByName(request.formName).orElseThrow()
 
-        return setOf(ExportFile(
-            PATH.format(formDefinition.name),
-            objectMapper.writeValueAsBytes(formDefinition.formDefinition)
-        ))
+        return ExportResult(
+            ExportFile(
+                PATH.format(formDefinition.name),
+                objectMapper.writeValueAsBytes(formDefinition.formDefinition)
+            )
+        )
     }
 
     companion object {

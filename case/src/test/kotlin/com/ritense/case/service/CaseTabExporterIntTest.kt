@@ -19,6 +19,7 @@ package com.ritense.case.service
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.export.request.DocumentDefinitionExportRequest
+import com.ritense.export.request.FormExportRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -39,10 +40,11 @@ class CaseTabExporterIntTest @Autowired constructor(
     fun `should export tabs for case definition`(): Unit = runWithoutAuthorization {
         val caseDefinitionName = "some-case-type"
 
-        val exportFiles = caseTabExportService.export(DocumentDefinitionExportRequest(caseDefinitionName, 1))
+        val request = DocumentDefinitionExportRequest(caseDefinitionName, 1)
+        val exportResult = caseTabExportService.export(request)
 
         val path = PATH.format(caseDefinitionName)
-        val caseTabsExport = exportFiles.singleOrNull {
+        val caseTabsExport = exportResult.exportFiles.singleOrNull {
             it.path == path
         }
         requireNotNull(caseTabsExport)
@@ -59,7 +61,10 @@ class CaseTabExporterIntTest @Autowired constructor(
             JSONCompareMode.NON_EXTENSIBLE
         )
 
-        assertThat(exportFiles.singleOrNull { it.path == "test-form.json" }).isNotNull
+        assertThat(exportResult.nestedRequests
+            .singleOrNull {
+                it is FormExportRequest && it.formName == "test-form"
+            }).isNotNull
     }
 
     companion object {

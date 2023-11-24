@@ -40,9 +40,6 @@ class TestApplication {
         return TestResolverFactory()
     }
 
-    @Bean
-    fun testFormExporter() = TestFormExporter()
-
     @TestConfiguration
     class TestConfig {
 

@@ -21,7 +21,8 @@ class FormDefinitionExporterIntTest @Autowired constructor(
     @Test
     fun `should export form`(): Unit = runWithoutAuthorization {
         val formName = "form-example"
-        val exportFiles = formDefinitionExportService.export(FormExportRequest(formName));
+        val request = FormExportRequest(formName)
+        val exportFiles = formDefinitionExportService.export(request).exportFiles
 
         val path = PATH.format(formName)
         val formExport = exportFiles.singleOrNull {

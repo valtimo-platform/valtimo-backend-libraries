@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.case
+package com.ritense.export
 
-import com.ritense.export.ExportFile
-import com.ritense.export.Exporter
-import com.ritense.export.request.FormExportRequest
-import org.springframework.stereotype.Component
+import com.ritense.export.request.ExportRequest
 
-class TestFormExporter : Exporter<FormExportRequest>{
-    override fun supports() = FormExportRequest::class.java
-
-    override fun export(request: FormExportRequest): Set<ExportFile> {
-        return setOf(ExportFile(
-            "${request.formName}.json",
-            "{}".toByteArray()
-        ))
-    }
-}
+data class TestStackOverflowExportRequest(
+    val value: String = "stackoverflow"
+) : ExportRequest()

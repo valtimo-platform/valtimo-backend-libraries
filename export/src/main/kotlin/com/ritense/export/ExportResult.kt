@@ -17,8 +17,13 @@
 package com.ritense.export
 
 import com.ritense.export.request.ExportRequest
-import java.io.ByteArrayOutputStream
 
-interface ExportService {
-    fun export(request: ExportRequest): ByteArrayOutputStream
+data class ExportResult(
+    val exportFiles: Set<ExportFile> = setOf(),
+    val nestedRequests: Set<ExportRequest> = setOf()
+) {
+    constructor(exportFile: ExportFile?, nestedRequests: Set<ExportRequest> = setOf()) : this(
+        if (exportFile != null) setOf(exportFile) else setOf(),
+        nestedRequests
+    )
 }

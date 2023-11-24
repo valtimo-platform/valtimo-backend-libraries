@@ -37,7 +37,8 @@ class SearchFieldExporterIntTest @Autowired constructor(
     @Test
     fun `should export search fields for document definition`(): Unit = runWithoutAuthorization {
         val definition = documentDefinitionService.findLatestByName("person").orElseThrow()
-        val exportFiles = searchFieldExporter.export(DocumentDefinitionExportRequest(definition.id().name(), definition.id().version()))
+        val request = DocumentDefinitionExportRequest(definition.id().name(), definition.id().version())
+        val exportFiles = searchFieldExporter.export(request).exportFiles
 
         val path = PATH.format(definition.id().name())
         val export = exportFiles.singleOrNull {

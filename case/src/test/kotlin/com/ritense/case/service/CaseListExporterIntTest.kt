@@ -37,7 +37,8 @@ class CaseListExporterIntTest @Autowired constructor(
     fun `should export list columns for case definition`(): Unit = AuthorizationContext.runWithoutAuthorization {
         val caseDefinitionName = "house"
 
-        val exportFiles = caseListExporter.export(DocumentDefinitionExportRequest(caseDefinitionName, 1))
+        val request = DocumentDefinitionExportRequest(caseDefinitionName, 1)
+        val exportFiles = caseListExporter.export(request).exportFiles
 
         val path = PATH.format(caseDefinitionName)
         val caseTabsExport = exportFiles.singleOrNull {
