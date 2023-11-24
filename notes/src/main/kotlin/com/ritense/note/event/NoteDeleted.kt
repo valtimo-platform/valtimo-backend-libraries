@@ -4,7 +4,7 @@ import com.ritense.outbox.domain.BaseEvent
 
 class NoteDeleted(noteId: String) : BaseEvent(
     type = "com.ritense.valtimo.note.deleted",
-    resultType = "com.ritense.document.domain.Note",
+    resultType = null,
     resultId = noteId,
     result = null
 )
