@@ -24,6 +24,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import java.util.UUID
@@ -123,7 +124,7 @@ class CorrelationServiceImpl(
 
     private fun getLatestProcessDefinitionIdByKey(processDefinitionKey: String): CamundaProcessDefinition {
         return runWithoutAuthorization {
-            camundaRepositoryService.findProcessDefinition(byKey(processDefinitionKey))
+            camundaRepositoryService.findProcessDefinition(byKey(processDefinitionKey).and(byLatestVersion()))
                 ?: throw RuntimeException("Failed to get process definition with key $processDefinitionKey")
         }
     }
