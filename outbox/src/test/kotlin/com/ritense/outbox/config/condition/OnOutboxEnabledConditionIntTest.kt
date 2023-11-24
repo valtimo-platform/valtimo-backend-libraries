@@ -16,7 +16,7 @@
 
 package com.ritense.outbox.config.condition
 
-import com.ritense.outbox.DefaultOutboxService
+import com.ritense.outbox.ValtimoOutboxService
 import com.ritense.outbox.NoopOutboxService
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Nested
@@ -39,7 +39,7 @@ class OnOutboxEnabledConditionIntTest {
     ) {
         @Test
         fun `Should create an DefaultOutboxService bean`() {
-            val bean = context.getBean(DefaultOutboxService::class.java)
+            val bean = context.getBean(ValtimoOutboxService::class.java)
             Assertions.assertThat(bean).isNotNull
         }
     }
