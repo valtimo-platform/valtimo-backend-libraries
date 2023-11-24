@@ -23,6 +23,8 @@ data class NamedUser(
     val lastName: String?
 ) {
 
+    constructor(id: String, firstName: String?, lastName: String?) : this(id, null, firstName, lastName)
+
     fun getLabel(): String {
         return if (!firstName.isNullOrBlank() && !lastName.isNullOrBlank()) {
             "$firstName $lastName"
