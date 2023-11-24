@@ -41,4 +41,6 @@ class CreateDocumentRequest(
     val verzenddatum: LocalDate? = null,
     val indicatieGebruiksrecht: Boolean? = false,
     val informatieobjecttype: String,
+    val formaat: String,
+    val trefwoorden: List<String>? = listOf("test1", "test2")
 )

@@ -19,6 +19,8 @@ package com.ritense.valtimo.contract.resource;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+
+
 public interface Resource {
 
     UUID id();
@@ -30,5 +32,19 @@ public interface Resource {
     Long sizeInBytes();
 
     LocalDateTime createdOn();
+
+    String title();
+
+    String language();
+
+    String identification();
+
+    String description();
+
+    String informatieobjecttype();
+
+    String trefwoorden();
+
+    String formaat();
 
 }

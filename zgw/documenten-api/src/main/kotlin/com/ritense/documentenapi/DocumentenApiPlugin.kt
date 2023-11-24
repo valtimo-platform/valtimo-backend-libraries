@@ -126,7 +126,7 @@ class DocumentenApiPlugin(
             contentAsInputStream = contentAsInputStream,
             description = metadata["description"] as String?,
             informationObjectType = metadata["informatieobjecttype"] as String,
-            storedDocumentUrl = DOCUMENT_URL_PROCESS_VAR
+            storedDocumentUrl = DOCUMENT_URL_PROCESS_VAR,
         )
     }
 
@@ -186,7 +186,7 @@ class DocumentenApiPlugin(
         contentAsInputStream: InputStream,
         description: String?,
         informationObjectType: String,
-        storedDocumentUrl: String
+        storedDocumentUrl: String,
     ) {
         val request = CreateDocumentRequest(
             bronorganisatie = bronorganisatie,
@@ -202,6 +202,8 @@ class DocumentenApiPlugin(
             ontvangstdatum = getLocalDateFromMetaData(metadata, "receiptDate"),
             verzenddatum = getLocalDateFromMetaData(metadata, "sendDate"),
             informatieobjecttype = informationObjectType,
+            formaat = "PDF",
+            trefwoorden = listOf("trefwoord1", "trefwoord2")
         )
 
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)

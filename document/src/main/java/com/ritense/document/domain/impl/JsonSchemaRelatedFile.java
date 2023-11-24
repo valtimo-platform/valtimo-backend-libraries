@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.valtimo.contract.resource.Resource;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class JsonSchemaRelatedFile implements RelatedFile {
@@ -30,19 +31,47 @@ public class JsonSchemaRelatedFile implements RelatedFile {
     private final LocalDateTime createdOn;
     private String createdBy;
 
+    private String title;
+
+    private String language;
+
+    private String identification;
+    private String author;
+    private String description;
+
+    private String informatieobjecttype;
+
+    private String trefwoorden;
+
+    private String formaat;
+
     @JsonCreator
     public JsonSchemaRelatedFile(
         final UUID fileId,
         final String fileName,
         final Long sizeInBytes,
         final LocalDateTime createdOn,
-        final String createdBy
+        final String createdBy,
+        final String title,
+        final String language,
+        final String identification,
+        final String description,
+        final String informatieobjecttype,
+        final String trefwoorden,
+        final String formaat
     ) {
         this.fileId = fileId;
         this.fileName = fileName;
         this.sizeInBytes = sizeInBytes;
         this.createdOn = createdOn;
         this.createdBy = createdBy;
+        this.title = title;
+        this.language = language;
+        this.identification = identification;
+        this.description = description;
+        this.informatieobjecttype = informatieobjecttype;
+        this.trefwoorden = trefwoorden;
+        this.formaat = formaat;
     }
 
     public static JsonSchemaRelatedFile from(final RelatedFile relatedFile) {
@@ -51,7 +80,14 @@ public class JsonSchemaRelatedFile implements RelatedFile {
             relatedFile.getFileName(),
             relatedFile.getSizeInBytes(),
             relatedFile.getCreatedOn(),
-            relatedFile.getCreatedBy()
+            relatedFile.getCreatedBy(),
+            relatedFile.getTitle(),
+            relatedFile.getLanguage(),
+            relatedFile.getIdentification(),
+            relatedFile.getDescription(),
+            relatedFile.getInformatieobjecttype(),
+            relatedFile.getTrefwoorden(),
+            relatedFile.getFormaat()
         );
     }
 
@@ -61,7 +97,14 @@ public class JsonSchemaRelatedFile implements RelatedFile {
             resource.name(),
             resource.sizeInBytes(),
             resource.createdOn(),
-            null
+            null,
+            resource.title(),
+            resource.language(),
+            resource.identification(),
+            resource.description(),
+            resource.informatieobjecttype(),
+            resource.trefwoorden(),
+            resource.extension() //change formaat to extesion
         );
     }
 
@@ -94,6 +137,21 @@ public class JsonSchemaRelatedFile implements RelatedFile {
     public String getCreatedBy() {
         return createdBy;
     }
+
+    public String getTitle() { return title; }
+
+    public String getLanguage() { return language; }
+
+    public String getIdentification() { return identification; }
+
+    public String getDescription() { return description; }
+
+    public String getInformatieobjecttype() { return informatieobjecttype; }
+
+    public String getTrefwoorden() { return trefwoorden; }
+
+    public String getFormaat() { return formaat; }
+
 
     @Override
     public boolean equals(Object o) {

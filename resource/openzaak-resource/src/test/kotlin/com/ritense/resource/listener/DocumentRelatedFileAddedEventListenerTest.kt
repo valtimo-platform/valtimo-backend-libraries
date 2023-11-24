@@ -58,7 +58,16 @@ internal class DocumentRelatedFileAddedEventListenerTest {
             "filename.txt",
             "txt",
             123L,
-            LocalDateTime.now()
+            LocalDateTime.now(),
+            "Title",
+            "nl",
+            "0001",
+            "system",
+            "This is a file",
+            "InformatieObjectType",
+            "",
+            "",
+
         )
 
         `when`(openZaakService.getResource(fileId)).thenReturn(resource)

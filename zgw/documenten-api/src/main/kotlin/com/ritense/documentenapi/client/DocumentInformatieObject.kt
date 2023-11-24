@@ -47,4 +47,6 @@ class DocumentInformatieObject (
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val verzenddatum: LocalDate? = null,
     val indicatieGebruiksrecht: Boolean? = null,
+    val informatieobjecttype: String? = null,
+    val trefwoorden: String? = null,
 )

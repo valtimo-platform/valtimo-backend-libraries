@@ -26,6 +26,13 @@ data class RelatedFileDto(
     private val sizeInBytes: Long?,
     private val createdOn: LocalDateTime,
     private val createdBy: String,
+    private val title: String?,
+    private val language: String?,
+    private val identification: String?,
+    private val description: String?,
+    private val informatieobjecttype: String?,
+    private val trefwoorden: String?,
+    private val formaat: String?,
     val pluginConfigurationId: UUID,
 ):  RelatedFile {
     override fun getFileId(): UUID {
@@ -46,5 +53,33 @@ data class RelatedFileDto(
 
     override fun getCreatedBy(): String {
         return createdBy
+    }
+
+    override fun getTitle(): String? {
+        return title
+    }
+
+    override fun getLanguage(): String? {
+        return language
+    }
+
+    override fun getIdentification(): String? {
+        return identification
+    }
+
+    override fun getDescription(): String? {
+        return description
+    }
+
+    override fun getInformatieobjecttype(): String? {
+        return informatieobjecttype
+    }
+
+    override fun getTrefwoorden(): String? {
+        return trefwoorden
+    }
+
+    override fun getFormaat(): String? {
+        return formaat
     }
 }

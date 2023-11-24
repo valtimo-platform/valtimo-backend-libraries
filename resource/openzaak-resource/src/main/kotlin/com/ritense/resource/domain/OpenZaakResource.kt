@@ -60,7 +60,31 @@ data class OpenZaakResource(
 
     @Column(name = "created_on", nullable = false, columnDefinition = "DATETIME")
     @field:NotNull
-    val createdOn: LocalDateTime
+    val createdOn: LocalDateTime,
+
+    @Column(name = "createdBy", nullable = true, columnDefinition = "VARCHAR(255)")
+    val createdBy: String,
+
+    @Column(name = "title", nullable = true, columnDefinition = "VARCHAR(255)")
+    val title: String,
+
+    @Column(name = "language", nullable = true, columnDefinition = "VARCHAR(255)")
+    val language: String,
+
+    @Column(name = "identification", nullable = true, columnDefinition = "VARCHAR(255)")
+    val identification: String,
+
+    @Column(name = "description", nullable = true, columnDefinition = "VARCHAR(255)")
+    val description: String,
+
+    @Column(name = "informatieobjecttype", nullable = true, columnDefinition = "VARCHAR(255)")
+    val informatieobjecttype: String,
+
+    @Column(name = "trefwoorden", nullable = true, columnDefinition = "")
+    val trefwoorden: String,
+
+    @Column(name = "formaat", nullable = true, columnDefinition = "")
+    val formaat: String
 ) : Resource, Persistable<ResourceId>, Validatable {
 
     init {
@@ -81,6 +105,34 @@ data class OpenZaakResource(
 
     override fun sizeInBytes(): Long {
         return sizeInBytes
+    }
+
+    override fun title(): String {
+        return title
+    }
+
+    override fun language(): String {
+        return language
+    }
+
+    override fun identification(): String {
+        return identification
+    }
+
+    override fun description(): String {
+        return description
+    }
+
+    override fun informatieobjecttype(): String {
+        return informatieobjecttype
+    }
+
+    override fun trefwoorden(): String {
+        return trefwoorden
+    }
+
+    override fun formaat(): String {
+        return formaat
     }
 
     override fun createdOn(): LocalDateTime {

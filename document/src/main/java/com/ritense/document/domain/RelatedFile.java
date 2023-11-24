@@ -37,4 +37,22 @@ public interface RelatedFile {
     @JsonProperty
     String getCreatedBy();
 
+    @JsonProperty
+    String getTitle();
+
+    @JsonProperty
+    String getLanguage();
+
+    @JsonProperty
+    String getIdentification();
+
+    @JsonProperty
+    String getDescription();
+    @JsonProperty
+    String getInformatieobjecttype();
+
+    String getTrefwoorden();
+
+    String getFormaat();
+
 }
