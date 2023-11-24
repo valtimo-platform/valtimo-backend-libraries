@@ -172,8 +172,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             .flatMap(Collection::stream)
             .map(this::toNamedUser)
             .distinct()
-            .sorted(comparing(NamedUser::getFirstName, nullsLast(naturalOrder()))
-                .thenComparing(NamedUser::getLastName, nullsLast(naturalOrder())))
+            .sorted(comparing(NamedUser::getLabel))
             .toList();
     }
 
@@ -245,6 +244,7 @@ public class KeycloakUserManagementService implements UserManagementService {
     private NamedUser toNamedUser(UserRepresentation userRepresentation) {
         return new NamedUser(
             userRepresentation.getId(),
+            userRepresentation.getEmail(),
             userRepresentation.getFirstName(),
             userRepresentation.getLastName()
         );
