@@ -206,7 +206,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         final var document = createDocument(definitionOf("person"), content).resultingDocument().get();
 
         when(documentService.getCandidateUsers(document.id()))
-            .thenReturn(List.of(new NamedUser("1234", "John", "Doe")));
+            .thenReturn(List.of(new NamedUser("1234", "john@ritense.com", "John", "Doe")));
         when(documentService.get(document.id().toString())).thenReturn(document);
         when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
             .thenReturn(true);

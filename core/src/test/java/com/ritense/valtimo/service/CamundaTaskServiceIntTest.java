@@ -18,6 +18,7 @@ package com.ritense.valtimo.service;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
@@ -25,8 +26,11 @@ import com.ritense.valtimo.contract.authentication.ManageableUser;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import javax.inject.Inject;
+
+import com.ritense.valtimo.contract.authentication.NamedUser;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.BeforeEach;
@@ -207,6 +211,26 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         List<ManageableUser> candidateUsers = camundaTaskService.getCandidateUsers(task);
 
         assertThat(candidateUsers).isEmpty();
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = USER)
+    void shouldFindNamedCandidateUsers() throws IllegalAccessException {
+        var user = new NamedUser("id", "user@ritense.com", "John", "Doe");
+        when(userManagementService.findNamedUserByRoles(Set.of(USER))).thenReturn(List.of(user));
+        camundaProcessService.startProcess(
+            processDefinitionKey,
+            businessKey,
+            Map.of()
+        );
+        var taskId = camundaTaskService.findTasksFiltered(
+            CamundaTaskService.TaskFilter.ALL,
+            PageRequest.of(0, 20)
+        ).get().findFirst().orElseThrow().getId();
+
+        var candidateUsers = camundaTaskService.getNamedCandidateUsers(taskId);
+
+        assertThat(candidateUsers).containsExactly(user);
     }
 
     private void startProcessAndModifyTask(Consumer<Task> taskHandler) {

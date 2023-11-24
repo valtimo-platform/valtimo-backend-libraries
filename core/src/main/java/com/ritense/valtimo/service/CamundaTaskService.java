@@ -21,6 +21,7 @@ import static java.util.stream.Collectors.toSet;
 
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
@@ -140,6 +141,7 @@ public class CamundaTaskService {
         }
     }
 
+    @Deprecated(since = "10.8.0", forRemoval = true)
     public List<ManageableUser> getCandidateUsers(String taskId) {
         final Task task = findTaskById(taskId);
         final Set<String> candidateGroups = taskService
@@ -156,6 +158,17 @@ public class CamundaTaskService {
         } else {
             return Collections.emptyList();
         }
+    }
+
+    public List<NamedUser> getNamedCandidateUsers(String taskId) {
+        final Task task = findTaskById(taskId);
+        final Set<String> candidateGroups = taskService
+            .getIdentityLinksForTask(task.getId())
+            .stream()
+            .filter(identityLink -> IdentityLinkType.CANDIDATE.equals(identityLink.getType()))
+            .map(IdentityLink::getGroupId)
+            .collect(toSet());
+        return userManagementService.findNamedUserByRoles(candidateGroups);
     }
 
     public void completeTaskWithoutFormData(String taskId) {
