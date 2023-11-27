@@ -36,7 +36,7 @@ class FormDefinitionExporter(
         return ExportResult(
             ExportFile(
                 PATH.format(formDefinition.name),
-                objectMapper.writeValueAsBytes(formDefinition.formDefinition)
+                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(formDefinition.formDefinition)
             )
         )
     }

@@ -49,7 +49,7 @@ class FormFlowDefinitionExporter(
         return ExportResult(
             ExportFile(
                 PATH.format(definition.id.key),
-                objectMapper.writeValueAsBytes(FormFlowDefinition.fromEntity(definition))
+                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(FormFlowDefinition.fromEntity(definition))
             ),
             relatedRequests
         )

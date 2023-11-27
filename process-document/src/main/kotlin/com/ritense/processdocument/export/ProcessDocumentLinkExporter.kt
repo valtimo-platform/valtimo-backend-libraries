@@ -60,7 +60,7 @@ class ProcessDocumentLinkExporter(
         return ExportResult(
             ExportFile(
                 PATH.format(request.name),
-                objectMapper.writeValueAsBytes(exportItems)
+                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(exportItems)
             ),
             relatedRequests
         )
