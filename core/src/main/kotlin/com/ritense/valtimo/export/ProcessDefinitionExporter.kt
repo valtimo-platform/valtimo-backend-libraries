@@ -27,6 +27,7 @@ import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.model.bpmn.Bpmn
 import org.camunda.bpm.model.bpmn.BpmnModelInstance
 import org.camunda.bpm.model.bpmn.instance.BusinessRuleTask
+import org.camunda.bpm.model.bpmn.instance.CallActivity
 
 class ProcessDefinitionExporter(
     private val camundaRepositoryService: CamundaRepositoryService,
@@ -43,6 +44,7 @@ class ProcessDefinitionExporter(
             Bpmn.readModelFromStream(inputStream)
         }
 
+        val subProcessDefinitionExportRequests = getCallActivityProcessDefinitionExportRequests(bpmnModelInstance)
         val decisionExportRequests = getDecisionExportRequests(bpmnModelInstance)
 
         val exportFile = ByteArrayOutputStream().use {
@@ -54,8 +56,20 @@ class ProcessDefinitionExporter(
         }
         return ExportResult(
             exportFile,
-            decisionExportRequests
+            subProcessDefinitionExportRequests + decisionExportRequests
         )
+    }
+
+    private fun getCallActivityProcessDefinitionExportRequests(bpmnModelInstance: BpmnModelInstance): Set<ProcessDefinitionExportRequest> {
+        return bpmnModelInstance.getModelElementsByType(CallActivity::class.java)
+            .mapNotNull { it.calledElement }
+            .distinct()
+            .map { key ->
+                val processDefinitionId = checkNotNull(camundaRepositoryService.findLatestProcessDefinition(key)) {
+                    "Process definition with key '$key' could not be found!"
+                }.id
+                ProcessDefinitionExportRequest(processDefinitionId)
+            }.toSet()
     }
 
     private fun getDecisionExportRequests(bpmnModelInstance: BpmnModelInstance): Set<DecisionDefinitionExportRequest> {
@@ -66,7 +80,7 @@ class ProcessDefinitionExporter(
                 val decisionDefinition = checkNotNull(repositoryService.createDecisionDefinitionQuery()
                     .decisionDefinitionKey(ref)
                     .latestVersion()
-                    .singleResult()) { "Decision definition with reference '$ref' could not be found!"}
+                    .singleResult()) { "Decision definition with reference '$ref' could not be found!" }
                 DecisionDefinitionExportRequest(decisionDefinition.id)
             }.toSet()
     }

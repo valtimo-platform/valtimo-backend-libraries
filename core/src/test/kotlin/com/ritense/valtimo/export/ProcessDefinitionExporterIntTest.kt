@@ -60,6 +60,10 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
         assertThat(result.relatedRequests).contains(
             DecisionDefinitionExportRequest(getDecisionDefinitionId("dmn-sample"))
         )
+
+        assertThat(result.relatedRequests).contains(
+            ProcessDefinitionExportRequest(getProcessDefinitionId("test-process"))
+        )
     }
 
     @Test
