@@ -28,8 +28,10 @@ import org.skyscreamer.jsonassert.JSONCompareMode
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 
+@Transactional(readOnly = true)
 class ProcessDocumentLinkExporterIntTest @Autowired constructor(
     private val resourceLoader: ResourceLoader,
     private val camundaRepositoryService: CamundaRepositoryService,
@@ -58,13 +60,10 @@ class ProcessDocumentLinkExporterIntTest @Autowired constructor(
             JSONCompareMode.NON_EXTENSIBLE
         )
 
-        val processDefinitionExportRequest = result.relatedRequests.mapNotNull {
-            it as? ProcessDefinitionExportRequest
-        }.singleOrNull()
-        assertThat(processDefinitionExportRequest).isNotNull
-
         val processDefinitionId = camundaRepositoryService.findLatestProcessDefinition("loan-process-demo")!!.id
-        assertThat(processDefinitionExportRequest!!.processDefinitionId).isEqualTo(processDefinitionId)
+        assertThat(result.relatedRequests).contains(
+            ProcessDefinitionExportRequest(processDefinitionId)
+        )
     }
 
     companion object {

@@ -17,12 +17,17 @@
 package com.ritense.valtimo.formflow.mapper
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.export.request.FormDefinitionExportRequest
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkResponseDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkUpdateRequestDto
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -30,9 +35,6 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 internal class FormFlowFlowProcessLinkMapperTest {
 
@@ -148,5 +150,22 @@ internal class FormFlowFlowProcessLinkMapperTest {
         }
 
         assertEquals("FormFlow definition not found with id ${updateRequestDto.formFlowDefinitionId}", exception.message)
+    }
+
+    @Test
+    fun `should return related export request for form-flow process links`() {
+        val formProcessLink = FormFlowProcessLink(
+            id = UUID.randomUUID(),
+            processDefinitionId = "processDefinitionId",
+            activityId = "activityId",
+            activityType = SERVICE_TASK_START,
+            formFlowDefinitionId = "testing:latest",
+        )
+
+        val relatedExportRequests = formFlowProcessLinkMapper.createRelatedExportRequests(formProcessLink)
+
+        Assertions.assertThat(relatedExportRequests).contains(
+            FormDefinitionExportRequest("testing:latest")
+        )
     }
 }

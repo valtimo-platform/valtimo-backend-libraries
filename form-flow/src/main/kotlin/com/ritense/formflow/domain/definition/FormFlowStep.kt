@@ -18,11 +18,11 @@ package com.ritense.formflow.domain.definition
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
-import org.hibernate.annotations.Type
 import javax.persistence.Column
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 import javax.persistence.Table
+import org.hibernate.annotations.Type
 
 @Entity
 @Table(name = "form_flow_step")

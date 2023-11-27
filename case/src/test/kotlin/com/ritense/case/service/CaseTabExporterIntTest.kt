@@ -61,10 +61,9 @@ class CaseTabExporterIntTest @Autowired constructor(
             JSONCompareMode.NON_EXTENSIBLE
         )
 
-        assertThat(exportResult.relatedRequests
-            .singleOrNull {
-                it is FormDefinitionExportRequest && it.formDefinitionName == "test-form"
-            }).isNotNull
+        assertThat(exportResult.relatedRequests).contains(
+            FormDefinitionExportRequest("test-form")
+        )
     }
 
     companion object {

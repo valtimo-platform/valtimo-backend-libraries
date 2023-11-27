@@ -27,7 +27,9 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional(readOnly = true)
 class ProcessLinkExporterIntTest @Autowired constructor(
     private val objectMapper: ObjectMapper,
     private val camundaRepositoryService: CamundaRepositoryService,

@@ -5,7 +5,6 @@
             "key": "loan",
             "nextSteps": [
                 {
-                    "condition": null,
                     "step": "loan-end"
                 }
             ],

@@ -63,10 +63,10 @@ class ProcessDefinitionExporter(
             .mapNotNull { it.camundaDecisionRef }
             .distinct()
             .map { ref ->
-                val decisionDefinition = repositoryService.createDecisionDefinitionQuery()
+                val decisionDefinition = checkNotNull(repositoryService.createDecisionDefinitionQuery()
                     .decisionDefinitionKey(ref)
                     .latestVersion()
-                    .singleResult()
+                    .singleResult()) { "Decision definition with reference '$ref' could not be found!"}
                 DecisionDefinitionExportRequest(decisionDefinition.id)
             }.toSet()
     }

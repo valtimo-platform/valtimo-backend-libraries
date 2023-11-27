@@ -29,7 +29,7 @@ import java.util.Optional
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -172,8 +172,9 @@ internal class FormProcessLinkMapperTest {
         whenever(formDefinitionService.getFormDefinitionById(formProcessLink.formDefinitionId))
             .thenReturn(Optional.of(formDefinition))
         val relatedExportRequests = formProcessLinkMapper.createRelatedExportRequests(formProcessLink)
-        Assertions.assertThat(relatedExportRequests.any {
-            (it as? FormDefinitionExportRequest) != null && it.formDefinitionName == "testing"
-        }).isTrue()
+
+        assertThat(relatedExportRequests).contains(
+            FormDefinitionExportRequest("testing")
+        )
     }
 }

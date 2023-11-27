@@ -28,6 +28,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.model.bpmn.Bpmn
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
@@ -39,7 +40,7 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
 ) : BaseIntegrationTest() {
 
     @Test
-    fun `should export process definition`(): Unit = runWithoutAuthorization {
+    fun `should export process definition with DMN reference`(): Unit = runWithoutAuthorization {
         val processDefinitionKey = "dmn-sample"
         val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
         val result = processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId))
@@ -56,11 +57,41 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
         }
         assertThat(bpmnModelInstance).isNotNull
 
-        val decisionExportRequest = result.relatedRequests
-            .singleOrNull {
-                it is DecisionDefinitionExportRequest && it.decisionDefinitionId == getDecisionDefinitionId("dmn-sample")
-            }
-        assertThat(decisionExportRequest).isNotNull
+        assertThat(result.relatedRequests).contains(
+            DecisionDefinitionExportRequest(getDecisionDefinitionId("dmn-sample"))
+        )
+    }
+
+    @Test
+    fun `should export process definition without DMN reference`(): Unit = runWithoutAuthorization {
+        val processDefinitionKey = "test-process"
+        val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
+        val result = processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId))
+
+        assertThat(result.exportFiles).isNotEmpty()
+
+        val bpmnExportFile = result.exportFiles.singleOrNull {
+            it.path == "config/bpmn/$processDefinitionKey.bpmn"
+        }
+
+        requireNotNull(bpmnExportFile)
+        val bpmnModelInstance = ByteArrayInputStream(bpmnExportFile.content).use {
+            Bpmn.readModelFromStream(it)
+        }
+        assertThat(bpmnModelInstance).isNotNull
+
+        assertThat(result.relatedRequests).isEmpty()
+    }
+
+    @Test
+    fun `should throw error when process definition contains an invalid DMN reference`(): Unit = runWithoutAuthorization {
+        val processDefinitionKey = "invalid-dmn-ref"
+        val processDefinitionId = getProcessDefinitionId(processDefinitionKey)
+        val exception = assertThrows<IllegalStateException> {
+            processDefinitionExporter.export(ProcessDefinitionExportRequest(processDefinitionId))
+        }
+
+        assertThat(exception.message).isEqualTo("Decision definition with reference 'invalidDmnRef' could not be found!")
     }
 
     fun getProcessDefinitionId(processDefinitionKey: String): String {
