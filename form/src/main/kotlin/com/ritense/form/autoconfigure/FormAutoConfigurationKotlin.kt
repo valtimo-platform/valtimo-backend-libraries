@@ -17,9 +17,11 @@
 
 package com.ritense.form.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.security.config.FormHttpSecurityConfigurerKotlin
+import com.ritense.form.service.FormDefinitionExporter
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.service.FormSubmissionService
 import com.ritense.form.service.FormSupportedProcessLinksHandler
@@ -94,5 +96,14 @@ class FormAutoConfigurationKotlin {
         authorizationService,
         valueResolverService
     )
+
+    @Bean
+    fun formDefinitionExporter(
+        objectMapper: ObjectMapper,
+        formDefinitionService: FormDefinitionService
+    ) = FormDefinitionExporter(
+            objectMapper,
+            formDefinitionService
+        )
 
 }

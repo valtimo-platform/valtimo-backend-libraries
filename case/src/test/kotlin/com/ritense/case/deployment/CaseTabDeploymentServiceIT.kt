@@ -52,10 +52,10 @@ class CaseTabDeploymentServiceIT @Autowired constructor(
 
         changelogDeployer.deployAll()
 
-        val changeset = changesetRepository.findById("case-tabs-deploy-test")
+        val changeset = changesetRepository.findById("some-case-type.case-tabs")
 
         assertThat(changeset.isPresent).isTrue()
-        assertThat(changeset.get().filename).endsWith("/autodeploy-test.case-tabs.json")
+        assertThat(changeset.get().filename).endsWith("/some-case-type.case-tabs.json")
         assertThat(changeset.get().dateExecuted).isBetween(Instant.now().minusSeconds(5), Instant.now().plusSeconds(5))
         assertThat(changeset.get().orderExecuted).isBetween(0, 1000)
         assertThat(changeset.get().md5sum).isNotNull()
