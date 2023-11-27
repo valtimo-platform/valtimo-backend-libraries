@@ -23,14 +23,14 @@ import io.cloudevents.jackson.JsonFormat
 import java.lang.RuntimeException
 import java.util.UUID
 
-class CloudEventOutboxService(private val outboxService: OutboxService<Any>): OutboxService<CloudEvent> {
+class CloudEventOutboxService(private val outboxService: OutboxService) {
 
-    override fun send(message: CloudEvent) {
+    override fun send(message: CloudEvent, aggregateId: String, aggregateType: String, eventType: String) {
         val cloudEventAsJsonString = jsonFormat
             .serialize(message).run {
                 String(this, Charsets.UTF_8)
             }
-        outboxService.send(cloudEventAsJsonString)
+        outboxService.send(cloudEventAsJsonString, aggregateId, aggregateType, eventType)
     }
 
     override fun getOldestMessage() = outboxService.getOldestMessage()

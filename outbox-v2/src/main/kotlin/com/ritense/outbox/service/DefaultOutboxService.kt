@@ -26,12 +26,7 @@ import java.util.UUID
 
 open class DefaultOutboxService(
     private val outboxMessageRepository: OutboxMessageRepository
-): OutboxService<Any> {
-
-    @Transactional(propagation = Propagation.MANDATORY)
-    override fun send(message: Any) {
-        send(message.toString(), message::class.simpleName!!)
-    }
+): OutboxService {
 
     /**
      * Guarantee that the message is published using the transactional outbox pattern.
@@ -46,12 +41,13 @@ open class DefaultOutboxService(
      * }
      */
     @Transactional(propagation = Propagation.MANDATORY)
-    open fun send(message: String, eventType: String) {
+    open fun send(message: String, aggregateId: String, aggregateType: String, eventType: String) {
         val outboxMessage = OutboxMessage(
             id = UUID.randomUUID(),
             message = message,
             createdOn = LocalDateTime.now(),
-            eventType = eventType
+            eventType = eventType,
+            groupId = groupId
         )
         logger.debug { "Saving OutboxMessage '${outboxMessage.id}'" }
         outboxMessageRepository.save(outboxMessage)

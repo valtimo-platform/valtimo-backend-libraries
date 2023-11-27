@@ -34,6 +34,12 @@ class OutboxMessage(
     @Column(name = "message", columnDefinition = "TEXT", updatable = false)
     val message: String,
 
+    @Column(name = "aggregate_id", columnDefinition = "VARCHAR(1024)", updatable = false)
+    val aggregateId: String,
+
+    @Column(name = "aggregate_type", columnDefinition = "VARCHAR(1024)", updatable = false)
+    val aggregateType: String,
+
     @Column(name = "event_type", columnDefinition = "VARCHAR(1024)", updatable = false)
     val eventType: String,
 

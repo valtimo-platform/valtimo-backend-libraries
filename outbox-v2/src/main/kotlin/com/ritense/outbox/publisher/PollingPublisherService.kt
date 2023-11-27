@@ -38,11 +38,11 @@ open class PollingPublisherService(
             try {
                 do {
                     TransactionTemplate(platformTransactionManager).executeWithoutResult {
-                        val oldestMessage = outboxService.getOldestMessage()
+                        val oldestMessage = outboxService.getOldestMessage()//TODO outboxRepository
                         if (oldestMessage != null) {
                             logger.debug { "Sending OutboxMessage '${oldestMessage.id}'" }
                             messagePublisher.publish(oldestMessage)
-                            outboxService.deleteMessage(oldestMessage.id)
+                            outboxService.deleteMessage(oldestMessage.id)//TODO outboxRepository
                         } else {
                             polling.set(false)
                         }

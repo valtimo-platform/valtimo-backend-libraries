@@ -38,7 +38,7 @@ class DomainEventOutboxService(
             .withDataContentType(APPLICATION_JSON_VALUE)
             .withData(objectMapper.writeValueAsBytes(message))
             .build()
-        cloudEventOutboxService.send(cloudEvent)
+        cloudEventOutboxService.send(cloudEvent, message.aggregateId(), message.getFilterKey(), message.getFilterKey())
     }
 
     override fun getOldestMessage() = cloudEventOutboxService.getOldestMessage()
