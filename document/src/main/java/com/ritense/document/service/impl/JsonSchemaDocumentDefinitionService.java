@@ -200,7 +200,9 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         try {
             for (var resource : loadResources()) {
                 if (resource.getFilename() != null) {
-                    deploy(resource.getInputStream(), readOnly, force);
+                    try (InputStream is = resource.getInputStream()) {
+                        deploy(is, readOnly, force);
+                    }
                 }
             }
         } catch (Exception ex) {

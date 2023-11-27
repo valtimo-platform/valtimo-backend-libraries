@@ -20,6 +20,7 @@ import com.ritense.document.JsonSchemaDocumentDefinitionSpecificationFactory
 import com.ritense.document.JsonSchemaDocumentSnapshotSpecificationFactory
 import com.ritense.document.JsonSchemaDocumentSpecificationFactory
 import com.ritense.document.SearchFieldSpecificationFactory
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -39,8 +40,9 @@ class DocumentAuthorizationAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(JsonSchemaDocumentDefinitionSpecificationFactory::class)
     fun jsonSchemaDocumentDefinitionSpecificationFactory(
-        queryDialectHelper: QueryDialectHelper
-    ) = JsonSchemaDocumentDefinitionSpecificationFactory(queryDialectHelper)
+        queryDialectHelper: QueryDialectHelper,
+        @Lazy documentDefinitionService: JsonSchemaDocumentDefinitionService
+    ) = JsonSchemaDocumentDefinitionSpecificationFactory(queryDialectHelper, documentDefinitionService)
 
     @Bean
     @ConditionalOnMissingBean(JsonSchemaDocumentSnapshotSpecificationFactory::class)

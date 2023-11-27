@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
 
-open class DefaultOutboxService(
+open class ValtimoOutboxService(
     private val outboxMessageRepository: OutboxMessageRepository,
     private val objectMapper: ObjectMapper,
     private val userProvider: UserProvider,
