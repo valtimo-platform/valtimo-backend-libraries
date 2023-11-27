@@ -233,8 +233,11 @@ public class CamundaTaskService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<NamedUser> getNamedCandidateUsers(String taskId) {
         final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
+        requirePermission(task, ASSIGN);
+
         final Set<String> candidateGroups = authorizationService.getAuthorizedRoles(
                 new EntityAuthorizationRequest<>(
                     CamundaTask.class,
