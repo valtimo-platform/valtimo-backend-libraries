@@ -111,7 +111,7 @@ class PermissionConditionOperatorTest {
 
     @Test
     fun `CONTAINS should evaluate correctly`() {
-        val op = PermissionConditionOperator.CONTAINS
+        val op = PermissionConditionOperator.LIST_CONTAINS
 
         assertEquals(true, op, listOf("a", "b"), "a")
         assertEquals(true, op, listOf("a", "b"), "b")
