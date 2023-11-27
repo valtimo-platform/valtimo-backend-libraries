@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseSettingsDto
+import com.ritense.export.ExportService
 import com.ritense.valtimo.contract.utils.TestUtil
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -22,11 +23,13 @@ class CaseDefinitionResourceTest {
     lateinit var mockMvc: MockMvc
     lateinit var resource: CaseDefinitionResource
     lateinit var service: CaseDefinitionService
+    lateinit var exportService: ExportService
 
     @BeforeEach
     fun setUp() {
         service = mock()
-        resource = CaseDefinitionResource(service)
+        exportService = mock()
+        resource = CaseDefinitionResource(service, exportService)
         mockMvc = MockMvcBuilders.standaloneSetup(resource).build()
     }
 
