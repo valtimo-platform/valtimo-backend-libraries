@@ -19,6 +19,8 @@ package com.ritense.valtimo.web.rest;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.dto.TaskExtended;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.authentication.NamedUser;
+import com.ritense.valtimo.repository.camunda.dto.TaskExtended;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
@@ -127,9 +129,16 @@ public class TaskResource extends AbstractTaskResource {
         return ResponseEntity.ok(taskComments);
     }
 
+    @Deprecated(since = "10.8.0", forRemoval = true)
     @GetMapping("/v1/task/{taskId}/candidate-user")
     public ResponseEntity<List<ManageableUser>> getTaskCandidateUsers(@PathVariable String taskId) {
         List<ManageableUser> users = camundaTaskService.getCandidateUsers(taskId);
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/v2/task/{taskId}/candidate-user")
+    public ResponseEntity<List<NamedUser>> getNamedCandidateUsers(@PathVariable String taskId) {
+        List<NamedUser> users = camundaTaskService.getNamedCandidateUsers(taskId);
         return ResponseEntity.ok(users);
     }
 

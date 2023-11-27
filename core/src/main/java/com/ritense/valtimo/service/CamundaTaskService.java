@@ -33,7 +33,9 @@ import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.camunda.service.CamundaContextService;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
@@ -44,6 +46,16 @@ import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import com.ritense.valtimo.service.util.FormUtils;
 import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import org.camunda.bpm.engine.AuthorizationException;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.ProcessEngineException;
@@ -198,6 +210,7 @@ public class CamundaTaskService {
         }
     }
 
+    @Deprecated(since = "10.8.0", forRemoval = true)
     @Transactional(readOnly = true)
     public List<ManageableUser> getCandidateUsers(String taskId) {
         final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
@@ -217,6 +230,20 @@ public class CamundaTaskService {
             .sorted(comparing(ManageableUser::getFirstName, nullsLast(naturalOrder()))
                 .thenComparing(ManageableUser::getLastName, nullsLast(naturalOrder())))
             .toList();
+    }
+
+    public List<NamedUser> getNamedCandidateUsers(String taskId) {
+        final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
+        final Set<String> candidateGroups = authorizationService.getAuthorizedRoles(
+                new EntityAuthorizationRequest<>(
+                    CamundaTask.class,
+                    ASSIGNABLE,
+                    task
+                )
+            ).stream()
+            .map(Role::getKey)
+            .collect(toSet());
+        return userManagementService.findNamedUserByRoles(candidateGroups);
     }
 
     @Transactional

@@ -91,6 +91,10 @@ public class SearchFieldService {
         searchFieldRepository.deleteAllByIdDocumentDefinitionName(documentDefinitionName);
     }
 
+    public void deleteSearchFields(String documentDefinitionName) {
+        searchFieldRepository.deleteAllByIdDocumentDefinitionName(documentDefinitionName);
+    }
+
     public void updateSearchFields(String documentDefinitionName, List<SearchFieldDto> searchFieldDtos) {
         denyAuthorization();
 
