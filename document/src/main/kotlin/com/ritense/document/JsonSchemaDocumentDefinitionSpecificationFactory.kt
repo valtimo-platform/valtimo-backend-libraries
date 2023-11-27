@@ -22,10 +22,12 @@ import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.JsonSchemaDocumentDefinitionSpecification
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 
 class JsonSchemaDocumentDefinitionSpecificationFactory(
-    private var queryDialectHelper: QueryDialectHelper
+    private var queryDialectHelper: QueryDialectHelper,
+    private var documentDefinitionService: JsonSchemaDocumentDefinitionService
 ) : AuthorizationSpecificationFactory<JsonSchemaDocumentDefinition> {
 
     override fun create(
@@ -35,7 +37,8 @@ class JsonSchemaDocumentDefinitionSpecificationFactory(
         return JsonSchemaDocumentDefinitionSpecification(
             request,
             permissions,
-            queryDialectHelper
+            queryDialectHelper,
+            documentDefinitionService
         )
     }
 
