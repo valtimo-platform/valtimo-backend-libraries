@@ -21,12 +21,13 @@ import com.ritense.outbox.repository.OutboxMessageRepository
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
 import java.time.LocalDateTime
 import java.util.UUID
 
 open class DefaultOutboxService(
     private val outboxMessageRepository: OutboxMessageRepository
-): OutboxService {
+) : OutboxService {
 
     /**
      * Guarantee that the message is published using the transactional outbox pattern.
@@ -41,23 +42,16 @@ open class DefaultOutboxService(
      * }
      */
     @Transactional(propagation = Propagation.MANDATORY)
-    open fun send(message: String, aggregateId: String, aggregateType: String, eventType: String) {
-        val outboxMessage = OutboxMessage(
-            id = UUID.randomUUID(),
-            message = message,
-            createdOn = LocalDateTime.now(),
-            eventType = eventType,
-            groupId = groupId
+    override fun send(aggregateRootId: String, eventType: String, message: String) {
+        outboxMessageRepository.save(
+            OutboxMessage(
+                id = UUID.randomUUID(),
+                message = message,
+                createdOn = LocalDateTime.now(),
+                aggregateRootId = aggregateRootId,
+                eventType = eventType
+            )
         )
-        logger.debug { "Saving OutboxMessage '${outboxMessage.id}'" }
-        outboxMessageRepository.save(outboxMessage)
     }
 
-    override fun getOldestMessage() = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
-
-    override fun deleteMessage(id: UUID) = outboxMessageRepository.deleteById(id)
-
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
 }

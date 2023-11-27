@@ -16,14 +16,6 @@
 
 package com.ritense.outbox.service
 
-import com.ritense.outbox.domain.OutboxMessage
-import java.util.UUID
-
 interface OutboxService {
-
-    fun send(message: String, aggregateId: String, aggregateType: String, eventType: String)
-
-    fun getOldestMessage(): OutboxMessage?
-
-    fun deleteMessage(id: UUID)
+    fun send(aggregateRootId: String, eventType: String, message: String)
 }
