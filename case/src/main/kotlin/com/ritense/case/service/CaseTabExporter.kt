@@ -42,6 +42,10 @@ class CaseTabExporter(
         val caseName = request.name
         val caseTabs = caseTabService.getCaseTabs(caseName)
 
+        if (caseTabs.isEmpty()) {
+            return ExportResult()
+        }
+
         val caseTabChangeset = CaseTabChangeset(
             "$caseName.case-tabs",
             listOf(

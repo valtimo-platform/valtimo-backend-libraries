@@ -34,6 +34,10 @@ class CaseListExporter(
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
         val listColumns = caseDefinitionService.getListColumns(request.name)
 
+        if (listColumns.isEmpty()) {
+            return ExportResult()
+        }
+
         val exportFile = ByteArrayOutputStream().use {
             mapper.writerWithDefaultPrettyPrinter().writeValue(it, listColumns)
 

@@ -34,6 +34,10 @@ class ProcessLinkExporter(
     override fun export(request: ProcessDefinitionExportRequest): ExportResult {
         val processLinks = processLinkService.getProcessLinks(request.processDefinitionId)
 
+        if (processLinks.isEmpty()) {
+            return ExportResult()
+        }
+
         val relatedRequests = mutableSetOf<ExportRequest>()
         val createDtos = processLinks.map { processLink ->
             val mapper = processLinkService.getProcessLinkMapper(processLink.processLinkType)

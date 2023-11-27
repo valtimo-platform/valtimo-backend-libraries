@@ -46,6 +46,10 @@ class ProcessDocumentLinkExporter(
             }
         }
 
+        if (exportItems.isEmpty()) {
+            return ExportResult()
+        }
+
         val relatedRequests = exportItems.map { it.processDefinitionKey }
             .distinct()
             .map { key -> requireNotNull(camundaRepositoryService.findLatestProcessDefinition(key)) }
