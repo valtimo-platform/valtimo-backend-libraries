@@ -109,6 +109,7 @@ import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHel
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsLast;
+import static java.util.stream.Collectors.toSet;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 public class CamundaTaskService {

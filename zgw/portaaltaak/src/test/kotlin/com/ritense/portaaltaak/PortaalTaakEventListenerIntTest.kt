@@ -94,9 +94,6 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
-    @Autowired
-    lateinit var objectMapper: ObjectMapper
-
     lateinit var processDefinitionId: String
     lateinit var objectManagement: ObjectManagement
     lateinit var portaalTaakPluginConfiguration: PluginConfiguration

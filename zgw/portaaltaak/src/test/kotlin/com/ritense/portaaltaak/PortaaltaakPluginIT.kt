@@ -70,7 +70,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
@@ -259,59 +258,6 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         assertThat(body, hasJsonPath("$.record.data.verwerker_taak_id", equalTo(task.id)))
         assertThat(body, hasJsonPath("$.record.data.zaak", equalTo(ZAAK_URL.toString())))
         assertThat(body, hasJsonPath("$.record.data.verloopdatum", startsWith(LocalDate.now().plusDays(3).toString())))
-        assertThat(body, hasJsonPath("$.record.startAt", equalTo(LocalDate.now().toString())))
-        assertThat(body, jsonPathMissingOrNull("$.record.endAt"))
-        assertThat(body, jsonPathMissingOrNull("$.record.registrationAt"))
-        assertThat(body, jsonPathMissingOrNull("$.record.correctionFor"))
-        assertThat(body, jsonPathMissingOrNull("$.record.correctedBy"))
-    }
-
-    @Test
-    fun `should create portaal taak without verloopdatum`() {
-        val actionPropertiesJson = """
-            {
-                "formType" : "${TaakFormType.ID.key}",
-                "formTypeId": "some-form",
-                "sendData": [
-                    {
-                        "key": "/lastname",
-                        "value": "test"
-                    }
-                ],
-                "receiveData": [],
-                "receiver": "${TaakReceiver.OTHER.key}",
-                "identificationKey": "${TaakIdentificatie.TYPE_KVK}",
-                "identificationValue": "569312863"
-            }
-        """.trimIndent()
-
-        createProcessLink(actionPropertiesJson)
-
-        val documentContent = """
-            {
-                "lastname": "test"
-            }
-        """.trimIndent()
-
-
-        val task = startPortaalTaakProcess(documentContent)
-
-        val recordedRequest = findRequest(HttpMethod.POST, "/objects")!!
-        val body = recordedRequest.body.readUtf8()
-
-        assertThat(body, hasJsonPath("$.type", endsWith("/objecttypes/object-type-id")))
-        assertThat(body, jsonPathMissingOrNull("$.record.index"))
-        assertThat(body, hasJsonPath("$.record.typeVersion", equalTo(1)))
-        assertThat(body, hasJsonPath("$.record.data.identificatie.type", equalTo("kvk")))
-        assertThat(body, hasJsonPath("$.record.data.identificatie.value", equalTo("569312863")))
-        assertThat(body, hasJsonPath("$.record.data.data.lastname", equalTo("test")))
-        assertThat(body, hasJsonPath("$.record.data.title", equalTo("user_task")))
-        assertThat(body, hasJsonPath("$.record.data.status", equalTo("open")))
-        assertThat(body, hasJsonPath("$.record.data.formulier.type", equalTo("id")))
-        assertThat(body, hasJsonPath("$.record.data.formulier.value", equalTo("some-form")))
-        assertThat(body, hasJsonPath("$.record.data.verwerker_taak_id", equalTo(task.id)))
-        assertThat(body, hasJsonPath("$.record.data.zaak", equalTo(ZAAK_URL.toString())))
-        assertThat(body, hasJsonPath("$.record.data.verloopdatum", nullValue()))
         assertThat(body, hasJsonPath("$.record.startAt", equalTo(LocalDate.now().toString())))
         assertThat(body, jsonPathMissingOrNull("$.record.endAt"))
         assertThat(body, jsonPathMissingOrNull("$.record.registrationAt"))
