@@ -17,6 +17,7 @@
 package com.ritense.valtimo.service;
 
 import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.DelegateUserEntityAuthorizationRequest;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
@@ -355,16 +356,17 @@ public class CamundaTaskService {
     public List<TaskInstanceWithIdentityLink> getProcessInstanceTasks(String processInstanceId, String businessKey) {
         return findTasks(byProcessInstanceId(processInstanceId), Sort.by(DESC, CREATE_TIME))
             .stream()
-            .map(task -> {
-                final var identityLinks = getIdentityLinks(task.getId());
-                return new TaskInstanceWithIdentityLink(
-                    businessKey,
-                    CamundaTaskDto.of(task),
-                    delegateTaskHelper.isTaskPublic(task),
-                    task.getProcessDefinition().getKey(),
-                    identityLinks
-                );
-            })
+            .map(task -> AuthorizationContext.runWithoutAuthorization(() -> {
+                    final var identityLinks = getIdentityLinks(task.getId());
+                    return new TaskInstanceWithIdentityLink(
+                        businessKey,
+                        CamundaTaskDto.of(task),
+                        delegateTaskHelper.isTaskPublic(task),
+                        task.getProcessDefinition().getKey(),
+                        identityLinks
+                    );
+                }
+            ))
             .collect(Collectors.toList());
     }
 
@@ -466,7 +468,6 @@ public class CamundaTaskService {
 
     private Specification<CamundaTask> buildTaskFilterSpecification(TaskFilter taskFilter) {
         String currentUserLogin = SecurityUtils.getCurrentUserLogin();
-        List<String> userRoles = SecurityUtils.getCurrentUserRoles();
         var filterSpec = all();
 
         if (taskFilter == TaskFilter.MINE) {
@@ -475,11 +476,9 @@ public class CamundaTaskService {
             }
             return filterSpec.and(byAssignee(currentUserLogin));
         } else if (taskFilter == TaskFilter.ALL) {
-            return filterSpec.and(byCandidateGroups(userRoles));
+            return filterSpec;
         } else if (taskFilter == TaskFilter.OPEN) {
-            return filterSpec
-                .and(byCandidateGroups(userRoles))
-                .and(byUnassigned());
+            return filterSpec.and(byUnassigned());
         }
 
         return filterSpec;
