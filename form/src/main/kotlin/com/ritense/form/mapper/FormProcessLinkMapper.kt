@@ -74,10 +74,11 @@ class FormProcessLinkMapper(
 
     override fun toProcessLinkExportResponseDto(processLink: ProcessLink): ProcessLinkExportResponseDto {
         processLink as FormProcessLink
+        val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
         return FormProcessLinkExportResponseDto(
             activityId = processLink.activityId,
             activityType = processLink.activityType,
-            formDefinitionId = processLink.formDefinitionId
+            formDefinitionName = formDefinition.name
         )
     }
 
