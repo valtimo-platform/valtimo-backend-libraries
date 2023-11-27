@@ -21,8 +21,6 @@ import com.ritense.export.ExportResult
 import com.ritense.export.Exporter
 import com.ritense.export.request.DecisionDefinitionExportRequest
 import com.ritense.export.request.ProcessDefinitionExportRequest
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
-import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import java.io.ByteArrayOutputStream
 import org.camunda.bpm.engine.RepositoryService
@@ -38,7 +36,7 @@ class ProcessDefinitionExporter(
 
     override fun export(request: ProcessDefinitionExportRequest): ExportResult {
         val processDefinition = requireNotNull(
-            camundaRepositoryService.findProcessDefinition(byKey(request.key).and(byLatestVersion()))
+            camundaRepositoryService.findProcessDefinitionById(request.processDefinitionId)
         )
 
         val bpmnModelInstance = repositoryService.getProcessModel(processDefinition.id).use { inputStream ->
@@ -62,10 +60,14 @@ class ProcessDefinitionExporter(
 
     private fun getDecisionExportRequests(bpmnModelInstance: BpmnModelInstance): Set<DecisionDefinitionExportRequest> {
         return bpmnModelInstance.getModelElementsByType(BusinessRuleTask::class.java)
-            .mapNotNull { task ->
-                task.camundaDecisionRef?.let { ref ->
-                    DecisionDefinitionExportRequest(ref)
-                }
+            .mapNotNull { it.camundaDecisionRef }
+            .distinct()
+            .map { ref ->
+                val decisionDefinition = repositoryService.createDecisionDefinitionQuery()
+                    .decisionDefinitionKey(ref)
+                    .latestVersion()
+                    .singleResult()
+                DecisionDefinitionExportRequest(decisionDefinition.id)
             }.toSet()
     }
 }

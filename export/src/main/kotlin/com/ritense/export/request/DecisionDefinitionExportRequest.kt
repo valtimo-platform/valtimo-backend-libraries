@@ -17,5 +17,5 @@
 package com.ritense.export.request
 
 data class DecisionDefinitionExportRequest(
-    val key: String
+    val decisionDefinitionId: String
 ): ExportRequest()

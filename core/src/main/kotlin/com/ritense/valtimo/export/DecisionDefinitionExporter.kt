@@ -29,10 +29,7 @@ class DecisionDefinitionExporter(
     override fun supports(): Class<DecisionDefinitionExportRequest> = DecisionDefinitionExportRequest::class.java
 
     override fun export(request: DecisionDefinitionExportRequest): ExportResult {
-        val decisionDefinition = repositoryService.createDecisionDefinitionQuery()
-            .decisionDefinitionKey(request.key)
-            .latestVersion()
-            .singleResult()
+        val decisionDefinition = repositoryService.getDecisionDefinition(request.decisionDefinitionId)
 
         val exportFile = repositoryService.getDecisionModel(decisionDefinition.id).use {inputStream ->
             ExportFile(

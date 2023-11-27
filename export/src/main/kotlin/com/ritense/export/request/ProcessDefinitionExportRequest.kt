@@ -17,5 +17,5 @@
 package com.ritense.export.request
 
 data class ProcessDefinitionExportRequest(
-    val key: String
+    val processDefinitionId: String
 ) : ExportRequest()
