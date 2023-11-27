@@ -17,7 +17,6 @@
 package com.ritense.processlink.domain
 
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
-import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.DiscriminatorValue
@@ -55,15 +54,6 @@ data class CustomProcessLink(
         activityType = activityType,
         someValue = someValue
     )
-
-    override fun toCreateRequestDto(): ProcessLinkCreateRequestDto {
-        return CustomProcessLinkCreateRequestDto(
-            processDefinitionId,
-            activityId,
-            activityType,
-            someValue
-        )
-    }
 
     companion object {
         const val PROCESS_LINK_TYPE_TEST = "test"

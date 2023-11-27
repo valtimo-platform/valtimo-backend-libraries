@@ -16,7 +16,6 @@
 
 package com.ritense.processlink.domain
 
-import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.DiscriminatorColumn
@@ -56,6 +55,4 @@ abstract class ProcessLink(
         id: UUID = this.id,
         processDefinitionId: String = this.processDefinitionId,
     ) : ProcessLink
-
-    abstract fun toCreateRequestDto() : ProcessLinkCreateRequestDto
 }

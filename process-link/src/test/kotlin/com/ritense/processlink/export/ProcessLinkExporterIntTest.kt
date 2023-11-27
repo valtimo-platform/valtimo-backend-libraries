@@ -5,7 +5,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.export.request.ProcessDefinitionExportRequest
 import com.ritense.processlink.BaseIntegrationTest
-import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
+import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import org.assertj.core.api.Assertions.assertThat
@@ -31,8 +31,10 @@ class ProcessLinkExporterIntTest @Autowired constructor(
             it.path == "config/auto-deploy-process-link.processlink.json"
         }
 
-        val createRequestDtos: List<ProcessLinkCreateRequestDto> = objectMapper.readValue(exportFile.content)
+        val createRequestDtos: List<ProcessLinkExportResponseDto> = objectMapper.readValue(exportFile.content)
         assertThat(createRequestDtos).isNotEmpty
+
+        assertThat(result.nestedRequests).contains(CustomProcessLinkNestedExportRequest())
     }
 
     fun getProcessDefinitionId(processDefinitionKey: String): String {

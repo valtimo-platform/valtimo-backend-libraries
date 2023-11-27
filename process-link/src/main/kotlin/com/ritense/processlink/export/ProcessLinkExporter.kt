@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.export.ExportFile
 import com.ritense.export.ExportResult
 import com.ritense.export.Exporter
+import com.ritense.export.request.ExportRequest
 import com.ritense.export.request.ProcessDefinitionExportRequest
 import com.ritense.processlink.service.ProcessLinkService
 
@@ -33,15 +34,21 @@ class ProcessLinkExporter(
     override fun export(request: ProcessDefinitionExportRequest): ExportResult {
         val processLinks = processLinkService.getProcessLinks(request.processDefinitionId)
 
-        val createDtos = processLinks.map {
-            it.toCreateRequestDto()
+        val nestedRequests = mutableSetOf<ExportRequest>()
+        val createDtos = processLinks.map { processLink ->
+            val mapper = processLinkService.getProcessLinkMapper(processLink.processLinkType)
+
+            nestedRequests.addAll(mapper.createDependencyExportRequests(processLink))
+
+            mapper.toProcessLinkExportResponseDto(processLink)
         }
 
         return ExportResult(
             ExportFile(
                 "config/${request.processDefinitionId.substringBefore(":")}.processlink.json",
                 objectMapper.writeValueAsBytes(createDtos)
-            )
+            ),
+            nestedRequests
         )
     }
 }

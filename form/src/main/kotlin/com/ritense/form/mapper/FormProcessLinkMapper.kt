@@ -40,10 +40,11 @@ class FormProcessLinkMapper(
 
     init {
         objectMapper.registerSubtypes(
-            FormProcessLinkDeployDto::class.java,
-            FormProcessLinkResponseDto::class.java,
             FormProcessLinkCreateRequestDto::class.java,
-            FormProcessLinkUpdateRequestDto::class.java,
+            FormProcessLinkDeployDto::class.java,
+            FormProcessLinkExportResponseDto::class.java,
+            FormProcessLinkResponseDto::class.java,
+            FormProcessLinkUpdateRequestDto::class.java
         )
     }
 

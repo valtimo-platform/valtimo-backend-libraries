@@ -44,6 +44,7 @@ class FormFlowProcessLinkMapper(
             FormFlowProcessLinkResponseDto::class.java,
             FormFlowProcessLinkCreateRequestDto::class.java,
             FormFlowProcessLinkUpdateRequestDto::class.java,
+            FormFlowProcessLinkExportResponseDto::class.java
         )
     }
 
