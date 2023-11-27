@@ -40,7 +40,7 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
         }
         assertThat(bpmnModelInstance).isNotNull
 
-        val decisionExportRequest = result.nestedRequests
+        val decisionExportRequest = result.relatedRequests
             .singleOrNull {
                 it is DecisionDefinitionExportRequest && it.decisionDefinitionId == getDecisionDefinitionId("dmn-sample")
             }

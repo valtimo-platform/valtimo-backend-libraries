@@ -34,7 +34,7 @@ class ProcessLinkExporterIntTest @Autowired constructor(
         val createRequestDtos: List<ProcessLinkExportResponseDto> = objectMapper.readValue(exportFile.content)
         assertThat(createRequestDtos).isNotEmpty
 
-        assertThat(result.nestedRequests).contains(CustomProcessLinkNestedExportRequest())
+        assertThat(result.relatedRequests).contains(CustomProcessLinkNestedExportRequest())
     }
 
     fun getProcessDefinitionId(processDefinitionKey: String): String {

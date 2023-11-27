@@ -35,5 +35,5 @@ interface ProcessLinkMapper {
         updateRequestDto: ProcessLinkUpdateRequestDto
     ): ProcessLink
 
-    fun createDependencyExportRequests(processLink: ProcessLink): Set<ExportRequest> = setOf()
+    fun createRelatedExportRequests(processLink: ProcessLink): Set<ExportRequest> = setOf()
 }

@@ -16,6 +16,6 @@
 
 package com.ritense.export.request
 
-data class FormExportRequest(
-    val formName: String
+data class FormDefinitionExportRequest(
+    val formDefinitionName: String
 ) : ExportRequest()

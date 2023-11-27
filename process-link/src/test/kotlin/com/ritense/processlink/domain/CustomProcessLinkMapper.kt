@@ -100,7 +100,7 @@ class CustomProcessLinkMapper(
         )
     }
 
-    override fun createDependencyExportRequests(processLink: ProcessLink): Set<ExportRequest> {
+    override fun createRelatedExportRequests(processLink: ProcessLink): Set<ExportRequest> {
         return setOf(CustomProcessLinkNestedExportRequest())
     }
 }

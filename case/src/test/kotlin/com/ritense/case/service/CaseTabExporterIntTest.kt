@@ -19,7 +19,7 @@ package com.ritense.case.service
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.export.request.DocumentDefinitionExportRequest
-import com.ritense.export.request.FormExportRequest
+import com.ritense.export.request.FormDefinitionExportRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -61,9 +61,9 @@ class CaseTabExporterIntTest @Autowired constructor(
             JSONCompareMode.NON_EXTENSIBLE
         )
 
-        assertThat(exportResult.nestedRequests
+        assertThat(exportResult.relatedRequests
             .singleOrNull {
-                it is FormExportRequest && it.formName == "test-form"
+                it is FormDefinitionExportRequest && it.formDefinitionName == "test-form"
             }).isNotNull
     }
 

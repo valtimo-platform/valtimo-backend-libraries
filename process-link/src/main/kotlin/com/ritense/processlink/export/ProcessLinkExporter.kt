@@ -34,11 +34,11 @@ class ProcessLinkExporter(
     override fun export(request: ProcessDefinitionExportRequest): ExportResult {
         val processLinks = processLinkService.getProcessLinks(request.processDefinitionId)
 
-        val nestedRequests = mutableSetOf<ExportRequest>()
+        val relatedRequests = mutableSetOf<ExportRequest>()
         val createDtos = processLinks.map { processLink ->
             val mapper = processLinkService.getProcessLinkMapper(processLink.processLinkType)
 
-            nestedRequests.addAll(mapper.createDependencyExportRequests(processLink))
+            relatedRequests.addAll(mapper.createRelatedExportRequests(processLink))
 
             mapper.toProcessLinkExportResponseDto(processLink)
         }
@@ -48,7 +48,7 @@ class ProcessLinkExporter(
                 "config/${request.processDefinitionId.substringBefore(":")}.processlink.json",
                 objectMapper.writeValueAsBytes(createDtos)
             ),
-            nestedRequests
+            relatedRequests
         )
     }
 }

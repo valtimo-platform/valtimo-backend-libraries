@@ -20,10 +20,10 @@ import com.ritense.export.request.ExportRequest
 
 data class ExportResult(
     val exportFiles: Set<ExportFile> = setOf(),
-    val nestedRequests: Set<ExportRequest> = setOf()
+    val relatedRequests: Set<ExportRequest> = setOf()
 ) {
-    constructor(exportFile: ExportFile?, nestedRequests: Set<ExportRequest> = setOf()) : this(
+    constructor(exportFile: ExportFile?, relatedRequests: Set<ExportRequest> = setOf()) : this(
         if (exportFile != null) setOf(exportFile) else setOf(),
-        nestedRequests
+        relatedRequests
     )
 }

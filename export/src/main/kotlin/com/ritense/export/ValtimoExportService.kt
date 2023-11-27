@@ -56,7 +56,7 @@ class ValtimoExportService (
         }.flatMap { exporter ->
             val result = exporter.export(request)
             result.exportFiles +
-                result.nestedRequests.flatMap {
+                result.relatedRequests.flatMap {
                     collectExportFiles(it, history)
                 }
         }.toSet()

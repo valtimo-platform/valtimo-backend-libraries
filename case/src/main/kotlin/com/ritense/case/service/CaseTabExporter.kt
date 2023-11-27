@@ -27,7 +27,7 @@ import com.ritense.export.ExportResult
 import com.ritense.export.Exporter
 import com.ritense.export.request.DocumentDefinitionExportRequest
 import com.ritense.export.request.ExportRequest
-import com.ritense.export.request.FormExportRequest
+import com.ritense.export.request.FormDefinitionExportRequest
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
@@ -68,7 +68,7 @@ class CaseTabExporter(
         }.distinctBy {
             it.contentKey
         }.map {
-            FormExportRequest(it.contentKey)
+            FormDefinitionExportRequest(it.contentKey)
         }.toSet()
     }
 
