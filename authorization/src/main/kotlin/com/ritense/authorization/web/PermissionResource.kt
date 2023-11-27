@@ -25,6 +25,7 @@ import com.ritense.authorization.web.result.PermissionAvailableResult
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -36,6 +37,7 @@ class PermissionResource(
     private var authorizationService: AuthorizationService
 ) {
 
+    @Transactional
     @PostMapping("/v1/permissions")
     fun userHasPermission(@RequestBody permissionsPresentRequest: List<PermissionAvailableRequest>)
         : ResponseEntity<List<PermissionAvailableResult>> {

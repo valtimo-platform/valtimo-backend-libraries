@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
-import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.processlink.service.ProcessLinkExistsException
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
@@ -50,6 +50,7 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
         try {
             val resources = loadResources()
             for (resource in resources) {
+                logger.info { "Deploying process link from file '${resource.filename}'" }
                 val processDefinitionId = getProcessDefinitionId(resource.filename!!)
 
                 val processLinkCreateDtos = getProcessLinks(resource, processDefinitionId)
@@ -71,8 +72,9 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
 
     private fun getProcessDefinitionId(fileName: String): String {
         val processDefinitionKey = fileName.substringBefore(".processlink.json")
-        return AuthorizationContext.runWithoutAuthorization {
-            repositoryService.findLatestProcessDefinition(processDefinitionKey)!!.id
+        return runWithoutAuthorization {
+            repositoryService.findLatestProcessDefinition(processDefinitionKey)?.id
+                ?: throw IllegalStateException("Error while deploying '$fileName'. Could not find Process definition with key '$processDefinitionKey'.")
         }
     }
 
