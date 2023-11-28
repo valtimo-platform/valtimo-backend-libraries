@@ -22,6 +22,7 @@ import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
+import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkExportResponseDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkResponseDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkUpdateRequestDto
 import java.util.UUID
@@ -70,6 +71,24 @@ internal class FormFlowProcessLinkMapperTest {
         assertEquals(formFlowProcessLink.activityId, formFlowProcessLinkResponseDto.activityId)
         assertEquals(formFlowProcessLink.activityType, formFlowProcessLinkResponseDto.activityType)
         assertEquals(formFlowProcessLink.formFlowDefinitionId, formFlowProcessLinkResponseDto.formFlowDefinitionId)
+    }
+
+    @Test
+    fun `should map FormFlowProcessLink entity to export DTO`() {
+        val formFlowProcessLink = FormFlowProcessLink(
+            id = UUID.randomUUID(),
+            processDefinitionId = "processDefinitionId",
+            activityId = "activityId",
+            activityType = SERVICE_TASK_START,
+            formFlowDefinitionId = "formFlowDefinitionId:3"
+        )
+
+        val dto = formFlowProcessLinkMapper.toProcessLinkExportResponseDto(formFlowProcessLink)
+
+        assertTrue(dto is FormFlowProcessLinkExportResponseDto)
+        assertEquals(formFlowProcessLink.activityId, dto.activityId)
+        assertEquals(formFlowProcessLink.activityType, dto.activityType)
+        assertEquals("formFlowDefinitionId:latest", dto.formFlowDefinitionId)
     }
 
     @Test
