@@ -16,6 +16,9 @@
 
 package com.ritense.case.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.export.request.DocumentDefinitionExportRequest
@@ -32,6 +35,7 @@ import org.springframework.util.StreamUtils
 
 @Transactional(readOnly = true)
 class CaseTabExporterIntTest @Autowired constructor(
+    private val objectMapper: ObjectMapper,
     private val resourceLoader: ResourceLoader,
     private val caseTabExportService: CaseTabExporter
 ) : BaseIntegrationTest() {
@@ -48,16 +52,25 @@ class CaseTabExporterIntTest @Autowired constructor(
             it.path == path
         }
         requireNotNull(caseTabsExport)
-        val exportJson = caseTabsExport.content.toString(Charsets.UTF_8)
+        val exportJson = objectMapper.readTree(caseTabsExport.content)
+
+        //Check if the changesetId ends with a timestamp
+        val changesetIdField = "changesetId"
+        val changesetRegex = """(some-case-type\.case-tabs)\.\d+""".toRegex()
+        val matchResult = changesetRegex.matchEntire(exportJson.get(changesetIdField).textValue())
+        assertThat(matchResult).isNotNull
+
+        //Remove the timestamp from the changesetId, so we can compare it as usual
+        (exportJson as ObjectNode).set<TextNode>(changesetIdField, TextNode(matchResult!!.groupValues[1]))
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/case-tabs/$caseDefinitionName.case-tabs.json")
+            .getResource("classpath:${PATH.format(caseDefinitionName)}")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
             }
         JSONAssert.assertEquals(
             expectedJson,
-            exportJson,
+            objectMapper.writeValueAsString(exportJson),
             JSONCompareMode.NON_EXTENSIBLE
         )
 
@@ -67,6 +80,6 @@ class CaseTabExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/%s.case-tabs.json"
+        private const val PATH = "config/case-tabs/%s.case-tabs.json"
     }
 }
