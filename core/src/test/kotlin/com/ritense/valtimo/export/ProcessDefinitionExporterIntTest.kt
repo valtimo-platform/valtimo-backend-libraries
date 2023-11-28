@@ -48,7 +48,7 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
         assertThat(result.exportFiles).isNotEmpty()
 
         val bpmnExportFile = result.exportFiles.singleOrNull {
-            it.path == "config/bpmn/$processDefinitionKey.bpmn"
+            it.path == "bpmn/$processDefinitionKey.bpmn"
         }
 
         requireNotNull(bpmnExportFile)
@@ -75,7 +75,7 @@ class ProcessDefinitionExporterIntTest @Autowired constructor(
         assertThat(result.exportFiles).isNotEmpty()
 
         val bpmnExportFile = result.exportFiles.singleOrNull {
-            it.path == "config/bpmn/$processDefinitionKey.bpmn"
+            it.path == "bpmn/$processDefinitionKey.bpmn"
         }
 
         requireNotNull(bpmnExportFile)

@@ -46,7 +46,7 @@ class ProcessLinkExporterIntTest @Autowired constructor(
         assertThat(result.exportFiles).isNotEmpty()
 
         val exportFile = result.exportFiles.single {
-            it.path == "config/auto-deploy-process-link.processlink.json"
+            it.path == "config/processlink/auto-deploy-process-link.processlink.json"
         }
 
         val createRequestDtos: List<ProcessLinkExportResponseDto> = objectMapper.readValue(exportFile.content)

@@ -28,6 +28,7 @@ import com.ritense.export.Exporter
 import com.ritense.export.request.DocumentDefinitionExportRequest
 import com.ritense.export.request.ExportRequest
 import com.ritense.export.request.FormDefinitionExportRequest
+import java.time.Instant
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
@@ -47,7 +48,7 @@ class CaseTabExporter(
         }
 
         val caseTabChangeset = CaseTabChangeset(
-            "$caseName.case-tabs",
+            "$caseName.case-tabs.${Instant.now().toEpochMilli()}",
             listOf(
                 CaseDefinitionsTabCollection(
                     caseName,
@@ -77,6 +78,6 @@ class CaseTabExporter(
     }
 
     companion object {
-        private const val PATH = "config/%s.case-tabs.json"
+        private const val PATH = "config/case-tabs/%s.case-tabs.json"
     }
 }
