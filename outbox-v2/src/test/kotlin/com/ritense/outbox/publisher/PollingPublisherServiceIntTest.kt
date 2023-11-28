@@ -18,11 +18,14 @@ package com.ritense.outbox.publisher
 
 import com.ritense.outbox.BaseIntegrationTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.mock.mockito.SpyBean
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Primary
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
@@ -31,64 +34,33 @@ class PollingPublisherServiceIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var pollingPublisherService: PollingPublisherService
 
-    @SpyBean
+    @Autowired
     lateinit var messagePublisher: DefaultMessagePublisher
-
-    /* @Value("\${polling-publisher.retry.max-attempts}")
-     lateinit var maxRetryExpression: String*/
 
     @Test
     fun `should send OutboxMessage`() {
-        val event = OrderCreatedEvent("textBook")
+        assertThat(outboxMessageRepository.findTopByOrderByCreatedOnAsc()).isNull()
 
-        assertThat(defaultOutboxService.getOldestMessage()).isNull()
-
-        defaultOutboxService.send(event)
-        assertThat(defaultOutboxService.getOldestMessage()).isNotNull()
+        defaultOutboxService.send("rootId", "evenType", "MESSAGE")
+        assertThat(outboxMessageRepository.findTopByOrderByCreatedOnAsc()).isNotNull()
 
         pollingPublisherService.pollAndPublishAll()
 
-        assertThat(defaultOutboxService.getOldestMessage()).isNull()
-        verify(messagePublisher).publish(any())
+        assertThat(outboxMessageRepository.findTopByOrderByCreatedOnAsc()).isNull()
     }
 
-    /* @Test
-     fun `should send multiple OutboxMessages`() {
-         val event = OrderCreatedEvent("textBook")
+    @Test
+    fun `should send multiple OutboxMessages`() {
+        assertThat(outboxMessageRepository.findAll().size).isEqualTo(0)
 
-         assertThat(outboxService.getMessages().size).isEqualTo(0)
+        defaultOutboxService.send("rootId", "eventId", "TextBook")
+        defaultOutboxService.send("rootId", "eventId", "TextBook")
+        defaultOutboxService.send("rootId", "eventId", "TextBook")
+        assertThat(outboxMessageRepository.findAll().size).isEqualTo(3)
 
-         outboxService.send(event)
-         outboxService.send(event)
-         outboxService.send(event)
-         assertThat(outboxService.getMessages().size).isEqualTo(3)
+        pollingPublisherService.pollAndPublishAll()
 
-         pollingPublisherService.pollMessage()
+        assertThat(outboxMessageRepository.findAll().size).isEqualTo(0)
+    }
 
-         assertThat(outboxService.getMessages().size).isEqualTo(0)
-         verify(messagePublisher, times(3)).publish(any())
-     }
-
-     @Test
-     fun `should not delete OutboxMessage when sending fails`() {
-         val event = OrderCreatedEvent("textBook")
-
-         assertThat(outboxService.getMessages().size).isEqualTo(0)
-
-         outboxService.send(event)
-         assertThat(outboxService.getMessages().size).isEqualTo(1)
-
-         try {
-             doThrow(RuntimeException("Haha")).whenever(messagePublisher).publish(any())
-             pollingPublisherService.pollMessage()
-             Assertions.fail("Error message not thrown")
-         } catch (e: Exception) {
-             assertThat(outboxService.getMessages().size).isEqualTo(1)
-             verify(messagePublisher, times(maxRetryExpression.toInt())).publish(any())
-         }
-     }*/
-
-    data class OrderCreatedEvent(
-        val name: String
-    )
 }

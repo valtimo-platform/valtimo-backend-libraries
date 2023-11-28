@@ -2,7 +2,6 @@ package com.ritense.outbox.service
 
 import io.cloudevents.CloudEvent
 import io.cloudevents.core.provider.EventFormatProvider
-import io.cloudevents.core.v1.CloudEventV1
 import io.cloudevents.jackson.JsonFormat
 
 class CloudEventOutboxService(
