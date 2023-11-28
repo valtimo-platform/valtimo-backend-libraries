@@ -50,7 +50,7 @@ class ProcessDefinitionExporter(
         val exportFile = ByteArrayOutputStream().use {
             Bpmn.writeModelToStream(it, bpmnModelInstance)
             ExportFile(
-                "config/bpmn/${processDefinition.key}.bpmn",
+                "bpmn/${processDefinition.key}.bpmn",
                 it.toByteArray()
             )
         }

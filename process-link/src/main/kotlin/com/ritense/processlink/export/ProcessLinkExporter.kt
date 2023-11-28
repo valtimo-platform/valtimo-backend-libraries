@@ -49,7 +49,7 @@ class ProcessLinkExporter(
 
         return ExportResult(
             ExportFile(
-                "config/${request.processDefinitionId.substringBefore(":")}.processlink.json",
+                "config/processlink/${request.processDefinitionId.substringBefore(":")}.processlink.json",
                 objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(createDtos)
             ),
             relatedRequests

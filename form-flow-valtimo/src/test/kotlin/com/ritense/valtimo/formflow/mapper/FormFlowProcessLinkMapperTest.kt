@@ -17,7 +17,7 @@
 package com.ritense.valtimo.formflow.mapper
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ritense.export.request.FormDefinitionExportRequest
+import com.ritense.export.request.FormFlowDefinitionExportRequest
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
@@ -36,7 +36,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
-internal class FormFlowFlowProcessLinkMapperTest {
+internal class FormFlowProcessLinkMapperTest {
 
     @Mock
     lateinit var formFlowService: FormFlowService
@@ -165,7 +165,7 @@ internal class FormFlowFlowProcessLinkMapperTest {
         val relatedExportRequests = formFlowProcessLinkMapper.createRelatedExportRequests(formProcessLink)
 
         Assertions.assertThat(relatedExportRequests).contains(
-            FormDefinitionExportRequest("testing:latest")
+            FormFlowDefinitionExportRequest("testing:latest")
         )
     }
 }
