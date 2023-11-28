@@ -18,6 +18,7 @@ package com.ritense.case.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.export.ExportFile
+import com.ritense.export.ExportResult
 import com.ritense.export.Exporter
 import com.ritense.export.request.DocumentDefinitionExportRequest
 import java.io.ByteArrayOutputStream
@@ -30,8 +31,12 @@ class CaseListExporter(
     override fun supports(): Class<DocumentDefinitionExportRequest> =
         DocumentDefinitionExportRequest::class.java
 
-    override fun export(request: DocumentDefinitionExportRequest): Set<ExportFile> {
+    override fun export(request: DocumentDefinitionExportRequest): ExportResult {
         val listColumns = caseDefinitionService.getListColumns(request.name)
+
+        if (listColumns.isEmpty()) {
+            return ExportResult()
+        }
 
         val exportFile = ByteArrayOutputStream().use {
             mapper.writerWithDefaultPrettyPrinter().writeValue(it, listColumns)
@@ -42,7 +47,7 @@ class CaseListExporter(
             )
         }
 
-        return setOf(exportFile)
+        return ExportResult(exportFile)
     }
 
     companion object {

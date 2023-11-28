@@ -17,17 +17,19 @@
 package com.ritense.case
 
 import com.ritense.export.ExportFile
+import com.ritense.export.ExportResult
 import com.ritense.export.Exporter
-import com.ritense.export.request.FormExportRequest
-import org.springframework.stereotype.Component
+import com.ritense.export.request.FormDefinitionExportRequest
 
-class TestFormExporter : Exporter<FormExportRequest>{
-    override fun supports() = FormExportRequest::class.java
+class TestFormExporter : Exporter<FormDefinitionExportRequest>{
+    override fun supports() = FormDefinitionExportRequest::class.java
 
-    override fun export(request: FormExportRequest): Set<ExportFile> {
-        return setOf(ExportFile(
-            "${request.formName}.json",
-            "{}".toByteArray()
-        ))
+    override fun export(request: FormDefinitionExportRequest): ExportResult {
+        return ExportResult(
+            ExportFile(
+                "${request.formDefinitionName}.json",
+                "{}".toByteArray()
+            )
+        )
     }
 }

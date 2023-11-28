@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.export.request
+package com.ritense.export
 
-data class FormExportRequest(
-    val formName: String
-) : ExportRequest
+import com.ritense.export.request.ExportRequest
+
+data class TestStackOverflowExportRequest(
+    val value: String = "stackoverflow"
+) : ExportRequest()

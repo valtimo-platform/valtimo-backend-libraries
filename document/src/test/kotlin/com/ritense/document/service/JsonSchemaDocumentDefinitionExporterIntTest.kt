@@ -39,7 +39,7 @@ class JsonSchemaDocumentDefinitionExporterIntTest @Autowired constructor(
         val definition = documentDefinitionService.findLatestByName("person").orElseThrow()
 
         val request = DocumentDefinitionExportRequest(definition.id().name(), definition.id().version())
-        val exportFiles = documentDefinitionExportService.export(request)
+        val exportFiles = documentDefinitionExportService.export(request).exportFiles
 
         val path = PATH.format(definition.id().name())
         val personDefinitionExport = exportFiles.singleOrNull {

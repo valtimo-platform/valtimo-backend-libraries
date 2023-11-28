@@ -21,5 +21,5 @@ import com.ritense.export.request.ExportRequest
 interface Exporter<T: ExportRequest> {
     fun supports(): Class<T>
 
-    fun export(request: T): Set<ExportFile>
+    fun export(request: T): ExportResult
 }

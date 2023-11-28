@@ -18,4 +18,6 @@ package com.ritense.export
 
 import com.ritense.export.request.ExportRequest
 
-class TestExportRequest : ExportRequest
+data class TestExportRequest(
+    val value: String = "test"
+) : ExportRequest()

@@ -21,6 +21,4 @@ import java.io.ByteArrayOutputStream
 
 interface ExportService {
     fun export(request: ExportRequest): ByteArrayOutputStream
-
-    fun collectExportFiles(request: ExportRequest): Set<ExportFile>
 }

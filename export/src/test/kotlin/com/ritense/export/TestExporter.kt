@@ -24,12 +24,11 @@ class TestExporter : Exporter<TestExportRequest> {
     override fun supports(): Class<TestExportRequest> =
         TestExportRequest::class.java
 
-    override fun export(request: TestExportRequest): Set<ExportFile> {
-        return setOf(
-            ExportFile(
-                "test",
-                "test".toByteArray()
-            )
-        )
-    }
+    override fun export(request: TestExportRequest) = ExportResult(
+        ExportFile(
+            "${request.value}.txt",
+            request.value.toByteArray()
+        ),
+        setOf(TestNestedExportRequest())
+    )
 }

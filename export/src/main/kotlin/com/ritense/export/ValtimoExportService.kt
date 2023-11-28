@@ -40,12 +40,29 @@ class ValtimoExportService (
         return outputStream
     }
 
-    override fun collectExportFiles(request: ExportRequest): Set<ExportFile> {
-        val exportList: Set<ExportFile> = exporters.filter { exporter ->
+    private fun collectExportFiles(request: ExportRequest, history: MutableSet<ExportRequest> = mutableSetOf()): Set<ExportFile> {
+        //This history prevents stack-overflows
+        if (history.contains(request)) {
+            return setOf()
+        }
+        history.add(request)
+
+        return exporters.filter { exporter ->
             exporter.supports().isInstance(request)
+        }.apply {
+            if (isEmpty()) {
+                logger.error { "No exporter found for export request of type '${request::class.java}'" }
+            }
         }.flatMap { exporter ->
-            exporter.export(request)
+            val result = exporter.export(request)
+            result.exportFiles +
+                result.relatedRequests.flatMap {
+                    collectExportFiles(it, history)
+                }
         }.toSet()
-        return exportList
+    }
+
+    companion object {
+        private val logger: mu.KLogger = mu.KotlinLogging.logger {}
     }
 }

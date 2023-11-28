@@ -18,6 +18,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"

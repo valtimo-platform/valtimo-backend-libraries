@@ -1,7 +1,7 @@
 package com.ritense.form.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.export.request.FormExportRequest
+import com.ritense.export.request.FormDefinitionExportRequest
 import com.ritense.form.BaseIntegrationTest
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -21,7 +21,8 @@ class FormDefinitionExporterIntTest @Autowired constructor(
     @Test
     fun `should export form`(): Unit = runWithoutAuthorization {
         val formName = "form-example"
-        val exportFiles = formDefinitionExportService.export(FormExportRequest(formName));
+        val request = FormDefinitionExportRequest(formName)
+        val exportFiles = formDefinitionExportService.export(request).exportFiles
 
         val path = PATH.format(formName)
         val formExport = exportFiles.singleOrNull {

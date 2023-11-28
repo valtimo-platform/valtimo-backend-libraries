@@ -13,8 +13,20 @@ class ExportServiceIntTest @Autowired constructor(
     @Test
     fun `should export a zip`() {
         val bytes = exportService.export(TestExportRequest()).toByteArray()
-        val zipEntry = ZipInputStream(ByteArrayInputStream(bytes)).nextEntry
+        val zipStream = ZipInputStream(ByteArrayInputStream(bytes))
+        val entries = generateSequence { zipStream.nextEntry }
+            .toList()
 
-        assertThat(zipEntry).isNotNull
+        assertThat(entries.singleOrNull { it.name == "test.txt" }).isNotNull
+        assertThat(entries.singleOrNull { it.name == "nested.txt" }).isNotNull
+    }
+
+    @Test
+    fun `should not result in a stackoverflow`() {
+        val bytes = exportService.export(TestStackOverflowExportRequest()).toByteArray()
+        val zipStream = ZipInputStream(ByteArrayInputStream(bytes))
+        val entries = generateSequence { zipStream.nextEntry }
+            .toList()
+        assertThat(entries).isEmpty()
     }
 }

@@ -248,11 +248,9 @@ class CaseAutoConfiguration {
     fun caseTabExporter(
         objectMapper: ObjectMapper,
         caseTabService: CaseTabService,
-        @Lazy exportService: ExportService
     ) = CaseTabExporter(
         objectMapper,
-        caseTabService,
-        exportService
+        caseTabService
     )
 
     @Bean

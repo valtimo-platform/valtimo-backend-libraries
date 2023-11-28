@@ -23,24 +23,28 @@ import com.ritense.case.domain.CaseTab
 import com.ritense.case.domain.CaseTabType
 import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.export.ExportFile
-import com.ritense.export.ExportService
+import com.ritense.export.ExportResult
 import com.ritense.export.Exporter
 import com.ritense.export.request.DocumentDefinitionExportRequest
-import com.ritense.export.request.FormExportRequest
+import com.ritense.export.request.ExportRequest
+import com.ritense.export.request.FormDefinitionExportRequest
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
 class CaseTabExporter(
     private val objectMapper: ObjectMapper,
-    private val caseTabService: CaseTabService,
-    private val exportService: ExportService
+    private val caseTabService: CaseTabService
 ) : Exporter<DocumentDefinitionExportRequest> {
 
     override fun supports() = DocumentDefinitionExportRequest::class.java
 
-    override fun export(request: DocumentDefinitionExportRequest): Set<ExportFile> {
+    override fun export(request: DocumentDefinitionExportRequest): ExportResult {
         val caseName = request.name
         val caseTabs = caseTabService.getCaseTabs(caseName)
+
+        if (caseTabs.isEmpty()) {
+            return ExportResult()
+        }
 
         val caseTabChangeset = CaseTabChangeset(
             "$caseName.case-tabs",
@@ -56,16 +60,19 @@ class CaseTabExporter(
             objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(caseTabChangeset)
         )
 
-        return setOf(caseTabExport, *exportFormDefinitions(caseTabs).toTypedArray())
+        return ExportResult(
+            caseTabExport,
+            createFormDefininitionExportRequests(caseTabs)
+        )
     }
 
-    private fun exportFormDefinitions(caseTabs: List<CaseTab>): Set<ExportFile> {
+    private fun createFormDefininitionExportRequests(caseTabs: List<CaseTab>): Set<ExportRequest> {
         return caseTabs.filter {
             it.type == CaseTabType.FORMIO
         }.distinctBy {
             it.contentKey
-        }.flatMap {
-            exportService.collectExportFiles(FormExportRequest(it.contentKey))
+        }.map {
+            FormDefinitionExportRequest(it.contentKey)
         }.toSet()
     }
 
