@@ -42,10 +42,12 @@ class CloudEventOutboxServiceIntTest : BaseIntegrationTest() {
             .withData(objectMapper.writeValueAsBytes("{ \"name\": \"textbook\" }"))
             .build()
 
-        cloudEventOutboxService.send(cloudEvent)
+        cloudEventOutboxService.send("ce:1", cloudEvent)
 
-        val message = defaultOutboxService.getOldestMessage()
+        val message = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+
         val jsonMessage = objectMapper.readTree(message?.message)
+
         assertThat(jsonMessage.get("id").asText()).isEqualTo(cloudEvent.id)
     }
 
