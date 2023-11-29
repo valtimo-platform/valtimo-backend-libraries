@@ -19,8 +19,10 @@ package com.ritense.documentenapi.service
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.plugin.service.PluginService
+import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
 
+@Transactional
 class DocumentenApiService(
     val pluginService: PluginService
 ) {
