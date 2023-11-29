@@ -226,7 +226,8 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
                 "receiveData": [],
                 "receiver": "${TaakReceiver.OTHER.key}",
                 "identificationKey": "${TaakIdentificatie.TYPE_KVK}",
-                "identificationValue": "569312863"
+                "identificationValue": "569312863",
+                "verloopDurationInDays": 3
             }
         """.trimIndent()
 
@@ -256,7 +257,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         assertThat(body, hasJsonPath("$.record.data.formulier.value", equalTo("some-form")))
         assertThat(body, hasJsonPath("$.record.data.verwerker_taak_id", equalTo(task.id)))
         assertThat(body, hasJsonPath("$.record.data.zaak", equalTo(ZAAK_URL.toString())))
-        assertThat(body, hasJsonPath("$.record.data.verloopdatum", nullValue()))
+        assertThat(body, hasJsonPath("$.record.data.verloopdatum", startsWith(LocalDate.now().plusDays(3).toString())))
         assertThat(body, hasJsonPath("$.record.startAt", equalTo(LocalDate.now().toString())))
         assertThat(body, jsonPathMissingOrNull("$.record.endAt"))
         assertThat(body, jsonPathMissingOrNull("$.record.registrationAt"))

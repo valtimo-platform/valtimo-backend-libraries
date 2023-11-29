@@ -15,6 +15,7 @@
  */
 package com.ritense.document.service
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
@@ -62,6 +63,8 @@ class JsonSchemaDocumentDefinitionSpecification(
     }
 
     override fun identifierToEntity(identifier: String): JsonSchemaDocumentDefinition {
-        return documentDefinitionService.findLatestByName(identifier).get()
+        return runWithoutAuthorization {
+            documentDefinitionService.findLatestByName(identifier).get()
+        }
     }
 }
