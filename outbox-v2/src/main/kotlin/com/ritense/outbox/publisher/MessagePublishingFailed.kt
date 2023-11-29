@@ -16,4 +16,8 @@
 
 package com.ritense.outbox.publisher
 
-open class MessagePublishingFailed(message: String) : RuntimeException(message)
+open class MessagePublishingFailed : RuntimeException {
+    constructor() : super()
+    constructor(message: String) : super(message)
+    constructor(message: String, ex: Throwable): super(message, ex)
+}
