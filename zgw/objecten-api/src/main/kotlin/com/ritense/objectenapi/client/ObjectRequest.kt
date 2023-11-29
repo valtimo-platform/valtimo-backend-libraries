@@ -16,9 +16,18 @@
 
 package com.ritense.objectenapi.client
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import java.net.URI
+import java.util.UUID
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class ObjectRequest(
+    val uuid: UUID?,
     val type: URI,
     val record: ObjectRecord
-)
+) {
+    constructor(
+        type: URI,
+        record: ObjectRecord
+    ) : this(null, type, record)
+}

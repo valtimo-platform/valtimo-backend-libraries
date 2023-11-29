@@ -51,7 +51,7 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentDelegate::class)
     fun documentDelegate(
-        @Lazy processDocumentService: ProcessDocumentService,
+        processDocumentService: ProcessDocumentService,
         userManagementService: UserManagementService,
         documentService: DocumentService
     ): DocumentDelegate {
@@ -66,7 +66,7 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentDelegateService::class)
     fun documentDelegateService(
-        @Lazy processDocumentService: ProcessDocumentService,
+        processDocumentService: ProcessDocumentService,
         documentService: DocumentService,
         jsonSchemaDocumentService: JsonSchemaDocumentService,
         userManagementService: UserManagementService
@@ -82,13 +82,13 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CorrelationService::class)
     fun correlationService(
-        @Lazy runtimeService: RuntimeService,
-        @Lazy camundaRuntimeService: CamundaRuntimeService,
-        @Lazy documentService: DocumentService,
-        @Lazy processDocumentAssociationService: ProcessDocumentAssociationService,
-        @Lazy camundaProcessService: CamundaProcessService,
-        @Lazy repositoryService: RepositoryService,
-        @Lazy camundaRepositoryService: CamundaRepositoryService,
+        runtimeService: RuntimeService,
+        camundaRuntimeService: CamundaRuntimeService,
+        documentService: DocumentService,
+        processDocumentAssociationService: ProcessDocumentAssociationService,
+        camundaProcessService: CamundaProcessService,
+        repositoryService: RepositoryService,
+        camundaRepositoryService: CamundaRepositoryService,
     ): CorrelationService {
         return CorrelationServiceImpl(
             runtimeService = runtimeService,
@@ -104,9 +104,9 @@ class ProcessDocumentsAutoConfiguration {
     @Bean("processService")
     @ConditionalOnMissingBean(ProcessDocumentsService::class)
     fun processDocumentsService(
-        @Lazy documentService: DocumentService,
-        @Lazy processDocumentAssociationService: ProcessDocumentAssociationService,
-        @Lazy camundaProcessService: CamundaProcessService
+        documentService: DocumentService,
+        processDocumentAssociationService: ProcessDocumentAssociationService,
+        camundaProcessService: CamundaProcessService
     ): ProcessDocumentsService {
         return ProcessDocumentsService(
             documentService,
