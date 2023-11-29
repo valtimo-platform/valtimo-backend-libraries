@@ -16,9 +16,7 @@
 
 package com.ritense.case.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.export.request.DocumentDefinitionExportRequest
 import org.junit.jupiter.api.Test
@@ -31,41 +29,38 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 
 @Transactional(readOnly = true)
-class CaseListExporterIntTest @Autowired constructor(
-    private val objectMapper: ObjectMapper,
+class CaseDefinitionSettingsExporterIntTest @Autowired constructor(
     private val resourceLoader: ResourceLoader,
-    private val caseListExporter: CaseListExporter
+    private val caseDefinitionSettingsExporter: CaseDefinitionSettingsExporter
 ) : BaseIntegrationTest() {
+
     @Test
-    fun `should export list columns for case definition`(): Unit = AuthorizationContext.runWithoutAuthorization {
-        val caseDefinitionName = "house"
+    fun `should export tabs for case definition`(): Unit = runWithoutAuthorization {
+        val caseDefinitionName = "some-case-type"
 
         val request = DocumentDefinitionExportRequest(caseDefinitionName, 1)
-        val exportFiles = caseListExporter.export(request).exportFiles
+        val exportResult = caseDefinitionSettingsExporter.export(request)
 
         val path = PATH.format(caseDefinitionName)
-        val caseTabsExport = exportFiles.singleOrNull {
+        val caseTabsExport = exportResult.exportFiles.singleOrNull {
             it.path == path
         }
-
-        val jsonTree = objectMapper.readTree(requireNotNull(caseTabsExport).content)
-        //The order is empty at the resource, but serialized anyway. Remove it to fix the comparison
-        (jsonTree.at("/1") as ObjectNode).remove("order")
-
+        requireNotNull(caseTabsExport)
+        val exportJson = caseTabsExport.content.toString(Charsets.UTF_8)
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/case/list/$caseDefinitionName.json")
+            .getResource("classpath:config/case/definition/$caseDefinitionName.json")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
             }
         JSONAssert.assertEquals(
             expectedJson,
-            objectMapper.writeValueAsString(jsonTree),
+            exportJson,
             JSONCompareMode.NON_EXTENSIBLE
         )
     }
 
     companion object {
-        private const val PATH = "config/case/list/%s.json"
+        private const val PATH = "config/case/definition/%s.json"
     }
 }

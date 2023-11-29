@@ -80,7 +80,7 @@ class FormFlowProcessLinkMapper(
         return FormFlowProcessLinkExportResponseDto(
             activityId = processLink.activityId,
             activityType = processLink.activityType,
-            formFlowDefinitionId = processLink.formFlowDefinitionId
+            formFlowDefinitionId = "${processLink.formFlowDefinitionId.substringBeforeLast(":")}:latest"
         )
     }
 
