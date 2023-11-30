@@ -16,6 +16,7 @@
 
 package com.ritense.note.repository
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
@@ -63,7 +64,9 @@ class NoteSpecification(
     }
 
     override fun identifierToEntity(identifier: String): Note {
-        return noteService.getNoteById(UUID.fromString(identifier))
+        return runWithoutAuthorization {
+            noteService.getNoteById(UUID.fromString(identifier))
+        }
     }
 }
 

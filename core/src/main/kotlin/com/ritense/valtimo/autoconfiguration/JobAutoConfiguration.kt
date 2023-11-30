@@ -23,7 +23,6 @@ import org.camunda.bpm.engine.ManagementService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Lazy
 
 @Configuration
 class JobAutoConfiguration {
@@ -31,7 +30,7 @@ class JobAutoConfiguration {
     @Bean
     @ProcessBean
     @ConditionalOnMissingBean(JobService::class)
-    fun jobService(@Lazy managementService: ManagementService): JobService {
+    fun jobService(managementService: ManagementService): JobService {
         return JobService(managementService)
     }
 
