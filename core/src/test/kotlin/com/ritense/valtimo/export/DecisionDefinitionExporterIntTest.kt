@@ -42,7 +42,7 @@ class DecisionDefinitionExporterIntTest @Autowired constructor(
         assertThat(result.exportFiles).isNotEmpty()
 
         val dmnExportFile = result.exportFiles.singleOrNull {
-            it.path == "bpmn/$decisionDefinitionKey.dmn"
+            it.path == "dmn/$decisionDefinitionKey.dmn"
         }
 
         requireNotNull(dmnExportFile)
