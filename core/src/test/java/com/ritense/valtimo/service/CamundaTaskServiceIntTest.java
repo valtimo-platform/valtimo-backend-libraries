@@ -294,14 +294,14 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         ManageableUser manageableUser = mock(ManageableUser.class);
         when(userManagementService.findByRole(userRole.getKey())).thenReturn(List.of(manageableUser));
 
-        AuthorizationContext.runWithoutAuthorization(() -> camundaProcessService.startProcess(
+        runWithoutAuthorization(() -> camundaProcessService.startProcess(
             processDefinitionKey,
             businessKey,
             Map.of()
         ));
 
 
-        var pagedTasks = AuthorizationContext.runWithoutAuthorization(() -> camundaTaskService.findTasksFiltered(
+        var pagedTasks = runWithoutAuthorization(() -> camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
             PageRequest.of(0, 20)
         ));
@@ -361,7 +361,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldSendOutboxEventWhenTaskCompleted() {
-        final var processInstance = AuthorizationContext.runWithoutAuthorization(() ->
+        final var processInstance = runWithoutAuthorization(() ->
             camundaProcessService.startProcess(
                 processDefinitionKey,
                 businessKey,

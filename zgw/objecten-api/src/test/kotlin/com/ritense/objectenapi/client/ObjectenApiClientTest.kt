@@ -604,7 +604,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send post request when creating object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
             {
@@ -663,7 +663,7 @@ internal class ObjectenApiClientTest {
     @Test
     fun `should send post request with uuid when uuid has been provided when creating object`() {
         val webclientBuilder = WebClient.builder()
-        val client = ObjectenApiClient(webclientBuilder)
+        val client = ObjectenApiClient(webclientBuilder, outboxService, objectMapper)
 
         val responseBody = """
             {
