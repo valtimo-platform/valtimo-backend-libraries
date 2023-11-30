@@ -50,6 +50,7 @@ import javax.sql.DataSource
 class OutboxAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(ObjectMapper::class)
     fun objectMapper(): ObjectMapper = ObjectMapper()
         .findAndRegisterModules()
         .registerModule(KotlinModule.Builder().build())
