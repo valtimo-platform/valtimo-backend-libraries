@@ -52,8 +52,17 @@ public interface DocumentDefinitionResource {
         @PageableDefault(sort = {"id_name"}, direction = ASC) Pageable pageable
     );
 
+    @GetMapping("/management/v1/document-definition/{name}")
+    ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionForManagement(@PathVariable String name);
+
     @GetMapping("/v1/document-definition/{name}")
     ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(@PathVariable String name);
+
+    @GetMapping("/management/v1/document-definition/{name}/version/{version}")
+    ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionVersion(
+        @PathVariable String name,
+        @PathVariable long version
+    );
 
     @GetMapping("/v1/document-definition/open/count")
     ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount();

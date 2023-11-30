@@ -26,6 +26,7 @@ import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import java.util.UUID
 import kotlin.jvm.optionals.getOrElse
@@ -56,8 +57,12 @@ open class ProcessLinkService(
         return processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinitionId, activityId)
     }
 
+    fun getProcessLinks(processDefinitionId: String): List<ProcessLink> {
+        return processLinkRepository.findByProcessDefinitionId(processDefinitionId)
+    }
+
     fun getProcessLinksByProcessDefinitionKey(processDefinitionKey: String): List<ProcessLink> {
-        return camundaRepositoryService.findProcessDefinitions(byKey(processDefinitionKey))
+        return camundaRepositoryService.findProcessDefinitions(byKey(processDefinitionKey).and(byLatestVersion()))
             .flatMap { processLinkRepository.findByProcessDefinitionId(it.id) }
     }
 

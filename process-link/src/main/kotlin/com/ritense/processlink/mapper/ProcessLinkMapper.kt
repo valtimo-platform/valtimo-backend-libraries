@@ -16,6 +16,7 @@
 
 package com.ritense.processlink.mapper
 
+import com.ritense.export.request.ExportRequest
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
@@ -33,4 +34,6 @@ interface ProcessLinkMapper {
         processLinkToUpdate: ProcessLink,
         updateRequestDto: ProcessLinkUpdateRequestDto
     ): ProcessLink
+
+    fun createRelatedExportRequests(processLink: ProcessLink): Set<ExportRequest> = setOf()
 }

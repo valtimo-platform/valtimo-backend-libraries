@@ -30,8 +30,11 @@ import com.ritense.case.repository.CaseTabSpecificationFactory
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case.service.CaseDefinitionSettingsExporter
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.service.CaseListDeploymentService
+import com.ritense.case.service.CaseListExporter
+import com.ritense.case.service.CaseTabExporter
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.web.rest.CaseDefinitionResource
@@ -40,6 +43,7 @@ import com.ritense.case.web.rest.CaseTabManagementResource
 import com.ritense.case.web.rest.CaseTabResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
+import com.ritense.export.ExportService
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -69,9 +73,10 @@ class CaseAutoConfiguration {
     @ConditionalOnMissingBean(name = ["caseDefinitionResource"])
     @Bean
     fun caseDefinitionResource(
-        service: CaseDefinitionService
+        service: CaseDefinitionService,
+        exportService: ExportService
     ): CaseDefinitionResource {
-        return CaseDefinitionResource(service)
+        return CaseDefinitionResource(service, exportService)
     }
 
     @Bean
@@ -238,4 +243,34 @@ class CaseAutoConfiguration {
             queryDialectHelper
         )
     }
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTabExporter::class)
+    fun caseTabExporter(
+        objectMapper: ObjectMapper,
+        caseTabService: CaseTabService,
+    ) = CaseTabExporter(
+        objectMapper,
+        caseTabService
+    )
+
+    @Bean
+    @ConditionalOnMissingBean(CaseListExporter::class)
+    fun caseListExporter(
+        caseDefinitionService: CaseDefinitionService,
+        objectMapper: ObjectMapper,
+    ) = CaseListExporter(
+        caseDefinitionService,
+        objectMapper
+    )
+
+    @Bean
+    @ConditionalOnMissingBean(CaseDefinitionSettingsExporter::class)
+    fun caseDefinitionSettingsExporter(
+        objectMapper: ObjectMapper,
+        caseDefinitionService: CaseDefinitionService,
+    ) = CaseDefinitionSettingsExporter(
+        objectMapper,
+        caseDefinitionService
+    )
 }

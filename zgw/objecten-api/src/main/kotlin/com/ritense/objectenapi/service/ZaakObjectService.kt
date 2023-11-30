@@ -32,13 +32,15 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
+import mu.KotlinLogging
+import org.springframework.http.HttpStatus
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
-import mu.KotlinLogging
-import org.springframework.http.HttpStatus
-import org.springframework.web.util.UriComponentsBuilder
 
+@Transactional
 class ZaakObjectService(
     private val zaakUrlProvider: ZaakUrlProvider,
     private val pluginService: PluginService,

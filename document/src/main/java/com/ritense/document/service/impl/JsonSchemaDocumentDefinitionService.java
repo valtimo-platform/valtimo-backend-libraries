@@ -160,6 +160,22 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
+    public Optional<JsonSchemaDocumentDefinition> findByNameAndVersion(String documentDefinitionName, long version) {
+        final var documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(documentDefinitionName, version);
+        final var optionalDefinition = documentDefinitionRepository.findById(documentDefinitionId);
+
+        optionalDefinition.ifPresent(definition -> authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                VIEW,
+                definition
+            )
+        ));
+
+        return optionalDefinition;
+    }
+
+    @Override
     public void deployAll() {
         //Authorization check is delegated to the store() method
         deployAll(true, false);
@@ -184,7 +200,9 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         try {
             for (var resource : loadResources()) {
                 if (resource.getFilename() != null) {
-                    deploy(resource.getInputStream(), readOnly, force);
+                    try (InputStream is = resource.getInputStream()) {
+                        deploy(is, readOnly, force);
+                    }
                 }
             }
         } catch (Exception ex) {

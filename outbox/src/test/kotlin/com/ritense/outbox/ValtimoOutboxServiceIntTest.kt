@@ -27,10 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
 
-class OutboxServiceImplIntTest : BaseIntegrationTest() {
+class ValtimoOutboxServiceIntTest : BaseIntegrationTest() {
 
     @Autowired
-    lateinit var outboxService: DefaultOutboxService
+    lateinit var outboxService: ValtimoOutboxService
 
     @Test
     @Transactional

@@ -29,6 +29,7 @@ dependencies {
     implementation project(':audit')
     implementation project(':resource')
     implementation project(':value-resolver')
+    implementation project(':export')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
