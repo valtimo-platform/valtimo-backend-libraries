@@ -17,6 +17,7 @@
 package com.ritense.outbox
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.outbox.repository.OutboxMessageRepository
 import com.ritense.outbox.service.DefaultOutboxService
 import com.ritense.outbox.service.OutboxService
 import org.junit.jupiter.api.Tag
@@ -31,9 +32,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 abstract class BaseIntegrationTest {
 
     @Autowired
+    lateinit var outboxMessageRepository: OutboxMessageRepository
+
+    @Autowired
     lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    lateinit var defaultOutboxService: OutboxService<Any>
+    lateinit var defaultOutboxService: OutboxService
 
 }

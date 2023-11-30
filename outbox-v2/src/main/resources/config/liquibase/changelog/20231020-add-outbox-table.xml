@@ -42,4 +42,12 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="Niels Erkamp" id="outbox-v2-3">
+        <addColumn tableName="outbox_message">
+            <column name="aggregate_root_id" type="VARCHAR(1024)">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

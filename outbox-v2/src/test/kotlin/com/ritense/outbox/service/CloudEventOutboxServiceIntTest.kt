@@ -20,7 +20,6 @@ import com.ritense.outbox.BaseIntegrationTest
 import io.cloudevents.core.builder.CloudEventBuilder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.MimeTypeUtils
 import java.net.URI
@@ -43,10 +42,12 @@ class CloudEventOutboxServiceIntTest : BaseIntegrationTest() {
             .withData(objectMapper.writeValueAsBytes("{ \"name\": \"textbook\" }"))
             .build()
 
-        cloudEventOutboxService.send(cloudEvent)
+        cloudEventOutboxService.send("ce:1", cloudEvent)
 
-        val message = defaultOutboxService.getOldestMessage()
+        val message = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+
         val jsonMessage = objectMapper.readTree(message?.message)
+
         assertThat(jsonMessage.get("id").asText()).isEqualTo(cloudEvent.id)
     }
 

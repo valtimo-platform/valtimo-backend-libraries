@@ -17,31 +17,34 @@
 package com.ritense.outbox.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.outbox.domain.DomainEvent
-import io.cloudevents.core.builder.CloudEventBuilder
+import io.cloudevents.core.v1.CloudEventBuilder
 import org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE
 import java.net.URI
 import java.time.OffsetDateTime
 import java.util.UUID
 
 class DomainEventOutboxService(
-    private val cloudEventOutboxService: CloudEventOutboxService,
-    private val objectMapper: ObjectMapper
-): OutboxService<DomainEvent> {
+    private val objectMapper: ObjectMapper,
+    private val cloudEventOutboxService: CloudEventOutboxService
+) {
 
-    override fun send(message: DomainEvent) {
-        val cloudEvent = CloudEventBuilder.v1()
-            .withId(UUID.randomUUID().toString())
-            .withSource(URI("http://allnex"))
-            .withTime(OffsetDateTime.now())
-            .withType(message::class.java.simpleName)
-            .withDataContentType(APPLICATION_JSON_VALUE)
-            .withData(objectMapper.writeValueAsBytes(message))
-            .build()
-        cloudEventOutboxService.send(cloudEvent)
+    fun send(event: DomainEvent) {
+        cloudEventOutboxService.send(
+            "${event.aggregateType()}:${event.aggregateId()}",
+            CloudEventBuilder()
+                .withId(UUID.randomUUID().toString())
+                .withType(event.eventType())
+                .withSource(URI.create("/valtimo"))
+                .withTime(OffsetDateTime.now())
+                .withDataContentType(APPLICATION_JSON_VALUE)
+                .withData(objectMapper.writeValueAsBytes(event))
+                .build()
+        )
     }
 
-    override fun getOldestMessage() = cloudEventOutboxService.getOldestMessage()
-
-    override fun deleteMessage(id: UUID) = cloudEventOutboxService.deleteMessage(id)
+    interface DomainEvent {
+        fun eventType(): String
+        fun aggregateId(): String
+        fun aggregateType(): String
+    }
 }

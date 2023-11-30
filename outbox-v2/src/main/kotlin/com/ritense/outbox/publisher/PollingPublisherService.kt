@@ -16,6 +16,7 @@
 
 package com.ritense.outbox.publisher
 
+import com.ritense.outbox.repository.OutboxMessageRepository
 import com.ritense.outbox.service.OutboxService
 import mu.KotlinLogging
 import org.springframework.transaction.PlatformTransactionManager
@@ -23,7 +24,7 @@ import org.springframework.transaction.support.TransactionTemplate
 import java.util.concurrent.atomic.AtomicBoolean
 
 open class PollingPublisherService(
-    private val outboxService: OutboxService<*>,
+    private val outboxMessageRepository: OutboxMessageRepository,
     private val messagePublisher: MessagePublisher,
     private val platformTransactionManager: PlatformTransactionManager
 ) {
@@ -38,18 +39,18 @@ open class PollingPublisherService(
             try {
                 do {
                     TransactionTemplate(platformTransactionManager).executeWithoutResult {
-                        val oldestMessage = outboxService.getOldestMessage()
+                        val oldestMessage = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
                         if (oldestMessage != null) {
                             logger.debug { "Sending OutboxMessage '${oldestMessage.id}'" }
                             messagePublisher.publish(oldestMessage)
-                            outboxService.deleteMessage(oldestMessage.id)
+                            outboxMessageRepository.deleteById(oldestMessage.id)
                         } else {
                             polling.set(false)
                         }
                     }
                 } while (polling.get())
             } catch (e: Exception) {
-                throw RuntimeException("Failed to poll and publish outbox messages", e)
+                throw MessagePublishingFailed("Failed to poll and publish outbox messages", e)
             } finally {
                 polling.set(false)
             }

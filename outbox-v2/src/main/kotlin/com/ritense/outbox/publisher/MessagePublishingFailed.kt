@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.domain
+package com.ritense.outbox.publisher
 
-import java.io.Serializable
-
-interface DomainEvent: Serializable {
+open class MessagePublishingFailed : RuntimeException {
+    constructor() : super()
+    constructor(message: String) : super(message)
+    constructor(message: String, ex: Throwable): super(message, ex)
 }
