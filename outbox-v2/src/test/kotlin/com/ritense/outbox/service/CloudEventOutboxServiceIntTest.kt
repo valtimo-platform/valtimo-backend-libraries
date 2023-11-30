@@ -33,7 +33,15 @@ class CloudEventOutboxServiceIntTest : BaseIntegrationTest() {
     fun `should create OutboxMessage`() {
         val cloudEventOutboxService = CloudEventOutboxService(defaultOutboxService)
 
-        val cloudEvent = CloudEventBuilder.v1()
+        val cloudEvent1 = CloudEventBuilder.v1()
+            .withId(UUID.randomUUID().toString())
+            .withSource(URI("http://allnex"))
+            .withTime(OffsetDateTime.now())
+            .withType("textBook")
+            .withDataContentType(MimeTypeUtils.APPLICATION_JSON_VALUE)
+            .withData(objectMapper.writeValueAsBytes("{ \"name\": \"textbook\" }"))
+            .build()
+        val cloudEvent2 = CloudEventBuilder.v1()
             .withId(UUID.randomUUID().toString())
             .withSource(URI("http://allnex"))
             .withTime(OffsetDateTime.now())
@@ -42,13 +50,14 @@ class CloudEventOutboxServiceIntTest : BaseIntegrationTest() {
             .withData(objectMapper.writeValueAsBytes("{ \"name\": \"textbook\" }"))
             .build()
 
-        cloudEventOutboxService.send("ce:1", cloudEvent)
+        cloudEventOutboxService.send("ce:1", cloudEvent1)
+        cloudEventOutboxService.send("ce:2", cloudEvent2)
 
         val message = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
 
         val jsonMessage = objectMapper.readTree(message?.message)
 
-        assertThat(jsonMessage.get("id").asText()).isEqualTo(cloudEvent.id)
+        assertThat(jsonMessage.get("id").asText()).isEqualTo(cloudEvent1.id)
     }
 
 }
