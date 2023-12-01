@@ -34,27 +34,6 @@ class CamundaIdentityLinkSpecification(
         private val camundaRuntimeService: CamundaRuntimeService,
         private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<CamundaIdentityLink>(authRequest, permissions) {
-    override fun toPredicate(
-        root: Root<CamundaIdentityLink>,
-        query: CriteriaQuery<*>,
-        criteriaBuilder: CriteriaBuilder
-    ): Predicate {
-        val predicates = permissions
-            .filter { permission ->
-                CamundaIdentityLink::class.java == permission.resourceType &&
-                    authRequest.action == permission.action
-            }
-            .map { permission ->
-                permission.toPredicate(
-                    root,
-                    query,
-                    criteriaBuilder,
-                    authRequest.resourceType,
-                    queryDialectHelper
-                )
-            }
-        return combinePredicates(criteriaBuilder, predicates)
-    }
 
     override fun toPredicate(
         root: Root<CamundaIdentityLink>,

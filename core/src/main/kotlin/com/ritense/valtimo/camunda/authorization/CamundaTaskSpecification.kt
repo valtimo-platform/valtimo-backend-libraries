@@ -23,6 +23,7 @@ import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaTaskService
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
@@ -36,7 +37,7 @@ class CamundaTaskSpecification(
 ) : AuthorizationSpecification<CamundaTask>(authRequest, permissions) {
     override fun toPredicate(
         root: Root<CamundaTask>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         val predicates = permissions

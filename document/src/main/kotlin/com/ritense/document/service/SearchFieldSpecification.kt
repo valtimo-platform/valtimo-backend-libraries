@@ -20,6 +20,7 @@ import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.searchfield.SearchField
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
@@ -33,7 +34,7 @@ class SearchFieldSpecification(
 
     override fun toPredicate(
         root: Root<SearchField>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         if (query.groupList.isEmpty()) {
