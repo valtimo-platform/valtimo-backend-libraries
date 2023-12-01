@@ -23,16 +23,17 @@ import org.camunda.bpm.engine.spring.SpringExpressionManager
 import org.springframework.context.ApplicationContext
 
 class CamundaBeansPlugin(
-    private val processBeans: Map<Any, Any>,
+    private val processBeans: Map<String, Any>,
     private val applicationContext: ApplicationContext
 ) : AbstractProcessEnginePlugin() {
     override fun preInit(processEngineConfiguration: ProcessEngineConfigurationImpl?) {
         logger.info("Registering process beans...")
         requireNotNull(processEngineConfiguration) { "No process engine configuration found. Failed to register process beans." }
 
-        processEngineConfiguration.beans = processBeans
-            .also { processEngineConfiguration.setExpressionManager(SpringExpressionManager(applicationContext, processBeans)) }
-            .also { logger.info("Successfully registered process beans.") }
+        val processBeansAny = processBeans as Map<Any, Any>
+        processEngineConfiguration.beans = processBeansAny
+        processEngineConfiguration.setExpressionManager(SpringExpressionManager(applicationContext, processBeansAny))
+        logger.info("Successfully registered process beans.")
     }
 
     companion object {
