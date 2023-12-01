@@ -138,6 +138,7 @@ class DocumentenApiPlugin(
     )
     fun downloadInformatieObject(
         execution: DelegateExecution,
+        @PluginActionProperty processVariableName: String? = null
     ): String {
         val documentUrlString = execution.getVariable(DOCUMENT_URL_PROCESS_VAR) as String?
             ?: throw IllegalStateException("Failed to download document. No process variable '$DOCUMENT_URL_PROCESS_VAR' found.")
@@ -159,7 +160,8 @@ class DocumentenApiPlugin(
             metadata = metaDataMap
         )
 
-        execution.setVariable(RESOURCE_ID_PROCESS_VAR, tempResourceId)
+        execution.setVariable(processVariableName ?: RESOURCE_ID_PROCESS_VAR, tempResourceId)
+
         return tempResourceId
     }
 

@@ -38,10 +38,11 @@ class PluginProcessLinkMapper(
 
     init {
         objectMapper.registerSubtypes(
-            PluginProcessLinkResultDto::class.java,
             PluginProcessLinkCreateDto::class.java,
-            PluginProcessLinkUpdateDto::class.java,
             PluginProcessLinkDeployDto::class.java,
+            PluginProcessLinkExportResponseDto::class.java,
+            PluginProcessLinkResultDto::class.java,
+            PluginProcessLinkUpdateDto::class.java
         )
     }
 

@@ -28,6 +28,7 @@ dependencies {
     implementation project(":outbox")
     implementation project(":resource")
     implementation project(":web")
+    implementation project(":export")
 
     testImplementation project(':test-utils-common')
 
