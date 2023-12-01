@@ -16,36 +16,36 @@
 
 package com.valtimo.keycloak.autoconfigure
 
-import com.valtimo.keycloak.security.config.RoleSecurityConfigurer
+import com.valtimo.keycloak.security.config.ExternalRoleSecurityConfigurer
 import com.valtimo.keycloak.service.KeycloakRoleService
 import com.valtimo.keycloak.service.KeycloakService
-import com.valtimo.keycloak.service.RoleService
-import com.valtimo.keycloak.web.rest.RoleResource
+import com.valtimo.keycloak.service.ExternalRoleService
+import com.valtimo.keycloak.web.rest.ExternalRoleResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 
 @Configuration
-internal class RoleAutoConfiguration {
+internal class ExternalRoleAutoConfiguration {
 
     @Bean
     @Order(408)
-    @ConditionalOnMissingBean(RoleSecurityConfigurer::class)
-    fun roleSecurityConfigurer(): RoleSecurityConfigurer = RoleSecurityConfigurer()
+    @ConditionalOnMissingBean(ExternalRoleSecurityConfigurer::class)
+    fun externalRoleSecurityConfigurer(): ExternalRoleSecurityConfigurer = ExternalRoleSecurityConfigurer()
 
     @Bean
-    @ConditionalOnMissingBean(RoleService::class)
+    @ConditionalOnMissingBean(ExternalRoleService::class)
     fun keycloakRoleService(
         keycloakService: KeycloakService
-    ): RoleService = KeycloakRoleService(
+    ): ExternalRoleService = KeycloakRoleService(
         keycloakService = keycloakService
     )
 
     @Bean
-    fun roleResource(
-        roleService: RoleService
-    ): RoleResource = RoleResource(
-        roleService = roleService
+    fun externalRoleResource(
+        externalRoleService: ExternalRoleService
+    ): ExternalRoleResource = ExternalRoleResource(
+        externalRoleService = externalRoleService
     )
 }

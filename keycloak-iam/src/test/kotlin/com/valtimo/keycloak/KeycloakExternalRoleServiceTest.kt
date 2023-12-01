@@ -32,7 +32,7 @@ import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 
 @ExtendWith(MockitoExtension::class)
-internal class KeycloakRoleServiceTest {
+internal class KeycloakExternalRoleServiceTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     lateinit var keycloakService: KeycloakService
@@ -41,13 +41,13 @@ internal class KeycloakRoleServiceTest {
     lateinit var keycloakRoleService: KeycloakRoleService
 
     @Test
-    fun `should return all roles found when prefix is null`() {
+    fun `should return all keycloak roles found when prefix is null`() {
 
         // given
         defaultConditions()
 
         // when
-        val result = keycloakRoleService.findRoles(null)
+        val result = keycloakRoleService.findExternalRoles(null)
 
         // then
         assertEquals(TEST_ROLE_NO_PREFIX_LIST, result)
@@ -60,7 +60,7 @@ internal class KeycloakRoleServiceTest {
         defaultConditions()
 
         // when
-        val result = keycloakRoleService.findRoles("ROLE_TEAM_")
+        val result = keycloakRoleService.findExternalRoles("ROLE_TEAM_")
 
         // then
         assertEquals(TEST_ROLE_LIST, result)

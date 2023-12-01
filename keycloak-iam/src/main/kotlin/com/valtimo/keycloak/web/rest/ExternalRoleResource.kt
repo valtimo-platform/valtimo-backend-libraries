@@ -16,7 +16,7 @@
 
 package com.valtimo.keycloak.web.rest
 
-import com.valtimo.keycloak.service.RoleService
+import com.valtimo.keycloak.service.ExternalRoleService
 import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,19 +26,19 @@ import org.springframework.web.bind.annotation.RestController
 import javax.ws.rs.NotFoundException
 
 @RestController
-@RequestMapping(value = ["/api/v1/role"])
-class RoleResource(
-    private val roleService: RoleService
+@RequestMapping(value = ["/api/v1/external-role"])
+class ExternalRoleResource(
+    private val externalRoleService: ExternalRoleService
 ) {
 
     @GetMapping
-    fun getRoles(
-        @RequestParam roleNamePrefix: String?
+    fun getExternalRoles(
+        @RequestParam externalRoleNamePrefix: String?
     ): ResponseEntity<Any> {
         return try {
-            ResponseEntity.ok(roleService.findRoles(roleNamePrefix))
+            ResponseEntity.ok(externalRoleService.findExternalRoles(externalRoleNamePrefix))
         } catch (e: NotFoundException) {
-            logger.debug("Could not find roles: ${e.message}")
+            logger.debug("Could not find external roles: ${e.message}")
             ResponseEntity.notFound().build()
         }
     }

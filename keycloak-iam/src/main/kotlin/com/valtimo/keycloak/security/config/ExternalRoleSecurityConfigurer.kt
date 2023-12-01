@@ -24,12 +24,12 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 
 
-class RoleSecurityConfigurer: HttpSecurityConfigurer {
+class ExternalRoleSecurityConfigurer: HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/v1/role").hasAnyAuthority(USER, ADMIN)
+                .antMatchers(HttpMethod.GET, "/api/v1/external-role").hasAnyAuthority(USER, ADMIN)
         } catch (e: Exception)  {
             throw HttpConfigurerConfigurationException(e)
         }

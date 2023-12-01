@@ -16,6 +16,6 @@
 
 package com.valtimo.keycloak.service
 
-interface RoleService {
-    fun findRoles(roleNamePrefix: String?): List<String>
+interface ExternalRoleService {
+    fun findExternalRoles(externalRoleNamePrefix: String?): List<String>
 }
