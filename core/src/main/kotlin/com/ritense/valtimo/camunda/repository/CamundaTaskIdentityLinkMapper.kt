@@ -36,14 +36,14 @@ class CamundaTaskIdentityLinkMapper : AuthorizationEntityMapper<CamundaTask, Cam
         query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): AuthorizationEntityMapperResult<CamundaIdentityLink> {
-        val ilQuery = query.subquery(String::class.java)
-        val subRoot = ilQuery.from(CamundaIdentityLink::class.java)
-        ilQuery.select(subRoot.get<CamundaTask>(TASK).get(ID))
+        val subquery = query.subquery(String::class.java)
+        val subRoot = subquery.from(CamundaIdentityLink::class.java)
+        subquery.select(subRoot.get<CamundaTask>(TASK).get(ID))
 
         return AuthorizationEntityMapperResult(
             subRoot,
-            ilQuery,
-            criteriaBuilder.`in`(root.get<Any>(ID)).value(ilQuery),
+            subquery,
+            criteriaBuilder.`in`(root.get<Any>(ID)).value(subquery),
         )
     }
 
