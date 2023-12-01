@@ -202,7 +202,7 @@ class DocumentenApiPlugin(
             ontvangstdatum = getLocalDateFromMetaData(metadata, "receiptDate"),
             verzenddatum = getLocalDateFromMetaData(metadata, "sendDate"),
             informatieobjecttype = informationObjectType,
-            formaat = "PDF",
+            formaat = metadata["contentType"] as String?,
             trefwoorden = listOf("trefwoord1", "trefwoord2")
         )
 

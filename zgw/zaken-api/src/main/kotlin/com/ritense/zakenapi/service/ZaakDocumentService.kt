@@ -50,22 +50,28 @@ class ZaakDocumentService(
         val pluginConfiguration = getDocumentenApiPluginByInformatieobjectUrl(zaakInformatieObject.informatieobject)
         val plugin = pluginService.createInstance(pluginConfiguration) as DocumentenApiPlugin
         val informatieObject = plugin.getInformatieObject(zaakInformatieObject.informatieobject)
-        val x = RelatedFileDto(
+        return RelatedFileDto(
             fileId = UUID.fromString(informatieObject.url.path.substringAfterLast("/")),
             fileName = informatieObject.bestandsnaam,
             sizeInBytes = informatieObject.bestandsomvang,
             createdOn = informatieObject.creatiedatum.atStartOfDay(),
             createdBy = informatieObject.auteur,
+            author = informatieObject.auteur,
             title = informatieObject.titel,
+            status = informatieObject.status,
             language = informatieObject.taal,
             pluginConfigurationId = pluginConfiguration.id.id,
             identification = informatieObject.identificatie,
             description = informatieObject.beschrijving,
             informatieobjecttype = informatieObject.informatieobjecttype,
-            trefwoorden = informatieObject.trefwoorden,
-            formaat = informatieObject.formaat
+            keywords = informatieObject.trefwoorden,
+            format = informatieObject.formaat,
+            sendDate = informatieObject.verzenddatum,
+            receiptDate = informatieObject.ontvangstdatum,
+            confidentialityLevel = informatieObject.vertrouwelijkheidaanduiding,
+            version = informatieObject.versie,
+            indicationUsageRights = informatieObject.indicatieGebruiksrecht
         )
-        return x;
     }
 
     private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {

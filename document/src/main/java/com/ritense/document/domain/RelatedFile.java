@@ -17,7 +17,10 @@
 package com.ritense.document.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public interface RelatedFile {
@@ -38,7 +41,13 @@ public interface RelatedFile {
     String getCreatedBy();
 
     @JsonProperty
+    String getAuthor();
+
+    @JsonProperty
     String getTitle();
+
+    @JsonProperty
+    String getStatus();
 
     @JsonProperty
     String getLanguage();
@@ -51,8 +60,14 @@ public interface RelatedFile {
     @JsonProperty
     String getInformatieobjecttype();
 
-    String getTrefwoorden();
+    List<String> getKeywords();
 
-    String getFormaat();
+    String getFormat();
+
+    LocalDate getSendDate();
+
+    LocalDate getReceiptDate();
+
+    String getConfidentialityLevel();
 
 }

@@ -24,7 +24,9 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import java.net.URI;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -81,7 +83,19 @@ public abstract class BaseTest {
             "Some-Name",
             1L,
             LocalDateTime.now(),
-            "some-body"
+            "some-body",
+            "some-body",
+            "some-title",
+            "some-status",
+            "some-language",
+            "some-identification",
+            "some-description",
+            "some-type",
+            List.of("some-keyword", "some-keyword"),
+            "some-mime-type",
+            LocalDate.now(),
+            LocalDate.now(),
+            "some-level"
         );
     }
 

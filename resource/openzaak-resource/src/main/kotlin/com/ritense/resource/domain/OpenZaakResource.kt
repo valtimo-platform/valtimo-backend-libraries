@@ -32,6 +32,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import org.hibernate.validator.constraints.Length
 import org.springframework.data.domain.Persistable
+import java.time.LocalDate
 
 @Entity
 @Table(name = "open_zaak_resource")
@@ -60,31 +61,7 @@ data class OpenZaakResource(
 
     @Column(name = "created_on", nullable = false, columnDefinition = "DATETIME")
     @field:NotNull
-    val createdOn: LocalDateTime,
-
-    @Column(name = "createdBy", nullable = true, columnDefinition = "VARCHAR(255)")
-    val createdBy: String,
-
-    @Column(name = "title", nullable = true, columnDefinition = "VARCHAR(255)")
-    val title: String,
-
-    @Column(name = "language", nullable = true, columnDefinition = "VARCHAR(255)")
-    val language: String,
-
-    @Column(name = "identification", nullable = true, columnDefinition = "VARCHAR(255)")
-    val identification: String,
-
-    @Column(name = "description", nullable = true, columnDefinition = "VARCHAR(255)")
-    val description: String,
-
-    @Column(name = "informatieobjecttype", nullable = true, columnDefinition = "VARCHAR(255)")
-    val informatieobjecttype: String,
-
-    @Column(name = "trefwoorden", nullable = true, columnDefinition = "")
-    val trefwoorden: String,
-
-    @Column(name = "formaat", nullable = true, columnDefinition = "")
-    val formaat: String
+    val createdOn: LocalDateTime
 ) : Resource, Persistable<ResourceId>, Validatable {
 
     init {
@@ -107,36 +84,52 @@ data class OpenZaakResource(
         return sizeInBytes
     }
 
+    override fun createdOn(): LocalDateTime {
+        return createdOn
+    }
+
     override fun title(): String {
-        return title
+        TODO("Not yet implemented")
+    }
+
+    override fun status(): String {
+        TODO("Not yet implemented")
     }
 
     override fun language(): String {
-        return language
+        TODO("Not yet implemented")
     }
 
     override fun identification(): String {
-        return identification
+        TODO("Not yet implemented")
     }
 
     override fun description(): String {
-        return description
+        TODO("Not yet implemented")
     }
 
     override fun informatieobjecttype(): String {
-        return informatieobjecttype
+        TODO("Not yet implemented")
     }
 
-    override fun trefwoorden(): String {
-        return trefwoorden
+    override fun keywords(): List<String> {
+        TODO("Not yet implemented")
     }
 
-    override fun formaat(): String {
-        return formaat
+    override fun format(): String {
+        TODO("Not yet implemented")
     }
 
-    override fun createdOn(): LocalDateTime {
-        return createdOn
+    override fun sendDate(): LocalDate {
+        TODO("Not yet implemented")
+    }
+
+    override fun receiptDate(): LocalDate {
+        TODO("Not yet implemented")
+    }
+
+    override fun confidentialityLevel(): String {
+        TODO("Not yet implemented")
     }
 
     @JsonIgnore

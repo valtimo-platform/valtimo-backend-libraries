@@ -17,6 +17,7 @@
 package com.ritense.zakenapi.domain
 
 import com.ritense.document.domain.RelatedFile
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -26,13 +27,20 @@ data class RelatedFileDto(
     private val sizeInBytes: Long?,
     private val createdOn: LocalDateTime,
     private val createdBy: String,
+    private val author: String,
     private val title: String?,
+    private val status: String?,
     private val language: String?,
     private val identification: String?,
     private val description: String?,
     private val informatieobjecttype: String?,
-    private val trefwoorden: String?,
-    private val formaat: String?,
+    private val keywords: List<String>?,
+    private val format: String?,
+    private val sendDate: LocalDate?,
+    private val receiptDate: LocalDate?,
+    private val confidentialityLevel: String?,
+    private val version: Int?,
+    private val indicationUsageRights: Boolean?,
     val pluginConfigurationId: UUID,
 ):  RelatedFile {
     override fun getFileId(): UUID {
@@ -55,8 +63,16 @@ data class RelatedFileDto(
         return createdBy
     }
 
+    override fun getAuthor(): String {
+        return author
+    }
+
     override fun getTitle(): String? {
         return title
+    }
+
+    override fun getStatus(): String? {
+        return status
     }
 
     override fun getLanguage(): String? {
@@ -75,11 +91,23 @@ data class RelatedFileDto(
         return informatieobjecttype
     }
 
-    override fun getTrefwoorden(): String? {
-        return trefwoorden
+    override fun getKeywords(): List<String>? {
+        return keywords
     }
 
-    override fun getFormaat(): String? {
-        return formaat
+    override fun getFormat(): String? {
+        return format
+    }
+
+    override fun getSendDate(): LocalDate? {
+        return sendDate
+    }
+
+    override fun getReceiptDate(): LocalDate? {
+        return receiptDate
+    }
+
+    override fun getConfidentialityLevel(): String? {
+        return confidentialityLevel
     }
 }

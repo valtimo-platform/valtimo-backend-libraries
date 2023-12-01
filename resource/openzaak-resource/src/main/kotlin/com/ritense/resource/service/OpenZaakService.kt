@@ -58,15 +58,7 @@ class OpenZaakService(
             key,
             uploadRequest.getExtension(),
             uploadRequest.getSize(),
-            LocalDateTime.now(),
-            "",
-            "Title from openzaakservice",
-            "en",
-            "0001",
-            "description",
-            "InformatieObjecttype",
-            "",
-            ""
+            LocalDateTime.now()
         )
         return openZaakResourceRepository.saveAndFlush(openZaakResource)
     }
@@ -83,15 +75,7 @@ class OpenZaakService(
             name,
             uploadRequest.getExtension(),
             uploadRequest.getSize(),
-            LocalDateTime.now(),
-            "",
-            "Title from openzaakservice",
-            "en",
-            "0001",
-            "description",
-            "InformatieObjecttype",
-            "",
-            ""
+            LocalDateTime.now()
         )
         return openZaakResourceRepository.saveAndFlush(openZaakResource)
     }
@@ -103,15 +87,7 @@ class OpenZaakService(
             informatieObject.bestandsnaam,
             informatieObject.bestandsnaam.substringAfterLast("."),
             informatieObject.bestandsomvang,
-            informatieObject.beginRegistratie,
-            "",
-            "Title from openzaakservice",
-            "de",
-            "0001",
-            "description",
-            "InformatieObjecttype",
-            "",
-            ""
+            informatieObject.beginRegistratie
         )
         return openZaakResourceRepository.save(openZaakResource)
     }
