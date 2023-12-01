@@ -49,6 +49,9 @@ dependencies {
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.skyscreamer:jsonassert:${jsonassertVersion}"
 
+    testImplementation "com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}"
+    testImplementation "com.jayway.jsonpath:json-path-assert:${jaywayJsonpathVersion}"
+
     jar {
         enabled = true
         manifest {
