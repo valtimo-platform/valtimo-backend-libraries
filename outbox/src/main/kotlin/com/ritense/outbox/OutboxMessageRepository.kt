@@ -21,8 +21,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.QueryHints
 import java.util.UUID
-import javax.persistence.LockModeType.PESSIMISTIC_WRITE
-import javax.persistence.QueryHint
+import jakarta.persistence.LockModeType.PESSIMISTIC_WRITE
+import jakarta.persistence.QueryHint
 
 interface OutboxMessageRepository : JpaRepository<OutboxMessage, UUID> {
 

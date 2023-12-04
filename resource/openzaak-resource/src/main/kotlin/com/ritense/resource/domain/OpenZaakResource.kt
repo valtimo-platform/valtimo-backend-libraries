@@ -23,13 +23,13 @@ import com.ritense.valtimo.contract.validation.Validatable
 import java.net.URI
 import java.time.LocalDateTime
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Convert
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
+import jakarta.persistence.Column
+import jakarta.persistence.Convert
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 import org.hibernate.validator.constraints.Length
 import org.springframework.data.domain.Persistable
 

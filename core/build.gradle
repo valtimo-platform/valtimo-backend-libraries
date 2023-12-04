@@ -35,7 +35,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:${javaxInjectVersion}"
+    api "jakarta.inject:jakarta.inject-api:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -91,13 +91,13 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
 
     // MyBatis (for camunda and our custom queries)
-    implementation "org.mybatis:mybatis:${mybatisVersion}"
+//    implementation "org.mybatis:mybatis:${mybatisVersion}"
     implementation "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisSpringBootStarterVersion}"
 
     implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 
     // Removed since JDK 9, explicitly need it to go through XML
-    implementation "javax.xml.bind:jaxb-api:${jaxbApiVersion}"
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jaxbApiVersion}"
 
     // Hibernate
     implementation "org.hibernate:hibernate-core"

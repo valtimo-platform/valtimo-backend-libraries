@@ -31,14 +31,18 @@ public class DocumentSearchHttpSecurityConfigurer implements HttpSecurityConfigu
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(POST, "/api/v1/document-search").authenticated()
-                .antMatchers(POST, "/api/v1/document-definition/{name}/search").authenticated()
-                .antMatchers(POST, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/document-search/{documentDefinitionName}/fields").authenticated()
-                .antMatchers(PUT, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/management/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN);
+            http.authorizeHttpRequests((requests) -> {
+                requests.requestMatchers(POST, "/api/v1/document-search").authenticated()
+                    .requestMatchers(POST, "/api/v1/document-definition/{name}/search").authenticated()
+                    .requestMatchers(POST, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(
+                        ADMIN)
+                    .requestMatchers(GET, "/api/v1/document-search/{documentDefinitionName}/fields").authenticated()
+                    .requestMatchers(PUT, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN)
+                    .requestMatchers(DELETE, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(
+                        ADMIN)
+                    .requestMatchers(
+                        GET, "/api/management/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN);
+            });
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

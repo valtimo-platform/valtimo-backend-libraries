@@ -55,9 +55,9 @@ import org.springframework.data.repository.findByIdOrNull
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import java.util.UUID
-import javax.validation.ConstraintViolationException
-import javax.validation.ValidationException
-import javax.validation.Validator
+import jakarta.validation.ConstraintViolationException
+import jakarta.validation.ValidationException
+import jakarta.validation.Validator
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 

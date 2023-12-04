@@ -28,8 +28,8 @@ public class EmailNotificationSettingsSecurityConfigurer implements HttpSecurity
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/email-notification-settings").authenticated()
-                .antMatchers(PUT, "/api/v1/email-notification-settings").authenticated();
+                .requestMatchers(GET, "/api/v1/email-notification-settings").authenticated()
+                .requestMatchers(PUT, "/api/v1/email-notification-settings").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

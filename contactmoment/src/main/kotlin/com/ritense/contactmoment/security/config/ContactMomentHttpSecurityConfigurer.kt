@@ -26,11 +26,12 @@ class ContactMomentHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/contactmoment").authenticated()
-                .antMatchers(POST, "/api/v1/contactmoment").authenticated()
-                .antMatchers(GET, "/api/v1/contactmoment/kanaal").authenticated()
-                .antMatchers(POST, "/api/v1/document/{documentId}/message").authenticated()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(GET, "/api/v1/contactmoment").authenticated()
+                    .requestMatchers(POST, "/api/v1/contactmoment").authenticated()
+                    .requestMatchers(GET, "/api/v1/contactmoment/kanaal").authenticated()
+                    .requestMatchers(POST, "/api/v1/document/{documentId}/message").authenticated()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

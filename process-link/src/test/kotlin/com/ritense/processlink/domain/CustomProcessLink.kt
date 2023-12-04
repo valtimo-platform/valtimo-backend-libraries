@@ -18,9 +18,9 @@ package com.ritense.processlink.domain
 
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.DiscriminatorValue
-import javax.persistence.Entity
+import jakarta.persistence.Column
+import jakarta.persistence.DiscriminatorValue
+import jakarta.persistence.Entity
 
 @Entity
 @DiscriminatorValue(PROCESS_LINK_TYPE_TEST)

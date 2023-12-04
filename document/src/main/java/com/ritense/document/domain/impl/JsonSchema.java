@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.config.validator.UuidValidator;
 import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.impl.meta.MetaJsonSchemaV7Draft;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import org.everit.json.schema.ReadWriteContext;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.Validator;
@@ -32,8 +33,8 @@ import org.json.JSONTokener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.annotation.Transient;
 import org.springframework.util.StreamUtils;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -52,7 +53,7 @@ public final class JsonSchema {
         .readWriteContext(ReadWriteContext.WRITE)
         .build();
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType.class)
     @Column(name = "json_schema", columnDefinition = "json")
     private String schema;
 

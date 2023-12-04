@@ -24,9 +24,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 class FormHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(POST, "/api/v1/process-link/{processLinkId}/form/submission").authenticated()
-                .antMatchers(GET, "/api/v1/process-link/form-definition/{formKey}").authenticated()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(POST, "/api/v1/process-link/{processLinkId}/form/submission").authenticated()
+                    .requestMatchers(GET, "/api/v1/process-link/form-definition/{formKey}").authenticated()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

@@ -51,15 +51,15 @@ public class ActuatorHttpSecurityConfigurer implements HttpSecurityConfigurer, A
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/management").hasAuthority(ACTUATOR)
-                .antMatchers(GET, "/management/configprops").hasAuthority(ACTUATOR)
-                .antMatchers(GET, "/management/env").hasAuthority(ACTUATOR)
-                .antMatchers(GET, "/management/health").hasAuthority(ACTUATOR)
-                .antMatchers(GET, "/management/mappings").hasAuthority(ACTUATOR)
-                .antMatchers(GET, "/management/logfile").hasAuthority(ACTUATOR)
-                .antMatchers(GET, "/management/loggers").hasAuthority(ACTUATOR)
-                .antMatchers(POST, "/management/loggers/**").hasAuthority(ACTUATOR)
-                .antMatchers(GET, "/management/info").hasAnyAuthority(ACTUATOR)
+                .requestMatchers(GET, "/management").hasAuthority(ACTUATOR)
+                .requestMatchers(GET, "/management/configprops").hasAuthority(ACTUATOR)
+                .requestMatchers(GET, "/management/env").hasAuthority(ACTUATOR)
+                .requestMatchers(GET, "/management/health").hasAuthority(ACTUATOR)
+                .requestMatchers(GET, "/management/mappings").hasAuthority(ACTUATOR)
+                .requestMatchers(GET, "/management/logfile").hasAuthority(ACTUATOR)
+                .requestMatchers(GET, "/management/loggers").hasAuthority(ACTUATOR)
+                .requestMatchers(POST, "/management/loggers/**").hasAuthority(ACTUATOR)
+                .requestMatchers(GET, "/management/info").hasAnyAuthority(ACTUATOR)
                 .and()
                 .httpBasic().authenticationEntryPoint(basicAuthenticationEntryPoint());
         } catch (Exception e) {

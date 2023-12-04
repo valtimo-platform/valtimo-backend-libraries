@@ -31,18 +31,18 @@ public class UserHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/users").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/users").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/users").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/users/{userId}/activate").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/users/{userId}/deactivate").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/users/email/{email}/").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/users/{userId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/users/authority/{authority}").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/users/{userId}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/users/send-verification-email/{userId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/user/settings").authenticated()
-                .antMatchers(PUT, "/api/v1/user/settings").authenticated();
+                .requestMatchers(GET, "/api/v1/users").hasAuthority(ADMIN)
+                .requestMatchers(POST, "/api/v1/users").hasAuthority(ADMIN)
+                .requestMatchers(PUT, "/api/v1/users").hasAuthority(ADMIN)
+                .requestMatchers(PUT, "/api/v1/users/{userId}/activate").hasAuthority(ADMIN)
+                .requestMatchers(PUT, "/api/v1/users/{userId}/deactivate").hasAuthority(ADMIN)
+                .requestMatchers(GET, "/api/v1/users/email/{email}/").hasAuthority(ADMIN)
+                .requestMatchers(GET, "/api/v1/users/{userId}").hasAuthority(ADMIN)
+                .requestMatchers(GET, "/api/v1/users/authority/{authority}").hasAuthority(ADMIN)
+                .requestMatchers(DELETE, "/api/v1/users/{userId}").hasAuthority(ADMIN)
+                .requestMatchers(POST, "/api/v1/users/send-verification-email/{userId}").hasAuthority(ADMIN)
+                .requestMatchers(GET, "/api/v1/user/settings").authenticated()
+                .requestMatchers(PUT, "/api/v1/user/settings").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

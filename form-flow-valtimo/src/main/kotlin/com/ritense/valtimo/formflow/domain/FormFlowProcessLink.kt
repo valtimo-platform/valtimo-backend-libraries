@@ -20,9 +20,9 @@ import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM_FLOW
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.DiscriminatorValue
-import javax.persistence.Entity
+import jakarta.persistence.Column
+import jakarta.persistence.DiscriminatorValue
+import jakarta.persistence.Entity
 
 @Entity
 @DiscriminatorValue(PROCESS_LINK_TYPE_FORM_FLOW)

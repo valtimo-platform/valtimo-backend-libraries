@@ -38,7 +38,7 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.contract.result.OperationError
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
-import javax.validation.ConstraintViolationException
+import jakarta.validation.ConstraintViolationException
 
 @Transactional
 class ZaakTypeLinkService(

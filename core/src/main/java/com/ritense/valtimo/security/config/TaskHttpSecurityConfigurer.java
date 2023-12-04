@@ -30,15 +30,15 @@ public class TaskHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/task").authenticated()
-                .antMatchers(POST, "/api/v1/task/assign/batch-assign").authenticated()
-                .antMatchers(POST, "/api/v1/task/batch-complete").authenticated()
-                .antMatchers(GET, "/api/v1/task/{taskId}").authenticated()
-                .antMatchers(POST, "/api/v1/task/{taskId}/assign").authenticated()
-                .antMatchers(GET, "/api/v1/task/{taskId}/comments").authenticated()
-                .antMatchers(POST, "/api/v1/task/{taskId}/complete").authenticated()
-                .antMatchers(POST, "/api/v1/task/{taskId}/unassign").authenticated()
-                .antMatchers(GET, "/api/v1/task/{taskId}/candidate-user").authenticated();
+                .requestMatchers(GET, "/api/v1/task").authenticated()
+                .requestMatchers(POST, "/api/v1/task/assign/batch-assign").authenticated()
+                .requestMatchers(POST, "/api/v1/task/batch-complete").authenticated()
+                .requestMatchers(GET, "/api/v1/task/{taskId}").authenticated()
+                .requestMatchers(POST, "/api/v1/task/{taskId}/assign").authenticated()
+                .requestMatchers(GET, "/api/v1/task/{taskId}/comments").authenticated()
+                .requestMatchers(POST, "/api/v1/task/{taskId}/complete").authenticated()
+                .requestMatchers(POST, "/api/v1/task/{taskId}/unassign").authenticated()
+                .requestMatchers(GET, "/api/v1/task/{taskId}/candidate-user").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

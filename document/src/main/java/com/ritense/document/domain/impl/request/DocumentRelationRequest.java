@@ -19,7 +19,7 @@ package com.ritense.document.domain.impl.request;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.document.domain.relation.DocumentRelationType;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public class DocumentRelationRequest {

@@ -27,7 +27,7 @@ public class CamundaHttpSecurityConfigurer implements HttpSecurityConfigurer {
         try {
             http.authorizeRequests()
                 //camunda endpoints are covered by camunda security
-                .antMatchers("/camunda/**").permitAll();
+                .requestMatchers("/camunda/**").permitAll();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -19,10 +19,10 @@ package com.ritense.authorization.specification.impl
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.specification.AuthorizationSpecification
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 
 class DenyAuthorizationSpecification<T : Any>(
     authRequest: AuthorizationRequest<T>,

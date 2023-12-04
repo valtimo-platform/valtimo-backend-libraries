@@ -94,6 +94,7 @@ allprojects {
                 mavenBom "org.junit:junit-bom:${junitVersion}"
             }
             dependencies {
+                dependency "org.hibernate:hibernate-core:${hibernateCoreVersion}"
                 dependency "org.yaml:snakeyaml:${snakeYamlVersionOverride}"
                 dependency "io.netty:netty-codec:${nettyCodecVersionOverride}"
                 dependency "org.liquibase:liquibase-core:${liquibaseVersion}"

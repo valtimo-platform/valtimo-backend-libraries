@@ -16,14 +16,14 @@
 package com.ritense.valtimo.security.interceptor;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import java.util.List;
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "valtimo.security.whitelist")
 public class SecurityWhitelistProperties {
     private final List<String> hosts;
 
+    @ConstructorBinding
     public SecurityWhitelistProperties(List<String> hosts) {
         this.hosts = hosts;
     }

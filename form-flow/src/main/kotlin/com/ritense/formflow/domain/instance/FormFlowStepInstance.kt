@@ -24,15 +24,16 @@ import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.event.ApplicationEventPublisherHolder
 import com.ritense.formflow.event.FormFlowStepCompletedEvent
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
-import org.hibernate.annotations.Type
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.Column
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
 import java.util.Objects
-import javax.persistence.Column
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
-import javax.persistence.Table
+import org.hibernate.annotations.Type
 
 @Entity
 @Table(name = "form_flow_step_instance")
@@ -46,10 +47,10 @@ data class FormFlowStepInstance(
     val stepKey: String,
     @Column(name = "form_flow_step_instance_order", updatable = false, nullable = false)
     val order: Int,
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "submission_data")
     var submissionData: String? = null,
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "temporary_submission_data")
     var temporarySubmissionData: String? = null
     // On complete, clear temporary submission from the current step

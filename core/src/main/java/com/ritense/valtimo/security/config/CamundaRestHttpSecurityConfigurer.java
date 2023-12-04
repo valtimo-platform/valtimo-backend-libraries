@@ -26,7 +26,7 @@ public class CamundaRestHttpSecurityConfigurer implements HttpSecurityConfigurer
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests().antMatchers("/api/camunda-rest/**").hasAuthority(ADMIN);
+            http.authorizeRequests().requestMatchers("/api/camunda-rest/**").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

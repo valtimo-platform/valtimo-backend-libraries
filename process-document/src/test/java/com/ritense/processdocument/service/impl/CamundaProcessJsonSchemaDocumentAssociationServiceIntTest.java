@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.test.context.support.WithMockUser;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;

@@ -21,8 +21,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.processdocument.domain.request.Request;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.Map;
 
 public class ModifyDocumentAndStartProcessRequest implements Request {

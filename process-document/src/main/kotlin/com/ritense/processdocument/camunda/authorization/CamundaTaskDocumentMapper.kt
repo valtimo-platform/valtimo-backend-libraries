@@ -28,9 +28,9 @@ import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpec
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.ID
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.PROCESS_INSTANCE
 import java.util.UUID
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Root
 
 class CamundaTaskDocumentMapper(
     private val processDocumentService: CamundaProcessJsonSchemaDocumentService

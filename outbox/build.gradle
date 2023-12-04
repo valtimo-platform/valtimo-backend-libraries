@@ -27,8 +27,9 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation("org.springframework.security:spring-security-core")
 
-    implementation "org.liquibase.ext:liquibase-hibernate5:$liquibaseVersion"
-    implementation "com.vladmihalcea:hibernate-types-55:$hibernateTypesVersion"
+    implementation "org.liquibase:liquibase-core"
+    implementation "org.liquibase.ext:liquibase-hibernate6:$liquibaseVersion"
+    implementation "io.hypersistence:hypersistence-utils-hibernate-62:$hypersistenceUtilsVersion"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     implementation "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"

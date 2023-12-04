@@ -48,8 +48,8 @@ import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import javax.persistence.EntityManager
-import javax.validation.Validator
+import jakarta.persistence.EntityManager
+import jakarta.validation.Validator
 
 @Configuration
 @EnableJpaRepositories(

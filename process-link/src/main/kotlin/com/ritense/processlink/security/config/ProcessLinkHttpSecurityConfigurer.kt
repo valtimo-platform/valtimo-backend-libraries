@@ -30,14 +30,14 @@ class ProcessLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/process-link").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/process-link/types").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/process-link").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/process-link").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/process-link/export").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/process-link/{processLinkId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v2/process-link/task/{taskId}").authenticated()
-                .antMatchers(GET, "/api/v1/process-definition/{processDefinitionId}/start-form").authenticated()
+                .requestMatchers(GET, "/api/v1/process-link").hasAuthority(ADMIN)
+                .requestMatchers(GET, "/api/v1/process-link/types").hasAuthority(ADMIN)
+                .requestMatchers(POST, "/api/v1/process-link").hasAuthority(ADMIN)
+                .requestMatchers(PUT, "/api/v1/process-link").hasAuthority(ADMIN)
+                .requestMatchers(GET, "/api/v1/process-link/export").hasAuthority(ADMIN)
+                .requestMatchers(DELETE, "/api/v1/process-link/{processLinkId}").hasAuthority(ADMIN)
+                .requestMatchers(GET, "/api/v2/process-link/task/{taskId}").authenticated()
+                .requestMatchers(GET, "/api/v1/process-definition/{processDefinitionId}/start-form").authenticated()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

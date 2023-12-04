@@ -28,10 +28,10 @@ class LocalResourceHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/resource/pre-signed-url/{fileName}").authenticated()
-                .antMatchers(GET, "/api/v1/resource/{resourceId}").authenticated()
-                .antMatchers(DELETE, "/api/v1/resource/{resourceId}").authenticated()
-                .antMatchers(PUT, "/api/v1/resource").authenticated()
+                .requestMatchers(GET, "/api/v1/resource/pre-signed-url/{fileName}").authenticated()
+                .requestMatchers(GET, "/api/v1/resource/{resourceId}").authenticated()
+                .requestMatchers(DELETE, "/api/v1/resource/{resourceId}").authenticated()
+                .requestMatchers(PUT, "/api/v1/resource").authenticated()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

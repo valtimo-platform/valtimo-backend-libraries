@@ -17,8 +17,8 @@
 package com.ritense.document.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
@@ -33,6 +33,21 @@ import com.ritense.document.service.SearchFieldService;
 import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.transaction.Transactional;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,23 +62,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.query.criteria.internal.OrderImpl;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
@@ -478,27 +476,19 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     ) {
         return sort.stream()
             .map(order -> {
+                Expression<String> expression;
                 if (order.getProperty().startsWith(DOC_PREFIX)) {
                     var jsonPath = "$." + order.getProperty().substring(DOC_PREFIX.length());
-                    return new OrderImpl(
-                        queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), jsonPath, String.class),
-                        order.getDirection().isAscending()
-                    );
+                    expression = queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), jsonPath, String.class);
                 } else if (order.getProperty().startsWith(CASE_PREFIX)) {
-                    return new OrderImpl(
-                        root.get(order.getProperty().substring(CASE_PREFIX.length())),
-                        order.getDirection().isAscending()
-                    );
+                    expression = root.get(order.getProperty().substring(CASE_PREFIX.length()));
                 } else if (order.getProperty().startsWith("$.")) {
-                    return new OrderImpl(
-                        cb.lower(queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), order.getProperty(), String.class)), order.getDirection().isAscending()
-                    );
+                    expression = cb.lower(queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), order.getProperty(), String.class));
                 } else {
-                    return new OrderImpl(
-                        root.get(order.getProperty()),
-                        order.getDirection().isAscending()
-                    );
+                    expression = root.get(order.getProperty());
                 }
+
+                return order.getDirection().isAscending() ? cb.asc(expression) : cb.desc(expression);
             })
             .collect(Collectors.toList());
     }

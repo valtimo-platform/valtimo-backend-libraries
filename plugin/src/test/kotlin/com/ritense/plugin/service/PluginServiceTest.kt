@@ -53,7 +53,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import javax.validation.Validation
+import jakarta.validation.Validation
 import kotlin.test.assertEquals
 
 internal class PluginServiceTest {

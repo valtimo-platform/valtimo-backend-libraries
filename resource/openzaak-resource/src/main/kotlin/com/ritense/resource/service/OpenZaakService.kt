@@ -33,7 +33,7 @@ import java.net.URI
 import java.net.URL
 import java.time.LocalDateTime
 import java.util.UUID
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 class OpenZaakService(
     val documentenService: DocumentenService,

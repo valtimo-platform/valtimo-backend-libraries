@@ -30,15 +30,15 @@ class ObjectenApiHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/objecttype").authenticated()
-                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/object").authenticated()
-                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/object/form").authenticated()
-                .antMatchers(POST, "/api/v1/object").authenticated()
-                .antMatchers(PUT, "/api/v1/object").authenticated()
-                .antMatchers(DELETE, "/api/v1/object").authenticated()
-                .antMatchers(GET, "/api/v1/object/form").authenticated()
-                .antMatchers(PATCH, "/api/v1/object").authenticated()
-                .antMatchers(GET, "/api/v1/object").authenticated()
+                .requestMatchers(GET, "/api/v1/document/{documentId}/zaak/objecttype").authenticated()
+                .requestMatchers(GET, "/api/v1/document/{documentId}/zaak/object").authenticated()
+                .requestMatchers(GET, "/api/v1/document/{documentId}/zaak/object/form").authenticated()
+                .requestMatchers(POST, "/api/v1/object").authenticated()
+                .requestMatchers(PUT, "/api/v1/object").authenticated()
+                .requestMatchers(DELETE, "/api/v1/object").authenticated()
+                .requestMatchers(GET, "/api/v1/object/form").authenticated()
+                .requestMatchers(PATCH, "/api/v1/object").authenticated()
+                .requestMatchers(GET, "/api/v1/object").authenticated()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

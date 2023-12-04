@@ -30,12 +30,12 @@ class ObjectSyncConfigHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/object/sync/config/{id}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/object/sync/config").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/object/sync/config").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/object/sync/config").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/object/sync/config/{id}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/notification").permitAll()
+                .requestMatchers(GET, "/api/v1/object/sync/config/{id}").hasAuthority(ADMIN)
+                .requestMatchers(GET, "/api/v1/object/sync/config").hasAuthority(ADMIN)
+                .requestMatchers(POST, "/api/v1/object/sync/config").hasAuthority(ADMIN)
+                .requestMatchers(PUT, "/api/v1/object/sync/config").hasAuthority(ADMIN)
+                .requestMatchers(DELETE, "/api/v1/object/sync/config/{id}").hasAuthority(ADMIN)
+                .requestMatchers(POST, "/api/v1/notification").permitAll()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

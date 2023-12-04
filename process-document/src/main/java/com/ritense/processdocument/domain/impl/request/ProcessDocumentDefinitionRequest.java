@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.processdocument.domain.request.Request;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class ProcessDocumentDefinitionRequest implements Request {
 

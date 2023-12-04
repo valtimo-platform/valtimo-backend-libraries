@@ -39,7 +39,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.domain.Pageable
 import java.util.UUID
 import javax.inject.Inject
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

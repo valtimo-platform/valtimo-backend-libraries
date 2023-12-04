@@ -42,7 +42,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:${javaxInjectVersion}"
+    api "jakarta.inject:jakarta.inject-api:${javaxInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"

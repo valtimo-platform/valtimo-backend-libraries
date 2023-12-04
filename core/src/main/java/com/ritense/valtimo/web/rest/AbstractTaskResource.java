@@ -29,7 +29,7 @@ import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.form.FormField;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

@@ -26,9 +26,9 @@ public class DocumentSnapshotHttpSecurityConfigurer implements HttpSecurityConfi
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/document-snapshot/{id}").authenticated()
-                .antMatchers(GET, "/api/v1/document-snapshot").authenticated();
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(GET, "/api/v1/document-snapshot/{id}").authenticated()
+                    .requestMatchers(GET, "/api/v1/document-snapshot").authenticated());
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

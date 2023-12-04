@@ -39,7 +39,7 @@
     <logger name="com.github.dockerjava" level="WARN"/>
     <logger name="okhttp3" level="WARN"/>
     <logger name="org.hibernate.engine.jdbc.spi" level="INFO"/>
-    <logger name="com.vladmihalcea.hibernate" level="WARN"/>
+    <logger name="io.hypersistence.utils.hibernate" level="WARN"/>
 
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
         <resetJUL>true</resetJUL>

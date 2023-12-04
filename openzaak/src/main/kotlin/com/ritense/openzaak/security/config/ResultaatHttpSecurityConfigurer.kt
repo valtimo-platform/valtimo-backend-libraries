@@ -27,7 +27,7 @@ class ResultaatHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(POST, "/api/v1/openzaak/resultaat").hasAuthority(ADMIN)
+                .requestMatchers(POST, "/api/v1/openzaak/resultaat").hasAuthority(ADMIN)
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

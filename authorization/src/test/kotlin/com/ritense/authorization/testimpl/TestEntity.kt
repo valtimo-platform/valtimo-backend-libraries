@@ -16,21 +16,22 @@
 
 package com.ritense.authorization.testimpl
 
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.CollectionTable
+import jakarta.persistence.Column
+import jakarta.persistence.ElementCollection
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.Table
 import java.util.UUID
-import javax.persistence.CollectionTable
-import javax.persistence.Column
-import javax.persistence.ElementCollection
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.Table
 import org.hibernate.annotations.Type
 
 @Entity
 @Table(name = "test_entity")
 data class TestEntity(
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "child", columnDefinition = "json")
     val child: TestChildEntity? = null,
 

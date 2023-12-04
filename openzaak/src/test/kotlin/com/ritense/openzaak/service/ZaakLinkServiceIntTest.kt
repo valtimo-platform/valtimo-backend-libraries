@@ -21,7 +21,7 @@ import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import java.net.URI
 import javax.inject.Inject
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

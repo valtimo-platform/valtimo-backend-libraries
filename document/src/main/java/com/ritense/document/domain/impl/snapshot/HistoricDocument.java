@@ -26,12 +26,13 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
 import com.ritense.document.domain.relation.DocumentRelation;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -74,11 +75,11 @@ public class HistoricDocument implements Document {
     @Column(name = "document_assignee_full_name", columnDefinition = "VARCHAR(255)")
     private String assigneeFullName;
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType.class)
     @Column(name = "document_relations", columnDefinition = "json")
     private Set<? extends DocumentRelation> documentRelations = new HashSet<>();
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType.class)
     @Column(name = "document_related_files", columnDefinition = "json")
     private Set<? extends RelatedFile> relatedFiles = new HashSet<>();
 

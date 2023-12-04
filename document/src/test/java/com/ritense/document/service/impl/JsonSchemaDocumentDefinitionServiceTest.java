@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Optional;

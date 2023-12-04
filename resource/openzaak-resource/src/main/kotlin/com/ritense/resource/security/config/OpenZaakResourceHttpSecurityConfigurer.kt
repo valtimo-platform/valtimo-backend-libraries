@@ -29,11 +29,11 @@ class OpenZaakResourceHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(POST, "/api/v1/resource/upload-open-zaak").authenticated()
-                .antMatchers(GET, "/api/v1/resource/{resourceId}").authenticated()
-                .antMatchers(GET, "/api/v1/resource/{resourceId}/download").authenticated()
-                .antMatchers(DELETE, "/api/v1/resource/{resourceId}").authenticated()
-                .antMatchers(PUT, "/api/v1/resource").authenticated()
+                .requestMatchers(POST, "/api/v1/resource/upload-open-zaak").authenticated()
+                .requestMatchers(GET, "/api/v1/resource/{resourceId}").authenticated()
+                .requestMatchers(GET, "/api/v1/resource/{resourceId}/download").authenticated()
+                .requestMatchers(DELETE, "/api/v1/resource/{resourceId}").authenticated()
+                .requestMatchers(PUT, "/api/v1/resource").authenticated()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

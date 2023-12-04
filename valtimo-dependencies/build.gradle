@@ -77,7 +77,7 @@ dependencies {
         api "org.json:json:${orgJsonJsonVersion}"
 
         api("org.liquibase:liquibase-core:${liquibaseVersion}")
-        api("org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}")
+        api("org.liquibase.ext:liquibase-hibernate6:${liquibaseVersion}")
 
         api("org.hibernate:hibernate-core:${hibernateCoreVersion}")
     }

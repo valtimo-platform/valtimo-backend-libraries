@@ -29,17 +29,18 @@ public class DocumentHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/document/{id}").authenticated()
-                .antMatchers(POST, "/api/v1/document").authenticated()
-                .antMatchers(PUT, "/api/v1/document").authenticated()
-                .antMatchers(POST, "/api/v1/document/{document-id}/resource/{resource-id}").authenticated()
-                .antMatchers(DELETE, "/api/v1/document/{document-id}/resource/{resource-id}").authenticated()
-                .antMatchers(POST, "/api/v1/document/{documentId}/assign").authenticated()
-                .antMatchers(POST, "/api/v1/document/assign").authenticated()
-                .antMatchers(POST, "/api/v1/document/{documentId}/unassign").authenticated()
-                .antMatchers(GET, "/api/v1/document/{document-id}/candidate-user").authenticated()
-                .antMatchers(POST, "/api/v1/document/candidate-user").authenticated();
+            http.authorizeHttpRequests((requests) -> {
+                requests.requestMatchers(GET, "/api/v1/document/{id}").authenticated()
+                    .requestMatchers(POST, "/api/v1/document").authenticated()
+                    .requestMatchers(PUT, "/api/v1/document").authenticated()
+                    .requestMatchers(POST, "/api/v1/document/{document-id}/resource/{resource-id}").authenticated()
+                    .requestMatchers(DELETE, "/api/v1/document/{document-id}/resource/{resource-id}").authenticated()
+                    .requestMatchers(POST, "/api/v1/document/{documentId}/assign").authenticated()
+                    .requestMatchers(POST, "/api/v1/document/assign").authenticated()
+                    .requestMatchers(POST, "/api/v1/document/{documentId}/unassign").authenticated()
+                    .requestMatchers(GET, "/api/v1/document/{document-id}/candidate-user").authenticated()
+                    .requestMatchers(POST, "/api/v1/document/candidate-user").authenticated();
+            });
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

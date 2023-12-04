@@ -29,10 +29,10 @@ class NoteHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(POST, "/api/v1/document/{document-id}/note").authenticated()
-                .antMatchers(GET, "/api/v1/document/{document-id}/note").authenticated()
-                .antMatchers(PUT, "/api/v1/note/{note-id}").authenticated()
-                .antMatchers(DELETE, "/api/v1/note/{note-id}").authenticated()
+                .requestMatchers(POST, "/api/v1/document/{document-id}/note").authenticated()
+                .requestMatchers(GET, "/api/v1/document/{document-id}/note").authenticated()
+                .requestMatchers(PUT, "/api/v1/note/{note-id}").authenticated()
+                .requestMatchers(DELETE, "/api/v1/note/{note-id}").authenticated()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

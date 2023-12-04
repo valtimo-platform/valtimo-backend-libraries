@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 
 internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
 

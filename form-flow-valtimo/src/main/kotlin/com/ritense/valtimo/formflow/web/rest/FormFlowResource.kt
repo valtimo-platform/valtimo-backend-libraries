@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 
 @RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])

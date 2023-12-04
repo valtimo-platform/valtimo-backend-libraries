@@ -16,9 +16,9 @@
 
 package com.ritense.plugin.domain
 
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "plugin_action_property_definition")

@@ -26,8 +26,9 @@ class BesluitConfigHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/besluittype").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(GET, "/api/v1/besluittype").hasAuthority(ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

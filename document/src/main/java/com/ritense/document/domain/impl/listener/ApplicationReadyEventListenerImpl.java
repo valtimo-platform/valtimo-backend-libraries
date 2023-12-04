@@ -18,7 +18,7 @@ package com.ritense.document.domain.impl.listener;
 
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.service.DocumentDefinitionService;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;

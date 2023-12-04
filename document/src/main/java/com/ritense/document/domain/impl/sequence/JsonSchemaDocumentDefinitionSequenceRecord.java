@@ -20,11 +20,11 @@ import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.sequence.DocumentDefinitionSequenceRecord;
 import org.springframework.data.domain.Persistable;
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Entity

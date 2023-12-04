@@ -19,10 +19,10 @@ package com.ritense.authorization.testimpl
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.permission.Permission
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 
 class RelatedTestEntitySpecification(
         authContext: AuthorizationRequest<RelatedTestEntity>,

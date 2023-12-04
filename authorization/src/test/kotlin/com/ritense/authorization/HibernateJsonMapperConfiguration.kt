@@ -29,6 +29,6 @@ class HibernateJsonMapperConfiguration {
     ): HibernatePropertiesCustomizer =
         HibernatePropertiesCustomizer { hibernateProperties ->
             HibernateObjectMapperSupplier(objectMapper)
-            hibernateProperties[com.vladmihalcea.hibernate.type.util.Configuration.PropertyKey.JACKSON_OBJECT_MAPPER.key] = HibernateObjectMapperSupplier::class.qualifiedName
+            hibernateProperties[io.hypersistence.utils.hibernate.type.util.Configuration.PropertyKey.JACKSON_OBJECT_MAPPER.key] = HibernateObjectMapperSupplier::class.qualifiedName
         }
 }

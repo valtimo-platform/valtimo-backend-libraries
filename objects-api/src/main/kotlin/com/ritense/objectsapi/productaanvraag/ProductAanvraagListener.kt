@@ -22,7 +22,7 @@ import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.objectsapi.opennotificaties.OpenNotificationEvent
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
-import javax.persistence.EntityNotFoundException
+import jakarta.persistence.EntityNotFoundException
 
 class ProductAanvraagListener(
     private val productAanvraagService: ProductAanvraagService,

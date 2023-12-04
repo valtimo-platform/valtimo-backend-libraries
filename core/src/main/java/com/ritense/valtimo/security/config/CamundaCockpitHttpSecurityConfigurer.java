@@ -29,9 +29,9 @@ public class CamundaCockpitHttpSecurityConfigurer implements HttpSecurityConfigu
             //we just set it open and let Camunda do the rest.
             http
                 .authorizeRequests()
-                .antMatchers("/app/**")
+                .requestMatchers("/app/**")
                 .access("@whitelistIpRequest.check(request)")
-                .antMatchers(
+                .requestMatchers(
                     "/api/admin/**",
                     "/api/cockpit/**",
                     "/api/tasklist/**",

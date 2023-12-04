@@ -61,8 +61,8 @@ public class CoreHttpSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
     @Override
     public void configure(WebSecurity web) {
         web.ignoring()
-            .antMatchers(OPTIONS, "/**")
-            .antMatchers("/content/**");
+            .requestMatchers(OPTIONS, "/**")
+            .requestMatchers("/content/**");
     }
 
 }

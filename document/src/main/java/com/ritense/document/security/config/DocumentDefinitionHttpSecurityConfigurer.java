@@ -29,18 +29,21 @@ public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityCon
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/document-definition").authenticated()
-                .antMatchers(GET, "/api/v1/document-definition").authenticated()
-                .antMatchers(GET, "/api/v1/document-definition/{name}").authenticated()
-                .antMatchers(GET, "/api/v1/document-definition/open/count").authenticated()
-                .antMatchers(GET, "/api/management/v1/document-definition").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/management/v1/document-definition/{name}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/management/v1/document-definition/{name}/version/{version}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/document-definition").hasAuthority(ADMIN) // Deprecated since v11
-                .antMatchers(POST, "/api/management/v1/document-definition").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/document-definition/{name}").hasAuthority(ADMIN) // Deprecated since v11
-                .antMatchers(DELETE, "/api/management/v1/document-definition/{name}").hasAuthority(ADMIN);
+            http.authorizeHttpRequests((requests) -> {
+                requests.requestMatchers(GET, "/api/v1/document-definition").authenticated()
+                    .requestMatchers(GET, "/api/v1/document-definition").authenticated()
+                    .requestMatchers(GET, "/api/v1/document-definition/{name}").authenticated()
+                    .requestMatchers(GET, "/api/v1/document-definition/open/count").authenticated()
+                    .requestMatchers(GET, "/api/management/v1/document-definition").hasAuthority(ADMIN)
+                    .requestMatchers(GET, "/api/management/v1/document-definition/{name}").hasAuthority(ADMIN)
+                    .requestMatchers(
+                        GET, "/api/management/v1/document-definition/{name}/version/{version}").hasAuthority(ADMIN)
+                    .requestMatchers(POST, "/api/v1/document-definition").hasAuthority(ADMIN) // Deprecated since v11
+                    .requestMatchers(POST, "/api/management/v1/document-definition").hasAuthority(ADMIN)
+                    .requestMatchers(DELETE, "/api/v1/document-definition/{name}").hasAuthority(
+                        ADMIN) // Deprecated since v11
+                    .requestMatchers(DELETE, "/api/management/v1/document-definition/{name}").hasAuthority(ADMIN);
+            });
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

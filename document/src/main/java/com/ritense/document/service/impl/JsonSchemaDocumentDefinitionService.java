@@ -53,7 +53,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;

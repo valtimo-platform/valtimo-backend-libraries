@@ -27,9 +27,10 @@ public class MilestoneInstanceHttpSecurityConfigurer implements HttpSecurityConf
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/milestone-instances").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/milestones/{processDefinitionId}/flownodes").hasAuthority(ADMIN);
+            http.authorizeHttpRequests((requests) -> {
+                requests.requestMatchers(GET, "/api/v1/milestone-instances").hasAuthority(ADMIN)
+                    .requestMatchers(GET, "/api/v1/milestones/{processDefinitionId}/flownodes").hasAuthority(ADMIN);
+            });
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -52,7 +52,7 @@ import reactor.core.publisher.Mono
 import java.time.LocalDate
 import java.util.Optional
 import java.util.UUID
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 

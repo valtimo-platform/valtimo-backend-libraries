@@ -19,20 +19,21 @@ package com.ritense.authorization.permission
 import com.ritense.authorization.Action
 import com.ritense.authorization.role.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import org.hibernate.annotations.Type
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.Column
+import jakarta.persistence.Embedded
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Embedded
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
-import javax.persistence.Table
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import org.hibernate.annotations.Type
 
 @Entity
 @Table(name = "permission")
@@ -48,7 +49,7 @@ data class Permission(
     @Embedded
     val action: Action<*>,
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "conditions", columnDefinition = "json")
     val conditionContainer: ConditionContainer,
 

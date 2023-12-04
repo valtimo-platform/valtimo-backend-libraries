@@ -32,7 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;

@@ -18,11 +18,10 @@ package com.ritense.outbox.rabbitmq.config
 
 import java.time.Duration
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.boot.context.properties.bind.ConstructorBinding
 
 @ConfigurationProperties(prefix = "valtimo.outbox.publisher.rabbitmq")
-@ConstructorBinding
-data class RabbitOutboxConfigurationProperties(
+data class RabbitOutboxConfigurationProperties @ConstructorBinding constructor(
     val routingKey: String,
     val deliveryTimeout: Duration = Duration.ofSeconds(1)
 )

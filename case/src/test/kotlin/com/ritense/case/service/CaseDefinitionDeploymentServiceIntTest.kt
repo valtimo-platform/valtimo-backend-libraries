@@ -4,7 +4,7 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

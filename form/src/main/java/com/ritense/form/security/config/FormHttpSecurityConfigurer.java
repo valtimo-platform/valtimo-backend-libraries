@@ -30,10 +30,11 @@ public class FormHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/form").authenticated()
-                .antMatchers(GET, "/api/v1/form/{formDefinitionName}").authenticated()
-                .antMatchers(GET, "/api/v1/form/{formDefinitionName}/document/{documentId}").authenticated();
+            http.authorizeHttpRequests((requests) -> {
+                requests.requestMatchers(GET, "/api/v1/form").authenticated()
+                    .requestMatchers(GET, "/api/v1/form/{formDefinitionName}").authenticated()
+                    .requestMatchers(GET, "/api/v1/form/{formDefinitionName}/document/{documentId}").authenticated();
+            });
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

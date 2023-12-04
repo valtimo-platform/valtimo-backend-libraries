@@ -26,7 +26,7 @@ import java.net.URL
 import java.time.LocalDateTime
 import java.util.Arrays
 import java.util.UUID
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue

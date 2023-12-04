@@ -27,7 +27,7 @@ import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkReque
 import com.ritense.valtimo.contract.result.OperationError
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
-import javax.validation.ConstraintViolationException
+import jakarta.validation.ConstraintViolationException
 
 @Transactional
 class InformatieObjectTypeLinkService(

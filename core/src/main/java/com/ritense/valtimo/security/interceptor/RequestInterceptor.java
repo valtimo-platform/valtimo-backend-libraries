@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.security.interceptor;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface RequestInterceptor {
 

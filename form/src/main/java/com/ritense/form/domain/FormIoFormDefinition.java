@@ -41,11 +41,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import org.hibernate.annotations.Type;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -96,7 +97,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     private String name;
 
     @Column(name = "form_definition", columnDefinition = "json")
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType.class)
     private String formDefinition;
 
     @Column(name = "read_only", columnDefinition = "BIT")

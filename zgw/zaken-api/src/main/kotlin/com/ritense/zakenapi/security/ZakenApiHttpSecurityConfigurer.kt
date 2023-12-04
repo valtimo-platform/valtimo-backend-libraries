@@ -26,8 +26,8 @@ class ZakenApiHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/zaken-api/document/{documentId}/files").authenticated()
-                .antMatchers(GET, "/api/v1/zaken-api/document/{documentId}/zaak").authenticated()
+                .requestMatchers(GET, "/api/v1/zaken-api/document/{documentId}/files").authenticated()
+                .requestMatchers(GET, "/api/v1/zaken-api/document/{documentId}/zaak").authenticated()
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

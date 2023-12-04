@@ -38,7 +38,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.nio.charset.StandardCharsets
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 
 @Transactional
 internal class PluginConfigurationResourceIT: BaseIntegrationTest() {

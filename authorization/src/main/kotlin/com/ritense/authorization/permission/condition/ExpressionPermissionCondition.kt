@@ -26,11 +26,11 @@ import com.ritense.authorization.jackson.ComparableDeserializer
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.permission.condition.ExpressionPermissionCondition.Companion.EXPRESSION
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Path
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Path
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 
 
 @JsonTypeName(EXPRESSION)

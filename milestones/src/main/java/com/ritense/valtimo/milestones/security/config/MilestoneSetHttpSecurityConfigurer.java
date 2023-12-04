@@ -30,11 +30,12 @@ public class MilestoneSetHttpSecurityConfigurer implements HttpSecurityConfigure
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/milestone-sets/{id}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/milestone-sets").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/milestone-sets").hasAuthority(DEVELOPER)
-                .antMatchers(DELETE, "/api/v1/milestone-sets/{id}").hasAuthority(DEVELOPER);
+            http.authorizeHttpRequests((requests) -> {
+                requests.requestMatchers(GET, "/api/v1/milestone-sets/{id}").hasAuthority(ADMIN)
+                    .requestMatchers(GET, "/api/v1/milestone-sets").hasAuthority(ADMIN)
+                    .requestMatchers(POST, "/api/v1/milestone-sets").hasAuthority(DEVELOPER)
+                    .requestMatchers(DELETE, "/api/v1/milestone-sets/{id}").hasAuthority(DEVELOPER);
+            });
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

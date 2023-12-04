@@ -28,8 +28,8 @@ public class OpenApiHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/v3/api-docs").hasAuthority(ADMIN)
-                .antMatchers("/v3/api-docs/**").hasAuthority(ADMIN);
+                .requestMatchers(GET, "/v3/api-docs").hasAuthority(ADMIN)
+                .requestMatchers("/v3/api-docs/**").hasAuthority(ADMIN);
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }
