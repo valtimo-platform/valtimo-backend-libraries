@@ -23,6 +23,7 @@ import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
+import com.ritense.document.service.result.DocumentVersionsResult;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import com.ritense.document.web.rest.DocumentDefinitionResource;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,6 @@ import java.util.stream.Collectors;
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static org.springframework.http.ResponseEntity.of;
 import static org.springframework.http.ResponseEntity.ok;
-import static org.springframework.http.ResponseEntity.of;
 
 public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionResource {
 
@@ -112,6 +112,13 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     @Override
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionVersion(String name, long version) {
         return of(runWithoutAuthorization(() -> documentDefinitionService.findByNameAndVersion(name, version)));
+    }
+
+    @Override
+    public ResponseEntity<DocumentVersionsResult> getDocumentDefinitionVersions(String name) {
+        List<Long> versions = runWithoutAuthorization(() -> documentDefinitionService.findVersionsByName(name));
+
+        return ok(new DocumentVersionsResult(name, versions));
     }
 
     @Override
