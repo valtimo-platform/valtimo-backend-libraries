@@ -80,8 +80,9 @@ public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefiniti
     Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable);
 
     @Query("" +
-        "   SELECT  definition.id.version" +
-        "   FROM    JsonSchemaDocumentDefinition definition " +
-        "   WHERE   definition.id.name = :documentDefinitionName ")
+        "   SELECT      definition.id.version" +
+        "   FROM        JsonSchemaDocumentDefinition definition " +
+        "   WHERE       definition.id.name = :documentDefinitionName " +
+        "   ORDER BY    definition.id.version DESC")
     List<Long> findVersionsByName(String documentDefinitionName);
 }
