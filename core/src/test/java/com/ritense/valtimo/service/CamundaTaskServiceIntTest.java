@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.service;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.permission.ConditionContainer;
 import com.ritense.authorization.permission.Permission;
 import com.ritense.authorization.permission.PermissionRepository;
