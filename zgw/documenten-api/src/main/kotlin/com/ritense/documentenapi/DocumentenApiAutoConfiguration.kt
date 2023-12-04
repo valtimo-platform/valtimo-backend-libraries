@@ -29,6 +29,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
@@ -38,9 +39,15 @@ class DocumentenApiAutoConfiguration {
     fun documentenApiClient(
         webclientBuilder: WebClient.Builder,
         outboxService: OutboxService,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
+        platformTransactionManager: PlatformTransactionManager
     ): DocumentenApiClient {
-        return DocumentenApiClient(webclientBuilder, outboxService, objectMapper)
+        return DocumentenApiClient(
+            webclientBuilder,
+            outboxService,
+            objectMapper,
+            platformTransactionManager
+        )
     }
 
     @Bean
