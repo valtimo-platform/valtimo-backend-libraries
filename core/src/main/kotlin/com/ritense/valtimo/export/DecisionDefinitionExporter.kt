@@ -33,7 +33,7 @@ class DecisionDefinitionExporter(
 
         val exportFile = repositoryService.getDecisionModel(decisionDefinition.id).use {inputStream ->
             ExportFile(
-                "bpmn/${decisionDefinition.key}.dmn",
+                "dmn/${decisionDefinition.key}.dmn",
                 IOUtils.toByteArray(inputStream)
             )
         }
