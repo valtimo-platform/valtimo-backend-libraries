@@ -35,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.stream.Collectors;
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.of;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -117,6 +118,10 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     @Override
     public ResponseEntity<DocumentVersionsResult> getDocumentDefinitionVersions(String name) {
         List<Long> versions = runWithoutAuthorization(() -> documentDefinitionService.findVersionsByName(name));
+
+        if(versions.isEmpty()) {
+            notFound().build();
+        }
 
         return ok(new DocumentVersionsResult(name, versions));
     }
