@@ -18,6 +18,8 @@ package com.ritense.import
 
 import java.io.InputStream
 import java.util.zip.ZipInputStream
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 
 open class ValtimoImportService(
@@ -29,11 +31,13 @@ open class ValtimoImportService(
     init {
         //Check for duplicate import types in the list of importers
         val wImporters = importers.map { WrappedImporter(it) }.toSet()
-        require(wImporters.size == importers.size) {
+        if (wImporters.size != importers.size) {
             val duplicatedTypes = wImporters.filter { wImporter ->
                 importers.count { wImporter.type() == it.type() } > 1
             }.map { it.type() }
-            "Multiple importers of the same type provided: [${duplicatedTypes.joinToString()}]"
+            throw ImportServiceException(
+                "Multiple importers of the same type provided: [${duplicatedTypes.joinToString()}]"
+            )
         }
 
         // Order and validate importers by their dependencies
@@ -43,9 +47,11 @@ open class ValtimoImportService(
                 !orderedImporters.containsKey(it.type()) &&
                     orderedImporters.keys.containsAll(it.dependsOn())
             }.apply {
-                require(this.isNotEmpty()) {
-                    "Importer dependencies could not be resolved or contain a cyclic reference! " +
-                        "Error occurred after: [${orderedImporters.keys.joinToString()}]"
+                if (this.isEmpty()) {
+                    throw ImportServiceException(
+                        "Importer dependencies could not be resolved or contain a cyclic reference! " +
+                            "Error occurred after: [${orderedImporters.keys.joinToString()}]"
+                    )
                 }
             }.forEach {
                 orderedImporters[it.type()] = it
@@ -61,10 +67,13 @@ open class ValtimoImportService(
 
         val handledTypes = mutableSetOf<String>()
         importerEntriesMap.forEach { (importer, entries) ->
-            check(handledTypes.containsAll(importer.dependsOn())) {
-                "Could not import files of type ${importer.type()}! " +
-                    "The dependencies (${importer.dependsOn().joinToString()}) were not fulfilled. " +
-                    "Failed after types: ${handledTypes.joinToString()}"
+            if (!handledTypes.containsAll(importer.dependsOn())) {
+                throw ImportServiceException(
+                    "Could not import files of type ${importer.type()}! " +
+                        "The dependencies (${importer.dependsOn().joinToString()}) were not fulfilled. " +
+                        "Failed after types: ${handledTypes.joinToString()}"
+                )
+
             }
 
             entries.forEach {
@@ -76,30 +85,39 @@ open class ValtimoImportService(
 
     private fun readZipEntries(inputStream: InputStream): List<ZipFileEntry> {
         // Read all entries with data from the stream
-        return ZipInputStream(inputStream).use { stream ->
-            generateSequence { stream.nextEntry }
-                .filter { !it.isDirectory }
-                .map { ZipFileEntry(it.name, stream.readBytes()) }
-                .toMutableList()
+        return try {
+            ZipInputStream(inputStream).use { stream ->
+                generateSequence { stream.nextEntry }
+                    .filter { !it.isDirectory }
+                    .map { ZipFileEntry(it.name, stream.readBytes()) }
+                    .toMutableList()
+            }
+        } catch (ex: Exception) {
+            throw ImportServiceException(ex.message)
         }
     }
 
     /**
-     * Maps all entries by an supporting importer.
+     * Maps all entries by a supporting importer.
      * When no files are provided, an empty list value is mapped.
      * @param entries
      */
     private fun getEntriesByImporter(entries: List<ZipFileEntry>): LinkedHashMap<Importer, List<ZipFileEntry>> {
-        val entryPairs = entries.map { entry ->
-            val importer = orderedImporters.filter { importer ->
+        val entryPairs = entries.mapNotNull { entry ->
+            orderedImporters.filter { importer ->
                 importer.supports(entry.fileName)
             }.apply {
-                check(this.size <= 1) {
-                    "Multiple importer candidates found for file ${entry.fileName}! Importer types: [${this.joinToString { it.type() }}]"
+                if(this.isEmpty()) {
+                    logger.info { "No importer candidate found for file ${entry.fileName}." }
+                } else if (this.size > 1) {
+                    throw ImportServiceException(
+                        "Multiple importer candidates found for file ${entry.fileName}! " +
+                            "Importer types: [${this.joinToString { it.type() }}]"
+                    )
                 }
-            }.first()
-
-            Pair(importer, entry)
+            }.firstOrNull()?.let {
+                Pair(it, entry)
+            }
         }
 
         // The map keys are kept in the same order as `importers` by using a LinkedHashMap
@@ -113,6 +131,7 @@ open class ValtimoImportService(
     }
 
     private companion object {
+        val logger: KLogger = KotlinLogging.logger {}
         class WrappedImporter(
 
             private val importer: Importer

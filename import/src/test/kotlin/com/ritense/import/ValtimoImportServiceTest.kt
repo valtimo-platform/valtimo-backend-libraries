@@ -26,14 +26,15 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.inOrder
+import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.times
 
 class ValtimoImportServiceTest {
 
     @Test
     fun `should not instantiate on duplicate importer types`() {
-        val exception = assertThrows<IllegalArgumentException> {
+        val exception = assertThrows<ImportServiceException> {
             ValtimoImportService(
                 setOf(
                     TestImporter(),
@@ -43,12 +44,12 @@ class ValtimoImportServiceTest {
         }
 
         assertThat(exception.message)
-            .isEqualTo("Multiple importers of the same type provided: test")
+            .isEqualTo("Multiple importers of the same type provided: [test]")
     }
 
     @Test
     fun `should not instantiate on cyclic importer dependencies`() {
-        val exception = assertThrows<IllegalArgumentException> {
+        val exception = assertThrows<ImportServiceException> {
             ValtimoImportService(
                 linkedSetOf(
                     TestImporter("2", dependsOn = setOf("1","3")),
@@ -59,7 +60,7 @@ class ValtimoImportServiceTest {
         }
 
         assertThat(exception.message)
-            .isEqualTo("Importer dependencies could not be resolved or contain a cyclic reference! Error occurred after: 1")
+            .isEqualTo("Importer dependencies could not be resolved or contain a cyclic reference! Error occurred after: [1]")
     }
 
     @Test
@@ -77,25 +78,26 @@ class ValtimoImportServiceTest {
                 ))
             }
 
-        val importService = ValtimoImportService(
-            importers.shuffled().toSet()
-        )
+        val importService = ValtimoImportService(importers.shuffled().toSet())
 
-        val inputStream = createZipInputStream(fileCount, skip = 3)
+        val skip = 3
+        val inputStream = createZipInputStream(fileCount, skip)
         importService.import(inputStream)
 
-        inOrder(*importers.toTypedArray())
-
+        // Verify the importers are called in the correct order
+        val inOrder = inOrder(*importers.toTypedArray())
         importers.forEach {
-            verify(it).import(any())
+            val verificationMode = if (it.type() == skip.toString()) never() else times(1)
+            inOrder.verify(it, verificationMode).import(any())
         }
     }
 
     private fun createZipInputStream(size: Int = 5, skip: Int? = null): InputStream {
         val outputStream = ByteArrayOutputStream()
         ZipOutputStream(outputStream).use { zipStream ->
-            IntRange(1, size).shuffled()
-                .filter { it == skip }
+            // Start at 0 to add a file that has no candidate importer
+            IntRange(0, size).shuffled()
+                .filterNot { it == skip }
                 .map { it.toString() }
                 .forEach { index ->
                     zipStream.putNextEntry(ZipEntry(index))
