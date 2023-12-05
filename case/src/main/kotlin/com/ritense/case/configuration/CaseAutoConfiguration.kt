@@ -44,6 +44,7 @@ import com.ritense.case.web.rest.CaseTabResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.export.ExportService
+import com.ritense.import.ImportService
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -74,9 +75,10 @@ class CaseAutoConfiguration {
     @Bean
     fun caseDefinitionResource(
         service: CaseDefinitionService,
-        exportService: ExportService
+        exportService: ExportService,
+        importService: ImportService
     ): CaseDefinitionResource {
-        return CaseDefinitionResource(service, exportService)
+        return CaseDefinitionResource(service, exportService, importService)
     }
 
     @Bean

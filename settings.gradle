@@ -45,6 +45,7 @@ include(
     "gradle:license-report",
     "haalcentraal",
     "haalcentraal:haalcentraal-brp",
+    "import",
     "keycloak-iam",
     "klant",
     "mail",
