@@ -36,7 +36,7 @@ open class CatalogiApiClient(
     private val webclientBuilder: WebClient.Builder,
     private val cacheManager: CacheManager
 ) {
-    fun getZaaktypeInformatieobjecttypes(
+    open fun getZaaktypeInformatieobjecttypes(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,
         request: ZaaktypeInformatieobjecttypeRequest
@@ -61,7 +61,7 @@ open class CatalogiApiClient(
         return result?.body!!
     }
 
-    fun getInformatieobjecttypes(
+    open fun getInformatieobjecttypes(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,
         request: InformatieobjecttypeRequest
@@ -98,7 +98,7 @@ open class CatalogiApiClient(
         return result?.body!!
     }
 
-    fun getRoltypen(
+    open fun getRoltypen(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,
         request: RoltypeRequest,
@@ -121,7 +121,7 @@ open class CatalogiApiClient(
         return result?.body!!
     }
 
-    fun getStatustypen(
+    open fun getStatustypen(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,
         request: StatustypeRequest,
@@ -143,7 +143,7 @@ open class CatalogiApiClient(
         return result?.body!!
     }
 
-    fun getResultaattypen(
+    open fun getResultaattypen(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,
         request: ResultaattypeRequest,
@@ -165,7 +165,7 @@ open class CatalogiApiClient(
         return result?.body!!
     }
 
-    fun getBesluittypen(
+    open fun getBesluittypen(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,
         request: BesluittypeRequest,
@@ -189,7 +189,7 @@ open class CatalogiApiClient(
         return result?.body!!
     }
 
-    fun prefillCache(authenticationPluginConfiguration: CatalogiApiAuthentication, url: URI) {
+    open fun prefillCache(authenticationPluginConfiguration: CatalogiApiAuthentication, url: URI) {
         prefillInformatieobjecttypeCache(authenticationPluginConfiguration, url)
     }
 
