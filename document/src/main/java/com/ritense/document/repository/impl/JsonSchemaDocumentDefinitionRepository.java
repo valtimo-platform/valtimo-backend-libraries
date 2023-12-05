@@ -78,4 +78,11 @@ public interface JsonSchemaDocumentDefinitionRepository extends DocumentDefiniti
         "on version_per_definition.latest_version = jsonschema.document_definition_version " +
         "and version_per_definition.document_definition_name = jsonschema.document_definition_name ")
     Page<JsonSchemaDocumentDefinition> findAll(Pageable pageable);
+
+    @Query("" +
+        "   SELECT      definition.id.version" +
+        "   FROM        JsonSchemaDocumentDefinition definition " +
+        "   WHERE       definition.id.name = :documentDefinitionName " +
+        "   ORDER BY    definition.id.version DESC")
+    List<Long> findVersionsByName(String documentDefinitionName);
 }
