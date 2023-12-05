@@ -65,21 +65,10 @@ open class ValtimoImportService(
         val entries = readZipEntries(inputStream)
         val importerEntriesMap = getEntriesByImporter(entries)
 
-        val handledTypes = mutableSetOf<String>()
         importerEntriesMap.forEach { (importer, entries) ->
-            if (!handledTypes.containsAll(importer.dependsOn())) {
-                throw ImportServiceException(
-                    "Could not import files of type ${importer.type()}! " +
-                        "The dependencies (${importer.dependsOn().joinToString()}) were not fulfilled. " +
-                        "Failed after types: ${handledTypes.joinToString()}"
-                )
-
+            entries.forEach { entry ->
+                importer.import(ImportRequest(entry.content))
             }
-
-            entries.forEach {
-                importer.import(ImportRequest(it.content))
-            }
-            handledTypes.add(importer.type())
         }
     }
 
