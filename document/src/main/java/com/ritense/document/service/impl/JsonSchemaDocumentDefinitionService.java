@@ -176,6 +176,23 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     }
 
     @Override
+    public List<Long> findVersionsByName(String documentDefinitionName) {
+        final var optionalDefinition = documentDefinitionRepository.findFirstByIdNameOrderByIdVersionDesc(
+            documentDefinitionName
+        );
+
+        optionalDefinition.ifPresent(definition -> authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                VIEW,
+                definition
+            )
+        ));
+
+        return documentDefinitionRepository.findVersionsByName(documentDefinitionName);
+    }
+
+    @Override
     public void deployAll() {
         //Authorization check is delegated to the store() method
         deployAll(true, false);
