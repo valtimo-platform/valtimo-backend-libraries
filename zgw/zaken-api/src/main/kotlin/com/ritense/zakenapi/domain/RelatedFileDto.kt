@@ -27,21 +27,21 @@ data class RelatedFileDto(
     private val sizeInBytes: Long?,
     private val createdOn: LocalDateTime,
     private val createdBy: String,
-    private val author: String,
-    private val title: String?,
-    private val status: String?,
-    private val language: String?,
-    private val identification: String?,
-    private val description: String?,
-    private val informatieobjecttype: String?,
-    private val keywords: List<String>?,
-    private val format: String?,
-    private val sendDate: LocalDate?,
-    private val receiptDate: LocalDate?,
-    private val confidentialityLevel: String?,
-    private val version: Int?,
-    private val indicationUsageRights: Boolean?,
     val pluginConfigurationId: UUID,
+    private val author: String? = null,
+    private val title: String? = null,
+    private val status: String? = null,
+    private val language: String? = null,
+    private val identification: String? = null,
+    private val description: String? = null,
+    private val informatieobjecttype: String? = null,
+    private val keywords: List<String>? = null,
+    private val format: String? = null,
+    private val sendDate: LocalDate? = null,
+    private val receiptDate: LocalDate? = null,
+    private val confidentialityLevel: String? = null,
+    private val version: Int? = null,
+    private val indicationUsageRights: Boolean? = null,
 ):  RelatedFile {
     override fun getFileId(): UUID {
         return fileId
@@ -63,7 +63,7 @@ data class RelatedFileDto(
         return createdBy
     }
 
-    override fun getAuthor(): String {
+    override fun getAuthor(): String? {
         return author
     }
 

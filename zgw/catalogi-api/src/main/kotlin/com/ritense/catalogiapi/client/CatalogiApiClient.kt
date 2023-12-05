@@ -25,12 +25,16 @@ import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
+import mu.KotlinLogging
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriBuilder
 import java.net.URI
 
-class CatalogiApiClient(
-    private val webclientBuilder: WebClient.Builder
+open class CatalogiApiClient(
+    private val webclientBuilder: WebClient.Builder,
+    private val cacheManager: CacheManager
 ) {
     fun getZaaktypeInformatieobjecttypes(
         authentication: CatalogiApiAuthentication,
@@ -57,7 +61,28 @@ class CatalogiApiClient(
         return result?.body!!
     }
 
-    fun getInformatieobjecttype(
+    fun getInformatieobjecttypes(
+        authentication: CatalogiApiAuthentication,
+        baseUrl: URI,
+        request: InformatieobjecttypeRequest
+    ): Page<Informatieobjecttype> {
+        val result = buildWebclient(authentication)
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .pathSegment("informatieobjecttypen")
+                    .addOptionalQueryParamFromRequest("status", request.status?.getSearchValue())
+                    .addOptionalQueryParamFromRequest("page", request.page)
+                    .build()
+            }.retrieve()
+            .toEntity(ClientTools.getTypedPage(Informatieobjecttype::class.java))
+            .block()
+
+        return result?.body!!
+    }
+
+    @Cacheable(INFORMATIEOBJECTTYPECACHE_KEY, key = "#informatieobjecttypeUrl")
+    open fun getInformatieobjecttype(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,
         informatieobjecttypeUrl: URI
@@ -164,6 +189,30 @@ class CatalogiApiClient(
         return result?.body!!
     }
 
+    fun prefillCache(authenticationPluginConfiguration: CatalogiApiAuthentication, url: URI) {
+        prefillInformatieobjecttypeCache(authenticationPluginConfiguration, url)
+    }
+
+    private fun prefillInformatieobjecttypeCache(authenticationPluginConfiguration: CatalogiApiAuthentication, url: URI) {
+        var currentPage = 1
+        var currentResults: Page<Informatieobjecttype>?
+
+        do {
+            logger.debug { "Getting page of informatieobjecttypes, page $currentPage for catalogi api $url" }
+            currentResults = getInformatieobjecttypes(
+                authenticationPluginConfiguration,
+                url,
+                InformatieobjecttypeRequest(
+                    status = InformatieobjecttypePublishedStatus.DEFINITIEF,
+                    page = currentPage++
+                )
+            )
+            currentResults.results.forEach {
+                cacheManager.getCache(INFORMATIEOBJECTTYPECACHE_KEY)?.put(it.url, it)
+            }
+        } while(currentResults?.next != null)
+    }
+
     private fun validateUrlHost(baseUrl: URI, url: URI?) {
         if (url != null && baseUrl.host != url.host) {
             throw IllegalArgumentException(
@@ -183,5 +232,10 @@ class CatalogiApiClient(
         if (value != null)
             this.queryParam(name, value.toString())
         return this
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
+        const val INFORMATIEOBJECTTYPECACHE_KEY = "zgw-catalogiapi-informatieobjecttype"
     }
 }

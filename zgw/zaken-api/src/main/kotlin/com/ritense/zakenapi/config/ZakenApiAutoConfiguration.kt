@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.config
 
+import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.ZaakUrlProvider
@@ -71,8 +72,12 @@ class ZakenApiAutoConfiguration {
     }
 
     @Bean
-    fun zaakDocumentService(zaakUrlProvider: ZaakUrlProvider, pluginService: PluginService): ZaakDocumentService {
-        return ZaakDocumentService(zaakUrlProvider, pluginService)
+    fun zaakDocumentService(
+        zaakUrlProvider: ZaakUrlProvider,
+        pluginService: PluginService,
+        catalogiService: CatalogiService
+    ): ZaakDocumentService {
+        return ZaakDocumentService(zaakUrlProvider, pluginService, catalogiService)
     }
 
     @Bean

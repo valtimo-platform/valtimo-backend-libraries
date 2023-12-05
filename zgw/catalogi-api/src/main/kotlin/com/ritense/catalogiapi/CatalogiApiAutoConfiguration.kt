@@ -24,17 +24,23 @@ import com.ritense.catalogiapi.web.rest.CatalogiResource
 import com.ritense.document.service.DocumentService
 import com.ritense.plugin.service.PluginService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
+@EnableCaching
 class CatalogiApiAutoConfiguration {
 
     @Bean
-    fun catalogiApiClient(webclientBuilder: WebClient.Builder): CatalogiApiClient {
-        return CatalogiApiClient(webclientBuilder)
+    fun catalogiApiClient(
+        webclientBuilder: WebClient.Builder,
+        cacheManager: CacheManager,
+    ): CatalogiApiClient {
+        return CatalogiApiClient(webclientBuilder, cacheManager)
     }
 
     @Bean

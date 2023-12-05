@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.service
 
+import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
@@ -28,8 +29,9 @@ import java.net.URI
 import java.util.UUID
 
 class ZaakDocumentService(
-    val zaakUrlProvider: ZaakUrlProvider,
-    val pluginService: PluginService
+    private val zaakUrlProvider: ZaakUrlProvider,
+    private val pluginService: PluginService,
+    private val catalogiService: CatalogiService,
 ) {
 
     fun getInformatieObjectenAsRelatedFiles(documentId: UUID): List<RelatedFileDto> {
@@ -63,7 +65,7 @@ class ZaakDocumentService(
             pluginConfigurationId = pluginConfiguration.id.id,
             identification = informatieObject.identificatie,
             description = informatieObject.beschrijving,
-            informatieobjecttype = informatieObject.informatieobjecttype,
+            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
             keywords = informatieObject.trefwoorden,
             format = informatieObject.formaat,
             sendDate = informatieObject.verzenddatum,
@@ -72,6 +74,10 @@ class ZaakDocumentService(
             version = informatieObject.versie,
             indicationUsageRights = informatieObject.indicatieGebruiksrecht
         )
+    }
+
+    private fun getInformatieobjecttypeByUri(uri: String?): String? {
+        return uri?.let { catalogiService.getInformatieobjecttype(URI(it))?.omschrijving }
     }
 
     private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {
