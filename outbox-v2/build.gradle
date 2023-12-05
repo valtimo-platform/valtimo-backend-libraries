@@ -35,6 +35,8 @@ dependencies {
     implementation "io.cloudevents:cloudevents-spring:${cloudeventsSpring}"
     implementation "io.cloudevents:cloudevents-json-jackson:${cloudeventsSpring}"
 
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jsr310Version}"
+
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.postgresql:postgresql:$postgresqlDriverVersion"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"

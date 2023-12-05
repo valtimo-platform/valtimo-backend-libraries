@@ -16,8 +16,12 @@
 
 package com.ritense.outbox.autoconfigure
 
+import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.addSerializer
 import com.ritense.outbox.publisher.DefaultMessagePublisher
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.PollingPublisherJob
@@ -36,6 +40,8 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import javax.sql.DataSource
 
 @Configuration
@@ -54,6 +60,11 @@ class OutboxAutoConfiguration {
     fun objectMapper(): ObjectMapper = ObjectMapper()
         .findAndRegisterModules()
         .registerModule(KotlinModule.Builder().build())
+        .setDateFormat(SimpleDateFormat(DATE_TIME_FORMAT))
+        .configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false)
+        .registerModule(SimpleModule()
+            .addSerializer(LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
+        )
 
     @Bean
     @ConditionalOnMissingBean(OutboxLiquibaseRunner::class)
@@ -100,4 +111,7 @@ class OutboxAutoConfiguration {
     @ConditionalOnMissingBean(MessagePublisher::class)
     fun defaultMessagePublisher() = DefaultMessagePublisher()
 
+    companion object {
+        const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    }
 }
