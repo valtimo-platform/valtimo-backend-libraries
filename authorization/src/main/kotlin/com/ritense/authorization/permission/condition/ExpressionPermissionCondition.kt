@@ -26,6 +26,7 @@ import com.ritense.authorization.jackson.ComparableDeserializer
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.permission.condition.ExpressionPermissionCondition.Companion.EXPRESSION
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Path
@@ -68,7 +69,7 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
 
     override fun <E : Any> toPredicate(
         root: Root<E>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<E>,
         queryDialectHelper: QueryDialectHelper

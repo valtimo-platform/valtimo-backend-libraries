@@ -23,8 +23,8 @@ import com.ritense.authorization.jackson.ComparableDeserializer
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.permission.condition.FieldPermissionCondition.Companion.FIELD
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
@@ -46,13 +46,14 @@ data class FieldPermissionCondition<V : Comparable<V>>(
 
     override fun <T : Any> toPredicate(
         root: Root<T>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper
     ): Predicate {
         val path = createDatabaseObjectPath(field, root)!!
         val resolvedValue = PermissionConditionValueResolver.resolveValue(this.value)
+
         return operator.toPredicate<Comparable<Any>>(criteriaBuilder, path, resolvedValue)
     }
 
