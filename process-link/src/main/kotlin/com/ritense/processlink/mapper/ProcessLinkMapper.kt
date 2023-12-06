@@ -16,7 +16,7 @@
 
 package com.ritense.processlink.mapper
 
-import com.ritense.export.request.ExportRequest
+import com.ritense.exporter.request.ExportRequest
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto

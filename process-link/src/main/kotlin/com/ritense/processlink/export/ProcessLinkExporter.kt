@@ -17,11 +17,11 @@
 package com.ritense.processlink.export
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.export.ExportFile
-import com.ritense.export.ExportResult
-import com.ritense.export.Exporter
-import com.ritense.export.request.ExportRequest
-import com.ritense.export.request.ProcessDefinitionExportRequest
+import com.ritense.exporter.ExportFile
+import com.ritense.exporter.ExportResult
+import com.ritense.exporter.Exporter
+import com.ritense.exporter.request.ExportRequest
+import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.processlink.service.ProcessLinkService
 
 class ProcessLinkExporter(

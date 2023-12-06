@@ -18,7 +18,7 @@ package com.ritense.case.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
-import com.ritense.export.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode

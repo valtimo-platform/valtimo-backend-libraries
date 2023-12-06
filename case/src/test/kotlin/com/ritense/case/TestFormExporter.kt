@@ -16,10 +16,10 @@
 
 package com.ritense.case
 
-import com.ritense.export.ExportFile
-import com.ritense.export.ExportResult
-import com.ritense.export.Exporter
-import com.ritense.export.request.FormDefinitionExportRequest
+import com.ritense.exporter.ExportFile
+import com.ritense.exporter.ExportResult
+import com.ritense.exporter.Exporter
+import com.ritense.exporter.request.FormDefinitionExportRequest
 
 class TestFormExporter : Exporter<FormDefinitionExportRequest>{
     override fun supports() = FormDefinitionExportRequest::class.java

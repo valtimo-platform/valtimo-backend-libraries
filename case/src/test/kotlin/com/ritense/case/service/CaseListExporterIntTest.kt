@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.case.BaseIntegrationTest
-import com.ritense.export.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
