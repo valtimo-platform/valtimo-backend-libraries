@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
-import com.ritense.export.request.DocumentDefinitionExportRequest
-import com.ritense.export.request.FormDefinitionExportRequest
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.request.FormDefinitionExportRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert

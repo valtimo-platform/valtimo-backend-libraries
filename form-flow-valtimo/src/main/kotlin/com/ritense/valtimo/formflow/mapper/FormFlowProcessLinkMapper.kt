@@ -17,8 +17,8 @@
 package com.ritense.valtimo.formflow.mapper
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.export.request.ExportRequest
-import com.ritense.export.request.FormFlowDefinitionExportRequest
+import com.ritense.exporter.request.ExportRequest
+import com.ritense.exporter.request.FormFlowDefinitionExportRequest
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink

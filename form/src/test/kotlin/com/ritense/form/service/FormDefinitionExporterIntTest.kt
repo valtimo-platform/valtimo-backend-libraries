@@ -1,7 +1,7 @@
 package com.ritense.form.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.export.request.FormDefinitionExportRequest
+import com.ritense.exporter.request.FormDefinitionExportRequest
 import com.ritense.form.BaseIntegrationTest
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert

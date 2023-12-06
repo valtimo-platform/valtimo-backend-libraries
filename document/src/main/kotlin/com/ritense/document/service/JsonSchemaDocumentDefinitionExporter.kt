@@ -19,10 +19,10 @@ package com.ritense.document.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
-import com.ritense.export.ExportFile
-import com.ritense.export.ExportResult
-import com.ritense.export.Exporter
-import com.ritense.export.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.ExportFile
+import com.ritense.exporter.ExportResult
+import com.ritense.exporter.Exporter
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import java.io.ByteArrayOutputStream
 import org.springframework.transaction.annotation.Transactional
 
