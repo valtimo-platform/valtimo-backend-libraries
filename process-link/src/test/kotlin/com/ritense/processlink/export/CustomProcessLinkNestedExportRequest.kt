@@ -16,7 +16,7 @@
 
 package com.ritense.processlink.export
 
-import com.ritense.export.request.ExportRequest
+import com.ritense.exporter.request.ExportRequest
 
 data class CustomProcessLinkNestedExportRequest(
     val someValue: String = "test"

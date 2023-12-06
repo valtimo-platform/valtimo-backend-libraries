@@ -17,8 +17,8 @@
 package com.ritense.form.mapper
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.export.request.ExportRequest
-import com.ritense.export.request.FormDefinitionExportRequest
+import com.ritense.exporter.request.ExportRequest
+import com.ritense.exporter.request.FormDefinitionExportRequest
 import com.ritense.form.domain.FormProcessLink
 import com.ritense.form.processlink.dto.FormProcessLinkDeployDto
 import com.ritense.form.service.FormDefinitionService

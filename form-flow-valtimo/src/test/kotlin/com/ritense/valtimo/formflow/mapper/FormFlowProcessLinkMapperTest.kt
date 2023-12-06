@@ -17,7 +17,7 @@
 package com.ritense.valtimo.formflow.mapper
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ritense.export.request.FormFlowDefinitionExportRequest
+import com.ritense.exporter.request.FormFlowDefinitionExportRequest
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink

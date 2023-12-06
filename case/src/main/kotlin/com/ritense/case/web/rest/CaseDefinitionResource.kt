@@ -22,10 +22,10 @@ import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.document.exception.UnknownDocumentDefinitionException
-import com.ritense.export.ExportService
-import com.ritense.export.request.DocumentDefinitionExportRequest
-import com.ritense.import.ImportService
-import com.ritense.import.ImportServiceException
+import com.ritense.exporter.ExportService
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.importer.ImportService
+import com.ritense.importer.ImportServiceException
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
