@@ -17,11 +17,11 @@
 package com.ritense.valtimo.formflow.export
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.export.ExportFile
-import com.ritense.export.ExportResult
-import com.ritense.export.Exporter
-import com.ritense.export.request.FormDefinitionExportRequest
-import com.ritense.export.request.FormFlowDefinitionExportRequest
+import com.ritense.exporter.ExportFile
+import com.ritense.exporter.ExportResult
+import com.ritense.exporter.Exporter
+import com.ritense.exporter.request.FormDefinitionExportRequest
+import com.ritense.exporter.request.FormFlowDefinitionExportRequest
 import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.service.FormFlowService
