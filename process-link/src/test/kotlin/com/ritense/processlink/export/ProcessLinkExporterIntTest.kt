@@ -19,7 +19,7 @@ package com.ritense.processlink.export
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.export.request.ProcessDefinitionExportRequest
+import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.processlink.BaseIntegrationTest
 import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper

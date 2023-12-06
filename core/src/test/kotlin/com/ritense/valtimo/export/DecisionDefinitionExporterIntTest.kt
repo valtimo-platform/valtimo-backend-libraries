@@ -17,7 +17,7 @@
 package com.ritense.valtimo.export
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.export.request.DecisionDefinitionExportRequest
+import com.ritense.exporter.request.DecisionDefinitionExportRequest
 import com.ritense.valtimo.BaseIntegrationTest
 import java.io.ByteArrayInputStream
 import org.assertj.core.api.Assertions.assertThat

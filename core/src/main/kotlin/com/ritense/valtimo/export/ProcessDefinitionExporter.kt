@@ -16,11 +16,11 @@
 
 package com.ritense.valtimo.export
 
-import com.ritense.export.ExportFile
-import com.ritense.export.ExportResult
-import com.ritense.export.Exporter
-import com.ritense.export.request.DecisionDefinitionExportRequest
-import com.ritense.export.request.ProcessDefinitionExportRequest
+import com.ritense.exporter.ExportFile
+import com.ritense.exporter.ExportResult
+import com.ritense.exporter.Exporter
+import com.ritense.exporter.request.DecisionDefinitionExportRequest
+import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import java.io.ByteArrayOutputStream
 import org.camunda.bpm.engine.RepositoryService

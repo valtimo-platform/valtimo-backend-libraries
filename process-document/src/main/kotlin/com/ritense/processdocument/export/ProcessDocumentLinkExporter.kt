@@ -17,11 +17,11 @@
 package com.ritense.processdocument.export
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.export.ExportFile
-import com.ritense.export.ExportResult
-import com.ritense.export.Exporter
-import com.ritense.export.request.DocumentDefinitionExportRequest
-import com.ritense.export.request.ProcessDefinitionExportRequest
+import com.ritense.exporter.ExportFile
+import com.ritense.exporter.ExportResult
+import com.ritense.exporter.Exporter
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.processdocument.domain.config.ProcessDocumentLinkConfigItem
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService

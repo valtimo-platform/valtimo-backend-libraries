@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.formflow.export
 
-import com.ritense.export.request.FormDefinitionExportRequest
-import com.ritense.export.request.FormFlowDefinitionExportRequest
+import com.ritense.exporter.request.FormDefinitionExportRequest
+import com.ritense.exporter.request.FormFlowDefinitionExportRequest
 import com.ritense.valtimo.formflow.BaseIntegrationTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
