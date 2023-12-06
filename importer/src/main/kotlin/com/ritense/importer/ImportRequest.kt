@@ -17,6 +17,7 @@
 package com.ritense.importer
 
 data class ImportRequest(
+    val fileName: String,
     val content: ByteArray
 ) {
     override fun equals(other: Any?): Boolean {
@@ -25,10 +26,10 @@ data class ImportRequest(
 
         other as ImportRequest
 
-        return content.contentEquals(other.content)
+        return fileName == other.fileName
     }
 
     override fun hashCode(): Int {
-        return content.contentHashCode()
+        return fileName.hashCode()
     }
 }

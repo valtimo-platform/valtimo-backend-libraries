@@ -24,7 +24,7 @@ import java.util.zip.ZipOutputStream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
@@ -80,15 +80,23 @@ class ValtimoImportServiceTest {
 
         val importService = ValtimoImportService(importers.shuffled().toSet())
 
+        // do no create file "3"
         val skip = 3
         val inputStream = createZipInputStream(fileCount, skip)
         importService.import(inputStream)
 
         // Verify the importers are called in the correct order
         val inOrder = inOrder(*importers.toTypedArray())
-        importers.forEach {
-            val verificationMode = if (it.type() == skip.toString()) never() else times(1)
-            inOrder.verify(it, verificationMode).import(any())
+        importers.forEach { importer ->
+            val verificationMode = if (importer.type() == skip.toString()) never() else times(1)
+            val importRequestCaptor = argumentCaptor<ImportRequest>()
+            inOrder.verify(importer, verificationMode).import(importRequestCaptor.capture())
+
+            val importRequest = importRequestCaptor.allValues.firstOrNull()
+            if (importRequest != null) {
+                assertThat(importRequest.fileName).isNotBlank()
+                assertThat(importer.supports(importRequest.fileName)).isTrue()
+            }
         }
     }
 

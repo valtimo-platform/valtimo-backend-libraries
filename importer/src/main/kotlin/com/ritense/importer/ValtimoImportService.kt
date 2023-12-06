@@ -67,7 +67,7 @@ open class ValtimoImportService(
 
         importerEntriesMap.forEach { (importer, entries) ->
             entries.forEach { entry ->
-                importer.import(ImportRequest(entry.content))
+                importer.import(ImportRequest(entry.fileName, entry.content))
             }
         }
     }
