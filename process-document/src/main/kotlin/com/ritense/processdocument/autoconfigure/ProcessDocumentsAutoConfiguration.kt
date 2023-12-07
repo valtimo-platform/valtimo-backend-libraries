@@ -22,13 +22,15 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.camunda.authorization.CamundaTaskDocumentMapper
 import com.ritense.processdocument.domain.impl.delegate.DocumentDelegate
-import com.ritense.processdocument.export.ProcessDocumentLinkExporter
+import com.ritense.processdocument.exporter.ProcessDocumentLinkExporter
+import com.ritense.processdocument.importer.ProcessDocumentLinkImporter
 import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
 import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
 import com.ritense.processdocument.service.DocumentDelegateService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.ProcessDocumentDeploymentService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
@@ -151,7 +153,7 @@ class ProcessDocumentsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ProcessDocumentLinkExporter::class)
-    fun procesDocumentLinkExporter(
+    fun processDocumentLinkExporter(
         objectMapper: ObjectMapper,
         camundaRepositoryService: CamundaRepositoryService,
         processDocumentAssociationService: ProcessDocumentAssociationService
@@ -160,6 +162,16 @@ class ProcessDocumentsAutoConfiguration {
             objectMapper,
             camundaRepositoryService,
             processDocumentAssociationService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDocumentLinkImporter::class)
+    fun processDocumentLinkImporter(
+        processDocumentDeploymentService: ProcessDocumentDeploymentService
+    ): ProcessDocumentLinkImporter {
+        return ProcessDocumentLinkImporter(
+            processDocumentDeploymentService,
         )
     }
 }
