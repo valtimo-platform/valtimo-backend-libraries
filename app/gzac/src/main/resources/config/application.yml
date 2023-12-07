@@ -227,7 +227,7 @@ valtimo:
             rabbitmq:
                 routing-key: valtimo-audit
                 delivery-timeout: "PT0.5S"
-            polling.rate: "PT10S"
+            polling.rate: "PT1M"
 
 spring-actuator:
     username: admin
