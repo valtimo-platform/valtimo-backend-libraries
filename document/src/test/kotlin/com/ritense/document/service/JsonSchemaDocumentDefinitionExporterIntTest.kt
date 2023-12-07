@@ -18,7 +18,7 @@ package com.ritense.document.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.BaseIntegrationTest
-import com.ritense.export.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -39,7 +39,7 @@ class JsonSchemaDocumentDefinitionExporterIntTest @Autowired constructor(
         val definition = documentDefinitionService.findLatestByName("person").orElseThrow()
 
         val request = DocumentDefinitionExportRequest(definition.id().name(), definition.id().version())
-        val exportFiles = documentDefinitionExportService.export(request)
+        val exportFiles = documentDefinitionExportService.export(request).exportFiles
 
         val path = PATH.format(definition.id().name())
         val personDefinitionExport = exportFiles.singleOrNull {

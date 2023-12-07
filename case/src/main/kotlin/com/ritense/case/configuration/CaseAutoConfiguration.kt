@@ -30,6 +30,7 @@ import com.ritense.case.repository.CaseTabSpecificationFactory
 import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionService
+import com.ritense.case.service.CaseDefinitionSettingsExporter
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.service.CaseListDeploymentService
 import com.ritense.case.service.CaseListExporter
@@ -42,7 +43,8 @@ import com.ritense.case.web.rest.CaseTabManagementResource
 import com.ritense.case.web.rest.CaseTabResource
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
-import com.ritense.export.ExportService
+import com.ritense.exporter.ExportService
+import com.ritense.importer.ImportService
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -73,9 +75,10 @@ class CaseAutoConfiguration {
     @Bean
     fun caseDefinitionResource(
         service: CaseDefinitionService,
-        exportService: ExportService
+        exportService: ExportService,
+        importService: ImportService
     ): CaseDefinitionResource {
-        return CaseDefinitionResource(service, exportService)
+        return CaseDefinitionResource(service, exportService, importService)
     }
 
     @Bean
@@ -248,11 +251,9 @@ class CaseAutoConfiguration {
     fun caseTabExporter(
         objectMapper: ObjectMapper,
         caseTabService: CaseTabService,
-        @Lazy exportService: ExportService
     ) = CaseTabExporter(
         objectMapper,
-        caseTabService,
-        exportService
+        caseTabService
     )
 
     @Bean
@@ -263,5 +264,15 @@ class CaseAutoConfiguration {
     ) = CaseListExporter(
         caseDefinitionService,
         objectMapper
+    )
+
+    @Bean
+    @ConditionalOnMissingBean(CaseDefinitionSettingsExporter::class)
+    fun caseDefinitionSettingsExporter(
+        objectMapper: ObjectMapper,
+        caseDefinitionService: CaseDefinitionService,
+    ) = CaseDefinitionSettingsExporter(
+        objectMapper,
+        caseDefinitionService
     )
 }

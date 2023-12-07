@@ -16,9 +16,13 @@
 
 package com.ritense.case.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
-import com.ritense.export.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.request.FormDefinitionExportRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -31,6 +35,7 @@ import org.springframework.util.StreamUtils
 
 @Transactional(readOnly = true)
 class CaseTabExporterIntTest @Autowired constructor(
+    private val objectMapper: ObjectMapper,
     private val resourceLoader: ResourceLoader,
     private val caseTabExportService: CaseTabExporter
 ) : BaseIntegrationTest() {
@@ -39,30 +44,42 @@ class CaseTabExporterIntTest @Autowired constructor(
     fun `should export tabs for case definition`(): Unit = runWithoutAuthorization {
         val caseDefinitionName = "some-case-type"
 
-        val exportFiles = caseTabExportService.export(DocumentDefinitionExportRequest(caseDefinitionName, 1))
+        val request = DocumentDefinitionExportRequest(caseDefinitionName, 1)
+        val exportResult = caseTabExportService.export(request)
 
         val path = PATH.format(caseDefinitionName)
-        val caseTabsExport = exportFiles.singleOrNull {
+        val caseTabsExport = exportResult.exportFiles.singleOrNull {
             it.path == path
         }
         requireNotNull(caseTabsExport)
-        val exportJson = caseTabsExport.content.toString(Charsets.UTF_8)
+        val exportJson = objectMapper.readTree(caseTabsExport.content)
+
+        //Check if the changesetId ends with a timestamp
+        val changesetIdField = "changesetId"
+        val changesetRegex = """(some-case-type\.case-tabs)\.\d+""".toRegex()
+        val matchResult = changesetRegex.matchEntire(exportJson.get(changesetIdField).textValue())
+        assertThat(matchResult).isNotNull
+
+        //Remove the timestamp from the changesetId, so we can compare it as usual
+        (exportJson as ObjectNode).set<TextNode>(changesetIdField, TextNode(matchResult!!.groupValues[1]))
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/case-tabs/$caseDefinitionName.case-tabs.json")
+            .getResource("classpath:${PATH.format(caseDefinitionName)}")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
             }
         JSONAssert.assertEquals(
             expectedJson,
-            exportJson,
+            objectMapper.writeValueAsString(exportJson),
             JSONCompareMode.NON_EXTENSIBLE
         )
 
-        assertThat(exportFiles.singleOrNull { it.path == "test-form.json" }).isNotNull
+        assertThat(exportResult.relatedRequests).contains(
+            FormDefinitionExportRequest("test-form")
+        )
     }
 
     companion object {
-        private const val PATH = "config/%s.case-tabs.json"
+        private const val PATH = "config/case-tabs/%s.case-tabs.json"
     }
 }

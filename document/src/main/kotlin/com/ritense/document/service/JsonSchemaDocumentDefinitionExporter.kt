@@ -19,9 +19,10 @@ package com.ritense.document.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
-import com.ritense.export.ExportFile
-import com.ritense.export.Exporter
-import com.ritense.export.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.ExportFile
+import com.ritense.exporter.ExportResult
+import com.ritense.exporter.Exporter
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import java.io.ByteArrayOutputStream
 import org.springframework.transaction.annotation.Transactional
 
@@ -34,7 +35,7 @@ class JsonSchemaDocumentDefinitionExporter(
     override fun supports(): Class<DocumentDefinitionExportRequest> =
         DocumentDefinitionExportRequest::class.java
 
-    override fun export(request: DocumentDefinitionExportRequest): Set<ExportFile> {
+    override fun export(request: DocumentDefinitionExportRequest): ExportResult {
         val documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(request.name, request.version)
         val documentDefinition = documentDefinitionService.findBy(documentDefinitionId).orElseThrow()
 
@@ -47,7 +48,7 @@ class JsonSchemaDocumentDefinitionExporter(
             )
         }
 
-        return setOf(exportFile)
+        return ExportResult(exportFile)
     }
 
     companion object {

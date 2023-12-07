@@ -18,7 +18,7 @@ package com.ritense.document.service
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.BaseIntegrationTest
-import com.ritense.export.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -37,7 +37,8 @@ class SearchFieldExporterIntTest @Autowired constructor(
     @Test
     fun `should export search fields for document definition`(): Unit = runWithoutAuthorization {
         val definition = documentDefinitionService.findLatestByName("person").orElseThrow()
-        val exportFiles = searchFieldExporter.export(DocumentDefinitionExportRequest(definition.id().name(), definition.id().version()))
+        val request = DocumentDefinitionExportRequest(definition.id().name(), definition.id().version())
+        val exportFiles = searchFieldExporter.export(request).exportFiles
 
         val path = PATH.format(definition.id().name())
         val export = exportFiles.singleOrNull {

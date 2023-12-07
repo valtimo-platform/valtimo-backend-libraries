@@ -38,7 +38,8 @@ public class TaskHttpSecurityConfigurer implements HttpSecurityConfigurer {
                 .antMatchers(GET, "/api/v1/task/{taskId}/comments").authenticated()
                 .antMatchers(POST, "/api/v1/task/{taskId}/complete").authenticated()
                 .antMatchers(POST, "/api/v1/task/{taskId}/unassign").authenticated()
-                .antMatchers(GET, "/api/v1/task/{taskId}/candidate-user").authenticated();
+                .antMatchers(GET, "/api/v1/task/{taskId}/candidate-user").authenticated()
+                .antMatchers(GET, "/api/v2/task/{taskId}/candidate-user").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

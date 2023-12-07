@@ -17,6 +17,8 @@
 package com.ritense.valtimo.formflow.mapper
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.exporter.request.ExportRequest
+import com.ritense.exporter.request.FormFlowDefinitionExportRequest
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
@@ -44,6 +46,7 @@ class FormFlowProcessLinkMapper(
             FormFlowProcessLinkResponseDto::class.java,
             FormFlowProcessLinkCreateRequestDto::class.java,
             FormFlowProcessLinkUpdateRequestDto::class.java,
+            FormFlowProcessLinkExportResponseDto::class.java
         )
     }
 
@@ -77,7 +80,7 @@ class FormFlowProcessLinkMapper(
         return FormFlowProcessLinkExportResponseDto(
             activityId = processLink.activityId,
             activityType = processLink.activityType,
-            formFlowDefinitionId = processLink.formFlowDefinitionId
+            formFlowDefinitionId = "${processLink.formFlowDefinitionId.substringBeforeLast(":")}:latest"
         )
     }
 
@@ -110,6 +113,11 @@ class FormFlowProcessLinkMapper(
             activityType = processLinkToUpdate.activityType,
             formFlowDefinitionId = updateRequestDto.formFlowDefinitionId
         )
+    }
+
+    override fun createRelatedExportRequests(processLink: ProcessLink): Set<ExportRequest> {
+        processLink as FormFlowProcessLink
+        return setOf(FormFlowDefinitionExportRequest(processLink.formFlowDefinitionId))
     }
 
     companion object {

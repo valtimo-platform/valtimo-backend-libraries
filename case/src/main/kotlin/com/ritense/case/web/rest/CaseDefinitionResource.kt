@@ -22,8 +22,10 @@ import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.document.exception.UnknownDocumentDefinitionException
-import com.ritense.export.ExportService
-import com.ritense.export.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.ExportService
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.importer.ImportService
+import com.ritense.importer.ImportServiceException
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -38,12 +40,15 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.multipart.MultipartFile
 
 @Controller
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class CaseDefinitionResource(
     private val service: CaseDefinitionService,
-    private val exportService: ExportService
+    private val exportService: ExportService,
+    private val importService: ImportService
 ) {
 
     @GetMapping("/v1/case/{caseDefinitionName}/settings")
@@ -165,11 +170,24 @@ class CaseDefinitionResource(
     ): ResponseEntity<ByteArray> {
         val baos = exportService
             .export(DocumentDefinitionExportRequest(caseDefinitionName, caseDefinitionVersion))
-        val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_hh-mm-ss"))
+        val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm"))
         val fileName = "${caseDefinitionName}_${caseDefinitionVersion}_$timestamp.valtimo.zip"
         return ResponseEntity
             .ok()
             .header("Content-Disposition", "attachment;filename=$fileName")
             .body(baos.toByteArray())
+    }
+
+    @PostMapping("/management/v1/case/import")
+    @RunWithoutAuthorization
+    fun import(
+        @RequestParam("file") file: MultipartFile
+    ): ResponseEntity<Unit> {
+        return try {
+            importService.import(file.inputStream)
+            ResponseEntity.ok().build()
+        } catch (_: ImportServiceException) {
+            ResponseEntity.badRequest().build()
+        }
     }
 }

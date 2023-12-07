@@ -26,6 +26,8 @@ import com.ritense.zgw.ClientTools
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.MediaType
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToFlux
@@ -39,7 +41,8 @@ import java.net.URI
 class DocumentenApiClient(
     private val webclientBuilder: WebClient.Builder,
     private val outboxService: OutboxService,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val platformTransactionManager: PlatformTransactionManager
 ) {
     fun storeDocument(
         authentication: DocumentenApiAuthentication,
@@ -136,10 +139,12 @@ class DocumentenApiClient(
             .retrieve()
             .bodyToFlux<DataBuffer>()
             .toInputStream {
-                outboxService.send {
-                    DocumentInformatieObjectDownloaded(
-                        objectUrl.toString()
-                    )
+                TransactionTemplate(platformTransactionManager).executeWithoutResult {
+                    outboxService.send {
+                        DocumentInformatieObjectDownloaded(
+                            objectUrl.toString()
+                        )
+                    }
                 }
             }
     }

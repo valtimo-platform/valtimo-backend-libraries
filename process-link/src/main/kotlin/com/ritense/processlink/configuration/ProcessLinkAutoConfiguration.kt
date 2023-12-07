@@ -19,6 +19,7 @@ package com.ritense.processlink.configuration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.processlink.autodeployment.ProcessLinkDeploymentApplicationReadyEventListener
 import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
+import com.ritense.processlink.export.ProcessLinkExporter
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.security.config.ProcessLinkHttpSecurityConfigurer
@@ -121,4 +122,15 @@ class ProcessLinkAutoConfiguration {
             repositoryService,
             processLinkService, objectMapper)
     }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessLinkExporter::class)
+    fun processLinkExporter(
+        objectMapper: ObjectMapper,
+        processLinkService: ProcessLinkService
+    ) = ProcessLinkExporter(
+        objectMapper,
+        processLinkService
+    )
+
 }

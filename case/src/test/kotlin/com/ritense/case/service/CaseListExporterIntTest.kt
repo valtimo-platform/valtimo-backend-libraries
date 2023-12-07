@@ -16,9 +16,11 @@
 
 package com.ritense.case.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.case.BaseIntegrationTest
-import com.ritense.export.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -30,6 +32,7 @@ import org.springframework.util.StreamUtils
 
 @Transactional(readOnly = true)
 class CaseListExporterIntTest @Autowired constructor(
+    private val objectMapper: ObjectMapper,
     private val resourceLoader: ResourceLoader,
     private val caseListExporter: CaseListExporter
 ) : BaseIntegrationTest() {
@@ -37,14 +40,18 @@ class CaseListExporterIntTest @Autowired constructor(
     fun `should export list columns for case definition`(): Unit = AuthorizationContext.runWithoutAuthorization {
         val caseDefinitionName = "house"
 
-        val exportFiles = caseListExporter.export(DocumentDefinitionExportRequest(caseDefinitionName, 1))
+        val request = DocumentDefinitionExportRequest(caseDefinitionName, 1)
+        val exportFiles = caseListExporter.export(request).exportFiles
 
         val path = PATH.format(caseDefinitionName)
         val caseTabsExport = exportFiles.singleOrNull {
             it.path == path
         }
-        requireNotNull(caseTabsExport)
-        val exportJson = caseTabsExport.content.toString(Charsets.UTF_8)
+
+        val jsonTree = objectMapper.readTree(requireNotNull(caseTabsExport).content)
+        //The order is empty at the resource, but serialized anyway. Remove it to fix the comparison
+        (jsonTree.at("/1") as ObjectNode).remove("order")
+
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:config/case/list/$caseDefinitionName.json")
             .inputStream
@@ -53,7 +60,7 @@ class CaseListExporterIntTest @Autowired constructor(
             }
         JSONAssert.assertEquals(
             expectedJson,
-            exportJson,
+            objectMapper.writeValueAsString(jsonTree),
             JSONCompareMode.NON_EXTENSIBLE
         )
     }
