@@ -34,7 +34,15 @@ class FormDefinitionImporter(
 
     override fun import(request: ImportRequest) {
         val formDefinitionAsString = request.content.toString(Charsets.UTF_8)
-        formDefinitionDeploymentService.deploy(request.fileName, formDefinitionAsString)
+        formDefinitionDeploymentService
+            .deploy(
+                fileNameWithoutPathAndExtension(request.fileName),
+                formDefinitionAsString
+            )
+    }
+
+    private fun fileNameWithoutPathAndExtension(fileName: String): String {
+        return fileName.substringBeforeLast('.').substringAfterLast('/')
     }
 
     companion object {

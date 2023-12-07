@@ -66,11 +66,10 @@ class FormDefinitionImporterIntTest @Autowired constructor(
         val request = ImportRequest(validPath, formDefinition.encodeToByteArray())
 
         formDefinitionImporter.import(request)
-
         val storedFormDefinition = formDefinitionService.getFormDefinitionByName("importer-example")
         assertThat(storedFormDefinition).isPresent
         assertThat(
-            jacksonObjectMapper().writeValueAsString((storedFormDefinition.get() as FormIoFormDefinition).asJson())
-        ).isEqualTo(formDefinition)
+            (storedFormDefinition.get() as FormIoFormDefinition).asJson()
+        ).isEqualTo(jacksonObjectMapper().readTree(formDefinition))
     }
 }
