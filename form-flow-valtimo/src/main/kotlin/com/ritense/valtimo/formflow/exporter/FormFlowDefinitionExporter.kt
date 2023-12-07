@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.formflow.export
+package com.ritense.valtimo.formflow.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.exporter.ExportFile
@@ -26,7 +26,9 @@ import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional(readOnly = true)
 class FormFlowDefinitionExporter(
     private val objectMapper: ObjectMapper,
     private val formFlowService: FormFlowService

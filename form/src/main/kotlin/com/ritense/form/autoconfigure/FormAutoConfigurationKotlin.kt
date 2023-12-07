@@ -106,7 +106,7 @@ class FormAutoConfigurationKotlin {
     )
 
     @Bean
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(FormDefinitionExporter::class)
     fun formDefinitionExporter(
         objectMapper: ObjectMapper,
         formDefinitionService: FormDefinitionService

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.formflow.export
+package com.ritense.valtimo.formflow.exporter
 
 import com.ritense.exporter.request.FormDefinitionExportRequest
 import com.ritense.exporter.request.FormFlowDefinitionExportRequest
