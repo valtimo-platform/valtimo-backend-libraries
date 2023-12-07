@@ -17,7 +17,7 @@
 package com.ritense.processlink.domain
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.export.request.ExportRequest
+import com.ritense.exporter.request.ExportRequest
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
 import com.ritense.processlink.export.CustomProcessLinkNestedExportRequest
