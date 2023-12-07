@@ -17,7 +17,7 @@
 package com.ritense.form.mapper
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ritense.export.request.FormDefinitionExportRequest
+import com.ritense.exporter.request.FormDefinitionExportRequest
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.domain.FormProcessLink
 import com.ritense.form.service.FormDefinitionService
