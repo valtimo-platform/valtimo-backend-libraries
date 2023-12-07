@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
+import java.io.InputStream
+import java.nio.charset.StandardCharsets
 import mu.KotlinLogging
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONObject
@@ -29,10 +31,10 @@ import org.springframework.context.event.EventListener
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
-import java.io.InputStream
-import java.nio.charset.StandardCharsets
 
+@Transactional
 class FormFlowDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val formFlowService: FormFlowService,
