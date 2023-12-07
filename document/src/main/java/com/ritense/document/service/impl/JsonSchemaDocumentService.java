@@ -294,7 +294,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     @Transactional(timeout = 30, rollbackFor = {Exception.class})
-    public synchronized JsonSchemaDocument.ModifyDocumentResultImpl modifyDocument(
+    public JsonSchemaDocument.ModifyDocumentResultImpl modifyDocument(
         ModifyDocumentRequest request
     ) {
         final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(request.documentId()));
