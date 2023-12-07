@@ -16,14 +16,28 @@
 
 package com.ritense.outbox
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 
 @SpringBootApplication
 class OutboxTestConfiguration {
 
     fun main(args: Array<String>) {
         SpringApplication.run(OutboxTestConfiguration::class.java, *args)
+    }
+
+    @TestConfiguration
+    class OutboxTestConfiguration {
+
+        @Bean
+        fun objectMapper(): ObjectMapper = ObjectMapper()
+            .findAndRegisterModules()
+            .registerModule(KotlinModule.Builder().build())
+
     }
 
 }
