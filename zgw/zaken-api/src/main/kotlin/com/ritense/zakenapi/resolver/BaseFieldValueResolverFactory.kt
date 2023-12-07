@@ -16,17 +16,13 @@
 
 package com.ritense.zakenapi.resolver
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valueresolver.ValueResolverFactory
 import org.camunda.bpm.engine.delegate.VariableScope
-import java.lang.NullPointerException
-import java.util.UUID
 import java.util.function.Function
 
 abstract class BaseFieldValueResolverFactory(
-    private val objectMapper: ObjectMapper,
     private val processDocumentService: ProcessDocumentService,
 ) : ValueResolverFactory {
 
@@ -34,21 +30,10 @@ abstract class BaseFieldValueResolverFactory(
         processInstanceId: String,
         variableScope: VariableScope
     ): Function<String, Any?> {
-        return Function { requestedValue ->
-            val documentId =
-                processDocumentService.getDocumentId(CamundaProcessInstanceId(processInstanceId), variableScope)
-                    .toString()
-            getResolvedValue(UUID.fromString(documentId), requestedValue)
-        }
+        val camundaProcessInstanceId = CamundaProcessInstanceId(processInstanceId)
+        val documentId = processDocumentService.getDocumentId(camundaProcessInstanceId, variableScope).toString()
+        return createResolver(documentId)
     }
-
-    override fun createResolver(documentId: String): Function<String, Any?> {
-        return Function { requestedValue ->
-            getResolvedValue(UUID.fromString(documentId), requestedValue)
-        }
-    }
-
-    abstract fun getResolvedValue(documentId: UUID, field: String): Any?
 
     fun getField(entity: Any, field: String): Any? {
         var currentEntity: Any? = entity

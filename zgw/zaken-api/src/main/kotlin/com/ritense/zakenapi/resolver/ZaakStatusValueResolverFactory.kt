@@ -16,7 +16,6 @@
 
 package com.ritense.zakenapi.resolver
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -25,16 +24,27 @@ import com.ritense.zakenapi.ZakenApiPlugin
 import org.camunda.bpm.engine.delegate.VariableScope
 import java.net.URI
 import java.util.UUID
+import java.util.function.Function
 
 class ZaakStatusValueResolverFactory(
-    objectMapper: ObjectMapper,
     processDocumentService: ProcessDocumentService,
     private val zaakUrlProvider: ZaakUrlProvider,
     private val pluginService: PluginService,
-) : BaseFieldValueResolverFactory(objectMapper, processDocumentService) {
-
+) : BaseFieldValueResolverFactory(processDocumentService) {
     override fun supportedPrefix(): String {
         return "zaakstatus"
+    }
+
+    override fun createResolver(documentId: String): Function<String, Any?> {
+        val url = zaakUrlProvider.getZaakUrl(UUID.fromString(documentId))
+        val zakenApiPlugin = getZakenApiPlugin(url)
+        val zaakStatus = zakenApiPlugin.getZaakStatus(url) ?: return Function { null }
+        val statusTypeUrl = zaakStatus.statustype
+        val catalogiApiPlugin = getCatalogiApiPlugin(statusTypeUrl)
+        val statusType = catalogiApiPlugin.getStatustype(statusTypeUrl)
+        return Function { requestedValue ->
+            return@Function getField(statusType, requestedValue)
+        }
     }
 
     override fun handleValues(
@@ -43,16 +53,6 @@ class ZaakStatusValueResolverFactory(
         values: Map<String, Any>
     ) {
         TODO()
-    }
-
-    override fun getResolvedValue(documentId: UUID, field: String): Any? {
-        val url = zaakUrlProvider.getZaakUrl(documentId)
-        val zakenApiPlugin = getZakenApiPlugin(url)
-        val zaakStatus = zakenApiPlugin.getZaakStatus(url) ?: return null
-        val statusTypeUrl = zaakStatus.statustype
-        val catalogiApiPlugin = getCatalogiApiPlugin(statusTypeUrl)
-        val statusType = catalogiApiPlugin.getStatustype(statusTypeUrl)
-        return getField(statusType, field)
     }
 
     private fun getZakenApiPlugin(url: URI): ZakenApiPlugin {
@@ -66,6 +66,7 @@ class ZaakStatusValueResolverFactory(
         return pluginService.createInstance(
             CatalogiApiPlugin::class.java,
             CatalogiApiPlugin.findConfigurationByUrl(statusTypeUrl)
-        ) ?: throw IllegalStateException("Missing plugin of type '${CatalogiApiPlugin.PLUGIN_KEY}' for statusType '$statusTypeUrl'")
+        )
+            ?: throw IllegalStateException("Missing plugin of type '${CatalogiApiPlugin.PLUGIN_KEY}' for statusType '$statusTypeUrl'")
     }
 }

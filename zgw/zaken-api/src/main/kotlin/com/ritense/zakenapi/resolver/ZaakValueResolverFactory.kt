@@ -16,20 +16,26 @@
 
 package com.ritense.zakenapi.resolver
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.zakenapi.service.ZaakDocumentService
 import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.UUID
+import java.util.function.Function
 
 class ZaakValueResolverFactory(
     private val zaakDocumentService: ZaakDocumentService,
-    objectMapper: ObjectMapper,
     processDocumentService: ProcessDocumentService,
-) : BaseFieldValueResolverFactory(objectMapper, processDocumentService) {
-
+) : BaseFieldValueResolverFactory(processDocumentService) {
     override fun supportedPrefix(): String {
         return "zaak"
+    }
+
+    override fun createResolver(documentId: String): Function<String, Any?> {
+        val zaak = zaakDocumentService.getZaakByDocumentId(UUID.fromString(documentId))
+            ?: throw IllegalStateException("No zaak linked to document with id '$documentId'")
+        return Function { field ->
+            return@Function getField(zaak, field)
+        }
     }
 
     override fun handleValues(
@@ -38,12 +44,6 @@ class ZaakValueResolverFactory(
         values: Map<String, Any>
     ) {
         TODO()
-    }
-
-    override fun getResolvedValue(documentId: UUID, field: String): Any? {
-        val zaak = zaakDocumentService.getZaakByDocumentId(documentId)
-            ?: throw IllegalStateException("No zaak linked to document with id '$documentId'")
-        return getField(zaak, field)
     }
 
 }

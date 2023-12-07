@@ -94,12 +94,10 @@ class ZakenApiAutoConfiguration {
     @ConditionalOnMissingBean(ZaakValueResolverFactory::class)
     fun zaakValueResolverFactory(
         zaakDocumentService: ZaakDocumentService,
-        objectMapper: ObjectMapper,
         processDocumentService: ProcessDocumentService
     ): ZaakValueResolverFactory {
         return ZaakValueResolverFactory(
             zaakDocumentService,
-            objectMapper,
             processDocumentService
         )
     }
@@ -107,13 +105,11 @@ class ZakenApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ZaakStatusValueResolverFactory::class)
     fun zaakStatusValueResolverFactory(
-        objectMapper: ObjectMapper,
         processDocumentService: ProcessDocumentService,
         zaakUrlProvider: ZaakUrlProvider,
         pluginService: PluginService,
     ): ZaakStatusValueResolverFactory {
         return ZaakStatusValueResolverFactory(
-            objectMapper,
             processDocumentService,
             zaakUrlProvider,
             pluginService
