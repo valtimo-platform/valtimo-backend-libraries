@@ -199,7 +199,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
      * @param versionCheck    The version on which the content was based on (in other words: this's ver)
      * @return Object representing the result of the operation (either resulting document or errors)
      */
-    public synchronized ModifyDocumentResultImpl applyModifiedContent(
+    public ModifyDocumentResultImpl applyModifiedContent(
         final JsonDocumentContent modifiedContent,
         final JsonSchemaDocumentDefinition documentDefinition,
         final DocumentVersion versionCheck
