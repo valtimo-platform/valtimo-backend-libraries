@@ -16,11 +16,13 @@
 
 package com.ritense.authorization.permission.condition
 
-import java.lang.NullPointerException
+
+import org.hibernate.Hibernate
 
 abstract class ReflectingPermissionCondition(type: PermissionConditionType) : PermissionCondition(type) {
     protected fun findEntityFieldValue(entity: Any, field: String): Any? {
         var currentEntity: Any? = entity
+        Hibernate.initialize(currentEntity)
         val fields = field.split('.')
         fields.forEachIndexed { index, value ->
             val declaredField = currentEntity!!.javaClass.getDeclaredField(value)
@@ -36,6 +38,7 @@ abstract class ReflectingPermissionCondition(type: PermissionConditionType) : Pe
                     throw npe
                 }
             }
+            Hibernate.initialize(currentEntity)
         }
         return currentEntity
     }
