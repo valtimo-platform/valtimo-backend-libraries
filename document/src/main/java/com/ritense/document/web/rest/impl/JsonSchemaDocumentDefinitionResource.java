@@ -120,7 +120,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
         List<Long> versions = runWithoutAuthorization(() -> documentDefinitionService.findVersionsByName(name));
 
         if(versions.isEmpty()) {
-            notFound().build();
+            return notFound().build();
         }
 
         return ok(new DocumentVersionsResult(name, versions));
