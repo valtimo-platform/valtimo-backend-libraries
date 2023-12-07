@@ -25,8 +25,10 @@ dependencies {
     api project(":authorization")
 
     implementation project(":contract")
+    implementation project(":outbox")
     implementation project(":resource")
     implementation project(":web")
+    implementation project(":exporter")
 
     testImplementation project(':test-utils-common')
 

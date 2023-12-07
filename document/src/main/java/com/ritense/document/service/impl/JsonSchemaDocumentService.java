@@ -17,6 +17,7 @@
 package com.ritense.document.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
@@ -37,17 +38,26 @@ import com.ritense.document.domain.impl.request.DocumentRelationRequest;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.relation.DocumentRelation;
+import com.ritense.document.event.DocumentAssigned;
 import com.ritense.document.event.DocumentAssigneeChangedEvent;
+import com.ritense.document.event.DocumentDeleted;
+import com.ritense.document.event.DocumentUnassigned;
 import com.ritense.document.event.DocumentUnassignedEvent;
+import com.ritense.document.event.DocumentViewed;
+import com.ritense.document.event.DocumentsListed;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentService;
+import com.ritense.outbox.OutboxService;
+import com.ritense.document.event.DocumentCreated;
+import com.ritense.document.event.DocumentUpdated;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.json.Mapper;
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
@@ -66,6 +76,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.byDocumentDefinitionIdName;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
@@ -78,6 +89,7 @@ import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 
+@Transactional
 public class JsonSchemaDocumentService implements DocumentService {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentService.class);
@@ -93,6 +105,10 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final OutboxService outboxService;
+
+    private final ObjectMapper objectMapper = Mapper.INSTANCE.get();
+
     public JsonSchemaDocumentService(
         JsonSchemaDocumentRepository documentRepository,
         JsonSchemaDocumentDefinitionService documentDefinitionService,
@@ -100,7 +116,8 @@ public class JsonSchemaDocumentService implements DocumentService {
         ResourceService resourceService,
         UserManagementService userManagementService,
         AuthorizationService authorizationService,
-        ApplicationEventPublisher applicationEventPublisher
+        ApplicationEventPublisher applicationEventPublisher,
+        OutboxService outboxService
     ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
@@ -109,6 +126,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         this.userManagementService = userManagementService;
         this.authorizationService = authorizationService;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.outboxService = outboxService;
     }
 
     @Override
@@ -116,11 +134,19 @@ public class JsonSchemaDocumentService implements DocumentService {
         Optional<JsonSchemaDocument> optionalDocument = documentRepository.findById(documentId);
 
         if (optionalDocument.isPresent()) {
+            JsonSchemaDocument document = optionalDocument.get();
             authorizationService.requirePermission(
                 new EntityAuthorizationRequest<>(
                     JsonSchemaDocument.class,
                     VIEW,
-                    optionalDocument.get()
+                    document
+                )
+            );
+
+            outboxService.send(() ->
+                new DocumentViewed(
+                    document.id().toString(),
+                    objectMapper.valueToTree(document)
                 )
             );
         }
@@ -158,7 +184,16 @@ public class JsonSchemaDocumentService implements DocumentService {
                 null
             );
 
-        return documentRepository.findAll(spec.and(byDocumentDefinitionIdName(definitionName)), pageable);
+        Page<JsonSchemaDocument> documentPage = documentRepository.findAll(
+            spec.and(byDocumentDefinitionIdName(definitionName)), pageable);
+
+        outboxService.send(() ->
+            new DocumentsListed(
+                objectMapper.valueToTree(documentPage.getContent())
+            )
+        );
+
+        return documentPage;
     }
 
     // TODO: Can this be removed?
@@ -177,11 +212,18 @@ public class JsonSchemaDocumentService implements DocumentService {
             ),
             null
         ));
-        return documentRepository.findAll(spec, pageable);
+        Page<JsonSchemaDocument> documentPage = documentRepository.findAll(spec, pageable);
+
+        outboxService.send(() ->
+            new DocumentsListed(
+                objectMapper.valueToTree(documentPage.getContent())
+            )
+        );
+
+        return documentPage;
     }
 
     @Override
-    @Transactional
     public JsonSchemaDocument.CreateDocumentResultImpl createDocument(
         NewDocumentRequest newDocumentRequest
     ) {
@@ -219,13 +261,19 @@ public class JsonSchemaDocumentService implements DocumentService {
                 );
 
                 documentRepository.save(jsonSchemaDocument);
+
+                outboxService.send(() ->
+                    new DocumentCreated(
+                        jsonSchemaDocument.id().toString(),
+                        objectMapper.valueToTree(jsonSchemaDocument)
+                    )
+                );
             }
         );
         return result;
     }
 
     @Override
-    @Transactional
     public void modifyDocument(Document document, JsonNode jsonNode) {
         JsonSchemaDocument jsonSchemaDocument = (JsonSchemaDocument) document;
 
@@ -246,7 +294,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     @Override
     @Transactional(timeout = 30, rollbackFor = {Exception.class})
-    public synchronized JsonSchemaDocument.ModifyDocumentResultImpl modifyDocument(
+    public JsonSchemaDocument.ModifyDocumentResultImpl modifyDocument(
         ModifyDocumentRequest request
     ) {
         final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(request.documentId()));
@@ -280,12 +328,20 @@ public class JsonSchemaDocumentService implements DocumentService {
             version
         );
 
-        result.resultingDocument().ifPresent(documentRepository::save);
+        result.resultingDocument().ifPresent(modifiedDocument -> {
+            documentRepository.save(modifiedDocument);
+            outboxService.send(() ->
+                new DocumentUpdated(
+                    modifiedDocument.id().toString(),
+                    objectMapper.valueToTree(modifiedDocument)
+                )
+            );
+        });
+
         return result;
     }
 
     @Override
-    @Transactional
     public void assignDocumentRelation(
         Document.Id documentId,
         DocumentRelation documentRelation
@@ -309,7 +365,6 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    @Transactional
     public void assignRelatedFile(
         final Document.Id documentId,
         final RelatedFile relatedFile
@@ -329,7 +384,6 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    @Transactional
     public void assignResource(Document.Id documentId, UUID resourceId) {
         JsonSchemaDocument document = getDocumentBy(documentId);
 
@@ -345,7 +399,6 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    @Transactional
     public void assignResource(Document.Id documentId, UUID resourceId, Map<String, Object> metadata) {
         JsonSchemaDocument document = getDocumentBy(documentId);
 
@@ -364,7 +417,6 @@ public class JsonSchemaDocumentService implements DocumentService {
     }
 
     @Override
-    @Transactional
     public void removeRelatedFile(Document.Id documentId, UUID fileId) {
         JsonSchemaDocument document = getDocumentBy(documentId);
 
@@ -383,13 +435,15 @@ public class JsonSchemaDocumentService implements DocumentService {
     public JsonSchemaDocument getDocumentBy(Document.Id documentId) {
         Optional<JsonSchemaDocument> optionalDocument = findBy(documentId);
 
-        optionalDocument.ifPresent(document -> authorizationService.requirePermission(
-            new EntityAuthorizationRequest<>(
-                JsonSchemaDocument.class,
-                VIEW,
-                document
-            )
-        ));
+        optionalDocument.ifPresent(document -> {
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    VIEW,
+                    document
+                )
+            );
+        });
 
         return optionalDocument
             .orElseThrow(() -> new DocumentNotFoundException("Unable to find document with ID " + documentId));
@@ -413,6 +467,11 @@ public class JsonSchemaDocumentService implements DocumentService {
             });
             documentRepository.saveAll(documents);
             documentRepository.deleteAll(documents);
+            documents.forEach(document -> outboxService.send(() ->
+                new DocumentDeleted(
+                    document.id().toString()
+                )
+            ));
             documentSequenceGeneratorService.deleteSequenceRecordBy(documentDefinitionName);
         }
     }
@@ -460,6 +519,13 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         // Publish an event to update the audit log
         publishDocumentAssigneeChangedEvent(documentId, assignee.getFullName());
+
+        outboxService.send(() ->
+            new DocumentAssigned(
+                document.id().toString(),
+                objectMapper.valueToTree(document)
+            )
+        );
     }
 
     @Override
@@ -528,6 +594,13 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         // Publish an event to update the audit log
         publishDocumentAssigneeChangedEvent(documentId, assignee.getFullName());
+
+        outboxService.send(() ->
+            new DocumentAssigned(
+                document.id().toString(),
+                objectMapper.valueToTree(document)
+            )
+        );
     }
 
     @Override
@@ -554,6 +627,13 @@ public class JsonSchemaDocumentService implements DocumentService {
                 LocalDateTime.now(),
                 AuditHelper.getActor(),
                 documentId
+            )
+        );
+
+        outboxService.send(() ->
+            new DocumentUnassigned(
+                document.id().toString(),
+                objectMapper.valueToTree(document)
             )
         );
     }
@@ -694,9 +774,15 @@ public class JsonSchemaDocumentService implements DocumentService {
         documentRepository.saveAll(documents);
 
         // Publish an event to update the audit log
-        documents.forEach(document ->
-            publishDocumentAssigneeChangedEvent(document.id().getId(), assignee.getFullName())
-        );
-    }
+        documents.forEach(document -> {
+            publishDocumentAssigneeChangedEvent(document.id().getId(), assignee.getFullName());
 
+            outboxService.send(() ->
+                new DocumentAssigned(
+                    document.id().toString(),
+                    objectMapper.valueToTree(document)
+                )
+            );
+        });
+    }
 }

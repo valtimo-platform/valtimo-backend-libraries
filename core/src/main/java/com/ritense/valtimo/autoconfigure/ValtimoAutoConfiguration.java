@@ -16,7 +16,9 @@
 
 package com.ritense.valtimo.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.ProcessApplicationStartedEventListener;
 import com.ritense.valtimo.camunda.ProcessDefinitionPropertyListener;
@@ -25,7 +27,6 @@ import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository;
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
-import com.ritense.valtimo.camunda.service.CamundaContextService;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
@@ -174,8 +175,9 @@ public class ValtimoAutoConfiguration {
         final UserManagementService userManagementService,
         final EntityManager entityManager,
         final AuthorizationService authorizationService,
-        final CamundaContextService camundaContextService
-    ) {
+        final OutboxService outboxService,
+        final ObjectMapper objectMapper
+        ) {
         return new CamundaTaskService(
             taskService,
             formService,
@@ -188,8 +190,8 @@ public class ValtimoAutoConfiguration {
             userManagementService,
             entityManager,
             authorizationService,
-            camundaContextService
-        );
+            outboxService,
+            objectMapper);
     }
 
     @Bean

@@ -1,0 +1,28 @@
+{
+    "startStep": "loan",
+    "steps": [
+        {
+            "key": "loan",
+            "nextSteps": [
+                {
+                    "step": "loan-end"
+                }
+            ],
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
+        },
+        {
+            "key": "loan-end",
+            "type": {
+                "name": "form",
+                "properties": {
+                    "definition": "my-form-definition"
+                }
+            }
+        }
+    ]
+}

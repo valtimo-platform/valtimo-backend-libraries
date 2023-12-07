@@ -17,21 +17,26 @@
 package com.ritense.document.service.impl;
 
 import com.fasterxml.jackson.core.JsonPointer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
 import com.ritense.document.domain.search.AssigneeFilter;
 import com.ritense.document.domain.search.SearchOperator;
+import com.ritense.document.event.DocumentsListed;
 import com.ritense.document.service.result.CreateDocumentResult;
+import com.ritense.outbox.domain.BaseEvent;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +48,8 @@ import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import static com.ritense.document.domain.search.DatabaseSearchType.BETWEEN;
 import static com.ritense.document.domain.search.DatabaseSearchType.EQUAL;
 import static com.ritense.document.domain.search.DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO;
@@ -53,6 +60,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @Tag("integration")
@@ -1073,6 +1083,44 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         assertThat(result.toList().get(1).id().getId()).isEqualTo(document2.id().getId());
         assertThat(result.toList().get(2).id().getId()).isEqualTo(document3.id().getId());
     }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
+    void shouldEmitOutboxEventWhenListing() throws JsonProcessingException {
+        documentRepository.deleteAllInBatch();
+
+        var documents = Stream.of("Alpaccalaan", "Baarnseweg", "Comeniuslaan").map(street ->
+            createDocument("{\"street\": \"" + street + "\"}").resultingDocument().get()
+        ).toList();
+
+        var searchRequest = new AdvancedSearchRequest()
+            .assigneeFilter(AssigneeFilter.ALL);
+
+        reset(outboxService);
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:street"))
+        );
+
+        assertThat(result.toList()).hasSize(3);
+
+        final ArgumentCaptor<Supplier<BaseEvent>> eventCaptor = ArgumentCaptor.forClass(Supplier.class);
+        verify(outboxService, atLeastOnce()).send(eventCaptor.capture());
+        List<BaseEvent> documentsListedEvents = eventCaptor.getAllValues().stream()
+            .map(Supplier::get)
+            .filter(baseEvent -> baseEvent instanceof DocumentsListed)
+            .toList();
+
+        assertThat(documentsListedEvents).hasSize(1);
+        DocumentsListed documentsListed = (DocumentsListed) documentsListedEvents.stream().findFirst().orElseThrow();
+        String resultJson = Mapper.INSTANCE.get().writeValueAsString(documentsListed.getResult());
+        documents.forEach(document -> {
+            assertThat(resultJson).contains("\"" + document.id() + "\"");
+        });
+    }
+
 
     private CreateDocumentResult createDocument(String content) {
         var documentContent = new JsonDocumentContent(content);

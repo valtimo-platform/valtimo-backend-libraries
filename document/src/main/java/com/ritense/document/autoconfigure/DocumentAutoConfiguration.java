@@ -16,6 +16,7 @@
 
 package com.ritense.document.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.config.DocumentSpringContextHelper;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
@@ -31,6 +32,7 @@ import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentStatisticService;
+import com.ritense.document.service.JsonSchemaDocumentDefinitionExporter;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionSequenceGeneratorService;
@@ -45,6 +47,7 @@ import com.ritense.document.web.rest.error.DocumentModuleExceptionTranslator;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
+import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
@@ -73,7 +76,8 @@ public class DocumentAutoConfiguration {
         final ResourceService resourceService,
         final UserManagementService userManagementService,
         final AuthorizationService authorizationService,
-        final ApplicationEventPublisher applicationEventPublisher
+        final ApplicationEventPublisher applicationEventPublisher,
+        final OutboxService outboxService
     ) {
         return new JsonSchemaDocumentService(
             documentRepository,
@@ -82,7 +86,8 @@ public class DocumentAutoConfiguration {
             resourceService,
             userManagementService,
             authorizationService,
-            applicationEventPublisher
+            applicationEventPublisher,
+            outboxService
         );
     }
 
@@ -97,6 +102,18 @@ public class DocumentAutoConfiguration {
             resourceLoader,
             documentDefinitionRepository,
             authorizationService
+        );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(JsonSchemaDocumentDefinitionExporter.class)
+    public JsonSchemaDocumentDefinitionExporter documentDefinitionExporter(
+        final JsonSchemaDocumentDefinitionService documentDefinitionService,
+        ObjectMapper objectMapper
+    ) {
+        return new JsonSchemaDocumentDefinitionExporter(
+            objectMapper,
+            documentDefinitionService
         );
     }
 
@@ -131,14 +148,19 @@ public class DocumentAutoConfiguration {
         final QueryDialectHelper queryDialectHelper,
         final SearchFieldService searchFieldService,
         final UserManagementService userManagementService,
-        final AuthorizationService authorizationService
+        final AuthorizationService authorizationService,
+        final OutboxService outboxService,
+        final ObjectMapper objectMapper
     ) {
         return new JsonSchemaDocumentSearchService(
             entityManager,
             queryDialectHelper,
             searchFieldService,
             userManagementService,
-            authorizationService);
+            authorizationService,
+            outboxService,
+            objectMapper
+        );
     }
 
     @Bean
@@ -185,9 +207,9 @@ public class DocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentResource.class)
     public JsonSchemaDocumentResource documentResource(
         DocumentService documentService,
-        DocumentDefinitionService documentDefinitionService
+        OutboxService outboxService
     ) {
-        return new JsonSchemaDocumentResource(documentService, documentDefinitionService);
+        return new JsonSchemaDocumentResource(documentService, outboxService);
     }
 
     @Bean

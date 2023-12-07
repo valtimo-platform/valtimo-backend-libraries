@@ -16,18 +16,20 @@
 
 package com.ritense.processdocument.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.camunda.authorization.CamundaTaskDocumentMapper
 import com.ritense.processdocument.domain.impl.delegate.DocumentDelegate
+import com.ritense.processdocument.export.ProcessDocumentLinkExporter
 import com.ritense.processdocument.listener.CaseAssigneeListener
 import com.ritense.processdocument.listener.CaseAssigneeTaskCreatedListener
+import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.CorrelationServiceImpl
 import com.ritense.processdocument.service.DocumentDelegateService
-import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.processdocument.service.CorrelationService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
@@ -51,7 +53,7 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentDelegate::class)
     fun documentDelegate(
-        @Lazy processDocumentService: ProcessDocumentService,
+        processDocumentService: ProcessDocumentService,
         userManagementService: UserManagementService,
         documentService: DocumentService
     ): DocumentDelegate {
@@ -66,7 +68,7 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentDelegateService::class)
     fun documentDelegateService(
-        @Lazy processDocumentService: ProcessDocumentService,
+        processDocumentService: ProcessDocumentService,
         documentService: DocumentService,
         jsonSchemaDocumentService: JsonSchemaDocumentService,
         userManagementService: UserManagementService
@@ -82,13 +84,13 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CorrelationService::class)
     fun correlationService(
-        @Lazy runtimeService: RuntimeService,
-        @Lazy camundaRuntimeService: CamundaRuntimeService,
-        @Lazy documentService: DocumentService,
-        @Lazy processDocumentAssociationService: ProcessDocumentAssociationService,
-        @Lazy camundaProcessService: CamundaProcessService,
-        @Lazy repositoryService: RepositoryService,
-        @Lazy camundaRepositoryService: CamundaRepositoryService,
+        runtimeService: RuntimeService,
+        camundaRuntimeService: CamundaRuntimeService,
+        documentService: DocumentService,
+        processDocumentAssociationService: ProcessDocumentAssociationService,
+        camundaProcessService: CamundaProcessService,
+        repositoryService: RepositoryService,
+        camundaRepositoryService: CamundaRepositoryService,
     ): CorrelationService {
         return CorrelationServiceImpl(
             runtimeService = runtimeService,
@@ -104,9 +106,9 @@ class ProcessDocumentsAutoConfiguration {
     @Bean("processService")
     @ConditionalOnMissingBean(ProcessDocumentsService::class)
     fun processDocumentsService(
-        @Lazy documentService: DocumentService,
-        @Lazy processDocumentAssociationService: ProcessDocumentAssociationService,
-        @Lazy camundaProcessService: CamundaProcessService
+        documentService: DocumentService,
+        processDocumentAssociationService: ProcessDocumentAssociationService,
+        camundaProcessService: CamundaProcessService
     ): ProcessDocumentsService {
         return ProcessDocumentsService(
             documentService,
@@ -145,5 +147,19 @@ class ProcessDocumentsAutoConfiguration {
         @Lazy processDocumentService: CamundaProcessJsonSchemaDocumentService
     ): CamundaTaskDocumentMapper {
         return CamundaTaskDocumentMapper(processDocumentService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessDocumentLinkExporter::class)
+    fun procesDocumentLinkExporter(
+        objectMapper: ObjectMapper,
+        camundaRepositoryService: CamundaRepositoryService,
+        processDocumentAssociationService: ProcessDocumentAssociationService
+    ): ProcessDocumentLinkExporter {
+        return ProcessDocumentLinkExporter(
+            objectMapper,
+            camundaRepositoryService,
+            processDocumentAssociationService
+        )
     }
 }

@@ -1,9 +1,9 @@
 spring:
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://localhost:3306/gzac-core
+        url: jdbc:mysql://localhost:33060/gzac
     jpa:
-        database-platform: org.hibernate.dialect.MySQL57Dialect
+        database-platform: org.hibernate.dialect.MySQL8Dialect
 
 valtimo:
     database: mysql
