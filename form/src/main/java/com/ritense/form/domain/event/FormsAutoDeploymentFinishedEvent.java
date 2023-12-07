@@ -18,7 +18,7 @@ package com.ritense.form.domain.event;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.form.domain.FormDefinition;
-import java.util.ArrayList;
+
 import java.util.List;
 
 public class FormsAutoDeploymentFinishedEvent {
@@ -26,7 +26,7 @@ public class FormsAutoDeploymentFinishedEvent {
     private final List<FormDefinition> formDefinitions;
 
     @JsonCreator
-    public FormsAutoDeploymentFinishedEvent(ArrayList<FormDefinition> formDefinitions) {
+    public FormsAutoDeploymentFinishedEvent(List<FormDefinition> formDefinitions) {
         this.formDefinitions = formDefinitions;
     }
 
