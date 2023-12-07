@@ -221,13 +221,13 @@ valtimo:
         case-tabs:
             clear-tables: true
     outbox:
-        enabled: false
+        enabled: true
         publisher:
             cloudevent-source: "com.ritense.gzac"
             rabbitmq:
                 routing-key: valtimo-audit
                 delivery-timeout: "PT0.5S"
-            polling.rate: "PT1M"
+            polling.rate: "PT10S"
 
 spring-actuator:
     username: admin
