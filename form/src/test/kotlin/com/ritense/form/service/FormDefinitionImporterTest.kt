@@ -55,9 +55,9 @@ class FormDefinitionImporterTest(
     }
 
     @Test
-    fun `should not support non-formflow fileName`() {
+    fun `should not support non-form fileName`() {
         assertThat(importer.supports("config/form/not/test.json")).isFalse()
-        assertThat(importer.supports("config/form/not/test-json")).isFalse()
+        assertThat(importer.supports("config/form/test-json")).isFalse()
     }
 
     @Test
