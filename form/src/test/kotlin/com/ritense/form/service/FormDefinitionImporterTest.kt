@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.formflow.importer
+package com.ritense.form.service
 
-import com.ritense.formflow.service.FormFlowDeploymentService
+import com.ritense.form.autodeployment.FormDefinitionDeploymentService
 import com.ritense.importer.ImportRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -28,52 +28,53 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
-class FormFlowDefinitionImporterTest(
-    @Mock private val formFlowDeploymentService: FormFlowDeploymentService
+class FormDefinitionImporterTest(
+    @Mock private val formDefinitionDeploymentService: FormDefinitionDeploymentService
 ) {
-    private lateinit var formFlowDefinitionImporter: FormFlowDefinitionImporter
+    private lateinit var importer: FormDefinitionImporter
 
     @BeforeEach
     fun before() {
-        formFlowDefinitionImporter = FormFlowDefinitionImporter(formFlowDeploymentService)
+        importer = FormDefinitionImporter(formDefinitionDeploymentService)
     }
 
     @Test
-    fun `should be of type 'formflow'`() {
-        assertThat(formFlowDefinitionImporter.type()).isEqualTo("formflow")
+    fun `should be of type 'form'`() {
+        assertThat(importer.type()).isEqualTo("form")
     }
 
     @Test
-    fun `should depend on 'form' type`() {
-        assertThat(formFlowDefinitionImporter.dependsOn()).isEqualTo(setOf("form"))
+    fun `should not depend on any type`() {
+        assertThat(importer.dependsOn()).isEmpty()
     }
 
+
     @Test
-    fun `should support formflow fileName`() {
-        assertThat(formFlowDefinitionImporter.supports(FILENAME)).isTrue()
+    fun `should support form fileName`() {
+        assertThat(importer.supports(FILENAME)).isTrue()
     }
 
     @Test
     fun `should not support non-formflow fileName`() {
-        assertThat(formFlowDefinitionImporter.supports("config/form-flow/not-supported/test.json")).isFalse()
-        assertThat(formFlowDefinitionImporter.supports("config/form-flow/test-json")).isFalse()
+        assertThat(importer.supports("config/form/not/test.json")).isFalse()
+        assertThat(importer.supports("config/form/not/test-json")).isFalse()
     }
 
     @Test
     fun `should call deploy method for import with correct parameters`() {
         val jsonContent = "{}"
-        formFlowDefinitionImporter.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
+        importer.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
 
         val formFlowKeyCaptor = argumentCaptor<String>()
         val jsonCaptor = argumentCaptor<String>()
 
-        verify(formFlowDeploymentService).deploy(formFlowKeyCaptor.capture(), jsonCaptor.capture())
+        verify(formDefinitionDeploymentService).deploy(formFlowKeyCaptor.capture(), jsonCaptor.capture())
 
         assertThat(formFlowKeyCaptor.firstValue).isEqualTo("my-form")
         assertThat(jsonCaptor.firstValue).isEqualTo(jsonContent)
     }
 
     private companion object {
-        const val FILENAME = "config/form-flow/my-form.json"
+        const val FILENAME = "config/form/my-form.json"
     }
 }
