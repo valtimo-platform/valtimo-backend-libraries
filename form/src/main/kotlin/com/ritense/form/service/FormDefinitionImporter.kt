@@ -17,9 +17,11 @@
 package com.ritense.form.service
 
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
-import com.ritense.importer.Importer
 import com.ritense.importer.ImportRequest
+import com.ritense.importer.Importer
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class FormDefinitionImporter(
     val formDefinitionDeploymentService: FormDefinitionDeploymentService
 ) : Importer {
