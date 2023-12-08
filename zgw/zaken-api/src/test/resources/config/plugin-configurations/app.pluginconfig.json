@@ -1,0 +1,25 @@
+[
+    {
+        "id": "27a399c7-9d70-4833-a651-57664e2e9e09",
+        "title": "OpenZaak mock Authentication",
+        "pluginDefinitionKey": "openzaak"
+    },
+    {
+        "id": "3079d6fe-42e3-4f8f-a9db-52ce2507b7ee",
+        "title": "Zaken API",
+        "pluginDefinitionKey": "zakenapi",
+        "properties": {
+            "url": "http://localhost:56273/zaken/",
+            "authenticationPluginConfiguration": "27a399c7-9d70-4833-a651-57664e2e9e09"
+        }
+    },
+    {
+        "id": "22c78b91-0b0f-4008-8d8f-c4a84b8e71ec",
+        "title": "Catalogi API",
+        "pluginDefinitionKey": "catalogiapi",
+        "properties": {
+            "url": "http://localhost:56273/catalogi/",
+            "authenticationPluginConfiguration": "27a399c7-9d70-4833-a651-57664e2e9e09"
+        }
+    }
+]

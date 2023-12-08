@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.formflow.importer
+package com.ritense.document.service
 
-import com.ritense.formflow.service.FormFlowDeploymentService
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class FormFlowDefinitionImporter(
-    private val formFlowDeploymentService: FormFlowDeploymentService
+class JsonSchemaDocumentDefinitionImporter(
+    private val jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService
 ) : Importer {
-    override fun type() = "formflow"
+    override fun type() = "documentdefinition"
 
-    override fun dependsOn() = setOf("form")
+    override fun dependsOn() = emptySet<String>()
 
-    override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
+    override fun supports(fileName: String) = fileName.matches(PATH_REGEX)
 
     override fun import(request: ImportRequest) {
-        val formFlowKey = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        formFlowDeploymentService.deploy(formFlowKey, request.content.toString(Charsets.UTF_8))
+        jsonSchemaDocumentDefinitionService.deploy(request.content.toString(Charsets.UTF_8))
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/form-flow/([^/]*).json""".toRegex()
+        val PATH_REGEX = """config/document/definition/[^/]*.json""".toRegex()
     }
 }
