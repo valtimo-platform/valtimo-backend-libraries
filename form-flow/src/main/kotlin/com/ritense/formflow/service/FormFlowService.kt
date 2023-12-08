@@ -28,7 +28,9 @@ import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchReposit
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
 import kotlin.jvm.optionals.getOrNull
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class FormFlowService(
     private val formFlowDefinitionRepository: FormFlowDefinitionRepository,
     private val formFlowInstanceRepository: FormFlowInstanceRepository,
@@ -41,7 +43,7 @@ class FormFlowService(
     }
 
     fun findDefinition(formFlowId: FormFlowDefinitionId): FormFlowDefinition {
-        return formFlowDefinitionRepository.getById(formFlowId)
+        return formFlowDefinitionRepository.getReferenceById(formFlowId)
     }
 
     fun findDefinition(formFlowDefinitionId: String): FormFlowDefinition? {
@@ -71,11 +73,11 @@ class FormFlowService(
     }
 
     fun getInstanceById(formFlowInstanceId: FormFlowInstanceId): FormFlowInstance {
-        return formFlowInstanceRepository.getById(formFlowInstanceId)
+        return formFlowInstanceRepository.getReferenceById(formFlowInstanceId)
     }
 
     fun getByInstanceIdIfExists(formFlowInstanceId: FormFlowInstanceId): FormFlowInstance? {
-        return formFlowInstanceRepository.getById(formFlowInstanceId)
+        return formFlowInstanceRepository.getReferenceById(formFlowInstanceId)
     }
 
     fun save(formFlowInstance: FormFlowInstance): FormFlowInstance {
