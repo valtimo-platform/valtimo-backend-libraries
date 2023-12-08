@@ -27,6 +27,8 @@ class JsonSchemaDocumentDefinitionImporter(
 ) : Importer {
     override fun type() = "form-definition"
 
+    override fun dependsOn() = emptySet<String>()
+
     override fun supports(fileName: String) = fileName.matches(PATH_REGEX)
 
     override fun import(request: ImportRequest) {

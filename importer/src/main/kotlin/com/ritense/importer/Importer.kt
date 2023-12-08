@@ -19,7 +19,7 @@ package com.ritense.importer
 interface Importer {
     fun type() : String
 
-    fun dependsOn() : Set<String> = setOf()
+    fun dependsOn() : Set<String>
 
     fun supports(fileName: String) : Boolean
 
