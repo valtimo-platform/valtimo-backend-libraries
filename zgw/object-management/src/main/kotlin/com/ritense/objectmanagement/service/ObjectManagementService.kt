@@ -101,6 +101,7 @@ class ObjectManagementService(
         objectManagementRepository.deleteById(id)
     }
 
+    @Transactional
     fun getObjects(id: UUID, pageable: Pageable): PageImpl<ObjectsListRowDto> {
         val objectManagement = getById(id) ?: let {
             throw IllegalArgumentException("The requested Id is not configured as a object management configuration. The requested id was: $id")
@@ -129,6 +130,7 @@ class ObjectManagementService(
         return PageImpl(objectsListDto, pageable, objectsList.count.toLong())
     }
 
+    @Transactional
     fun getObjectsWithSearchParams(
         searchWithConfigRequest: SearchWithConfigRequest,
         id: UUID,
