@@ -56,6 +56,7 @@ class JsonSchemaDocumentDefinitionImporterTest(
     @Test
     fun `should not support invalid document definition fileName`() {
         assertThat(importer.supports("config/document/definition/not/my-definition.json")).isFalse()
+        assertThat(importer.supports("config/document/definition/my-definition-json")).isFalse()
     }
 
     @Test
