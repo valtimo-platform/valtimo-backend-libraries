@@ -40,7 +40,7 @@ class JsonSchemaDocumentDefinitionImporterTest(
 
     @Test
     fun `should be of type 'form-definition'`() {
-        assertThat(importer.type()).isEqualTo("form-definition")
+        assertThat(importer.type()).isEqualTo("documentdefinition")
     }
 
     @Test
@@ -54,7 +54,7 @@ class JsonSchemaDocumentDefinitionImporterTest(
     }
 
     @Test
-    fun `should not support non-formflow fileName`() {
+    fun `should not support invalid document definition fileName`() {
         assertThat(importer.supports("config/document/definition/not/my-definition.json")).isFalse()
     }
 

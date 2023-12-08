@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional
 class JsonSchemaDocumentDefinitionImporter(
     private val jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService
 ) : Importer {
-    override fun type() = "form-definition"
+    override fun type() = "documentdefinition"
 
     override fun dependsOn() = emptySet<String>()
 

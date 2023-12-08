@@ -16,7 +16,6 @@
 
 package com.ritense.case.web.rest
 
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
@@ -183,8 +182,8 @@ class CaseDefinitionResource(
     @RunWithoutAuthorization
     fun import(
         @RequestParam("file") file: MultipartFile
-    ): ResponseEntity<Unit> = runWithoutAuthorization {
-        try {
+    ): ResponseEntity<Unit> {
+        return try {
             importService.import(file.inputStream)
             ResponseEntity.ok().build()
         } catch (_: ImportServiceException) {
