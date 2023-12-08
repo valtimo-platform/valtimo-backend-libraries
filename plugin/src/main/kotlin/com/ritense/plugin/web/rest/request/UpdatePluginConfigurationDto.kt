@@ -17,8 +17,10 @@
 package com.ritense.plugin.web.rest.request
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import java.util.UUID
 
 class UpdatePluginConfigurationDto(
     val title: String,
-    val properties: ObjectNode
+    val properties: ObjectNode,
+    val newId: UUID? = null
 )

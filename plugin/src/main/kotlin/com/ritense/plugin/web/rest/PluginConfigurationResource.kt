@@ -93,10 +93,17 @@ class PluginConfigurationResource(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID,
         @RequestBody updatePluginConfiguration: UpdatePluginConfigurationDto
     ): ResponseEntity<PluginConfigurationDto> {
+        val newPluginConfigurationId = if (updatePluginConfiguration.newId == null) {
+            PluginConfigurationId.existingId(pluginConfigurationId)
+        } else {
+            PluginConfigurationId(updatePluginConfiguration.newId)
+        }
+
         return ResponseEntity.ok(
             PluginConfigurationDto(
                 pluginService.updatePluginConfiguration(
                     PluginConfigurationId.existingId(pluginConfigurationId),
+                    newPluginConfigurationId,
                     updatePluginConfiguration.title,
                     updatePluginConfiguration.properties
                 )
