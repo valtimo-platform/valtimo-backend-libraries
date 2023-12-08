@@ -21,19 +21,18 @@ import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationServiceHolder
+import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.PermissionView
-import com.ritense.authorization.permission.condition.ContainerPermissionCondition.Companion.CONTAINER
-import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.role.Role
-import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.authorization.permission.condition.ContainerPermissionCondition.Companion.CONTAINER
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
-import org.hibernate.Hibernate
 
 @JsonTypeName(CONTAINER)
 data class ContainerPermissionCondition<TO : Any>(
@@ -45,7 +44,6 @@ data class ContainerPermissionCondition<TO : Any>(
     override fun <FROM: Any> isValid(entity: FROM): Boolean {
         val mapper = findMapper(entity::class.java) as AuthorizationEntityMapper<FROM, TO>
         val relatedEntities = mapper.mapRelated(entity)
-        Hibernate.initialize(relatedEntities)
         return relatedEntities.any { relatedEntity ->
             val spec = findChildSpecification(relatedEntity)
             spec.isAuthorized()
