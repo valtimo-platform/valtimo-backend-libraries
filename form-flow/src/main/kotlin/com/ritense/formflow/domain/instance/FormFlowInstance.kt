@@ -91,7 +91,7 @@ class FormFlowInstance(
         val previousStepOrder = currentStep.order - 1
         return if (previousStepOrder >= 0) {
             currentStep.back()
-            val previousStep = history.single { it.order == previousStepOrder }
+            val previousStep = history.last { it.order == previousStepOrder }
             currentFormFlowStepInstanceId = previousStep.id
             previousStep
         } else {
