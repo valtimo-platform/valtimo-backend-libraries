@@ -62,7 +62,7 @@ class ZaakDocumentService(
             createdBy = informatieObject.auteur,
             author = informatieObject.auteur,
             title = informatieObject.titel,
-            status = informatieObject.status,
+            status = informatieObject.status?.key,
             language = informatieObject.taal,
             pluginConfigurationId = pluginConfiguration.id.id,
             identification = informatieObject.identificatie,
@@ -72,7 +72,7 @@ class ZaakDocumentService(
             format = informatieObject.formaat,
             sendDate = informatieObject.verzenddatum,
             receiptDate = informatieObject.ontvangstdatum,
-            confidentialityLevel = informatieObject.vertrouwelijkheidaanduiding,
+            confidentialityLevel = informatieObject.vertrouwelijkheidaanduiding?.key,
             version = informatieObject.versie,
             indicationUsageRights = informatieObject.indicatieGebruiksrecht
         )
