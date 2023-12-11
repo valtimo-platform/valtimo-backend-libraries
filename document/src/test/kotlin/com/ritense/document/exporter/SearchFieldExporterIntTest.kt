@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.document.service
+package com.ritense.document.exporter
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.BaseIntegrationTest
-import com.ritense.document.exporter.JsonSchemaDocumentDefinitionExporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -30,24 +29,23 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 
 @Transactional(readOnly = true)
-class JsonSchemaDocumentDefinitionExporterIntTest @Autowired constructor(
+class SearchFieldExporterIntTest @Autowired constructor(
     private val resourceLoader: ResourceLoader,
-    private val documentDefinitionExportService: JsonSchemaDocumentDefinitionExporter
+    private val searchFieldExporter: SearchFieldExporter
 ) : BaseIntegrationTest() {
 
     @Test
-    fun `should export document definition`(): Unit = runWithoutAuthorization {
+    fun `should export search fields for document definition`(): Unit = runWithoutAuthorization {
         val definition = documentDefinitionService.findLatestByName("person").orElseThrow()
-
         val request = DocumentDefinitionExportRequest(definition.id().name(), definition.id().version())
-        val exportFiles = documentDefinitionExportService.export(request).exportFiles
+        val exportFiles = searchFieldExporter.export(request).exportFiles
 
         val path = PATH.format(definition.id().name())
-        val personDefinitionExport = exportFiles.singleOrNull {
+        val export = exportFiles.singleOrNull {
             it.path == path
         }
-        requireNotNull(personDefinitionExport)
-        val resultJson = personDefinitionExport.content.toString(Charsets.UTF_8)
+        requireNotNull(export)
+        val exportJson = export.content.toString(Charsets.UTF_8)
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:$path")
             .inputStream
@@ -56,12 +54,12 @@ class JsonSchemaDocumentDefinitionExporterIntTest @Autowired constructor(
             }
         JSONAssert.assertEquals(
             expectedJson,
-            resultJson,
+            exportJson,
             JSONCompareMode.NON_EXTENSIBLE
         )
     }
 
     companion object {
-        private const val PATH = "config/document/definition/%s.schema.json"
+        private const val PATH = "config/search/%s.json"
     }
 }
