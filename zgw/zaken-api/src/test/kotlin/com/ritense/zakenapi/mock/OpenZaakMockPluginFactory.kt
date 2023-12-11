@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest.request
+package com.ritense.zakenapi.mock
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import java.util.UUID
+import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginService
+import org.springframework.stereotype.Service
 
-class CreatePluginConfigurationDto(
-    val title: String,
-    val properties: ObjectNode,
-    val definitionKey: String,
-    val id: UUID? = null,
-)
+@Service
+class OpenZaakMockPluginFactory(
+    pluginService: PluginService,
+) : PluginFactory<OpenZaakMockPlugin>(pluginService) {
+
+    override fun create(): OpenZaakMockPlugin {
+        return OpenZaakMockPlugin()
+    }
+}

@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest.request
+package com.ritense.zakenapi.domain
 
-import com.fasterxml.jackson.databind.node.ObjectNode
+import java.net.URI
+import java.time.LocalDateTime
 import java.util.UUID
 
-class CreatePluginConfigurationDto(
-    val title: String,
-    val properties: ObjectNode,
-    val definitionKey: String,
-    val id: UUID? = null,
+data class ZaakStatus(
+    val url: URI,
+    val uuid: UUID,
+    val zaak: URI,
+    val statustype: URI,
+    val datumStatusGezet: LocalDateTime,
+    val statustoelichting: String? = null,
 )

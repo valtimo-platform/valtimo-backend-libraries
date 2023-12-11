@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -52,6 +53,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
     @Autowired
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
 
+    lateinit var categoryPluginConfiguration: PluginConfiguration
     lateinit var pluginConfiguration: PluginConfiguration
     lateinit var mockMvc: MockMvc
 
@@ -76,6 +78,16 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
                     """
                 ) as ObjectNode,
                 pluginDefinition
+            )
+        )
+
+        val categoryPluginDefinition = pluginDefinitionRepository.getById("test-category-plugin")
+        categoryPluginConfiguration = pluginConfigurationRepository.save(
+            PluginConfiguration(
+                PluginConfigurationId.newId(),
+                "title",
+                null,
+                categoryPluginDefinition
             )
         )
     }
@@ -138,6 +150,32 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$.*", hasSize<Int>(greaterThanOrEqualTo(1))))
             .andExpect(jsonPath("$[?(@.title=='some-config')]","").exists())
+    }
+
+    @Test
+    fun `should create plugin configurations with id`() {
+        mockMvc.perform(post("/api/v1/plugin/configuration")
+            .content("""
+                {
+                    "id": "f63997d7-d30e-4a1c-8d16-885e5077c0a2",
+                    "title": "Test plugin",
+                    "definitionKey": "test-plugin",
+                    "properties": {
+                        "property1": "test123",
+                        "property3": 456,
+                        "property4": "${categoryPluginConfiguration.id.id}"
+                    }
+                }
+            """.trimIndent())
+            .characterEncoding(StandardCharsets.UTF_8.name())
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(print())
+            .andExpect(status().is2xxSuccessful)
+            .andExpect(jsonPath("$.id").value("f63997d7-d30e-4a1c-8d16-885e5077c0a2"))
+            .andExpect(jsonPath("$.title").value("Test plugin"))
+            .andExpect(jsonPath("$.pluginDefinition.key").value("test-plugin"))
     }
 
     @Test

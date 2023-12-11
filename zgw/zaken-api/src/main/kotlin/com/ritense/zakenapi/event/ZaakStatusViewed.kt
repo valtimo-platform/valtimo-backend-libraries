@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.web.rest.request
+package com.ritense.zakenapi.event
 
 import com.fasterxml.jackson.databind.node.ObjectNode
-import java.util.UUID
+import com.ritense.outbox.domain.BaseEvent
 
-class CreatePluginConfigurationDto(
-    val title: String,
-    val properties: ObjectNode,
-    val definitionKey: String,
-    val id: UUID? = null,
+class ZaakStatusViewed(zaakStatus: ObjectNode) : BaseEvent(
+    type = "com.ritense.gzac.zrc.status.viewed",
+    resultType = "com.ritense.zakenapi.domain.ZaakStatus",
+    resultId = null,
+    result = zaakStatus
 )

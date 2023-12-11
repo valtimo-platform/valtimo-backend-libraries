@@ -96,6 +96,22 @@ class CatalogiApiClient(
         return result?.body!!
     }
 
+    fun getStatustype(
+        authentication: CatalogiApiAuthentication,
+        baseUrl: URI,
+        informatieobjecttypeUrl: URI
+    ): Statustype {
+        validateUrlHost(baseUrl, informatieobjecttypeUrl)
+        val result = buildWebclient(authentication)
+            .get()
+            .uri(informatieobjecttypeUrl)
+            .retrieve()
+            .toEntity(Statustype::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
     fun getStatustypen(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,

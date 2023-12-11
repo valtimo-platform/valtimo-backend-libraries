@@ -28,6 +28,7 @@ import com.ritense.zakenapi.domain.CreateZaakStatusResponse
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.ZaakResponse
+import com.ritense.zakenapi.domain.ZaakStatus
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
 import com.ritense.zakenapi.domain.ZaakopschortingResponse
 import com.ritense.zakenapi.domain.rol.Rol
@@ -41,6 +42,7 @@ import com.ritense.zakenapi.event.ZaakResultaatCreated
 import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
 import com.ritense.zakenapi.event.ZaakStatusCreated
+import com.ritense.zakenapi.event.ZaakStatusViewed
 import com.ritense.zakenapi.event.ZaakViewed
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
@@ -284,6 +286,31 @@ class ZakenApiClient(
             outboxService.send {
                 ZaakStatusCreated(
                     result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
+        return result?.body!!
+    }
+
+    fun getZaakStatus(
+        authentication: ZakenApiAuthentication,
+        zaakStatusUrl: URI,
+    ): ZaakStatus {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri(zaakStatusUrl)
+            .retrieve()
+            .toEntity(ZaakStatus::class.java)
+            .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakStatusViewed(
                     objectMapper.valueToTree(result.body)
                 )
             }

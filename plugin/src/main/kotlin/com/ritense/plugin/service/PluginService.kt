@@ -92,11 +92,25 @@ class PluginService(
         properties: ObjectNode,
         pluginDefinitionKey: String
     ): PluginConfiguration {
+        return createPluginConfiguration(
+            PluginConfigurationId.newId(),
+            title,
+            properties,
+            pluginDefinitionKey
+        )
+    }
+
+    fun createPluginConfiguration(
+        id: PluginConfigurationId,
+        title: String,
+        properties: ObjectNode,
+        pluginDefinitionKey: String
+    ): PluginConfiguration {
         val pluginDefinition = pluginDefinitionRepository.getById(pluginDefinitionKey)
         validateProperties(properties, pluginDefinition)
 
         val pluginConfiguration = pluginConfigurationRepository.save(
-            PluginConfiguration(PluginConfigurationId.newId(), title, properties, pluginDefinition)
+            PluginConfiguration(id, title, properties, pluginDefinition)
         )
 
         try {
@@ -514,7 +528,6 @@ class PluginService(
                         assert(propertyConfiguration.isPresent) { "Plugin configuration with id ${propertyConfigurationId.id} does not exist!" }
                     } else {
                         val propertyValue = objectMapper.treeToValue(propertyNode, propertyClass)
-                        assert(propertyValue != null)
                         val validationErrors =
                             validator.validateValue(pluginClass, pluginProperty.fieldName, propertyValue)
                         if (validationErrors.isNotEmpty()) {
