@@ -16,7 +16,6 @@
 
 package com.ritense.zakenapi.client
 
-import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.OutboxService
 import com.ritense.zakenapi.ZakenApiAuthentication
@@ -141,28 +140,6 @@ class ZakenApiClient(
             }
             .retrieve()
             .toEntityList(ZaakInformatieObject::class.java)
-            .block()
-
-        return result?.body!!
-    }
-
-    fun getInformatieObjectTypen(
-        authentication: ZakenApiAuthentication,
-        informatieobjecttype: URI,
-        catalogUrl: URI
-    ): List<Informatieobjecttype> {
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
-            .get()
-            .uri {
-                ClientTools.baseUrlToBuilder(it, informatieobjecttype)
-                    .queryParam("catalogus", catalogUrl)
-                    .build()
-            }
-            .retrieve()
-            .toEntityList(Informatieobjecttype::class.java)
             .block()
 
         if (result.hasBody()) {
