@@ -55,7 +55,7 @@ public class SearchFieldAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(SearchFieldImporter.class)
     public SearchFieldImporter searchFieldImporter(
-        final SearchConfigurationDeploymentService searchConfigurationDeploymentService
+        final  SearchConfigurationDeploymentService searchConfigurationDeploymentService
     ) {
         return new SearchFieldImporter(searchConfigurationDeploymentService);
     }
