@@ -38,6 +38,6 @@ class ProcessDocumentLinkImporter(
     }
 
     companion object {
-        private val FILENAME_REGEX = """config/process-document-link/([^/]*).json""".toRegex()
+        private val FILENAME_REGEX = """config/process-document-link/([^/]*)\.json""".toRegex()
     }
 }

@@ -56,6 +56,7 @@ class ProcessDocumentLinkImporterTest(
     @Test
     fun `should not support non-process-document-link fileName`() {
         assertThat(processDocumentLinkImporter.supports("config/process-document-link/aa/test.json")).isFalse()
+        assertThat(processDocumentLinkImporter.supports("config/process-document-link/test-json")).isFalse()
     }
 
     @Test
