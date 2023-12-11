@@ -361,6 +361,15 @@ class PluginService(
         val processLinks = pluginProcessLinkRepository.findByPluginConfigurationId(oldPluginConfigurationId)
             .map { it.copy(pluginConfigurationId = newPluginConfigurationId) }
         pluginProcessLinkRepository.saveAll(processLinks)
+        val configurations = pluginConfigurationRepository.findAll()
+        configurations.forEach { configuration ->
+            configuration.rawProperties?.fields()?.forEachRemaining { property ->
+                if (property.value.textValue() == oldPluginConfigurationId.id.toString()) {
+                    property.setValue(TextNode.valueOf(newPluginConfigurationId.id.toString()))
+                }
+            }
+        }
+        pluginConfigurationRepository.saveAll(configurations)
         return newPluginConfiguration
     }
 

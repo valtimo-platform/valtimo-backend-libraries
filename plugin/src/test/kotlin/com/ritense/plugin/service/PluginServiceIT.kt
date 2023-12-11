@@ -26,6 +26,7 @@ import com.ritense.plugin.autodeployment.PluginAutoDeploymentDto
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.exception.PluginEventInvocationException
@@ -79,15 +80,16 @@ internal class PluginServiceIT : BaseIntegrationTest() {
 
     lateinit var pluginConfiguration: PluginConfiguration
     lateinit var categoryPluginConfiguration: PluginConfiguration
+    lateinit var pluginDefinition: PluginDefinition
 
     @BeforeEach
     fun init() {
-        val pluginDefinition = pluginDefinitionRepository.getById("test-plugin")
+        pluginDefinition = pluginDefinitionRepository.getById("test-plugin")
         pluginConfiguration = pluginConfigurationRepository.save(
             PluginConfiguration(
                 PluginConfigurationId.newId(),
                 "title",
-                null,
+                jacksonObjectMapper().createObjectNode(),
                 pluginDefinition
             )
         )
@@ -97,7 +99,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             PluginConfiguration(
                 PluginConfigurationId.newId(),
                 "title",
-                null,
+                jacksonObjectMapper().createObjectNode(),
                 categoryPluginDefinition
             )
         )
@@ -230,7 +232,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
         )
 
         val testPlugin = spy(TestPlugin("someString"))
-        whenever(pluginFactory.create(pluginConfiguration)).thenReturn(testPlugin)
+        doReturn(testPlugin).whenever(pluginFactory).create(pluginConfiguration)
 
         val execution = DelegateExecutionFake.of()
             .withProcessInstanceId(UUID.randomUUID().toString())
@@ -386,34 +388,38 @@ internal class PluginServiceIT : BaseIntegrationTest() {
     @Test
     @Transactional
     fun `should update plugin configuration id`() {
-        val pluginProperties = jacksonObjectMapper().readTree(
-            """
+        val pluginProperties = jacksonObjectMapper().readTree("""{ "property1": "updated" }""") as ObjectNode
+        val newPluginConfigurationId = PluginConfigurationId(UUID.fromString("ec9c12f3-5617-4184-88cc-e314dd9f4de2"))
+        val update = """
             {
-                "property1": "test123",
+                "property1": "test1234",
                 "property2": false,
                 "property3": 123,
                 "property4": "${categoryPluginConfiguration.id.id}"
             }
         """.trimMargin()
-        ) as ObjectNode
-        val testPlugin = spy(TestPlugin("someString"))
-        doReturn(testPlugin).whenever(pluginService).createInstance(any<PluginConfiguration>())
-        whenever(pluginProcessLinkRepository.findByPluginConfigurationId(any())).thenReturn(emptyList())
-        pluginConfiguration = pluginService.createPluginConfiguration(
-            "title",
-            pluginProperties,
-            "test-plugin",
+        val pluginConfigurationWithRef = pluginConfigurationRepository.save(
+            PluginConfiguration(
+                PluginConfigurationId.newId(),
+                "title",
+                jacksonObjectMapper().readTree(update) as ObjectNode,
+                pluginDefinition
+            )
         )
-        val newPluginConfigurationId = PluginConfigurationId(UUID.fromString("ec9c12f3-5617-4184-88cc-e314dd9f4de2"))
 
         pluginService.updatePluginConfiguration(
-            oldPluginConfigurationId = pluginConfiguration.id,
+            oldPluginConfigurationId = categoryPluginConfiguration.id,
             newPluginConfigurationId = newPluginConfigurationId,
-            title = "title",
+            title = "Updated title",
             properties = pluginProperties
         )
 
-        assertTrue(pluginConfigurationRepository.findById(pluginConfiguration.id).isEmpty)
-        assertTrue(pluginConfigurationRepository.findById(newPluginConfigurationId).isPresent)
+        assertTrue(pluginConfigurationRepository.findById(categoryPluginConfiguration.id).isEmpty)
+        val updatedConfiguration = pluginConfigurationRepository.findById(newPluginConfigurationId)
+        assertTrue(updatedConfiguration.isPresent)
+        assertEquals(updatedConfiguration.get().title, "Updated title")
+        assertEquals(updatedConfiguration.get().properties!!["property1"].textValue(), "updated")
+        val linkedConfiguration = pluginConfigurationRepository.findById(pluginConfigurationWithRef.id).get()
+        assertEquals(linkedConfiguration.properties!!["property4"].textValue(), newPluginConfigurationId.id.toString())
     }
 }
