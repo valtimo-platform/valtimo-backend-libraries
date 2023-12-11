@@ -11,7 +11,7 @@ spring:
         enabled: true
         change-log: classpath:/config/liquibase/process-link-master.xml
     jpa:
-        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database-platform: org.hibernate.dialect.PostgreSQL10Dialect
         database: postgresql
         show_sql: true
         open-in-view: false

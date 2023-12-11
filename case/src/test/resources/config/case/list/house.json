@@ -12,5 +12,16 @@
         "sortable": false,
         "defaultSort": "DESC",
         "order": 0
+    },
+    {
+        "key": "modifiedOn",
+        "path": "test:modifiedOn",
+        "displayType": {
+            "type": "date",
+            "displayTypeParameters": {
+                "dateFormat": null
+            }
+        },
+        "sortable": true
     }
 ]

@@ -16,6 +16,7 @@
 
 package com.ritense.document.domain.search;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldFieldType;
@@ -34,6 +35,22 @@ public class SearchConfigurationDto {
         // Empty constructor needed for Jackson
     }
 
+    public SearchConfigurationDto(List<SearchField> searchFields) {
+        this.searchFields = searchFields.stream().map(
+            searchField -> {
+                var searchConfigurationField = new SearchConfigurationFieldJson();
+                searchConfigurationField.setKey(searchField.getKey());
+                searchConfigurationField.setPath(searchField.getPath());
+                searchConfigurationField.setDataType(searchField.getDataType());
+                searchConfigurationField.setFieldType(searchField.getFieldType());
+                searchConfigurationField.setMatchType(searchField.getMatchType());
+                searchConfigurationField.setDropdownDataProvider(searchField.getDropdownDataProvider());
+                searchConfigurationField.setTitle(searchField.getTitle());
+                return searchConfigurationField;
+            }).toList();
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class SearchConfigurationFieldJson {
         private String key;
         private String path;
@@ -113,7 +130,7 @@ public class SearchConfigurationDto {
     public List<SearchField> toEntity(String documentDefinitionName) {
         return IntStream.range(0, searchFields.size())
             .mapToObj(index -> searchFields.get(index).toEntity(documentDefinitionName, index))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public List<SearchConfigurationFieldJson> getSearchFields() {

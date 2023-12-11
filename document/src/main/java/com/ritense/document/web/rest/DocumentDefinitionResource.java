@@ -20,6 +20,7 @@ import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
+import com.ritense.document.service.result.DocumentVersionsResult;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,8 +53,22 @@ public interface DocumentDefinitionResource {
         @PageableDefault(sort = {"id_name"}, direction = ASC) Pageable pageable
     );
 
+    @GetMapping("/management/v1/document-definition/{name}")
+    ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionForManagement(@PathVariable String name);
+
     @GetMapping("/v1/document-definition/{name}")
     ResponseEntity<? extends DocumentDefinition> getDocumentDefinition(@PathVariable String name);
+
+    @GetMapping("/management/v1/document-definition/{name}/version/{version}")
+    ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionVersion(
+        @PathVariable String name,
+        @PathVariable long version
+    );
+
+    @GetMapping("/management/v1/document-definition/{name}/version")
+    ResponseEntity<DocumentVersionsResult> getDocumentDefinitionVersions(
+        @PathVariable String name
+    );
 
     @GetMapping("/v1/document-definition/open/count")
     ResponseEntity<List<UnassignedDocumentCountDto>> getUnassignedDocumentCount();

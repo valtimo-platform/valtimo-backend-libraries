@@ -25,10 +25,19 @@ import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultMatcher
@@ -39,8 +48,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @Transactional
 class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
@@ -1166,6 +1173,55 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             """.trimIndent()
                 )
             }
+    }
+
+    @Test
+    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
+    fun `should export case definitions as an admin`() {
+        val caseDefinitionName = "house"
+        val caseDefinitionVersion = 1
+        val result = mockMvc.perform(
+            MockMvcRequestBuilders.get(
+                "/api/management/v1/case/{caseDefinitionName}/{caseDefinitionVersion}/export",
+                caseDefinitionName, caseDefinitionVersion
+            )
+        ).andExpect(status().isOk)
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM_VALUE))
+            .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM_VALUE))
+            .andReturn()
+
+        ZipInputStream(ByteArrayInputStream(result.response.contentAsByteArray)).use {
+            assertThat(it.nextEntry).isNotNull
+        }
+    }
+
+    @Test
+    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
+    fun `should import case archive as an admin`() {
+
+        val file = MockMultipartFile(
+            "file",
+            "test.zip",
+            MediaType.APPLICATION_OCTET_STREAM_VALUE,
+            createImportZip()
+        )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.multipart("/api/management/v1/case/import")
+                .file(file)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+        ).andExpect(status().isOk)
+    }
+
+    private fun createImportZip(): ByteArray {
+        val outputStream = ByteArrayOutputStream()
+        ZipOutputStream(outputStream).use { zipStream ->
+            zipStream.putNextEntry(ZipEntry("test.txt"))
+            zipStream.write("test".toByteArray())
+            zipStream.closeEntry()
+        }
+
+        return outputStream.toByteArray();
     }
 
     private fun createListColumn(caseDefinitionName: String, json: String, expectedStatus: ResultMatcher) {

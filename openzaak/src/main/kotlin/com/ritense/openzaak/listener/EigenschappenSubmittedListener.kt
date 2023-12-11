@@ -16,11 +16,14 @@
 
 package com.ritense.openzaak.listener
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.openzaak.exception.UnmappableOpenZaakPropertyException
 import com.ritense.openzaak.service.impl.EigenschapService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
+import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.springframework.context.event.EventListener
 import java.net.URI
@@ -34,7 +37,7 @@ class EigenschappenSubmittedListener(
 
     @EventListener(ExternalDataSubmittedEvent::class)
     fun handle(event: ExternalDataSubmittedEvent) {
-        event.data["OpenZaak".lowercase()]?.let {
+        event.data["openzaak"]?.let {
             val mappedEigenschappen: MutableMap<URI, String> = mutableMapOf()
             val zaakTypeLink = zaakTypeLinkService.findBy(event.documentDefinition)
             val zaakInstanceLink = zaakInstanceLinkService.getByDocumentId(event.documentId)
@@ -43,7 +46,7 @@ class EigenschappenSubmittedListener(
                 it.forEach { (key, value) ->
                     eigenschappen.forEach { e ->
                         if (e.naam == key) {
-                            mappedEigenschappen[e.url!!] = value.toString()
+                            mappedEigenschappen[e.url!!] = getStringValue(value)
                         }
                     }
                 }
@@ -53,8 +56,16 @@ class EigenschappenSubmittedListener(
                 zaakTypeLinkService.modify(zaakTypeLink)
             } else
                 throw UnmappableOpenZaakPropertyException(
-                    "Cannot process form variables prefixed with 'oz'. Please check Open Zaak for the available 'Eigenschappen'"
+                    "Cannot process form variables prefixed with 'openzaak'. Please check Open Zaak for the available 'Eigenschappen'"
                 )
+        }
+    }
+
+    private fun getStringValue(value: Any): String {
+        return if (value is JsonNode) {
+            Mapper.INSTANCE.get().treeToValue<String>(value)
+        } else {
+            value.toString()
         }
     }
 

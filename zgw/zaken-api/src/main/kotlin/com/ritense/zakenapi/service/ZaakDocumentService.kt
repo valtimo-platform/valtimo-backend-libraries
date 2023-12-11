@@ -27,7 +27,9 @@ import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakResponse
 import java.net.URI
 import java.util.UUID
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class ZaakDocumentService(
     private val zaakUrlProvider: ZaakUrlProvider,
     private val pluginService: PluginService,

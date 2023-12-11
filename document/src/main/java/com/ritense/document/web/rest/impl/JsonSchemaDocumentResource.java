@@ -23,18 +23,19 @@ import com.ritense.document.domain.impl.request.GetDocumentCandidateUsersRequest
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.impl.request.UpdateAssigneeRequest;
-import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.web.rest.DocumentResource;
+import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,12 +43,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
@@ -56,22 +55,26 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentResource.class);
 
     private final DocumentService documentService;
-    private final DocumentDefinitionService documentDefinitionService;
+    private final OutboxService outboxService;
 
     public JsonSchemaDocumentResource(
         final DocumentService documentService,
-        final DocumentDefinitionService documentDefinitionService
+        final OutboxService outboxService
     ) {
         this.documentService = documentService;
-        this.documentDefinitionService = documentDefinitionService;
+        this.outboxService = outboxService;
     }
 
+    @Transactional
     @Override
     @GetMapping("/v1/document/{id}")
     public ResponseEntity<? extends Document> getDocument(@PathVariable(name = "id") UUID id) {
-        return documentService.findBy(JsonSchemaDocumentId.existingId(id))
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+        var document = documentService.findBy(JsonSchemaDocumentId.existingId(id)).orElse(null);
+        if (document != null) {
+            return ResponseEntity.ok(document);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Override

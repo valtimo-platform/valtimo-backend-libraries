@@ -30,10 +30,13 @@ dependencies {
     implementation project(':value-resolver')
     implementation project(':zgw:zaken-api')
     implementation project(':zgw:objecttypen-api')
+    implementation project(':outbox')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     testImplementation project(":contract")
 
@@ -45,6 +48,9 @@ dependencies {
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.skyscreamer:jsonassert:${jsonassertVersion}"
+
+    testImplementation "com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}"
+    testImplementation "com.jayway.jsonpath:json-path-assert:${jaywayJsonpathVersion}"
 
     jar {
         enabled = true

@@ -16,11 +16,34 @@
 
 package com.ritense.zakenapi.client
 
-import com.ritense.catalogiapi.domain.Informatieobjecttype
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.outbox.OutboxService
 import com.ritense.zakenapi.ZakenApiAuthentication
-import com.ritense.zakenapi.domain.*
+import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.CreateZaakResponse
+import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
+import com.ritense.zakenapi.domain.CreateZaakResultaatResponse
+import com.ritense.zakenapi.domain.CreateZaakStatusRequest
+import com.ritense.zakenapi.domain.CreateZaakStatusResponse
+import com.ritense.zakenapi.domain.ZaakInformatieObject
+import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.ZaakResponse
+import com.ritense.zakenapi.domain.ZaakStatus
+import com.ritense.zakenapi.domain.ZaakopschortingRequest
+import com.ritense.zakenapi.domain.ZaakopschortingResponse
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.event.DocumentLinkedToZaak
+import com.ritense.zakenapi.event.ZaakCreated
+import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
+import com.ritense.zakenapi.event.ZaakObjectenListed
+import com.ritense.zakenapi.event.ZaakOpschortingUpdated
+import com.ritense.zakenapi.event.ZaakResultaatCreated
+import com.ritense.zakenapi.event.ZaakRolCreated
+import com.ritense.zakenapi.event.ZaakRollenListed
+import com.ritense.zakenapi.event.ZaakStatusCreated
+import com.ritense.zakenapi.event.ZaakStatusViewed
+import com.ritense.zakenapi.event.ZaakViewed
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
 import org.springframework.http.HttpHeaders
@@ -30,7 +53,9 @@ import org.springframework.web.reactive.function.client.WebClient
 import java.net.URI
 
 class ZakenApiClient(
-    private val webclientBuilder: WebClient.Builder
+    private val webclientBuilder: WebClient.Builder,
+    private val outboxService: OutboxService,
+    private val objectMapper: ObjectMapper
 ) {
     fun linkDocument(
         authentication: ZakenApiAuthentication,
@@ -52,6 +77,15 @@ class ZakenApiClient(
             .retrieve()
             .toEntity(LinkDocumentResult::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                DocumentLinkedToZaak(
+                    result.body.uuid,
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
 
         return result?.body!!
     }
@@ -78,6 +112,15 @@ class ZakenApiClient(
             .toEntity(ClientTools.getTypedPage(ZaakObject::class.java))
             .block()
 
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakObjectenListed(
+                    objectMapper.valueToTree(result.body.results)
+                )
+            }
+        }
+
         return result?.body!!
     }
 
@@ -101,36 +144,24 @@ class ZakenApiClient(
             .toEntityList(ZaakInformatieObject::class.java)
             .block()
 
-        return result?.body!!
-    }
-
-    fun getInformatieObjectTypen(
-        authentication: ZakenApiAuthentication,
-        informatieobjecttype: URI,
-        catalogUrl: URI
-    ): List<Informatieobjecttype> {
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
-            .get()
-            .uri {
-                ClientTools.baseUrlToBuilder(it, informatieobjecttype)
-                    .queryParam("catalogus", catalogUrl)
-                    .build()
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakInformatieObjectenListed(
+                    objectMapper.valueToTree(result.body)
+                )
             }
-            .retrieve()
-            .toEntityList(Informatieobjecttype::class.java)
-            .block()
+        }
 
         return result?.body!!
     }
 
-    fun getZaakRollen(authentication: ZakenApiAuthentication,
-                      baseUrl: URI,
-                      zaakUrl: URI,
-                      page: Int,
-                      roleType: RolType? = null): Page<Rol> {
+    fun getZaakRollen(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        zaakUrl: URI,
+        page: Int,
+        roleType: RolType? = null
+    ): Page<Rol> {
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -142,7 +173,7 @@ class ZakenApiClient(
                     .queryParam("page", page)
                     .queryParam("zaak", zaakUrl)
                     .apply {
-                        if(roleType != null) {
+                        if (roleType != null) {
                             queryParam("omschrijvingGeneriek", roleType.getApiValue())
                         }
                     }
@@ -152,12 +183,22 @@ class ZakenApiClient(
             .toEntity(ClientTools.getTypedPage(Rol::class.java))
             .block()
 
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakRollenListed(
+                    objectMapper.valueToTree(result.body.results)
+                )
+            }
+        }
+
         return result?.body!!
     }
 
-    fun createZaakRol(authentication: ZakenApiAuthentication,
-                      baseUrl: URI,
-                      rol: Rol): Rol {
+    fun createZaakRol(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        rol: Rol
+    ): Rol {
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -172,6 +213,15 @@ class ZakenApiClient(
             .retrieve()
             .toEntity(Rol::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakRolCreated(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
 
         return result?.body!!
     }
@@ -198,6 +248,15 @@ class ZakenApiClient(
             .toEntity(CreateZaakResponse::class.java)
             .block()
 
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakCreated(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
         return result?.body!!
     }
 
@@ -222,6 +281,40 @@ class ZakenApiClient(
             .retrieve()
             .toEntity(CreateZaakStatusResponse::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakStatusCreated(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
+        return result?.body!!
+    }
+
+    fun getZaakStatus(
+        authentication: ZakenApiAuthentication,
+        zaakStatusUrl: URI,
+    ): ZaakStatus {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri(zaakStatusUrl)
+            .retrieve()
+            .toEntity(ZaakStatus::class.java)
+            .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakStatusViewed(
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
 
         return result?.body!!
     }
@@ -248,6 +341,15 @@ class ZakenApiClient(
             .toEntity(CreateZaakResultaatResponse::class.java)
             .block()
 
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakResultaatCreated(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
         return result?.body!!
     }
 
@@ -269,6 +371,15 @@ class ZakenApiClient(
             .toEntity(ZaakopschortingResponse::class.java)
             .block()
 
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakOpschortingUpdated(
+                    result.body.url,
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
         return result?.body!!
     }
 
@@ -283,6 +394,15 @@ class ZakenApiClient(
             .retrieve()
             .toEntity(ZaakResponse::class.java)
             .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakViewed(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
 
         return result?.body!!
     }

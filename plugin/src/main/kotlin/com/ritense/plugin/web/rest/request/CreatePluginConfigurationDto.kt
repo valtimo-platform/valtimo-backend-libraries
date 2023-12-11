@@ -17,9 +17,11 @@
 package com.ritense.plugin.web.rest.request
 
 import com.fasterxml.jackson.databind.node.ObjectNode
+import java.util.UUID
 
 class CreatePluginConfigurationDto(
     val title: String,
     val properties: ObjectNode,
-    val definitionKey: String
+    val definitionKey: String,
+    val id: UUID? = null,
 )

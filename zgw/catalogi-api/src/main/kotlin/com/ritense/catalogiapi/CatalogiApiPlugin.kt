@@ -210,6 +210,10 @@ class CatalogiApiPlugin(
         return results
     }
 
+    fun getStatustype(statusTypeUrl: URI): Statustype {
+        return client.getStatustype(authenticationPluginConfiguration, url, statusTypeUrl)
+    }
+
     fun getStatustypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Statustype {
         return getStatustypen(zaakTypeUrl)
             .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
@@ -276,6 +280,7 @@ class CatalogiApiPlugin(
 
     companion object {
         val logger = KotlinLogging.logger {}
+        const val PLUGIN_KEY = "catalogiapi"
         const val URL_PROPERTY = "url"
         private val HTTPS_REGEX = "https?://.+".toRegex()
 

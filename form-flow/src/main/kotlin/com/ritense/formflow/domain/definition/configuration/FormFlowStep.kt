@@ -16,9 +16,12 @@
 
 package com.ritense.formflow.domain.definition.configuration
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.FormFlowStep as FormFlowStepEntity
 
+@JsonInclude(Include.NON_EMPTY)
 data class FormFlowStep(
     val key: String,
     val nextStep: String? = null,
@@ -63,5 +66,19 @@ data class FormFlowStep(
             onComplete,
             type
         )
+    }
+
+    companion object {
+        fun fromEntity(entity: FormFlowStepEntity): FormFlowStep {
+            return FormFlowStep(
+                key = entity.id.key,
+                nextStep = null,
+                nextSteps = entity.nextSteps.map { FormFlowNextStep.fromEntity(it) },
+                onBack = entity.onBack,
+                onComplete = entity.onComplete,
+                onOpen = entity.onOpen,
+                type = entity.type
+            )
+        }
     }
 }

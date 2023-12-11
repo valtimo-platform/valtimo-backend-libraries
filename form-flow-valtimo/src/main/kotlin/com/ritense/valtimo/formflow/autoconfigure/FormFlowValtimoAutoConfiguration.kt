@@ -20,12 +20,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.service.DocumentService
 import com.ritense.form.service.PrefillFormService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
+import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.autoconfigure.FormLinkAutoConfiguration
 import com.ritense.formlink.domain.FormLinkTaskProvider
 import com.ritense.formlink.repository.ProcessFormAssociationRepository
 import com.ritense.formlink.service.FormAssociationService
 import com.ritense.formlink.service.FormLinkNewProcessFormFlowProvider
+import com.ritense.outbox.OutboxService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processlink.service.ProcessLinkActivityHandler
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
@@ -35,7 +37,10 @@ import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.FormLinkNewProcessFormFlowProviderImpl
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeCustomComponentHandler
+import com.ritense.valtimo.formflow.event.FormFlowStepCompletedEventListener
+import com.ritense.valtimo.formflow.exporter.FormFlowDefinitionExporter
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
+import com.ritense.valtimo.formflow.importer.FormFlowDefinitionImporter
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper
 import com.ritense.valtimo.formflow.repository.FormFlowProcessLinkRepository
 import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
@@ -182,5 +187,40 @@ class FormFlowValtimoAutoConfiguration {
     @ConditionalOnMissingBean(FormFlowSupportedProcessLinksHandler::class)
     fun formFlowSupportedProcessLinks(formFlowService: FormFlowService): FormFlowSupportedProcessLinksHandler {
         return FormFlowSupportedProcessLinksHandler(formFlowService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowStepCompletedEventListener::class)
+    fun formFlowStepCompletedEventListener(
+        outboxService: OutboxService,
+        objectMapper: ObjectMapper
+    ): FormFlowStepCompletedEventListener {
+        return FormFlowStepCompletedEventListener(
+            outboxService,
+            objectMapper
+        )
+    }
+
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowDefinitionExporter::class)
+    fun formFlowDefinitionExporter(
+        objectMapper: ObjectMapper,
+        formFlowService: FormFlowService
+    ): FormFlowDefinitionExporter {
+        return FormFlowDefinitionExporter(
+            objectMapper,
+            formFlowService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowDefinitionImporter::class)
+    fun formFlowDefinitionImporter(
+        formFlowDeploymentService: FormFlowDeploymentService
+    ): FormFlowDefinitionImporter {
+        return FormFlowDefinitionImporter(
+            formFlowDeploymentService
+        )
     }
 }

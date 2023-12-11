@@ -171,6 +171,41 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
+    void shouldReturnSingleDefinitionRecordByNameForManagement() throws Exception {
+        String definitionName = definition.getId().name();
+        when(documentDefinitionService.findLatestByName(anyString())).thenReturn(Optional.of(definition));
+        mockMvc.perform(get("/api/management/v1/document-definition/{name}", definitionName))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$").isNotEmpty());
+
+        verify(documentDefinitionService).findLatestByName(definitionName);
+    }
+
+    @Test
+    void shouldReturnSingleDefinitionRecordByNameAndVersion() throws Exception {
+        String definitionName = definition.getId().name();
+        long definitionVersion = definition.id().version();
+        when(documentDefinitionService.findByNameAndVersion(definitionName, definitionVersion)).thenReturn(Optional.of(definition));
+        mockMvc.perform(get("/api/management/v1/document-definition/{name}/version/{version}", definitionName, definitionVersion))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$").isNotEmpty());
+    }
+
+    @Test
+    void shouldReturnNoDefinitionRecordByNameAndVersion() throws Exception {
+        String definitionName = definition.getId().name();
+        long definitionVersion = 5;
+        when(documentDefinitionService.findByNameAndVersion(definitionName, definition.getId().version())).thenReturn(Optional.of(definition));
+        mockMvc.perform(get("/api/management/v1/document-definition/{name}/version/{version}", definitionName, definitionVersion))
+            .andDo(print())
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
     void shouldReturnCreateSuccessResult() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest("{\n" +

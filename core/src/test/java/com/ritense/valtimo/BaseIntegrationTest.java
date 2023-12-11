@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo;
 
+import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import org.camunda.bpm.engine.RuntimeService;
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
@@ -43,6 +45,9 @@ public abstract class BaseIntegrationTest {
 
     @MockBean
     public MailSender mailSender;
+
+    @SpyBean
+    public OutboxService outboxService;
 
     @BeforeAll
     static void beforeAll() {

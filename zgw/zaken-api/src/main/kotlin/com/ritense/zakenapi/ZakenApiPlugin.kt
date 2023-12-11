@@ -36,6 +36,7 @@ import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.ZaakResponse
+import com.ritense.zakenapi.domain.ZaakStatus
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
 import com.ritense.zakenapi.domain.rol.BetrokkeneType
 import com.ritense.zakenapi.domain.rol.Rol
@@ -349,6 +350,15 @@ class ZakenApiPlugin(
                     "Retrieving over 50 zaakrol pages. Please consider using a paginated result!"
                 }
             }
+        }
+    }
+
+    fun getZaakStatus(zaakUrl: URI): ZaakStatus? {
+        val zaak = getZaak(zaakUrl)
+        return if (zaak.status == null) {
+            null
+        } else {
+            client.getZaakStatus(authenticationPluginConfiguration, URI(zaak.status))
         }
     }
 

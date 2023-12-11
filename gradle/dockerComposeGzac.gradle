@@ -1,0 +1,50 @@
+/*
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+tasks.register("downloadValtimoDockerCompose") {
+    doFirst {
+        file(buildDir.absolutePath + "/docker").mkdirs()
+        File dockerFile = file(buildDir.absolutePath + "/docker/valtimo-docker-compose.zip")
+        new URL("https://codeload.github.com/generiekzaakafhandelcomponent/gzac-docker-compose/zip/refs/heads/main")
+            .withInputStream { i -> dockerFile.withOutputStream { it << i } }
+    }
+}
+
+tasks.register("downloadAndUnzipValtimoDockerCompose", Copy) {
+    dependsOn tasks.downloadValtimoDockerCompose
+    from zipTree(buildDir.absolutePath + "/docker/valtimo-docker-compose.zip")
+    into file(buildDir.absolutePath + "/docker/extract/")
+}
+
+tasks.register("composeUpGzac") {
+    group = "docker"
+    dependsOn tasks.downloadAndUnzipValtimoDockerCompose
+    dependsOn tasks.composeUp
+    tasks.composeUp.mustRunAfter(tasks.downloadAndUnzipValtimoDockerCompose)
+}
+
+composeBuild {
+    dependsOn tasks.downloadAndUnzipValtimoDockerCompose
+}
+
+composeUp {
+    dependsOn tasks.downloadAndUnzipValtimoDockerCompose
+}
+
+dockerCompose {
+    useComposeFiles.addAll(buildDir.absolutePath + "/docker/extract/gzac-docker-compose-main/docker-compose.yaml")
+    composeAdditionalArgs = ["--profile", "zgw"]
+}
