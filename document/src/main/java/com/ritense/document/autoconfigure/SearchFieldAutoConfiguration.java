@@ -18,12 +18,13 @@ package com.ritense.document.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.exporter.SearchFieldExporter;
+import com.ritense.document.importer.SearchFieldImporter;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.repository.SearchFieldRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.SearchConfigurationDeploymentService;
-import com.ritense.document.service.SearchFieldExporter;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.impl.SearchFieldResource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -49,6 +50,14 @@ public class SearchFieldAutoConfiguration {
         ObjectMapper objectMapper
     ) {
         return new SearchFieldExporter(objectMapper, searchFieldService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SearchFieldImporter.class)
+    public SearchFieldImporter searchFieldImporter(
+        final  SearchConfigurationDeploymentService searchConfigurationDeploymentService
+    ) {
+        return new SearchFieldImporter(searchConfigurationDeploymentService);
     }
 
     @Bean

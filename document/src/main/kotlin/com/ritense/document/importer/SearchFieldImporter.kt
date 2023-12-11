@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-package com.ritense.document.service
+package com.ritense.document.importer
 
-import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
+import com.ritense.document.service.SearchConfigurationDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class JsonSchemaDocumentDefinitionImporter(
-    private val jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService
+class SearchFieldImporter(
+    private val searchConfigurationDeploymentService: SearchConfigurationDeploymentService
 ) : Importer {
-    override fun type() = "documentdefinition"
+    override fun type() = "search"
 
-    override fun dependsOn() = emptySet<String>()
+    override fun dependsOn() = setOf("documentdefinition")
 
-    override fun supports(fileName: String) = fileName.matches(PATH_REGEX)
+    override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        jsonSchemaDocumentDefinitionService.deploy(request.content.toString(Charsets.UTF_8))
+        val documentDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
+        searchConfigurationDeploymentService.deploy(documentDefinitionName, request.content.toString(Charsets.UTF_8))
     }
 
     private companion object {
-        val PATH_REGEX = """config/document/definition/[^/]*\.json""".toRegex()
+        val FILENAME_REGEX = """config/search/([^/]*)\.json""".toRegex()
     }
 }
