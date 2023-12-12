@@ -27,8 +27,11 @@ import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
+
+import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,6 +48,10 @@ public abstract class BaseTest {
     public BaseTest() {
         documentSequenceGeneratorService = mock(DocumentSequenceGeneratorService.class);
         when(documentSequenceGeneratorService.next(any())).thenReturn(1L);
+    }
+
+    protected String readFileAsString(String fileName) throws IOException {
+        return new String(getClass().getResource(fileName).openStream().readAllBytes());
     }
 
     protected CamundaProcessInstanceId processInstanceId() {
