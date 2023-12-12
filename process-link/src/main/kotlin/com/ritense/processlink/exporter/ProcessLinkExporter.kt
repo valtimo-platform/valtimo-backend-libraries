@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.export
+package com.ritense.processlink.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.exporter.ExportFile
