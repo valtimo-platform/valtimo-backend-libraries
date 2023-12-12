@@ -25,7 +25,7 @@ import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.exporter.ExportService
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.importer.ImportService
-import com.ritense.importer.ImportServiceException
+import com.ritense.importer.exception.ImportServiceException
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

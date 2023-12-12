@@ -16,6 +16,10 @@
 
 package com.ritense.importer
 
+import com.ritense.importer.exception.CyclicImporterDependencyException
+import com.ritense.importer.exception.DuplicateImporterTypeException
+import com.ritense.importer.exception.InvalidImportZipException
+import com.ritense.importer.exception.TooManyImportCandidatesException
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -24,17 +28,19 @@ import java.util.zip.ZipOutputStream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 class ValtimoImportServiceTest {
 
     @Test
     fun `should not instantiate on duplicate importer types`() {
-        val exception = assertThrows<ImportServiceException> {
+        val exception = assertThrows<DuplicateImporterTypeException> {
             ValtimoImportService(
                 setOf(
                     TestImporter(),
@@ -43,24 +49,65 @@ class ValtimoImportServiceTest {
             )
         }
 
-        assertThat(exception.message)
-            .isEqualTo("Multiple importers of the same type provided: [test]")
+        assertThat(exception.duplicatedTypes)
+            .isEqualTo(setOf("test"))
+    }
+
+    @Test
+    fun `should filter importer types that depend on unprovided importer`() {
+        val filteredImporter = spy(TestImporter(type = "other", dependsOn = setOf("not-provided")))
+        val service = ValtimoImportService(
+            // Create two importers that both accept the provided file
+            setOf(
+                filteredImporter
+            )
+        )
+
+        //Should not throw TooManyImportCandidatesException, since 'other' is filtered out
+        service.import(createZipInputStream(1))
+
+        verify(filteredImporter, never()).supports(any())
+    }
+
+    @Test
+    fun `should throw TooManyImportCandidatesException`() {
+        val exception = assertThrows<TooManyImportCandidatesException> {
+            val service = ValtimoImportService(
+                // Create two importers that both accept the provided file
+                setOf(
+                    TestImporter("test1"),
+                    TestImporter("test2"),
+                    TestImporter("test3", supportsFunction = { false })
+                )
+            )
+
+            service.import(createZipInputStream(1))
+        }
+
+        assertThat(exception.importerTypes).isEqualTo(setOf("test1", "test2"))
     }
 
     @Test
     fun `should not instantiate on cyclic importer dependencies`() {
-        val exception = assertThrows<ImportServiceException> {
+        val exception = assertThrows<CyclicImporterDependencyException> {
             ValtimoImportService(
                 linkedSetOf(
-                    TestImporter("2", dependsOn = setOf("1","3")),
+                    TestImporter("2", dependsOn = setOf("2")),
                     TestImporter("1"),
-                    TestImporter("3", dependsOn = setOf("2"))
                 )
             )
         }
 
-        assertThat(exception.message)
-            .isEqualTo("Importer dependencies could not be resolved or contain a cyclic reference! Error occurred after: [1]")
+        assertThat(exception.afterImporterTypes)
+            .isEqualTo(setOf("1"))
+    }
+
+    @Test
+    fun `should throw InvalidImportZipException`() {
+        val importService = ValtimoImportService(setOf())
+        assertThrows<InvalidImportZipException> {
+            importService.import("123456".byteInputStream(Charsets.UTF_8))
+        }
     }
 
     @Test
