@@ -34,22 +34,25 @@ import org.springframework.core.io.support.ResourcePatternResolver
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 
-open class CaseListDeploymentService(
+@Transactional
+class CaseListDeploymentService(
     private val resourcePatternResolver: ResourcePatternResolver,
     private val objectMapper: ObjectMapper,
     private val caseDefinitionService: CaseDefinitionService
 ) {
 
-    @Transactional
     @EventListener(ApplicationReadyEvent::class)
     @RunWithoutAuthorization
-    open fun deployColumns() {
+    fun deployColumns() {
         logger.info("Deploying case list column definitions")
         try {
             val resources = loadCaseListResources()
             resources.forEach { resource ->
                 if (resource.filename != null) {
-                    deployColumnsForCase(resource)
+                    deployColumns(
+                        caseDefinitionName = resource.filename!!.substringBeforeLast("."),
+                        jsonContent = StreamUtils.copyToString(resource.inputStream, StandardCharsets.UTF_8)
+                    )
                 }
             }
         } catch (e: Exception) {
@@ -57,15 +60,12 @@ open class CaseListDeploymentService(
         }
     }
 
-    private fun deployColumnsForCase(resource: Resource) {
-        val caseDefinitionName = resource.filename!!.substringBeforeLast(".")
-        val caseColumnsJson = StreamUtils.copyToString(resource.inputStream, StandardCharsets.UTF_8)
-
-        validate(caseColumnsJson)
+    fun deployColumns(caseDefinitionName: String, jsonContent: String) {
+        validate(jsonContent)
 
         val existingColumns = caseDefinitionService.getListColumns(caseDefinitionName)
 
-        val formFlowDefinitionConfig = objectMapper.readValue(caseColumnsJson,
+        val formFlowDefinitionConfig = objectMapper.readValue(jsonContent,
             object : TypeReference<List<CaseListColumnDto>>() {})
 
         caseDefinitionService.updateListColumns(caseDefinitionName, formFlowDefinitionConfig)
