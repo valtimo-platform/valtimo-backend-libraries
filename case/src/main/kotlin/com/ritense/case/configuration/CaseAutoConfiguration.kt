@@ -36,6 +36,7 @@ import com.ritense.case.service.CaseListDeploymentService
 import com.ritense.case.service.CaseListExporter
 import com.ritense.case.service.CaseListImporter
 import com.ritense.case.service.CaseTabExporter
+import com.ritense.case.service.CaseTabImporter
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.web.rest.CaseDefinitionResource
@@ -46,6 +47,7 @@ import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -272,6 +274,13 @@ class CaseAutoConfiguration {
     fun caseListImporter(
         caseListDeploymentService: CaseListDeploymentService
     ) = CaseListImporter(caseListDeploymentService)
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTabImporter::class)
+    fun caseTabImporter(
+        caseTabDeploymentService: CaseTabDeploymentService,
+        changelogDeployer: ChangelogDeployer
+    ) = CaseTabImporter(caseTabDeploymentService, changelogDeployer)
 
     @Bean
     @ConditionalOnMissingBean(CaseDefinitionSettingsExporter::class)
