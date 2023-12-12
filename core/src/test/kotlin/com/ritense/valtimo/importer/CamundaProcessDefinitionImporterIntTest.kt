@@ -40,8 +40,9 @@ class CamundaProcessDefinitionImporterIntTest @Autowired constructor(
     @Test
     fun `should import process definition with bpmn extension`() {
         val validPath = "bpmn/shouldDeploy.bpmn"
-        val inputStream = processDefinition.inputStream
-        val request = ImportRequest(validPath, inputStream.readAllBytes())
+        val request = processDefinition.inputStream.use {
+            ImportRequest(validPath, it.readAllBytes())
+        }
 
         runWithoutAuthorization {
             camundaProcessDefinitionImporter.import(request)
@@ -55,8 +56,9 @@ class CamundaProcessDefinitionImporterIntTest @Autowired constructor(
     @Test
     fun `should not import process definition with xml extension`() {
         val validPath = "bpmn/shouldDeploy.xml"
-        val inputStream = processDefinitionAsXml.inputStream
-        val request = ImportRequest(validPath, inputStream.readAllBytes())
+        val request = processDefinition.inputStream.use {
+            ImportRequest(validPath, it.readAllBytes())
+        }
 
         assertThrows(FileExtensionNotSupportedException::class.java) {
             runWithoutAuthorization {
