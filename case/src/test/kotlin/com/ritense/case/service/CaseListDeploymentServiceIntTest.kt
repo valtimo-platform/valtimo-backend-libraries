@@ -34,7 +34,9 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.Resource
+import org.springframework.transaction.annotation.Transactional
 
+@Transactional
 class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
     @Autowired
     lateinit var caseDefinitionService: CaseDefinitionService
@@ -138,5 +140,44 @@ class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {
         assertFalse(firstColumn.sortable)
         assertEquals(ColumnDefaultSort.DESC, firstColumn.defaultSort)
         assertEquals(0, firstColumn.order)
+    }
+
+    @Test
+    fun `should deploy columns for case definition`() {
+        val caseDefinitionName = "some-document"
+        //load initial configuration
+        val fileContent = """
+            [
+                {
+                    "key": "single-column",
+                    "title": "single-title",
+                    "path": "test:createdOn",
+                    "displayType": {
+                        "type": "date",
+                        "displayTypeParameters": {
+                            "dateFormat": "yyyy-dd-MM"
+                        }
+                    },
+                    "sortable": true,
+                    "defaultSort": "ASC",
+                    "order": 0
+                }
+            ]
+        """.trimIndent()
+
+        val service = CaseListDeploymentService(
+            resourcePatternResolver,
+            objectMapper,
+            caseDefinitionService
+        )
+
+        val column = runWithoutAuthorization {
+            service.deployColumns(caseDefinitionName, fileContent)
+
+            caseDefinitionService.getListColumns("some-document")
+        }.single()
+
+        assertEquals("single-column", column.key)
+        assertEquals("single-title", column.title)
     }
 }
