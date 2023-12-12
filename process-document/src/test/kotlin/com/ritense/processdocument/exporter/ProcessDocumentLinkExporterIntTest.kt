@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.processdocument.export
+package com.ritense.processdocument.exporter
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.exporter.request.DocumentDefinitionExportRequest

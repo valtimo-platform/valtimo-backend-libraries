@@ -84,14 +84,18 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
                     continue;
                 }
                 final var documentDefinitionName = filename.split("\\.")[0];
-                final var processDocumentLinkConfigItems = getJson(IOUtils.toString(resource.getInputStream(), UTF_8));
-
-                if (documentDefinitionService.findLatestByName(documentDefinitionName).isPresent()) {
-                    processDocumentLinkConfigItems.forEach(item -> createProcessDocumentLink(documentDefinitionName, item));
-                }
+                final var content = IOUtils.toString(resource.getInputStream(), UTF_8);
+                deploy(documentDefinitionName, content);
             } catch (IOException e) {
                 logger.error("Error while deploying process-document-link", e);
             }
+        }
+    }
+
+    public void deploy(String documentDefinitionName, String content) throws JsonProcessingException {
+        final var processDocumentLinkConfigItems = getJson(content);
+        if (documentDefinitionService.findLatestByName(documentDefinitionName).isPresent()) {
+            processDocumentLinkConfigItems.forEach(item -> createProcessDocumentLink(documentDefinitionName, item));
         }
     }
 
