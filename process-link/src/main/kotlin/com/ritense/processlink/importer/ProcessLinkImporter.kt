@@ -54,7 +54,7 @@ class ProcessLinkImporter(
                 ?: throw IllegalStateException("Error while deploying '${request.fileName}'. Could not find Process definition with key '$processDefinitionKey'.")
         }
 
-        val jsonTree = objectMapper.readTree(request.content.inputStream().toString(Charsets.UTF_8))
+        val jsonTree = objectMapper.readTree(request.content.toString(Charsets.UTF_8))
         require(jsonTree is ArrayNode) { "Error while processing file ${request.fileName}. Expected root item to be an array!" }
 
         jsonTree.forEachIndexed { index, node ->

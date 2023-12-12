@@ -41,7 +41,9 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
             loadResources().forEach { resource ->
                 val fileName = requireNotNull(resource.filename)
                 logger.info { "Deploying process link from file '${fileName}'" }
-                val importRequest = ImportRequest(fileName, resource.inputStream.readAllBytes())
+                val importRequest = resource.inputStream.use { inputStream ->
+                     ImportRequest(fileName, inputStream.readAllBytes())
+                }
 
                 processLinkImporter.import(importRequest)
             }
