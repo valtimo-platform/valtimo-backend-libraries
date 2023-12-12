@@ -36,7 +36,9 @@ class CamundaProcessDefinitionImporter(
     }
 
     override fun import(request: ImportRequest) {
-        camundaProcessService.deploy(fileNameWithoutPath(request.fileName), ByteArrayInputStream(request.content))
+        request.content.inputStream().use {
+            camundaProcessService.deploy(fileNameWithoutPath(request.fileName), it)
+        }
     }
 
     private fun fileNameWithoutPath(fileName: String): String {
