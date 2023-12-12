@@ -29,7 +29,7 @@ class CaseTabImporter(
 ) : Importer {
     override fun type() = "casetab"
 
-    override fun dependsOn() = emptySet<String>()
+    override fun dependsOn() = setOf("documentdefinition", "form")
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
