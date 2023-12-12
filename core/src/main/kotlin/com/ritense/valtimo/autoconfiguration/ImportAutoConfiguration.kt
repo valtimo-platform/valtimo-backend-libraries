@@ -17,6 +17,7 @@
 
 package com.ritense.valtimo.autoconfiguration
 
+import com.ritense.valtimo.importer.CamundaDecisionDefinitionImporter
 import com.ritense.valtimo.importer.CamundaProcessDefinitionImporter
 import com.ritense.valtimo.service.CamundaProcessService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -31,5 +32,11 @@ class ImportAutoConfiguration {
     fun camundaProcessDefinitionImporter(
         camundaProcessService: CamundaProcessService
     ) = CamundaProcessDefinitionImporter(camundaProcessService)
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun camundaDecisionDefinitionImporter(
+        camundaProcessService: CamundaProcessService
+    ) = CamundaDecisionDefinitionImporter(camundaProcessService)
 
 }
