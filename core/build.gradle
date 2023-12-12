@@ -29,6 +29,7 @@ dependencies {
     implementation project(":resource")
     implementation project(":web")
     implementation project(":exporter")
+    implementation project(":importer")
 
     testImplementation project(':test-utils-common')
 
