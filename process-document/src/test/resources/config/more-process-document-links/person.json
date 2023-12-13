@@ -1,0 +1,7 @@
+[
+    {
+        "processDefinitionKey": "loan-process-demo",
+        "canInitializeDocument": true,
+        "startableByUser": true
+    }
+]

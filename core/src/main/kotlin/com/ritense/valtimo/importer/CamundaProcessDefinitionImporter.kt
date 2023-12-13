@@ -14,28 +14,39 @@
  * limitations under the License.
  */
 
-package com.ritense.case.service
+package com.ritense.valtimo.importer
 
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.valtimo.service.CamundaProcessService
 import org.springframework.transaction.annotation.Transactional
+import java.io.ByteArrayInputStream
 
 @Transactional
-class CaseListImporter(
-    private val caseListDeploymentService: CaseListDeploymentService
+class CamundaProcessDefinitionImporter(
+    private val camundaProcessService: CamundaProcessService
 ) : Importer {
-    override fun type() = "caselist"
+    override fun type() = "processdefinition"
 
-    override fun dependsOn() = setOf("documentdefinition")
+    override fun dependsOn(): Set<String> = emptySet()
 
-    override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
+    override fun supports(fileName: String): Boolean {
+        return fileName.startsWith(PATH)
+            && fileName.substringAfterLast('.') == EXTENSION
+    }
 
     override fun import(request: ImportRequest) {
-        val caseDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        caseListDeploymentService.deployColumns(caseDefinitionName, request.content.toString(Charsets.UTF_8))
+        request.content.inputStream().use {
+            camundaProcessService.deploy(fileNameWithoutPath(request.fileName), it)
+        }
+    }
+
+    private fun fileNameWithoutPath(fileName: String): String {
+        return fileName.substringAfterLast('/')
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/case/list/([^/]+)\.json""".toRegex()
+            private const val PATH = "bpmn/"
+            private const val EXTENSION = "bpmn"
     }
 }

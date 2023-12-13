@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-package com.ritense.case.service
+package com.ritense.document.importer
 
+import com.ritense.document.service.SearchConfigurationDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class CaseListImporter(
-    private val caseListDeploymentService: CaseListDeploymentService
+class SearchFieldImporter(
+    private val searchConfigurationDeploymentService: SearchConfigurationDeploymentService
 ) : Importer {
-    override fun type() = "caselist"
+    override fun type() = "search"
 
     override fun dependsOn() = setOf("documentdefinition")
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        val caseDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        caseListDeploymentService.deployColumns(caseDefinitionName, request.content.toString(Charsets.UTF_8))
+        val documentDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
+        searchConfigurationDeploymentService.deploy(documentDefinitionName, request.content.toString(Charsets.UTF_8))
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/case/list/([^/]+)\.json""".toRegex()
+        val FILENAME_REGEX = """config/search/([^/]*)\.json""".toRegex()
     }
 }

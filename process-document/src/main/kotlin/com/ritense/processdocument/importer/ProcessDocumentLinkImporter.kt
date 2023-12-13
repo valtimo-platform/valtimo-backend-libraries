@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-package com.ritense.case.service
+package com.ritense.processdocument.importer
 
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.processdocument.service.ProcessDocumentDeploymentService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class CaseListImporter(
-    private val caseListDeploymentService: CaseListDeploymentService
+class ProcessDocumentLinkImporter(
+    private val processDocumentDeploymentService: ProcessDocumentDeploymentService,
 ) : Importer {
-    override fun type() = "caselist"
 
-    override fun dependsOn() = setOf("documentdefinition")
+    override fun type() = "processdocumentlink"
+
+    override fun dependsOn() = setOf("documentdefinition", "processdefinition")
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        val caseDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        caseListDeploymentService.deployColumns(caseDefinitionName, request.content.toString(Charsets.UTF_8))
+        val formFlowKey = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
+        processDocumentDeploymentService.deploy(formFlowKey, request.content.toString(Charsets.UTF_8))
     }
 
-    private companion object {
-        val FILENAME_REGEX = """config/case/list/([^/]+)\.json""".toRegex()
+    companion object {
+        private val FILENAME_REGEX = """config/process-document-link/([^/]+)\.json""".toRegex()
     }
 }

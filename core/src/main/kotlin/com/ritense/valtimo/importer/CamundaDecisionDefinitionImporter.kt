@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
-package com.ritense.case.service
+package com.ritense.valtimo.importer
 
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.valtimo.service.CamundaProcessService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class CaseListImporter(
-    private val caseListDeploymentService: CaseListDeploymentService
+class CamundaDecisionDefinitionImporter(
+    private val camundaProcessService: CamundaProcessService
 ) : Importer {
-    override fun type() = "caselist"
+    override fun type() = "decisiondefinition"
 
-    override fun dependsOn() = setOf("documentdefinition")
+    override fun dependsOn(): Set<String> = emptySet()
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        val caseDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        caseListDeploymentService.deployColumns(caseDefinitionName, request.content.toString(Charsets.UTF_8))
+        val fileName = request.fileName.substringAfterLast("/")
+        request.content.inputStream().use {
+            camundaProcessService.deploy(fileName, it)
+        }
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/case/list/([^/]+)\.json""".toRegex()
+        val FILENAME_REGEX = """(?:dmn|bpmn)/[^/]+\.dmn""".toRegex()
     }
 }

@@ -16,26 +16,28 @@
 
 package com.ritense.case.service
 
+import com.ritense.case.deployment.CaseTabDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class CaseListImporter(
-    private val caseListDeploymentService: CaseListDeploymentService
+class CaseTabImporter(
+    private val caseTabDeploymentService: CaseTabDeploymentService,
+    private val changelogDeployer: ChangelogDeployer
 ) : Importer {
-    override fun type() = "caselist"
+    override fun type() = "casetab"
 
-    override fun dependsOn() = setOf("documentdefinition")
+    override fun dependsOn() = setOf("documentdefinition", "form")
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        val caseDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        caseListDeploymentService.deployColumns(caseDefinitionName, request.content.toString(Charsets.UTF_8))
+        changelogDeployer.deploy(caseTabDeploymentService, request.fileName, request.content.toString(Charsets.UTF_8))
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/case/list/([^/]+)\.json""".toRegex()
+        val FILENAME_REGEX = """config/case-tabs/([^/]+)\.case-tabs\.json""".toRegex()
     }
 }

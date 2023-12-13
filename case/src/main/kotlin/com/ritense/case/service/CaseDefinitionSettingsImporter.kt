@@ -18,13 +18,11 @@ package com.ritense.case.service
 
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
-import org.springframework.transaction.annotation.Transactional
 
-@Transactional
-class CaseListImporter(
-    private val caseListDeploymentService: CaseListDeploymentService
+class CaseDefinitionSettingsImporter(
+    private val deploymentService: CaseDefinitionDeploymentService
 ) : Importer {
-    override fun type() = "caselist"
+    override fun type() = "casesettings"
 
     override fun dependsOn() = setOf("documentdefinition")
 
@@ -32,10 +30,10 @@ class CaseListImporter(
 
     override fun import(request: ImportRequest) {
         val caseDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        caseListDeploymentService.deployColumns(caseDefinitionName, request.content.toString(Charsets.UTF_8))
+        deploymentService.deploy(caseDefinitionName, request.content.toString(Charsets.UTF_8))
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/case/list/([^/]+)\.json""".toRegex()
+        val FILENAME_REGEX = """config/case/definition/([^/]+)\.json""".toRegex()
     }
 }
