@@ -23,6 +23,7 @@ import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.request.FormDefinitionExportRequest
 import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayOutputStream
 
@@ -48,7 +49,10 @@ class JsonSchemaDocumentDefinitionExporter(
             )
         }
 
-        return ExportResult(exportFile)
+        return ExportResult(
+            exportFile,
+            setOf(FormDefinitionExportRequest(request.name + ".summary", true))
+        )
     }
 
     companion object {
