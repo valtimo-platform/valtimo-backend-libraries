@@ -24,6 +24,8 @@ import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerIm
 import com.ritense.document.domain.impl.listener.DocumentRelatedFileSubmittedEventListenerImpl;
 import com.ritense.document.domain.impl.listener.RelatedJsonSchemaDocumentAvailableEventListenerImpl;
 import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
+import com.ritense.document.exporter.JsonSchemaDocumentDefinitionExporter;
+import com.ritense.document.importer.JsonSchemaDocumentDefinitionImporter;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.repository.DocumentDefinitionSequenceRepository;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
@@ -32,8 +34,6 @@ import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentStatisticService;
-import com.ritense.document.service.JsonSchemaDocumentDefinitionExporter;
-import com.ritense.document.service.JsonSchemaDocumentDefinitionImporter;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionSequenceGeneratorService;
@@ -60,6 +60,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
 import javax.persistence.EntityManager;
 import java.util.Optional;
 
