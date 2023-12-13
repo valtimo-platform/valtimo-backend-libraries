@@ -14,47 +14,66 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.autodeployment
+package com.ritense.processlink.importer
 
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.importer.ImportRequest
 import com.ritense.processlink.BaseIntegrationTest
 import com.ritense.processlink.domain.CustomProcessLink
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers
-import org.hamcrest.Matchers.hasSize
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
-
 @Transactional
-class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired constructor(
-    private val repositoryService: CamundaRepositoryService,
+@ExtendWith(MockitoExtension::class)
+class ProcessLinkImporterIntTest @Autowired constructor(
+    private val processLinkImporter: ProcessLinkImporter,
     private val processLinkRepository: ProcessLinkRepository,
-    private val listener: ProcessLinkDeploymentApplicationReadyEventListener
-): BaseIntegrationTest() {
+    private val repositoryService: CamundaRepositoryService
+) : BaseIntegrationTest() {
 
     @Test
-    fun `should find 1 deployed process link on service task`() {
-        listener.deployProcessLinks()
+    fun `should dependsOn types from mappers`() {
+        Assertions.assertThat(processLinkImporter.dependsOn()).isEqualTo(setOf("processdefinition", "test"))
+    }
+
+    @Test
+    fun `should deploy processLinks`() {
+        processLinkImporter.import(ImportRequest(
+            "auto-deploy-process-link.processlink.json",
+            JSON.toByteArray(Charsets.UTF_8)
+        ))
 
         val processDefinition = getLatestProcessDefinition()
         val processLinks =
             processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinition.id, "my-service-task")
 
-        assertThat(processLinks, hasSize(1))
-        val processLink = processLinks.first()
-        assertThat(processLink, Matchers.isA(CustomProcessLink::class.java))
-        processLink as CustomProcessLink
-        assertThat(processLink.someValue, Matchers.equalTo("test"))
+        val processLink = requireNotNull(processLinks.single() as? CustomProcessLink)
+        Assertions.assertThat(processLink.someValue).isEqualTo("importer test")
     }
 
     private fun getLatestProcessDefinition(): CamundaProcessDefinition {
         return AuthorizationContext.runWithoutAuthorization {
             repositoryService.findLatestProcessDefinition("auto-deploy-process-link")!!
         }
+    }
+
+    private companion object {
+        const val JSON = """
+            [
+                {
+                    "activityId": "my-service-task",
+                    "activityType": "bpmn:ServiceTask:start",
+                    "processLinkType": "test",
+                    "someValue": "importer test"
+                }
+            ]
+        """
     }
 }

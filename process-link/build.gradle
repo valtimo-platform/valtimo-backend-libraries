@@ -25,6 +25,7 @@ dependencies {
     implementation project(":contract")
     implementation project(":core")
     implementation project(":exporter")
+    implementation project(":importer")
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter"
