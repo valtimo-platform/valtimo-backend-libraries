@@ -34,6 +34,6 @@ class CaseDefinitionSettingsImporter(
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/case/definition/([^/]*)\.json""".toRegex()
+        val FILENAME_REGEX = """config/case/definition/([^/]+)\.json""".toRegex()
     }
 }
