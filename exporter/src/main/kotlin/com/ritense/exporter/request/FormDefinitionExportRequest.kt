@@ -17,5 +17,6 @@
 package com.ritense.exporter.request
 
 data class FormDefinitionExportRequest(
-    val formDefinitionName: String
-) : ExportRequest()
+    val formDefinitionName: String,
+    override val isOptional: Boolean = false
+) : ExportRequest(isOptional)

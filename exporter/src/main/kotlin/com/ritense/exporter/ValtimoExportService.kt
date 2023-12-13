@@ -18,6 +18,7 @@ package com.ritense.exporter
 
 import com.ritense.exporter.request.ExportRequest
 import java.io.ByteArrayOutputStream
+import java.util.NoSuchElementException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -53,13 +54,20 @@ class ValtimoExportService (
             if (isEmpty()) {
                 logger.error { "No exporter found for export request of type '${request::class.java}'" }
             }
-        }.flatMap { exporter ->
-            val result = exporter.export(request)
-            result.exportFiles +
-                result.relatedRequests.flatMap {
+        }.mapNotNull { exporter ->
+            try {
+                val result = exporter.export(request)
+                result.exportFiles + result.relatedRequests.flatMap {
                     collectExportFiles(it, history)
                 }
-        }.toSet()
+            } catch (e: NoSuchElementException) {
+                if (request.isOptional) {
+                    null
+                } else {
+                    throw e
+                }
+            }
+        }.flatten().toSet()
     }
 
     companion object {
