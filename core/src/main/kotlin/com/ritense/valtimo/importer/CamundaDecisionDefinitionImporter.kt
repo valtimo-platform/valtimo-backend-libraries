@@ -14,30 +14,31 @@
  * limitations under the License.
  */
 
-package com.ritense.case.service
+package com.ritense.valtimo.importer
 
-import com.ritense.case.deployment.CaseTabDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
-import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import com.ritense.valtimo.service.CamundaProcessService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class CaseTabImporter(
-    private val caseTabDeploymentService: CaseTabDeploymentService,
-    private val changelogDeployer: ChangelogDeployer
+class CamundaDecisionDefinitionImporter(
+    private val camundaProcessService: CamundaProcessService
 ) : Importer {
-    override fun type() = "casetab"
+    override fun type() = "decisiondefinition"
 
-    override fun dependsOn() = setOf("documentdefinition", "form")
+    override fun dependsOn(): Set<String> = emptySet()
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        changelogDeployer.deploy(caseTabDeploymentService, request.fileName, request.content.toString(Charsets.UTF_8))
+        val fileName = request.fileName.substringAfterLast("/")
+        request.content.inputStream().use {
+            camundaProcessService.deploy(fileName, it)
+        }
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/case-tabs/([^/]+)\.case-tabs\.json""".toRegex()
+        val FILENAME_REGEX = """(?:dmn|bpmn)/[^/]+\.dmn""".toRegex()
     }
 }
