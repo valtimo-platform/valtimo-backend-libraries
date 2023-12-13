@@ -35,5 +35,12 @@ interface ProcessLinkMapper {
         updateRequestDto: ProcessLinkUpdateRequestDto
     ): ProcessLink
 
+    /**
+     * Used by the export service.
+     * Should return export requests the provided processLink depends on.
+     * @param processLink The processLink to create related export requests for
+     */
     fun createRelatedExportRequests(processLink: ProcessLink): Set<ExportRequest> = setOf()
+
+    fun getImporterType(): String? = null
 }

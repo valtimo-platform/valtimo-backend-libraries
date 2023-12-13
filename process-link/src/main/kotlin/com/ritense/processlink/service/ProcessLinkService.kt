@@ -113,6 +113,12 @@ open class ProcessLinkService(
             ?: throw IllegalStateException("No ProcessLinkMapper found for processLinkType $processLinkType")
     }
 
+    fun getImporterDependsOnTypes() : Set<String> {
+        return processLinkMappers.mapNotNull {
+            it.getImporterType()
+        }.toSet()
+    }
+
     fun getSupportedProcessLinkTypes(activityType: String): List<ProcessLinkType> {
         return processLinkTypes.mapNotNull {
             it.getProcessLinkType(activityType)
