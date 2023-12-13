@@ -70,7 +70,6 @@ open class ProcessLinkService(
         return processLinkRepository.findByProcessDefinitionIdAndActivityType(processDefinitionId, activityType)
     }
 
-    @Transactional
     @Throws(ProcessLinkExistsException::class)
     fun createProcessLink(createRequest: ProcessLinkCreateRequestDto): ProcessLink {
         val mapper = getProcessLinkMapper(createRequest.processLinkType)
