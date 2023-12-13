@@ -36,6 +36,6 @@ class JsonSchemaDocumentDefinitionImporter(
     }
 
     private companion object {
-        val PATH_REGEX = """config/document/definition/[^/]*\.json""".toRegex()
+        val PATH_REGEX = """config/document/definition/[^/]+\.json""".toRegex()
     }
 }

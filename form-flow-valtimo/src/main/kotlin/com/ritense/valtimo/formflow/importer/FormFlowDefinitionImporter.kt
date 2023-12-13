@@ -37,6 +37,6 @@ class FormFlowDefinitionImporter(
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/form-flow/([^/]*)\.json""".toRegex()
+        val FILENAME_REGEX = """config/form-flow/([^/]+)\.json""".toRegex()
     }
 }
