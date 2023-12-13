@@ -109,6 +109,7 @@ open class ValtimoImportService(
 
         importerEntriesMap.forEach { (importer, entries) ->
             entries.forEach { entry ->
+                logger.debug { "Importing ${entry.fileName} with importer ${importer.type()}" }
                 importer.import(ImportRequest(entry.fileName, entry.content))
             }
         }
