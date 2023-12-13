@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
-package com.ritense.document.importer
+package com.ritense.valtimo.importer
 
-import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.valtimo.service.CamundaProcessService
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
-class JsonSchemaDocumentDefinitionImporter(
-    private val jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService
+class CamundaDecisionDefinitionImporter(
+    private val camundaProcessService: CamundaProcessService
 ) : Importer {
-    override fun type() = "documentdefinition"
+    override fun type() = "decisiondefinition"
 
-    override fun dependsOn() = emptySet<String>()
+    override fun dependsOn(): Set<String> = emptySet()
 
-    override fun supports(fileName: String) = fileName.matches(PATH_REGEX)
+    override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
-        jsonSchemaDocumentDefinitionService.deploy(request.content.toString(Charsets.UTF_8))
+        val fileName = request.fileName.substringAfterLast("/")
+        request.content.inputStream().use {
+            camundaProcessService.deploy(fileName, it)
+        }
     }
 
     private companion object {
-        val PATH_REGEX = """config/document/definition/[^/]+\.json""".toRegex()
+        val FILENAME_REGEX = """(?:dmn|bpmn)/[^/]+\.dmn""".toRegex()
     }
 }

@@ -38,6 +38,6 @@ class CaseTabImporter(
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/case-tabs/([^/]*)\.case-tabs\.json""".toRegex()
+        val FILENAME_REGEX = """config/case-tabs/([^/]+)\.case-tabs\.json""".toRegex()
     }
 }
