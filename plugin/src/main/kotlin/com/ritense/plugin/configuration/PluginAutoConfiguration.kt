@@ -29,6 +29,7 @@ import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginConfigurationSearchRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.plugin.repository.PluginProcessLinkRepositoryImpl
 import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.EncryptionService
@@ -58,7 +59,7 @@ import javax.validation.Validator
         PluginCategoryRepository::class,
         PluginConfigurationRepository::class,
         PluginDefinitionRepository::class,
-        PluginProcessLinkRepository::class,
+        PluginProcessLinkRepositoryImpl::class,
         PluginPropertyRepository::class,
     ]
 )
@@ -152,6 +153,14 @@ class PluginAutoConfiguration {
         pluginService: PluginService
     ): PluginConfigurationResource {
         return PluginConfigurationResource(pluginService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PluginProcessLinkRepository::class)
+    fun pluginProcessLinkRepository(
+        pluginProcessLinkRepositoryImpl: PluginProcessLinkRepositoryImpl
+    ): PluginProcessLinkRepository {
+        return PluginProcessLinkRepository(pluginProcessLinkRepositoryImpl)
     }
 
     @Bean
