@@ -56,7 +56,7 @@ class CamundaDecisionDefinitionImporterTest(
     }
 
     @Test
-    fun `should not support non-caselist fileName`() {
+    fun `should not support non-dmn fileName`() {
         assertThat(importer.supports("bpmn/test.json")).isFalse()
         assertThat(importer.supports("bpmn/x/test.dmn")).isFalse()
         assertThat(importer.supports("dmn/test.json")).isFalse()
