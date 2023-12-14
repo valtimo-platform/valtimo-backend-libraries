@@ -27,9 +27,7 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
-import com.ritense.smartdocuments.domain.DocumentFormatOption
-import com.ritense.smartdocuments.domain.FileStreamResponse
-import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.domain.*
 import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.utils.RequestHelper
@@ -55,13 +53,13 @@ class SmartDocumentsPlugin(
 
     @URL
     @PluginProperty(key = "url", required = true, secret = false)
-    private lateinit var url: String
+    lateinit var url: String
 
     @PluginProperty(key = "username", required = true, secret = false)
-    private lateinit var username: String
+    lateinit var username: String
 
     @PluginProperty(key = "password", required = true, secret = true)
-    private lateinit var password: String
+    lateinit var password: String
 
     @PluginAction(
         key = "generate-document",
@@ -87,6 +85,34 @@ class SmartDocumentsPlugin(
             saveGeneratedDocumentToTempFile(generatedDocument)
         }
         execution.setVariable(resultingDocumentProcessVariableName, resourceId)
+    }
+
+    @PluginAction(
+        key = "get-template-names",
+        title = "Get Template Names",
+        description = "Fetch the template names of a template group.",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun getTemplateNames(
+        @PluginActionProperty templateGroupName: String,
+    ): List<String> {
+        val documentsStructure = smartDocumentsClient.getDocumentStructure() ?: return emptyList()
+        val templateGroup = findTemplateGroupByName(documentsStructure.templatesStructure.templateGroups, templateGroupName)
+        return templateGroup?.templates?.map { it.name } ?: emptyList()
+    }
+
+    private fun findTemplateGroupByName(templateGroups: List<TemplateGroup>, groupName: String): TemplateGroup? {
+        for (group in templateGroups) {
+            if (group.name == groupName) {
+                return group
+            }
+
+            val foundInChildGroups = findTemplateGroupByName(group.templateGroups, groupName)
+            if (foundInChildGroups != null) {
+                return foundInChildGroups
+            }
+        }
+        return null
     }
 
     private fun saveGeneratedDocumentToTempFile(generatedDocument: FileStreamResponse): String {

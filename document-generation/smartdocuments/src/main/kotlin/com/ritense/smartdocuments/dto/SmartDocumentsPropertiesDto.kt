@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.smartdocuments.domain
+package com.ritense.smartdocuments.dto
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
-data class SmartDocumentsRequest(
-    val customerData: Map<String, Any?>,
-    @JsonProperty("SmartDocument") val smartDocument: SmartDocument,
-) {
-
-    data class SmartDocument(
-        @JsonProperty("Selection") val selection: Selection,
-    )
-
-    data class Selection(
-        @JsonProperty("com.ritense.smartdocuments.domain.TemplateGroup") val templateGroup: String,
-        @JsonProperty("com.ritense.smartdocuments.domain.Template") val template: String,
-    )
-}
+data class SmartDocumentsPropertiesDto(
+    val url: String,
+    val username: String,
+    val password: String
+)

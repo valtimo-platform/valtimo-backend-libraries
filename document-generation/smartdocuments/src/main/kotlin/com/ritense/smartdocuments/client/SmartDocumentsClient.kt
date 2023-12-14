@@ -16,16 +16,22 @@
 
 package com.ritense.smartdocuments.client
 
+import com.ritense.smartdocuments.domain.DocumentsStructure
 import com.fasterxml.jackson.core.JsonFactory
+import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.FileStreamResponse
 import com.ritense.smartdocuments.domain.FilesResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
+import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
+import mu.KLogger
+import mu.KotlinLogging
 import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
@@ -43,13 +49,32 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import reactor.core.publisher.Mono
 
 class SmartDocumentsClient(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
     private val smartDocumentsWebClientBuilder: WebClient.Builder,
     private val maxFileSizeMb: Int,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
+    private val pluginService: PluginService
 ) {
+
+    fun getDocumentStructure(): DocumentsStructure? {
+        return pluginWebClient().get()
+                .uri(STRUCTURE_PATH)
+                .retrieve()
+                .onStatus(
+                    { statusCode -> statusCode.is4xxClientError || statusCode.is5xxServerError },
+                    { clientResponse ->
+                        val statusCode = clientResponse.statusCode()
+                        logger.warn { "SmartDocuments has not returned a DocumentStructure. Status code: $statusCode" }
+                        Mono.empty()
+                    }
+                )
+                .toEntity(DocumentsStructure::class.java)
+                .block()
+                ?.body
+    }
 
     fun generateDocument(
         smartDocumentsRequest: SmartDocumentsRequest,
@@ -157,6 +182,21 @@ class SmartDocumentsClient(
         this.smartDocumentsConnectorProperties = smartDocumentsConnectorProperties
     }
 
+    private fun pluginWebClient(): WebClient {
+        val pluginProperties = getSmartDocumentsPluginData()
+
+        val basicAuthentication = ExchangeFilterFunctions.basicAuthentication(
+            pluginProperties.username,
+            pluginProperties.password
+        )
+
+        return smartDocumentsWebClientBuilder
+            .clone()
+            .baseUrl(smartDocumentsConnectorProperties.url!!)
+            .filter(basicAuthentication)
+            .build()
+    }
+
     private fun webClient(): WebClient {
         val basicAuthentication = ExchangeFilterFunctions.basicAuthentication(
             smartDocumentsConnectorProperties.username!!,
@@ -230,5 +270,25 @@ class SmartDocumentsClient(
         val documentDataStart: Long,
         val documentDataEnd: Long,
     )
+
+    private fun getSmartDocumentsPluginData(): SmartDocumentsPropertiesDto {
+        val pluginInstance = pluginService
+            .createInstance(SmartDocumentsPlugin::class.java) { true }
+
+        requireNotNull(pluginInstance) { "No plugin found" }
+
+        return SmartDocumentsPropertiesDto(
+            url = pluginInstance.url,
+            username = pluginInstance.username,
+            password = pluginInstance.password,
+        )
+    }
+
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
+
+        private const val STRUCTURE_PATH = "sdapi/structure"
+    }
 
 }
