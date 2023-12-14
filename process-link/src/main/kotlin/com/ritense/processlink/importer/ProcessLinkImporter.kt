@@ -83,6 +83,4 @@ class ProcessLinkImporter(
         val logger: KLogger = KotlinLogging.logger {}
         val FILENAME_REGEX = """(?:.*\/)?(.+)\.processlink\.json""".toRegex()
     }
-
-
 }
