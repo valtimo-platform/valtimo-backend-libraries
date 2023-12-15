@@ -195,12 +195,13 @@ internal class PluginConfigurationResourceTest {
         val plugin = PluginDefinition("key", "title", "description", "className")
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.newId(), "title", properties, plugin)
 
-        whenever(pluginService.createPluginConfiguration(any(), any(), any())).thenReturn(pluginConfiguration)
+        whenever(pluginService.createPluginConfiguration(any(), any(), any(), any())).thenReturn(pluginConfiguration)
 
         val pluginConfiguratieDto = CreatePluginConfigurationDto(
             "title",
             properties,
-            "key"
+            "key",
+            UUID.fromString("3ab43f1a-0154-4658-82b8-41527def0aee")
         )
 
         mockMvc.perform(
@@ -231,6 +232,7 @@ internal class PluginConfigurationResourceTest {
                 jsonPath("$.pluginDefinition.fullyQualifiedClassName").doesNotExist())
 
         verify(pluginService).createPluginConfiguration(
+            PluginConfigurationId.existingId(UUID.fromString("3ab43f1a-0154-4658-82b8-41527def0aee")),
             "title",
             properties,
             "key")
@@ -242,7 +244,7 @@ internal class PluginConfigurationResourceTest {
         val plugin = PluginDefinition("key", "title", "description", "className")
         val pluginConfigurationId = UUID.randomUUID()
         val pluginConfiguration = PluginConfiguration(PluginConfigurationId.existingId(pluginConfigurationId), "title", properties, plugin)
-        whenever(pluginService.updatePluginConfiguration(any(), any(), any())).thenReturn(pluginConfiguration)
+        whenever(pluginService.updatePluginConfiguration(any(), any(), any(), any())).thenReturn(pluginConfiguration)
 
         val pluginConfiguratieDto = UpdatePluginConfigurationDto(
             "title",
@@ -275,6 +277,7 @@ internal class PluginConfigurationResourceTest {
                 jsonPath("$.pluginDefinition.fullyQualifiedClassName").doesNotExist())
 
         verify(pluginService).updatePluginConfiguration(
+            PluginConfigurationId.existingId(pluginConfigurationId),
             PluginConfigurationId.existingId(pluginConfigurationId),
             "title",
             properties)
