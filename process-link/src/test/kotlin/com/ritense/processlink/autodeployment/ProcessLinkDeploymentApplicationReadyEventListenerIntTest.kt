@@ -27,15 +27,20 @@ import org.hamcrest.Matchers
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 
 
+@Transactional
 class ProcessLinkDeploymentApplicationReadyEventListenerIntTest @Autowired constructor(
     private val repositoryService: CamundaRepositoryService,
-    private val processLinkRepository: ProcessLinkRepository
+    private val processLinkRepository: ProcessLinkRepository,
+    private val listener: ProcessLinkDeploymentApplicationReadyEventListener
 ): BaseIntegrationTest() {
 
     @Test
     fun `should find 1 deployed process link on service task`() {
+        listener.deployProcessLinks()
+
         val processDefinition = getLatestProcessDefinition()
         val processLinks =
             processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinition.id, "my-service-task")

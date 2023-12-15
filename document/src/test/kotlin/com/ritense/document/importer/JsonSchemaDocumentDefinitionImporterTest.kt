@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.document.service
+package com.ritense.document.importer
 
+import com.ritense.document.importer.JsonSchemaDocumentDefinitionImporter
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.importer.ImportRequest
 import org.assertj.core.api.Assertions.assertThat

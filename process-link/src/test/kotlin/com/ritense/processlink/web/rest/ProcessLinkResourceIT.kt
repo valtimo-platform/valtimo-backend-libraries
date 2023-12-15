@@ -19,11 +19,14 @@ package com.ritense.processlink.web.rest
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.processlink.BaseIntegrationTest
+import com.ritense.processlink.autodeployment.ProcessLinkDeploymentApplicationReadyEventListener
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.processlink.domain.CustomProcessLink
 import com.ritense.processlink.domain.CustomProcessLinkCreateRequestDto
 import com.ritense.processlink.domain.CustomProcessLinkUpdateRequestDto
 import com.ritense.processlink.repository.ProcessLinkRepository
+import java.nio.charset.StandardCharsets
+import java.util.UUID
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -39,18 +42,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
-import java.nio.charset.StandardCharsets
-import java.util.UUID
 
 
-internal class ProcessLinkResourceIT : BaseIntegrationTest() {
-
-    @Autowired
-    lateinit var webApplicationContext: WebApplicationContext
-
-    @Autowired
-    lateinit var processLinkRepository: ProcessLinkRepository
-
+@Transactional
+internal class ProcessLinkResourceIT @Autowired constructor(
+    private val webApplicationContext: WebApplicationContext,
+    private val processLinkRepository: ProcessLinkRepository,
+    private val listener: ProcessLinkDeploymentApplicationReadyEventListener
+) : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
 
@@ -62,7 +61,6 @@ internal class ProcessLinkResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `should create a process-link`() {
         val createDto = CustomProcessLinkCreateRequestDto(
             processDefinitionId = PROCESS_DEF_ID,
@@ -82,7 +80,6 @@ internal class ProcessLinkResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `should create a process-link without processLinkType`() {
         val createDto = CustomProcessLinkCreateRequestDto(
             processDefinitionId = PROCESS_DEF_ID,
@@ -106,7 +103,6 @@ internal class ProcessLinkResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `should list process-links`() {
         createProcessLink()
 
@@ -126,7 +122,6 @@ internal class ProcessLinkResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `should update a process-link`() {
         val processLinkId = createProcessLink()
 
@@ -146,8 +141,9 @@ internal class ProcessLinkResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    @Transactional
     fun `should export process-links`() {
+        listener.deployProcessLinks()
+
         mockMvc.perform(
             get("/api/v1/process-link/export")
                 .param("processDefinitionKey", "auto-deploy-process-link")

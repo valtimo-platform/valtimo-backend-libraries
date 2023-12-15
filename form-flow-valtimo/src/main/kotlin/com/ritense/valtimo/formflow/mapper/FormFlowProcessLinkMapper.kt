@@ -120,6 +120,8 @@ class FormFlowProcessLinkMapper(
         return setOf(FormFlowDefinitionExportRequest(processLink.formFlowDefinitionId))
     }
 
+    override fun getImporterType() = "formflow"
+
     companion object {
         const val PROCESS_LINK_TYPE_FORM_FLOW = "form-flow"
     }

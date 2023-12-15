@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package com.ritense.importer
+package com.ritense.importer.exception
 
-class ImportServiceException(message: String?) : RuntimeException(message)
+open class ImportServiceException(message: String?) : RuntimeException(message)

@@ -14,27 +14,36 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.export
+package com.ritense.processlink.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.processlink.BaseIntegrationTest
+import com.ritense.processlink.autodeployment.ProcessLinkDeploymentApplicationReadyEventListener
 import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
-@Transactional(readOnly = true)
+@Transactional
 class ProcessLinkExporterIntTest @Autowired constructor(
     private val objectMapper: ObjectMapper,
     private val camundaRepositoryService: CamundaRepositoryService,
-    private val processLinkExporter: ProcessLinkExporter
+    private val processLinkExporter: ProcessLinkExporter,
+    private val listener: ProcessLinkDeploymentApplicationReadyEventListener
 ) : BaseIntegrationTest() {
+
+
+    @BeforeEach
+    fun before() {
+        listener.deployProcessLinks()
+    }
 
     @Test
     fun `should export process links`(): Unit = runWithoutAuthorization {

@@ -14,36 +14,38 @@
  * limitations under the License.
  */
 
-package com.ritense.document.service
+package com.ritense.document.exporter
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
-import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
+import com.ritense.document.domain.search.SearchConfigurationDto
+import com.ritense.document.service.SearchFieldService
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
-import java.io.ByteArrayOutputStream
 import org.springframework.transaction.annotation.Transactional
+import java.io.ByteArrayOutputStream
 
 @Transactional(readOnly = true)
-class JsonSchemaDocumentDefinitionExporter(
+class SearchFieldExporter(
     private val objectMapper: ObjectMapper,
-    private val documentDefinitionService: JsonSchemaDocumentDefinitionService
+    private val searchFieldService: SearchFieldService,
 ) : Exporter<DocumentDefinitionExportRequest> {
 
-    override fun supports(): Class<DocumentDefinitionExportRequest> =
-        DocumentDefinitionExportRequest::class.java
+    override fun supports() = DocumentDefinitionExportRequest::class.java
 
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
-        val documentDefinitionId = JsonSchemaDocumentDefinitionId.existingId(request.name, request.version)
-        val documentDefinition = documentDefinitionService.findBy(documentDefinitionId).orElseThrow()
+        val searchFields = searchFieldService.getSearchFields(request.name)
+
+        if (searchFields.isEmpty()) {
+            return ExportResult()
+        }
 
         val exportFile = ByteArrayOutputStream().use {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(it, documentDefinition.schema.asJson())
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(it, SearchConfigurationDto(searchFields))
 
             ExportFile(
-                PATH.format(documentDefinition.id.name()),
+                PATH.format(request.name),
                 it.toByteArray()
             )
         }
@@ -52,6 +54,6 @@ class JsonSchemaDocumentDefinitionExporter(
     }
 
     companion object {
-        private const val PATH = "config/document/definition/%s.schema.json"
+        private const val PATH = "config/search/%s.json"
     }
 }

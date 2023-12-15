@@ -19,5 +19,6 @@ package com.ritense.exporter
 import com.ritense.exporter.request.ExportRequest
 
 data class TestExportRequest(
-    val value: String = "test"
-) : ExportRequest()
+    val value: String = "test",
+    override val isOptional: Boolean = false
+) : ExportRequest(isOptional)
