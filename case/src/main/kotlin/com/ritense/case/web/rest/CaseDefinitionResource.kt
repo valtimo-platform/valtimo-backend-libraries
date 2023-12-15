@@ -25,8 +25,9 @@ import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.exporter.ExportService
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.importer.ImportService
-import com.ritense.importer.ImportServiceException
+import com.ritense.importer.exception.ImportServiceException
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import mu.KotlinLogging
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import org.springframework.http.MediaType
@@ -186,8 +187,13 @@ class CaseDefinitionResource(
         return try {
             importService.import(file.inputStream)
             ResponseEntity.ok().build()
-        } catch (_: ImportServiceException) {
+        } catch (exception: ImportServiceException) {
+            logger.info(exception) { "Import failed" }
             ResponseEntity.badRequest().build()
         }
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }

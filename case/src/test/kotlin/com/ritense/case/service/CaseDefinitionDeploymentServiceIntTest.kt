@@ -11,12 +11,12 @@ import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-class CaseDefinitionDeploymentServiceIntTest : BaseIntegrationTest() {
-    @Autowired
-    lateinit var documentDefinitionService: DocumentDefinitionService
-
-    @Autowired
-    lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
+@Transactional
+class CaseDefinitionDeploymentServiceIntTest @Autowired constructor(
+    private val documentDefinitionService: DocumentDefinitionService,
+    private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository,
+    private val caseDefinitionDeploymentService: CaseDefinitionDeploymentService
+) : BaseIntegrationTest() {
 
     @Test
     fun `should create settings when settings are defined`() {
@@ -35,11 +35,46 @@ class CaseDefinitionDeploymentServiceIntTest : BaseIntegrationTest() {
         assertEquals("all-properties-present", settings.name)
         assertTrue(settings.canHaveAssignee)
         assertTrue(settings.autoAssignTasks)
-
     }
 
     @Test
-    @Transactional
+    fun `should deploy settings caseDefinitionName and json content`() {
+        val caseDefinitionName = "by-case-definition-name-and-json"
+
+        caseDefinitionDeploymentService.deploy(caseDefinitionName, """
+            {
+                "canHaveAssignee": true,
+                "autoAssignTasks": false
+            }
+        """.trimIndent())
+
+        val settings = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
+
+        assertEquals(caseDefinitionName, settings.name)
+        assertTrue(settings.canHaveAssignee)
+        assertFalse(settings.autoAssignTasks)
+    }
+
+    @Test
+    fun `should deploy settings when settings are defined`() {
+        runWithoutAuthorization {
+            documentDefinitionService.deploy(
+                "" +
+                    "{\n" +
+                    "    \"\$id\": \"all-properties-present.schema\",\n" +
+                    "    \"\$schema\": \"http://json-schema.org/draft-07/schema#\"\n" +
+                    "}\n"
+            )
+        }
+
+        val settings = caseDefinitionSettingsRepository.getById("all-properties-present")
+
+        assertEquals("all-properties-present", settings.name)
+        assertTrue(settings.canHaveAssignee)
+        assertTrue(settings.autoAssignTasks)
+    }
+
+    @Test
     fun `should throw exception when settings are invalid`() {
         val result = runWithoutAuthorization {
             documentDefinitionService.deploy(

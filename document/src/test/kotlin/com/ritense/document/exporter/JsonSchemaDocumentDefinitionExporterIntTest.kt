@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.processdocument.export
+package com.ritense.document.exporter
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
+import com.ritense.document.BaseIntegrationTest
+import com.ritense.document.exporter.JsonSchemaDocumentDefinitionExporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
-import com.ritense.exporter.request.ProcessDefinitionExportRequest
-import com.ritense.processdocument.BaseIntegrationTest
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -32,41 +30,38 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 
 @Transactional(readOnly = true)
-class ProcessDocumentLinkExporterIntTest @Autowired constructor(
+class JsonSchemaDocumentDefinitionExporterIntTest @Autowired constructor(
     private val resourceLoader: ResourceLoader,
-    private val camundaRepositoryService: CamundaRepositoryService,
-    private val processDocumentLinkExporter: ProcessDocumentLinkExporter
+    private val documentDefinitionExportService: JsonSchemaDocumentDefinitionExporter
 ) : BaseIntegrationTest() {
 
     @Test
-    fun `should export process document links`(): Unit = runWithoutAuthorization {
-        val documentDefinitionName = "house"
-        val result = processDocumentLinkExporter.export(DocumentDefinitionExportRequest(documentDefinitionName, 1))
+    fun `should export document definition`(): Unit = runWithoutAuthorization {
+        val definition = documentDefinitionService.findLatestByName("person").orElseThrow()
 
-        val exportFile = result.exportFiles.single {
-            it.path == PATH.format(documentDefinitionName)
+        val request = DocumentDefinitionExportRequest(definition.id().name(), definition.id().version())
+        val exportFiles = documentDefinitionExportService.export(request).exportFiles
+
+        val path = PATH.format(definition.id().name())
+        val personDefinitionExport = exportFiles.singleOrNull {
+            it.path == path
         }
-
-        val exportJson = exportFile.content.toString(Charsets.UTF_8)
+        requireNotNull(personDefinitionExport)
+        val resultJson = personDefinitionExport.content.toString(Charsets.UTF_8)
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:${PATH.format(documentDefinitionName)}")
+            .getResource("classpath:$path")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
             }
         JSONAssert.assertEquals(
             expectedJson,
-            exportJson,
+            resultJson,
             JSONCompareMode.NON_EXTENSIBLE
-        )
-
-        val processDefinitionId = camundaRepositoryService.findLatestProcessDefinition("loan-process-demo")!!.id
-        assertThat(result.relatedRequests).contains(
-            ProcessDefinitionExportRequest(processDefinitionId)
         )
     }
 
     companion object {
-        private const val PATH = "config/process-document-link/%s.json";
+        private const val PATH = "config/document/definition/%s.schema.json"
     }
 }

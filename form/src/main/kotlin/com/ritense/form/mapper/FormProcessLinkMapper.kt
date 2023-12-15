@@ -123,6 +123,8 @@ class FormProcessLinkMapper(
         return setOf(FormDefinitionExportRequest(formDefinition.name))
     }
 
+    override fun getImporterType() = "form"
+
     companion object {
         const val PROCESS_LINK_TYPE_FORM = "form"
     }

@@ -16,6 +16,10 @@
 
 package com.ritense.importer
 
+import com.ritense.importer.exception.CyclicImporterDependencyException
+import com.ritense.importer.exception.DuplicateImporterTypeException
+import com.ritense.importer.exception.InvalidImportZipException
+import com.ritense.importer.exception.TooManyImportCandidatesException
 import java.io.InputStream
 import java.util.zip.ZipInputStream
 import mu.KLogger
@@ -26,21 +30,62 @@ open class ValtimoImportService(
     importers: Set<Importer>
 ) : ImportService {
 
-    private val orderedImporters: LinkedHashSet<Importer>
+    private val orderedImporters = distinctImporters(importers).let {
+        filterImportersByDependsOn(it)
+    }.let {
+        orderImporters(it)
+    }
 
-    init {
-        //Check for duplicate import types in the list of importers
-        val wImporters = importers.map { WrappedImporter(it) }.toSet()
-        if (wImporters.size != importers.size) {
-            val duplicatedTypes = wImporters.filter { wImporter ->
-                importers.count { wImporter.type() == it.type() } > 1
-            }.map { it.type() }
-            throw ImportServiceException(
-                "Multiple importers of the same type provided: [${duplicatedTypes.joinToString()}]"
-            )
+    /**
+     * Get a distinct set of importers by type.
+     * Fails when duplicates are found.
+     */
+    private fun distinctImporters(importers: Set<Importer>): Set<Importer> {
+        return importers.map { WrappedImporter(it) }
+            .toSet()
+            .apply {
+                if (this.size != importers.size) {
+                    val duplicatedTypes = this.filter { wImporter ->
+                        importers.count { wImporter.type() == it.type() } > 1
+                    }.map { it.type() }.toSet()
+                    throw DuplicateImporterTypeException(duplicatedTypes)
+                }
+            }
+    }
+
+    /**
+     * This will filter out any importer that depends on an importer that is not provided.
+     */
+    private fun filterImportersByDependsOn(importers: Set<Importer>): Set<Importer> {
+        var result = importers
+
+        while (result.isNotEmpty()) {
+            val filtered = result.filter { importer ->
+                importer.dependsOn().all { type ->
+                    result.any { it.type() == type }.apply {
+                        if (this) {
+                            logger.warn { "Importer ${importer.type()} depends on '$type', which cannot be resolved. Importer will not be used!" }
+                        }
+                    }
+                }
+            }.toSet()
+
+            // Check if any importer was filtered. If not, we can stop the loop
+            if(filtered.size == result.size) {
+                break
+            }
+
+            result = filtered
         }
 
-        // Order and validate importers by their dependencies
+        return result
+    }
+
+    /**
+     * Order the imports by their dependencies.
+     * Fail when the dependencies form a circular dependency
+     */
+    private fun orderImporters(importers: Set<Importer>): LinkedHashSet<Importer> {
         val orderedImporters = LinkedHashMap<String, Importer>()
         while (orderedImporters.size < importers.size) {
             importers.filter {
@@ -48,16 +93,13 @@ open class ValtimoImportService(
                     orderedImporters.keys.containsAll(it.dependsOn())
             }.apply {
                 if (this.isEmpty()) {
-                    throw ImportServiceException(
-                        "Importer dependencies could not be resolved or contain a cyclic reference! " +
-                            "Error occurred after: [${orderedImporters.keys.joinToString()}]"
-                    )
+                    throw CyclicImporterDependencyException(orderedImporters.keys)
                 }
             }.forEach {
                 orderedImporters[it.type()] = it
             }
         }
-        this.orderedImporters = linkedSetOf(*orderedImporters.values.toTypedArray())
+        return linkedSetOf(*orderedImporters.values.toTypedArray())
     }
 
     @Transactional
@@ -67,6 +109,7 @@ open class ValtimoImportService(
 
         importerEntriesMap.forEach { (importer, entries) ->
             entries.forEach { entry ->
+                logger.debug { "Importing ${entry.fileName} with importer ${importer.type()}" }
                 importer.import(ImportRequest(entry.fileName, entry.content))
             }
         }
@@ -82,7 +125,11 @@ open class ValtimoImportService(
                     .toMutableList()
             }
         } catch (ex: Exception) {
-            throw ImportServiceException(ex.message)
+            throw InvalidImportZipException(ex.message)
+        }.apply {
+            if(this.isEmpty()) {
+                throw InvalidImportZipException("Archive was empty or not a zip")
+            }
         }
     }
 
@@ -99,9 +146,9 @@ open class ValtimoImportService(
                 if(this.isEmpty()) {
                     logger.info { "No importer candidate found for file ${entry.fileName}." }
                 } else if (this.size > 1) {
-                    throw ImportServiceException(
-                        "Multiple importer candidates found for file ${entry.fileName}! " +
-                            "Importer types: [${this.joinToString { it.type() }}]"
+                    throw TooManyImportCandidatesException(
+                        entry.fileName,
+                        this.map { it.type() }.toSet()
                     )
                 }
             }.firstOrNull()?.let {

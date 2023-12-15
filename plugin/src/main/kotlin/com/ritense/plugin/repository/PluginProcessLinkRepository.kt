@@ -21,32 +21,48 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.processlink.domain.ActivityTypeWithEventName
-import org.springframework.data.jpa.repository.JpaRepository
+import com.ritense.processlink.repository.BaseProcessLinkRepository
 
-@Deprecated("Marked for removal since 10.6.0", ReplaceWith("ProcessLinkRepository"))
-class PluginProcessLinkRepository(
-    private val pluginProcessLinkRepositoryImpl: PluginProcessLinkRepositoryImpl
-) {
-    fun getById(id: PluginProcessLinkId) = pluginProcessLinkRepositoryImpl.getById(id)
-    fun save(entity: PluginProcessLink) = pluginProcessLinkRepositoryImpl.save(entity)
-    fun deleteById(id: PluginProcessLinkId) = pluginProcessLinkRepositoryImpl.deleteById(id)
-    fun findByProcessDefinitionId(processDefinitionId: String) =
-        pluginProcessLinkRepositoryImpl.findByProcessDefinitionId(processDefinitionId)
+interface PluginProcessLinkRepository : BaseProcessLinkRepository<PluginProcessLink> {
+    @Deprecated("Marked for removal since 11.2.0", ReplaceWith("getById(UUID)"))
+    fun getById(existingId: PluginProcessLinkId): PluginProcessLink = getById(existingId.id)
 
-    fun findByProcessDefinitionIdAndActivityId(processDefinitionId: String, activityId: String) =
-        pluginProcessLinkRepositoryImpl.findByProcessDefinitionIdAndActivityId(processDefinitionId, activityId)
+    @Deprecated("Marked for removal since 11.2.0", ReplaceWith("deleteById(UUID)"))
+    fun deleteById(id: PluginProcessLinkId) = deleteById(id.id)
 
-    fun findByProcessDefinitionIdAndActivityIdAndActivityType(processDefinitionId: String, activityId: String, activityType: ActivityType) =
-        pluginProcessLinkRepositoryImpl.findByProcessDefinitionIdAndActivityIdAndActivityType(processDefinitionId, activityId, activityType.toActivityTypeWithEventName())
+    @Deprecated(
+        "Marked for removal since 11.2.0",
+        ReplaceWith("findByProcessDefinitionIdAndActivityIdAndActivityType(String, String, ActivityTypeWithEventName)")
+    )
+    fun findByProcessDefinitionIdAndActivityIdAndActivityType(
+        processDefinitionId: String,
+        activityId: String,
+        activityType: ActivityType
+    ): List<PluginProcessLink> = findByProcessDefinitionIdAndActivityIdAndActivityType(
+        processDefinitionId,
+        activityId,
+        activityType.toActivityTypeWithEventName()
+    )
 
-    fun findByPluginConfigurationIdAndActivityIdAndActivityType(pluginConfigurationId: PluginConfigurationId, activityId: String, activityType: ActivityType) =
-        pluginProcessLinkRepositoryImpl.findByPluginConfigurationIdAndActivityIdAndActivityType(pluginConfigurationId, activityId, activityType.toActivityTypeWithEventName())
-}
+    @Deprecated(
+        "Marked for removal since 11.2.0",
+        ReplaceWith("findByPluginConfigurationIdAndActivityIdAndActivityType(PluginConfigurationId, String, ActivityTypeWithEventName)")
+    )
+    fun findByPluginConfigurationIdAndActivityIdAndActivityType(
+        pluginConfigurationId: PluginConfigurationId,
+        activityId: String,
+        activityType: ActivityType
+    ): List<PluginProcessLink> = findByPluginConfigurationIdAndActivityIdAndActivityType(
+        pluginConfigurationId,
+        activityId,
+        activityType.toActivityTypeWithEventName()
+    )
 
-@Deprecated("Marked for removal since 10.6.0", ReplaceWith("ProcessLinkRepository"))
-interface PluginProcessLinkRepositoryImpl : JpaRepository<PluginProcessLink, PluginProcessLinkId> {
-    fun findByProcessDefinitionId(processDefinitionId: String): List<PluginProcessLink>
-    fun findByProcessDefinitionIdAndActivityId(processDefinitionId: String, activityId: String): List<PluginProcessLink>
-    fun findByProcessDefinitionIdAndActivityIdAndActivityType(processDefinitionId: String, activityId: String, activityType: ActivityTypeWithEventName): List<PluginProcessLink>
-    fun findByPluginConfigurationIdAndActivityIdAndActivityType(pluginConfigurationId: PluginConfigurationId, activityId: String, activityType: ActivityTypeWithEventName): List<PluginProcessLink>
+    fun findByPluginConfigurationIdAndActivityIdAndActivityType(
+        pluginConfigurationId: PluginConfigurationId,
+        activityId: String,
+        activityType: ActivityTypeWithEventName
+    ): List<PluginProcessLink>
+
+    fun findByPluginConfigurationId(pluginConfigurationId: PluginConfigurationId): List<PluginProcessLink>
 }

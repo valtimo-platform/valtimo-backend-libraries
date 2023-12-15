@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.document.service
+package com.ritense.processdocument.exporter
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.document.BaseIntegrationTest
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.request.ProcessDefinitionExportRequest
+import com.ritense.processdocument.BaseIntegrationTest
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
@@ -29,25 +32,24 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 
 @Transactional(readOnly = true)
-class SearchFieldExporterIntTest @Autowired constructor(
+class ProcessDocumentLinkExporterIntTest @Autowired constructor(
     private val resourceLoader: ResourceLoader,
-    private val searchFieldExporter: SearchFieldExporter
+    private val camundaRepositoryService: CamundaRepositoryService,
+    private val processDocumentLinkExporter: ProcessDocumentLinkExporter
 ) : BaseIntegrationTest() {
 
     @Test
-    fun `should export search fields for document definition`(): Unit = runWithoutAuthorization {
-        val definition = documentDefinitionService.findLatestByName("person").orElseThrow()
-        val request = DocumentDefinitionExportRequest(definition.id().name(), definition.id().version())
-        val exportFiles = searchFieldExporter.export(request).exportFiles
+    fun `should export process document links`(): Unit = runWithoutAuthorization {
+        val documentDefinitionName = "house"
+        val result = processDocumentLinkExporter.export(DocumentDefinitionExportRequest(documentDefinitionName, 1))
 
-        val path = PATH.format(definition.id().name())
-        val export = exportFiles.singleOrNull {
-            it.path == path
+        val exportFile = result.exportFiles.single {
+            it.path == PATH.format(documentDefinitionName)
         }
-        requireNotNull(export)
-        val exportJson = export.content.toString(Charsets.UTF_8)
+
+        val exportJson = exportFile.content.toString(Charsets.UTF_8)
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:$path")
+            .getResource("classpath:${PATH.format(documentDefinitionName)}")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
@@ -57,9 +59,14 @@ class SearchFieldExporterIntTest @Autowired constructor(
             exportJson,
             JSONCompareMode.NON_EXTENSIBLE
         )
+
+        val processDefinitionId = camundaRepositoryService.findLatestProcessDefinition("loan-process-demo")!!.id
+        assertThat(result.relatedRequests).contains(
+            ProcessDefinitionExportRequest(processDefinitionId)
+        )
     }
 
     companion object {
-        private const val PATH = "config/search/%s.json"
+        private const val PATH = "config/process-document-link/%s.json";
     }
 }

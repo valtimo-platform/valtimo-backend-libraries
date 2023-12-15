@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-package com.ritense.processlink.export
+package com.ritense.importer.exception
 
-import com.ritense.exporter.request.ExportRequest
-
-data class CustomProcessLinkNestedExportRequest(
-    val someValue: String = "test"
-) : ExportRequest()
+class InvalidImportZipException(message: String?) : ImportServiceException(message)
