@@ -30,7 +30,7 @@ class CaseDefinitionSettingsImporter(
 
     override fun import(request: ImportRequest) {
         val caseDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        deploymentService.deploy(caseDefinitionName, request.content.toString(Charsets.UTF_8))
+        deploymentService.deploy(caseDefinitionName, request.content.toString(Charsets.UTF_8), true)
     }
 
     private companion object {
