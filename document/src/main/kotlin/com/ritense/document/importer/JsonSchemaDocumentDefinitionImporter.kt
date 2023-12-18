@@ -19,13 +19,14 @@ package com.ritense.document.importer
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class JsonSchemaDocumentDefinitionImporter(
     private val jsonSchemaDocumentDefinitionService: JsonSchemaDocumentDefinitionService
 ) : Importer {
-    override fun type() = "documentdefinition"
+    override fun type() = DOCUMENT_DEFINITION
 
     override fun dependsOn() = emptySet<String>()
 

@@ -19,6 +19,9 @@ package com.ritense.case.service
 import com.ritense.case.deployment.CaseTabDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.CASE_TAB
+import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.FORM
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import org.springframework.transaction.annotation.Transactional
 
@@ -27,9 +30,9 @@ class CaseTabImporter(
     private val caseTabDeploymentService: CaseTabDeploymentService,
     private val changelogDeployer: ChangelogDeployer
 ) : Importer {
-    override fun type() = "casetab"
+    override fun type() = CASE_TAB
 
-    override fun dependsOn() = setOf("documentdefinition", "form")
+    override fun dependsOn() = setOf(DOCUMENT_DEFINITION, FORM)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
