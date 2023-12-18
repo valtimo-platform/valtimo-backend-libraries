@@ -47,7 +47,7 @@ class ProcessLinkImporterIntTest @Autowired constructor(
     @Test
     fun `should deploy processLinks`() {
         processLinkImporter.import(ImportRequest(
-            "auto-deploy-process-link.processlink.json",
+            "test-importer-process.processlink.json",
             JSON.toByteArray(Charsets.UTF_8)
         ))
 
@@ -61,7 +61,7 @@ class ProcessLinkImporterIntTest @Autowired constructor(
 
     private fun getLatestProcessDefinition(): CamundaProcessDefinition {
         return AuthorizationContext.runWithoutAuthorization {
-            repositoryService.findLatestProcessDefinition("auto-deploy-process-link")!!
+            repositoryService.findLatestProcessDefinition("test-importer-process")!!
         }
     }
 
