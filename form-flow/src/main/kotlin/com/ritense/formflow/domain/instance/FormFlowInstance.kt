@@ -162,7 +162,7 @@ class FormFlowInstance(
     private fun mergeSubmissionData(source: JSONObject, target: JSONObject) {
         val keys = JSONObject.getNames(source) ?: arrayOf()
         for (key in keys) {
-            val value = source.get(key)
+            val value = source[key]
             if (target.has(key) && value is JSONObject) {
                 mergeSubmissionData(value, target.getJSONObject(key))
             } else {
@@ -178,11 +178,16 @@ class FormFlowInstance(
             this.currentFormFlowStepInstanceId = null
             return null
         }
-        history.removeIf { (it.stepKey == nextStep.stepKey && it.order == nextStep.order)}
-        // TODO: if the order of the next step does not have the same stepKey as the one in the history, every step of
-        // order or higher should be removed from the history.
-        // The above should be true, but needs to be verified.
-        history.add(nextStep.order, nextStep)
+
+        val formFlowStepInstance = history.firstOrNull {
+            it.order == nextStep.order && it.stepKey == nextStep.stepKey
+        }
+
+        if (formFlowStepInstance == null) {
+            history.removeIf { (it.order >= nextStep.order)}
+            history.add(nextStep.order, nextStep)
+        }
+
         currentFormFlowStepInstanceId = nextStep.id
         return nextStep
     }
