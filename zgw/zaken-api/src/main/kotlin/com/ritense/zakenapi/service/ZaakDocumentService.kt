@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.service
 
+import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
@@ -30,8 +31,9 @@ import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class ZaakDocumentService(
-    val zaakUrlProvider: ZaakUrlProvider,
-    val pluginService: PluginService
+    private val zaakUrlProvider: ZaakUrlProvider,
+    private val pluginService: PluginService,
+    private val catalogiService: CatalogiService,
 ) {
 
     fun getInformatieObjectenAsRelatedFiles(documentId: UUID): List<RelatedFileDto> {
@@ -60,20 +62,24 @@ class ZaakDocumentService(
             createdBy = informatieObject.auteur,
             author = informatieObject.auteur,
             title = informatieObject.titel,
-            status = informatieObject.status,
+            status = informatieObject.status?.key,
             language = informatieObject.taal,
             pluginConfigurationId = pluginConfiguration.id.id,
             identification = informatieObject.identificatie,
             description = informatieObject.beschrijving,
-            informatieobjecttype = informatieObject.informatieobjecttype,
+            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
             keywords = informatieObject.trefwoorden,
             format = informatieObject.formaat,
             sendDate = informatieObject.verzenddatum,
             receiptDate = informatieObject.ontvangstdatum,
-            confidentialityLevel = informatieObject.vertrouwelijkheidaanduiding,
+            confidentialityLevel = informatieObject.vertrouwelijkheidaanduiding?.key,
             version = informatieObject.versie,
             indicationUsageRights = informatieObject.indicatieGebruiksrecht
         )
+    }
+
+    private fun getInformatieobjecttypeByUri(uri: String?): String? {
+        return uri?.let { catalogiService.getInformatieobjecttype(URI(it))?.omschrijving }
     }
 
     private fun getDocumentenApiPluginByInformatieobjectUrl(informatieobjectUrl: URI): PluginConfiguration {

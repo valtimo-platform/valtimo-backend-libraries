@@ -17,6 +17,7 @@
 package com.ritense.catalogiapi.client
 
 import com.ritense.catalogiapi.CatalogiApiAuthentication
+import com.ritense.catalogiapi.client.CatalogiApiClient.Companion.INFORMATIEOBJECTTYPECACHE_KEY
 import com.ritense.catalogiapi.domain.InformatieobjecttypeRichting
 import com.ritense.catalogiapi.domain.InformatieobjecttypeVertrouwelijkheid
 import okhttp3.mockwebserver.MockResponse
@@ -28,6 +29,14 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.springframework.cache.Cache
+import org.springframework.cache.CacheManager
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -40,6 +49,7 @@ import java.util.UUID
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class CatalogiApiClientTes {
     lateinit var mockApi: MockWebServer
+    val cacheManager = mock<CacheManager>()
 
     @BeforeAll
     fun setUp() {
@@ -85,7 +95,7 @@ internal class CatalogiApiClientTes {
     @Test
     fun `should send get informatieobjecttype request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = CatalogiApiClient(webclientBuilder)
+        val client = CatalogiApiClient(webclientBuilder, cacheManager)
 
         val responseBody = """
             {
@@ -125,7 +135,7 @@ internal class CatalogiApiClientTes {
     @Test
     fun `should not send get informatieobjecttype request when url and baseUrl dont match`() {
         val webclientBuilder = WebClient.builder()
-        val client = CatalogiApiClient(webclientBuilder)
+        val client = CatalogiApiClient(webclientBuilder, cacheManager)
 
         val baseUrl = "http://example.com"
         val informatieobjecttypeUrl = "http://other-domain.com/informatieobjecttypen/f3974b80-b538-48c1-b82e-3a3113fc9971"
@@ -144,7 +154,7 @@ internal class CatalogiApiClientTes {
     @Test
     fun `should send get roltypen request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = CatalogiApiClient(webclientBuilder)
+        val client = CatalogiApiClient(webclientBuilder, cacheManager)
         val baseUrl = mockApi.url("api").toString()
         val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
         val responseBody = """
@@ -187,7 +197,7 @@ internal class CatalogiApiClientTes {
     @Test
     fun `should get statustypen request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = CatalogiApiClient(webclientBuilder)
+        val client = CatalogiApiClient(webclientBuilder, cacheManager)
         val baseUrl = mockApi.url("api").toString()
         val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
         val responseBody = """
@@ -237,7 +247,7 @@ internal class CatalogiApiClientTes {
     @Test
     fun `should get resultaattypen request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = CatalogiApiClient(webclientBuilder)
+        val client = CatalogiApiClient(webclientBuilder, cacheManager)
         val baseUrl = mockApi.url("api").toString()
         val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
         val responseBody = """
@@ -295,7 +305,7 @@ internal class CatalogiApiClientTes {
     @Test
     fun `should get beluittypen request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = CatalogiApiClient(webclientBuilder)
+        val client = CatalogiApiClient(webclientBuilder, cacheManager)
         val baseUrl = mockApi.url("api").toString()
         val zaakTypeUrl = "$baseUrl/zaaktypen/${UUID.randomUUID()}"
         val responseBody = """
@@ -350,11 +360,48 @@ internal class CatalogiApiClientTes {
         assertEquals(LocalDate.parse("2022-09-12"), response.results[0].beginGeldigheid)
     }
 
+    @Test
+    fun `prefillCache should prefill the cache`() {
+        val webclientBuilder = WebClient.builder()
+        val client = CatalogiApiClient(webclientBuilder, cacheManager)
+        val baseUrl = mockApi.url("api").toString()
+        val cache = mock<Cache>()
+        whenever(cacheManager.getCache(INFORMATIEOBJECTTYPECACHE_KEY)).thenReturn(cache)
+
+        val responseBody = """
+            {
+              "count": 1,
+              "next": null,
+              "previous": null,
+              "results": [
+                {
+                  "url": "http://example.com",
+                  "catalogus": "http://example.com",
+                  "omschrijving": "string",
+                  "vertrouwelijkheidaanduiding": "openbaar",
+                  "beginGeldigheid": "2019-08-24",
+                  "eindeGeldigheid": "2019-08-24",
+                  "concept": true
+                }
+              ]
+            }
+        """.trimIndent()
+        mockApi.enqueue(mockResponse(responseBody))
+
+        client.prefillCache(TestAuthentication(), URI(baseUrl))
+
+        // to make sure the request is cleaned up to prevent issues with other tests
+        mockApi.takeRequest()
+
+        verify(cacheManager).getCache(INFORMATIEOBJECTTYPECACHE_KEY)
+        verify(cache).put(eq(URI("http://example.com")), any())
+    }
+
     private fun sendGetZaaktypeInformatieobjecttypeRequest(
         request: ZaaktypeInformatieobjecttypeRequest
     ): RecordedRequest {
         val webclientBuilder = WebClient.builder()
-        val client = CatalogiApiClient(webclientBuilder)
+        val client = CatalogiApiClient(webclientBuilder, cacheManager)
 
         val responseBody = """
             {

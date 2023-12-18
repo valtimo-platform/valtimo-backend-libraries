@@ -158,6 +158,16 @@ class CatalogiApiPlugin(
         return results
     }
 
+    fun getInformatieobjecttype(
+        typeUrl: URI,
+    ): Informatieobjecttype {
+        return client.getInformatieobjecttype(
+            authenticationPluginConfiguration,
+            url,
+            typeUrl
+        )
+    }
+
     fun getRoltypes(zaakTypeUrl: URI): List<Roltype> {
         var currentPage = 1
         var currentResults: Page<Roltype>?
@@ -262,6 +272,10 @@ class CatalogiApiPlugin(
         return getBesluittypen(zaakTypeUrl)
             .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
             ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
+    }
+
+    fun prefillCache() {
+        client.prefillCache(authenticationPluginConfiguration, url)
     }
 
     companion object {

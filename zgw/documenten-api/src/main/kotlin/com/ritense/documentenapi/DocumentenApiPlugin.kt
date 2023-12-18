@@ -237,7 +237,8 @@ class DocumentenApiPlugin(
     private fun getStatusFromMetaData(metadata: Map<String, Any>): DocumentStatusType {
         val status = metadata["status"] as String?
         return if (status != null) {
-            DocumentStatusType.fromKey(status)
+            DocumentStatusType.fromKey(status) ?:
+               throw IllegalStateException("Failed to store document. Invalid status '$status' found in metadata.")
         } else {
             DocumentStatusType.DEFINITIEF
         }
