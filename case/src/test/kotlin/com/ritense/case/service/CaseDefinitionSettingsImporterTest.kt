@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
@@ -63,13 +62,7 @@ class CaseDefinitionSettingsImporterTest(
         val jsonContent = "{}"
         importer.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
 
-        val nameCaptor = argumentCaptor<String>()
-        val jsonCaptor = argumentCaptor<String>()
-
-        verify(deploymentService).deploy(nameCaptor.capture(), jsonCaptor.capture())
-
-        assertThat(nameCaptor.firstValue).isEqualTo("my-case-list")
-        assertThat(jsonCaptor.firstValue).isEqualTo(jsonContent)
+        verify(deploymentService).deploy("my-case-list", jsonContent, true)
     }
 
     private companion object {

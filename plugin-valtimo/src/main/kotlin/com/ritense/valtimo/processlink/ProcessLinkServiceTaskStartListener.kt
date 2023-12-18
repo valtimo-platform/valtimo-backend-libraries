@@ -16,9 +16,9 @@
 
 package com.ritense.valtimo.processlink
 
+import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
-import com.ritense.processlink.domain.ActivityTypeWithEventName
 import org.camunda.bpm.engine.ActivityTypes
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.ExecutionListener
@@ -37,7 +37,7 @@ open class ProcessLinkServiceTaskStartListener(
         val pluginProcessLinks = pluginProcessLinkRepository.findByProcessDefinitionIdAndActivityIdAndActivityType(
             execution.processDefinitionId,
             execution.currentActivityId,
-            ActivityTypeWithEventName.SERVICE_TASK_START
+            ActivityType.SERVICE_TASK_START
         )
 
         pluginProcessLinks.forEach { pluginProcessLink ->
