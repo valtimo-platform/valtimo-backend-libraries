@@ -18,15 +18,17 @@ package com.ritense.case.service
 
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.CASE_LIST
+import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class CaseListImporter(
     private val caseListDeploymentService: CaseListDeploymentService
 ) : Importer {
-    override fun type() = "caselist"
+    override fun type() = CASE_LIST
 
-    override fun dependsOn() = setOf("documentdefinition")
+    override fun dependsOn() = setOf(DOCUMENT_DEFINITION)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 

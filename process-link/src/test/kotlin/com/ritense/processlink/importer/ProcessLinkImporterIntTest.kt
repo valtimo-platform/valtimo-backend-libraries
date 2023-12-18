@@ -18,12 +18,13 @@ package com.ritense.processlink.importer
 
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.importer.ImportRequest
+import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
 import com.ritense.processlink.BaseIntegrationTest
 import com.ritense.processlink.domain.CustomProcessLink
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
@@ -40,7 +41,7 @@ class ProcessLinkImporterIntTest @Autowired constructor(
 
     @Test
     fun `should dependsOn types from mappers`() {
-        Assertions.assertThat(processLinkImporter.dependsOn()).isEqualTo(setOf("processdefinition", "test"))
+        assertThat(processLinkImporter.dependsOn()).isEqualTo(setOf(PROCESS_DEFINITION, "test"))
     }
 
     @Test
@@ -55,7 +56,7 @@ class ProcessLinkImporterIntTest @Autowired constructor(
             processLinkRepository.findByProcessDefinitionIdAndActivityId(processDefinition.id, "my-service-task")
 
         val processLink = requireNotNull(processLinks.single() as? CustomProcessLink)
-        Assertions.assertThat(processLink.someValue).isEqualTo("importer test")
+        assertThat(processLink.someValue).isEqualTo("importer test")
     }
 
     private fun getLatestProcessDefinition(): CamundaProcessDefinition {
