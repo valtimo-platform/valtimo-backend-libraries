@@ -58,11 +58,11 @@ class CaseDefinitionDeploymentService(
         }
     }
 
-    fun deploy(caseDefinitionName: String, settingsJson: String) {
+    fun deploy(caseDefinitionName: String, settingsJson: String, forceDeploy: Boolean = false) {
         logger.debug { "Deploying case definition $caseDefinitionName" }
         val caseDefinitionSettings = caseDefinitionSettingsRepository.findByIdOrNull(caseDefinitionName)
 
-        if (caseDefinitionSettings == null) {
+        if (caseDefinitionSettings == null || forceDeploy) {
             val settingsToDeploy = objectMapper.readValue<ObjectNode>(settingsJson)
                 .put("name", caseDefinitionName)
             val createdCaseDefinitionSettings: CaseDefinitionSettings = objectMapper.convertValue(settingsToDeploy)
