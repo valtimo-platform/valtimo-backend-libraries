@@ -24,6 +24,8 @@ import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_LINK
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.service.ProcessLinkExistsException
 import com.ritense.processlink.service.ProcessLinkService
@@ -38,10 +40,10 @@ class ProcessLinkImporter(
     private val repositoryService: CamundaRepositoryService,
     private val objectMapper: ObjectMapper
 ) : Importer {
-    override fun type() = "processlink"
+    override fun type() = PROCESS_LINK
 
     override fun dependsOn(): Set<String> {
-        return setOf("processdefinition") +
+        return setOf(PROCESS_DEFINITION) +
             processLinkService.getImporterDependsOnTypes()
     }
 

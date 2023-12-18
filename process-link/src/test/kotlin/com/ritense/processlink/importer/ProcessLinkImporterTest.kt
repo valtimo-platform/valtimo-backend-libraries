@@ -17,6 +17,7 @@
 package com.ritense.processlink.importer
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import org.assertj.core.api.Assertions.assertThat
@@ -52,7 +53,7 @@ class ProcessLinkImporterTest(
 
     @Test
     fun `should depend on 'processdefinition' type`() {
-        assertThat(importer.dependsOn()).isEqualTo(setOf("processdefinition", "x", "y", "z"))
+        assertThat(importer.dependsOn()).isEqualTo(setOf(PROCESS_DEFINITION, "x", "y", "z"))
     }
 
     @Test

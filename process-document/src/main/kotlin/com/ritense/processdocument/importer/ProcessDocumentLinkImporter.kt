@@ -18,6 +18,9 @@ package com.ritense.processdocument.importer
 
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DOCUMENT_LINK
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService
 import org.springframework.transaction.annotation.Transactional
 
@@ -26,9 +29,9 @@ class ProcessDocumentLinkImporter(
     private val processDocumentDeploymentService: ProcessDocumentDeploymentService,
 ) : Importer {
 
-    override fun type() = "processdocumentlink"
+    override fun type() = PROCESS_DOCUMENT_LINK
 
-    override fun dependsOn() = setOf("documentdefinition", "processdefinition")
+    override fun dependsOn() = setOf(DOCUMENT_DEFINITION, PROCESS_DEFINITION)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
