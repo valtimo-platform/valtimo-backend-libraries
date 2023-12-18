@@ -20,7 +20,6 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.HistoryService
-import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
@@ -32,9 +31,6 @@ class JavascriptScriptTaskProcessIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var camundaProcessService: CamundaProcessService
-
-    @Autowired
-    lateinit var runtimeService: RuntimeService
 
     @Autowired
     lateinit var historyService: HistoryService
@@ -49,13 +45,11 @@ class JavascriptScriptTaskProcessIntTest : BaseIntegrationTest() {
             ).processInstanceDto
         }
 
-        val c = runWithoutAuthorization {
-            historyService.createHistoricVariableInstanceQuery()
-                .processInstanceId(processInstance.id)
-                .variableName("c")
-                .singleResult()
-                .value
-        }
+        val c = historyService.createHistoricVariableInstanceQuery()
+            .processInstanceId(processInstance.id)
+            .variableName("c")
+            .singleResult()
+            .value
         assertEquals(3, c)
     }
 }
