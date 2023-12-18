@@ -23,8 +23,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
-import java.util.HashMap;
+
 import java.util.Map;
 
 @Configuration
@@ -33,8 +34,11 @@ public class CamundaContextConfiguration {
 
     @Bean
     @Order(Ordering.DEFAULT_ORDER - 1)
-    public CamundaBeansPlugin camundaBeansPlugin(@ProcessBean Map<String, Object> processBeans, ApplicationContext applicationContext) {
-        return new CamundaBeansPlugin(new HashMap<>(processBeans), applicationContext);
+    public CamundaBeansPlugin camundaBeansPlugin(
+        @Lazy @ProcessBean Map<String, Object> processBeans,
+        ApplicationContext applicationContext
+    ) {
+        return new CamundaBeansPlugin(processBeans, applicationContext);
     }
 
 }

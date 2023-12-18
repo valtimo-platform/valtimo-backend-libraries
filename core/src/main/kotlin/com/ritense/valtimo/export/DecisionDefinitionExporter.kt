@@ -16,10 +16,10 @@
 
 package com.ritense.valtimo.export
 
-import com.ritense.export.ExportFile
-import com.ritense.export.ExportResult
-import com.ritense.export.Exporter
-import com.ritense.export.request.DecisionDefinitionExportRequest
+import com.ritense.exporter.ExportFile
+import com.ritense.exporter.ExportResult
+import com.ritense.exporter.Exporter
+import com.ritense.exporter.request.DecisionDefinitionExportRequest
 import org.apache.commons.io.IOUtils
 import org.camunda.bpm.engine.RepositoryService
 
@@ -33,7 +33,7 @@ class DecisionDefinitionExporter(
 
         val exportFile = repositoryService.getDecisionModel(decisionDefinition.id).use {inputStream ->
             ExportFile(
-                "bpmn/${decisionDefinition.key}.dmn",
+                "dmn/${decisionDefinition.key}.dmn",
                 IOUtils.toByteArray(inputStream)
             )
         }

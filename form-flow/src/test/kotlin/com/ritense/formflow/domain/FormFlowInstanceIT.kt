@@ -108,4 +108,125 @@ internal class FormFlowInstanceIT : BaseIntegrationTest() {
             assertEquals(it.submissionData, submissionData.replace("[ \\n]".toRegex(), ""))
         }
     }
+
+    @Test
+    fun `complete goes through the entire flow, back and then through again`() {
+        val formFlowDefinition =
+            formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc("inkomens_loket")
+        val submissionData = """
+            {
+                "inkomen": {
+                    "value": 1500
+                },
+                "leeftijd": {
+                    "isJongerDanAOW":true,
+                    "isOuderDan21":true
+                },
+                "gezinssituatie": {
+                    "vermogenGrens": 2000
+                },
+                "woonplaats": {
+                    "inUtrecht":true
+                }
+            }"""
+        val formFlowInstance = FormFlowInstance(
+            formFlowDefinition = formFlowDefinition!!
+        )
+
+        while (formFlowInstance.getCurrentStep().stepKey != "end") {
+            formFlowInstance.getCurrentStep().open()
+            formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject(submissionData))
+            formFlowInstanceRepository.saveAndFlush(formFlowInstance)
+        }
+
+        while (formFlowInstance.getCurrentStep().stepKey != "woonplaats") {
+            formFlowInstance.back()
+            formFlowInstanceRepository.saveAndFlush(formFlowInstance)
+        }
+
+        val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
+        assertEquals(7, storedInstance.getHistory().size)
+
+        formFlowInstanceRepository.saveAndFlush(formFlowInstance)
+        while (formFlowInstance.currentFormFlowStepInstanceId != null) {
+            formFlowInstance.getCurrentStep().open()
+            formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject(submissionData))
+            formFlowInstanceRepository.saveAndFlush(formFlowInstance)
+        }
+
+        val storedInstance2 = formFlowInstanceRepository.findById(formFlowInstance.id).get()
+        assertEquals(7, storedInstance2.getHistory().size)
+        storedInstance2.getHistory().forEach{
+            assertEquals(it.submissionData, submissionData.replace("[ \\n]".toRegex(), ""))
+        }
+    }
+
+    @Test
+    fun `navigate to next step removes previous steps`() {
+        val formFlowDefinition =
+            formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc("inkomens_loket")
+        val submissionData = """
+            {
+                "inkomen": {
+                    "value": 1500
+                },
+                "leeftijd": {
+                    "isJongerDanAOW":true,
+                    "isOuderDan21":true
+                },
+                "gezinssituatie": {
+                    "vermogenGrens": 2000
+                },
+                "woonplaats": {
+                    "inUtrecht":true
+                }
+            }"""
+        val formFlowInstance = FormFlowInstance(
+            formFlowDefinition = formFlowDefinition!!
+        )
+
+        val submissionData2 = """
+            {
+                "inkomen": {
+                    "value": 1500
+                },
+                "leeftijd": {
+                    "isJongerDanAOW":true,
+                    "isOuderDan21":true
+                },
+                "gezinssituatie": {
+                    "vermogenGrens": 2000
+                },
+                "woonplaats": {
+                    "inUtrecht":false
+                }
+            }"""
+
+        formFlowInstanceRepository.saveAndFlush(formFlowInstance)
+        while (formFlowInstance.getCurrentStep().stepKey != "end") {
+            formFlowInstance.getCurrentStep().open()
+            formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject(submissionData))
+            formFlowInstanceRepository.saveAndFlush(formFlowInstance)
+        }
+
+        val storedInstance = formFlowInstanceRepository.findById(formFlowInstance.id).get()
+        assertEquals(7, storedInstance.getHistory().size)
+
+        while (formFlowInstance.getCurrentStep().stepKey != "woonplaats") {
+            formFlowInstance.back()
+            formFlowInstanceRepository.saveAndFlush(formFlowInstance)
+        }
+
+        while (formFlowInstance.currentFormFlowStepInstanceId != null) {
+            formFlowInstance.getCurrentStep().open()
+            formFlowInstance.complete(formFlowInstance.currentFormFlowStepInstanceId!!, JSONObject(submissionData2))
+            formFlowInstanceRepository.saveAndFlush(formFlowInstance)
+        }
+
+        val storedInstance2 = formFlowInstanceRepository.findById(formFlowInstance.id).get()
+        assertEquals(2, storedInstance2.getHistory().size)
+        storedInstance2.getHistory().forEach{
+            assertEquals(it.submissionData, submissionData2.replace("[ \\n]".toRegex(), ""))
+        }
+    }
 }

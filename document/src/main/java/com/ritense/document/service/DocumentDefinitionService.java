@@ -26,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import jakarta.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 
 public interface DocumentDefinitionService {
@@ -41,6 +42,8 @@ public interface DocumentDefinitionService {
     Optional<? extends DocumentDefinition> findLatestByName(String documentDefinitionName);
 
     Optional<? extends DocumentDefinition> findByNameAndVersion(String documentDefinitionName, long version);
+
+    List<Long> findVersionsByName(String documentDefinitionName);
 
     void deployAll();
 

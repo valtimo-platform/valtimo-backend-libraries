@@ -22,14 +22,15 @@ dockerCompose {
 }
 
 dependencies {
-    implementation project(':case')
-    implementation project(':contract')
-    implementation project(':core')
-    implementation project(':document')
-    implementation project(':audit')
-    implementation project(':resource')
-    implementation project(':value-resolver')
-    implementation project(':export')
+    implementation project(":audit")
+    implementation project(":case")
+    implementation project(":contract")
+    implementation project(":core")
+    implementation project(":document")
+    implementation project(":exporter")
+    implementation project(":importer")
+    implementation project(":resource")
+    implementation project(":value-resolver")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
@@ -73,6 +74,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${kotlinCoroutinesVersion}"
 
     jar {
         enabled = true

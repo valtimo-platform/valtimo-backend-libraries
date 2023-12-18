@@ -17,7 +17,7 @@
 package com.ritense.valtimo.export
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.export.request.DecisionDefinitionExportRequest
+import com.ritense.exporter.request.DecisionDefinitionExportRequest
 import com.ritense.valtimo.BaseIntegrationTest
 import java.io.ByteArrayInputStream
 import org.assertj.core.api.Assertions.assertThat
@@ -42,7 +42,7 @@ class DecisionDefinitionExporterIntTest @Autowired constructor(
         assertThat(result.exportFiles).isNotEmpty()
 
         val dmnExportFile = result.exportFiles.singleOrNull {
-            it.path == "bpmn/$decisionDefinitionKey.dmn"
+            it.path == "dmn/$decisionDefinitionKey.dmn"
         }
 
         requireNotNull(dmnExportFile)

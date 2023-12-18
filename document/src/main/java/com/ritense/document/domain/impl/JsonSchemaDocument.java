@@ -35,7 +35,7 @@ import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileAddedEvent;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
-import io.hypersistence.utils.hibernate.type.json.JsonType;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +43,13 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
 
 import javax.annotation.Nonnull;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,6 +75,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
         @Index(name = "sequence_index", columnList = "sequence")
     }
 )
+@DynamicUpdate
 public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument>
     implements Document, Persistable<JsonSchemaDocumentId> {
 
@@ -103,17 +104,17 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Column(name = "sequence", columnDefinition = "BIGINT")
     private Long sequence;
 
-    @Column(name = "assignee_id", columnDefinition="varchar(64)")
+    @Column(name = "assignee_id", columnDefinition = "varchar(64)")
     private String assigneeId;
 
-    @Column(name = "assignee_full_name", columnDefinition="varchar(255)")
+    @Column(name = "assignee_full_name", columnDefinition = "varchar(255)")
     private String assigneeFullName;
 
-    @Type(value = JsonType.class)
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "document_relations", columnDefinition = "json")
     private Set<JsonSchemaDocumentRelation> documentRelations = new HashSet<>();
 
-    @Type(value = JsonType.class)
+    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
     @Column(name = "related_files", columnDefinition = "json")
     private Set<JsonSchemaRelatedFile> relatedFiles = new HashSet<>();
 
@@ -124,7 +125,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         final String createdBy,
         final Long sequence,
         final JsonSchemaDocumentRelation documentRelation
-        ) {
+    ) {
         assertArgumentNotNull(id, "id is required");
         assertArgumentNotNull(content, "content is required");
         assertArgumentNotNull(documentDefinition, "documentDefinition is required");
@@ -198,7 +199,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
      * @param versionCheck    The version on which the content was based on (in other words: this's ver)
      * @return Object representing the result of the operation (either resulting document or errors)
      */
-    public synchronized ModifyDocumentResultImpl applyModifiedContent(
+    public ModifyDocumentResultImpl applyModifiedContent(
         final JsonDocumentContent modifiedContent,
         final JsonSchemaDocumentDefinition documentDefinition,
         final DocumentVersion versionCheck
@@ -254,6 +255,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     public void addRelatedFile(final JsonSchemaRelatedFile relatedFile) {
         addRelatedFile(relatedFile, null);
     }
+
     public void addRelatedFile(final JsonSchemaRelatedFile relatedFile, Map<String, Object> metadata) {
         assertArgumentNotNull(relatedFile, "relatedFile is required");
         if (this.relatedFiles.add(relatedFile)) {

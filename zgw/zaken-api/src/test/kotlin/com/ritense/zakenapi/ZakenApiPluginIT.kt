@@ -21,6 +21,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.camunda.bpm.engine.RepositoryService
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -64,15 +65,13 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
     internal fun setUp() {
         server = MockWebServer()
         setupMockZakenApiServer()
-        server.start()
+        server.start(port = 56273)
 
         // Since we do not have an actual authentication plugin in this context we will mock one
         val mockedId = PluginConfigurationId.existingId(UUID.fromString("27a399c7-9d70-4833-a651-57664e2e9e09"))
         doReturn(Optional.of(mock<PluginConfiguration>())).whenever(pluginConfigurationRepository).findById(mockedId)
         doReturn(TestAuthentication()).whenever(pluginService).createInstance(mockedId)
         doCallRealMethod().whenever(pluginService).createPluginConfiguration(any(), any(), any())
-
-        whenever(zaakUrlProvider.getZaakUrl(any())).thenReturn(ZAAK_URL)
 
         // Setting up plugin
         val pluginPropertiesJson = """
@@ -115,6 +114,11 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
                 ActivityType.SERVICE_TASK_START
             )
         )
+    }
+
+    @AfterEach
+    internal fun tearDown() {
+        server.shutdown()
     }
 
     @Test
@@ -241,6 +245,6 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         private const val PROCESS_DEFINITION_KEY = "zaken-api-plugin"
         private const val DOCUMENT_DEFINITION_KEY = "profile"
         private const val INFORMATIE_OBJECT_URL = "http://informatie.object.url"
-        private val ZAAK_URL = URI("http://zaak.url")
+        private val ZAAK_URL = URI("http://localhost:56273/zaken/57f66ff6-db7f-43bc-84ef-6847640d3609")
     }
 }

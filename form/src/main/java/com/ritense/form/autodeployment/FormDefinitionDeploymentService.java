@@ -32,7 +32,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class FormDefinitionDeploymentService {
@@ -54,45 +57,59 @@ public class FormDefinitionDeploymentService {
 
     void deployAllFromResourceFiles() {
         logger.info("Deploying all forms from {}", PATH);
-        ArrayList<FormDefinition> formDefinitions = new ArrayList<>();
         final Resource[] resources = loadResources();
-        for (Resource resource : resources) {
-            try {
-                if (resource.getFilename() == null) {
-                    continue;
-                }
-                var name = getFormName(resource);
-                var rawFormDefinition = getJson(IOUtils.toString(resource.getInputStream(), UTF_8));
-                var optionalFormDefinition = formDefinitionRepository.findByName(name);
-                if (optionalFormDefinition.isPresent()) {
-                    var existingFormDefinition = optionalFormDefinition.get();
-                    if (!rawFormDefinition.equals(existingFormDefinition.getFormDefinition())) {
-                        var formDefinition = formDefinitionService.modifyFormDefinition(
-                            existingFormDefinition.getId(),
-                            name,
-                            rawFormDefinition.toString(),
-                            true
-                        );
-                        formDefinitions.add(formDefinition);
-                        logger.info("Modified existing form definition {}", name);
-                    }
-                } else {
-                    var formDefinition = formDefinitionService.createFormDefinition(
-                        new CreateFormDefinitionRequest(
-                            name,
-                            rawFormDefinition.toString(),
-                            true
-                        )
-                    );
-                    formDefinitions.add(formDefinition);
-                    logger.info("Deployed form definition {}", name);
-                }
-            } catch (IOException e) {
-                logger.error("Error while deploying form definition {}", getFormName(resource), e);
-            }
-        }
+        List<FormDefinition> formDefinitions = Arrays
+            .stream(resources)
+            .map(this::deploy)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .toList();
 
         applicationEventPublisher.publishEvent(new FormsAutoDeploymentFinishedEvent(formDefinitions));
+    }
+
+    public Optional<FormDefinition> deploy(Resource resource) {
+        try {
+            if (resource.getFilename() == null) {
+                return Optional.empty();
+            }
+            var name = getFormName(resource);
+            return deploy(name, IOUtils.toString(resource.getInputStream(), UTF_8));
+        } catch (IOException e) {
+            logger.error("Error while deploying form definition {}", getFormName(resource), e);
+        }
+
+        return Optional.empty();
+    }
+
+    public Optional<FormDefinition> deploy(String name, String formDefinitionAsString) throws JsonProcessingException {
+        var rawFormDefinition = getJson(formDefinitionAsString);
+        var optionalFormDefinition = formDefinitionRepository.findByName(name);
+        if (optionalFormDefinition.isPresent()) {
+            var existingFormDefinition = optionalFormDefinition.get();
+            if (!rawFormDefinition.equals(existingFormDefinition.getFormDefinition())) {
+                var formDefinition = formDefinitionService.modifyFormDefinition(
+                    existingFormDefinition.getId(),
+                    name,
+                    rawFormDefinition.toString(),
+                    true
+                );
+                logger.info("Modified existing form definition {}", name);
+                return Optional.of(formDefinition);
+            }
+        } else {
+            var formDefinition = formDefinitionService.createFormDefinition(
+                new CreateFormDefinitionRequest(
+                    name,
+                    rawFormDefinition.toString(),
+                    true
+                )
+            );
+            logger.info("Deployed form definition {}", name);
+            return Optional.of(formDefinition);
+        }
+
+        return Optional.empty();
     }
 
     private JsonNode getJson(String rawJson) throws JsonProcessingException {

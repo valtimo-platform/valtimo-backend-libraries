@@ -17,10 +17,10 @@
 package com.ritense.processlink.domain
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.export.request.ExportRequest
+import com.ritense.exporter.request.ExportRequest
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
-import com.ritense.processlink.export.CustomProcessLinkNestedExportRequest
+import com.ritense.processlink.exporter.CustomProcessLinkNestedExportRequest
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
@@ -103,4 +103,6 @@ class CustomProcessLinkMapper(
     override fun createRelatedExportRequests(processLink: ProcessLink): Set<ExportRequest> {
         return setOf(CustomProcessLinkNestedExportRequest())
     }
+
+    override fun getImporterType() = "test"
 }

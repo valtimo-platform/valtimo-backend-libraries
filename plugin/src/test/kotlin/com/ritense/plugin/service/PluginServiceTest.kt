@@ -53,7 +53,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import jakarta.validation.Validation
+import java.util.Optional
+import javax.validation.Validation
 import kotlin.test.assertEquals
 
 internal class PluginServiceTest {
@@ -187,7 +188,7 @@ internal class PluginServiceTest {
         val pluginConfigurationCaptor = argumentCaptor<PluginConfiguration>()
         val newProperties = ObjectMapper().readTree("{\"name\": \"whatever\" }")  as ObjectNode
 
-        whenever(pluginConfigurationRepository.getById(pluginConfiguration.id)).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.findById(pluginConfiguration.id)).thenReturn(Optional.of(pluginConfiguration))
 
         val plugin2 = TestPlugin2()
         plugin2.name = "whatever"

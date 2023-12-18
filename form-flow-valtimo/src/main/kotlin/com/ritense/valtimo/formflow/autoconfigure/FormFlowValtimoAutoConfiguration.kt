@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.service.DocumentService
 import com.ritense.form.service.PrefillFormService
 import com.ritense.form.service.impl.FormIoFormDefinitionService
+import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.formlink.autoconfigure.FormLinkAutoConfiguration
 import com.ritense.formlink.domain.FormLinkTaskProvider
@@ -37,8 +38,9 @@ import com.ritense.valtimo.formflow.FormLinkNewProcessFormFlowProviderImpl
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeCustomComponentHandler
 import com.ritense.valtimo.formflow.event.FormFlowStepCompletedEventListener
-import com.ritense.valtimo.formflow.export.FormFlowDefinitionExporter
+import com.ritense.valtimo.formflow.exporter.FormFlowDefinitionExporter
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
+import com.ritense.valtimo.formflow.importer.FormFlowDefinitionImporter
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper
 import com.ritense.valtimo.formflow.repository.FormFlowProcessLinkRepository
 import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
@@ -209,6 +211,16 @@ class FormFlowValtimoAutoConfiguration {
         return FormFlowDefinitionExporter(
             objectMapper,
             formFlowService
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowDefinitionImporter::class)
+    fun formFlowDefinitionImporter(
+        formFlowDeploymentService: FormFlowDeploymentService
+    ): FormFlowDefinitionImporter {
+        return FormFlowDefinitionImporter(
+            formFlowDeploymentService
         )
     }
 }

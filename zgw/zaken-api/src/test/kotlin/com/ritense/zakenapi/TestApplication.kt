@@ -34,12 +34,6 @@ class TestApplication {
     class TestConfig {
 
         @MockBean
-        lateinit var zaakUrlProvider: ZaakUrlProvider
-
-        @MockBean
-        lateinit var zaaktypeUrlProvider: ZaaktypeUrlProvider
-
-        @MockBean
         lateinit var resourceService: ResourceService
     }
 }

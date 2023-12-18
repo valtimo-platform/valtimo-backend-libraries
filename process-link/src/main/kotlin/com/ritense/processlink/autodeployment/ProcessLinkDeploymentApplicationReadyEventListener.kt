@@ -15,16 +15,9 @@
  */
 package com.ritense.processlink.autodeployment
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.databind.node.TextNode
-import com.fasterxml.jackson.module.kotlin.treeToValue
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.processlink.service.ProcessLinkExistsException
-import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.importer.ImportRequest
+import com.ritense.processlink.importer.ProcessLinkImporter
+import java.io.IOException
 import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -34,13 +27,10 @@ import org.springframework.core.annotation.Order
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
-import java.io.IOException
 
 open class ProcessLinkDeploymentApplicationReadyEventListener(
     private val resourceLoader: ResourceLoader,
-    private val repositoryService: CamundaRepositoryService,
-    private val processLinkService: ProcessLinkService,
-    private val objectMapper: ObjectMapper
+    private val processLinkImporter: ProcessLinkImporter
 ) {
 
     @EventListener(ApplicationReadyEvent::class)
@@ -48,57 +38,18 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
     open fun deployProcessLinks() {
         logger.info { "Deploying all process links from $PATH" }
         try {
-            val resources = loadResources()
-            for (resource in resources) {
-                logger.info { "Deploying process link from file '${resource.filename}'" }
-                val processDefinitionId = getProcessDefinitionId(resource.filename!!)
-
-                val processLinkCreateDtos = getProcessLinks(resource, processDefinitionId)
-
-                processLinkCreateDtos.forEach {  processLinkDto ->
-                    try {
-                        processLinkService.createProcessLink(processLinkDto)
-                    } catch (e: ProcessLinkExistsException) {
-                        if (e.contentsDiffer) {
-                            logger.error { "${e.message} Skipping autodeployment." }
-                        }
-                    }
+            loadResources().forEach { resource ->
+                val fileName = requireNotNull(resource.filename)
+                logger.info { "Deploying process link from file '${fileName}'" }
+                val importRequest = resource.inputStream.use { inputStream ->
+                     ImportRequest(fileName, inputStream.readAllBytes())
                 }
+
+                processLinkImporter.import(importRequest)
             }
         } catch (e: Exception) {
             logger.error(e) { "Error while deploying process-links" }
         }
-    }
-
-    private fun getProcessDefinitionId(fileName: String): String {
-        val processDefinitionKey = fileName.substringBefore(".processlink.json")
-        return runWithoutAuthorization {
-            repositoryService.findLatestProcessDefinition(processDefinitionKey)?.id
-                ?: throw IllegalStateException("Error while deploying '$fileName'. Could not find Process definition with key '$processDefinitionKey'.")
-        }
-    }
-
-    private fun getProcessLinks(
-        resource: Resource,
-        processDefinitionId: String?
-    ): List<ProcessLinkCreateRequestDto> {
-        val jsonTree = objectMapper.readTree(resource.inputStream)
-        require(jsonTree is ArrayNode) { "Error while processing file ${resource.filename}. Expected root item to be an array!" }
-
-        val processLinkCreateDtos = jsonTree.mapIndexed { index, node ->
-            require(node is ObjectNode) { "Error while processing file ${resource.filename}. Expected item at index $index to be an object!" }
-
-            if (!node.has("processDefinitionId")) {
-                node.set<ObjectNode>("processDefinitionId", TextNode.valueOf(processDefinitionId))
-            }
-
-            val deployDto = objectMapper.treeToValue<ProcessLinkDeployDto>(node)
-
-            processLinkService.getProcessLinkMapper(deployDto.processLinkType)
-                .toProcessLinkCreateRequestDto(deployDto)
-        }
-
-        return processLinkCreateDtos
     }
 
     @Throws(IOException::class)

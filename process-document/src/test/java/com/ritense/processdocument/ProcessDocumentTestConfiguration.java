@@ -16,7 +16,10 @@
 
 package com.ritense.processdocument;
 
+import com.ritense.document.service.DocumentService;
+import com.ritense.processdocument.config.DeadlockService;
 import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.contract.annotation.ProcessBean;
 import com.ritense.valtimo.contract.mail.MailSender;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
@@ -43,7 +46,15 @@ public class ProcessDocumentTestConfiguration {
 
     @TestConfiguration
     public static class TestConfig {
-        //Beans extra
+
+        @ProcessBean
+        @Bean
+        public DeadlockService deadlockService(
+            DocumentService documentService
+        ) {
+            return new DeadlockService(documentService);
+        }
+
     }
 
 }

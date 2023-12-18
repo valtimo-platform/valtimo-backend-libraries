@@ -22,9 +22,12 @@ import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.document.exception.UnknownDocumentDefinitionException
-import com.ritense.export.ExportService
-import com.ritense.export.request.DocumentDefinitionExportRequest
+import com.ritense.exporter.ExportService
+import com.ritense.exporter.request.DocumentDefinitionExportRequest
+import com.ritense.importer.ImportService
+import com.ritense.importer.exception.ImportServiceException
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import mu.KotlinLogging
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import org.springframework.http.MediaType
@@ -38,12 +41,15 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.multipart.MultipartFile
 
 @Controller
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class CaseDefinitionResource(
     private val service: CaseDefinitionService,
-    private val exportService: ExportService
+    private val exportService: ExportService,
+    private val importService: ImportService
 ) {
 
     @GetMapping("/v1/case/{caseDefinitionName}/settings")
@@ -171,5 +177,23 @@ class CaseDefinitionResource(
             .ok()
             .header("Content-Disposition", "attachment;filename=$fileName")
             .body(baos.toByteArray())
+    }
+
+    @PostMapping("/management/v1/case/import")
+    @RunWithoutAuthorization
+    fun import(
+        @RequestParam("file") file: MultipartFile
+    ): ResponseEntity<Unit> {
+        return try {
+            importService.import(file.inputStream)
+            ResponseEntity.ok().build()
+        } catch (exception: ImportServiceException) {
+            logger.info(exception) { "Import failed" }
+            ResponseEntity.badRequest().build()
+        }
+    }
+
+    companion object {
+        val logger = KotlinLogging.logger {}
     }
 }

@@ -44,14 +44,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Tag("integration")
 @Transactional
-public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationTest {
+class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationTest {
 
     @Inject
     private ResourceLoader resourceLoader;
 
     @Test
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
-    public void shouldDeployFromString() {
+    void shouldDeployFromString() {
         final var result = documentDefinitionService.deploy("""
                 {
                     "$id": "testing.schema",
@@ -69,7 +69,7 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
 
     @Test
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
-    public void shouldDeployResourceAsReadOnly() throws IOException {
+    void shouldDeployResourceAsReadOnly() throws IOException {
 
         final var resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:config/document/definition/noautodeploy/giraffe.schema.json");
@@ -83,7 +83,7 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
 
     @Test
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
-    public void shouldNotDeployASchemaThatChangedReadOnlyFlag() throws IOException {
+    void shouldNotDeployASchemaThatChangedReadOnlyFlag() throws IOException {
 
         final var resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:config/document/definition/noautodeploy/rhino.schema.json");
@@ -108,7 +108,7 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
 
     @Test
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
-    public void shouldDeployNextVersionWhenDifferentSchema() {
+    void shouldDeployNextVersionWhenDifferentSchema() {
 
         documentDefinitionService.deploy("""
                 {
@@ -134,7 +134,7 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
 
     @Test
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
-    public void shouldListLatestVersions() {
+    void shouldListLatestVersions() {
         var v1 = documentDefinitionService.deploy("""
                 {
                     "$id": "clown.schema",
@@ -160,7 +160,56 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
 
     @Test
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
-    public void shouldNotDeployNextVersionWhenSchemaAlreadyExists() throws IOException {
+    void shouldFindVersionsForDocumentDefinitionName() {
+        var v1 = documentDefinitionService.deploy("""
+                {
+                    "$id": "clown.schema",
+                    "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """).documentDefinition();
+
+        var v2 = documentDefinitionService
+            .deploy("""
+                    {
+                        "$id": "clown.schema",
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "title": "Clown"
+                    }
+                """).documentDefinition();
+
+        final var versions = documentDefinitionService.findVersionsByName("clown");
+        assertThat(versions)
+            .isNotEmpty()
+            .contains(v1.id().version(), v2.id().version());
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
+    void shouldNotFindVersionsForNonExistingDocumentDefinitionName() {
+        var v1 = documentDefinitionService.deploy("""
+                {
+                    "$id": "clown.schema",
+                    "$schema": "http://json-schema.org/draft-07/schema#"
+                }
+            """).documentDefinition();
+
+        var v2 = documentDefinitionService
+            .deploy("""
+                    {
+                        "$id": "clown.schema",
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "title": "Clown"
+                    }
+                """).documentDefinition();
+
+        final var versions = documentDefinitionService.findVersionsByName("nothing");
+        assertThat(versions)
+            .isEmpty();
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
+    void shouldNotDeployNextVersionWhenSchemaAlreadyExists() throws IOException {
         final var resource = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
             .getResource("classpath:config/document/definition/house.schema.json");
 
@@ -173,7 +222,7 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
 
     @Test
     @WithMockUser(username = USERNAME, authorities = USER)
-    public void shouldGetForRolesOnly() {
+    void shouldGetForRolesOnly() {
         final var expectedDefinition = runWithoutAuthorization(() -> documentDefinitionService.deploy("""
                 {
                     "$id": "roles1.schema",
@@ -210,7 +259,7 @@ public class JsonSchemaDocumentDefinitionServiceIntTest extends BaseIntegrationT
 
     @Test
     @WithMockUser(username = USERNAME, authorities = ADMIN)
-    public void shouldGetAllForAdmin() {
+    void shouldGetAllForAdmin() {
         final var documentDefinition1 = runWithoutAuthorization(() -> documentDefinitionService.deploy("""
                 {
                     "$id": "roles1.schema",

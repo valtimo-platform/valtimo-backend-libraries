@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.camunda.authorization
 
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
@@ -56,8 +57,10 @@ class CamundaIdentityLinkSpecification(
     }
 
     override fun identifierToEntity(identifier: String): CamundaIdentityLink {
-        return camundaRuntimeService.getIdentityLink(identifier)
-            ?: throw IllegalStateException("Identity link not found")
+        return runWithoutAuthorization {
+            camundaRuntimeService.getIdentityLink(identifier)
+                ?: throw IllegalStateException("Identity link not found")
+        }
     }
 }
 

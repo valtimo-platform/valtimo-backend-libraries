@@ -52,6 +52,7 @@ import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import java.util.UUID
@@ -61,6 +62,7 @@ import jakarta.validation.Validator
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 
+@Transactional
 class PluginService(
     private val pluginDefinitionRepository: PluginDefinitionRepository,
     private val pluginConfigurationRepository: PluginConfigurationRepository,
@@ -92,11 +94,25 @@ class PluginService(
         properties: ObjectNode,
         pluginDefinitionKey: String
     ): PluginConfiguration {
+        return createPluginConfiguration(
+            PluginConfigurationId.newId(),
+            title,
+            properties,
+            pluginDefinitionKey
+        )
+    }
+
+    fun createPluginConfiguration(
+        id: PluginConfigurationId,
+        title: String,
+        properties: ObjectNode,
+        pluginDefinitionKey: String
+    ): PluginConfiguration {
         val pluginDefinition = pluginDefinitionRepository.getById(pluginDefinitionKey)
         validateProperties(properties, pluginDefinition)
 
         val pluginConfiguration = pluginConfigurationRepository.save(
-            PluginConfiguration(PluginConfigurationId.newId(), title, properties, pluginDefinition)
+            PluginConfiguration(id, title, properties, pluginDefinition)
         )
 
         try {
@@ -173,7 +189,16 @@ class PluginService(
         title: String,
         properties: ObjectNode,
     ): PluginConfiguration {
-        val pluginConfiguration = pluginConfigurationRepository.getById(pluginConfigurationId)
+        return updatePluginConfiguration(pluginConfigurationId, pluginConfigurationId, title, properties)
+    }
+
+    fun updatePluginConfiguration(
+        oldPluginConfigurationId: PluginConfigurationId,
+        newPluginConfigurationId: PluginConfigurationId,
+        title: String,
+        properties: ObjectNode,
+    ): PluginConfiguration {
+        val pluginConfiguration = updatePluginConfigurationId(oldPluginConfigurationId, newPluginConfigurationId)
 
         pluginConfiguration.title = title
         pluginConfiguration.updateProperties(properties)
@@ -314,6 +339,38 @@ class PluginService(
         logger.debug { "Invoking method ${method.name} of class ${instance.javaClass.simpleName} for task ${task.taskDefinitionKey} of process-instance ${task.processInstanceId}" }
 
         return method.invoke(instance, *methodArguments)
+    }
+
+    private fun updatePluginConfigurationId(
+        oldPluginConfigurationId: PluginConfigurationId,
+        newPluginConfigurationId: PluginConfigurationId
+    ): PluginConfiguration {
+        val oldPluginConfiguration = pluginConfigurationRepository.findById(oldPluginConfigurationId).orElseThrow()
+        if (newPluginConfigurationId == oldPluginConfigurationId) {
+            return oldPluginConfiguration
+        }
+        pluginConfigurationRepository.deleteById(oldPluginConfigurationId)
+        val newPluginConfiguration = pluginConfigurationRepository.save(
+            PluginConfiguration(
+                newPluginConfigurationId,
+                oldPluginConfiguration.title,
+                oldPluginConfiguration.rawProperties,
+                oldPluginConfiguration.pluginDefinition
+            )
+        )
+        val processLinks = pluginProcessLinkRepository.findByPluginConfigurationId(oldPluginConfigurationId)
+            .map { it.copy(pluginConfigurationId = newPluginConfigurationId) }
+        pluginProcessLinkRepository.saveAll(processLinks)
+        val configurations = pluginConfigurationRepository.findAll()
+        configurations.forEach { configuration ->
+            configuration.rawProperties?.fields()?.forEachRemaining { property ->
+                if (property.value.textValue() == oldPluginConfigurationId.id.toString()) {
+                    property.setValue(TextNode.valueOf(newPluginConfigurationId.id.toString()))
+                }
+            }
+        }
+        pluginConfigurationRepository.saveAll(configurations)
+        return newPluginConfiguration
     }
 
     private fun resolveMethodArguments(
@@ -514,7 +571,6 @@ class PluginService(
                         assert(propertyConfiguration.isPresent) { "Plugin configuration with id ${propertyConfigurationId.id} does not exist!" }
                     } else {
                         val propertyValue = objectMapper.treeToValue(propertyNode, propertyClass)
-                        assert(propertyValue != null)
                         val validationErrors =
                             validator.validateValue(pluginClass, pluginProperty.fieldName, propertyValue)
                         if (validationErrors.isNotEmpty()) {

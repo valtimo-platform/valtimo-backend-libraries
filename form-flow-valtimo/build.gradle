@@ -26,7 +26,8 @@ dependencies {
     implementation project(":outbox")
     implementation project(":process-link")
     implementation project(":process-document")
-    implementation project(":export")
+    implementation project(":exporter")
+    implementation project(":importer")
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

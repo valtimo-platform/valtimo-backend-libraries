@@ -26,8 +26,6 @@ import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
 import com.ritense.plugin.web.rest.result.PluginConfigurationDto
 import com.ritense.plugin.web.rest.result.PluginConfigurationExportDto
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
-import java.util.Comparator.comparingInt
-import java.util.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -38,6 +36,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.Comparator.comparingInt
+import java.util.UUID
 
 @RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
@@ -70,9 +70,16 @@ class PluginConfigurationResource(
     fun createPluginConfiguration(
         @RequestBody createPluginConfiguration: CreatePluginConfigurationDto
     ): ResponseEntity<PluginConfigurationDto> {
+        val pluginConfigurationId = if (createPluginConfiguration.id == null) {
+            PluginConfigurationId.newId()
+        } else {
+            PluginConfigurationId.existingId(createPluginConfiguration.id)
+        }
+
         return ResponseEntity.ok(
             PluginConfigurationDto(
                 pluginService.createPluginConfiguration(
+                    pluginConfigurationId,
                     createPluginConfiguration.title,
                     createPluginConfiguration.properties,
                     createPluginConfiguration.definitionKey
@@ -86,10 +93,17 @@ class PluginConfigurationResource(
         @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: UUID,
         @RequestBody updatePluginConfiguration: UpdatePluginConfigurationDto
     ): ResponseEntity<PluginConfigurationDto> {
+        val newPluginConfigurationId = if (updatePluginConfiguration.newId == null) {
+            PluginConfigurationId.existingId(pluginConfigurationId)
+        } else {
+            PluginConfigurationId(updatePluginConfiguration.newId)
+        }
+
         return ResponseEntity.ok(
             PluginConfigurationDto(
                 pluginService.updatePluginConfiguration(
                     PluginConfigurationId.existingId(pluginConfigurationId),
+                    newPluginConfigurationId,
                     updatePluginConfiguration.title,
                     updatePluginConfiguration.properties
                 )
@@ -101,7 +115,8 @@ class PluginConfigurationResource(
     fun exportPluginConfiguration(): ResponseEntity<List<PluginConfigurationExportDto>> {
         val pluginConfigurations = pluginService.getPluginConfigurations(PluginConfigurationSearchParameters())
             .sortedWith(comparingInt<PluginConfiguration> { pluginConfiguration ->
-                pluginConfiguration.properties?.fieldNames()?.asSequence()?.count { it.contains("PluginConfiguration") } ?: 0
+                pluginConfiguration.properties?.fieldNames()?.asSequence()?.count { it.contains("PluginConfiguration") }
+                    ?: 0
             }
                 .thenBy { it.pluginDefinition.key }
                 .thenBy { it.title })
