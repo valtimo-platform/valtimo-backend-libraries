@@ -18,21 +18,16 @@ package com.ritense.case.service
 
 import com.ritense.case.deployment.CaseTabDeploymentService
 import com.ritense.importer.ImportRequest
-import com.ritense.valtimo.changelog.domain.ChangesetDetails
+import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.FORM
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
-import org.assertj.core.api.Assertions.FILE
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 
 @ExtendWith(MockitoExtension::class)
 class CaseTabImporterTest(
@@ -53,7 +48,7 @@ class CaseTabImporterTest(
 
     @Test
     fun `should depend on 'documentdefinition' and 'form' type`() {
-        assertThat(importer.dependsOn()).isEqualTo(setOf("documentdefinition", "form"))
+        assertThat(importer.dependsOn()).isEqualTo(setOf(DOCUMENT_DEFINITION, FORM))
     }
 
     @Test

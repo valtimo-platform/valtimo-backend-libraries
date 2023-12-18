@@ -18,6 +18,7 @@ package com.ritense.valtimo.formflow.importer
 
 import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.importer.ImportRequest
+import com.ritense.importer.ValtimoImportTypes.Companion.FORM
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -45,7 +46,7 @@ class FormFlowDefinitionImporterTest(
 
     @Test
     fun `should depend on 'form' type`() {
-        assertThat(formFlowDefinitionImporter.dependsOn()).isEqualTo(setOf("form"))
+        assertThat(formFlowDefinitionImporter.dependsOn()).isEqualTo(setOf(FORM))
     }
 
     @Test
