@@ -111,4 +111,12 @@ interface ValueResolverFactory {
     fun preProcessValuesForNewCase(values: Map<String, Any>): Any {
         return values
     }
+
+    fun getResolvableKeys(documentDefinitionName: String, version: Long): List<String> {
+        return emptyList()
+    }
+
+    fun getResolvableKeys(documentDefinitionName: String): List<String> {
+        return emptyList()
+    }
 }

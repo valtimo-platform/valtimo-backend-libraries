@@ -94,4 +94,10 @@ interface ValueResolverService {
     ): Map<String, Any>
 
     fun supportsValue(value: String): Boolean
+
+    fun getValueResolvers(): List<String>
+
+    fun getResolvableKeys(prefix: String, documentDefinitionName: String, version: Long): List<String>
+
+    fun getResolvableKeys(prefix: String, documentDefinitionName: String): List<String>
 }

@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.internal.path.ArrayPathToken;
 import com.jayway.jsonpath.internal.path.CompiledPath;
@@ -53,13 +54,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
+
 import javax.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.CREATE;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.DELETE;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.MODIFY;
@@ -173,6 +177,13 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         ));
 
         return optionalDefinition;
+    }
+
+    @Override
+    public List<String> getPropertyNames(DocumentDefinition definition) {
+        JsonSchemaDocumentDefinition jsonSchemaDocumentDefinition = (JsonSchemaDocumentDefinition) definition;
+        ObjectNode propertiesObjectNode = (ObjectNode) jsonSchemaDocumentDefinition.getSchema().asJson().get("properties");
+        return getPropertyNamesFromObjectNode(jsonSchemaDocumentDefinition, propertiesObjectNode, "/");
     }
 
     @Override
@@ -459,4 +470,29 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         return ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(PATH);
     }
 
+    private List<String> getPropertyNamesFromObjectNode(JsonSchemaDocumentDefinition definition, ObjectNode node, String parent) {
+        List<String> propertyNames = new ArrayList<>();
+        node.fields().forEachRemaining((jsonNode -> {
+            if(jsonNode.getValue().has("type")) {
+                String propertyType = jsonNode.getValue().get("type").asText();
+                if(isSimpleObject(propertyType)) {
+                    propertyNames.add(parent + jsonNode.getKey());
+                } else if (propertyType.equals("object")) {
+                    ObjectNode objectNode = (ObjectNode) jsonNode.getValue();
+                    propertyNames.addAll(getPropertyNamesFromObjectNode(definition, objectNode, parent.concat(jsonNode.getKey() + "/")));
+                }
+            } else if(jsonNode.getValue().has("$ref")) {
+                String internalDefinition = jsonNode.getValue().get("$ref").asText().substring(1);
+                ObjectNode jsonNode1 = (ObjectNode) definition.schema().at(internalDefinition).get("properties");
+                propertyNames.addAll(getPropertyNamesFromObjectNode(definition, jsonNode1, parent.concat(jsonNode.getKey() + "/")));
+            }
+        }));
+
+        return propertyNames;
+    }
+
+    private boolean isSimpleObject(String propertyType) {
+        List<String> simpleTypes = List.of("string", "boolean", "integer");
+        return simpleTypes.contains(propertyType);
+    }
 }

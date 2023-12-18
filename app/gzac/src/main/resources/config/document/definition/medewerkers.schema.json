@@ -43,6 +43,15 @@
         "medewerker" : {
             "$ref": "#/definitions/medewerker"
         },
+        "nummer": {
+            "type": "integer"
+        },
+        "naam": {
+            "type": "string"
+        },
+        "inDienst": {
+            "type": "boolean"
+        },
         "verlofAanvragen": {
             "type": "array",
             "items": {

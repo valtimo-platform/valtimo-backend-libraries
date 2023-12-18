@@ -129,6 +129,16 @@ class DocumentJsonValueResolverFactory(
         return emptyDocumentContent
     }
 
+    override fun getResolvableKeys(documentDefinitionName: String, version: Long): List<String> {
+        val documentDefinition = documentDefinitionService.findByNameAndVersion(documentDefinitionName, version).orElseThrow()
+        return documentDefinitionService.getPropertyNames(documentDefinition)
+    }
+
+    override fun getResolvableKeys(documentDefinitionName: String): List<String> {
+        val documentDefinition = documentDefinitionService.findLatestByName(documentDefinitionName).orElseThrow()
+        return documentDefinitionService.getPropertyNames(documentDefinition)
+    }
+
     private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any>) {
         val jsonPatchBuilder = JsonPatchBuilder()
 

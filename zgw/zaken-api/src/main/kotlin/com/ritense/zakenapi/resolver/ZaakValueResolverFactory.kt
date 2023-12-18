@@ -46,4 +46,27 @@ class ZaakValueResolverFactory(
         TODO()
     }
 
+    override fun getResolvableKeys(documentDefinitionName: String, version: Long): List<String> {
+        return ZAAK_FIELD_LIST
+    }
+
+    override fun getResolvableKeys(documentDefinitionName: String): List<String> {
+        return ZAAK_FIELD_LIST
+    }
+
+    companion object {
+        val ZAAK_FIELD_LIST = listOf(
+            "bronorganisatie",
+            "identificatie",
+            "omschrijving",
+            "toelichting",
+            "zaaktype",
+            "registratiedatum",
+            "verantwoordelijkeOrganisatie",
+            "startdatum",
+            "einddatum",
+            "einddatumGepland",
+            "uuid"
+        ).sorted()
+    }
 }

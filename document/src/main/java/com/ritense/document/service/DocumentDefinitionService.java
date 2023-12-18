@@ -43,6 +43,8 @@ public interface DocumentDefinitionService {
 
     Optional<? extends DocumentDefinition> findByNameAndVersion(String documentDefinitionName, long version);
 
+    List<String> getPropertyNames(DocumentDefinition definition);
+
     List<Long> findVersionsByName(String documentDefinitionName);
 
     void deployAll();

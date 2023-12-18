@@ -32,8 +32,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.of;
@@ -113,6 +115,16 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     @Override
     public ResponseEntity<? extends DocumentDefinition> getDocumentDefinitionVersion(String name, long version) {
         return of(runWithoutAuthorization(() -> documentDefinitionService.findByNameAndVersion(name, version)));
+    }
+
+    @Override
+    public ResponseEntity<List<String>> getDocumentDefinitionVersionProperties(String name, long version) {
+        DocumentDefinition definition =
+                runWithoutAuthorization(() ->
+                        documentDefinitionService.findByNameAndVersion(name, version)
+                                .orElseThrow()
+                );
+        return ok(documentDefinitionService.getPropertyNames(definition));
     }
 
     @Override

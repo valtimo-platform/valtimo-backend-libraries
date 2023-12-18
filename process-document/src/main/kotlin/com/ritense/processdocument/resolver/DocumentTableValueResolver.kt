@@ -66,6 +66,14 @@ class DocumentTableValueResolver(
         throw NotImplementedError("Unable to handle value: {${firstValue.key} to ${firstValue.value}}")
     }
 
+    override fun getResolvableKeys(documentDefinitionName: String, version: Long): List<String> {
+        return TABLE_COLUMN_LIST
+    }
+
+    override fun getResolvableKeys(documentDefinitionName: String): List<String> {
+        return TABLE_COLUMN_LIST
+    }
+
     private fun createResolver(document: Document): Function<String, Any?> {
         return Function { requestedValue ->
             when (requestedValue) {

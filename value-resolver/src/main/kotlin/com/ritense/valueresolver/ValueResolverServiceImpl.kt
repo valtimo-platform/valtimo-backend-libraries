@@ -18,6 +18,7 @@ package com.ritense.valueresolver
 
 import java.util.UUID
 import org.camunda.bpm.engine.delegate.VariableScope
+import java.util.stream.Collectors
 
 open class ValueResolverServiceImpl(
     private val valueResolverFactories: List<ValueResolverFactory>
@@ -41,6 +42,18 @@ open class ValueResolverServiceImpl(
 
     override fun supportsValue(value: String) : Boolean {
         return getResolverFactoryMap().containsKey(getPrefix(value))
+    }
+
+    override fun getValueResolvers(): List<String> {
+        return getResolverFactoryMap().keys.filter { prefix -> prefix != "" }.toList()
+    }
+
+    override fun getResolvableKeys(prefix: String, documentDefinitionName: String): List<String> {
+        return getResolverFactoryMap()[prefix]?.getResolvableKeys(documentDefinitionName) ?: emptyList()
+    }
+
+    override fun getResolvableKeys(prefix: String, documentDefinitionName: String, version: Long): List<String> {
+        return getResolverFactoryMap()[prefix]?.getResolvableKeys(documentDefinitionName, version) ?: emptyList()
     }
 
     /**
