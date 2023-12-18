@@ -18,7 +18,6 @@ package com.ritense.exporter
 
 import com.ritense.exporter.request.ExportRequest
 import java.io.ByteArrayOutputStream
-import java.util.NoSuchElementException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -61,7 +60,7 @@ class ValtimoExportService (
                     collectExportFiles(it, history)
                 }
             } catch (e: NoSuchElementException) {
-                if (request.isOptional) {
+                if (!request.required) {
                     null
                 } else {
                     throw e
