@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
+import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import java.io.ByteArrayOutputStream
 
@@ -39,7 +40,7 @@ class CaseListExporter(
         }
 
         val exportFile = ByteArrayOutputStream().use {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(it, listColumns)
+            mapper.writer(ExportPrettyPrinter()).writeValue(it, listColumns)
 
             ExportFile(
                 PATH.format(request.name),

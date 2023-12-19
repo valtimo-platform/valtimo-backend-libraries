@@ -63,7 +63,15 @@ class CaseDefinitionSettingsImporterTest(
         val jsonContent = "{}"
         importer.import(ImportRequest(FILENAME, jsonContent.toByteArray()))
 
-        verify(deploymentService).deploy("my-case-list", jsonContent, true)
+        val nameCaptor = argumentCaptor<String>()
+        val jsonCaptor = argumentCaptor<String>()
+        val booleanCaptor = argumentCaptor<Boolean>()
+
+        verify(deploymentService).deploy(nameCaptor.capture(), jsonCaptor.capture(), booleanCaptor.capture())
+
+        assertThat(nameCaptor.firstValue).isEqualTo("my-case-list")
+        assertThat(jsonCaptor.firstValue).isEqualTo(jsonContent)
+        assertThat(booleanCaptor.firstValue).isEqualTo(true)
     }
 
     private companion object {
