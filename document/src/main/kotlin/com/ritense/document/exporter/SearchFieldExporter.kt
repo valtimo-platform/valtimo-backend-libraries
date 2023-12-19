@@ -22,6 +22,7 @@ import com.ritense.document.service.SearchFieldService
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
+import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayOutputStream
@@ -42,7 +43,7 @@ class SearchFieldExporter(
         }
 
         val exportFile = ByteArrayOutputStream().use {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(it, SearchConfigurationDto(searchFields))
+            objectMapper.writer(ExportPrettyPrinter()).writeValue(it, SearchConfigurationDto(searchFields))
 
             ExportFile(
                 PATH.format(request.name),
