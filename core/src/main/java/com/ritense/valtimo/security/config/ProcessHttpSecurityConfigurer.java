@@ -29,8 +29,8 @@ public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/process/definition").authenticated()
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(GET, "/api/v1/process/definition").authenticated()
                 .requestMatchers(POST, "/api/v1/process/definition/{processDefinitionId}/count").authenticated()
                 .requestMatchers(GET, "/api/v1/process/definition/{processDefinitionId}/xml").authenticated()
                 .requestMatchers(PUT, "/api/v1/process/definition/{processDefinitionId}/xml/timer").authenticated()
@@ -56,7 +56,8 @@ public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
                 .requestMatchers(POST, "/api/v1/process/{processDefinitionName}/count").authenticated()
                 .requestMatchers(POST, "/api/v1/process/{processInstanceId}/comment").authenticated()
                 .requestMatchers(POST, "/api/v1/process/{processInstanceId}/delete").hasAuthority(ADMIN)
-                .requestMatchers(POST, "/api/v1/process/definition/deployment").hasAuthority(ADMIN);
+                .requestMatchers(POST, "/api/v1/process/definition/deployment").hasAuthority(ADMIN)
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

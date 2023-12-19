@@ -36,12 +36,13 @@ public class FormAssociationManagementHttpSecurityConfigurer implements HttpSecu
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/form-association-management").hasAuthority(ADMIN)
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(GET, "/api/v1/form-association-management").hasAuthority(ADMIN)
                 .requestMatchers(GET, "/api/v1/form-association-management/{formAssociationId}").hasAuthority(ADMIN)
                 .requestMatchers(PUT, "/api/v1/form-association-management").hasAuthority(ADMIN)
                 .requestMatchers(POST, "/api/v1/form-association-management").hasAuthority(ADMIN)
-                .requestMatchers(DELETE, "/api/v1/form-association-management/{processDefinitionKey}/{formAssociationId}").hasAuthority(ADMIN);
+                .requestMatchers(DELETE, "/api/v1/form-association-management/{processDefinitionKey}/{formAssociationId}").hasAuthority(ADMIN)
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

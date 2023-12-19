@@ -86,7 +86,7 @@ class SmartDocumentsClient(
 
         DataBufferUtils.write(body, responseOut).subscribe(DataBufferUtils.releaseConsumer())
 
-        assertHttp200Status(response.statusCode(), response, responseIn)
+        assertHttp200Status(HttpStatus.valueOf(response.statusCode().value()), response, responseIn)
 
         val responseResourceId = temporaryResourceStorageService.store(responseIn)
         val parsedResponse = temporaryResourceStorageService.getResourceContentAsInputStream(responseResourceId)

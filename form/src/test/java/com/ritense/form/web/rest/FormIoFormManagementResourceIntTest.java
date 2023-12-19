@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;

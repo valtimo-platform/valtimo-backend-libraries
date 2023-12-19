@@ -52,8 +52,8 @@ dependencies {
     implementation "org.springframework.data:spring-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-security"
 
-    implementation "org.hibernate:hibernate-core"
-    implementation "org.hibernate:hibernate-envers"
+    implementation "org.hibernate.orm:hibernate-core"
+    implementation "org.hibernate.orm:hibernate-envers"
 
     testImplementation "org.assertj:assertj-core"
     testImplementation "org.mockito:mockito-core"

@@ -25,7 +25,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ACTUATOR;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -50,18 +49,23 @@ public class ActuatorHttpSecurityConfigurer implements HttpSecurityConfigurer, A
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/management").hasAuthority(ACTUATOR)
-                .requestMatchers(GET, "/management/configprops").hasAuthority(ACTUATOR)
-                .requestMatchers(GET, "/management/env").hasAuthority(ACTUATOR)
-                .requestMatchers(GET, "/management/health").hasAuthority(ACTUATOR)
-                .requestMatchers(GET, "/management/mappings").hasAuthority(ACTUATOR)
-                .requestMatchers(GET, "/management/logfile").hasAuthority(ACTUATOR)
-                .requestMatchers(GET, "/management/loggers").hasAuthority(ACTUATOR)
-                .requestMatchers(POST, "/management/loggers/**").hasAuthority(ACTUATOR)
-                .requestMatchers(GET, "/management/info").hasAnyAuthority(ACTUATOR)
-                .and()
-                .httpBasic().authenticationEntryPoint(basicAuthenticationEntryPoint());
+            http.authorizeHttpRequests((requests) ->
+                    requests.requestMatchers(GET, "/management").hasAuthority(ACTUATOR)
+                        .requestMatchers(GET, "/management/configprops").hasAuthority(ACTUATOR)
+                        .requestMatchers(GET, "/management/env").hasAuthority(ACTUATOR)
+                        .requestMatchers(GET, "/management/health").hasAuthority(ACTUATOR)
+                        .requestMatchers(GET, "/management/mappings").hasAuthority(ACTUATOR)
+                        .requestMatchers(GET, "/management/logfile").hasAuthority(ACTUATOR)
+                        .requestMatchers(GET, "/management/loggers").hasAuthority(ACTUATOR)
+                        .requestMatchers(POST, "/management/loggers/**").hasAuthority(ACTUATOR)
+                        .requestMatchers(GET, "/management/info").hasAnyAuthority(ACTUATOR)
+// TODO: 92240
+//                .and()
+//                .httpBasic((configurer) ->
+//                    configurer.authenticationEntryPoint(basicAuthenticationEntryPoint())
+//                );
+            );
+
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

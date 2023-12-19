@@ -20,7 +20,7 @@ import com.ritense.openzaak.BaseIntegrationTest
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import java.net.URI
-import javax.inject.Inject
+import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

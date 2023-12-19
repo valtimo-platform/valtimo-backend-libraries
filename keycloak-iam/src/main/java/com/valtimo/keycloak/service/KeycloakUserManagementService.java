@@ -32,15 +32,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import javax.ws.rs.NotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
@@ -89,11 +86,6 @@ public class KeycloakUserManagementService implements UserManagementService {
         throw new NotImplementedException();
     }
 
-    @Override
-    public Page<ManageableUser> getAllUsers(Pageable pageable) {
-        throw new NotImplementedException();
-    }
-
     public Integer countUsers() {
         try (Keycloak keycloak = keycloakService.keycloak()) {
             return keycloakService.usersResource(keycloak).count();
@@ -115,6 +107,11 @@ public class KeycloakUserManagementService implements UserManagementService {
         }
 
         return users;
+    }
+
+    @Override
+    public Page<ManageableUser> getAllUsers(Pageable pageable) {
+        throw new NotImplementedException();
     }
 
     @Override
@@ -196,31 +193,30 @@ public class KeycloakUserManagementService implements UserManagementService {
         boolean rolesFound = false;
 
         try {
-            Set<UserRepresentation> users;
             try (Keycloak keycloak = keycloakService.keycloak()) {
-                users = keycloakService.realmRolesResource(keycloak).get(authority).getRoleUserMembers(0, MAX_USERS);
-            }
-            if (users.size() >= MAX_USERS) {
-                logger.warn(MAX_USERS_WARNING_MESSAGE);
-            }
-            roleUserMembers.addAll(users);
-            rolesFound = true;
-        } catch (NotFoundException e) {
-            logger.debug("Could not find realm roles", e);
-        }
+                var users = keycloakService.realmRolesResource(keycloak).get(authority).getUserMembers(0, MAX_USERS);
 
-        if (!clientName.isBlank()) {
-            try {
-                Set<UserRepresentation> users;
-                try (Keycloak keycloak = keycloakService.keycloak()) {
-                    users = keycloakService.clientRolesResource(keycloak).get(authority).getRoleUserMembers(0, MAX_USERS);
-                }
                 if (users.size() >= MAX_USERS) {
                     logger.warn(MAX_USERS_WARNING_MESSAGE);
                 }
                 roleUserMembers.addAll(users);
                 rolesFound = true;
-            } catch (NotFoundException e) {
+            }
+        } catch (Exception e) {
+            logger.debug("Could not find realm roles", e);
+        }
+
+        if (!clientName.isBlank()) {
+            try {
+                try (Keycloak keycloak = keycloakService.keycloak()) {
+                    var users = keycloakService.clientRolesResource(keycloak).get(authority).getUserMembers(0, MAX_USERS);
+                    if (users.size() >= MAX_USERS) {
+                        logger.warn(MAX_USERS_WARNING_MESSAGE);
+                    }
+                    roleUserMembers.addAll(users);
+                    rolesFound = true;
+                }
+            } catch (Exception e) {
                 logger.debug("Could not find client roles", e);
             }
         }

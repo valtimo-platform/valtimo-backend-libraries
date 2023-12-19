@@ -23,11 +23,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+//import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import java.util.List;
 import static org.springframework.http.HttpMethod.OPTIONS;
 
-public class CoreHttpSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+// TODO: 92240
+public class CoreHttpSecurityConfigurerAdapter { // extends WebSecurityConfigurerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(CoreHttpSecurityConfigurerAdapter.class);
     private final List<HttpSecurityConfigurer> httpSecurityConfigurers;
@@ -41,7 +42,7 @@ public class CoreHttpSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
         this.authenticationSecurityConfigurers = authenticationSecurityConfigurers;
     }
 
-    @Override
+//    @Override
     protected void configure(HttpSecurity httpSecurity) {
         logger.debug("Configuring httpSecurity");
         httpSecurityConfigurers.forEach(httpConfig -> {
@@ -50,7 +51,7 @@ public class CoreHttpSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
         });
     }
 
-    @Override
+//    @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         authenticationSecurityConfigurers.forEach(authConfig -> {
             logger.debug("Configure AuthenticationManagerBuilder with AuthenticationSecurityConfigurer {}", authConfig.getClass());
@@ -58,7 +59,7 @@ public class CoreHttpSecurityConfigurerAdapter extends WebSecurityConfigurerAdap
         });
     }
 
-    @Override
+//    @Override
     public void configure(WebSecurity web) {
         web.ignoring()
             .requestMatchers(OPTIONS, "/**")

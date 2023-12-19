@@ -16,19 +16,20 @@
 package com.ritense.authorization
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.hibernate.cfg.AvailableSettings
+import org.hibernate.type.format.jackson.JacksonJsonFormatMapper
 import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+
 
 @Configuration
 class HibernateJsonMapperConfiguration {
 
     @Bean
-    fun hibernatePropertiesCustomizer(
-        objectMapper: ObjectMapper
-    ): HibernatePropertiesCustomizer =
-        HibernatePropertiesCustomizer { hibernateProperties ->
-            HibernateObjectMapperSupplier(objectMapper)
-            hibernateProperties[io.hypersistence.utils.hibernate.type.util.Configuration.PropertyKey.JACKSON_OBJECT_MAPPER.key] = HibernateObjectMapperSupplier::class.qualifiedName
+    fun jsonFormatMapperCustomizer(objectMapper: ObjectMapper): HibernatePropertiesCustomizer {
+        return HibernatePropertiesCustomizer { properties: MutableMap<String?, Any?> ->
+            properties[AvailableSettings.JSON_FORMAT_MAPPER] = JacksonJsonFormatMapper(objectMapper)
         }
+    }
 }

@@ -30,8 +30,8 @@ public class UserHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/users").hasAuthority(ADMIN)
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(GET, "/api/v1/users").hasAuthority(ADMIN)
                 .requestMatchers(POST, "/api/v1/users").hasAuthority(ADMIN)
                 .requestMatchers(PUT, "/api/v1/users").hasAuthority(ADMIN)
                 .requestMatchers(PUT, "/api/v1/users/{userId}/activate").hasAuthority(ADMIN)
@@ -42,7 +42,8 @@ public class UserHttpSecurityConfigurer implements HttpSecurityConfigurer {
                 .requestMatchers(DELETE, "/api/v1/users/{userId}").hasAuthority(ADMIN)
                 .requestMatchers(POST, "/api/v1/users/send-verification-email/{userId}").hasAuthority(ADMIN)
                 .requestMatchers(GET, "/api/v1/user/settings").authenticated()
-                .requestMatchers(PUT, "/api/v1/user/settings").authenticated();
+                .requestMatchers(PUT, "/api/v1/user/settings").authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

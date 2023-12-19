@@ -67,7 +67,7 @@ public class TokenBuilder {
     }
 
     protected Claims getClaims(String token) {
-        return Jwts.parserBuilder()
+        return Jwts.parser()
             .setSigningKeyResolver(secretKeyResolver)
             .build()
             .parseClaimsJws(token)

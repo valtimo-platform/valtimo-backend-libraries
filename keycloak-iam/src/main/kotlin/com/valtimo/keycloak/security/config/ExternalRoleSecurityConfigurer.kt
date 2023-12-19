@@ -29,7 +29,7 @@ class ExternalRoleSecurityConfigurer: HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/v1/external-role").hasAnyAuthority(USER, ADMIN)
+                .requestMatchers(HttpMethod.GET, "/api/v1/external-role").hasAnyAuthority(USER, ADMIN)
         } catch (e: Exception)  {
             throw HttpConfigurerConfigurationException(e)
         }

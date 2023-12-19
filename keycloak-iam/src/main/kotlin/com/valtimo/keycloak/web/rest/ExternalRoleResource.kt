@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import javax.ws.rs.NotFoundException
+import jakarta.ws.rs.NotFoundException
 
 @RestController
 @RequestMapping(value = ["/api/v1/external-role"])

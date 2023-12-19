@@ -26,7 +26,9 @@ public class StaticResourcesHttpSecurityConfigurer implements HttpSecurityConfig
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests().requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+            );
         } catch (Exception e) {
            throw new HttpConfigurerConfigurationException(e);
         }

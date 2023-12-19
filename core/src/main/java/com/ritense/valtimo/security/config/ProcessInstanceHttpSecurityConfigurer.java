@@ -26,8 +26,9 @@ public class ProcessInstanceHttpSecurityConfigurer implements HttpSecurityConfig
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(POST, "/api/v1/process-instance/{id}/variables").authenticated();
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(POST, "/api/v1/process-instance/{id}/variables").authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -29,23 +29,23 @@ class DashboardHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/dashboard").authenticated()
-                .requestMatchers(GET, "/api/v1/dashboard/{dashboardKey}/data").authenticated()
-
-                .requestMatchers(GET, "/api/management/v1/dashboard").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}").hasAuthority(ADMIN)
-                .requestMatchers(POST, "/api/management/v1/dashboard").hasAuthority(ADMIN)
-                .requestMatchers(PUT, "/api/management/v1/dashboard").hasAuthority(ADMIN)
-                .requestMatchers(DELETE, "/api/management/v1/dashboard/{dashboard-key}").hasAuthority(ADMIN)
-                .requestMatchers(PUT, "/api/management/v1/dashboard/{dashboard-key}").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration").hasAuthority(ADMIN)
-                .requestMatchers(POST, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration").hasAuthority(ADMIN)
-                .requestMatchers(PUT, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}").hasAuthority(ADMIN)
-                .requestMatchers(PUT, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}").hasAuthority(ADMIN)
-                .requestMatchers(DELETE, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/management/v1/dashboard/widget-data-sources").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(GET, "/api/v1/dashboard").authenticated()
+                    .requestMatchers(GET, "/api/v1/dashboard/{dashboardKey}/data").authenticated()
+                    .requestMatchers(GET, "/api/management/v1/dashboard").hasAuthority(ADMIN)
+                    .requestMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}").hasAuthority(ADMIN)
+                    .requestMatchers(POST, "/api/management/v1/dashboard").hasAuthority(ADMIN)
+                    .requestMatchers(PUT, "/api/management/v1/dashboard").hasAuthority(ADMIN)
+                    .requestMatchers(DELETE, "/api/management/v1/dashboard/{dashboard-key}").hasAuthority(ADMIN)
+                    .requestMatchers(PUT, "/api/management/v1/dashboard/{dashboard-key}").hasAuthority(ADMIN)
+                    .requestMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration").hasAuthority(ADMIN)
+                    .requestMatchers(POST, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration").hasAuthority(ADMIN)
+                    .requestMatchers(PUT, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration").hasAuthority(ADMIN)
+                    .requestMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}").hasAuthority(ADMIN)
+                    .requestMatchers(PUT, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}").hasAuthority(ADMIN)
+                    .requestMatchers(DELETE, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}").hasAuthority(ADMIN)
+                    .requestMatchers(GET, "/api/management/v1/dashboard/widget-data-sources").hasAuthority(ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

@@ -27,9 +27,10 @@ public class AccountHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/account").authenticated()
-                .requestMatchers(POST, "/api/v1/account/profile", "/api/v1/account/change_password").authenticated();
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(GET, "/api/v1/account").authenticated()
+                .requestMatchers(POST, "/api/v1/account/profile", "/api/v1/account/change_password").authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -30,8 +30,8 @@ public class ChoiceFieldHttpSecurityConfigurer implements HttpSecurityConfigurer
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(
                     GET,
                     "/api/v1/choice-fields",
                     "/api/v1/choice-fields/{id}",
@@ -47,7 +47,8 @@ public class ChoiceFieldHttpSecurityConfigurer implements HttpSecurityConfigurer
                 .requestMatchers(GET, "/api/v1/choice-field-values/{id}").authenticated()
                 .requestMatchers(DELETE, "/api/v1/choice-field-values/{id}").hasAuthority(ADMIN)
                 .requestMatchers(GET, "/api/v1/choice-field-values/choice-field/{choicefield_name}/value/{value}").authenticated()
-                .requestMatchers(GET, "/api/v1/choice-field-values/{choice_field_name}/values").authenticated();
+                .requestMatchers(GET, "/api/v1/choice-field-values/{choice_field_name}/values").authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

@@ -71,6 +71,7 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "org.liquibase.ext:liquibase-hibernate6:${liquibaseVersion}"
+    implementation "org.liquibase:liquibase-core"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
@@ -79,7 +80,7 @@ dependencies {
 
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation "org.mockito:mockito-inline"
+    testImplementation "org.mockito:mockito-inline:${mockitoInlineVersion}"
 
     testImplementation project(':test-utils-common')
 

@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.authorization
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import java.util.function.Supplier
+package com.ritense.valtimo.security
 
-/*
- * This class links the ObjectMapper from the spring context to the JPA type in order to use any global configuration
- * and modules.
- */
-class HibernateObjectMapperSupplier(): Supplier<ObjectMapper?> {
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
+import org.springframework.security.web.SecurityFilterChain
 
-    constructor (objectMapper: ObjectMapper) : this() {
-        Companion.objectMapper = objectMapper
-    }
+interface CoreSecurityFactory {
+    fun createSecurityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain
 
-    override fun get(): ObjectMapper? {
-        return objectMapper
-    }
+    fun createWebSecurityCustomizer() : WebSecurityCustomizer
 
-    companion object {
-        private var objectMapper: ObjectMapper? = null
-    }
 }

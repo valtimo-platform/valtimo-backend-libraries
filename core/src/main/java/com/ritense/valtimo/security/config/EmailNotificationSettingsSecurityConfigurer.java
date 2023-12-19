@@ -27,9 +27,10 @@ public class EmailNotificationSettingsSecurityConfigurer implements HttpSecurity
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/email-notification-settings").authenticated()
-                .requestMatchers(PUT, "/api/v1/email-notification-settings").authenticated();
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(GET, "/api/v1/email-notification-settings").authenticated()
+                .requestMatchers(PUT, "/api/v1/email-notification-settings").authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

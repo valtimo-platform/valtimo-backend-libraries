@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
-import javax.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -37,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class KeycloakUserManagementServiceTest {
@@ -57,10 +57,10 @@ class KeycloakUserManagementServiceTest {
         johnDoe = newUser("John", "Doe", List.of(USER, ADMIN));
         ashaMiller = newUser("Asha", "Miller", List.of(ADMIN));
 
-        when(keycloakService.realmRolesResource(any()).get(USER).getRoleUserMembers(0, MAX_USERS))
-            .thenReturn(Set.of(johnDoe, jamesVance));
-        when(keycloakService.realmRolesResource(any()).get(ADMIN).getRoleUserMembers(0, MAX_USERS))
-            .thenReturn(Set.of(johnDoe, ashaMiller));
+        when(keycloakService.realmRolesResource(any()).get(USER).getUserMembers(0, MAX_USERS))
+            .thenReturn(List.of(johnDoe, jamesVance));
+        when(keycloakService.realmRolesResource(any()).get(ADMIN).getUserMembers(0, MAX_USERS))
+            .thenReturn(List.of(johnDoe, ashaMiller));
     }
 
     @Test
@@ -133,13 +133,14 @@ class KeycloakUserManagementServiceTest {
     }
 
     @Test
-    void findByRoleShouldReturnEmptyListWhenNotFoundExceptionIsThrown() {
-        when( keycloakService.realmRolesResource(any()).get("some-role").getRoleUserMembers())
-            .thenThrow(new NotFoundException());
+    void findByRoleShouldReturnEmptyListWhenExceptionIsThrown() {
+        when( keycloakService.realmRolesResource(any()).get("some-role").getUserMembers())
+            .thenThrow(new Exception());
 
         var users = userManagementService.findByRole("some-role");
 
         assertThat(users).isEmpty();
+        verify(keycloakService).realmRolesResource(any()).get("some-role").getUserMembers();
     }
 
     private UserRepresentation newUser(String firstName, String lastName, List<String> roles) {

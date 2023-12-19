@@ -31,7 +31,7 @@ import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;

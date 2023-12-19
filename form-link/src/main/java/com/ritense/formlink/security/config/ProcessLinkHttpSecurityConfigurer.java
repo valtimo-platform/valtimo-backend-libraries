@@ -33,9 +33,10 @@ public class ProcessLinkHttpSecurityConfigurer implements HttpSecurityConfigurer
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/process-link/task/{taskId}").authenticated()
-                .requestMatchers(POST, "/api/v1/process-definition/{processDefinitionKey}/form-flow").authenticated();
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(GET, "/api/v1/process-link/task/{taskId}").authenticated()
+                .requestMatchers(POST, "/api/v1/process-definition/{processDefinitionKey}/form-flow").authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

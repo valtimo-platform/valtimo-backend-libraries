@@ -109,21 +109,25 @@ public class KeycloakTokenAuthenticatorTest {
         assertThat(userAuthorities.size()).isEqualTo(1);
     }
 
+
     private Claims claimsWithRealmAccessRoles() {
-        final Claims roles = new DefaultClaims();
-        roles.put(ROLES_SCOPE, List.of(USER));
+        final Claims roles = new DefaultClaims(Map.of(
+            ROLES_SCOPE, List.of(USER)
+        ));
         return defaultKeycloakClaimWith(roles);
     }
 
     private Claims claimsWithRealmAndResourceAccessRoles() {
-        final Claims roles = new DefaultClaims();
-        roles.put(ROLES_SCOPE, List.of(USER));
+        final Claims roles = new DefaultClaims(Map.of(
+            ROLES_SCOPE, List.of(USER)
+        ));
         return keycloakClaimWithRealmAndResourceRoles(roles);
     }
 
     private Claims claimsWithUnknownRealmAccessRoles() {
-        final Claims roles = new DefaultClaims();
-        roles.put(ROLES_SCOPE, List.of("unknown-role"));
+        final Claims roles = new DefaultClaims(Map.of(
+            ROLES_SCOPE, List.of("unknown-role")
+        ));
         return defaultKeycloakClaimWith(roles);
     }
 
@@ -141,10 +145,10 @@ public class KeycloakTokenAuthenticatorTest {
     }
 
     private Claims defaultKeycloakClaimWith(Claims role) {
-        final Claims claims = new DefaultClaims();
-        claims.put(REALM_ACCESS, role);
-        claims.put(EMAIL_KEY, "test@test.com");
-        return claims;
+        return new DefaultClaims(Map.of(
+            REALM_ACCESS, role,
+            EMAIL_KEY, "test@test.com"
+        ));
     }
 
 }

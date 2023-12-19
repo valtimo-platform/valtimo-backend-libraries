@@ -69,7 +69,7 @@ public class TokenAuthenticationService {
     }
 
     private JwtParser jwtSignedParser() {
-        return Jwts.parserBuilder()
+        return Jwts.parser()
             .setSigningKeyResolver(secretKeyResolver)
             .build();
     }

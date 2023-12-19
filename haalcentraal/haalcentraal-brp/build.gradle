@@ -54,7 +54,7 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
-    implementation "org.hibernate:hibernate-core"
+    implementation "org.hibernate.orm:hibernate-core"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:${kotlinCoroutinesVersion}"
 

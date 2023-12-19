@@ -19,5 +19,7 @@ package com.ritense.valtimo.contract.security.config;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 
 public interface AuthenticationSecurityConfigurer {
+    //TODO: 92240
+    @Deprecated
     void configure(AuthenticationManagerBuilder auth);
 }

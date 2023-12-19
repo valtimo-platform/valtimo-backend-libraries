@@ -27,9 +27,10 @@ public class OpenApiHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/v3/api-docs").hasAuthority(ADMIN)
-                .requestMatchers("/v3/api-docs/**").hasAuthority(ADMIN);
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(GET, "/v3/api-docs").hasAuthority(ADMIN)
+                .requestMatchers("/v3/api-docs/**").hasAuthority(ADMIN)
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

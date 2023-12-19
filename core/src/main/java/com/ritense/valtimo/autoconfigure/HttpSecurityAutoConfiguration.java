@@ -16,11 +16,11 @@
 
 package com.ritense.valtimo.autoconfigure;
 
-import com.ritense.valtimo.contract.security.config.AuthenticationSecurityConfigurer;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
+import com.ritense.valtimo.security.CoreSecurityFactory;
 import com.ritense.valtimo.security.Http401UnauthorizedEntryPoint;
 import com.ritense.valtimo.security.SpringSecurityAuditorAware;
-import com.ritense.valtimo.security.adapter.CoreHttpSecurityConfigurerAdapter;
+import com.ritense.valtimo.security.ValtimoCoreSecurityFactory;
 import com.ritense.valtimo.security.config.AccountHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ActuatorHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ApiLoginHttpSecurityConfigurer;
@@ -53,11 +53,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import java.util.List;
 
@@ -269,20 +271,44 @@ public class HttpSecurityAutoConfiguration {
         return new DenyAllHttpSecurityConfigurer();
     }
 
-    @Order(100)
-    @Bean
-    @ConditionalOnMissingBean(CoreHttpSecurityConfigurerAdapter.class)
-    public CoreHttpSecurityConfigurerAdapter coreHttpSecurityConfigurerAdapter(
-        List<HttpSecurityConfigurer> httpSecurityConfigurers,
-        List<AuthenticationSecurityConfigurer> authenticationSecurityConfigurers
-    ) {
-        return new CoreHttpSecurityConfigurerAdapter(httpSecurityConfigurers, authenticationSecurityConfigurers);
-    }
 
     @Bean
-    @ConditionalOnMissingBean(AuthenticationManager.class)
-    public AuthenticationManager authenticationManager(CoreHttpSecurityConfigurerAdapter configurerAdapter) throws Exception {
-        return configurerAdapter.authenticationManagerBean();
+    @ConditionalOnMissingBean(CoreSecurityFactory.class)
+    public CoreSecurityFactory coreSecurityFactory(
+        List<? extends HttpSecurityConfigurer> httpSecurityConfigurers
+    ) {
+        return new ValtimoCoreSecurityFactory(httpSecurityConfigurers);
     }
+
+    @Order(100)
+    @Bean
+    public SecurityFilterChain coreSecurityFilterChain(
+        CoreSecurityFactory coreSecurityFactory,
+        HttpSecurity httpSecurity
+    ) {
+        return coreSecurityFactory.createSecurityFilterChain(httpSecurity);
+    }
+
+    @Order(100)
+    @Bean
+    public WebSecurityCustomizer coreWebSecurityCustomizer(
+        CoreSecurityFactory coreSecurityFactory
+    ) {
+        return coreSecurityFactory.createWebSecurityCustomizer();
+    }
+
+    // TODO: 92240
+//    public CoreHttpSecurityConfigurerAdapter coreHttpSecurityConfigurerAdapter(
+//        List<HttpSecurityConfigurer> httpSecurityConfigurers,
+//        List<AuthenticationSecurityConfigurer> authenticationSecurityConfigurers
+//    ) {
+//        return new CoreHttpSecurityConfigurerAdapter(httpSecurityConfigurers, authenticationSecurityConfigurers);
+//    }
+
+//    @Bean
+//    @ConditionalOnMissingBean(AuthenticationManager.class)
+//    public AuthenticationManager authenticationManager(CoreHttpSecurityConfigurerAdapter configurerAdapter) throws Exception {
+//        return configurerAdapter.authenticationManagerBean();
+//    }
 
 }

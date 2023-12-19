@@ -32,10 +32,11 @@ public class FormAssociationHttpSecurityConfigurer implements HttpSecurityConfig
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/form-association/form-definition").authenticated()
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(GET, "/api/v1/form-association/form-definition").authenticated()
                 .requestMatchers(GET, "/api/v1/form-association/form-definition/{formKey}").authenticated()
-                .requestMatchers(POST, "/api/v1/form-association/form-definition/submission").authenticated();
+                .requestMatchers(POST, "/api/v1/form-association/form-definition/submission").authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

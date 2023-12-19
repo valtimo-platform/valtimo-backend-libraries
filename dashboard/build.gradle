@@ -41,7 +41,7 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
 
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation "org.mockito:mockito-inline"
+    testImplementation "org.mockito:mockito-inline:${mockitoInlineVersion}"
 
     jar {
         enabled = true

@@ -56,7 +56,7 @@ dependencies {
 
     implementation "io.hypersistence:hypersistence-utils-hibernate-62:${hypersistenceUtilsVersion}"
 
-    implementation "org.hibernate:hibernate-core"
+    implementation "org.hibernate.orm:hibernate-core"
 
     implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 

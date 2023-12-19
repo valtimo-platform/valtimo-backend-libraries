@@ -25,7 +25,7 @@ import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.net.URI
-import javax.inject.Inject
+import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 
 @Transactional

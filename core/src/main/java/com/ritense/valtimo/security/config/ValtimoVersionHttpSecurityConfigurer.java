@@ -26,8 +26,9 @@ public class ValtimoVersionHttpSecurityConfigurer implements HttpSecurityConfigu
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/valtimo/version").authenticated();
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(GET, "/api/v1/valtimo/version").authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

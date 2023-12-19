@@ -55,7 +55,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;

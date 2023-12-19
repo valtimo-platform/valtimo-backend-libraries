@@ -47,7 +47,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
-    implementation "org.hibernate:hibernate-core"
+    implementation "org.hibernate.orm:hibernate-core"
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
