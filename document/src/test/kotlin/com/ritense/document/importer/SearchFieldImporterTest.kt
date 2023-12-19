@@ -18,13 +18,13 @@ package com.ritense.document.importer
 
 import com.ritense.document.service.SearchConfigurationDeploymentService
 import com.ritense.importer.ImportRequest
+import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.verify
 
@@ -46,7 +46,7 @@ class SearchFieldImporterTest(
 
     @Test
     fun `should depend on set of 'documentdefinition'`() {
-        assertThat(importer.dependsOn().first().equals("documentdefinition"))
+        assertThat(importer.dependsOn()).isEqualTo(setOf(DOCUMENT_DEFINITION))
     }
 
     @Test

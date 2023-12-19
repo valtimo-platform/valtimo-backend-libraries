@@ -18,6 +18,7 @@ package com.ritense.valtimo.importer
 
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.DECISION_DEFINITION
 import com.ritense.valtimo.service.CamundaProcessService
 import org.springframework.transaction.annotation.Transactional
 
@@ -25,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional
 class CamundaDecisionDefinitionImporter(
     private val camundaProcessService: CamundaProcessService
 ) : Importer {
-    override fun type() = "decisiondefinition"
+    override fun type() = DECISION_DEFINITION
 
     override fun dependsOn(): Set<String> = emptySet()
 

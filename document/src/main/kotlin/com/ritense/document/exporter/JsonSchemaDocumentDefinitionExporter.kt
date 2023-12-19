@@ -24,8 +24,8 @@ import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.exporter.request.FormDefinitionExportRequest
-import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayOutputStream
+import org.springframework.transaction.annotation.Transactional
 
 @Transactional(readOnly = true)
 class JsonSchemaDocumentDefinitionExporter(
@@ -51,7 +51,7 @@ class JsonSchemaDocumentDefinitionExporter(
 
         return ExportResult(
             exportFile,
-            setOf(FormDefinitionExportRequest(request.name + ".summary", true))
+            setOf(FormDefinitionExportRequest(request.name + ".summary", false))
         )
     }
 
