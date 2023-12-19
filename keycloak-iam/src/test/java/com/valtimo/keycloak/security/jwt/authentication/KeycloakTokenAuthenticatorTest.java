@@ -17,7 +17,6 @@
 package com.valtimo.keycloak.security.jwt.authentication;
 
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
-import com.ritense.valtimo.security.jwt.exception.TokenAuthenticatorNotFoundException;
 import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
 import com.valtimo.keycloak.security.jwt.provider.KeycloakSecretKeyProvider;
 import io.jsonwebtoken.Claims;
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -95,7 +93,7 @@ public class KeycloakTokenAuthenticatorTest {
     @Test
     public void shouldReturnAuthenticationForResourceRoleUser() {
         String jwt = Jwts.builder()
-                .setClaims(claimsWithRealmAndResourceAccessRoles())
+                .setClaims(keycloakClaimWithRealmAndResourceRoles())
                 .signWith(keyPair.getPrivate())
                 .compact();
 
@@ -117,11 +115,20 @@ public class KeycloakTokenAuthenticatorTest {
         return defaultKeycloakClaimWith(roles);
     }
 
-    private Claims claimsWithRealmAndResourceAccessRoles() {
-        final Claims roles = new DefaultClaims(Map.of(
-            ROLES_SCOPE, List.of(USER)
-        ));
-        return keycloakClaimWithRealmAndResourceRoles(roles);
+
+    private Claims keycloakClaimWithRealmAndResourceRoles() {
+        Claims realmClaims = claimsWithUnknownRealmAccessRoles();
+
+        HashMap<String, Object> claims = new HashMap<>(realmClaims);
+        Map<String, Map<String, List<String>>> resourceClient = new HashMap<>();
+        Map<String, List<String>> resourceClientRoles = new HashMap<>();
+
+        resourceClientRoles.put("roles", List.of(USER));
+        resourceClient.put("test-client-resource", resourceClientRoles);
+
+        claims.put(RESOURCE_ACCESS, resourceClient);
+
+        return new DefaultClaims(claims);
     }
 
     private Claims claimsWithUnknownRealmAccessRoles() {
@@ -131,22 +138,10 @@ public class KeycloakTokenAuthenticatorTest {
         return defaultKeycloakClaimWith(roles);
     }
 
-    private Claims keycloakClaimWithRealmAndResourceRoles(Claims role) {
-        Claims claims = claimsWithUnknownRealmAccessRoles();
-        Map<String, Map<String, List<String>>> resourceclient = new HashMap<>();
-        Map<String, List<String>> resourceClientRoles = new HashMap<>();
 
-        resourceClientRoles.put("roles", List.of(USER));
-        resourceclient.put("test-client-resource", resourceClientRoles);
-
-        claims.put(RESOURCE_ACCESS, resourceclient);
-
-        return claims;
-    }
-
-    private Claims defaultKeycloakClaimWith(Claims role) {
+    private Claims defaultKeycloakClaimWith(Claims realmRoles) {
         return new DefaultClaims(Map.of(
-            REALM_ACCESS, role,
+            REALM_ACCESS, realmRoles,
             EMAIL_KEY, "test@test.com"
         ));
     }
