@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
+import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.request.FormDefinitionExportRequest
 import org.springframework.transaction.annotation.Transactional
 
@@ -36,7 +37,7 @@ class FormDefinitionExporter(
         return ExportResult(
             ExportFile(
                 PATH.format(formDefinition.name),
-                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(formDefinition.formDefinition)
+                objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(formDefinition.formDefinition)
             )
         )
     }
