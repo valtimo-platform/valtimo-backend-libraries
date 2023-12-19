@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
+import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.processdocument.domain.config.ProcessDocumentLinkConfigItem
@@ -60,7 +61,7 @@ class ProcessDocumentLinkExporter(
         return ExportResult(
             ExportFile(
                 PATH.format(request.name),
-                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(exportItems)
+                objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(exportItems)
             ),
             relatedRequests
         )
