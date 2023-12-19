@@ -17,6 +17,8 @@
 package com.ritense.processdocument.importer
 
 import com.ritense.importer.ImportRequest
+import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -45,7 +47,7 @@ class ProcessDocumentLinkImporterTest(
 
     @Test
     fun `should depend on 'documentdefinition' and 'processdefinition' type`() {
-        assertThat(processDocumentLinkImporter.dependsOn()).isEqualTo(setOf("documentdefinition", "processdefinition"))
+        assertThat(processDocumentLinkImporter.dependsOn()).isEqualTo(setOf(DOCUMENT_DEFINITION, PROCESS_DEFINITION))
     }
 
     @Test
