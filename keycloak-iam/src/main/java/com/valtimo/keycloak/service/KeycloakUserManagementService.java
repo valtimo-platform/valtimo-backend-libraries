@@ -24,6 +24,7 @@ import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCrite
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import jakarta.ws.rs.NotFoundException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -202,7 +203,7 @@ public class KeycloakUserManagementService implements UserManagementService {
                 roleUserMembers.addAll(users);
                 rolesFound = true;
             }
-        } catch (Exception e) {
+        } catch (NotFoundException e) {
             logger.debug("Could not find realm roles", e);
         }
 
@@ -216,7 +217,7 @@ public class KeycloakUserManagementService implements UserManagementService {
                     roleUserMembers.addAll(users);
                     rolesFound = true;
                 }
-            } catch (Exception e) {
+            } catch (NotFoundException e) {
                 logger.debug("Could not find client roles", e);
             }
         }

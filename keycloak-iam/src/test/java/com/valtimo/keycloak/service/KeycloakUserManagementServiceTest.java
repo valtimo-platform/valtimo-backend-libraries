@@ -18,6 +18,7 @@ package com.valtimo.keycloak.service;
 
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
+import jakarta.ws.rs.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -36,7 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class KeycloakUserManagementServiceTest {
@@ -121,8 +121,8 @@ class KeycloakUserManagementServiceTest {
             .thenReturn(List.of());
         when(keycloakService.usersResource(any()).get(markUser.getId()).roles().clientLevel(any()).listAll())
             .thenReturn(List.of(roleRepresentation));
-        when(keycloakService.clientRolesResource(any()).get(DEVELOPER).getRoleUserMembers(0, MAX_USERS))
-            .thenReturn(Set.of(markUser));
+        when(keycloakService.clientRolesResource(any()).get(DEVELOPER).getUserMembers(0, MAX_USERS))
+            .thenReturn(List.of(markUser));
         var search = new SearchByUserGroupsCriteria();
         search.addToOrUserGroups(Set.of(DEVELOPER));
 
@@ -134,13 +134,12 @@ class KeycloakUserManagementServiceTest {
 
     @Test
     void findByRoleShouldReturnEmptyListWhenExceptionIsThrown() {
-        when( keycloakService.realmRolesResource(any()).get("some-role").getUserMembers())
-            .thenThrow(new Exception());
+        when(keycloakService.realmRolesResource(any()).get("some-role").getUserMembers(0, MAX_USERS))
+            .thenThrow(new NotFoundException());
 
         var users = userManagementService.findByRole("some-role");
 
         assertThat(users).isEmpty();
-        verify(keycloakService).realmRolesResource(any()).get("some-role").getUserMembers();
     }
 
     private UserRepresentation newUser(String firstName, String lastName, List<String> roles) {
