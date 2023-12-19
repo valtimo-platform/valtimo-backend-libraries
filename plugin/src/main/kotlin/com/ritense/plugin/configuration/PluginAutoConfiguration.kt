@@ -42,7 +42,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
@@ -50,7 +50,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import jakarta.persistence.EntityManager
 import jakarta.validation.Validator
 
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(
     basePackageClasses = [
         PluginActionDefinitionRepository::class,

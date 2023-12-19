@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.bind.ConstructorBinding
 
 @ConfigurationProperties(prefix = "valtimo.openklant")
-data class OpenKlantClientProperties @ConstructorBinding constructor(
+data class OpenKlantClientProperties (
     val url: String,
     val clientId: String,
     val secret: String,

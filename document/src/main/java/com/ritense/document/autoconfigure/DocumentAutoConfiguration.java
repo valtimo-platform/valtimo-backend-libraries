@@ -57,14 +57,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import jakarta.persistence.EntityManager;
 import java.util.Optional;
 
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(basePackages = "com.ritense.document.repository")
 @EntityScan("com.ritense.document.domain")
 public class DocumentAutoConfiguration {

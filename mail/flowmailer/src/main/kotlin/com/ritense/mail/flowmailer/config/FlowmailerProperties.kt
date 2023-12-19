@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.bind.ConstructorBinding
 
 @ConfigurationProperties(prefix = "valtimo.flowmailer")
-data class FlowmailerProperties @ConstructorBinding constructor(
+data class FlowmailerProperties (
     val clientId: String,
     val clientSecret: String,
     val accountId: String

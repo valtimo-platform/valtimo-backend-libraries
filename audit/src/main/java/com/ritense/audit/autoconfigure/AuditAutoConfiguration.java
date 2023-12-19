@@ -34,17 +34,17 @@ import com.ritense.audit.service.impl.AuditServiceImpl;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
-import jakarta.persistence.EntityManager;
 
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(basePackages = "com.ritense.audit.repository.impl")
 @EntityScan("com.ritense.audit.domain")
 public class AuditAutoConfiguration {

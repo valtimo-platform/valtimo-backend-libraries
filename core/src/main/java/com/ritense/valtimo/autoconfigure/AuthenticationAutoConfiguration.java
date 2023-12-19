@@ -22,10 +22,10 @@ import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationServic
 import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import java.util.List;
 
-@Configuration
+@AutoConfiguration
 public class AuthenticationAutoConfiguration {
 
     @Bean

@@ -20,12 +20,12 @@ import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import javax.sql.DataSource
 
-@Configuration
+@AutoConfiguration
 @ConditionalOnClass(DataSource::class)
 internal class VerzoekLiquibaseAutoConfiguration {
 

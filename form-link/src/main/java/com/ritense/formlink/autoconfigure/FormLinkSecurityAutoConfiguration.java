@@ -21,11 +21,11 @@ import com.ritense.formlink.security.config.FormAssociationManagementHttpSecurit
 import com.ritense.formlink.security.config.ProcessLinkHttpSecurityConfigurer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.annotation.Order;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
-@Configuration
+@AutoConfiguration
 public class FormLinkSecurityAutoConfiguration {
 
     @Order(273)

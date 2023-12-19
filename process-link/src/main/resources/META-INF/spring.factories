@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.processlink.configuration.ProcessLinkAutoConfiguration, \
-  com.ritense.processlink.configuration.ProcessLinkLiquibaseAutoConfiguration

@@ -20,10 +20,10 @@ import com.ritense.openzaak.service.impl.OpenZaakConfigService
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.web.client.RestTemplate
 
-@Configuration
+@AutoConfiguration
 class CatalogiAutoConfiguration {
 
     @Bean

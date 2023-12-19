@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.bind.ConstructorBinding
 
 @ConfigurationProperties(prefix = "mailing", ignoreUnknownFields = false)
-data class MailingProperties @ConstructorBinding constructor(
+data class MailingProperties (
     var onlyAllowWhitelistedRecipients: Boolean = false,
     /**
      * The priority determines the order in which filters will get executed.

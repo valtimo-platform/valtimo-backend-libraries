@@ -1,0 +1,4 @@
+com.ritense.form.autoconfigure.FormAutoConfiguration
+com.ritense.form.autoconfigure.FormLiquibaseAutoConfiguration
+com.ritense.form.autoconfigure.FormSecurityAutoConfiguration
+com.ritense.form.autoconfigure.FormAutoConfigurationKotlin

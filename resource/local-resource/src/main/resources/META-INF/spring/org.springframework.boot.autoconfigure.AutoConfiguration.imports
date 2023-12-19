@@ -1,0 +1,2 @@
+com.ritense.resource.autoconfigure.LocalResourceAutoConfiguration
+com.ritense.resource.autoconfigure.LocalResourceSecurityAutoConfiguration

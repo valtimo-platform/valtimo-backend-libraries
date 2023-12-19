@@ -22,9 +22,9 @@ import com.ritense.valtimo.contract.annotation.ProcessBean
 import org.camunda.bpm.engine.ManagementService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 
-@Configuration
+@AutoConfiguration
 class JobAutoConfiguration {
 
     @Bean

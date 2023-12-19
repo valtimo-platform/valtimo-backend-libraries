@@ -21,9 +21,9 @@ import com.ritense.valtimo.sse.domain.listener.TaskUpdateListener
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 
-@Configuration
+@AutoConfiguration
 class SseAutoConfiguration {
 
     @Bean
