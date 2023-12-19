@@ -26,6 +26,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 //import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import java.util.List;
 import static org.springframework.http.HttpMethod.OPTIONS;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 // TODO: 92240
 public class CoreHttpSecurityConfigurerAdapter { // extends WebSecurityConfigurerAdapter {
@@ -62,8 +63,8 @@ public class CoreHttpSecurityConfigurerAdapter { // extends WebSecurityConfigure
 //    @Override
     public void configure(WebSecurity web) {
         web.ignoring()
-            .requestMatchers(OPTIONS, "/**")
-            .requestMatchers("/content/**");
+            .requestMatchers(antMatcher(OPTIONS, "/**"))
+            .requestMatchers(antMatcher("/content/**"));
     }
 
 }

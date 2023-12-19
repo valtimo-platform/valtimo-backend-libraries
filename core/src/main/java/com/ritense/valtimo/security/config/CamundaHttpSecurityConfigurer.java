@@ -20,6 +20,8 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 public class CamundaHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
@@ -27,7 +29,7 @@ public class CamundaHttpSecurityConfigurer implements HttpSecurityConfigurer {
         try {
             http.authorizeHttpRequests((requests) ->
                 //camunda endpoints are covered by camunda security
-                requests.requestMatchers("/camunda/**").permitAll()
+                requests.requestMatchers(antMatcher("/camunda/**")).permitAll()
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

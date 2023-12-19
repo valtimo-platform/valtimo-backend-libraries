@@ -22,6 +22,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class FormFileHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -33,9 +34,9 @@ public class FormFileHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) ->
-                requests.requestMatchers(GET, "/api/v1/form-file").permitAll()
-                .requestMatchers(POST, "/api/v1/form-file/upload").authenticated()
-                .requestMatchers(DELETE, "/api/v1/form-file").authenticated());
+                requests.requestMatchers(antMatcher(GET, "/api/v1/form-file")).permitAll()
+                .requestMatchers(antMatcher(POST, "/api/v1/form-file/upload")).authenticated()
+                .requestMatchers(antMatcher(DELETE, "/api/v1/form-file")).authenticated());
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

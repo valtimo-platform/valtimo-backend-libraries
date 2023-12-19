@@ -21,21 +21,22 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class ValtimoFormFlowHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(HttpMethod.GET, "/api/v1/form-flow/{formFlowInstanceId}").authenticated()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/step/{stepInstanceId}").authenticated()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/back").authenticated()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/save").authenticated()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/process-link/form-flow-definition").hasAuthority(ADMIN)
-                    .requestMatchers(HttpMethod.GET, "/api/v1/form-flow/instance/{formFlowInstanceId}").authenticated()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}").authenticated()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/back").authenticated()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/save").authenticated()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/form-flow/definition").hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/form-flow/{formFlowInstanceId}")).authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/step/{stepInstanceId}")).authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/back")).authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/save")).authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/process-link/form-flow-definition")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/form-flow/instance/{formFlowInstanceId}")).authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}")).authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/back")).authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/save")).authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/form-flow/definition")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

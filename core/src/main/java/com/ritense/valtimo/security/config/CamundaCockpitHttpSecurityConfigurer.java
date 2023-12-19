@@ -20,6 +20,8 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 public class CamundaCockpitHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
@@ -28,13 +30,15 @@ public class CamundaCockpitHttpSecurityConfigurer implements HttpSecurityConfigu
             //By default cockpit uses BasicAuth using different tech,
             //we just set it open and let Camunda do the rest.
             http.authorizeHttpRequests((requests) ->
-                requests.requestMatchers("/app/**").denyAll() //TODO: 92240 .access("@whitelistIpRequest.check(request)")
+                requests.requestMatchers(
+                    antMatcher("/app/**")
+                ).denyAll() //TODO: 92240 .access("@whitelistIpRequest.check(request)")
                 .requestMatchers(
-                    "/api/admin/**",
-                    "/api/cockpit/**",
-                    "/api/tasklist/**",
-                    "/api/engine/**",
-                    "/lib/**"
+                    antMatcher("/api/admin/**"),
+                    antMatcher("/api/cockpit/**"),
+                    antMatcher("/api/tasklist/**"),
+                    antMatcher("/api/engine/**"),
+                    antMatcher("/lib/**")
                 ).denyAll() //TODO: 92240 .access("@whitelistIpRequest.check(request)")
             );
         } catch (Exception e) {

@@ -21,19 +21,20 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(HttpMethod.POST, "/api/v1/object/management/configuration").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{id}").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.GET, "/api/v1/object/management/configuration").authenticated()
-                    .requestMatchers(HttpMethod.PUT, "/api/v1/object/management/configuration").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.DELETE, "/api/v1/object/management/configuration/{id}").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{id}/object").authenticated()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/object/management/configuration/{id}/object").authenticated()
+                requests.requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/object/management/configuration")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/object/management/configuration/{id}")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/object/management/configuration")).authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.PUT, "/api/v1/object/management/configuration")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/v1/object/management/configuration/{id}")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/object/management/configuration/{id}/object")).authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/object/management/configuration/{id}/object")).authenticated()
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

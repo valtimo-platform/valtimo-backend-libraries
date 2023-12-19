@@ -24,19 +24,20 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class ConnectorHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(GET, "/api/v1/connector/instance").hasAuthority(ADMIN)
-                    .requestMatchers(POST, "/api/v1/connector/instance").hasAuthority(ADMIN)
-                    .requestMatchers(PUT, "/api/v1/connector/instance").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/v1/connector/type").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/v1/connector/instance/{typeId}").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/v1/connector/instance/{instanceId}").hasAuthority(ADMIN)
-                    .requestMatchers(DELETE, "/api/v1/connector/instance/{instanceId}").hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(GET, "/api/v1/connector/instance")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/connector/instance")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/v1/connector/instance")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/connector/type")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/connector/instance/{typeId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/connector/instance/{instanceId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/connector/instance/{instanceId}")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

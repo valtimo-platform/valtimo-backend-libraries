@@ -21,23 +21,25 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class ValtimoAuthorizationHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(HttpMethod.GET, "/api/management/v1/roles").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.POST, "/api/management/v1/roles").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.PUT, "/api/management/v1/roles/{oldRoleKey}").hasAuthority(
+                requests.requestMatchers(antMatcher(HttpMethod.GET, "/api/management/v1/roles")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/management/v1/roles")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.PUT, "/api/management/v1/roles/{oldRoleKey}")).hasAuthority(
                         AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.DELETE, "/api/management/v1/roles").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.GET, "/api/management/v1/roles/{roleKey}/permissions").hasAuthority(
+                    .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/management/v1/roles")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/management/v1/roles/{roleKey}/permissions")).hasAuthority(
                         AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.PUT, "/api/management/v1/roles/{roleKey}/permissions").hasAuthority(
+                    .requestMatchers(antMatcher(HttpMethod.PUT, "/api/management/v1/roles/{roleKey}/permissions")).hasAuthority(
                         AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.POST, "/api/management/v1/permissions/search").hasAuthority(
+                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/management/v1/permissions/search")).hasAuthority(
                         AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.POST, "/api/v1/permissions").authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/permissions")).authenticated()
             }
 
         } catch (e: Exception) {

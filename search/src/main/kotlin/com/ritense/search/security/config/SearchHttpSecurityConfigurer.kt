@@ -21,22 +21,23 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class SearchHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(HttpMethod.POST, "/api/v1/search/list-column/{ownerId}").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.GET, "/api/v1/search/list-column/{ownerId}").authenticated()
-                    .requestMatchers(HttpMethod.PUT, "/api/v1/search/list-column/{ownerId}/{key}").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.PUT, "/api/v1/search/list-column/{ownerId}/search-list-columns").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.DELETE, "/api/v1/search/list-column/{ownerId}/{key}").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.POST, "/api/v1/search/field/{ownerId}").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.GET, "/api/v1/search/field/{ownerId}").authenticated()
-                    .requestMatchers(HttpMethod.PUT, "/api/v1/search/field/{ownerId}/{key}").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.PUT, "/api/v1/search/field/{ownerId}/fields").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(HttpMethod.DELETE, "/api/v1/search/field/{ownerId}/{key}").hasAuthority(AuthoritiesConstants.ADMIN)
+                requests.requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/search/list-column/{ownerId}")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/search/list-column/{ownerId}")).authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.PUT, "/api/v1/search/list-column/{ownerId}/{key}")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.PUT, "/api/v1/search/list-column/{ownerId}/search-list-columns")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/v1/search/list-column/{ownerId}/{key}")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/search/field/{ownerId}")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/search/field/{ownerId}")).authenticated()
+                    .requestMatchers(antMatcher(HttpMethod.PUT, "/api/v1/search/field/{ownerId}/{key}")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.PUT, "/api/v1/search/field/{ownerId}/fields")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/v1/search/field/{ownerId}/{key}")).hasAuthority(AuthoritiesConstants.ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

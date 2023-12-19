@@ -23,6 +23,7 @@ import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.A
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -30,18 +31,18 @@ public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityCon
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) ->
-                requests.requestMatchers(GET, "/api/v1/document-definition").authenticated()
-                .requestMatchers(GET, "/api/v1/document-definition").authenticated()
-                .requestMatchers(GET, "/api/v1/document-definition/{name}").authenticated()
-                .requestMatchers(GET, "/api/v1/document-definition/open/count").authenticated()
-                .requestMatchers(GET, "/api/management/v1/document-definition").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/management/v1/document-definition/{name}").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/management/v1/document-definition/{name}/version/{version}").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/management/v1/document-definition/{name}/version").hasAuthority(ADMIN)
-                .requestMatchers(POST, "/api/v1/document-definition").hasAuthority(ADMIN) // Deprecated since v11
-                .requestMatchers(POST, "/api/management/v1/document-definition").hasAuthority(ADMIN)
-                .requestMatchers(DELETE, "/api/v1/document-definition/{name}").hasAuthority(ADMIN) // Deprecated since v11
-                .requestMatchers(DELETE, "/api/management/v1/document-definition/{name}").hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(GET, "/api/v1/document-definition")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/document-definition")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/document-definition/{name}")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/document-definition/open/count")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition/{name}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition/{name}/version/{version}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition/{name}/version")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(POST, "/api/v1/document-definition")).hasAuthority(ADMIN) // Deprecated since v11
+                .requestMatchers(antMatcher(POST, "/api/management/v1/document-definition")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(DELETE, "/api/v1/document-definition/{name}")).hasAuthority(ADMIN) // Deprecated since v11
+                .requestMatchers(antMatcher(DELETE, "/api/management/v1/document-definition/{name}")).hasAuthority(ADMIN)
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

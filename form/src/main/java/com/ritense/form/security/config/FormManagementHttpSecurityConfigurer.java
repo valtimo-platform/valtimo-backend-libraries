@@ -24,6 +24,7 @@ import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class FormManagementHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -35,13 +36,13 @@ public class FormManagementHttpSecurityConfigurer implements HttpSecurityConfigu
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) -> {
-                requests.requestMatchers(GET, "/api/v1/form-definition").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/v1/form-management").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/v1/form-management/{formDefinitionId}").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/v1/form-management/exists/{name}").hasAuthority(ADMIN)
-                    .requestMatchers(DELETE, "/api/v1/form-management/{formDefinitionId}").hasAuthority(ADMIN)
-                    .requestMatchers(PUT, "/api/v1/form-management").hasAuthority(ADMIN)
-                    .requestMatchers(POST, "/api/v1/form-management").hasAuthority(ADMIN);
+                requests.requestMatchers(antMatcher(GET, "/api/v1/form-definition")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/form-management")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/form-management/{formDefinitionId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/form-management/exists/{name}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/form-management/{formDefinitionId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/v1/form-management")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/form-management")).hasAuthority(ADMIN);
             });
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

@@ -23,6 +23,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class ValtimoCoreSecurityFactory(
     private val httpSecurityConfigurers: List<HttpSecurityConfigurer>
@@ -40,8 +41,8 @@ class ValtimoCoreSecurityFactory(
     override fun createWebSecurityCustomizer(): WebSecurityCustomizer {
         return WebSecurityCustomizer { web ->
             web.ignoring()
-                .requestMatchers(HttpMethod.OPTIONS, "/**")
-                .requestMatchers("/content/**") }
+                .requestMatchers(antMatcher(HttpMethod.OPTIONS, "/**"))
+                .requestMatchers(antMatcher("/content/**")) }
     }
 
 

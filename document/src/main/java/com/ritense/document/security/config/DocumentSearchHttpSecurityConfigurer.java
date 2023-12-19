@@ -25,6 +25,7 @@ import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class DocumentSearchHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -32,16 +33,16 @@ public class DocumentSearchHttpSecurityConfigurer implements HttpSecurityConfigu
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) -> {
-                requests.requestMatchers(POST, "/api/v1/document-search").authenticated()
-                    .requestMatchers(POST, "/api/v1/document-definition/{name}/search").authenticated()
-                    .requestMatchers(POST, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(
+                requests.requestMatchers(antMatcher(POST, "/api/v1/document-search")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/document-definition/{name}/search")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(
                         ADMIN)
-                    .requestMatchers(GET, "/api/v1/document-search/{documentDefinitionName}/fields").authenticated()
-                    .requestMatchers(PUT, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN)
-                    .requestMatchers(DELETE, "/api/v1/document-search/{documentDefinitionName}/fields").hasAuthority(
+                    .requestMatchers(antMatcher(GET, "/api/v1/document-search/{documentDefinitionName}/fields")).authenticated()
+                    .requestMatchers(antMatcher(PUT, "/api/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(
                         ADMIN)
-                    .requestMatchers(
-                        GET, "/api/management/v1/document-search/{documentDefinitionName}/fields").hasAuthority(ADMIN);
+                    .requestMatchers(antMatcher(
+                        GET, "/api/management/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(ADMIN);
             });
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

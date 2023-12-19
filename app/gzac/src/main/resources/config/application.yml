@@ -246,6 +246,9 @@ camunda:
     bpm:
         history-level: AUDIT
         history-level-default: AUDIT
+        generic-properties:
+            properties:
+                historyTimeToLive: P1D
         admin-user:
             id: Admin
             password: admin

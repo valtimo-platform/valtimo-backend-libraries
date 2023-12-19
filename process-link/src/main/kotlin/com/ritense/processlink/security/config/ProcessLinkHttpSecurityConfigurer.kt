@@ -24,20 +24,21 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class ProcessLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(GET, "/api/v1/process-link").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/v1/process-link/types").hasAuthority(ADMIN)
-                    .requestMatchers(POST, "/api/v1/process-link").hasAuthority(ADMIN)
-                    .requestMatchers(PUT, "/api/v1/process-link").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/v1/process-link/export").hasAuthority(ADMIN)
-                    .requestMatchers(DELETE, "/api/v1/process-link/{processLinkId}").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/v2/process-link/task/{taskId}").authenticated()
-                    .requestMatchers(GET, "/api/v1/process-definition/{processDefinitionId}/start-form").authenticated()
+                requests.requestMatchers(antMatcher(GET, "/api/v1/process-link")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/process-link/types")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/process-link")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/v1/process-link")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/process-link/export")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/process-link/{processLinkId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v2/process-link/task/{taskId}")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/process-definition/{processDefinitionId}/start-form")).authenticated()
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

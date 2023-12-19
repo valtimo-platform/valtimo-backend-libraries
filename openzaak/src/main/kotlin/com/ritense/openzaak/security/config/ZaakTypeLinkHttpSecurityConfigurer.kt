@@ -24,20 +24,21 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class ZaakTypeLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(GET, "/api/v1/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
-                    .requestMatchers(POST, "/api/v1/openzaak/link").hasAuthority(ADMIN)
-                    .requestMatchers(DELETE, "/api/v1/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
-                    .requestMatchers(PUT, "/api/v1/openzaak/link").hasAuthority(ADMIN)
-                    .requestMatchers(POST, "/api/v1/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
-                    .requestMatchers(PUT, "/api/v1/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
-                    .requestMatchers(DELETE, "/api/v1/openzaak/link/{id}/service-handler/{processDefinitionKey}/{serviceTaskId}").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/v1/openzaak/link/process/{processDefinitionKey}").hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(GET, "/api/v1/openzaak/link/{documentDefinitionName}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/openzaak/link")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/openzaak/link/{documentDefinitionName}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/v1/openzaak/link")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/openzaak/link/{id}/service-handler")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/v1/openzaak/link/{id}/service-handler")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/openzaak/link/{id}/service-handler/{processDefinitionKey}/{serviceTaskId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/openzaak/link/process/{processDefinitionKey}")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

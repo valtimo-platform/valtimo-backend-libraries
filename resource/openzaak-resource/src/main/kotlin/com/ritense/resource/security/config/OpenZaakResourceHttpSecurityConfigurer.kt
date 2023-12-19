@@ -23,17 +23,18 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class OpenZaakResourceHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(POST, "/api/v1/resource/upload-open-zaak").authenticated()
-                    .requestMatchers(GET, "/api/v1/resource/{resourceId}").authenticated()
-                    .requestMatchers(GET, "/api/v1/resource/{resourceId}/download").authenticated()
-                    .requestMatchers(DELETE, "/api/v1/resource/{resourceId}").authenticated()
-                    .requestMatchers(PUT, "/api/v1/resource").authenticated()
+                requests.requestMatchers(antMatcher(POST, "/api/v1/resource/upload-open-zaak")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/resource/{resourceId}")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/resource/{resourceId}/download")).authenticated()
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/resource/{resourceId}")).authenticated()
+                    .requestMatchers(antMatcher(PUT, "/api/v1/resource")).authenticated()
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

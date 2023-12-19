@@ -20,6 +20,7 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class CamundaRestHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -27,7 +28,7 @@ public class CamundaRestHttpSecurityConfigurer implements HttpSecurityConfigurer
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) ->
-                requests.requestMatchers("/api/camunda-rest/**").hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher("/api/camunda-rest/**")).hasAuthority(ADMIN)
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

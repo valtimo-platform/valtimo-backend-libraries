@@ -20,6 +20,7 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class ReportingHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -27,13 +28,13 @@ public class ReportingHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) ->
-                requests.requestMatchers(GET, "/api/v1/reporting/instancecount").authenticated()
-                .requestMatchers(GET, "/api/v1/reporting/instancesstatistics").authenticated()
-                .requestMatchers(GET, "/api/v1/reporting/tasksAverage").authenticated()
-                .requestMatchers(GET, "/api/v1/reporting/tasksPerPerson").authenticated()
-                .requestMatchers(GET, "/api/v1/reporting/pendingTasksByRole").authenticated()
-                .requestMatchers(GET, "/api/v1/reporting/unfinishedTasksPerType").authenticated()
-                .requestMatchers(GET, "/api/v1/reporting/finishedAndUnfinishedInstances").authenticated()
+                requests.requestMatchers(antMatcher(GET, "/api/v1/reporting/instancecount")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/reporting/instancesstatistics")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/reporting/tasksAverage")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/reporting/tasksPerPerson")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/reporting/pendingTasksByRole")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/reporting/unfinishedTasksPerType")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/reporting/finishedAndUnfinishedInstances")).authenticated()
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

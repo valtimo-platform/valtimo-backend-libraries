@@ -28,6 +28,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationEn
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ACTUATOR;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class ActuatorHttpSecurityConfigurer implements HttpSecurityConfigurer, AuthenticationSecurityConfigurer {
 
@@ -50,15 +51,15 @@ public class ActuatorHttpSecurityConfigurer implements HttpSecurityConfigurer, A
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) ->
-                    requests.requestMatchers(GET, "/management").hasAuthority(ACTUATOR)
-                        .requestMatchers(GET, "/management/configprops").hasAuthority(ACTUATOR)
-                        .requestMatchers(GET, "/management/env").hasAuthority(ACTUATOR)
-                        .requestMatchers(GET, "/management/health").hasAuthority(ACTUATOR)
-                        .requestMatchers(GET, "/management/mappings").hasAuthority(ACTUATOR)
-                        .requestMatchers(GET, "/management/logfile").hasAuthority(ACTUATOR)
-                        .requestMatchers(GET, "/management/loggers").hasAuthority(ACTUATOR)
-                        .requestMatchers(POST, "/management/loggers/**").hasAuthority(ACTUATOR)
-                        .requestMatchers(GET, "/management/info").hasAnyAuthority(ACTUATOR)
+                    requests.requestMatchers(antMatcher(GET, "/management")).hasAuthority(ACTUATOR)
+                        .requestMatchers(antMatcher(GET, "/management/configprops")).hasAuthority(ACTUATOR)
+                        .requestMatchers(antMatcher(GET, "/management/env")).hasAuthority(ACTUATOR)
+                        .requestMatchers(antMatcher(GET, "/management/health")).hasAuthority(ACTUATOR)
+                        .requestMatchers(antMatcher(GET, "/management/mappings")).hasAuthority(ACTUATOR)
+                        .requestMatchers(antMatcher(GET, "/management/logfile")).hasAuthority(ACTUATOR)
+                        .requestMatchers(antMatcher(GET, "/management/loggers")).hasAuthority(ACTUATOR)
+                        .requestMatchers(antMatcher(POST, "/management/loggers/**")).hasAuthority(ACTUATOR)
+                        .requestMatchers(antMatcher(GET, "/management/info")).hasAnyAuthority(ACTUATOR)
 // TODO: 92240
 //                .and()
 //                .httpBasic((configurer) ->

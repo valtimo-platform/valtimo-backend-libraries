@@ -24,6 +24,7 @@ import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class UserHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -31,18 +32,18 @@ public class UserHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) ->
-                requests.requestMatchers(GET, "/api/v1/users").hasAuthority(ADMIN)
-                .requestMatchers(POST, "/api/v1/users").hasAuthority(ADMIN)
-                .requestMatchers(PUT, "/api/v1/users").hasAuthority(ADMIN)
-                .requestMatchers(PUT, "/api/v1/users/{userId}/activate").hasAuthority(ADMIN)
-                .requestMatchers(PUT, "/api/v1/users/{userId}/deactivate").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/v1/users/email/{email}/").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/v1/users/{userId}").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/v1/users/authority/{authority}").hasAuthority(ADMIN)
-                .requestMatchers(DELETE, "/api/v1/users/{userId}").hasAuthority(ADMIN)
-                .requestMatchers(POST, "/api/v1/users/send-verification-email/{userId}").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/v1/user/settings").authenticated()
-                .requestMatchers(PUT, "/api/v1/user/settings").authenticated()
+                requests.requestMatchers(antMatcher(GET, "/api/v1/users")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(POST, "/api/v1/users")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(PUT, "/api/v1/users")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(PUT, "/api/v1/users/{userId}/activate")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(PUT, "/api/v1/users/{userId}/deactivate")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/v1/users/email/{email}/")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/v1/users/{userId}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/v1/users/authority/{authority}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(DELETE, "/api/v1/users/{userId}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(POST, "/api/v1/users/send-verification-email/{userId}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/v1/user/settings")).authenticated()
+                .requestMatchers(antMatcher(PUT, "/api/v1/user/settings")).authenticated()
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

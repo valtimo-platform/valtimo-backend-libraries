@@ -23,6 +23,7 @@ import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class DocumentHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -30,16 +31,16 @@ public class DocumentHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) -> {
-                requests.requestMatchers(GET, "/api/v1/document/{id}").authenticated()
-                    .requestMatchers(POST, "/api/v1/document").authenticated()
-                    .requestMatchers(PUT, "/api/v1/document").authenticated()
-                    .requestMatchers(POST, "/api/v1/document/{document-id}/resource/{resource-id}").authenticated()
-                    .requestMatchers(DELETE, "/api/v1/document/{document-id}/resource/{resource-id}").authenticated()
-                    .requestMatchers(POST, "/api/v1/document/{documentId}/assign").authenticated()
-                    .requestMatchers(POST, "/api/v1/document/assign").authenticated()
-                    .requestMatchers(POST, "/api/v1/document/{documentId}/unassign").authenticated()
-                    .requestMatchers(GET, "/api/v1/document/{document-id}/candidate-user").authenticated()
-                    .requestMatchers(POST, "/api/v1/document/candidate-user").authenticated();
+                requests.requestMatchers(antMatcher(GET, "/api/v1/document/{id}")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/document")).authenticated()
+                    .requestMatchers(antMatcher(PUT, "/api/v1/document")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/document/{document-id}/resource/{resource-id}")).authenticated()
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/document/{document-id}/resource/{resource-id}")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/document/{documentId}/assign")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/document/assign")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/document/{documentId}/unassign")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/document/{document-id}/candidate-user")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/document/candidate-user")).authenticated();
             });
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

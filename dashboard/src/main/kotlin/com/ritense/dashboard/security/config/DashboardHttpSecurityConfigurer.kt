@@ -24,27 +24,28 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class DashboardHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(GET, "/api/v1/dashboard").authenticated()
-                    .requestMatchers(GET, "/api/v1/dashboard/{dashboardKey}/data").authenticated()
-                    .requestMatchers(GET, "/api/management/v1/dashboard").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}").hasAuthority(ADMIN)
-                    .requestMatchers(POST, "/api/management/v1/dashboard").hasAuthority(ADMIN)
-                    .requestMatchers(PUT, "/api/management/v1/dashboard").hasAuthority(ADMIN)
-                    .requestMatchers(DELETE, "/api/management/v1/dashboard/{dashboard-key}").hasAuthority(ADMIN)
-                    .requestMatchers(PUT, "/api/management/v1/dashboard/{dashboard-key}").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration").hasAuthority(ADMIN)
-                    .requestMatchers(POST, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration").hasAuthority(ADMIN)
-                    .requestMatchers(PUT, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}").hasAuthority(ADMIN)
-                    .requestMatchers(PUT, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}").hasAuthority(ADMIN)
-                    .requestMatchers(DELETE, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/management/v1/dashboard/widget-data-sources").hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(GET, "/api/v1/dashboard")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/dashboard/{dashboardKey}/data")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/dashboard")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/dashboard/{dashboardKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/dashboard")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/dashboard")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/dashboard/{dashboard-key}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/dashboard/{dashboard-key}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/dashboard/widget-data-sources")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

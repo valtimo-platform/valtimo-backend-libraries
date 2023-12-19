@@ -20,13 +20,15 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 public class ApiLoginHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) ->
-                requests.requestMatchers("/api/v1/authenticate").permitAll()
+                requests.requestMatchers(antMatcher("/api/v1/authenticate")).permitAll()
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

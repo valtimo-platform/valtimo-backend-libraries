@@ -20,17 +20,18 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.GET
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class CatalogiApiHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(GET, "/api/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype").authenticated()
-                    .requestMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/roltype").authenticated()
-                    .requestMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/statustype").authenticated()
-                    .requestMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype").authenticated()
-                    .requestMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype").authenticated()
+                requests.requestMatchers(antMatcher(GET, "/api/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/roltype")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/statustype")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype")).authenticated()
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

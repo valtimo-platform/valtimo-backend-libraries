@@ -21,6 +21,7 @@ import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class OpenApiHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -28,8 +29,8 @@ public class OpenApiHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) ->
-                requests.requestMatchers(GET, "/v3/api-docs").hasAuthority(ADMIN)
-                .requestMatchers("/v3/api-docs/**").hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(GET, "/v3/api-docs")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher("/v3/api-docs/**")).hasAuthority(ADMIN)
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

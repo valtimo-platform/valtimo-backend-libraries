@@ -21,6 +21,7 @@ import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class EmailNotificationSettingsSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -28,8 +29,8 @@ public class EmailNotificationSettingsSecurityConfigurer implements HttpSecurity
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) ->
-                requests.requestMatchers(GET, "/api/v1/email-notification-settings").authenticated()
-                .requestMatchers(PUT, "/api/v1/email-notification-settings").authenticated()
+                requests.requestMatchers(antMatcher(GET, "/api/v1/email-notification-settings")).authenticated()
+                .requestMatchers(antMatcher(PUT, "/api/v1/email-notification-settings")).authenticated()
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

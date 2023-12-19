@@ -23,6 +23,7 @@ import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.A
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -30,33 +31,33 @@ public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) ->
-                requests.requestMatchers(GET, "/api/v1/process/definition").authenticated()
-                .requestMatchers(POST, "/api/v1/process/definition/{processDefinitionId}/count").authenticated()
-                .requestMatchers(GET, "/api/v1/process/definition/{processDefinitionId}/xml").authenticated()
-                .requestMatchers(PUT, "/api/v1/process/definition/{processDefinitionId}/xml/timer").authenticated()
-                .requestMatchers(GET, "/api/v1/process/definition/{processDefinitionKey}/search-properties").authenticated()
-                .requestMatchers(GET, "/api/v1/process/definition/{processDefinitionKey}").authenticated()
-                .requestMatchers(GET, "/api/v1/process/definition/{processDefinitionKey}/versions").authenticated()
-                .requestMatchers(GET, "/api/v1/process/definition/{processDefinitionKey}/start-form").authenticated()
-                .requestMatchers(GET, "/api/v1/process/definition/{processDefinitionKey}/usertasks").authenticated()
-                .requestMatchers(GET, "/api/v1/process/definition/{processDefinitionKey}/heatmap/count").authenticated()
-                .requestMatchers(GET, "/api/v1/process/definition/{processDefinitionKey}/heatmap/duration").authenticated()
-                .requestMatchers(POST, "/api/v1/process/definition/{processDefinitionKey}/{businessKey}/start").authenticated()
-                .requestMatchers(GET, "/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/flownodes").authenticated()
-                .requestMatchers(POST, "/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/migrate").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/v1/process/{processInstanceId}").authenticated()
-                .requestMatchers(GET, "/api/v1/process/{processInstanceId}/history").authenticated()
-                .requestMatchers(GET, "/api/v1/process/{processInstanceId}/log").authenticated()
-                .requestMatchers(GET, "/api/v1/process/{processInstanceId}/tasks").authenticated()
-                .requestMatchers(GET, "/api/v1/process/{processInstanceId}/activetask").authenticated()
-                .requestMatchers(GET, "/api/v1/process/{processInstanceId}/xml").authenticated()
-                .requestMatchers(GET, "/api/v1/process/{processInstanceId}/activities").authenticated()
-                .requestMatchers(GET, "/api/v1/process/{processInstanceId}/comments").authenticated()
-                .requestMatchers(GET, "/api/v1/process/{processDefinitionName}/search").authenticated()
-                .requestMatchers(POST, "/api/v1/process/{processDefinitionName}/count").authenticated()
-                .requestMatchers(POST, "/api/v1/process/{processInstanceId}/comment").authenticated()
-                .requestMatchers(POST, "/api/v1/process/{processInstanceId}/delete").hasAuthority(ADMIN)
-                .requestMatchers(POST, "/api/v1/process/definition/deployment").hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(GET, "/api/v1/process/definition")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/process/definition/{processDefinitionId}/count")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionId}/xml")).authenticated()
+                .requestMatchers(antMatcher(PUT, "/api/v1/process/definition/{processDefinitionId}/xml/timer")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionKey}/search-properties")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionKey}")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionKey}/versions")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionKey}/start-form")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionKey}/usertasks")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionKey}/heatmap/count")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionKey}/heatmap/duration")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/process/definition/{processDefinitionKey}/{businessKey}/start")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/flownodes")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/migrate")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/history")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/log")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/tasks")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/activetask")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/xml")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/activities")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/comments")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process/{processDefinitionName}/search")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/process/{processDefinitionName}/count")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/process/{processInstanceId}/comment")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/process/{processInstanceId}/delete")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(POST, "/api/v1/process/definition/deployment")).hasAuthority(ADMIN)
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);

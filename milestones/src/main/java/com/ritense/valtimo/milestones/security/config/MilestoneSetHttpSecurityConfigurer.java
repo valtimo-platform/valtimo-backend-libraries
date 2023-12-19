@@ -24,6 +24,7 @@ import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.D
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class MilestoneSetHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -31,10 +32,10 @@ public class MilestoneSetHttpSecurityConfigurer implements HttpSecurityConfigure
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests((requests) -> {
-                requests.requestMatchers(GET, "/api/v1/milestone-sets/{id}").hasAuthority(ADMIN)
-                    .requestMatchers(GET, "/api/v1/milestone-sets").hasAuthority(ADMIN)
-                    .requestMatchers(POST, "/api/v1/milestone-sets").hasAuthority(DEVELOPER)
-                    .requestMatchers(DELETE, "/api/v1/milestone-sets/{id}").hasAuthority(DEVELOPER);
+                requests.requestMatchers(antMatcher(GET, "/api/v1/milestone-sets/{id}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/milestone-sets")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/milestone-sets")).hasAuthority(DEVELOPER)
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/milestone-sets/{id}")).hasAuthority(DEVELOPER);
             });
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
