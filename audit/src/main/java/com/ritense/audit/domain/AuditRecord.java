@@ -62,6 +62,9 @@ public class AuditRecord implements Persistable<AuditRecordId> {
     @Column(name = "document_id", updatable = false)
     private UUID documentId;
 
+    @Column(name = "classname", updatable = false)
+    private String className;
+
     public AuditRecord(
         AuditRecordId auditRecordId,
         MetaData metaData,
@@ -136,6 +139,10 @@ public class AuditRecord implements Persistable<AuditRecordId> {
 
     public UUID getDocumentId() {
         return this.documentId;
+    }
+
+    public String getClassName() {
+        return className;
     }
 
     public static AuditRecordBuilder builder() {
