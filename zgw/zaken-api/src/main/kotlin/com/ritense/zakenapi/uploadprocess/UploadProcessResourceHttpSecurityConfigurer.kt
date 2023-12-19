@@ -25,8 +25,9 @@ class UploadProcessResourceHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/uploadprocess/case/{caseDefinitionKey}/check-link").authenticated()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(GET, "/api/v1/uploadprocess/case/{caseDefinitionKey}/check-link").authenticated()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

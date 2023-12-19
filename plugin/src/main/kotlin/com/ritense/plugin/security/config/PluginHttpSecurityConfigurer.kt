@@ -29,14 +29,15 @@ class PluginHttpSecurityConfigurer: HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/plugin/definition").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/v1/plugin/configuration").hasAuthority(ADMIN)
-                .requestMatchers(POST, "/api/v1/plugin/configuration").hasAuthority(ADMIN)
-                .requestMatchers(PUT, "/api/v1/plugin/configuration/{pluginConfigurationId}").hasAuthority(ADMIN)
-                .requestMatchers(DELETE, "/api/v1/plugin/configuration/{pluginConfigurationId}").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/v1/plugin/definition/{pluginDefinitionKey}/action").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/v1/plugin/configuration/export").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(GET, "/api/v1/plugin/definition").hasAuthority(ADMIN)
+                    .requestMatchers(GET, "/api/v1/plugin/configuration").hasAuthority(ADMIN)
+                    .requestMatchers(POST, "/api/v1/plugin/configuration").hasAuthority(ADMIN)
+                    .requestMatchers(PUT, "/api/v1/plugin/configuration/{pluginConfigurationId}").hasAuthority(ADMIN)
+                    .requestMatchers(DELETE, "/api/v1/plugin/configuration/{pluginConfigurationId}").hasAuthority(ADMIN)
+                    .requestMatchers(GET, "/api/v1/plugin/definition/{pluginDefinitionKey}/action").hasAuthority(ADMIN)
+                    .requestMatchers(GET, "/api/v1/plugin/configuration/export").hasAuthority(ADMIN)
+            }
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

@@ -28,10 +28,11 @@ class InformatieObjectTypeLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/openzaak/informatie-object-type-link/{documentDefinitionName}").hasAuthority(ADMIN)
-                .requestMatchers(POST, "/api/v1/openzaak/informatie-object-type-link").hasAuthority(ADMIN)
-                .requestMatchers(DELETE, "/api/v1/openzaak/informatie-object-type-link/{documentDefinitionName}").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(GET, "/api/v1/openzaak/informatie-object-type-link/{documentDefinitionName}").hasAuthority(ADMIN)
+                    .requestMatchers(POST, "/api/v1/openzaak/informatie-object-type-link").hasAuthority(ADMIN)
+                    .requestMatchers(DELETE, "/api/v1/openzaak/informatie-object-type-link/{documentDefinitionName}").hasAuthority(ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

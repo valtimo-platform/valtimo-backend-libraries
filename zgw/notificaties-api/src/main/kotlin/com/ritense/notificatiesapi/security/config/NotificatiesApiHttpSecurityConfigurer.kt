@@ -24,9 +24,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 class NotificatiesApiHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(HttpMethod.POST, "/api/v1/notificatiesapi/callback")
-                .permitAll()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(HttpMethod.POST, "/api/v1/notificatiesapi/callback").permitAll()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

@@ -27,11 +27,12 @@ class LocalResourceHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/resource/pre-signed-url/{fileName}").authenticated()
-                .requestMatchers(GET, "/api/v1/resource/{resourceId}").authenticated()
-                .requestMatchers(DELETE, "/api/v1/resource/{resourceId}").authenticated()
-                .requestMatchers(PUT, "/api/v1/resource").authenticated()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(GET, "/api/v1/resource/pre-signed-url/{fileName}").authenticated()
+                    .requestMatchers(GET, "/api/v1/resource/{resourceId}").authenticated()
+                    .requestMatchers(DELETE, "/api/v1/resource/{resourceId}").authenticated()
+                    .requestMatchers(PUT, "/api/v1/resource").authenticated()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

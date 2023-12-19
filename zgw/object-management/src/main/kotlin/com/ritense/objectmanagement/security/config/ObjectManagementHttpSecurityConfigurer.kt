@@ -26,21 +26,15 @@ class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(HttpMethod.POST, "/api/v1/object/management/configuration")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
-                .requestMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{id}")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
-                .requestMatchers(HttpMethod.GET, "/api/v1/object/management/configuration")
-                .authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/v1/object/management/configuration")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
-                .requestMatchers(HttpMethod.DELETE, "/api/v1/object/management/configuration/{id}")
-                .hasAuthority(AuthoritiesConstants.ADMIN)
-                .requestMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{id}/object")
-                .authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/v1/object/management/configuration/{id}/object")
-                .authenticated()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(HttpMethod.POST, "/api/v1/object/management/configuration").hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{id}").hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(HttpMethod.GET, "/api/v1/object/management/configuration").authenticated()
+                    .requestMatchers(HttpMethod.PUT, "/api/v1/object/management/configuration").hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(HttpMethod.DELETE, "/api/v1/object/management/configuration/{id}").hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(HttpMethod.GET, "/api/v1/object/management/configuration/{id}/object").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/object/management/configuration/{id}/object").authenticated()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

@@ -25,8 +25,9 @@ class TemporaryResourceStorageHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(POST, "/api/v1/resource/temp").authenticated()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(POST, "/api/v1/resource/temp").authenticated()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

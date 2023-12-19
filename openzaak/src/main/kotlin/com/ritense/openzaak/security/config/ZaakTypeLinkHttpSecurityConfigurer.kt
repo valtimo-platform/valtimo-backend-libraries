@@ -29,15 +29,16 @@ class ZaakTypeLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
-                .requestMatchers(POST, "/api/v1/openzaak/link").hasAuthority(ADMIN)
-                .requestMatchers(DELETE, "/api/v1/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
-                .requestMatchers(PUT, "/api/v1/openzaak/link").hasAuthority(ADMIN)
-                .requestMatchers(POST, "/api/v1/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
-                .requestMatchers(PUT, "/api/v1/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
-                .requestMatchers(DELETE, "/api/v1/openzaak/link/{id}/service-handler/{processDefinitionKey}/{serviceTaskId}").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/v1/openzaak/link/process/{processDefinitionKey}").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(GET, "/api/v1/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
+                    .requestMatchers(POST, "/api/v1/openzaak/link").hasAuthority(ADMIN)
+                    .requestMatchers(DELETE, "/api/v1/openzaak/link/{documentDefinitionName}").hasAuthority(ADMIN)
+                    .requestMatchers(PUT, "/api/v1/openzaak/link").hasAuthority(ADMIN)
+                    .requestMatchers(POST, "/api/v1/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
+                    .requestMatchers(PUT, "/api/v1/openzaak/link/{id}/service-handler").hasAuthority(ADMIN)
+                    .requestMatchers(DELETE, "/api/v1/openzaak/link/{id}/service-handler/{processDefinitionKey}/{serviceTaskId}").hasAuthority(ADMIN)
+                    .requestMatchers(GET, "/api/v1/openzaak/link/process/{processDefinitionKey}").hasAuthority(ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

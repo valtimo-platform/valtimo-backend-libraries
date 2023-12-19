@@ -21,6 +21,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
+import jakarta.persistence.GeneratedValue;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GeneratedColumn;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
 import jakarta.persistence.Column;
@@ -62,6 +65,7 @@ public class AuditRecord implements Persistable<AuditRecordId> {
     @Column(name = "document_id", updatable = false)
     private UUID documentId;
 
+    @Generated
     @Column(name = "classname", updatable = false)
     private String className;
 

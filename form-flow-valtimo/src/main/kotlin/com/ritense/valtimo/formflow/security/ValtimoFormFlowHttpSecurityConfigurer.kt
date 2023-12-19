@@ -25,17 +25,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 class ValtimoFormFlowHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(HttpMethod.GET, "/api/v1/form-flow/{formFlowInstanceId}").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/step/{stepInstanceId}").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/back").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/save").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/v1/process-link/form-flow-definition").hasAuthority(ADMIN)
-                .requestMatchers(HttpMethod.GET, "/api/v1/form-flow/instance/{formFlowInstanceId}").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/back").authenticated()
-                .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/save").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/v1/form-flow/definition").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(HttpMethod.GET, "/api/v1/form-flow/{formFlowInstanceId}").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/step/{stepInstanceId}").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/back").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/{formFlowId}/save").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/process-link/form-flow-definition").hasAuthority(ADMIN)
+                    .requestMatchers(HttpMethod.GET, "/api/v1/form-flow/instance/{formFlowInstanceId}").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/step/instance/{stepInstanceId}").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/back").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/save").authenticated()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/form-flow/definition").hasAuthority(ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

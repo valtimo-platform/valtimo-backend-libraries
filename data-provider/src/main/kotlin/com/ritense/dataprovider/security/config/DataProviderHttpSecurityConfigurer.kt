@@ -28,12 +28,13 @@ class DataProviderHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(GET, "/api/v1/data/{category}/provider").hasAuthority(ADMIN)
-                .requestMatchers(GET, "/api/v1/data/{category}/all").authenticated()
-                .requestMatchers(GET, "/api/v1/data/{category}").authenticated()
-                .requestMatchers(POST, "/api/v1/data/{category}").hasAuthority(ADMIN)
-                .requestMatchers(DELETE, "/api/v1/data/{category}").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(GET, "/api/v1/data/{category}/provider").hasAuthority(ADMIN)
+                    .requestMatchers(GET, "/api/v1/data/{category}/all").authenticated()
+                    .requestMatchers(GET, "/api/v1/data/{category}").authenticated()
+                    .requestMatchers(POST, "/api/v1/data/{category}").hasAuthority(ADMIN)
+                    .requestMatchers(DELETE, "/api/v1/data/{category}").hasAuthority(ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

@@ -9,8 +9,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 class ExactPluginSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(POST, "/api/v1/plugin/exact/exchange").hasAuthority(AuthoritiesConstants.ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(POST, "/api/v1/plugin/exact/exchange").hasAuthority(AuthoritiesConstants.ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

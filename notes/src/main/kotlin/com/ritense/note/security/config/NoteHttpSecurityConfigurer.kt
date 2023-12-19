@@ -28,11 +28,12 @@ class NoteHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .requestMatchers(POST, "/api/v1/document/{document-id}/note").authenticated()
-                .requestMatchers(GET, "/api/v1/document/{document-id}/note").authenticated()
-                .requestMatchers(PUT, "/api/v1/note/{note-id}").authenticated()
-                .requestMatchers(DELETE, "/api/v1/note/{note-id}").authenticated()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(POST, "/api/v1/document/{document-id}/note").authenticated()
+                    .requestMatchers(GET, "/api/v1/document/{document-id}/note").authenticated()
+                    .requestMatchers(PUT, "/api/v1/note/{note-id}").authenticated()
+                    .requestMatchers(DELETE, "/api/v1/note/{note-id}").authenticated()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
