@@ -26,14 +26,11 @@ import jakarta.persistence.Entity
 
 @Entity
 @DiscriminatorValue(PROCESS_LINK_TYPE_FORM_FLOW)
-data class FormFlowProcessLink(
-    override val id: UUID,
-
-    override val processDefinitionId: String,
-
-    override val activityId: String,
-
-    override val activityType: ActivityTypeWithEventName,
+class FormFlowProcessLink(
+    id: UUID,
+    processDefinitionId: String,
+    activityId: String,
+    activityType: ActivityTypeWithEventName,
 
     @Column(name = "form_flow_definition_id", nullable = false)
     val formFlowDefinitionId: String
@@ -52,8 +49,36 @@ data class FormFlowProcessLink(
     ) = copy(
         id = id,
         processDefinitionId = processDefinitionId,
+        activityId = activityId
+    )
+
+    fun copy(
+        id: UUID = this.id,
+        processDefinitionId: String = this.processDefinitionId,
+        activityId: String = this.activityId,
+        activityType: ActivityTypeWithEventName = this.activityType,
+        formFlowDefinitionId: String = this.formFlowDefinitionId
+    ) = FormFlowProcessLink(
+        id = id,
+        processDefinitionId = processDefinitionId,
         activityId = activityId,
         activityType = activityType,
-        formFlowDefinitionId = this.formFlowDefinitionId
+        formFlowDefinitionId = formFlowDefinitionId
     )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as FormFlowProcessLink
+
+        return formFlowDefinitionId == other.formFlowDefinitionId
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + formFlowDefinitionId.hashCode()
+        return result
+    }
 }

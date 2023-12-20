@@ -36,23 +36,47 @@ abstract class ProcessLink(
 
     @Id
     @Column(name = "id")
-    open val id: UUID,
+    val id: UUID,
 
     @Column(name = "process_definition_id")
-    open val processDefinitionId: String,
+    val processDefinitionId: String,
 
     @Column(name = "activity_id")
-    open val activityId: String,
+    val activityId: String,
 
     @Column(name = "activity_type")
     @Enumerated(EnumType.STRING)
-    open val activityType: ActivityTypeWithEventName,
+    val activityType: ActivityTypeWithEventName,
 
     @Column(name = "process_link_type", insertable = false, updatable = false)
-    open val processLinkType: String,
+    val processLinkType: String,
 ) {
     abstract fun copy(
         id: UUID = this.id,
         processDefinitionId: String = this.processDefinitionId,
     ) : ProcessLink
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ProcessLink
+
+        if (id != other.id) return false
+        if (processDefinitionId != other.processDefinitionId) return false
+        if (activityId != other.activityId) return false
+        if (activityType != other.activityType) return false
+        if (processLinkType != other.processLinkType) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + processDefinitionId.hashCode()
+        result = 31 * result + activityId.hashCode()
+        result = 31 * result + activityType.hashCode()
+        result = 31 * result + processLinkType.hashCode()
+        return result
+    }
 }

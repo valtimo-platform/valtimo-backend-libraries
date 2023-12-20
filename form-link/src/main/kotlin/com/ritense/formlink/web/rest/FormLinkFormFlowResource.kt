@@ -21,12 +21,14 @@ import com.ritense.formlink.service.CreateFormFlowResponse
 import com.ritense.formlink.service.FormLinkNewProcessFormFlowProvider
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Deprecated("Since 10.6.0")
+@Controller
 @RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_UTF8_VALUE])
 internal class FormLinkFormFlowResource internal constructor(
     private val formLinkNewProcessFormFlowProvider: FormLinkNewProcessFormFlowProvider

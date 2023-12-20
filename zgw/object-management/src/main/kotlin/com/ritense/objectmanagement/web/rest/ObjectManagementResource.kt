@@ -34,7 +34,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import java.util.UUID
 import jakarta.validation.Valid
+import org.springframework.stereotype.Controller
 
+@Controller
 @RequestMapping("/api/v1/object/management/configuration", produces = [APPLICATION_JSON_UTF8_VALUE])
 class ObjectManagementResource(
     private val objectManagementService: ObjectManagementService

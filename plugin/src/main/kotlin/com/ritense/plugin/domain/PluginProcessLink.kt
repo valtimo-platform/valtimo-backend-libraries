@@ -30,14 +30,11 @@ import org.hibernate.annotations.Type
 
 @Entity
 @DiscriminatorValue(PROCESS_LINK_TYPE_PLUGIN)
-data class PluginProcessLink(
-    override val id: UUID,
-
-    override val processDefinitionId: String,
-
-    override val activityId: String,
-
-    override val activityType: ActivityTypeWithEventName,
+class PluginProcessLink(
+    id: UUID,
+    processDefinitionId: String,
+    activityId: String,
+    activityType: ActivityTypeWithEventName,
 
     @Type(value = JsonType::class)
     @Column(name = "action_properties", columnDefinition = "JSON")
@@ -82,10 +79,46 @@ data class PluginProcessLink(
     ) = copy(
         id = id,
         processDefinitionId = processDefinitionId,
+        activityId = activityId
+    )
+
+    fun copy(
+        id: UUID = this.id,
+        processDefinitionId: String = this.processDefinitionId,
+        activityId: String = this.activityId,
+        activityType: ActivityTypeWithEventName = this.activityType,
+        actionProperties: ObjectNode? = this.actionProperties,
+        pluginConfigurationId: PluginConfigurationId = this.pluginConfigurationId,
+        pluginActionDefinitionKey: String = this.pluginActionDefinitionKey,
+    ) = PluginProcessLink(
+        id = id,
+        processDefinitionId = processDefinitionId,
         activityId = activityId,
         activityType = activityType,
         actionProperties = actionProperties,
         pluginConfigurationId = pluginConfigurationId,
         pluginActionDefinitionKey = pluginActionDefinitionKey
     )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as PluginProcessLink
+
+        if (actionProperties != other.actionProperties) return false
+        if (pluginConfigurationId != other.pluginConfigurationId) return false
+        if (pluginActionDefinitionKey != other.pluginActionDefinitionKey) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + (actionProperties?.hashCode() ?: 0)
+        result = 31 * result + pluginConfigurationId.hashCode()
+        result = 31 * result + pluginActionDefinitionKey.hashCode()
+        return result
+    }
 }

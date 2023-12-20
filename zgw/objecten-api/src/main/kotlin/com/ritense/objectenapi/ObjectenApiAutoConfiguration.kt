@@ -122,10 +122,9 @@ class ObjectenApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ZaakObjectResource::class)
     fun zaakObjectResource(
-        zaakObjectService: ZaakObjectService,
-        pluginService: PluginService,
+        zaakObjectService: ZaakObjectService
     ): ZaakObjectResource {
-        return ZaakObjectResource(zaakObjectService, pluginService)
+        return ZaakObjectResource(zaakObjectService)
     }
 
     @Order(Ordered.LOWEST_PRECEDENCE)

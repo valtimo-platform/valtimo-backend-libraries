@@ -28,7 +28,9 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import jakarta.validation.Valid
+import org.springframework.stereotype.Controller
 
+@Controller
 @RequestMapping("/api/v1/search/list-column", produces = [APPLICATION_JSON_UTF8_VALUE])
 class SearchListColumnResource(
     private val searchListColumnService: SearchListColumnService

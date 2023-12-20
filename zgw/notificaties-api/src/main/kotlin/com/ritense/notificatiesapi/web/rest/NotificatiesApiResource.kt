@@ -22,11 +22,13 @@ import com.ritense.notificatiesapi.service.NotificatiesApiService
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 
+@Controller
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class NotificatiesApiResource(
     private val notificatiesApiService: NotificatiesApiService
