@@ -101,7 +101,10 @@ class SmartDocumentsPlugin(
         return templateGroup?.templates?.map { it.name } ?: emptyList()
     }
 
-    private fun findTemplateGroupByName(templateGroups: List<TemplateGroup>, groupName: String): TemplateGroup? {
+    private fun findTemplateGroupByName(
+        templateGroups: List<TemplateGroup>,
+        groupName: String
+    ): TemplateGroup? {
         for (group in templateGroups) {
             if (group.name == groupName) {
                 return group

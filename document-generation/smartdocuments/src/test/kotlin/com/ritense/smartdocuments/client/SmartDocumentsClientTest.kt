@@ -16,11 +16,15 @@
 
 package com.ritense.smartdocuments.client
 
+import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.BaseTest
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
+import com.ritense.smartdocuments.domain.DocumentsStructure
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
+import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import java.time.Instant
 import java.util.concurrent.TimeUnit.MILLISECONDS
@@ -35,14 +39,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.never
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
+import org.mockito.kotlin.*
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.WebClient
 
@@ -52,6 +49,8 @@ internal class SmartDocumentsClientTest : BaseTest() {
     lateinit var mockDocumentenApi: MockWebServer
     lateinit var client: SmartDocumentsClient
     lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+    lateinit var pluginService: PluginService
+
 
     @BeforeAll
     fun setUp() {
@@ -66,11 +65,14 @@ internal class SmartDocumentsClientTest : BaseTest() {
             uploadProperties = ValtimoUploadProperties()
         ))
 
+        pluginService = mock()
+
         client = spy( SmartDocumentsClient(
             properties,
             WebClient.builder(),
             5,
-            temporaryResourceStorageService
+            temporaryResourceStorageService,
+            pluginService
         ))
     }
 
@@ -305,6 +307,26 @@ internal class SmartDocumentsClientTest : BaseTest() {
         verify(temporaryResourceStorageService, never()).store(any(), any())
     }
 
+    @Test
+    fun `200 ok response should return DocumentStructure`() {
+        // given
+        val responseBody = documentStructureJson()
+        val smartDocumentsPlugin = mock<SmartDocumentsPlugin>()
+        smartDocumentsPlugin.url = "www.test.com"
+        smartDocumentsPlugin.username = "user"
+        smartDocumentsPlugin.password = "password"
+        whenever(pluginService.createInstance(eq(SmartDocumentsPlugin::class.java), any())).thenReturn(smartDocumentsPlugin)
+
+        mockDocumentenApi.enqueue(mockResponse(responseBody))
+
+        // when
+        val response = client.getDocumentStructure()
+
+        // then
+        assertThat(response).isNotNull
+        assertThat(response).isInstanceOf(DocumentsStructure::class.java)
+    }
+
     private fun mockResponse(
         body: String,
         contentType: String = "application/json",
@@ -315,4 +337,95 @@ internal class SmartDocumentsClientTest : BaseTest() {
             .addHeader("Content-Type", contentType)
             .setBody(body)
     }
+
+    private fun documentStructureJson() =
+        """
+            {
+              "TemplatesStructure": {
+                "@IsAccessible": "true",
+                "TemplateGroups": [
+                  {
+                    "@IsAccessible": "true",
+                    "@ID": "group1",
+                    "@Name": "Group 1",
+                    "TemplateGroups": [
+                      {
+                        "@IsAccessible": "true",
+                        "@ID": "subgroup1",
+                        "@Name": "Subgroup 1",
+                        "TemplateGroups": [],
+                        "Templates": [
+                          {
+                            "@ID": "template1",
+                            "@Name": "Template 1"
+                          },
+                          {
+                            "@ID": "template2",
+                            "@Name": "Template 2"
+                          }
+                        ]
+                      }
+                    ],
+                    "Templates": [
+                      {
+                        "@ID": "template3",
+                        "@Name": "Template 3"
+                      }
+                    ]
+                  }
+                ]
+              },
+              "UsersStructure": {
+                "@IsAccessible": "true",
+                "com.ritense.smartdocuments.domain.GroupsAccess": {
+                  "TemplateGroups": [
+                    {
+                      "@IsAccessible": "true",
+                      "@ID": "group1",
+                      "@Name": "Group 1",
+                      "TemplateGroups": [],
+                      "Templates": []
+                    }
+                  ],
+                  "HeaderGroups": []
+                },
+                "com.ritense.smartdocuments.domain.UserGroups": {
+                  "com.ritense.smartdocuments.domain.UserGroup": {
+                    "@IsAccessible": "true",
+                    "@ID": "usergroup1",
+                    "@Name": "User Group 1",
+                    "com.ritense.smartdocuments.domain.GroupsAccess": {
+                      "TemplateGroups": [],
+                      "HeaderGroups": []
+                    },
+                    "com.ritense.smartdocuments.domain.UserGroups": [
+                      {
+                        "@IsAccessible": "true",
+                        "@ID": "subusergroup1",
+                        "@Name": "Subuser Group 1",
+                        "com.ritense.smartdocuments.domain.GroupsAccess": {
+                          "TemplateGroups": [],
+                          "HeaderGroups": []
+                        },
+                        "com.ritense.smartdocuments.domain.UserGroups": [],
+                        "com.ritense.smartdocuments.domain.Users": {
+                          "User": {
+                            "@ID": "user1",
+                            "@Name": "User 1"
+                          }
+                        }
+                      }
+                    ],
+                    "com.ritense.smartdocuments.domain.Users": {
+                      "User": {
+                        "@ID": "user2",
+                        "@Name": "User 2"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+        """.trimIndent()
+
 }
