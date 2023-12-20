@@ -45,3 +45,10 @@ valtimo:
         acceptedMimeTypes:
             - text/plain
             - application/xml
+
+camunda:
+    bpm:
+        history-level: audit
+        generic-properties:
+            properties:
+                enforceHistoryTimeToLive: false

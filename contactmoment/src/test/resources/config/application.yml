@@ -43,3 +43,11 @@ valtimo:
     plugin:
         encryption-secret: "abcdefghijklmnop"
     genericTemplateName: "test-template"
+
+
+camunda:
+    bpm:
+        history-level: audit
+        generic-properties:
+            properties:
+                enforceHistoryTimeToLive: false

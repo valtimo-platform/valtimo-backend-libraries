@@ -67,6 +67,7 @@ class NotificatiesApiAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(NotificatiesApiResource::class)
     fun notificatiesApiResource(notificatiesApiService: NotificatiesApiService): NotificatiesApiResource {
         return NotificatiesApiResource(notificatiesApiService)
     }

@@ -248,7 +248,7 @@ camunda:
         history-level-default: AUDIT
         generic-properties:
             properties:
-                historyTimeToLive: P1D
+                enforceHistoryTimeToLive: false
         admin-user:
             id: Admin
             password: admin

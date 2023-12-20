@@ -42,3 +42,10 @@ valtimo:
     plugin:
         encryption-secret: "abcdefghijklmnop"
     besluitDocumentRequired: false
+
+camunda:
+    bpm:
+        history-level: audit
+        generic-properties:
+            properties:
+                enforceHistoryTimeToLive: false

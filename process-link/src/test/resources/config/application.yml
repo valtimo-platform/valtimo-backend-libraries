@@ -40,3 +40,10 @@ valtimo:
 spring-actuator:
     username: admin
     password: password
+
+camunda:
+    bpm:
+        history-level: audit
+        generic-properties:
+            properties:
+                enforceHistoryTimeToLive: false

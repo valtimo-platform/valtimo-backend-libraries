@@ -54,13 +54,11 @@ internal class ZaakObjectResourceTest {
     lateinit var mockMvc: MockMvc
     lateinit var zaakObjectService: ZaakObjectService
     lateinit var zaakObjectResource: ZaakObjectResource
-    lateinit var pluginService: PluginService
 
     @BeforeEach
     fun init() {
         zaakObjectService = mock()
-        pluginService = mock()
-        zaakObjectResource = ZaakObjectResource(zaakObjectService, pluginService)
+        zaakObjectResource = ZaakObjectResource(zaakObjectService)
 
         mockMvc = MockMvcBuilders
             .standaloneSetup(zaakObjectResource)

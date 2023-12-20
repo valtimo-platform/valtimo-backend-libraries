@@ -30,10 +30,6 @@ spring:
           provider_disables_autocommit: true
     hibernate:
       ddl-auto: none
-      naming:
-        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
-      use-new-id-generator-mappings: false
 
 spring-actuator:
   username: test

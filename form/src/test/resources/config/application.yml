@@ -45,6 +45,9 @@ spring-actuator:
 camunda:
     bpm:
         history-level: audit
+        generic-properties:
+            properties:
+                enforceHistoryTimeToLive: false
 aws:
     profile: ritense
     region: eu-central-1

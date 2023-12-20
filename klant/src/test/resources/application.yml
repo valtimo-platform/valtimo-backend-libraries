@@ -43,3 +43,10 @@ valtimo:
         url: "http://localhost:8006"
     plugin:
         encryption-secret: "abcdefghijklmnop"
+
+camunda:
+    bpm:
+        history-level: audit
+        generic-properties:
+            properties:
+                enforceHistoryTimeToLive: false

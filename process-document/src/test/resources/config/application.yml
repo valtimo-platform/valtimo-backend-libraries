@@ -64,3 +64,10 @@ valtimo:
         reminderTemplate: bpc-task-reminder
     plugin:
         encryption-secret: "abcdefghijklmnop"
+
+camunda:
+    bpm:
+        history-level: audit
+        generic-properties:
+            properties:
+                enforceHistoryTimeToLive: false
