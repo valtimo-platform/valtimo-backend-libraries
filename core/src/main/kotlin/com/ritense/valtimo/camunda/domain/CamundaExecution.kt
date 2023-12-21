@@ -46,7 +46,7 @@ class CamundaExecution(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_INST_ID_")
-    val processInstance: CamundaExecution?,
+    var processInstance: CamundaExecution?,
 
     @Column(name = "BUSINESS_KEY_")
     val businessKey: String?,

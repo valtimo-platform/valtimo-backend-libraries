@@ -20,6 +20,7 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
+import com.ritense.authorization.request.RelatedEntityAuthorizationRequest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
@@ -47,16 +48,23 @@ import com.ritense.processdocument.exception.UnknownProcessDefinitionException;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
+import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider;
+import com.ritense.valtimo.camunda.domain.CamundaExecution;
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionRepository;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
+import com.ritense.valtimo.service.CamundaProcessService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
@@ -72,9 +80,16 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private final AuthorizationService authorizationService;
     private final DocumentService documentService;
 
-    public CamundaProcessJsonSchemaDocumentAssociationService(ProcessDocumentDefinitionRepository processDocumentDefinitionRepository, ProcessDocumentInstanceRepository processDocumentInstanceRepository, DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository, DocumentDefinitionService documentDefinitionService, CamundaRepositoryService repositoryService, RuntimeService runtimeService,
-                                                              AuthorizationService authorizationService,
-                                                              DocumentService documentService) {
+    public CamundaProcessJsonSchemaDocumentAssociationService(
+        ProcessDocumentDefinitionRepository processDocumentDefinitionRepository,
+        ProcessDocumentInstanceRepository processDocumentInstanceRepository,
+        DocumentDefinitionRepository<JsonSchemaDocumentDefinition> documentDefinitionRepository,
+        DocumentDefinitionService documentDefinitionService,
+        CamundaRepositoryService repositoryService,
+        RuntimeService runtimeService,
+        AuthorizationService authorizationService,
+        DocumentService documentService
+    ) {
         this.processDocumentDefinitionRepository = processDocumentDefinitionRepository;
         this.processDocumentInstanceRepository = processDocumentInstanceRepository;
         this.documentDefinitionRepository = documentDefinitionRepository;
@@ -126,8 +141,26 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName) {
         // TODO: (VIEW JsonSchemaDocument) / (ADMIN role, so separate endpoint)
 
-        return processDocumentDefinitionRepository
+        List<CamundaProcessJsonSchemaDocumentDefinition> results = processDocumentDefinitionRepository
             .findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(documentDefinitionName);
+
+        return results.stream().filter(result -> {
+            CamundaProcessDefinition processDefinition = AuthorizationContext.runWithoutAuthorization(() ->
+            repositoryService
+                .findLatestProcessDefinition(
+                    result.processDocumentDefinitionId().processDefinitionKey().toString()
+                )
+            );
+
+            return authorizationService.hasPermission(
+                new RelatedEntityAuthorizationRequest<>(
+                    CamundaExecution.class,
+                    CamundaExecutionActionProvider.CREATE,
+                    CamundaProcessDefinition.class,
+                    processDefinition.getId()
+                )
+            );
+        }).toList();
     }
 
     @Override
