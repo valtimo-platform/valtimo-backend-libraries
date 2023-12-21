@@ -146,7 +146,7 @@ class FormIoFormManagementSecurityResourceTest extends SecuritySpecificEndpointI
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void deleteFormDefinitionAsAdmin() throws Exception {
-        assertHttpStatus(DELETE, "/api/v1/form-management/" + UUID.randomUUID(), INTERNAL_SERVER_ERROR);
+        assertHttpStatus(DELETE, "/api/v1/form-management/" + UUID.randomUUID(), NO_CONTENT);
     }
 
     @Test

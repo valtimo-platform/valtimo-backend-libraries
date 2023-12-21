@@ -99,7 +99,7 @@ class AdminDashboardResourceSecurityIntTest : SecuritySpecificEndpointIntegratio
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `should have access to delete dashboard method with role_admin`() {
-        assertHttpStatus(DELETE, "/api/management/v1/dashboard/1", INTERNAL_SERVER_ERROR)
+        assertHttpStatus(DELETE, "/api/management/v1/dashboard/1", NO_CONTENT)
     }
 
     @Test
