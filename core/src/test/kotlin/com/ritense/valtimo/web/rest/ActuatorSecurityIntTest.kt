@@ -41,7 +41,7 @@ class ActuatorSecurityIntTest(
 
     @Test
     fun `actuator user should have access to actuator endpoints`() {
-        val request = MockMvcRequestBuilders.request(HttpMethod.GET, "/management/health")
+        val request = MockMvcRequestBuilders.request(HttpMethod.GET, "/actuator/health")
         val credentials = Base64.getEncoder().encodeToString("test:test".toByteArray())
         request.accept(MediaType.APPLICATION_JSON)
         request.header("Authorization", "Basic $credentials")
@@ -68,7 +68,7 @@ class ActuatorSecurityIntTest(
     @Test
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `admin user should not have access to actuator endpoints`() {
-        val request = MockMvcRequestBuilders.request(HttpMethod.GET, "/management/health")
+        val request = MockMvcRequestBuilders.request(HttpMethod.GET, "/actuator/health")
         val credentials = Base64.getEncoder().encodeToString("test:test".toByteArray())
         request.accept(MediaType.APPLICATION_JSON)
         request.with { r: MockHttpServletRequest ->

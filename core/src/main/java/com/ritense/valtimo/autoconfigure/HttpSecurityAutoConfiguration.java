@@ -49,6 +49,7 @@ import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationServic
 import java.util.List;
 import org.camunda.bpm.engine.IdentityService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -282,11 +283,13 @@ public class HttpSecurityAutoConfiguration {
     @Bean
     public SecurityFilterChain actuatorSecurityFilterChain(
         HttpSecurity httpSecurity,
+        WebEndpointProperties webEndpointProperties,
         PasswordEncoder passwordEncoder,
         @Value("${spring-actuator.username}") String username,
         @Value("${spring-actuator.password}") String password
     ) {
-        return new ActuatorSecurityFilterChainFactory().createFilterChain(httpSecurity, passwordEncoder, username, password);
+        return new ActuatorSecurityFilterChainFactory().createFilterChain(
+            httpSecurity, webEndpointProperties, passwordEncoder, username, password);
     }
 
     @Order(100)

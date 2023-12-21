@@ -17,6 +17,7 @@
 package com.ritense.valtimo.security
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ACTUATOR
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.security.authentication.AuthenticationManager
@@ -36,13 +37,15 @@ class ActuatorSecurityFilterChainFactory {
 
     fun createFilterChain(
         http: HttpSecurity,
+        webEndpointProperties: WebEndpointProperties,
         passwordEncoder: PasswordEncoder,
         username: String,
         password: String
     ): SecurityFilterChain {
+        val matchers = getActuatorMatchers(webEndpointProperties.basePath)
         http
-            .securityMatcher(OrRequestMatcher(*ACTUATOR_REQUESTS))
-            .authorizeHttpRequests { it.requestMatchers(*ACTUATOR_REQUESTS).hasAuthority(ACTUATOR) }
+            .securityMatcher(OrRequestMatcher(*matchers))
+            .authorizeHttpRequests { it.requestMatchers(*matchers).hasAuthority(ACTUATOR) }
             .authenticationManager(actuatorAuthenticationManager(passwordEncoder, username, password))
             .httpBasic { it.realmName(ACTUATOR_REALM) }
 
@@ -76,18 +79,19 @@ class ActuatorSecurityFilterChainFactory {
         return InMemoryUserDetailsManager(actuatorUser)
     }
 
+    private fun getActuatorMatchers(actuatorPath: String) = arrayOf(
+        antMatcher(GET, actuatorPath),
+        antMatcher(GET, "${actuatorPath}/configprops"),
+        antMatcher(GET, "${actuatorPath}/env"),
+        antMatcher(GET, "${actuatorPath}/health"),
+        antMatcher(GET, "${actuatorPath}/mappings"),
+        antMatcher(GET, "${actuatorPath}/logfile"),
+        antMatcher(GET, "${actuatorPath}/loggers"),
+        antMatcher(POST, "${actuatorPath}/loggers/**"),
+        antMatcher(GET, "${actuatorPath}/info"),
+    )
+
     companion object {
         const val ACTUATOR_REALM = "Actuator realm"
-        val ACTUATOR_REQUESTS = arrayOf(
-            antMatcher(GET, "/management"),
-            antMatcher(GET, "/management/configprops"),
-            antMatcher(GET, "/management/env"),
-            antMatcher(GET, "/management/health"),
-            antMatcher(GET, "/management/mappings"),
-            antMatcher(GET, "/management/logfile"),
-            antMatcher(GET, "/management/loggers"),
-            antMatcher(POST, "/management/loggers/**"),
-            antMatcher(GET, "/management/info"),
-        )
     }
 }
