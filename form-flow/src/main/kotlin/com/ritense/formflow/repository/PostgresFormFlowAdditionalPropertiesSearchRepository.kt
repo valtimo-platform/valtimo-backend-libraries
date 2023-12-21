@@ -43,7 +43,7 @@ class PostgresFormFlowAdditionalPropertiesSearchRepository(
         return criteriaBuilder.equal(
             criteriaBuilder.function(
                 "json_extract_path_text",
-                FormFlowInstance::class.java,
+                String::class.java,
                 root.get<Any>("additionalProperties"),
                 criteriaBuilder.literal(key)
             ),
