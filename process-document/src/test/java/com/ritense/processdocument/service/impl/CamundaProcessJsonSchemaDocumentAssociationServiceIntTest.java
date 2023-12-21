@@ -57,8 +57,9 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
 
     @Test
     public void findProcessDocumentDefinition() {
-        final var processDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
-            .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME);
+        final var processDocumentDefinitions = AuthorizationContext
+            .runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
+            .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME));
 
         assertThat(processDocumentDefinitions.size()).isEqualTo(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
