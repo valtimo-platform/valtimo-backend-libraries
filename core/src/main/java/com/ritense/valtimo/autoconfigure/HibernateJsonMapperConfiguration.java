@@ -31,7 +31,7 @@ public class HibernateJsonMapperConfiguration {
      * Sets up hibernate to use the HibernateObjectMapperSupplier to get the ObjectMapper
      */
     static {
-        System.setProperty("hibernate.types.jackson.object.mapper", HibernateObjectMapperSupplier.class.getName());
+        System.setProperty("hypersistence.utils.jackson.object.mapper", HibernateObjectMapperSupplier.class.getName());
     }
 
     /*
