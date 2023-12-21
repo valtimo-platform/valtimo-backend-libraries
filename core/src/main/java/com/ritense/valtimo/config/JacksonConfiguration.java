@@ -22,13 +22,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import com.ritense.valtimo.contract.json.serializer.PageSerializer;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
+
 import java.time.format.DateTimeFormatter;
 
-@Configuration
+@AutoConfiguration
 public class JacksonConfiguration {
 
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
