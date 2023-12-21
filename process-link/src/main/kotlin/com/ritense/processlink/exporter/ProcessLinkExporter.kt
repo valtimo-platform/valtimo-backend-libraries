@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
+import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.request.ExportRequest
 import com.ritense.exporter.request.ProcessDefinitionExportRequest
 import com.ritense.processlink.service.ProcessLinkService
@@ -50,7 +51,7 @@ class ProcessLinkExporter(
         return ExportResult(
             ExportFile(
                 "config/processlink/${request.processDefinitionId.substringBefore(":")}.processlink.json",
-                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(createDtos)
+                objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(createDtos)
             ),
             relatedRequests
         )
