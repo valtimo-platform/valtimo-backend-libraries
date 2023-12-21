@@ -10,7 +10,7 @@
                     "type": "expression",
                     "field": "child",
                     "path": "$.property",
-                    "operator": "contains",
+                    "operator": "list_contains",
                     "value": "two",
                     "clazz": "java.util.Collection"
                 }
@@ -25,7 +25,7 @@
                     "type": "expression",
                     "field": "child",
                     "path": "$.property",
-                    "operator": "contains",
+                    "operator": "list_contains",
                     "value": "two",
                     "clazz": "java.util.Collection"
                 }
@@ -39,7 +39,7 @@
                 {
                     "type": "field",
                     "field": "fruits",
-                    "operator": "contains",
+                    "operator": "list_contains",
                     "value": "strawberry"
                 }
             ]
@@ -52,7 +52,7 @@
                 {
                     "type": "field",
                     "field": "fruits",
-                    "operator": "contains",
+                    "operator": "list_contains",
                     "value": "strawberry"
                 }
             ]
@@ -66,7 +66,7 @@
                     "type": "expression",
                     "field": "child",
                     "path": "$.property",
-                    "operator": "contains",
+                    "operator": "list_contains",
                     "value": "${currentUserEmail}",
                     "clazz": "java.util.Collection"
                 }
@@ -80,7 +80,7 @@
                 {
                     "type": "field",
                     "field": "fruits",
-                    "operator": "contains",
+                    "operator": "list_contains",
                     "value": "${currentUserEmail}"
                 }
             ]

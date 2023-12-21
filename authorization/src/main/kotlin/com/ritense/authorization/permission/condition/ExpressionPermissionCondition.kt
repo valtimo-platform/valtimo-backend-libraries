@@ -26,6 +26,7 @@ import com.ritense.authorization.jackson.ComparableDeserializer
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.permission.condition.ExpressionPermissionCondition.Companion.EXPRESSION
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Path
@@ -68,7 +69,7 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
 
     override fun <E : Any> toPredicate(
         root: Root<E>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<E>,
         queryDialectHelper: QueryDialectHelper
@@ -77,7 +78,7 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
         val resolvedValue = PermissionConditionValueResolver.resolveValue(value)
 
         // we need an exception for json contains
-        if (operator == PermissionConditionOperator.CONTAINS) {
+        if (operator == PermissionConditionOperator.LIST_CONTAINS) {
             if (Collection::class.java.isAssignableFrom(clazz)) {
                 return queryDialectHelper.getJsonArrayContainsExpression(
                     criteriaBuilder, path, this.path, resolvedValue.toString()

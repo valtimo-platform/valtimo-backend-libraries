@@ -16,11 +16,11 @@
 
 package com.ritense.authorization.testimpl
 
+import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
-import com.ritense.authorization.permission.Permission
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
@@ -30,7 +30,7 @@ class RelatedTestEntitySpecification(
 ): AuthorizationSpecification<RelatedTestEntity>(authContext, permissions) {
     override fun toPredicate(
         root: Root<RelatedTestEntity>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         return criteriaBuilder.isTrue(root.isNotNull)

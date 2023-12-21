@@ -12,7 +12,7 @@
                     "path": "$.height",
                     "operator": "<",
                     "value": 20000,
-                    "clazz": "int"
+                    "clazz": "java.lang.Integer"
                 },
                 {
                     "type": "field",
@@ -46,7 +46,7 @@
                     "path": "$.height",
                     "operator": "<",
                     "value": 20000,
-                    "clazz": "int"
+                    "clazz": "java.lang.Integer"
                 },
                 {
                     "type": "field",
