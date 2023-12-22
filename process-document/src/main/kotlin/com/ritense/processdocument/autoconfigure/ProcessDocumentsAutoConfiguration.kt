@@ -33,6 +33,7 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.ProcessDocumentsService
+import com.ritense.processdocument.service.ValueResolverDelegateService
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
@@ -40,6 +41,7 @@ import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
@@ -63,6 +65,17 @@ class ProcessDocumentsAutoConfiguration {
             processDocumentService,
             userManagementService,
             documentService
+        )
+    }
+
+    @ProcessBean
+    @Bean
+    @ConditionalOnMissingBean
+    fun valueResolverDelegateService(
+        valueResolverService: ValueResolverService
+    ): ValueResolverDelegateService {
+        return ValueResolverDelegateService(
+            valueResolverService,
         )
     }
 
