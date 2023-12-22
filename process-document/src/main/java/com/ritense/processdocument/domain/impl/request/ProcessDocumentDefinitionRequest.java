@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.processdocument.domain.request.Request;
 
+import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 public class ProcessDocumentDefinitionRequest implements Request {
@@ -29,6 +30,9 @@ public class ProcessDocumentDefinitionRequest implements Request {
 
     @JsonProperty
     private String documentDefinitionName;
+
+    @JsonProperty
+    private Optional<Long> documentDefinitionVersion;
 
     @JsonProperty("canInitializeDocument")
     private boolean canInitializeDocument;
@@ -45,9 +49,9 @@ public class ProcessDocumentDefinitionRequest implements Request {
         this.documentDefinitionName = documentDefinitionName;
         this.canInitializeDocument = canInitializeDocument;
         this.startableByUser = true;
+        this.documentDefinitionVersion = Optional.empty();
     }
 
-    @JsonCreator
     public ProcessDocumentDefinitionRequest(
         @JsonProperty(value = "processDefinitionKey", required = true) @NotNull String processDefinitionKey,
         @JsonProperty(value = "documentDefinitionName", required = true) @NotNull String documentDefinitionName,
@@ -57,6 +61,26 @@ public class ProcessDocumentDefinitionRequest implements Request {
         this.processDefinitionKey = processDefinitionKey;
         this.documentDefinitionName = documentDefinitionName;
         this.canInitializeDocument = canInitializeDocument;
+        this.documentDefinitionVersion = Optional.empty();
+        if (startableByUser == null) {
+            this.startableByUser = true;
+        } else {
+            this.startableByUser = startableByUser;
+        }
+    }
+
+    @JsonCreator
+    public ProcessDocumentDefinitionRequest(
+        @JsonProperty(value = "processDefinitionKey", required = true) @NotNull String processDefinitionKey,
+        @JsonProperty(value = "documentDefinitionName", required = true) @NotNull String documentDefinitionName,
+        @JsonProperty(value = "canInitializeDocument", required = true) boolean canInitializeDocument,
+        @JsonProperty("startableByUser") Boolean startableByUser,
+        @JsonProperty("documentDefinitionVersion") Optional<Long> documentDefinitionVersion
+    ) {
+        this.processDefinitionKey = processDefinitionKey;
+        this.documentDefinitionName = documentDefinitionName;
+        this.canInitializeDocument = canInitializeDocument;
+        this.documentDefinitionVersion = documentDefinitionVersion;
         if (startableByUser == null) {
             this.startableByUser = true;
         } else {
@@ -80,4 +104,7 @@ public class ProcessDocumentDefinitionRequest implements Request {
         return startableByUser;
     }
 
+    public Optional<Long> getDocumentDefinitionVersion() {
+        return documentDefinitionVersion;
+    }
 }
