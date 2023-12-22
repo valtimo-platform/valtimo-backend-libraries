@@ -163,6 +163,46 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
     }
 
     @Test
+    public void shouldDeleteProcessDocumentDefinitionForOldVersion() {
+        //create association for old version
+        var request = new ProcessDocumentDefinitionRequest(
+            "embedded-subprocess-example",
+            oldDocumentDefinition.id().name(),
+            true,
+            true,
+            Optional.of(oldDocumentDefinition.id().version())
+        );
+
+        runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
+            .createProcessDocumentDefinition(request));
+
+        //create association for new version
+        var request2 = new ProcessDocumentDefinitionRequest(
+            "embedded-subprocess-example",
+            newDocumentDefinition.id().name(),
+            true,
+            true,
+            Optional.of(newDocumentDefinition.id().version())
+        );
+
+        runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
+            .createProcessDocumentDefinition(request2));
+
+        //delete association for old version
+        camundaProcessJsonSchemaDocumentAssociationService.deleteProcessDocumentDefinition(request);
+
+        //verify that only association for new version exists
+        List<CamundaProcessJsonSchemaDocumentDefinition> oldProcessDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
+            .findProcessDocumentDefinitions(oldDocumentDefinition.id().name(), oldDocumentDefinition.id().version());
+
+        List<CamundaProcessJsonSchemaDocumentDefinition> newProcessDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
+            .findProcessDocumentDefinitions(newDocumentDefinition.id().name(), newDocumentDefinition.id().version());
+
+        assertThat(oldProcessDocumentDefinitions.size()).isEqualTo(0);
+        assertThat(newProcessDocumentDefinitions.size()).isEqualTo(1);
+    }
+
+    @Test
     public void shouldCreateProcessDocumentDefinitionForNewVersionWhenNoVersionSpecified() {
         var request = new ProcessDocumentDefinitionRequest(
             "embedded-subprocess-example",
@@ -182,6 +222,53 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
 
         assertThat(oldProcessDocumentDefinitions.size()).isEqualTo(0);
         assertThat(newProcessDocumentDefinitions.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldDeleteProcessDocumentDefinitionForNewVersioWhenNoVersionSpecified() {
+        //create association for old version
+        var request = new ProcessDocumentDefinitionRequest(
+            "embedded-subprocess-example",
+            oldDocumentDefinition.id().name(),
+            true,
+            true,
+            Optional.of(oldDocumentDefinition.id().version())
+        );
+
+        runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
+            .createProcessDocumentDefinition(request));
+
+        //create association for new version
+        var request2 = new ProcessDocumentDefinitionRequest(
+            "embedded-subprocess-example",
+            newDocumentDefinition.id().name(),
+            true,
+            true,
+            Optional.of(newDocumentDefinition.id().version())
+        );
+
+        runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
+            .createProcessDocumentDefinition(request2));
+
+        //delete association for old version
+        var deleteRequest = new ProcessDocumentDefinitionRequest(
+            "embedded-subprocess-example",
+            oldDocumentDefinition.id().name(),
+            true,
+            true
+        );
+
+        camundaProcessJsonSchemaDocumentAssociationService.deleteProcessDocumentDefinition(deleteRequest);
+
+        //verify that only association for new version exists
+        List<CamundaProcessJsonSchemaDocumentDefinition> oldProcessDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
+            .findProcessDocumentDefinitions(oldDocumentDefinition.id().name(), oldDocumentDefinition.id().version());
+
+        List<CamundaProcessJsonSchemaDocumentDefinition> newProcessDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
+            .findProcessDocumentDefinitions(newDocumentDefinition.id().name(), newDocumentDefinition.id().version());
+
+        assertThat(oldProcessDocumentDefinitions.size()).isEqualTo(1);
+        assertThat(newProcessDocumentDefinitions.size()).isEqualTo(0);
     }
 
     @Test
