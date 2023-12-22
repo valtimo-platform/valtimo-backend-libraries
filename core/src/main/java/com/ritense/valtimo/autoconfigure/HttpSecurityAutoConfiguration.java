@@ -296,18 +296,4 @@ public class HttpSecurityAutoConfiguration {
         return coreSecurityFactory.createWebSecurityCustomizer();
     }
 
-    // TODO: 92240
-//    public CoreHttpSecurityConfigurerAdapter coreHttpSecurityConfigurerAdapter(
-//        List<HttpSecurityConfigurer> httpSecurityConfigurers,
-//        List<AuthenticationSecurityConfigurer> authenticationSecurityConfigurers
-//    ) {
-//        return new CoreHttpSecurityConfigurerAdapter(httpSecurityConfigurers, authenticationSecurityConfigurers);
-//    }
-
-//    @Bean
-//    @ConditionalOnMissingBean(AuthenticationManager.class)
-//    public AuthenticationManager authenticationManager(CoreHttpSecurityConfigurerAdapter configurerAdapter) throws Exception {
-//        return configurerAdapter.authenticationManagerBean();
-//    }
-
 }
