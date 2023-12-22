@@ -17,33 +17,23 @@
 package com.ritense.processdocument;
 
 import com.ritense.audit.service.impl.AuditServiceImpl;
-import com.ritense.authorization.AuthorizationService;
-import com.ritense.authorization.request.AuthorizationRequest;
-import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.specification.impl.NoopAuthorizationSpecificationFactory;
+import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAssociationService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentService;
 import com.ritense.resource.service.ResourceService;
-import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider;
-import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.service.CamundaTaskService;
+import javax.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import javax.inject.Inject;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Tag("integration")
@@ -67,6 +57,9 @@ public abstract class BaseIntegrationTest extends BaseTest {
 
     @MockBean
     protected ResourceService resourceService;
+
+    @SpyBean
+    protected ProcessDocumentDefinitionRepository processDocumentDefinitionRepository;
 
     @Autowired
     public NoopAuthorizationSpecificationFactory noopAuthorizationSpecificationFactory;

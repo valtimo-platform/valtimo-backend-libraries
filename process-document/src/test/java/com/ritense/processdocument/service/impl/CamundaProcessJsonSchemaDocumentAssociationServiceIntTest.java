@@ -20,12 +20,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.BaseIntegrationTest;
+import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
+import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstance;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest;
@@ -35,7 +38,7 @@ import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResu
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import java.util.List;
 import java.util.Optional;
-import javax.transaction.Transactional;
+import javax.persistence.EntityManager;
 import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -43,10 +46,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.transaction.annotation.Transactional;
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 
 @Tag("integration")
 @Transactional
@@ -62,6 +67,9 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
 
     @Autowired
     private DocumentDefinitionService documentDefinitionService;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private DocumentDefinition oldDocumentDefinition;
     private DocumentDefinition newDocumentDefinition;
@@ -189,17 +197,21 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             .createProcessDocumentDefinition(request2));
 
         //delete association for old version
-        camundaProcessJsonSchemaDocumentAssociationService.deleteProcessDocumentDefinition(request);
+        runWithoutAuthorization(() -> {
+            camundaProcessJsonSchemaDocumentAssociationService.deleteProcessDocumentDefinition(request);
+            return null;
+        });
 
-        //verify that only association for new version exists
-        List<CamundaProcessJsonSchemaDocumentDefinition> oldProcessDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
-            .findProcessDocumentDefinitions(oldDocumentDefinition.id().name(), oldDocumentDefinition.id().version());
-
-        List<CamundaProcessJsonSchemaDocumentDefinition> newProcessDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
-            .findProcessDocumentDefinitions(newDocumentDefinition.id().name(), newDocumentDefinition.id().version());
-
-        assertThat(oldProcessDocumentDefinitions.size()).isEqualTo(0);
-        assertThat(newProcessDocumentDefinitions.size()).isEqualTo(1);
+        // can't delete and select in the same transaction with JPA so we check the call instead
+        verify(processDocumentDefinitionRepository).deleteById(
+            CamundaProcessJsonSchemaDocumentDefinitionId.existingId(
+                new CamundaProcessDefinitionKey("embedded-subprocess-example"),
+                JsonSchemaDocumentDefinitionId.existingId(
+                    "some-test",
+                    1
+                )
+            )
+        );
     }
 
     @Test
@@ -250,7 +262,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
         runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
             .createProcessDocumentDefinition(request2));
 
-        //delete association for old version
+        //delete association for latest version
         var deleteRequest = new ProcessDocumentDefinitionRequest(
             "embedded-subprocess-example",
             oldDocumentDefinition.id().name(),
@@ -258,17 +270,21 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             true
         );
 
-        camundaProcessJsonSchemaDocumentAssociationService.deleteProcessDocumentDefinition(deleteRequest);
+        runWithoutAuthorization(() -> {
+            camundaProcessJsonSchemaDocumentAssociationService.deleteProcessDocumentDefinition(deleteRequest);
+            return null;
+        });
 
-        //verify that only association for new version exists
-        List<CamundaProcessJsonSchemaDocumentDefinition> oldProcessDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
-            .findProcessDocumentDefinitions(oldDocumentDefinition.id().name(), oldDocumentDefinition.id().version());
-
-        List<CamundaProcessJsonSchemaDocumentDefinition> newProcessDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
-            .findProcessDocumentDefinitions(newDocumentDefinition.id().name(), newDocumentDefinition.id().version());
-
-        assertThat(oldProcessDocumentDefinitions.size()).isEqualTo(1);
-        assertThat(newProcessDocumentDefinitions.size()).isEqualTo(0);
+        // can't delete and select in the same transaction with JPA so we check the call instead
+        verify(processDocumentDefinitionRepository).deleteById(
+            CamundaProcessJsonSchemaDocumentDefinitionId.existingId(
+                new CamundaProcessDefinitionKey("embedded-subprocess-example"),
+                JsonSchemaDocumentDefinitionId.existingId(
+                    "some-test",
+                    2
+                )
+            )
+        );
     }
 
     @Test
