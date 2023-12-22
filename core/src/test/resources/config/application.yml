@@ -71,3 +71,10 @@ aws:
         enabled: true
         region: eu-central-1
         projectName: Valtimo-Implementation
+
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: 'health'

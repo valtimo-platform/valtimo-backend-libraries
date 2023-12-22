@@ -17,12 +17,12 @@
 package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
+import com.ritense.valtimo.security.ActuatorSecurityFilterChainFactory;
 import com.ritense.valtimo.security.CoreSecurityFactory;
 import com.ritense.valtimo.security.Http401UnauthorizedEntryPoint;
 import com.ritense.valtimo.security.SpringSecurityAuditorAware;
 import com.ritense.valtimo.security.ValtimoCoreSecurityFactory;
 import com.ritense.valtimo.security.config.AccountHttpSecurityConfigurer;
-import com.ritense.valtimo.security.config.ActuatorHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ApiLoginHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CamundaCockpitHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CamundaHttpSecurityConfigurer;
@@ -46,12 +46,14 @@ import com.ritense.valtimo.security.config.ValtimoVersionHttpSecurityConfigurer;
 import com.ritense.valtimo.security.interceptor.SecurityWhitelistProperties;
 import com.ritense.valtimo.security.interceptor.WhitelistIpRequest;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
+import java.util.List;
 import org.camunda.bpm.engine.IdentityService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -61,7 +63,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
-import java.util.List;
 
 @AutoConfiguration
 @EnableWebSecurity
@@ -222,17 +223,6 @@ public class HttpSecurityAutoConfiguration {
         return new ErrorHttpSecurityConfigurer(http403ForbiddenEntryPoint);
     }
 
-    @Order(430)
-    @Bean
-    @ConditionalOnMissingBean(ActuatorHttpSecurityConfigurer.class)
-    public ActuatorHttpSecurityConfigurer actuatorHttpSecurityConfigurer(
-        @Value("${spring-actuator.username}") String username,
-        @Value("${spring-actuator.password}") String password,
-        PasswordEncoder passwordEncoder
-    ) {
-        return new ActuatorHttpSecurityConfigurer(username, password, passwordEncoder);
-    }
-
     @Order(440)
     @Bean
     @ConditionalOnMissingBean(JwtHttpSecurityConfigurer.class)
@@ -287,6 +277,19 @@ public class HttpSecurityAutoConfiguration {
         HttpSecurity httpSecurity
     ) {
         return coreSecurityFactory.createSecurityFilterChain(httpSecurity);
+    }
+
+    @Order(50)
+    @Bean
+    public SecurityFilterChain actuatorSecurityFilterChain(
+        HttpSecurity httpSecurity,
+        WebEndpointProperties webEndpointProperties,
+        PasswordEncoder passwordEncoder,
+        @Value("${spring-actuator.username}") String username,
+        @Value("${spring-actuator.password}") String password
+    ) {
+        return new ActuatorSecurityFilterChainFactory().createFilterChain(
+            httpSecurity, webEndpointProperties, passwordEncoder, username, password);
     }
 
     @Order(100)
