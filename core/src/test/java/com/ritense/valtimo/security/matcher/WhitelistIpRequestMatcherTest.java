@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.security.interceptor;
+package com.ritense.valtimo.security.matcher;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,16 +24,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class WhitelistIpRequestTest {
+class WhitelistIpRequestMatcherTest {
 
     private static final String IPV4_LOOPBACK_IP = "127.0.0.1";
     private static final String LOCALHOST = "localhost";
-    private WhitelistIpRequest localIpRequest;
+    private WhitelistIpRequestMatcher localHostRequestMatcher;
     private HttpServletRequest httpServletRequest;
 
     @BeforeEach
     void setUp() {
-        localIpRequest = new WhitelistIpRequest(Set.of(LOCALHOST));
+        localHostRequestMatcher = new WhitelistIpRequestMatcher(Set.of(LOCALHOST));
         httpServletRequest = mock(HttpServletRequest.class);
     }
 
@@ -41,7 +41,7 @@ class WhitelistIpRequestTest {
     void shouldReturnTrueWhenIpFromLocalHost() {
         when(httpServletRequest.getRemoteAddr()).thenReturn(IPV4_LOOPBACK_IP);
 
-        final boolean result = localIpRequest.check(httpServletRequest);
+        final boolean result = localHostRequestMatcher.matches(httpServletRequest);
         assertThat(result).isTrue();
     }
 
@@ -49,7 +49,7 @@ class WhitelistIpRequestTest {
     void shouldReturnFalseWhenEmpty() {
         when(httpServletRequest.getRemoteAddr()).thenReturn("");
 
-        final boolean result = localIpRequest.check(httpServletRequest);
+        final boolean result = localHostRequestMatcher.matches(httpServletRequest);
         assertThat(result).isFalse();
     }
 
@@ -57,8 +57,27 @@ class WhitelistIpRequestTest {
     void shouldReturnFalseWhenNonLocalHostIp() {
         when(httpServletRequest.getRemoteAddr()).thenReturn("10.0.0.1");
 
-        final boolean result = localIpRequest.check(httpServletRequest);
+        final boolean result = localHostRequestMatcher.matches(httpServletRequest);
         assertThat(result).isFalse();
     }
+
+    @Test
+    void shouldReturnTrueWhenWhitelistedWithNetmask() {
+        when(httpServletRequest.getRemoteAddr()).thenReturn("10.0.0.1");
+
+        var privateNetworkMatcher = new WhitelistIpRequestMatcher(Set.of("10.0.0.0/8"));
+        final boolean result = privateNetworkMatcher.matches(httpServletRequest);
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueWhenWhitelistedGlobalMask() {
+        when(httpServletRequest.getRemoteAddr()).thenReturn("8.8.8.8");
+
+        var privateNetworkMatcher = new WhitelistIpRequestMatcher(Set.of("0.0.0.0/0"));
+        final boolean result = privateNetworkMatcher.matches(httpServletRequest);
+        assertThat(result).isTrue();
+    }
+
 
 }

@@ -17,7 +17,6 @@
 package com.ritense.valtimo.web.rest
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -26,18 +25,10 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.web.context.WebApplicationContext
-import java.util.Base64
+import java.util.*
 
 @TestPropertySource(properties = ["management.port=0"])
-class ActuatorSecurityIntTest(
-    private val context: WebApplicationContext
-) : SecuritySpecificEndpointIntegrationTest() {
-
-    @BeforeEach
-    fun setUp() {
-        //context.getBean(HealthEndpoint::class.java).enabled = true
-    }
+class ActuatorSecurityIntTest : SecuritySpecificEndpointIntegrationTest() {
 
     @Test
     fun `actuator user should have access to actuator endpoints`() {
@@ -69,7 +60,6 @@ class ActuatorSecurityIntTest(
     @WithMockUser(authorities = [AuthoritiesConstants.ADMIN])
     fun `admin user should not have access to actuator endpoints`() {
         val request = MockMvcRequestBuilders.request(HttpMethod.GET, "/actuator/health")
-        val credentials = Base64.getEncoder().encodeToString("test:test".toByteArray())
         request.accept(MediaType.APPLICATION_JSON)
         request.with { r: MockHttpServletRequest ->
             r.remoteAddr = "8.8.8.8"

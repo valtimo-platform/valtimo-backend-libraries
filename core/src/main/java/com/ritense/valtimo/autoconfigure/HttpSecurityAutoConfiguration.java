@@ -25,7 +25,6 @@ import com.ritense.valtimo.security.ValtimoCoreSecurityFactory;
 import com.ritense.valtimo.security.config.AccountHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ApiLoginHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CamundaCockpitHttpSecurityConfigurer;
-import com.ritense.valtimo.security.config.CamundaHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CamundaRestHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ChoiceFieldHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.CsrfHttpSecurityConfigurer;
@@ -43,10 +42,9 @@ import com.ritense.valtimo.security.config.StaticResourcesHttpSecurityConfigurer
 import com.ritense.valtimo.security.config.TaskHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.UserHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.ValtimoVersionHttpSecurityConfigurer;
-import com.ritense.valtimo.security.interceptor.SecurityWhitelistProperties;
-import com.ritense.valtimo.security.interceptor.WhitelistIpRequest;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
-import java.util.List;
+import com.ritense.valtimo.security.matcher.SecurityWhitelistProperties;
+import com.ritense.valtimo.security.matcher.WhitelistIpRequestMatcher;
 import org.camunda.bpm.engine.IdentityService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -63,6 +61,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+
+import java.util.List;
 
 @AutoConfiguration
 @EnableWebSecurity
@@ -88,10 +88,10 @@ public class HttpSecurityAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(WhitelistIpRequest.class)
-    public WhitelistIpRequest whitelistIpRequest(
+    @ConditionalOnMissingBean(WhitelistIpRequestMatcher.class)
+    public WhitelistIpRequestMatcher whitelistIpRequest(
         SecurityWhitelistProperties properties) {
-        return new WhitelistIpRequest(properties.getHosts());
+        return new WhitelistIpRequestMatcher(properties.getHosts());
     }
 
     @Bean
@@ -178,13 +178,6 @@ public class HttpSecurityAutoConfiguration {
         return new AccountHttpSecurityConfigurer();
     }
 
-    @Order(391)
-    @Bean
-    @ConditionalOnMissingBean(CamundaHttpSecurityConfigurer.class)
-    public CamundaHttpSecurityConfigurer camundaHttpSecurityConfigurer() {
-        return new CamundaHttpSecurityConfigurer();
-    }
-
 
     //DEFAULTS SECURITY CHAIN
 
@@ -250,8 +243,11 @@ public class HttpSecurityAutoConfiguration {
     @Order(470)
     @Bean
     @ConditionalOnMissingBean(CamundaCockpitHttpSecurityConfigurer.class)
-    public CamundaCockpitHttpSecurityConfigurer camundaCockpitHttpSecurityConfigurer() {
-        return new CamundaCockpitHttpSecurityConfigurer();
+    public CamundaCockpitHttpSecurityConfigurer camundaCockpitHttpSecurityConfigurer(
+        SecurityWhitelistProperties whitelistProperties
+    ) {
+        WhitelistIpRequestMatcher whitelistIpRequestMatcher = new WhitelistIpRequestMatcher(whitelistProperties.getHosts());
+        return new CamundaCockpitHttpSecurityConfigurer(whitelistIpRequestMatcher);
     }
 
     @Order(500)

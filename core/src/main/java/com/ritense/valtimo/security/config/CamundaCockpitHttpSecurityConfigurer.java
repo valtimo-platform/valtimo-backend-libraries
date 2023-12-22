@@ -18,11 +18,23 @@ package com.ritense.valtimo.security.config;
 
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
+import com.ritense.valtimo.security.matcher.WhitelistIpRequestMatcher;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.util.matcher.AndRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class CamundaCockpitHttpSecurityConfigurer implements HttpSecurityConfigurer {
+
+    private final WhitelistIpRequestMatcher whitelistIpRequestMatcher;
+
+    public CamundaCockpitHttpSecurityConfigurer(
+        WhitelistIpRequestMatcher whitelistIpRequestMatcher
+    ) {
+        this.whitelistIpRequestMatcher = whitelistIpRequestMatcher;
+    }
 
     @Override
     public void configure(HttpSecurity http) {
@@ -31,19 +43,24 @@ public class CamundaCockpitHttpSecurityConfigurer implements HttpSecurityConfigu
             //we just set it open and let Camunda do the rest.
             http.authorizeHttpRequests((requests) ->
                 requests.requestMatchers(
-                    antMatcher("/app/**")
-                ).denyAll() //TODO: 92240 .access("@whitelistIpRequest.check(request)")
-                .requestMatchers(
-                    antMatcher("/api/admin/**"),
-                    antMatcher("/api/cockpit/**"),
-                    antMatcher("/api/tasklist/**"),
-                    antMatcher("/api/engine/**"),
-                    antMatcher("/lib/**")
-                ).denyAll() //TODO: 92240 .access("@whitelistIpRequest.check(request)")
+                    whiteListed(
+                        antMatcher("/camunda/api/admin/**"),
+                        antMatcher("/camunda/api/cockpit/**"),
+                        antMatcher("/camunda/api/engine/**"),
+                        antMatcher("/camunda/app/**"),
+                        antMatcher("/camunda/assets/**"),
+                        antMatcher("/camunda/favicon.ico"),
+                        antMatcher("/camunda/lib/**")
+                    )
+                ).permitAll()
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }
+    }
+
+    private RequestMatcher whiteListed(RequestMatcher... requestMatchers) {
+        return new AndRequestMatcher(new OrRequestMatcher(requestMatchers), whitelistIpRequestMatcher);
     }
 
 }
