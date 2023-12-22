@@ -36,20 +36,20 @@ abstract class ProcessLink(
 
     @Id
     @Column(name = "id")
-    val id: UUID,
+    open val id: UUID,
 
     @Column(name = "process_definition_id")
-    val processDefinitionId: String,
+    open val processDefinitionId: String,
 
     @Column(name = "activity_id")
-    val activityId: String,
+    open val activityId: String,
 
     @Column(name = "activity_type")
     @Enumerated(EnumType.STRING)
-    val activityType: ActivityTypeWithEventName,
+    open val activityType: ActivityTypeWithEventName,
 
     @Column(name = "process_link_type", insertable = false, updatable = false)
-    val processLinkType: String,
+    open val processLinkType: String,
 ) {
     abstract fun copy(
         id: UUID = this.id,
