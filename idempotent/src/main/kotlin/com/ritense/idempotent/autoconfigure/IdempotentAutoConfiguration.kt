@@ -20,6 +20,7 @@ import com.ritense.idempotent.repository.IdempotentMessageRepository
 import com.ritense.idempotent.service.IdempotentMessageArchivingService
 import com.ritense.idempotent.service.IdempotentMessageService
 import javax.sql.DataSource
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -63,8 +64,11 @@ class IdempotentAutoConfiguration {
 
     @Bean
     fun idempotentMessageArchivingService(
-        idempotentMessageRepository: IdempotentMessageRepository
+        idempotentMessageRepository: IdempotentMessageRepository,
+        @Value("idempotent.archive-message-after-months")
+        archiveAfterMonths: Long
     ) = IdempotentMessageArchivingService(
-        idempotentMessageRepository
+        idempotentMessageRepository,
+        archiveAfterMonths
     )
 }
