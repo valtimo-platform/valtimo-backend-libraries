@@ -22,14 +22,15 @@ import com.ritense.outbox.domain.CloudEventData
 import io.cloudevents.core.builder.CloudEventBuilder
 import io.cloudevents.core.provider.EventFormatProvider
 import io.cloudevents.jackson.JsonFormat
+import mu.KotlinLogging
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.net.URI
 import java.time.ZonedDateTime
 import java.util.UUID
 import java.util.function.Supplier
 import kotlin.text.Charsets.UTF_8
-import mu.KotlinLogging
-import org.springframework.transaction.annotation.Propagation
-import org.springframework.transaction.annotation.Transactional
 
 
 open class ValtimoOutboxService(
@@ -77,6 +78,10 @@ open class ValtimoOutboxService(
      */
     @Transactional(propagation = Propagation.MANDATORY)
     open fun send(message: String) {
+        if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
+            throw IllegalStateException("Failed to send outbox message. Reason: current transaction is read-only")
+        }
+
         val outboxMessage = OutboxMessage(
             message = message
         )
