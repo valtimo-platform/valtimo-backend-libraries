@@ -303,7 +303,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         assertThat(body, hasJsonPath("$.record.data.formulier.value", equalTo("some-form")))
         assertThat(body, hasJsonPath("$.record.data.verwerker_taak_id", equalTo(task.id)))
         assertThat(body, hasJsonPath("$.record.data.zaak", equalTo(ZAAK_URL.toString())))
-        assertThat(body, hasJsonPath("$.record.data.verloopdatum", equalTo(LocalDateTime.parse("2040-02-03T12:34:56"))))
+        assertThat(body, hasJsonPath("$.record.data.verloopdatum", equalTo("2040-02-03T12:34:56.000Z")))
         assertThat(body, hasJsonPath("$.record.startAt", equalTo(LocalDate.now().toString())))
         assertThat(body, jsonPathMissingOrNull("$.record.endAt"))
         assertThat(body, jsonPathMissingOrNull("$.record.registrationAt"))
