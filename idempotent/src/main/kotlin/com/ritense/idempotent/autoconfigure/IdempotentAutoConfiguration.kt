@@ -65,7 +65,7 @@ class IdempotentAutoConfiguration {
     @Bean
     fun idempotentMessageArchivingService(
         idempotentMessageRepository: IdempotentMessageRepository,
-        @Value("idempotent.archive-message-after-months")
+        @Value("\${idempotent.archive-message-after-months}")
         archiveAfterMonths: Long
     ) = IdempotentMessageArchivingService(
         idempotentMessageRepository,

@@ -16,6 +16,8 @@
 
 package com.ritense.idempotent
 
+import com.ritense.idempotent.repository.IdempotentMessageRepository
+import com.ritense.idempotent.service.IdempotentMessageArchivingService
 import com.ritense.idempotent.service.IdempotentMessageService
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
@@ -30,4 +32,10 @@ abstract class BaseIntegrationTest {
 
     @Autowired
     lateinit var idempotentMessageService: IdempotentMessageService
+
+    @Autowired
+    lateinit var idempotentMessageArchivingService: IdempotentMessageArchivingService
+
+    @Autowired
+    lateinit var idempotentMessageRepository: IdempotentMessageRepository
 }
