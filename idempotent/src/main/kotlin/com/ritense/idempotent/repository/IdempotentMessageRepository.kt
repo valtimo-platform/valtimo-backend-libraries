@@ -14,6 +14,6 @@ interface IdempotentMessageRepository : JpaRepository<IdempotentMessage, UUID> {
 
     @Transactional
     @Modifying
-    @Query("DELETE FROM IdempotentMessage e WHERE e.processedOn < :cutoffDate")
+    @Query("DELETE FROM IdempotentMessage im WHERE im.processedOn < :cutoffDate")
     fun deleteAllOlderThan(@Param("cutoffDate") cutoffDate: LocalDateTime)
 }
