@@ -30,6 +30,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
@@ -55,6 +56,11 @@ internal class LostUpdateIntTest : BaseIntegrationTest() {
         admin.roles = listOf(USER, ADMIN)
         whenever(userManagementService.currentUser).thenReturn(admin)
         whenever(userManagementService.findById(USERNAME)).thenReturn(admin)
+    }
+
+    @AfterEach
+    override fun afterEach() {
+        documentRepository.deleteAll()
     }
 
     @Test
