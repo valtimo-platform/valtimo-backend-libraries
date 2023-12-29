@@ -36,6 +36,7 @@ import static com.valtimo.keycloak.service.KeycloakUserManagementService.MAX_USE
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -57,10 +58,16 @@ class KeycloakUserManagementServiceTest {
         johnDoe = newUser("John", "Doe", List.of(USER, ADMIN));
         ashaMiller = newUser("Asha", "Miller", List.of(ADMIN));
 
-        when(keycloakService.realmRolesResource(any()).get(USER).getRoleUserMembers(0, MAX_USERS))
-            .thenReturn(Set.of(johnDoe, jamesVance));
-        when(keycloakService.realmRolesResource(any()).get(ADMIN).getRoleUserMembers(0, MAX_USERS))
-            .thenReturn(Set.of(johnDoe, ashaMiller));
+        when(keycloakService.realmRolesResource(any()).get(USER).getUserMembers(0, MAX_USERS))
+            .thenReturn(List.of(johnDoe, jamesVance));
+        when(keycloakService.realmRolesResource(any()).get(ADMIN).getUserMembers(0, MAX_USERS))
+            .thenReturn(List.of(johnDoe, ashaMiller));
+        when(keycloakService.clientRolesResource(any()).get(any()).getUserMembers(0, MAX_USERS))
+            .thenReturn(List.of());
+        when(keycloakService.realmRolesResource(any()).get(any()).getRoleGroupMembers())
+            .thenReturn(Set.of());
+        when(keycloakService.clientRolesResource(any()).get(any()).getRoleGroupMembers())
+            .thenReturn(Set.of());
     }
 
     @Test
@@ -117,12 +124,14 @@ class KeycloakUserManagementServiceTest {
         markUser.setFirstName("Mark");
         markUser.setLastName("Smit");
         var roleRepresentation = new RoleRepresentation(DEVELOPER, "developer", false);
-        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().realmLevel().listAll())
+        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().realmLevel().listEffective())
             .thenReturn(List.of());
-        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().clientLevel(any()).listAll())
+        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().clientLevel(any()).listEffective())
             .thenReturn(List.of(roleRepresentation));
-        when(keycloakService.clientRolesResource(any()).get(DEVELOPER).getRoleUserMembers(0, MAX_USERS))
-            .thenReturn(Set.of(markUser));
+        when(keycloakService.realmRolesResource(any()).get(DEVELOPER).getUserMembers(0, MAX_USERS))
+            .thenReturn(List.of());
+        when(keycloakService.clientRolesResource(any()).get(DEVELOPER).getUserMembers(0, MAX_USERS))
+            .thenReturn(List.of(markUser));
         var search = new SearchByUserGroupsCriteria();
         search.addToOrUserGroups(Set.of(DEVELOPER));
 
@@ -134,7 +143,7 @@ class KeycloakUserManagementServiceTest {
 
     @Test
     void findByRoleShouldReturnEmptyListWhenNotFoundExceptionIsThrown() {
-        when( keycloakService.realmRolesResource(any()).get("some-role").getRoleUserMembers())
+        when(keycloakService.realmRolesResource(any()).get("some-role").getUserMembers(0, MAX_USERS))
             .thenThrow(new NotFoundException());
 
         var users = userManagementService.findByRole("some-role");
@@ -151,9 +160,9 @@ class KeycloakUserManagementServiceTest {
         var roleRepresentations = roles.stream()
             .map(role -> new RoleRepresentation(role, role + " description", false))
             .collect(Collectors.toList());
-        when(keycloakService.usersResource(any()).get(user.getId()).roles().realmLevel().listAll())
+        when(keycloakService.usersResource(any()).get(user.getId()).roles().realmLevel().listEffective())
             .thenReturn(roleRepresentations);
-        when(keycloakService.usersResource(any()).get(user.getId()).roles().clientLevel(any()).listAll())
+        when(keycloakService.usersResource(any()).get(user.getId()).roles().clientLevel(any()).listEffective())
             .thenReturn(List.of());
         return user;
     }

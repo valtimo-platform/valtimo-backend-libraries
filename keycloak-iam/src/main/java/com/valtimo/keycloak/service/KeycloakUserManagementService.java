@@ -26,6 +26,7 @@ import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 import static java.util.Comparator.comparing;
@@ -192,42 +194,50 @@ public class KeycloakUserManagementService implements UserManagementService {
     }
 
     private List<UserRepresentation> findUserRepresentationByRole(String authority) {
-        Set<UserRepresentation> roleUserMembers = new HashSet<>();
         boolean rolesFound = false;
 
-        try {
-            Set<UserRepresentation> users;
-            try (Keycloak keycloak = keycloakService.keycloak()) {
-                users = keycloakService.realmRolesResource(keycloak).get(authority).getRoleUserMembers(0, MAX_USERS);
+        List<List<UserRepresentation>> usersList = new ArrayList<>();
+        try (Keycloak keycloak = keycloakService.keycloak()) {
+            Set<GroupRepresentation> roleGroups = new HashSet<>();
+            try {
+                usersList.add(keycloakService.realmRolesResource(keycloak).get(authority).getUserMembers(0, MAX_USERS));
+                rolesFound = true;
+                roleGroups.addAll(keycloakService.realmRolesResource(keycloak).get(authority).getRoleGroupMembers());
+            } catch (NotFoundException e) {
+                logger.debug("Failed to find users by realm. Error: {}", e.getMessage());
             }
+            if (!clientName.isBlank()) {
+                try {
+                    usersList.add(keycloakService.clientRolesResource(keycloak).get(authority).getUserMembers(0, MAX_USERS));
+                    rolesFound = true;
+                    roleGroups.addAll(keycloakService.clientRolesResource(keycloak).get(authority).getRoleGroupMembers());
+                } catch (NotFoundException e) {
+                    logger.debug("Failed to find users by client. Error: {}", e.getMessage());
+                }
+            }
+            try {
+                for (GroupRepresentation group : roleGroups) {
+                    usersList.add(keycloakService.realmResource(keycloak).groups().group(group.getId()).members());
+                    rolesFound = true;
+                }
+            } catch (NotFoundException e) {
+                logger.debug("Failed to find users by group. Error: {}", e.getMessage());
+            }
+        }
+
+        usersList.forEach(users -> {
             if (users.size() >= MAX_USERS) {
                 logger.warn(MAX_USERS_WARNING_MESSAGE);
             }
-            roleUserMembers.addAll(users);
-            rolesFound = true;
-        } catch (NotFoundException e) {
-            logger.debug("Could not find realm roles", e);
-        }
-
-        if (!clientName.isBlank()) {
-            try {
-                Set<UserRepresentation> users;
-                try (Keycloak keycloak = keycloakService.keycloak()) {
-                    users = keycloakService.clientRolesResource(keycloak).get(authority).getRoleUserMembers(0, MAX_USERS);
-                }
-                if (users.size() >= MAX_USERS) {
-                    logger.warn(MAX_USERS_WARNING_MESSAGE);
-                }
-                roleUserMembers.addAll(users);
-                rolesFound = true;
-            } catch (NotFoundException e) {
-                logger.debug("Could not find client roles", e);
-            }
-        }
+        });
 
         if (!rolesFound) {
             logger.error("Role {} was not found in keycloak realm roles or client roles", authority);
         }
+
+        Set<UserRepresentation> roleUserMembers = usersList.stream()
+            .flatMap(Collection::stream)
+            .collect(Collectors.toSet());
 
         return roleUserMembers.stream()
             .filter(UserRepresentation::isEnabled)
@@ -266,13 +276,13 @@ public class KeycloakUserManagementService implements UserManagementService {
             var realmRoles = keycloakService
                 .usersResource(keycloak)
                 .get(userRepresentation.getId())
-                .roles().realmLevel().listAll();
+                .roles().realmLevel().listEffective();
             var roles = new ArrayList<>(realmRoles);
             if (!clientName.isBlank()) {
                 var clientRoles = keycloakService
                     .usersResource(keycloak)
                     .get(userRepresentation.getId())
-                    .roles().clientLevel(keycloakService.getClientId(keycloak)).listAll();
+                    .roles().clientLevel(keycloakService.getClientId(keycloak)).listEffective();
                 roles.addAll(clientRoles);
             }
             return roles;
