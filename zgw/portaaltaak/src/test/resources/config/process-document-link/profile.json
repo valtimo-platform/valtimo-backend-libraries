@@ -3,5 +3,10 @@
         "processDefinitionKey": "portaaltaak-process",
         "canInitializeDocument": true,
         "startableByUser": true
+    },
+    {
+        "processDefinitionKey": "portaaltaak-due-date-process",
+        "canInitializeDocument": true,
+        "startableByUser": true
     }
 ]
