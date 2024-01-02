@@ -63,7 +63,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
             .webAppContextSetup(this.webApplicationContext)
             .build()
 
-        val pluginDefinition = pluginDefinitionRepository.getById("test-plugin")
+        val pluginDefinition = pluginDefinitionRepository.getReferenceById("test-plugin")
 
         pluginConfiguration = pluginConfigurationRepository.save(
             PluginConfiguration(
@@ -81,7 +81,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
             )
         )
 
-        val categoryPluginDefinition = pluginDefinitionRepository.getById("test-category-plugin")
+        val categoryPluginDefinition = pluginDefinitionRepository.getReferenceById("test-category-plugin")
         categoryPluginConfiguration = pluginConfigurationRepository.save(
             PluginConfiguration(
                 PluginConfigurationId.newId(),

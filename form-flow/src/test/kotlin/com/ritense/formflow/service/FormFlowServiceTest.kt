@@ -147,7 +147,7 @@ internal class FormFlowServiceTest : BaseTest() {
             formFlowDefinition = definition
         )
 
-        whenever(formFlowInstanceRepository.getById(formFlowInstance.id)).thenReturn(formFlowInstance)
+        whenever(formFlowInstanceRepository.getReferenceById(formFlowInstance.id)).thenReturn(formFlowInstance)
 
         return formFlowInstance
     }

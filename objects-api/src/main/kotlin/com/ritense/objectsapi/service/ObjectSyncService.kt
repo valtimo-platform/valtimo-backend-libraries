@@ -41,7 +41,7 @@ open class ObjectSyncService(
 ) {
 
     fun getObjectSyncConfig(id: UUID): ObjectSyncConfig? {
-        return objectSyncConfigRepository.getById(ObjectSyncConfigId.existingId(id))
+        return objectSyncConfigRepository.getReferenceById(ObjectSyncConfigId.existingId(id))
     }
 
     fun getObjectSyncConfig(documentDefinitionName: String, pageable: Pageable = Pageable.unpaged()): Page<ObjectSyncConfig> {

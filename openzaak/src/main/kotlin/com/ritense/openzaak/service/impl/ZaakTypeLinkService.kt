@@ -100,7 +100,7 @@ class ZaakTypeLinkService(
     }
 
     private fun findBy(id: ZaakTypeLinkId): ZaakTypeLink {
-        return zaakTypeLinkRepository.getById(id)
+        return zaakTypeLinkRepository.getReferenceById(id)
     }
 
     override fun assignServiceTaskHandler(

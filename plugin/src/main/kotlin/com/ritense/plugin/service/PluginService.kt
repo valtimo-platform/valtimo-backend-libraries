@@ -108,7 +108,7 @@ class PluginService(
         properties: ObjectNode,
         pluginDefinitionKey: String
     ): PluginConfiguration {
-        val pluginDefinition = pluginDefinitionRepository.getById(pluginDefinitionKey)
+        val pluginDefinition = pluginDefinitionRepository.getReferenceById(pluginDefinitionKey)
         validateProperties(properties, pluginDefinition)
 
         val pluginConfiguration = pluginConfigurationRepository.save(
@@ -128,7 +128,7 @@ class PluginService(
 
     fun deployPluginConfigurations(deploymentDto: PluginAutoDeploymentDto) {
         val plugin: PluginConfiguration
-        val pluginDefinition = pluginDefinitionRepository.getById(deploymentDto.pluginDefinitionKey)
+        val pluginDefinition = pluginDefinitionRepository.getReferenceById(deploymentDto.pluginDefinitionKey)
         if (deploymentDto.id != null && pluginConfigurationRepository.existsById(
                 PluginConfigurationId.existingId(deploymentDto.id)
             )
@@ -513,7 +513,7 @@ class PluginService(
     }
 
     fun createInstance(pluginConfigurationId: PluginConfigurationId): Any {
-        val configuration = pluginConfigurationRepository.getById(pluginConfigurationId)
+        val configuration = pluginConfigurationRepository.getReferenceById(pluginConfigurationId)
         return createInstance(configuration)
     }
 

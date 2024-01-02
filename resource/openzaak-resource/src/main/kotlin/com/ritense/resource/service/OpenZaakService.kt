@@ -101,7 +101,7 @@ class OpenZaakService(
     }
 
     override fun getResourceUrl(id: UUID): ObjectUrlDTO {
-        val resource = openZaakResourceRepository.getById(ResourceId.existingId(id))
+        val resource = openZaakResourceRepository.getReferenceById(ResourceId.existingId(id))
 
         return ObjectUrlDTO(
             getDownloadUrl(resource),
@@ -121,7 +121,7 @@ class OpenZaakService(
     }
 
     override fun getResourceContent(id: UUID): ObjectContentDTO {
-        val resource = openZaakResourceRepository.getById(ResourceId.existingId(id))
+        val resource = openZaakResourceRepository.getReferenceById(ResourceId.existingId(id))
         return ObjectContentDTO(
             getDownloadUrl(resource),
             ResourceDTO(
