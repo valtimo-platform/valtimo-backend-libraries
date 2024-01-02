@@ -17,9 +17,11 @@
 package com.ritense.besluitenapi.client
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonInclude
 import java.net.URI
 import java.time.LocalDate
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class CreateBesluitRequest(
     val zaak: URI,
     val besluittype: URI,

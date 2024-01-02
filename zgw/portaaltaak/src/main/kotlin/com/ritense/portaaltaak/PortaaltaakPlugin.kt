@@ -52,6 +52,7 @@ import org.camunda.bpm.engine.delegate.DelegateTask
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.UUID
 
 @Plugin(
@@ -114,6 +115,7 @@ class PortaaltaakPlugin(
             null
         }
         val verloopdatum = verloopDurationInDays?.let { LocalDateTime.now().plusDays(verloopDurationInDays) }
+            ?: delegateTask.dueDate?.let { LocalDateTime.ofInstant(delegateTask.dueDate.toInstant(), ZoneId.systemDefault()) }
 
         val portaalTaak = TaakObject(
             getTaakIdentification(delegateTask, receiver, identificationKey, identificationValue),
