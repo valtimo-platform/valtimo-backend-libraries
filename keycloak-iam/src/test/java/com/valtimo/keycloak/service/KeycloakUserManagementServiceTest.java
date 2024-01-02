@@ -36,7 +36,6 @@ import static com.valtimo.keycloak.service.KeycloakUserManagementService.MAX_USE
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -124,9 +123,9 @@ class KeycloakUserManagementServiceTest {
         markUser.setFirstName("Mark");
         markUser.setLastName("Smit");
         var roleRepresentation = new RoleRepresentation(DEVELOPER, "developer", false);
-        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().realmLevel().listEffective())
+        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().realmLevel().listEffective(true))
             .thenReturn(List.of());
-        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().clientLevel(any()).listEffective())
+        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().clientLevel(any()).listEffective(true))
             .thenReturn(List.of(roleRepresentation));
         when(keycloakService.realmRolesResource(any()).get(DEVELOPER).getUserMembers(0, MAX_USERS))
             .thenReturn(List.of());
@@ -160,9 +159,9 @@ class KeycloakUserManagementServiceTest {
         var roleRepresentations = roles.stream()
             .map(role -> new RoleRepresentation(role, role + " description", false))
             .collect(Collectors.toList());
-        when(keycloakService.usersResource(any()).get(user.getId()).roles().realmLevel().listEffective())
+        when(keycloakService.usersResource(any()).get(user.getId()).roles().realmLevel().listEffective(true))
             .thenReturn(roleRepresentations);
-        when(keycloakService.usersResource(any()).get(user.getId()).roles().clientLevel(any()).listEffective())
+        when(keycloakService.usersResource(any()).get(user.getId()).roles().clientLevel(any()).listEffective(true))
             .thenReturn(List.of());
         return user;
     }

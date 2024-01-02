@@ -217,7 +217,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             }
             try {
                 for (GroupRepresentation group : roleGroups) {
-                    usersList.add(keycloakService.realmResource(keycloak).groups().group(group.getId()).members());
+                    usersList.add(keycloakService.realmResource(keycloak).groups().group(group.getId()).members(0, MAX_USERS));
                     rolesFound = true;
                 }
             } catch (NotFoundException e) {
@@ -276,13 +276,13 @@ public class KeycloakUserManagementService implements UserManagementService {
             var realmRoles = keycloakService
                 .usersResource(keycloak)
                 .get(userRepresentation.getId())
-                .roles().realmLevel().listEffective();
+                .roles().realmLevel().listEffective(true);
             var roles = new ArrayList<>(realmRoles);
             if (!clientName.isBlank()) {
                 var clientRoles = keycloakService
                     .usersResource(keycloak)
                     .get(userRepresentation.getId())
-                    .roles().clientLevel(keycloakService.getClientId(keycloak)).listEffective();
+                    .roles().clientLevel(keycloakService.getClientId(keycloak)).listEffective(true);
                 roles.addAll(clientRoles);
             }
             return roles;
