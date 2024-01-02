@@ -36,6 +36,7 @@ public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfig
                 .antMatchers(POST, "/api/v1/process-document/definition").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/v1/process-document/definition").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/process-document/definition/document/{document-definition-name}").authenticated()
+                .antMatchers(GET, "/api/v1/process-document/definition/document/{document-definition-name}/version/{document-definition-version}").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/process-document/definition/process/{process-definition-key}").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/process-document/definition/processinstance/{process-instance-id}").authenticated()
                 .antMatchers(GET, "/api/v1/process-document/instance/document/{document-id}").authenticated()
