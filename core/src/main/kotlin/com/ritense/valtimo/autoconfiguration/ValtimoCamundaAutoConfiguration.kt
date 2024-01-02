@@ -135,7 +135,8 @@ class ValtimoCamundaAutoConfiguration {
     @ConditionalOnBean(AuthorizationService::class)
     fun camundaExecutionSpecificationFactory(
         repository: CamundaExecutionRepository,
-        queryDialectHelper: QueryDialectHelper): CamundaExecutionSpecificationFactory {
+        queryDialectHelper: QueryDialectHelper
+    ): CamundaExecutionSpecificationFactory {
         return CamundaExecutionSpecificationFactory(repository, queryDialectHelper)
     }
 
@@ -144,7 +145,8 @@ class ValtimoCamundaAutoConfiguration {
     @ConditionalOnBean(AuthorizationService::class)
     fun camundaProcessDefinitionSpecificationFactory(
         repository: CamundaProcessDefinitionRepository,
-        queryDialectHelper: QueryDialectHelper): CamundaProcessDefinitionSpecificationFactory {
+        queryDialectHelper: QueryDialectHelper
+    ): CamundaProcessDefinitionSpecificationFactory {
         return CamundaProcessDefinitionSpecificationFactory(repository, queryDialectHelper)
     }
 
