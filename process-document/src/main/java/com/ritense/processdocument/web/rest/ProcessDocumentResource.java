@@ -20,6 +20,7 @@ import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
+import com.ritense.processdocument.domain.ProcessDocumentInstance;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcess;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessLinkResponse;
@@ -34,7 +35,6 @@ import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskResult;
 import com.ritense.processdocument.service.result.ModifyDocumentAndStartProcessResult;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
-import com.ritense.processdocument.domain.impl.ProcessDocumentInstanceDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -128,7 +128,7 @@ public class ProcessDocumentResource {
     }
 
     @GetMapping("/v1/process-document/instance/document/{documentId}")
-    public ResponseEntity<List<ProcessDocumentInstanceDto>> findProcessDocumentInstances(
+    public ResponseEntity<List<? extends ProcessDocumentInstance>> findProcessDocumentInstances(
         @PathVariable UUID documentId
     ) {
         return ResponseEntity.ok(

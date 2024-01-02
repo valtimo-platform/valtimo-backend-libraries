@@ -16,11 +16,12 @@
 
 package com.ritense.processdocument.domain.impl;
 
+import com.ritense.processdocument.domain.ProcessDocumentInstance;
 import com.ritense.processdocument.domain.ProcessDocumentInstanceId;
 
 import java.time.LocalDateTime;
 
-public class ProcessDocumentInstanceDto {
+public class ProcessDocumentInstanceDto implements ProcessDocumentInstance {
 
     private ProcessDocumentInstanceId id;
     private String processName;
@@ -58,12 +59,14 @@ public class ProcessDocumentInstanceDto {
         this.startedOn = startedOn;
     }
 
-    public ProcessDocumentInstanceId getId() {
+    @Override
+    public ProcessDocumentInstanceId processDocumentInstanceId() {
         return id;
     }
 
-    public String getProcessName() {
-        return this.processName;
+    @Override
+    public String processName() {
+        return processName;
     }
 
     public boolean isActive() {
