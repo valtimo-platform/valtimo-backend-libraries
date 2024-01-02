@@ -81,6 +81,7 @@ import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.UUID
 import java.util.function.Supplier
+import kotlin.test.assertNull
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ZakenApiClientTest {
@@ -160,6 +161,36 @@ internal class ZakenApiClientTest {
         assertEquals("string", result.beschrijving)
         assertEquals("Hoort bij, omgekeerd: kent", result.aardRelatieWeergave)
         assertEquals(LocalDateTime.of(2019, 8, 24, 14, 15, 22), result.registratiedatum)
+    }
+
+    @Test
+    fun `should not include null fields when creating zaakstatus`() {
+        val webclientBuilder = WebClient.builder()
+        val client = ZakenApiClient(webclientBuilder, outboxService, objectMapper)
+
+        mockApi.enqueue(mockResponse("").setResponseCode(400))
+
+        try {
+            client.createZaakStatus(
+                TestAuthentication(),
+                URI(mockApi.url("/").toString()),
+                CreateZaakStatusRequest(
+                    zaak = URI("https://example.com"),
+                    datumStatusGezet = LocalDateTime.parse("2023-03-03T03:03:00"),
+                    statustype = URI("https://example.com"),
+                    statustoelichting = null
+                )
+            )
+        } catch (_: WebClientResponseException) {
+        }
+
+        val recordedRequest = mockApi.takeRequest()
+        val requestString = recordedRequest.body.readUtf8()
+        val parsedOutput: Map<String, Any> = objectMapper.readValue(requestString)
+
+        assertEquals("https://example.com", parsedOutput["zaak"])
+        assertEquals("https://example.com", parsedOutput["statustype"])
+        assertNull(parsedOutput["statustoelichting"])
     }
 
     @Test

@@ -16,9 +16,11 @@
 
 package com.ritense.zakenapi.domain
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import java.net.URI
 import java.time.LocalDateTime
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CreateZaakStatusRequest(
     val zaak: URI,
     val statustype: URI,
