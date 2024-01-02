@@ -44,6 +44,8 @@ public interface ProcessDocumentAssociationService {
 
     List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName);
 
+    List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName, Long documentDefinitionVersion);
+
     List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitionsByProcessDefinitionKey(String processDefinitionKey);
 
     Optional<? extends ProcessDocumentDefinition> findByDocumentDefinitionName(String documentDefinitionName);
@@ -71,5 +73,4 @@ public interface ProcessDocumentAssociationService {
         UUID documentId,
         String processName
     );
-
 }
