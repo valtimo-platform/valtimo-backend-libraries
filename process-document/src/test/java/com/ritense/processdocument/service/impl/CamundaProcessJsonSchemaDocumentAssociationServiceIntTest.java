@@ -18,6 +18,7 @@ package com.ritense.processdocument.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;

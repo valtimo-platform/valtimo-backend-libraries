@@ -107,6 +107,14 @@ public class ProcessDocumentResource {
         return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName, documentDefinitionVersion));
     }
 
+    @GetMapping("/management/v1/process-document/definition/document/{document-definition-name}")
+    public ResponseEntity<List<? extends ProcessDocumentDefinition>> findManagementProcessDocumentDefinitions(
+        @PathVariable(name = "document-definition-name") String documentDefinitionName
+    ) {
+        return ResponseEntity.ok(AuthorizationContext.runWithoutAuthorization(() ->
+            processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName)));
+    }
+
     @GetMapping("/v1/process-document/definition/process/{process-definition-key}")
     public ResponseEntity<List<? extends ProcessDocumentDefinition>> findProcessDocumentDefinitionsByProcessDefinitionKey(
         @PathVariable(name = "process-definition-key") String processDefinitionKey
@@ -126,6 +134,7 @@ public class ProcessDocumentResource {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.badRequest().build());
     }
+
 
     @GetMapping("/v1/process-document/instance/document/{documentId}")
     public ResponseEntity<List<? extends ProcessDocumentInstance>> findProcessDocumentInstances(
