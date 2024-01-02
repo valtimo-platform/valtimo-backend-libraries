@@ -24,7 +24,7 @@ class ZaakInstanceLinkNotFoundException(message: String?) : AbstractThrowablePro
     (
     null,
     message,
-    Status.NOT_FOUND
+    Status.INTERNAL_SERVER_ERROR
 ) {
     override fun getCause(): Exceptional? {
         return null
