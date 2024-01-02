@@ -47,9 +47,11 @@ import com.ritense.processdocument.service.impl.DocumentDefinitionProcessLinkSer
 import com.ritense.processdocument.web.rest.ProcessDocumentResource;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.annotation.ProcessBean;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valueresolver.ValueResolverFactory;
+import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -93,8 +95,10 @@ public class ProcessDocumentAutoConfiguration {
         DocumentDefinitionService documentDefinitionService,
         CamundaRepositoryService repositoryService,
         RuntimeService runtimeService,
+        HistoryService historyService,
         AuthorizationService authorizationService,
-        DocumentService documentService
+        DocumentService documentService,
+        UserManagementService userManagementService
     ) {
         return new CamundaProcessJsonSchemaDocumentAssociationService(
             processDocumentDefinitionRepository,
@@ -103,8 +107,10 @@ public class ProcessDocumentAutoConfiguration {
             documentDefinitionService,
             repositoryService,
             runtimeService,
+            historyService,
             authorizationService,
-            documentService
+            documentService,
+            userManagementService
         );
     }
 
