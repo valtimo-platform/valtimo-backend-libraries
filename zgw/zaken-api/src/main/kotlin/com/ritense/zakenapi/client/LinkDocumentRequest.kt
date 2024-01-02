@@ -16,6 +16,9 @@
 
 package com.ritense.zakenapi.client
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class LinkDocumentRequest(
     val informatieobject: String,
     val zaak: String,

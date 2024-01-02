@@ -99,6 +99,14 @@ public class ProcessDocumentResource {
         return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName));
     }
 
+    @GetMapping("/v1/process-document/definition/document/{document-definition-name}/version/{document-definition-version}")
+    public ResponseEntity<List<? extends ProcessDocumentDefinition>> findProcessDocumentDefinitions(
+        @PathVariable(name = "document-definition-name") String documentDefinitionName,
+        @PathVariable(name = "document-definition-version") Long documentDefinitionVersion
+    ) {
+        return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName, documentDefinitionVersion));
+    }
+
     @GetMapping("/v1/process-document/definition/process/{process-definition-key}")
     public ResponseEntity<List<? extends ProcessDocumentDefinition>> findProcessDocumentDefinitionsByProcessDefinitionKey(
         @PathVariable(name = "process-definition-key") String processDefinitionKey
