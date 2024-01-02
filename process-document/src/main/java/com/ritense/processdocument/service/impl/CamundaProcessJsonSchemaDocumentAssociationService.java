@@ -41,6 +41,7 @@ import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentD
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstance;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
+import com.ritense.processdocument.domain.impl.ProcessDocumentInstanceDto;
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import com.ritense.processdocument.exception.DuplicateProcessDocumentDefinitionException;
 import com.ritense.processdocument.exception.ProcessDocumentDefinitionNotFoundException;
@@ -53,12 +54,18 @@ import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionRepository;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +75,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
@@ -80,8 +89,10 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     private final DocumentDefinitionService documentDefinitionService;
     private final CamundaRepositoryService repositoryService;
     private final RuntimeService runtimeService;
+    private final HistoryService historyService;
     private final AuthorizationService authorizationService;
     private final DocumentService documentService;
+    private final UserManagementService userManagementService;
 
     public CamundaProcessJsonSchemaDocumentAssociationService(
         ProcessDocumentDefinitionRepository processDocumentDefinitionRepository,
@@ -90,17 +101,21 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         DocumentDefinitionService documentDefinitionService,
         CamundaRepositoryService repositoryService,
         RuntimeService runtimeService,
+        HistoryService historyService,
         AuthorizationService authorizationService,
-        DocumentService documentService
+        DocumentService documentService,
+        UserManagementService userManagementService
     ) {
         this.processDocumentDefinitionRepository = processDocumentDefinitionRepository;
         this.processDocumentInstanceRepository = processDocumentInstanceRepository;
         this.documentDefinitionRepository = documentDefinitionRepository;
         this.documentDefinitionService = documentDefinitionService;
         this.repositoryService = repositoryService;
+        this.historyService = historyService;
         this.runtimeService = runtimeService;
         this.authorizationService = authorizationService;
         this.documentService = documentService;
+        this.userManagementService = userManagementService;
     }
 
     @Override
@@ -142,7 +157,6 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName) {
-        // TODO: (VIEW JsonSchemaDocument) / (ADMIN role, so separate endpoint)
 
         List<CamundaProcessJsonSchemaDocumentDefinition> results = processDocumentDefinitionRepository
             .findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(documentDefinitionName);
@@ -215,6 +229,47 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
             }
         }
         return processes;
+    }
+
+    @Override
+    public List<ProcessDocumentInstanceDto> findProcessDocumentInstanceDtos(Document.Id documentId) {
+        var document = documentService.findBy(documentId).orElseThrow();
+
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                JsonSchemaDocumentActionProvider.VIEW,
+                (JsonSchemaDocument) document
+            )
+        );
+
+        return processDocumentInstanceRepository.findAllByProcessDocumentInstanceIdDocumentId(documentId).stream()
+            .map(process -> {
+                if (process.getId() != null) {
+                    var camundaProcess = historyService.createHistoricProcessInstanceQuery()
+                        .processInstanceId(process.getId().processInstanceId().toString())
+                        .singleResult();
+                    var camundaProcessDefinition = runWithoutAuthorization(() -> repositoryService.findLatestProcessDefinition(camundaProcess.getProcessDefinitionKey()));
+                    var startDateTime = LocalDateTime.ofInstant(camundaProcess.getStartTime().toInstant(), ZoneId.systemDefault());
+                    var startedByUser = userManagementService.findByEmail(camundaProcess.getStartUserId()).orElseThrow();
+                    return new ProcessDocumentInstanceDto(
+                        process.getId(),
+                        process.processName(),
+                        process.isActive(),
+                        camundaProcess.getProcessDefinitionVersion(),
+                        camundaProcessDefinition.getVersion(),
+                        startedByUser.getFullName(),
+                        startDateTime
+                    );
+                }
+
+                return new ProcessDocumentInstanceDto(
+                    process.getId(),
+                    process.processName(),
+                    process.isActive()
+                );
+            })
+            .toList();
     }
 
     @Override
