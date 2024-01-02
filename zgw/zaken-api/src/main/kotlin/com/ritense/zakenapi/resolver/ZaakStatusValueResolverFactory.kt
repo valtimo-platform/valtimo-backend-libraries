@@ -59,7 +59,8 @@ class ZaakStatusValueResolverFactory(
         return pluginService.createInstance(
             ZakenApiPlugin::class.java,
             ZakenApiPlugin.findConfigurationByUrl(url)
-        ) ?: throw IllegalStateException("Missing plugin of type '${ZakenApiPlugin.PLUGIN_KEY}' for url '$url'")
+        )
+            ?: throw IllegalStateException("Missing plugin configuration of type '${ZakenApiPlugin.PLUGIN_KEY}' for url '$url'")
     }
 
     private fun getCatalogiApiPlugin(statusTypeUrl: URI): CatalogiApiPlugin {
@@ -67,6 +68,6 @@ class ZaakStatusValueResolverFactory(
             CatalogiApiPlugin::class.java,
             CatalogiApiPlugin.findConfigurationByUrl(statusTypeUrl)
         )
-            ?: throw IllegalStateException("Missing plugin of type '${CatalogiApiPlugin.PLUGIN_KEY}' for statusType '$statusTypeUrl'")
+            ?: throw IllegalStateException("Missing plugin configuration of type '${CatalogiApiPlugin.PLUGIN_KEY}' for statusType '$statusTypeUrl'")
     }
 }
