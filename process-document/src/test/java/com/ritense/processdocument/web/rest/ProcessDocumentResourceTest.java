@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
+import com.ritense.valtimo.contract.json.Mapper;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.service.result.CreateDocumentResult;
@@ -29,9 +30,9 @@ import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinitionId;
-import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstance;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentInstanceId;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcess;
+import com.ritense.processdocument.domain.impl.ProcessDocumentInstanceDto;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessLinkResponse;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
 import com.ritense.processdocument.domain.impl.request.ModifyDocumentAndCompleteTaskRequest;
@@ -53,12 +54,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -95,7 +98,7 @@ class ProcessDocumentResourceTest extends BaseTest {
     private DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService;
     private MockMvc mockMvc;
     private CamundaProcessJsonSchemaDocumentDefinition processDocumentDefinition;
-    private CamundaProcessJsonSchemaDocumentInstance processDocumentInstance;
+    private ProcessDocumentInstanceDto processDocumentInstance;
     private Page<CamundaProcessJsonSchemaDocumentDefinition> processDocumentInstancesPage;
     private ObjectMapper objectMapper;
     private JsonSchemaDocumentDefinitionId documentDefinitionId;
@@ -115,6 +118,7 @@ class ProcessDocumentResourceTest extends BaseTest {
 
         mockMvc = MockMvcBuilders.standaloneSetup(processDocumentResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .setMessageConverters(new MappingJackson2HttpMessageConverter(Mapper.INSTANCE.get()))
             .build();
 
         documentDefinitionId = JsonSchemaDocumentDefinitionId.newId(DOCUMENT_DEFINITION_NAME);
@@ -129,12 +133,17 @@ class ProcessDocumentResourceTest extends BaseTest {
             false
         );
 
-        processDocumentInstance = new CamundaProcessJsonSchemaDocumentInstance(
+        processDocumentInstance = new ProcessDocumentInstanceDto(
             CamundaProcessJsonSchemaDocumentInstanceId.newId(
                 new CamundaProcessInstanceId(PROCESS_INSTANCE_ID),
                 JsonSchemaDocumentId.existingId(UUID.randomUUID())
             ),
-            "aName"
+            "aName",
+            true,
+            1,
+            2,
+            "John Doe",
+            LocalDateTime.parse("2024-01-01T12:10:00")
         );
 
         List<CamundaProcessJsonSchemaDocumentDefinition> camundaProcessJsonSchemaDocumentDefinitions = List.of(
@@ -196,7 +205,7 @@ class ProcessDocumentResourceTest extends BaseTest {
 
     @Test
     void shouldReturnOkWhenGettingProcessDocumentInstances() throws Exception {
-        when(processDocumentAssociationService.findProcessDocumentInstances(any(JsonSchemaDocumentId.class)))
+        when(processDocumentAssociationService.findProcessDocumentInstanceDtos(any(JsonSchemaDocumentId.class)))
             .thenReturn(List.of(processDocumentInstance));
 
         mockMvc.perform(
@@ -207,7 +216,12 @@ class ProcessDocumentResourceTest extends BaseTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[0].id.processInstanceId").exists())
-            .andExpect(jsonPath("$.[0].id.documentId").exists());
+            .andExpect(jsonPath("$.[0].id.documentId").exists())
+            .andExpect(jsonPath("$.[0].active").value(true))
+            .andExpect(jsonPath("$.[0].version").value(1))
+            .andExpect(jsonPath("$.[0].latestVersion").value(2))
+            .andExpect(jsonPath("$.[0].startedBy").value("John Doe"))
+            .andExpect(jsonPath("$.[0].startedOn").value("2024-01-01T12:10:00"));
     }
 
     @Test
