@@ -31,8 +31,7 @@ class ZaakValueResolverFactory(
     }
 
     override fun createResolver(documentId: String): Function<String, Any?> {
-        val zaak = zaakDocumentService.getZaakByDocumentId(UUID.fromString(documentId))
-            ?: throw IllegalStateException("No zaak linked to document with id '$documentId'")
+        val zaak = zaakDocumentService.getZaakByDocumentIdOrThrow(UUID.fromString(documentId))
         return Function { field ->
             return@Function getField(zaak, field)
         }
