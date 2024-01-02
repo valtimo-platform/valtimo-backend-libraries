@@ -132,7 +132,7 @@ public class ProcessDocumentResource {
         @PathVariable UUID documentId
     ) {
         return ResponseEntity.ok(
-            processDocumentAssociationService.findProcessDocumentInstances(JsonSchemaDocumentId.existingId(documentId)));
+            processDocumentAssociationService.findProcessDocumentInstanceDtos(JsonSchemaDocumentId.existingId(documentId)));
     }
 
     @PostMapping(value = "/v1/process-document/operation/new-document-and-start-process", consumes = APPLICATION_JSON_VALUE)
