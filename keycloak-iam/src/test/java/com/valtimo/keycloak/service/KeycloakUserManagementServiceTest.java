@@ -77,7 +77,7 @@ class KeycloakUserManagementServiceTest {
         var users = userManagementService.findByRoles(search);
 
         var userIds = users.stream().map(ManageableUser::getId).collect(Collectors.toList());
-        assertThat(userIds).containsOnly(jamesVance.getId(), johnDoe.getId());
+        assertThat(userIds).containsOnlyOnce(jamesVance.getId(), johnDoe.getId());
     }
 
     @Test
@@ -148,6 +148,20 @@ class KeycloakUserManagementServiceTest {
         var users = userManagementService.findByRole("some-role");
 
         assertThat(users).isEmpty();
+    }
+
+    @Test
+    void shouldDeDuplicateUsersForRequiredUserGroup() {
+        var duplicateJames = newUser(jamesVance.getFirstName(), jamesVance.getLastName(), List.of(USER));
+        duplicateJames.setId(jamesVance.getId());
+
+        when(keycloakService.clientRolesResource(any()).get(USER).getUserMembers(0, MAX_USERS))
+            .thenReturn(List.of(duplicateJames));
+
+        var users = userManagementService.findByRole(USER);
+
+        var userIds = users.stream().map(ManageableUser::getId).collect(Collectors.toList());
+        assertThat(userIds).containsOnlyOnce(jamesVance.getId(), johnDoe.getId());
     }
 
     private UserRepresentation newUser(String firstName, String lastName, List<String> roles) {
