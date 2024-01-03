@@ -73,7 +73,7 @@ public class KeycloakService {
         }
     }
 
-    private RealmResource realmResource(Keycloak keycloak) {
+    public RealmResource realmResource(Keycloak keycloak) {
         return keycloak.realm(properties.getRealm());
     }
 
