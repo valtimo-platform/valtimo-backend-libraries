@@ -20,20 +20,16 @@ import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationEntityMapperResult
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Root
 
-class CamundaExecutionProcessDefinitionMapper: AuthorizationEntityMapper<CamundaExecution, CamundaProcessDefinition> {
+class CamundaExecutionProcessDefinitionMapper : AuthorizationEntityMapper<CamundaExecution, CamundaProcessDefinition> {
     override fun mapRelated(entity: CamundaExecution): List<CamundaProcessDefinition> {
         return listOf(entity.processDefinition!!)
     }
 
-    override fun mapQuery(
-        root: Root<CamundaExecution>,
-        query: CriteriaQuery<*>,
-        criteriaBuilder: CriteriaBuilder
-    ): AuthorizationEntityMapperResult<CamundaProcessDefinition> {
+    override fun mapQuery(root: Root<CamundaExecution>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<CamundaProcessDefinition> {
         val processDefinitionRoot: Root<CamundaProcessDefinition> = query.from(CamundaProcessDefinition::class.java)
         val groupList = query.groupList.toMutableList()
         groupList.add(root.get<CamundaProcessDefinition>("processDefinition").get<String>("id"))
