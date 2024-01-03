@@ -20,27 +20,23 @@ import java.util.UUID
 import org.camunda.bpm.engine.delegate.VariableScope
 
 open class ValueResolverServiceImpl(
-    private val valueResolverFactories: List<ValueResolverFactory>
+    valueResolverFactories: List<ValueResolverFactory>
 ) : ValueResolverService {
 
-    private lateinit var resolverFactoryMap: Map<String, ValueResolverFactory>
-    private fun getResolverFactoryMap(): Map<String, ValueResolverFactory> {
-        if (!this::resolverFactoryMap.isInitialized) {
-            resolverFactoryMap = valueResolverFactories.groupBy { it.supportedPrefix() }
-                .onEach { (key, value) ->
-                    if(value.size != 1) {
-                        throw RuntimeException("Expected 1 resolver for prefix '$key'. Found: ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")
-                    }
-                }.map { (key, value) ->
-                    key to value.first()
-                }.toMap()
-        }
-
-        return resolverFactoryMap
+    // This property is lazy because valueResolverFactories can contain Lazy proxy instances
+    private val resolverFactoryMap: Map<String, ValueResolverFactory> by lazy {
+        valueResolverFactories.groupBy { it.supportedPrefix() }
+            .onEach { (key, value) ->
+                if (value.size != 1) {
+                    throw RuntimeException("Expected 1 resolver for prefix '$key'. Found: ${value.joinToString { resolver -> resolver.javaClass.simpleName }}")
+                }
+            }.map { (key, value) ->
+                key to value.first()
+            }.toMap()
     }
 
     override fun supportsValue(value: String) : Boolean {
-        return getResolverFactoryMap().containsKey(getPrefix(value))
+        return resolverFactoryMap.containsKey(getPrefix(value))
     }
 
     /**
@@ -178,7 +174,7 @@ open class ValueResolverServiceImpl(
         return requestedValues.groupBy(::getPrefix)
             .mapNotNull { (prefix, requestedValues) ->
                 //Create a resolver per prefix group
-                val resolverFactory = getResolverFactoryMap()[prefix]
+                val resolverFactory = resolverFactoryMap[prefix]
                     ?: throw RuntimeException("No resolver factory found for value prefix $prefix")
                 //Create a map of ValueResolverFactories
                 resolverFactory to requestedValues
