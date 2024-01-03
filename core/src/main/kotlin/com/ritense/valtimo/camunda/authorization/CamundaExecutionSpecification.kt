@@ -22,8 +22,8 @@ import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
@@ -33,11 +33,11 @@ class CamundaExecutionSpecification(
     private val repository: CamundaExecutionRepository,
     private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<CamundaExecution>(authRequest, permissions) {
-    override fun toPredicate(
-        root: Root<CamundaExecution>,
-        query: CriteriaQuery<*>,
-        criteriaBuilder: CriteriaBuilder
-    ): Predicate {
+    override fun identifierToEntity(identifier: String): CamundaExecution {
+        return repository.findById(identifier).get()
+    }
+
+    override fun toPredicate(root: Root<CamundaExecution>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
         val predicates = permissions
             .filter { permission ->
                 CamundaExecution::class.java == permission.resourceType &&
@@ -53,10 +53,6 @@ class CamundaExecutionSpecification(
                 )
             }
         return combinePredicates(criteriaBuilder, predicates)
-    }
-
-    override fun identifierToEntity(identifier: String): CamundaExecution {
-        return repository.findById(identifier).get()
     }
 }
 

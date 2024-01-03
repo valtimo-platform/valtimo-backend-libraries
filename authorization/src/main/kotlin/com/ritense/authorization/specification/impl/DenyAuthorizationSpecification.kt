@@ -16,11 +16,11 @@
 
 package com.ritense.authorization.specification.impl
 
-import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
@@ -39,7 +39,7 @@ class DenyAuthorizationSpecification<T : Any>(
         throw NotImplementedError()
     }
 
-    override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
+    override fun toPredicate(root: Root<T>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
         return criteriaBuilder.equal(criteriaBuilder.literal(0), 1)
     }
 }
