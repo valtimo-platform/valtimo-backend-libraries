@@ -32,15 +32,15 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
 
-open class CaseDefinitionDeploymentService(
+@Transactional
+class CaseDefinitionDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val objectMapper: ObjectMapper,
     private val caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository
 ) {
 
-    @Transactional
     @EventListener(DocumentDefinitionDeployedEvent::class)
-    open fun conditionalCreateCase(event: DocumentDefinitionDeployedEvent) {
+    fun conditionalCreateCase(event: DocumentDefinitionDeployedEvent) {
         val documentDefinitionName = event.documentDefinition().id().name()
         val caseDefinitionSettings = caseDefinitionSettingsRepository.findByIdOrNull(documentDefinitionName)
         if (caseDefinitionSettings == null) {
@@ -58,12 +58,12 @@ open class CaseDefinitionDeploymentService(
         }
     }
 
-    private fun deploy(caseDefinitionName: String, configToLoad: String) {
+    fun deploy(caseDefinitionName: String, settingsJson: String, forceDeploy: Boolean = false) {
         logger.debug { "Deploying case definition $caseDefinitionName" }
         val caseDefinitionSettings = caseDefinitionSettingsRepository.findByIdOrNull(caseDefinitionName)
 
-        if (caseDefinitionSettings == null) {
-            val settingsToDeploy = objectMapper.readValue<ObjectNode>(configToLoad)
+        if (caseDefinitionSettings == null || forceDeploy) {
+            val settingsToDeploy = objectMapper.readValue<ObjectNode>(settingsJson)
                 .put("name", caseDefinitionName)
             val createdCaseDefinitionSettings: CaseDefinitionSettings = objectMapper.convertValue(settingsToDeploy)
 

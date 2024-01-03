@@ -20,6 +20,7 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
+import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider;
 import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
@@ -37,6 +38,7 @@ import com.ritense.valtimo.service.util.FormUtils;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
@@ -50,13 +52,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -66,6 +71,7 @@ import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpe
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
+import static org.camunda.bpm.engine.impl.util.EnsureUtil.ensureNotNull;
 
 public class CamundaProcessService {
 
@@ -167,19 +173,63 @@ public class CamundaProcessService {
     public ProcessInstanceWithDefinition startProcess(
         String processDefinitionKey, String businessKey, Map<String, Object> variables
     ) {
-        denyAuthorization();
         final CamundaProcessDefinition processDefinition = AuthorizationContext
             .runWithoutAuthorization(() -> camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey));
         if (processDefinition == null) {
             throw new IllegalStateException("No process definition found with key: '" + processDefinitionKey + "'");
         }
         businessKey = businessKey.equals(UNDEFINED_BUSINESS_KEY) ? null : businessKey;
+
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest(
+                CamundaExecution.class,
+                CamundaExecutionActionProvider.CREATE,
+                createDummyCamundaExecution(
+                    processDefinition,
+                    businessKey
+                )
+            )
+        );
+
         ProcessInstance processInstance = formService.submitStartForm(
             processDefinition.getId(),
             businessKey,
             FormUtils.createTypedVariableMap(variables)
         );
+
         return new ProcessInstanceWithDefinition(processInstance, processDefinition);
+    }
+
+    public CamundaExecution createDummyCamundaExecution(
+        @NotNull CamundaProcessDefinition processDefinition,
+        String businessKey
+    ) {
+        CamundaExecution execution = new CamundaExecution(
+            UUID.randomUUID().toString(),
+            1,
+            null,
+            null,
+            businessKey,
+            null,
+            processDefinition,
+            null,
+            null,
+            null,
+            null,
+            null,
+            true,
+            false,
+            false,
+            false,
+            SuspensionState.ACTIVE.getStateCode(),
+            0,
+            0,
+            null,
+            new HashSet<>()
+        );
+        execution.setProcessInstance(execution);
+
+        return execution;
     }
 
     public CamundaProcessDefinition getProcessDefinition(String processDefinitionKey) {
@@ -237,8 +287,7 @@ public class CamundaProcessService {
 
     @Transactional
     public void deploy(String fileName, ByteArrayInputStream fileInput)
-            throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException
-    {
+        throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
         denyAuthorization();
 
         if (fileName.endsWith(".bpmn")) {

@@ -69,6 +69,7 @@ dependencies {
     implementation "com.flipkart.zjsonpatch:zjsonpatch:${zjsonpatchVersion}"
     implementation "com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}"
     implementation "org.springframework.retry:spring-retry:${springRetryVersion}"
+    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
@@ -78,6 +79,8 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.mockito:mockito-core"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${kotlinCoroutinesVersion}"
     testImplementation "org.skyscreamer:jsonassert:${jsonassertVersion}"
     testImplementation project(':core')
 

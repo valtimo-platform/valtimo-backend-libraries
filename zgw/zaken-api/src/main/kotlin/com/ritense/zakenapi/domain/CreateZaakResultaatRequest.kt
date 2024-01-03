@@ -16,8 +16,10 @@
 
 package com.ritense.zakenapi.domain
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import java.net.URI
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CreateZaakResultaatRequest(
     val zaak: URI,
     val resultaattype: URI,

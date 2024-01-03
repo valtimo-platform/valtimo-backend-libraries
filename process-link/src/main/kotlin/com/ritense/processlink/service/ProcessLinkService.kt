@@ -70,7 +70,7 @@ open class ProcessLinkService(
         return processLinkRepository.findByProcessDefinitionIdAndActivityType(processDefinitionId, activityType)
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = [ProcessLinkExistsException::class])
     @Throws(ProcessLinkExistsException::class)
     fun createProcessLink(createRequest: ProcessLinkCreateRequestDto): ProcessLink {
         val mapper = getProcessLinkMapper(createRequest.processLinkType)
@@ -111,6 +111,12 @@ open class ProcessLinkService(
     fun getProcessLinkMapper(processLinkType: String): ProcessLinkMapper {
         return processLinkMappers.singleOrNull { it.supportsProcessLinkType(processLinkType) }
             ?: throw IllegalStateException("No ProcessLinkMapper found for processLinkType $processLinkType")
+    }
+
+    fun getImporterDependsOnTypes() : Set<String> {
+        return processLinkMappers.mapNotNull {
+            it.getImporterType()
+        }.toSet()
     }
 
     fun getSupportedProcessLinkTypes(activityType: String): List<ProcessLinkType> {

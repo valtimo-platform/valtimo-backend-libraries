@@ -227,7 +227,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
                 "receiver": "${TaakReceiver.OTHER.key}",
                 "identificationKey": "${TaakIdentificatie.TYPE_KVK}",
                 "identificationValue": "569312863",
-                "verloopDurationInDays": 3
+                "verloopDurationInDays": null
             }
         """.trimIndent()
 
@@ -257,7 +257,53 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         assertThat(body, hasJsonPath("$.record.data.formulier.value", equalTo("some-form")))
         assertThat(body, hasJsonPath("$.record.data.verwerker_taak_id", equalTo(task.id)))
         assertThat(body, hasJsonPath("$.record.data.zaak", equalTo(ZAAK_URL.toString())))
-        assertThat(body, hasJsonPath("$.record.data.verloopdatum", startsWith(LocalDate.now().plusDays(3).toString())))
+        assertThat(body, hasJsonPath("$.record.data.verloopdatum", nullValue()))
+        assertThat(body, hasJsonPath("$.record.startAt", equalTo(LocalDate.now().toString())))
+        assertThat(body, jsonPathMissingOrNull("$.record.endAt"))
+        assertThat(body, jsonPathMissingOrNull("$.record.registrationAt"))
+        assertThat(body, jsonPathMissingOrNull("$.record.correctionFor"))
+        assertThat(body, jsonPathMissingOrNull("$.record.correctedBy"))
+    }
+
+    @Test
+    fun `should create portaal taak with verloopdatum from BPMN user task due-date`() {
+        val actionPropertiesJson = """
+            {
+                "formType" : "${TaakFormType.ID.key}",
+                "formTypeId": "some-form",
+                "sendData": [
+                    {
+                        "key": "/lastname",
+                        "value": "test"
+                    }
+                ],
+                "receiveData": [],
+                "receiver": "${TaakReceiver.OTHER.key}",
+                "identificationKey": "${TaakIdentificatie.TYPE_KVK}",
+                "identificationValue": "569312863",
+                "verloopDurationInDays": null
+            }
+        """.trimIndent()
+
+        createProcessLink(actionPropertiesJson, "portaaltaak-due-date-process")
+        val task = startPortaalTaakProcess("{}", "portaaltaak-due-date-process")
+
+        val recordedRequest = findRequest(HttpMethod.POST, "/objects")!!
+        val body = recordedRequest.body.readUtf8()
+
+        assertThat(body, hasJsonPath("$.type", endsWith("/objecttypes/object-type-id")))
+        assertThat(body, jsonPathMissingOrNull("$.record.index"))
+        assertThat(body, hasJsonPath("$.record.typeVersion", equalTo(1)))
+        assertThat(body, hasJsonPath("$.record.data.identificatie.type", equalTo("kvk")))
+        assertThat(body, hasJsonPath("$.record.data.identificatie.value", equalTo("569312863")))
+        assertThat(body, hasJsonPath("$.record.data.data.lastname", equalTo("test")))
+        assertThat(body, hasJsonPath("$.record.data.title", equalTo("user_task")))
+        assertThat(body, hasJsonPath("$.record.data.status", equalTo("open")))
+        assertThat(body, hasJsonPath("$.record.data.formulier.type", equalTo("id")))
+        assertThat(body, hasJsonPath("$.record.data.formulier.value", equalTo("some-form")))
+        assertThat(body, hasJsonPath("$.record.data.verwerker_taak_id", equalTo(task.id)))
+        assertThat(body, hasJsonPath("$.record.data.zaak", equalTo(ZAAK_URL.toString())))
+        assertThat(body, hasJsonPath("$.record.data.verloopdatum", equalTo("2040-02-03T12:34:56.000Z")))
         assertThat(body, hasJsonPath("$.record.startAt", equalTo(LocalDate.now().toString())))
         assertThat(body, jsonPathMissingOrNull("$.record.endAt"))
         assertThat(body, jsonPathMissingOrNull("$.record.registrationAt"))
@@ -360,11 +406,11 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         )
     }
 
-    private fun startPortaalTaakProcess(content: String): CamundaTask {
+    private fun startPortaalTaakProcess(content: String, processDefinitionKey: String = PROCESS_DEFINITION_KEY): CamundaTask {
         return runWithoutAuthorization {
             val newDocumentRequest =
                 NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().readTree(content))
-            val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
+            val request = NewDocumentAndStartProcessRequest(processDefinitionKey, newDocumentRequest)
             val processResult = procesDocumentService.newDocumentAndStartProcess(request)
             taskService.findTask(
                 byActive().and(
@@ -467,9 +513,9 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
         return configuration
     }
 
-    private fun createProcessLink(propertiesConfig: String) {
+    private fun createProcessLink(propertiesConfig: String, processDefinitionKey: String = PROCESS_DEFINITION_KEY) {
         processDefinitionId = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(PROCESS_DEFINITION_KEY)
+            .processDefinitionKey(processDefinitionKey)
             .latestVersion()
             .singleResult()
             .id

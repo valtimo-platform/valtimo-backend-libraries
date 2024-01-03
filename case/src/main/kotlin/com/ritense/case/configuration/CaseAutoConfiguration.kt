@@ -31,10 +31,13 @@ import com.ritense.case.security.config.CaseHttpSecurityConfigurer
 import com.ritense.case.service.CaseDefinitionDeploymentService
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.service.CaseDefinitionSettingsExporter
+import com.ritense.case.service.CaseDefinitionSettingsImporter
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.service.CaseListDeploymentService
 import com.ritense.case.service.CaseListExporter
+import com.ritense.case.service.CaseListImporter
 import com.ritense.case.service.CaseTabExporter
+import com.ritense.case.service.CaseTabImporter
 import com.ritense.case.service.CaseTabService
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.web.rest.CaseDefinitionResource
@@ -45,6 +48,7 @@ import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -267,6 +271,19 @@ class CaseAutoConfiguration {
     )
 
     @Bean
+    @ConditionalOnMissingBean(CaseListImporter::class)
+    fun caseListImporter(
+        caseListDeploymentService: CaseListDeploymentService
+    ) = CaseListImporter(caseListDeploymentService)
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTabImporter::class)
+    fun caseTabImporter(
+        caseTabDeploymentService: CaseTabDeploymentService,
+        changelogDeployer: ChangelogDeployer
+    ) = CaseTabImporter(caseTabDeploymentService, changelogDeployer)
+
+    @Bean
     @ConditionalOnMissingBean(CaseDefinitionSettingsExporter::class)
     fun caseDefinitionSettingsExporter(
         objectMapper: ObjectMapper,
@@ -274,5 +291,13 @@ class CaseAutoConfiguration {
     ) = CaseDefinitionSettingsExporter(
         objectMapper,
         caseDefinitionService
+    )
+
+    @Bean
+    @ConditionalOnMissingBean(CaseDefinitionSettingsImporter::class)
+    fun caseDefinitionSettingsImporter(
+        deploymentService: CaseDefinitionDeploymentService
+    ) = CaseDefinitionSettingsImporter(
+        deploymentService
     )
 }

@@ -19,13 +19,14 @@ package com.ritense.form.service
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.FORM
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class FormDefinitionImporter(
     private val formDefinitionDeploymentService: FormDefinitionDeploymentService
 ) : Importer {
-    override fun type(): String = "form"
+    override fun type(): String = FORM
 
     override fun dependsOn(): Set<String> = emptySet()
 

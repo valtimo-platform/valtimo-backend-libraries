@@ -53,13 +53,20 @@ class ValtimoExportService (
             if (isEmpty()) {
                 logger.error { "No exporter found for export request of type '${request::class.java}'" }
             }
-        }.flatMap { exporter ->
-            val result = exporter.export(request)
-            result.exportFiles +
-                result.relatedRequests.flatMap {
+        }.mapNotNull { exporter ->
+            try {
+                val result = exporter.export(request)
+                result.exportFiles + result.relatedRequests.flatMap {
                     collectExportFiles(it, history)
                 }
-        }.toSet()
+            } catch (e: NoSuchElementException) {
+                if (!request.required) {
+                    null
+                } else {
+                    throw e
+                }
+            }
+        }.flatten().toSet()
     }
 
     companion object {

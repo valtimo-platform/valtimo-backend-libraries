@@ -16,5 +16,10 @@
 
 package com.ritense.processdocument.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 public interface ProcessDocumentDeploymentService {
+
+    void deploy(String documentDefinitionName, String content) throws JsonProcessingException;
+
 }

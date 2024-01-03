@@ -23,6 +23,17 @@ class ExportServiceIntTest @Autowired constructor(
     }
 
     @Test
+    fun `should export an empty zip`() {
+        val bytes = exportService.export(TestExportRequest(required = false)).toByteArray()
+        val entries = ZipInputStream(ByteArrayInputStream(bytes)).use {
+            generateSequence { it.nextEntry }
+                .toList()
+        }
+
+        assertThat(entries.isEmpty())
+    }
+
+    @Test
     fun `should not result in a stackoverflow`() {
         val bytes = exportService.export(TestStackOverflowExportRequest()).toByteArray()
         val entries = ZipInputStream(ByteArrayInputStream(bytes)).use {

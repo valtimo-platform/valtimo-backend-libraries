@@ -25,6 +25,7 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
+import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.exporter.request.ExportRequest
 import com.ritense.exporter.request.FormDefinitionExportRequest
@@ -58,7 +59,7 @@ class CaseTabExporter(
         )
         val caseTabExport = ExportFile(
             PATH.format(caseName),
-            objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(caseTabChangeset)
+            objectMapper.writer(ExportPrettyPrinter()).writeValueAsBytes(caseTabChangeset)
         )
 
         return ExportResult(

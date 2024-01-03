@@ -34,6 +34,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -69,7 +70,7 @@ public class SearchConfigurationDeploymentService {
         }
     }
 
-    private void deploy(String documentDefinitionName, String searchConfigurationJson) throws IOException {
+    public void deploy(String documentDefinitionName, String searchConfigurationJson) throws IOException {
         validate(searchConfigurationJson);
 
         var searchConfiguration = objectMapper.readValue(searchConfigurationJson, SearchConfigurationDto.class);
