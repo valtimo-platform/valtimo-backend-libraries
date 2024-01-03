@@ -46,6 +46,18 @@ class ValtimoOutboxServiceIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @Transactional(readOnly = true)
+    fun `should throw error when read-only transaction`() {
+        val event = OrderCreatedEvent("textBook")
+
+        val exception = assertThrows<RuntimeException> {
+            outboxService.send(objectMapper.writeValueAsString(event))
+        }
+
+        assertThat(exception.message).isEqualTo("Failed to send outbox message. Reason: current transaction is read-only")
+    }
+
+    @Test
     fun `should throw error when no transaction exists`() {
         val event = OrderCreatedEvent("textBook")
 
