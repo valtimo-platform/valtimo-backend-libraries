@@ -16,6 +16,7 @@
 
 package com.ritense.document.autoconfiguration
 
+import com.ritense.document.DocumentDocumentDefinitionMapper
 import com.ritense.document.JsonSchemaDocumentDefinitionSpecificationFactory
 import com.ritense.document.JsonSchemaDocumentSnapshotSpecificationFactory
 import com.ritense.document.JsonSchemaDocumentSpecificationFactory
@@ -55,4 +56,9 @@ class DocumentAuthorizationAutoConfiguration {
     fun searchFieldSpecificationFactory(
         queryDialectHelper: QueryDialectHelper
     ) = SearchFieldSpecificationFactory(queryDialectHelper)
+
+    @Bean
+    fun documentDocumentDefinitionMapper(
+        @Lazy documentDefinitionService: JsonSchemaDocumentDefinitionService
+    ) = DocumentDocumentDefinitionMapper(documentDefinitionService)
 }

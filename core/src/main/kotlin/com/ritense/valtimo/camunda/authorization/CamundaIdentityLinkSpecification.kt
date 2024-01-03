@@ -23,8 +23,8 @@ import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.valtimo.camunda.domain.CamundaIdentityLink
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
@@ -34,9 +34,10 @@ class CamundaIdentityLinkSpecification(
         private val camundaRuntimeService: CamundaRuntimeService,
         private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationSpecification<CamundaIdentityLink>(authRequest, permissions) {
+
     override fun toPredicate(
         root: Root<CamundaIdentityLink>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         val predicates = permissions

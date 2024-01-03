@@ -15,13 +15,13 @@
  */
 package com.ritense.document.service
 
+import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
-import com.ritense.authorization.permission.Permission
 import com.ritense.document.domain.impl.searchfield.SearchField
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
@@ -33,7 +33,7 @@ class SearchFieldSpecification(
 
     override fun toPredicate(
         root: Root<SearchField>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         if (query.groupList.isEmpty()) {

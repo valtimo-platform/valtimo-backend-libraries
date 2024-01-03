@@ -16,11 +16,11 @@
 
 package com.ritense.authorization.testimpl
 
+import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
-import com.ritense.authorization.permission.Permission
+import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
@@ -30,7 +30,7 @@ class TestDocumentAuthorizationSpecification(
 ): AuthorizationSpecification<TestDocument>(authContext, permissions) {
     override fun toPredicate(
         root: Root<TestDocument>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         return criteriaBuilder.isTrue(root.isNotNull)

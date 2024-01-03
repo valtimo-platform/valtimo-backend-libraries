@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.outbox.exception
 
-import jakarta.persistence.criteria.AbstractQuery
-import jakarta.persistence.criteria.Predicate
-import jakarta.persistence.criteria.Root
-
-class AuthorizationEntityMapperResult<T>(
-    val root: Root<T>,
-    val query: AbstractQuery<*>,
-    val joinPredicate: Predicate
-)
+class OutboxTransactionReadOnlyException :
+    RuntimeException("Failed to send outbox message. Reason: current transaction is read-only")

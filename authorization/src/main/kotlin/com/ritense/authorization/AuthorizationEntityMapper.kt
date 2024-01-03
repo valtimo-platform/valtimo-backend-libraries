@@ -16,14 +16,14 @@
 
 package com.ritense.authorization
 
+import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Root
 
 interface AuthorizationEntityMapper<FROM, TO> {
     fun mapRelated(entity: FROM): List<TO>
 
-    fun mapQuery(root: Root<FROM>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<TO>
+    fun mapQuery(root: Root<FROM>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<TO>
 
     fun supports(fromClass: Class<*>, toClass: Class<*>): Boolean
 }

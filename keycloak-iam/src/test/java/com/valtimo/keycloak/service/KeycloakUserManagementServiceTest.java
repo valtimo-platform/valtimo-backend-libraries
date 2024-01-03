@@ -61,6 +61,12 @@ class KeycloakUserManagementServiceTest {
             .thenReturn(List.of(johnDoe, jamesVance));
         when(keycloakService.realmRolesResource(any()).get(ADMIN).getUserMembers(0, MAX_USERS))
             .thenReturn(List.of(johnDoe, ashaMiller));
+        when(keycloakService.clientRolesResource(any()).get(any()).getUserMembers(0, MAX_USERS))
+            .thenReturn(List.of());
+        when(keycloakService.realmRolesResource(any()).get(any()).getRoleGroupMembers())
+            .thenReturn(Set.of());
+        when(keycloakService.clientRolesResource(any()).get(any()).getRoleGroupMembers())
+            .thenReturn(Set.of());
     }
 
     @Test
@@ -71,7 +77,7 @@ class KeycloakUserManagementServiceTest {
         var users = userManagementService.findByRoles(search);
 
         var userIds = users.stream().map(ManageableUser::getId).collect(Collectors.toList());
-        assertThat(userIds).containsOnly(jamesVance.getId(), johnDoe.getId());
+        assertThat(userIds).containsOnlyOnce(jamesVance.getId(), johnDoe.getId());
     }
 
     @Test
@@ -117,10 +123,12 @@ class KeycloakUserManagementServiceTest {
         markUser.setFirstName("Mark");
         markUser.setLastName("Smit");
         var roleRepresentation = new RoleRepresentation(DEVELOPER, "developer", false);
-        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().realmLevel().listAll())
+        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().realmLevel().listEffective(true))
             .thenReturn(List.of());
-        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().clientLevel(any()).listAll())
+        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().clientLevel(any()).listEffective(true))
             .thenReturn(List.of(roleRepresentation));
+        when(keycloakService.realmRolesResource(any()).get(DEVELOPER).getUserMembers(0, MAX_USERS))
+            .thenReturn(List.of());
         when(keycloakService.clientRolesResource(any()).get(DEVELOPER).getUserMembers(0, MAX_USERS))
             .thenReturn(List.of(markUser));
         var search = new SearchByUserGroupsCriteria();
@@ -142,6 +150,20 @@ class KeycloakUserManagementServiceTest {
         assertThat(users).isEmpty();
     }
 
+    @Test
+    void shouldDeDuplicateUsersForRequiredUserGroup() {
+        var duplicateJames = newUser(jamesVance.getFirstName(), jamesVance.getLastName(), List.of(USER));
+        duplicateJames.setId(jamesVance.getId());
+
+        when(keycloakService.clientRolesResource(any()).get(USER).getUserMembers(0, MAX_USERS))
+            .thenReturn(List.of(duplicateJames));
+
+        var users = userManagementService.findByRole(USER);
+
+        var userIds = users.stream().map(ManageableUser::getId).collect(Collectors.toList());
+        assertThat(userIds).containsOnlyOnce(jamesVance.getId(), johnDoe.getId());
+    }
+
     private UserRepresentation newUser(String firstName, String lastName, List<String> roles) {
         var user = new UserRepresentation();
         user.setId(Integer.toString(Objects.hash(firstName, lastName, roles)));
@@ -151,9 +173,9 @@ class KeycloakUserManagementServiceTest {
         var roleRepresentations = roles.stream()
             .map(role -> new RoleRepresentation(role, role + " description", false))
             .collect(Collectors.toList());
-        when(keycloakService.usersResource(any()).get(user.getId()).roles().realmLevel().listAll())
+        when(keycloakService.usersResource(any()).get(user.getId()).roles().realmLevel().listEffective(true))
             .thenReturn(roleRepresentations);
-        when(keycloakService.usersResource(any()).get(user.getId()).roles().clientLevel(any()).listAll())
+        when(keycloakService.usersResource(any()).get(user.getId()).roles().clientLevel(any()).listEffective(true))
             .thenReturn(List.of());
         return user;
     }

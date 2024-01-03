@@ -16,11 +16,14 @@
 
 package com.ritense.processdocument.service.impl
 
+import com.ritense.authorization.AuthorizationContext
+import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -28,19 +31,22 @@ import kotlin.test.assertTrue
 @Transactional
 internal class CamundaProcessJsonSchemaDocumentDeploymentServiceIntTest : BaseIntegrationTest() {
 
+    @Autowired
     private lateinit var processDocumentDeploymentService: ProcessDocumentDeploymentService
+    @Autowired
     private lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
 
     @Test
     fun `should deploy process document link`() {
         val linkJson = readFileAsString("/config/more-process-document-links/person.json")
 
-        processDocumentDeploymentService.deploy("house", linkJson)
-
-        val link = processDocumentAssociationService.findProcessDocumentDefinition(
-            CamundaProcessDefinitionKey("loan-process-demo")
-        ).get()
-        assertEquals("person", link.processDocumentDefinitionId().documentDefinitionId().name())
+        val link = AuthorizationContext.runWithoutAuthorization {
+            processDocumentDeploymentService.deploy("house", linkJson)
+            processDocumentAssociationService.findProcessDocumentDefinition(
+                CamundaProcessDefinitionKey("loan-process-demo")
+            ).get()
+        }
+        assertEquals("house", link.processDocumentDefinitionId().documentDefinitionId().name())
         assertEquals("loan-process-demo", link.processDocumentDefinitionId().processDefinitionKey().toString())
         assertTrue(link.canInitializeDocument())
         assertTrue(link.startableByUser())

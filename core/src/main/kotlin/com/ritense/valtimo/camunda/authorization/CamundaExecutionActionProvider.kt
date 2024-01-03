@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.authorization
+package com.ritense.valtimo.camunda.authorization
 
-import jakarta.persistence.criteria.AbstractQuery
-import jakarta.persistence.criteria.Predicate
-import jakarta.persistence.criteria.Root
+import com.ritense.authorization.Action
+import com.ritense.authorization.ResourceActionProvider
+import com.ritense.valtimo.camunda.domain.CamundaExecution
 
-class AuthorizationEntityMapperResult<T>(
-    val root: Root<T>,
-    val query: AbstractQuery<*>,
-    val joinPredicate: Predicate
-)
+class CamundaExecutionActionProvider : ResourceActionProvider<CamundaExecution> {
+    override fun getAvailableActions(): List<Action<CamundaExecution>> {
+        return listOf(CREATE)
+    }
+
+    companion object {
+        @JvmField
+        val CREATE = Action<CamundaExecution>(Action.CREATE)
+    }
+}

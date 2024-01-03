@@ -22,8 +22,8 @@ import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
@@ -36,7 +36,7 @@ class JsonSchemaDocumentDefinitionSpecification(
 
     override fun toPredicate(
         root: Root<JsonSchemaDocumentDefinition>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         // Filter the permissions for the relevant ones and use those to  find the filters that are required

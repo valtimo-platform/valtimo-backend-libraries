@@ -17,11 +17,11 @@
 package com.ritense.authorization.specification.impl
 
 import com.ritense.authorization.AuthorizationContext
-import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
+import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
@@ -36,7 +36,7 @@ class NoopAuthorizationSpecification<T : Any>(
         return AuthorizationContext.ignoreAuthorization
     }
 
-    override fun toPredicate(root: Root<T>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
+    override fun toPredicate(root: Root<T>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
         return criteriaBuilder.equal(criteriaBuilder.literal(1), 1)
     }
 

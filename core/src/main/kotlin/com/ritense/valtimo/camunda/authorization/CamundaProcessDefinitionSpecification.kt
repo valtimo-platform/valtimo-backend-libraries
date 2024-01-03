@@ -16,32 +16,31 @@
 
 package com.ritense.valtimo.camunda.authorization
 
-import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
-import com.ritense.valtimo.camunda.domain.CamundaTask
+import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionRepository
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import com.ritense.valtimo.service.CamundaTaskService
-import jakarta.persistence.criteria.AbstractQuery
-import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.Predicate
-import jakarta.persistence.criteria.Root
+import javax.persistence.criteria.AbstractQuery
+import javax.persistence.criteria.CriteriaBuilder
+import javax.persistence.criteria.Predicate
+import javax.persistence.criteria.Root
 
-class CamundaTaskSpecification(
-        authRequest: AuthorizationRequest<CamundaTask>,
-        permissions: List<Permission>,
-        private val taskService: CamundaTaskService,
-        private val queryDialectHelper: QueryDialectHelper
-) : AuthorizationSpecification<CamundaTask>(authRequest, permissions) {
-    override fun toPredicate(
-        root: Root<CamundaTask>,
-        query: AbstractQuery<*>,
-        criteriaBuilder: CriteriaBuilder
-    ): Predicate {
+class CamundaProcessDefinitionSpecification(
+    authRequest: AuthorizationRequest<CamundaProcessDefinition>,
+    permissions: List<Permission>,
+    private val repository: CamundaProcessDefinitionRepository,
+    private val queryDialectHelper: QueryDialectHelper
+) : AuthorizationSpecification<CamundaProcessDefinition>(authRequest, permissions) {
+    override fun identifierToEntity(identifier: String): CamundaProcessDefinition {
+        return repository.findById(identifier).get()
+    }
+
+    override fun toPredicate(root: Root<CamundaProcessDefinition>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
         val predicates = permissions
             .filter { permission ->
-                CamundaTask::class.java == permission.resourceType &&
+                CamundaProcessDefinition::class.java == permission.resourceType &&
                     authRequest.action == permission.action
             }
             .map { permission ->
@@ -54,12 +53,6 @@ class CamundaTaskSpecification(
                 )
             }
         return combinePredicates(criteriaBuilder, predicates)
-    }
-
-    override fun identifierToEntity(identifier: String): CamundaTask {
-        return runWithoutAuthorization {
-            taskService.findTaskById(identifier)
-        }
     }
 }
 

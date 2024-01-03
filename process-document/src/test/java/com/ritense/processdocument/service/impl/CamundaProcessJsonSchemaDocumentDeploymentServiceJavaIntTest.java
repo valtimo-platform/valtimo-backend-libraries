@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.service.impl;
 
+import com.ritense.authorization.AuthorizationContext;
 import com.ritense.processdocument.BaseIntegrationTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -26,15 +27,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")
 @Transactional
-class CamundaProcessJsonSchemaDocumentDeploymentServiceIntTest extends BaseIntegrationTest {
+class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseIntegrationTest {
 
     private static final String DOCUMENT_DEFINITION_NAME = "house";
     private static final String PROCESS_DEFINITION_KEY = "loan-process-demo";
 
     @Test
     void shouldDeployProcessDocumentLinkFromResourceFolder() {
-        final var processDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
-                .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME);
+        final var processDocumentDefinitions = AuthorizationContext
+            .runWithoutAuthorization(
+                () -> camundaProcessJsonSchemaDocumentAssociationService
+                    .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME));
 
         assertThat(processDocumentDefinitions).hasSize(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey()).hasToString(PROCESS_DEFINITION_KEY);

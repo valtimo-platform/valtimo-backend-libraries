@@ -29,7 +29,8 @@ enum class PermissionConditionOperator(@JsonValue val asText: String) {
     GREATER_THAN_OR_EQUAL_TO(">="),
     LESS_THAN("<"),
     LESS_THAN_OR_EQUAL_TO("<="),
-    CONTAINS("contains");
+    LIST_CONTAINS("list_contains"),
+    IN("in");
 
     fun evaluate(left: Any?, right: Any?): Boolean {
         return when (this) {
@@ -39,7 +40,8 @@ enum class PermissionConditionOperator(@JsonValue val asText: String) {
             GREATER_THAN_OR_EQUAL_TO -> compare(left, right, -1) >= 0
             LESS_THAN -> compare(left, right) < 0
             LESS_THAN_OR_EQUAL_TO -> compare(left, right) <= 0
-            CONTAINS -> contains(left, right)
+            LIST_CONTAINS -> contains(left, right)
+            IN -> contains(right, left)
         }
     }
 
@@ -89,8 +91,16 @@ enum class PermissionConditionOperator(@JsonValue val asText: String) {
                     criteriaBuilder.greaterThanOrEqualTo(expression as Expression<T>, value as T)
                 }
 
-            CONTAINS ->
+            LIST_CONTAINS ->
                 criteriaBuilder.isMember(value, expression as Expression<Collection<T>>)
+
+            IN -> {
+                val inClause = criteriaBuilder.`in`(expression as Expression<T>)
+                (value as Collection<Any?>).forEach {
+                    inClause.value(it!! as T)
+                }
+                inClause
+            }
         }
     }
 

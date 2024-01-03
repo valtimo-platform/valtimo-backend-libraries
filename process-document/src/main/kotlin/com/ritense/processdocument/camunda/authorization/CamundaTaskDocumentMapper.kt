@@ -28,8 +28,8 @@ import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpec
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.ID
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.PROCESS_INSTANCE
 import java.util.UUID
+import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Root
 
 class CamundaTaskDocumentMapper(
@@ -44,7 +44,7 @@ class CamundaTaskDocumentMapper(
 
     override fun mapQuery(
         root: Root<CamundaTask>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): AuthorizationEntityMapperResult<JsonSchemaDocument> {
         val documentRoot = query.from(JsonSchemaDocument::class.java)

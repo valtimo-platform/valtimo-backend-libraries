@@ -27,6 +27,7 @@ import com.ritense.authorization.permission.condition.ContainerPermissionConditi
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.condition.PermissionCondition
 import org.springframework.data.jpa.domain.Specification
+import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
@@ -131,9 +132,36 @@ abstract class AuthorizationSpecification<T : Any>(
 
     protected abstract fun identifierToEntity(identifier: String): T
 
-    abstract override fun toPredicate(
+    /**
+     * Creates a WHERE clause for a query of the referenced entity in form of a Predicate for the given Root and
+     * CriteriaQuery. This is only used when applying predicates to the root query for the entity. It is recommended to
+     * implement {@link #toPredicate(Root, AbstractQuery, CriteriaBuilder) toPredicate} instead to ensure filters are
+     * also applied when the entity is used in a relation.
+     *
+     * @param root must not be {@literal null}.
+     * @param query must not be {@literal null}.
+     * @param criteriaBuilder must not be {@literal null}.
+     * @return a {@link Predicate}, may be {@literal null}.
+     */
+    override fun toPredicate(
         root: Root<T>,
         query: CriteriaQuery<*>,
+        criteriaBuilder: CriteriaBuilder
+    ): Predicate { return toPredicate(root, query as AbstractQuery<*>, criteriaBuilder) }
+
+    /**
+     * Creates a WHERE clause for a query of the referenced entity in form of a Predicate for the given Root and
+     * CriteriaQuery. This is used when applying predicates a subquery, and unless the default
+     * {@link #toPredicate(Root, CriteriaQuery, CriteriaBuilder) toPredicate} is overridden, also to the root query.
+     *
+     * @param root must not be {@literal null}.
+     * @param query must not be {@literal null}.
+     * @param criteriaBuilder must not be {@literal null}.
+     * @return a {@link Predicate}, may be {@literal null}.
+     */
+    abstract fun toPredicate(
+        root: Root<T>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate
 }

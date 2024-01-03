@@ -16,7 +16,6 @@
 
 package com.ritense.case.repository
 
-import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
@@ -25,8 +24,8 @@ import com.ritense.case.domain.CaseTab
 import com.ritense.case.service.CaseTabService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import java.util.UUID
+import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
@@ -38,7 +37,7 @@ class CaseTabSpecification(
 ) : AuthorizationSpecification<CaseTab>(authRequest, permissions) {
     override fun toPredicate(
         root: Root<CaseTab>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         // Filter the permissions for the relevant ones and use those to  find the filters that are required

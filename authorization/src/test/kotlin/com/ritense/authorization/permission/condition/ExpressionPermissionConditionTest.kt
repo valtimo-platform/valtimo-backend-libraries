@@ -19,7 +19,7 @@ package com.ritense.authorization.permission.condition
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.authorization.permission.condition.PermissionConditionOperator.CONTAINS
+import com.ritense.authorization.permission.condition.PermissionConditionOperator.LIST_CONTAINS
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
@@ -107,7 +107,7 @@ class ExpressionPermissionConditionTest {
         val conditionTemplate = ExpressionPermissionCondition(
             field = "child.property",
             path = "value",
-            operator = CONTAINS,
+            operator = LIST_CONTAINS,
             value = "myValue",
             clazz = String::class.java
         )
@@ -126,7 +126,7 @@ class ExpressionPermissionConditionTest {
         val conditionTemplate = ExpressionPermissionCondition(
             field = "child.property",
             path = "value",
-            operator = CONTAINS,
+            operator = LIST_CONTAINS,
             value = "myValue",
             clazz = String::class.java
         )
