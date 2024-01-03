@@ -360,8 +360,8 @@ public class ProcessResource extends AbstractProcessResource {
             @PathVariable String businessKey,
             @RequestBody Map<String, Object> variables
     ) {
-        final var processInstanceWithDefinition = AuthorizationContext.runWithoutAuthorization(() ->
-            camundaProcessService.startProcess(processDefinitionKey, businessKey, variables));
+        final var processInstanceWithDefinition = camundaProcessService
+            .startProcess(processDefinitionKey, businessKey, variables);
         return ResponseEntity.ok(processInstanceWithDefinition.getProcessInstanceDto());
     }
 
