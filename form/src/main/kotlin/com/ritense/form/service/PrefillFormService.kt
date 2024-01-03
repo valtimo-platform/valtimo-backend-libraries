@@ -43,7 +43,7 @@ import java.util.UUID
 import org.springframework.transaction.annotation.Transactional
 
 
-@Transactional(readOnly = true)
+@Transactional
 class PrefillFormService(
     private val documentService: DocumentService,
     private val formDefinitionService: FormIoFormDefinitionService,
