@@ -272,9 +272,7 @@ class SmartDocumentsClient(
     )
 
     private fun getSmartDocumentsPluginData(): SmartDocumentsPropertiesDto {
-        val pluginInstance = pluginService
-            .createInstance(SmartDocumentsPlugin::class.java) { true }
-
+        val pluginInstance = pluginService.createInstance(SmartDocumentsPlugin::class.java) { true }
         requireNotNull(pluginInstance) { "No plugin found" }
 
         return SmartDocumentsPropertiesDto(

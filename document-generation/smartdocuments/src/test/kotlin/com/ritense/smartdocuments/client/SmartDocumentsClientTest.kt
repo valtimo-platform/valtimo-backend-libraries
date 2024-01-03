@@ -23,7 +23,6 @@ import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.DocumentsStructure
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
-import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import java.time.Instant
@@ -312,10 +311,10 @@ internal class SmartDocumentsClientTest : BaseTest() {
         // given
         val responseBody = documentStructureJson()
         val smartDocumentsPlugin = mock<SmartDocumentsPlugin>()
-        smartDocumentsPlugin.url = "www.test.com"
-        smartDocumentsPlugin.username = "user"
-        smartDocumentsPlugin.password = "password"
         whenever(pluginService.createInstance(eq(SmartDocumentsPlugin::class.java), any())).thenReturn(smartDocumentsPlugin)
+        whenever(smartDocumentsPlugin.url).thenReturn("www.ritense.com/")
+        whenever(smartDocumentsPlugin.username).thenReturn("user")
+        whenever(smartDocumentsPlugin.password).thenReturn("password")
 
         mockDocumentenApi.enqueue(mockResponse(responseBody))
 
