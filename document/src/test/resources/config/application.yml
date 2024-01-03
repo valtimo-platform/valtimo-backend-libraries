@@ -11,7 +11,7 @@ spring:
         enabled: false
 #        change-log: classpath:/config/liquibase/document-master.xml
     jpa:
-        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        database-platform: org.hibernate.dialect.PostgreSQL10Dialect
         database: postgresql
         show_sql: true
         open-in-view: false
@@ -48,7 +48,7 @@ spring-actuator:
 
 valtimo:
     database: postgres
-    versioning.enabled: true
+    versioning.enabled: false
     plugin:
         encryption-secret: "abcdefghijklmnop"
 

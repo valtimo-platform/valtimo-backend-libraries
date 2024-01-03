@@ -20,9 +20,9 @@ import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
-import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
+import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.utils.TestUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,14 +61,14 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
     private MockMvc mockMvc;
     private Page<JsonSchemaDocument> documentPage;
     private JsonSchemaDocument document;
-    private DocumentDefinitionService documentDefinitionService;
+    private OutboxService outboxService;
 
     @BeforeEach
     void setUp() {
 
         documentService = mock(JsonSchemaDocumentService.class);
-        documentDefinitionService = mock(DocumentDefinitionService.class);
-        documentResource = new JsonSchemaDocumentResource(documentService, documentDefinitionService);
+        outboxService = mock(OutboxService.class);
+        documentResource = new JsonSchemaDocumentResource(documentService, outboxService);
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -95,8 +95,6 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
     void shouldReturnOkWithDocument() throws Exception {
         when(documentService.findBy(any()))
             .thenReturn(Optional.of(document));
-        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
-            .thenReturn(true);
 
         mockMvc.perform(get("/api/v1/document/{id}", UUID.randomUUID().toString())
             .accept(APPLICATION_JSON_VALUE)
@@ -112,8 +110,6 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
     void shouldReturnDocumentWithAssignee() throws Exception {
         when(documentService.findBy(any()))
             .thenReturn(Optional.of(document));
-        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
-            .thenReturn(true);
 
         mockMvc.perform(get("/api/v1/document/{id}", UUID.randomUUID().toString())
                 .accept(APPLICATION_JSON_VALUE)
@@ -136,8 +132,6 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         when(documentService.modifyDocument(any())).thenReturn(modifyDocumentResult);
         when(documentService.get(document.id().getId().toString()))
             .thenReturn(document);
-        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
-            .thenReturn(true);
 
         final var modifyRequest = new ModifyDocumentRequest(
             document.id().toString(),
@@ -163,8 +157,6 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
 
         when(documentService.get(document.id().getId().toString()))
             .thenReturn(document);
-        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
-            .thenReturn(true);
 
         mockMvc.perform(
             post("/api/v1/document/{document-id}/resource/{resource-id}", document.id(), UUID.randomUUID())
@@ -185,8 +177,6 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
 
         when(documentService.get(document.id().getId().toString()))
             .thenReturn(document);
-        when(documentDefinitionService.currentUserCanAccessDocumentDefinition(document.definitionId().name()))
-            .thenReturn(true);
 
         mockMvc.perform(
             delete("/api/v1/document/{document-id}/resource/{resource-id}", document.id(), UUID.randomUUID())

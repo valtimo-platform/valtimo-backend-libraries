@@ -1,0 +1,60 @@
+spring:
+    rabbitmq:
+        host: localhost
+        port: 55672
+        username: guest
+        password: guest
+        publisher-confirm-type: correlated
+        publisher-returns: true
+
+    datasource:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:3348/outbox-rabbitmq-test
+        username: valtimo
+        password: password
+        hikari:
+            auto-commit: false
+    liquibase:
+        enabled: false
+    jpa:
+        database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+        database: postgresql
+        show_sql: true
+        open-in-view: false
+        properties:
+            hibernate:
+                hbm2ddl.auto: none
+                generate_statistics: false
+                naming-strategy: org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy
+                cache:
+                    use_second_level_cache: false
+                    use_query_cache: false
+                    region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+                format_sql: true
+                jdbc:
+                    time_zone: UTC
+                connection:
+                    provider_disables_autocommit: true
+        hibernate:
+            ddl-auto: none
+            naming:
+                physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+                implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+            use-new-id-generator-mappings: false
+
+valtimo:
+    database: postgres
+    outbox:
+        publisher:
+            rabbitmq:
+                routingKey: valtimo-audit
+                delivery-timeout: "PT0.5S"
+            polling.rate: "PT1H"
+
+logging:
+    level:
+        org:
+            springframework:
+                cloud: DEBUG
+                integration: DEBUG

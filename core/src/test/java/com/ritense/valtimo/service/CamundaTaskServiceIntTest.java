@@ -21,15 +21,19 @@ import com.ritense.authorization.permission.ConditionContainer;
 import com.ritense.authorization.permission.Permission;
 import com.ritense.authorization.permission.PermissionRepository;
 import com.ritense.authorization.role.RoleRepository;
+import com.ritense.outbox.OutboxMessageRepository;
+import com.ritense.outbox.domain.BaseEvent;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.NamedUser;
+import com.ritense.valtimo.contract.json.Mapper;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -43,6 +47,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
@@ -50,6 +55,7 @@ import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.U
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -71,6 +77,9 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     @Inject
     private PermissionRepository permissionRepository;
 
+    @Inject
+    private OutboxMessageRepository outboxRepository;
+
     private final String processDefinitionKey = "one-task-process";
     private final String businessKey = "some-id";
 
@@ -85,7 +94,7 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
         final var processInstance = runWithoutAuthorization(
                 () -> camundaProcessService
-            .findProcessInstanceById(processInstanceWithDefinition.getProcessInstanceDto().getId()).orElseThrow());
+                    .findProcessInstanceById(processInstanceWithDefinition.getProcessInstanceDto().getId()).orElseThrow());
         final var processInstanceTasks = camundaTaskService
             .getProcessInstanceTasks(processInstance.getId(), processInstance.getBusinessKey());
 
@@ -142,14 +151,14 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     void shouldFind10TasksFiltered() throws IllegalAccessException {
         runWithoutAuthorization(() -> {
             for (int i = 0; i < 10; i++) {
-                    camundaProcessService.startProcess(
-                        processDefinitionKey,
-                        businessKey,
-                        Map.of()
-                    );
-                }
+                camundaProcessService.startProcess(
+                    processDefinitionKey,
+                    businessKey,
+                    Map.of()
+                );
+            }
             return null;
-            });
+        });
 
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
@@ -282,6 +291,61 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
 
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
+    void shouldUnassignTask() {
+        var adminRole = roleRepository.findByKey(ADMIN);
+        var userRole = roleRepository.findByKey(USER);
+        var permissions = List.of(
+            new Permission(
+                UUID.randomUUID(),
+                CamundaTask.class,
+                CamundaTaskActionProvider.ASSIGN,
+                new ConditionContainer(),
+                adminRole
+            ),
+            new Permission(
+                UUID.randomUUID(),
+                CamundaTask.class,
+                CamundaTaskActionProvider.ASSIGNABLE,
+                new ConditionContainer(),
+                userRole
+            )
+        );
+
+        permissionRepository.deleteAll();
+        permissionRepository.saveAllAndFlush(permissions);
+
+        ManageableUser manageableUser = mock(ManageableUser.class);
+        when(userManagementService.findByRole(userRole.getKey())).thenReturn(List.of(manageableUser));
+
+        runWithoutAuthorization(() -> camundaProcessService.startProcess(
+            processDefinitionKey,
+            businessKey,
+            Map.of()
+        ));
+
+
+        var pagedTasks = runWithoutAuthorization(() -> camundaTaskService.findTasksFiltered(
+            CamundaTaskService.TaskFilter.ALL,
+            PageRequest.of(0, 20)
+        ));
+
+        var task = pagedTasks.get().findFirst().orElseThrow().getId();
+
+        camundaTaskService.assign(task, null);
+
+        assertThat(outboxRepository.count()).isEqualTo(1);
+
+        ArgumentCaptor<Supplier<BaseEvent>> eventCapture = ArgumentCaptor.forClass(Supplier.class);
+        verify(outboxService, times(1)).send(eventCapture.capture());
+        var event = eventCapture.getValue().get();
+        assertThat(event.getType()).isEqualTo("com.ritense.valtimo.task.unassigned");
+        assertThat(event.getResultType()).isEqualTo("com.ritense.valtimo.camunda.domain.CamundaTask");
+        assertThat(event.getResultId()).isEqualTo(task);
+        assertThat(event.getResult()).isNotNull();
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldGetSerializedVariable() {
         final var processInstance = runWithoutAuthorization(() -> camundaProcessService.startProcess(
             processDefinitionKey,
@@ -315,6 +379,30 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         var candidateUsers = camundaTaskService.getNamedCandidateUsers(taskId);
 
         assertThat(candidateUsers).containsExactly(user);
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
+    void shouldSendOutboxEventWhenTaskCompleted() {
+        final var processInstance = runWithoutAuthorization(() ->
+            camundaProcessService.startProcess(
+                processDefinitionKey,
+                businessKey,
+                Map.of()
+            ));
+        final var task = taskService.createTaskQuery()
+            .processInstanceId(processInstance.getProcessInstanceDto().getId())
+            .singleResult();
+
+        camundaTaskService.complete(task.getId());
+
+        ArgumentCaptor<Supplier<BaseEvent>> eventCapture = ArgumentCaptor.forClass(Supplier.class);
+        verify(outboxService, times(1)).send(eventCapture.capture());
+        var event = eventCapture.getValue().get();
+        assertThat(event.getType()).isEqualTo("com.ritense.valtimo.task.completed");
+        assertThat(event.getResultType()).isEqualTo("com.ritense.valtimo.camunda.domain.CamundaTask");
+        assertThat(event.getResultId()).isEqualTo(task.getId());
+        assertThat(event.getResult()).isNotNull();
     }
 
     private void startProcessAndModifyTask(Consumer<Task> taskHandler) {

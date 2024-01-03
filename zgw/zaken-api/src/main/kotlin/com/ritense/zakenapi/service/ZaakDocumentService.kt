@@ -24,9 +24,12 @@ import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.RelatedFileDto
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakResponse
+import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
+import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 import java.util.UUID
 
+@Transactional
 class ZaakDocumentService(
     val zaakUrlProvider: ZaakUrlProvider,
     val pluginService: PluginService
@@ -71,13 +74,27 @@ class ZaakDocumentService(
     }
 
     fun getZaakByDocumentId(documentId: UUID): ZaakResponse? {
-        val url = zaakUrlProvider.getZaakUrl(documentId)
+        val url = try {
+            zaakUrlProvider.getZaakUrl(documentId)
+        } catch (e: ZaakInstanceLinkNotFoundException) {
+            return null
+        }
         val plugin = pluginService.createInstance(
             ZakenApiPlugin::class.java,
             ZakenApiPlugin.findConfigurationByUrl(url)
         )
 
         return plugin?.getZaak(url)
+    }
+
+    fun getZaakByDocumentIdOrThrow(documentId: UUID): ZaakResponse {
+        val url = zaakUrlProvider.getZaakUrl(documentId)
+        val plugin = pluginService.createInstance(
+            ZakenApiPlugin::class.java,
+            ZakenApiPlugin.findConfigurationByUrl(url)
+        )
+            ?: throw IllegalStateException("Missing plugin configuration of type '${ZakenApiPlugin.PLUGIN_KEY}' for url '$url'")
+        return plugin.getZaak(url)
     }
 
 }

@@ -16,11 +16,16 @@
 
 package com.ritense.valtimo.formflow
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.resource.service.ResourceService
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.runApplication
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.context.annotation.Bean
 
 @SpringBootApplication
 class TestApplication {
@@ -34,5 +39,11 @@ class TestApplication {
 
         @MockBean
         lateinit var resourceService: ResourceService
+
+        @Bean
+        @ConditionalOnMissingBean(ObjectMapper::class)
+        fun objectMapper(): ObjectMapper {
+            return jacksonObjectMapper().registerModule(JavaTimeModule())
+        }
     }
 }

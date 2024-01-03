@@ -19,6 +19,8 @@ package com.ritense.processlink.configuration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.processlink.autodeployment.ProcessLinkDeploymentApplicationReadyEventListener
 import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
+import com.ritense.processlink.exporter.ProcessLinkExporter
+import com.ritense.processlink.importer.ProcessLinkImporter
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.processlink.security.config.ProcessLinkHttpSecurityConfigurer
@@ -114,11 +116,34 @@ class ProcessLinkAutoConfiguration {
     @ConditionalOnMissingBean(ProcessLinkDeploymentApplicationReadyEventListener::class)
     fun processLinkDeploymentApplicationReadyEventListener(
         resourceLoader: ResourceLoader,
-        repositoryService: CamundaRepositoryService,
-        processLinkService: ProcessLinkService,
-        objectMapper: ObjectMapper): ProcessLinkDeploymentApplicationReadyEventListener {
-        return ProcessLinkDeploymentApplicationReadyEventListener(resourceLoader,
-            repositoryService,
-            processLinkService, objectMapper)
+        processLinkImporter: ProcessLinkImporter
+    ): ProcessLinkDeploymentApplicationReadyEventListener {
+        return ProcessLinkDeploymentApplicationReadyEventListener(
+            resourceLoader,
+            processLinkImporter
+        )
     }
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessLinkExporter::class)
+    fun processLinkExporter(
+        objectMapper: ObjectMapper,
+        processLinkService: ProcessLinkService
+    ) = ProcessLinkExporter(
+        objectMapper,
+        processLinkService
+    )
+
+    @Bean
+    @ConditionalOnMissingBean(ProcessLinkImporter::class)
+    fun processLinkImporter(
+        processLinkService: ProcessLinkService,
+        repositoryService: CamundaRepositoryService,
+        objectMapper: ObjectMapper
+    ) = ProcessLinkImporter(
+        processLinkService,
+        repositoryService,
+        objectMapper
+    )
+
 }

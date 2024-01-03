@@ -28,15 +28,19 @@ dependencies {
     implementation project(":plugin")
     implementation project(":process-document")
     implementation project(":resource:temporary-resource-storage")
+    implementation project(":value-resolver")
     implementation project(":zgw")
     implementation project(':zgw:catalogi-api')
     implementation project(':zgw:documenten-api')
+    implementation project(":outbox")
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
+    testImplementation project(":form")
     testImplementation project(":process-document")
     testImplementation project(":plugin-valtimo")
     testImplementation project(":resource")

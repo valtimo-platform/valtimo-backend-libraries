@@ -20,12 +20,18 @@ import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
+import com.ritense.document.service.SearchConfigurationDeploymentService;
 import com.ritense.document.service.SearchFieldService;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Function;
+
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.NUMBER;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
@@ -36,9 +42,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
-
     @Autowired
     public SearchFieldService searchFieldService;
+
+    @Autowired
+    public SearchConfigurationDeploymentService searchConfigurationDeploymentService;
 
     @Test
     void shouldDeploySearchConfigurationFromResourceFolder() {
@@ -111,4 +119,18 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
         });
     }
 
+    @Test
+    void shouldBeAbleToDeploySearchFieldsFromFile() throws IOException {
+        final var personSearchFieldsJson = IOUtils.toString(
+            Thread.currentThread().getContextClassLoader().getResourceAsStream("config/search/person.json"),
+            StandardCharsets.UTF_8
+        );
+        var documentDefinitionName = "person";
+
+        searchConfigurationDeploymentService.deploy(documentDefinitionName, personSearchFieldsJson);
+
+        List<SearchField> result = AuthorizationContext.runWithoutAuthorization(() -> searchFieldService.getSearchFields(documentDefinitionName));
+
+        assertThat(result.get(0).getKey()).isEqualTo("firstName");
+    }
 }

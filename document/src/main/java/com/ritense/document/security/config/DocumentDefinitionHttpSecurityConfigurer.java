@@ -36,6 +36,8 @@ public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityCon
                 .antMatchers(GET, "/api/v1/document-definition/open/count").authenticated()
                 .antMatchers(GET, "/api/management/v1/document-definition").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/management/v1/document-definition/{name}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/management/v1/document-definition/{name}/version/{version}").hasAuthority(ADMIN)
+                .antMatchers(GET, "/api/management/v1/document-definition/{name}/version").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/v1/document-definition").hasAuthority(ADMIN) // Deprecated since v11
                 .antMatchers(POST, "/api/management/v1/document-definition").hasAuthority(ADMIN)
                 .antMatchers(DELETE, "/api/v1/document-definition/{name}").hasAuthority(ADMIN) // Deprecated since v11

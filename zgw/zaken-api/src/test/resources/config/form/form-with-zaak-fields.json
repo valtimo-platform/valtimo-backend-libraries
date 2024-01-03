@@ -1,0 +1,23 @@
+{
+    "display": "form",
+    "components": [
+        {
+            "key": "zaakIdentificatie",
+            "type": "textfield",
+            "label": "Zaak identificatie",
+            "properties": {
+                "sourceKey": "zaak:identificatie"
+            },
+            "input": true
+        },
+        {
+            "key": "firstZaakStatus",
+            "type": "textfield",
+            "label": "First zaak status",
+            "properties": {
+                "sourceKey": "zaakstatus:omschrijving"
+            },
+            "input": true
+        }
+    ]
+}

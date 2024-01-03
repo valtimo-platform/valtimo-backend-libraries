@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -26,8 +27,10 @@ import com.ritense.document.domain.search.SearchOperator;
 import com.ritense.document.domain.search.SearchRequestMapper;
 import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
+import com.ritense.document.event.DocumentsListed;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.SearchFieldService;
+import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import java.time.Instant;
@@ -83,18 +86,25 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private final UserManagementService userManagementService;
 
     private final AuthorizationService authorizationService;
+    private final OutboxService outboxService;
+
+    private final ObjectMapper objectMapper;
 
     public JsonSchemaDocumentSearchService(
         EntityManager entityManager,
         QueryDialectHelper queryDialectHelper,
         SearchFieldService searchFieldService,
         UserManagementService userManagementService,
-        AuthorizationService authorizationService) {
+        AuthorizationService authorizationService, OutboxService outboxService,
+        ObjectMapper objectMapper
+    ) {
         this.entityManager = entityManager;
         this.queryDialectHelper = queryDialectHelper;
         this.searchFieldService = searchFieldService;
         this.userManagementService = userManagementService;
         this.authorizationService = authorizationService;
+        this.outboxService = outboxService;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -155,7 +165,13 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .setMaxResults(pageable.getPageSize());
         }
 
-        return new PageImpl<>(typedQuery.getResultList(), pageable, count(queryWhereBuilder));
+        List<JsonSchemaDocument> documents = typedQuery.getResultList();
+        outboxService.send(() ->
+            new DocumentsListed(
+                objectMapper.valueToTree(documents)
+            )
+        );
+        return new PageImpl<>(documents, pageable, count(queryWhereBuilder));
     }
 
     private Long count(

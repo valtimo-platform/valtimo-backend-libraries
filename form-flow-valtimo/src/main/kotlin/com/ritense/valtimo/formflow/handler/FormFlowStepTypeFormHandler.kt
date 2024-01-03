@@ -34,7 +34,7 @@ class FormFlowStepTypeFormHandler(
     private val objectMapper: ObjectMapper
 ) : FormFlowStepTypeHandler {
 
-    override fun getType() = "form"
+    override fun getType() = TYPE
 
     override fun getTypeProperties(stepInstance: FormFlowStepInstance): FormTypeProperties {
         val formDefinition = getFormDefinition(stepInstance)
@@ -75,5 +75,9 @@ class FormFlowStepTypeFormHandler(
             null,
             taskInstanceId
         )
+    }
+
+    companion object {
+        const val TYPE = "form"
     }
 }

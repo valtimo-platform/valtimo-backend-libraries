@@ -16,6 +16,7 @@
 
 package com.ritense.processlink.mapper
 
+import com.ritense.exporter.request.ExportRequest
 import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
@@ -33,4 +34,13 @@ interface ProcessLinkMapper {
         processLinkToUpdate: ProcessLink,
         updateRequestDto: ProcessLinkUpdateRequestDto
     ): ProcessLink
+
+    /**
+     * Used by the export service.
+     * Should return export requests the provided processLink depends on.
+     * @param processLink The processLink to create related export requests for
+     */
+    fun createRelatedExportRequests(processLink: ProcessLink): Set<ExportRequest> = setOf()
+
+    fun getImporterType(): String? = null
 }

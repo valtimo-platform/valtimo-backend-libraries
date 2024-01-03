@@ -17,15 +17,19 @@
 package com.ritense.form.mapper
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.exporter.request.FormDefinitionExportRequest
+import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.domain.FormProcessLink
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.web.rest.dto.FormProcessLinkCreateRequestDto
 import com.ritense.form.web.rest.dto.FormProcessLinkResponseDto
 import com.ritense.form.web.rest.dto.FormProcessLinkUpdateRequestDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
+import java.util.Optional
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -147,5 +151,30 @@ internal class FormProcessLinkMapperTest {
         }
 
         assertEquals("Form definition not found with id ${updateRequestDto.formDefinitionId}", exception.message)
+    }
+
+    @Test
+    fun `should return related export request for form process links`() {
+        val formDefinition = FormIoFormDefinition(
+            UUID.randomUUID(),
+            "testing",
+            "{}",
+            true
+        )
+        val formProcessLink = FormProcessLink(
+            id = UUID.randomUUID(),
+            processDefinitionId = "processDefinitionId",
+            activityId = "activityId",
+            activityType = SERVICE_TASK_START,
+            formDefinitionId = formDefinition.id
+        )
+
+        whenever(formDefinitionService.getFormDefinitionById(formProcessLink.formDefinitionId))
+            .thenReturn(Optional.of(formDefinition))
+        val relatedExportRequests = formProcessLinkMapper.createRelatedExportRequests(formProcessLink)
+
+        assertThat(relatedExportRequests).contains(
+            FormDefinitionExportRequest("testing")
+        )
     }
 }

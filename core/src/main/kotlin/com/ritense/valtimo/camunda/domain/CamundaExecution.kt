@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.camunda.domain
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -28,6 +30,7 @@ import javax.persistence.Transient
 
 @Entity
 @Table(name = "ACT_RU_EXECUTION")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "id")
 class CamundaExecution(
 
     @Id
@@ -43,7 +46,7 @@ class CamundaExecution(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROC_INST_ID_")
-    val processInstance: CamundaExecution?,
+    var processInstance: CamundaExecution?,
 
     @Column(name = "BUSINESS_KEY_")
     val businessKey: String?,

@@ -17,6 +17,8 @@
 package com.ritense.form.mapper
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.exporter.request.ExportRequest
+import com.ritense.exporter.request.FormDefinitionExportRequest
 import com.ritense.form.domain.FormProcessLink
 import com.ritense.form.processlink.dto.FormProcessLinkDeployDto
 import com.ritense.form.service.FormDefinitionService
@@ -40,10 +42,11 @@ class FormProcessLinkMapper(
 
     init {
         objectMapper.registerSubtypes(
-            FormProcessLinkDeployDto::class.java,
-            FormProcessLinkResponseDto::class.java,
             FormProcessLinkCreateRequestDto::class.java,
-            FormProcessLinkUpdateRequestDto::class.java,
+            FormProcessLinkDeployDto::class.java,
+            FormProcessLinkExportResponseDto::class.java,
+            FormProcessLinkResponseDto::class.java,
+            FormProcessLinkUpdateRequestDto::class.java
         )
     }
 
@@ -113,6 +116,14 @@ class FormProcessLinkMapper(
             formDefinitionId = updateRequestDto.formDefinitionId
         )
     }
+
+    override fun createRelatedExportRequests(processLink: ProcessLink): Set<ExportRequest> {
+        processLink as FormProcessLink
+        val formDefinition = formDefinitionService.getFormDefinitionById(processLink.formDefinitionId).orElseThrow()
+        return setOf(FormDefinitionExportRequest(formDefinition.name))
+    }
+
+    override fun getImporterType() = "form"
 
     companion object {
         const val PROCESS_LINK_TYPE_FORM = "form"

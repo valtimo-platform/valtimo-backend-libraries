@@ -25,8 +25,11 @@ dependencies {
     api project(":authorization")
 
     implementation project(":contract")
+    implementation project(":outbox")
     implementation project(":resource")
     implementation project(":web")
+    implementation project(":exporter")
+    implementation project(":importer")
 
     testImplementation project(':test-utils-common')
 
@@ -51,6 +54,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect"
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "org.graalvm.js:js-scriptengine:${graalvmJsVersion}"
+    implementation "org.graalvm.js:js:${graalvmJsVersion}"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"

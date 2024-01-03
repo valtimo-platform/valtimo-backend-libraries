@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
@@ -23,6 +24,9 @@ import com.ritense.authorization.request.DelegateUserEntityAuthorizationRequest;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.role.Role;
 import com.ritense.authorization.specification.AuthorizationSpecification;
+import com.ritense.outbox.OutboxService;
+import com.ritense.valtimo.event.TaskAssigned;
+import com.ritense.valtimo.event.TaskCompleted;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
@@ -31,7 +35,6 @@ import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
 import com.ritense.valtimo.camunda.dto.TaskExtended;
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
-import com.ritense.valtimo.camunda.service.CamundaContextService;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -41,6 +44,7 @@ import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import com.ritense.valtimo.event.TaskUnassigned;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
@@ -64,6 +68,7 @@ import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.form.TaskFormData;
 import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
 import org.camunda.bpm.engine.task.Comment;
+import org.hibernate.Hibernate;
 import org.hibernate.query.criteria.internal.OrderImpl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -73,6 +78,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Order;
@@ -84,6 +90,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGN;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGNABLE;
@@ -128,7 +135,8 @@ public class CamundaTaskService {
     private final UserManagementService userManagementService;
     private final EntityManager entityManager;
     private final AuthorizationService authorizationService;
-    private final CamundaContextService camundaContextService;
+    private final OutboxService outboxService;
+    private final ObjectMapper objectMapper;
 
     public CamundaTaskService(
         TaskService taskService,
@@ -142,7 +150,7 @@ public class CamundaTaskService {
         UserManagementService userManagementService,
         EntityManager entityManager,
         AuthorizationService authorizationService,
-        CamundaContextService camundaContextService) {
+        OutboxService outboxService, ObjectMapper objectMapper) {
         this.taskService = taskService;
         this.formService = formService;
         this.delegateTaskHelper = delegateTaskHelper;
@@ -154,7 +162,8 @@ public class CamundaTaskService {
         this.userManagementService = userManagementService;
         this.entityManager = entityManager;
         this.authorizationService = authorizationService;
-        this.camundaContextService = camundaContextService;
+        this.outboxService = outboxService;
+        this.objectMapper = objectMapper;
     }
 
     @Transactional(readOnly = true)
@@ -189,6 +198,7 @@ public class CamundaTaskService {
                 taskService.setAssignee(task.getId(), assignee);
                 entityManager.refresh(task);
                 publishTaskAssignedEvent(task, currentAssignee, assignee);
+                outboxService.send(() -> new TaskAssigned(task.getId(), objectMapper.valueToTree(task)));
             } catch (AuthorizationException ex) {
                 throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
             } catch (ProcessEngineException ex) {
@@ -204,6 +214,7 @@ public class CamundaTaskService {
         try {
             taskService.setAssignee(task.getId(), NO_USER);
             entityManager.refresh(task);
+            outboxService.send(() -> new TaskUnassigned(task.getId(), objectMapper.valueToTree(task)));
         } catch (AuthorizationException ex) {
             throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
         } catch (ProcessEngineException ex) {
@@ -255,7 +266,10 @@ public class CamundaTaskService {
         final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
         requirePermission(task, COMPLETE);
         taskService.complete(taskId);
+        Hibernate.initialize(task.getVariableInstances());
+        Hibernate.initialize(task.getIdentityLinks());
         entityManager.detach(task);
+        outboxService.send(() -> new TaskCompleted(taskId, objectMapper.valueToTree(task)));
     }
 
     @Transactional
@@ -267,6 +281,7 @@ public class CamundaTaskService {
                 final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
                 requirePermission(task, COMPLETE);
                 formService.submitTaskForm(task.getId(), FormUtils.createTypedVariableMap(variables));
+                outboxService.send(() -> new TaskCompleted(taskId, objectMapper.valueToTree(task)));
             }
         } catch (FormFieldValidationException ex) {
             throw ex;

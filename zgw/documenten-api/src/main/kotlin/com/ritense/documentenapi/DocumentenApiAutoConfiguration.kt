@@ -21,6 +21,7 @@ import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.security.DocumentenApiHttpSecurityConfigurer
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.web.rest.DocumentenApiResource
+import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -28,14 +29,25 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
+import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
 class DocumentenApiAutoConfiguration {
 
     @Bean
-    fun documentenApiClient(webclientBuilder: WebClient.Builder): DocumentenApiClient {
-        return DocumentenApiClient(webclientBuilder)
+    fun documentenApiClient(
+        webclientBuilder: WebClient.Builder,
+        outboxService: OutboxService,
+        objectMapper: ObjectMapper,
+        platformTransactionManager: PlatformTransactionManager
+    ): DocumentenApiClient {
+        return DocumentenApiClient(
+            webclientBuilder,
+            outboxService,
+            objectMapper,
+            platformTransactionManager
+        )
     }
 
     @Bean
