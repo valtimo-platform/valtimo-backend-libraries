@@ -18,7 +18,10 @@
 package com.ritense.valtimo.autoconfiguration
 
 import com.ritense.authorization.AuthorizationService
+import com.ritense.valtimo.camunda.authorization.CamundaExecutionProcessDefinitionMapper
+import com.ritense.valtimo.camunda.authorization.CamundaExecutionSpecificationFactory
 import com.ritense.valtimo.camunda.authorization.CamundaIdentityLinkSpecificationFactory
+import com.ritense.valtimo.camunda.authorization.CamundaProcessDefinitionSpecificationFactory
 import com.ritense.valtimo.camunda.authorization.CamundaTaskSpecificationFactory
 import com.ritense.valtimo.camunda.repository.CamundaBytearrayRepository
 import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository
@@ -126,6 +129,33 @@ class ValtimoCamundaAutoConfiguration {
     ): CamundaIdentityLinkSpecificationFactory {
         return CamundaIdentityLinkSpecificationFactory(camundaRuntimeService, queryDialectHelper)
     }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaExecutionSpecificationFactory::class)
+    @ConditionalOnBean(AuthorizationService::class)
+    fun camundaExecutionSpecificationFactory(
+        repository: CamundaExecutionRepository,
+        queryDialectHelper: QueryDialectHelper
+    ): CamundaExecutionSpecificationFactory {
+        return CamundaExecutionSpecificationFactory(repository, queryDialectHelper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaProcessDefinitionSpecificationFactory::class)
+    @ConditionalOnBean(AuthorizationService::class)
+    fun camundaProcessDefinitionSpecificationFactory(
+        repository: CamundaProcessDefinitionRepository,
+        queryDialectHelper: QueryDialectHelper
+    ): CamundaProcessDefinitionSpecificationFactory {
+        return CamundaProcessDefinitionSpecificationFactory(repository, queryDialectHelper)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaExecutionProcessDefinitionMapper::class)
+    @ConditionalOnBean(AuthorizationService::class)
+    fun camundaExecutionProcessDefinitionMapper() = CamundaExecutionProcessDefinitionMapper()
+
+
 
     @Bean
     @ConditionalOnMissingBean(CamundaTaskIdentityLinkMapper::class)
