@@ -3,5 +3,10 @@
         "processDefinitionKey": "loan-process-demo",
         "canInitializeDocument": true,
         "startableByUser": true
+    },
+    {
+        "processDefinitionKey": "single-user-task-process",
+        "canInitializeDocument": true,
+        "startableByUser": true
     }
 ]
