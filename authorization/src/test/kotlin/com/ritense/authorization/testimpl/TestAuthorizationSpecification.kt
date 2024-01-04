@@ -16,12 +16,12 @@
 
 package com.ritense.authorization.testimpl
 
+import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
-import com.ritense.authorization.permission.Permission
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
 
@@ -32,7 +32,7 @@ class TestAuthorizationSpecification(
 ): AuthorizationSpecification<TestEntity>(authContext, permissions) {
     override fun toPredicate(
         root: Root<TestEntity>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         val predicates = permissions.stream()

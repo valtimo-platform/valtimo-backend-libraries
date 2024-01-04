@@ -22,6 +22,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.exporter.ExportFile
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
+import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.exporter.request.FormDefinitionExportRequest
 import org.springframework.transaction.annotation.Transactional
@@ -41,7 +42,7 @@ class JsonSchemaDocumentDefinitionExporter(
         val documentDefinition = documentDefinitionService.findBy(documentDefinitionId).orElseThrow()
 
         val exportFile = ByteArrayOutputStream().use {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(it, documentDefinition.schema.asJson())
+            objectMapper.writer(ExportPrettyPrinter()).writeValue(it, documentDefinition.schema.asJson())
 
             ExportFile(
                 PATH.format(documentDefinition.id.name()),
@@ -51,7 +52,7 @@ class JsonSchemaDocumentDefinitionExporter(
 
         return ExportResult(
             exportFile,
-            setOf(FormDefinitionExportRequest(request.name + ".summary", true))
+            setOf(FormDefinitionExportRequest(request.name + ".summary", false))
         )
     }
 

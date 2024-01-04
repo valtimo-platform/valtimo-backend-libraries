@@ -17,6 +17,7 @@
 package com.ritense.case.service
 
 import com.ritense.importer.ImportRequest
+import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -44,7 +45,7 @@ class CaseDefinitionSettingsImporterTest(
 
     @Test
     fun `should depend on 'documentdefinition' type`() {
-        assertThat(importer.dependsOn()).isEqualTo(setOf("documentdefinition"))
+        assertThat(importer.dependsOn()).isEqualTo(setOf(DOCUMENT_DEFINITION))
     }
 
     @Test
@@ -65,11 +66,13 @@ class CaseDefinitionSettingsImporterTest(
 
         val nameCaptor = argumentCaptor<String>()
         val jsonCaptor = argumentCaptor<String>()
+        val booleanCaptor = argumentCaptor<Boolean>()
 
-        verify(deploymentService).deploy(nameCaptor.capture(), jsonCaptor.capture())
+        verify(deploymentService).deploy(nameCaptor.capture(), jsonCaptor.capture(), booleanCaptor.capture())
 
         assertThat(nameCaptor.firstValue).isEqualTo("my-case-list")
         assertThat(jsonCaptor.firstValue).isEqualTo(jsonContent)
+        assertThat(booleanCaptor.firstValue).isEqualTo(true)
     }
 
     private companion object {

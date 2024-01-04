@@ -26,6 +26,8 @@ import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.RoleResource;
+import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
@@ -38,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -192,46 +195,54 @@ public class KeycloakUserManagementService implements UserManagementService {
     }
 
     private List<UserRepresentation> findUserRepresentationByRole(String authority) {
-        Set<UserRepresentation> roleUserMembers = new HashSet<>();
-        boolean rolesFound = false;
 
-        try {
-            Set<UserRepresentation> users;
-            try (Keycloak keycloak = keycloakService.keycloak()) {
-                users = keycloakService.realmRolesResource(keycloak).get(authority).getRoleUserMembers(0, MAX_USERS);
+        List<List<UserRepresentation>> usersList = new ArrayList<>();
+        try (Keycloak keycloak = keycloakService.keycloak()) {
+            Set<GroupRepresentation> roleGroups = new HashSet<>();
+            try {
+                RoleResource roleResource = keycloakService.realmRolesResource(keycloak).get(authority);
+                usersList.add(roleResource.getUserMembers(0, MAX_USERS));
+                roleGroups.addAll(roleResource.getRoleGroupMembers());
+            } catch (NotFoundException e) {
+                logger.debug("Failed to find users by realm. Error: {}", e.getMessage());
             }
+            if (!clientName.isBlank()) {
+                try {
+                    RoleResource roleResource = keycloakService.clientRolesResource(keycloak).get(authority);
+                    usersList.add(roleResource.getUserMembers(0, MAX_USERS));
+                    roleGroups.addAll(roleResource.getRoleGroupMembers());
+                } catch (NotFoundException e) {
+                    logger.debug("Failed to find users by client. Error: {}", e.getMessage());
+                }
+            }
+            try {
+                for (GroupRepresentation group : roleGroups) {
+                    usersList.add(keycloakService.realmResource(keycloak).groups().group(group.getId()).members(0, MAX_USERS));
+                }
+            } catch (NotFoundException e) {
+                logger.debug("Failed to find users by group. Error: {}", e.getMessage());
+            }
+        }
+
+        usersList.forEach(users -> {
             if (users.size() >= MAX_USERS) {
                 logger.warn(MAX_USERS_WARNING_MESSAGE);
             }
-            roleUserMembers.addAll(users);
-            rolesFound = true;
-        } catch (NotFoundException e) {
-            logger.debug("Could not find realm roles", e);
-        }
+        });
 
-        if (!clientName.isBlank()) {
-            try {
-                Set<UserRepresentation> users;
-                try (Keycloak keycloak = keycloakService.keycloak()) {
-                    users = keycloakService.clientRolesResource(keycloak).get(authority).getRoleUserMembers(0, MAX_USERS);
-                }
-                if (users.size() >= MAX_USERS) {
-                    logger.warn(MAX_USERS_WARNING_MESSAGE);
-                }
-                roleUserMembers.addAll(users);
-                rolesFound = true;
-            } catch (NotFoundException e) {
-                logger.debug("Could not find client roles", e);
-            }
-        }
-
-        if (!rolesFound) {
-            logger.error("Role {} was not found in keycloak realm roles or client roles", authority);
-        }
-
-        return roleUserMembers.stream()
+        var users  = usersList.stream()
+            .flatMap(Collection::stream)
             .filter(UserRepresentation::isEnabled)
+            .map(UserRepresentationWrapper::new)
+            .distinct()
+            .map(UserRepresentationWrapper::userRepresentation)
             .toList();
+
+        if (users.isEmpty()) {
+            logger.error("No active users found with role {}", authority);
+        }
+
+        return users;
     }
 
     private ManageableUser toManageableUserByRetrievingRoles(UserRepresentation userRepresentation) {
@@ -266,13 +277,13 @@ public class KeycloakUserManagementService implements UserManagementService {
             var realmRoles = keycloakService
                 .usersResource(keycloak)
                 .get(userRepresentation.getId())
-                .roles().realmLevel().listAll();
+                .roles().realmLevel().listEffective(true);
             var roles = new ArrayList<>(realmRoles);
             if (!clientName.isBlank()) {
                 var clientRoles = keycloakService
                     .usersResource(keycloak)
                     .get(userRepresentation.getId())
-                    .roles().clientLevel(keycloakService.getClientId(keycloak)).listAll();
+                    .roles().clientLevel(keycloakService.getClientId(keycloak)).listEffective(true);
                 roles.addAll(clientRoles);
             }
             return roles;
@@ -281,5 +292,35 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     private ValtimoUser toValtimoUserByRetrievingRoles(UserRepresentation userRepresentation) {
         return (ValtimoUser) toManageableUserByRetrievingRoles(userRepresentation);
+    }
+
+    private record UserRepresentationWrapper(UserRepresentation userRepresentation) {
+
+        String getId() {
+            return userRepresentation.getId();
+        }
+
+        String getUsername() {
+            return userRepresentation.getUsername();
+        }
+
+        String getEmail() {
+            return userRepresentation.getEmail();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            UserRepresentationWrapper that = (UserRepresentationWrapper) o;
+            return Objects.equals(getId(), that.getId())
+                && Objects.equals(getUsername(), that.getUsername())
+                && Objects.equals(getEmail(), that.getEmail());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getId(), getUsername(), getEmail());
+        }
     }
 }

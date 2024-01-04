@@ -19,15 +19,17 @@ package com.ritense.document.importer
 import com.ritense.document.service.SearchConfigurationDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
+import com.ritense.importer.ValtimoImportTypes.Companion.SEARCH
 import org.springframework.transaction.annotation.Transactional
 
 @Transactional
 class SearchFieldImporter(
     private val searchConfigurationDeploymentService: SearchConfigurationDeploymentService
 ) : Importer {
-    override fun type() = "search"
+    override fun type() = SEARCH
 
-    override fun dependsOn() = setOf("documentdefinition")
+    override fun dependsOn() = setOf(DOCUMENT_DEFINITION)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 

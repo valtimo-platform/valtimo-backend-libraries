@@ -18,19 +18,21 @@ package com.ritense.case.service
 
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
+import com.ritense.importer.ValtimoImportTypes.Companion.CASE_DEFINITION_SETTINGS
+import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
 
 class CaseDefinitionSettingsImporter(
     private val deploymentService: CaseDefinitionDeploymentService
 ) : Importer {
-    override fun type() = "casesettings"
+    override fun type() = CASE_DEFINITION_SETTINGS
 
-    override fun dependsOn() = setOf("documentdefinition")
+    override fun dependsOn() = setOf(DOCUMENT_DEFINITION)
 
     override fun supports(fileName: String) = fileName.matches(FILENAME_REGEX)
 
     override fun import(request: ImportRequest) {
         val caseDefinitionName = FILENAME_REGEX.matchEntire(request.fileName)!!.groupValues[1]
-        deploymentService.deploy(caseDefinitionName, request.content.toString(Charsets.UTF_8))
+        deploymentService.deploy(caseDefinitionName, request.content.toString(Charsets.UTF_8), true)
     }
 
     private companion object {

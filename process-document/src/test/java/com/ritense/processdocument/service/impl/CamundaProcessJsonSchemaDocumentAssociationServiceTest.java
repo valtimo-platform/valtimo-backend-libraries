@@ -32,8 +32,10 @@ import com.ritense.processdocument.exception.UnknownProcessDefinitionException;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
+import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,8 +60,10 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
     private DocumentDefinitionService documentDefinitionService;
     private CamundaRepositoryService repositoryService;
     private RuntimeService runtimeService;
+    private HistoryService historyService;
     private AuthorizationService authorizationService;
     private DocumentService documentService;
+    private UserManagementService userManagementService;
 
     @BeforeEach
     public void setUp() {
@@ -69,8 +73,10 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
         documentDefinitionService = mock(DocumentDefinitionService.class);
         repositoryService = mock(CamundaRepositoryService.class);
         runtimeService = mock(RuntimeService.class);
+        historyService = mock(HistoryService.class);
         authorizationService = mock(AuthorizationService.class);
         documentService = mock(DocumentService.class);
+        userManagementService = mock(UserManagementService.class);
 
         service = new CamundaProcessJsonSchemaDocumentAssociationService(
             processDocumentDefinitionRepository,
@@ -79,8 +85,10 @@ public class CamundaProcessJsonSchemaDocumentAssociationServiceTest extends Base
             documentDefinitionService,
             repositoryService,
             runtimeService,
+            historyService,
             authorizationService,
-            documentService
+            documentService,
+            userManagementService
         );
     }
 

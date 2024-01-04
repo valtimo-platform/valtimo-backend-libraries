@@ -24,7 +24,7 @@ class ExportServiceIntTest @Autowired constructor(
 
     @Test
     fun `should export an empty zip`() {
-        val bytes = exportService.export(TestExportRequest(isOptional = true)).toByteArray()
+        val bytes = exportService.export(TestExportRequest(required = false)).toByteArray()
         val entries = ZipInputStream(ByteArrayInputStream(bytes)).use {
             generateSequence { it.nextEntry }
                 .toList()
