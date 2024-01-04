@@ -22,12 +22,12 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 data class RelatedFileDto(
-    val fileId: UUID,
-    val fileName: String?,
-    val sizeInBytes: Long?,
-    val createdOn: LocalDateTime,
-    val createdBy: String,
-    val pluginConfigurationId: UUID,
+    private val fileId: UUID,
+    private val fileName: String?,
+    private val sizeInBytes: Long?,
+    private val createdOn: LocalDateTime,
+    private val createdBy: String,
+    private val pluginConfigurationId: UUID,
     private val author: String? = null,
     private val title: String? = null,
     private val status: String? = null,

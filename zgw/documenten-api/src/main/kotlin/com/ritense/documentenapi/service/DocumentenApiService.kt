@@ -16,18 +16,23 @@
 
 package com.ritense.documentenapi.service
 
+import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
+import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.service.PluginService
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
+import java.net.URI
+import java.util.UUID
 
 @Transactional
 class DocumentenApiService(
-    val pluginService: PluginService
+    private val pluginService: PluginService,
+    private val catalogiService: CatalogiService,
 ) {
     fun downloadInformatieObject(pluginConfigurationId: String, documentId: String): InputStream {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
@@ -46,7 +51,8 @@ class DocumentenApiService(
     ): RelatedFile? {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentId)
-        documentApiPlugin.modifyInformatieObject(documentUrl, PatchDocumentRequest(modifyDocumentRequest))
+        val informatieObject = documentApiPlugin.modifyInformatieObject(documentUrl, PatchDocumentRequest(modifyDocumentRequest))
+        return getRelatedFiles(informatieObject, pluginConfigurationId)
     }
 
     fun deleteInformatieObject(pluginConfigurationId: String, documentId: String) {
@@ -55,4 +61,32 @@ class DocumentenApiService(
         documentApiPlugin.deleteInformatieObject(documentUrl)
     }
 
+    private fun getRelatedFiles(informatieObject: DocumentInformatieObject, pluginConfigurationId: String): RelatedFileDto {
+        return RelatedFileDto(
+            fileId = UUID.fromString(informatieObject.url.path.substringAfterLast("/")),
+            fileName = informatieObject.bestandsnaam,
+            sizeInBytes = informatieObject.bestandsomvang,
+            createdOn = informatieObject.creatiedatum.atStartOfDay(),
+            createdBy = informatieObject.auteur,
+            author = informatieObject.auteur,
+            title = informatieObject.titel,
+            status = informatieObject.status?.key,
+            language = informatieObject.taal,
+            pluginConfigurationId = UUID.fromString(pluginConfigurationId),
+            identification = informatieObject.identificatie,
+            description = informatieObject.beschrijving,
+            informatieobjecttype = getInformatieobjecttypeByUri(informatieObject.informatieobjecttype),
+            keywords = informatieObject.trefwoorden,
+            format = informatieObject.formaat,
+            sendDate = informatieObject.verzenddatum,
+            receiptDate = informatieObject.ontvangstdatum,
+            confidentialityLevel = informatieObject.vertrouwelijkheidaanduiding?.key,
+            version = informatieObject.versie,
+            indicationUsageRights = informatieObject.indicatieGebruiksrecht
+        )
+    }
+
+    private fun getInformatieobjecttypeByUri(uri: String?): String? {
+        return uri?.let { catalogiService.getInformatieobjecttype(URI(it))?.omschrijving }
+    }
 }

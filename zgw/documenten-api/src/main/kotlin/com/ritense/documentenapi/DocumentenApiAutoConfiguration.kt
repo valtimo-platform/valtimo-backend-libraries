@@ -17,6 +17,7 @@
 package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.security.DocumentenApiHttpSecurityConfigurer
 import com.ritense.documentenapi.service.DocumentenApiService
@@ -70,9 +71,10 @@ class DocumentenApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentenApiService::class)
     fun documentenApiService(
-        pluginService: PluginService
+        pluginService: PluginService,
+        catalogiService: CatalogiService,
     ): DocumentenApiService {
-        return DocumentenApiService(pluginService)
+        return DocumentenApiService(pluginService, catalogiService)
     }
 
     @Bean
