@@ -28,6 +28,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.*
+import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.utils.RequestHelper
@@ -96,7 +97,13 @@ class SmartDocumentsPlugin(
     fun getTemplateNames(
         @PluginActionProperty templateGroupName: String,
     ): List<String> {
-        val documentsStructure = smartDocumentsClient.getDocumentStructure() ?: return emptyList()
+        val pluginProperties = SmartDocumentsPropertiesDto(
+            username = username,
+            password = password,
+            url = url
+        )
+
+        val documentsStructure = smartDocumentsClient.getDocumentStructure(pluginProperties) ?: return emptyList()
         val templateGroup = findTemplateGroupByName(documentsStructure.templatesStructure.templateGroups, templateGroupName)
         return templateGroup?.templates?.map { it.name } ?: emptyList()
     }

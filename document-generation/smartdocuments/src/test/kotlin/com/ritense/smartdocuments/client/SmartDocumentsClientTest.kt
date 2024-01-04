@@ -16,14 +16,13 @@
 
 package com.ritense.smartdocuments.client
 
-import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.BaseTest
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.DocumentsStructure
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
-import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
+import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import java.time.Instant
 import java.util.concurrent.TimeUnit.MILLISECONDS
@@ -48,8 +47,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
     lateinit var mockDocumentenApi: MockWebServer
     lateinit var client: SmartDocumentsClient
     lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
-    lateinit var pluginService: PluginService
-
 
     @BeforeAll
     fun setUp() {
@@ -64,14 +61,11 @@ internal class SmartDocumentsClientTest : BaseTest() {
             uploadProperties = ValtimoUploadProperties()
         ))
 
-        pluginService = mock()
-
         client = spy( SmartDocumentsClient(
             properties,
             WebClient.builder(),
             5,
             temporaryResourceStorageService,
-            pluginService
         ))
     }
 
@@ -310,16 +304,11 @@ internal class SmartDocumentsClientTest : BaseTest() {
     fun `200 ok response should return DocumentStructure`() {
         // given
         val responseBody = documentStructureJson()
-        val smartDocumentsPlugin = mock<SmartDocumentsPlugin>()
-        whenever(pluginService.createInstance(eq(SmartDocumentsPlugin::class.java), any())).thenReturn(smartDocumentsPlugin)
-        whenever(smartDocumentsPlugin.url).thenReturn("www.ritense.com/")
-        whenever(smartDocumentsPlugin.username).thenReturn("user")
-        whenever(smartDocumentsPlugin.password).thenReturn("password")
 
         mockDocumentenApi.enqueue(mockResponse(responseBody))
 
         // when
-        val response = client.getDocumentStructure()
+        val response = client.getDocumentStructure(pluginProperties())
 
         // then
         assertThat(response).isNotNull
@@ -426,5 +415,11 @@ internal class SmartDocumentsClientTest : BaseTest() {
               }
             }
         """.trimIndent()
+
+    private fun pluginProperties(): SmartDocumentsPropertiesDto = SmartDocumentsPropertiesDto(
+        username = "username",
+        password = "password",
+        url = "www.test.com"
+    )
 
 }

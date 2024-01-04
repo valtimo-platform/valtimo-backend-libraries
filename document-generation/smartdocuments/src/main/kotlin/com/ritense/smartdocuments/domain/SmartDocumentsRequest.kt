@@ -28,7 +28,7 @@ data class SmartDocumentsRequest(
     )
 
     data class Selection(
-        @JsonProperty("com.ritense.smartdocuments.domain.TemplateGroup") val templateGroup: String,
-        @JsonProperty("com.ritense.smartdocuments.domain.Template") val template: String,
+        @JsonProperty("TemplateGroup") val templateGroup: String,
+        @JsonProperty("Template") val template: String,
     )
 }

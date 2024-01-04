@@ -19,7 +19,6 @@ package com.ritense.smartdocuments.autoconfigure
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
-import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.service.ResourceService
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -77,14 +76,12 @@ class SmartDocumentsAutoConfiguration {
         smartDocumentsWebClientBuilder: WebClient.Builder,
         @Value("\${valtimo.smartdocuments.max-file-size-mb:10}") maxFileSize: Int,
         temporaryResourceStorageService: TemporaryResourceStorageService,
-        pluginService: PluginService
     ): SmartDocumentsClient {
         return SmartDocumentsClient(
             smartDocumentsConnectorProperties,
             smartDocumentsWebClientBuilder,
             maxFileSize,
             temporaryResourceStorageService,
-            pluginService
         )
     }
 
