@@ -23,6 +23,7 @@ import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
@@ -36,6 +37,7 @@ import com.ritense.zgw.domain.Vertrouwelijkheid
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
@@ -175,6 +177,22 @@ class DocumentenApiPlugin(
 
     fun getInformatieObject(objectUrl: URI): DocumentInformatieObject {
         return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
+    }
+
+    fun deleteInformatieObject(objectUrl: URI) {
+        client.deleteInformatieObject(authenticationPluginConfiguration, objectUrl)
+    }
+
+    fun createInformatieObjectUrl(objectId: String): URI {
+        return UriComponentsBuilder
+            .fromUri(url)
+            .pathSegment("enkelvoudiginformatieobjecten", objectId)
+            .build()
+            .toUri()
+    }
+
+    fun modifyInformatieObject(documentUrl: URI, patchDocumentRequest: PatchDocumentRequest): DocumentInformatieObject {
+        return client.modifyInformatieObject(authenticationPluginConfiguration, documentUrl, patchDocumentRequest)
     }
 
     private fun storeDocument(

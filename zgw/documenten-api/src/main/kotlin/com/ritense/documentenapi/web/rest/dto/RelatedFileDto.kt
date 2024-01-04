@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.documentenapi.web.rest.dto
 
 import com.ritense.document.domain.RelatedFile
 import java.time.LocalDate
@@ -22,11 +22,11 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 data class RelatedFileDto(
-    private val fileId: UUID,
-    private val fileName: String?,
-    private val sizeInBytes: Long?,
-    private val createdOn: LocalDateTime,
-    private val createdBy: String,
+    val fileId: UUID,
+    val fileName: String?,
+    val sizeInBytes: Long?,
+    val createdOn: LocalDateTime,
+    val createdBy: String,
     val pluginConfigurationId: UUID,
     private val author: String? = null,
     private val title: String? = null,

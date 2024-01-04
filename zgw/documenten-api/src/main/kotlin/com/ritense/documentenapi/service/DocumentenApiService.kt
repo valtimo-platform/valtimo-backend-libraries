@@ -16,8 +16,11 @@
 
 package com.ritense.documentenapi.service
 
+import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
+import com.ritense.documentenapi.client.PatchDocumentRequest
+import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.plugin.service.PluginService
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
@@ -34,6 +37,22 @@ class DocumentenApiService(
     fun getInformatieObject(pluginConfigurationId: String, documentId: String): DocumentInformatieObject {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         return documentApiPlugin.getInformatieObject(documentId)
+    }
+
+    fun modifyInformatieObject(
+        pluginConfigurationId: String,
+        documentId: String,
+        modifyDocumentRequest: ModifyDocumentRequest
+    ): RelatedFile? {
+        val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
+        val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentId)
+        documentApiPlugin.modifyInformatieObject(documentUrl, PatchDocumentRequest(modifyDocumentRequest))
+    }
+
+    fun deleteInformatieObject(pluginConfigurationId: String, documentId: String) {
+        val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
+        val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentId)
+        documentApiPlugin.deleteInformatieObject(documentUrl)
     }
 
 }
