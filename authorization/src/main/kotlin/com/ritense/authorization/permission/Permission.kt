@@ -19,6 +19,7 @@ package com.ritense.authorization.permission
 import com.ritense.authorization.Action
 import com.ritense.authorization.role.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import io.hypersistence.utils.hibernate.type.json.JsonType
 import java.util.UUID
 import jakarta.persistence.Column
 import jakarta.persistence.Embedded
