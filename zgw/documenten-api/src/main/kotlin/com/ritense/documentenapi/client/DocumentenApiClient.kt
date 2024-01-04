@@ -18,9 +18,11 @@ package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.documentenapi.event.DocumentDeleted
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
 import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
 import com.ritense.documentenapi.event.DocumentStored
+import com.ritense.documentenapi.event.DocumentUpdated
 import com.ritense.outbox.OutboxService
 import com.ritense.zgw.ClientTools
 import org.springframework.core.io.buffer.DataBuffer
@@ -147,6 +149,52 @@ class DocumentenApiClient(
                     }
                 }
             }
+    }
+
+    fun deleteInformatieObject(authenticationPluginConfiguration: DocumentenApiAuthentication, url: URI) {
+        webclientBuilder
+            .clone()
+            .filter(authenticationPluginConfiguration)
+            .build()
+            .delete()
+            .uri(url)
+            .retrieve()
+            .toBodilessEntity()
+            .block()
+
+        outboxService.send { DocumentDeleted(url.toASCIIString()) }
+    }
+
+    fun modifyInformatieObject(
+        authenticationPluginConfiguration: DocumentenApiAuthentication,
+        documentUrl: URI,
+        patchDocumentRequest: PatchDocumentRequest
+    ): DocumentInformatieObject {
+        val result = checkNotNull(
+            webclientBuilder
+                .clone()
+                .filter(authenticationPluginConfiguration)
+                .build()
+                .patch()
+                .uri(documentUrl)
+                .body(BodyInserters.fromValue(patchDocumentRequest))
+                .retrieve()
+                .toEntity(DocumentInformatieObject::class.java)
+                .block()
+        ) {
+            "Could not retrieve ${DocumentInformatieObject::class.simpleName} at $documentUrl"
+        }
+
+        if (result.hasBody()) {
+            outboxService.send {
+                DocumentUpdated(
+                    result.body.url.toASCIIString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
+        return result.body!!
     }
 
     private fun toObjectUrl(baseUrl: URI, objectId: String): URI {

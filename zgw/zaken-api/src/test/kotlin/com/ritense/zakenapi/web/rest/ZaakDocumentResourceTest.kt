@@ -16,15 +16,10 @@
 
 package com.ritense.zakenapi.web.rest
 
+import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.zakenapi.BaseIntegrationTest
-import com.ritense.zakenapi.domain.RelatedFileDto
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zgw.Rsin
-import java.net.URI
-import java.nio.charset.StandardCharsets
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.UUID
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -39,6 +34,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import java.net.URI
+import java.nio.charset.StandardCharsets
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.UUID
 
 class ZaakDocumentResourceTest : BaseIntegrationTest() {
 

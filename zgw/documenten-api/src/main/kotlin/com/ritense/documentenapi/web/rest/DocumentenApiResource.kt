@@ -16,14 +16,20 @@
 
 package com.ritense.documentenapi.web.rest
 
+import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.net.URLConnection
@@ -56,5 +62,27 @@ class DocumentenApiResource(
             .headers(responseHeaders)
             .contentType(documentMediaType)
             .body(InputStreamResource(documentInputStream))
+    }
+
+    @PutMapping("/v1/documenten-api/{pluginConfigurationId}/files/{documentId}")
+    fun modifyDocument(
+        @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: String,
+        @PathVariable(name = "documentId") documentId: String,
+        @RequestBody modifyDocumentRequest: ModifyDocumentRequest,
+    ): ResponseEntity<RelatedFile> {
+        return ResponseEntity
+            .ok()
+            .body(documentenApiService.modifyInformatieObject(pluginConfigurationId, documentId, modifyDocumentRequest))
+    }
+
+    @DeleteMapping("/v1/documenten-api/{pluginConfigurationId}/files/{documentId}")
+    fun deleteDocument(
+        @PathVariable(name = "pluginConfigurationId") pluginConfigurationId: String,
+        @PathVariable(name = "documentId") documentId: String,
+    ): ResponseEntity<Void> {
+        documentenApiService.deleteInformatieObject(pluginConfigurationId, documentId)
+        return ResponseEntity
+            .noContent()
+            .build()
     }
 }
