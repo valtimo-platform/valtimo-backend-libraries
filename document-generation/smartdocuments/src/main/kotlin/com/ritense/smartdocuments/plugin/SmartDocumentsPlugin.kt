@@ -108,18 +108,17 @@ class SmartDocumentsPlugin(
             url = url
         )
 
-        val documentsStructure = smartDocumentsClient.getDocumentStructure(pluginProperties)
+        val smartDocumentsTemplateData = smartDocumentsClient.getSmartDocumentsTemplateData(pluginProperties)
 
-        val templateNameList = if (documentsStructure != null) {
+        val templateNameList = if (smartDocumentsTemplateData != null) {
             val templateGroup = findTemplateGroupByName(
-                templateGroups = documentsStructure.templatesStructure.templateGroups,
+                templateGroups = smartDocumentsTemplateData.documentsStructure.templatesStructure.templateGroups,
                 groupName = templateGroupName
             )
                 templateGroup?.templates?.map { it.name } ?: emptyList()
         } else {
             emptyList()
         }
-
         execution.setVariable(resultingTemplateNameListProcessVariableName, templateNameList)
     }
 
@@ -132,7 +131,7 @@ class SmartDocumentsPlugin(
                 return group
             }
 
-            val foundInChildGroups = findTemplateGroupByName(group.templateGroups, groupName)
+            val foundInChildGroups = group.templateGroups?.let { findTemplateGroupByName(it, groupName) }
             if (foundInChildGroups != null) {
                 return foundInChildGroups
             }

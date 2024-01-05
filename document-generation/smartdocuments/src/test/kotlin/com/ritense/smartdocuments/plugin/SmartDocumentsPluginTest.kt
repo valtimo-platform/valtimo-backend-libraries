@@ -19,7 +19,11 @@ package com.ritense.smartdocuments.plugin
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
-import com.ritense.smartdocuments.domain.*
+import com.ritense.smartdocuments.domain.DocumentsStructure
+import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
+import com.ritense.smartdocuments.domain.TemplateGroup
+import com.ritense.smartdocuments.domain.TemplatesStructure
+import com.ritense.smartdocuments.domain.Template
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.extension.mockito.delegate.DelegateExecutionFake
@@ -70,7 +74,7 @@ internal class SmartDocumentsPluginTest {
     @Test
     fun `should get template names`() {
         // given
-        whenever(smartDocumentsClient.getDocumentStructure(any())).thenReturn(documentsStructure())
+        whenever(smartDocumentsClient.getSmartDocumentsTemplateData(any())).thenReturn(smartDocumentsTemplateData())
         smartDocumentsPlugin.url = "test.com"
         smartDocumentsPlugin.username = "username"
         smartDocumentsPlugin.password = "password"
@@ -86,13 +90,13 @@ internal class SmartDocumentsPluginTest {
         val result = delegateExecution.getVariable(TEMPLATE_NAME_LIST) as List<String>
 
         assertThat(result).isNotNull
-        assertThat(result.size).isEqualTo(2)
+        assertThat(result.size).isEqualTo(3)
         assertThat(result.first()).isEqualTo(TEMPLATE_NAME)
 
     }@Test
     fun `list should be empty`() {
         // given
-        whenever(smartDocumentsClient.getDocumentStructure(any())).thenReturn(documentsStructure())
+        whenever(smartDocumentsClient.getSmartDocumentsTemplateData(any())).thenReturn(smartDocumentsTemplateData())
         smartDocumentsPlugin.url = "test.com"
         smartDocumentsPlugin.username = "username"
         smartDocumentsPlugin.password = "password"
@@ -111,52 +115,40 @@ internal class SmartDocumentsPluginTest {
         assertThat(result).isEmpty()
     }
 
-    private fun documentsStructure(): DocumentsStructure = DocumentsStructure(
-        templatesStructure = TemplatesStructure(
-            isAccessible = "true",
-            templateGroups = listOf(
-                TemplateGroup(
-                    isAccessible = "true",
-                    id = "group1",
-                    name = "Group 1",
-                    templateGroups = emptyList(),
-                    templates = listOf(
-                        Template(id = "template1", name = "Template 1"),
-                        Template(id = "template2", name = "Template 2")
-                    )
-                ),
-                TemplateGroup(
-                    isAccessible = "true",
-                    id = "group2",
-                    name = "Group 2",
-                    templateGroups = emptyList(),
-                    templates = listOf(
-                        Template(id = "template3", name = "Template 3"),
-                        Template(id = "template4", name = "Template 4")
-                    )
-                )
-            )
-        ),
-        usersStructure = UsersStructure(
-            isAccessible = "true",
-            groupsAccess = GroupsAccess(
-                templateGroups = emptyList(),
-                headerGroups = emptyList()
-            ),
-            userGroups = UserGroups(
-                userGroup = UserGroup(
-                    isAccessible = "true",
-                    id = "userGroup1",
-                    name = "User Group 1",
-                    groupsAccess = GroupsAccess(
-                        templateGroups = emptyList(),
-                        headerGroups = emptyList()
+    private fun smartDocumentsTemplateData() = SmartDocumentsTemplateData(
+        DocumentsStructure(
+            TemplatesStructure(
+                listOf(
+                    TemplateGroup(
+                        TEMPLATE_GROUP_NAME,
+                        null,
+                        listOf(
+                            Template(
+                                "BA72ACC982C042A5B285DF91F684C214",
+                                TEMPLATE_NAME
+                            ),
+                            Template(
+                                "6B39F51603474130B8DF7CE7ED58309F",
+                                "Plan intakegesprek1"
+                            ),
+                            Template(
+                                "9014A7F2AD12453DBE2AE055773642E0",
+                                "Plan intakegesprek2"
+                            )
+                        )
                     ),
-                    userGroups = emptyList(),
-                    users = Users(
-                        user = User(
-                            id = "user1",
-                            name = "John Doe"
+                    TemplateGroup(
+                        "test",
+                        null,
+                        listOf(
+                            Template(
+                                "A99A1DD46F204EDA9988EE7F54C99B6E",
+                                "Plan intakegesprek3"
+                            ),
+                            Template(
+                                "E9BBADF6C0964CB69A0165E26509DAF0",
+                                "Plan intakegesprek4"
+                            )
                         )
                     )
                 )

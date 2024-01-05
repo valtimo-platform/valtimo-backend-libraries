@@ -51,9 +51,9 @@ import org.springframework.web.reactive.function.client.WebClient
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class SmartDocumentsClientTest : BaseTest() {
 
-    lateinit var mockDocumentenApi: MockWebServer
-    lateinit var client: SmartDocumentsClient
-    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+    private lateinit var mockDocumentenApi: MockWebServer
+    private lateinit var client: SmartDocumentsClient
+    private lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
 
     @BeforeAll
     fun setUp() {
@@ -310,12 +310,14 @@ internal class SmartDocumentsClientTest : BaseTest() {
     @Test
     fun `200 ok response should return DocumentStructure`() {
         // given
-        val responseBody = documentStructureJson()
+        val responseBody = smartDocumentsTemplateXml()
 
-        mockDocumentenApi.enqueue(mockResponse(responseBody))
+        mockDocumentenApi.enqueue(mockResponse(
+            body = responseBody)
+        )
 
         // when
-        val response = client.getDocumentStructure(pluginProperties())
+        val response = client.getSmartDocumentsTemplateData(pluginProperties())
 
         // then
         assertThat(response).isNotNull
@@ -333,100 +335,60 @@ internal class SmartDocumentsClientTest : BaseTest() {
             .setBody(body)
     }
 
-    private fun documentStructureJson() =
+    private fun smartDocumentsTemplateXml() =
         """
-            {
-              "TemplatesStructure": {
-                "@IsAccessible": "true",
-                "TemplateGroups": [
-                  {
-                    "@IsAccessible": "true",
-                    "@ID": "group1",
-                    "@Name": "Group 1",
-                    "TemplateGroups": [
-                      {
-                        "@IsAccessible": "true",
-                        "@ID": "subgroup1",
-                        "@Name": "Subgroup 1",
-                        "TemplateGroups": [],
-                        "Templates": [
-                          {
-                            "@ID": "template1",
-                            "@Name": "Template 1"
-                          },
-                          {
-                            "@ID": "template2",
-                            "@Name": "Template 2"
-                          }
-                        ]
-                      }
-                    ],
-                    "Templates": [
-                      {
-                        "@ID": "template3",
-                        "@Name": "Template 3"
-                      }
-                    ]
-                  }
-                ]
-              },
-              "UsersStructure": {
-                "@IsAccessible": "true",
-                "com.ritense.smartdocuments.domain.GroupsAccess": {
-                  "TemplateGroups": [
-                    {
-                      "@IsAccessible": "true",
-                      "@ID": "group1",
-                      "@Name": "Group 1",
-                      "TemplateGroups": [],
-                      "Templates": []
-                    }
-                  ],
-                  "HeaderGroups": []
-                },
-                "com.ritense.smartdocuments.domain.UserGroups": {
-                  "com.ritense.smartdocuments.domain.UserGroup": {
-                    "@IsAccessible": "true",
-                    "@ID": "usergroup1",
-                    "@Name": "User Group 1",
-                    "com.ritense.smartdocuments.domain.GroupsAccess": {
-                      "TemplateGroups": [],
-                      "HeaderGroups": []
-                    },
-                    "com.ritense.smartdocuments.domain.UserGroups": [
-                      {
-                        "@IsAccessible": "true",
-                        "@ID": "subusergroup1",
-                        "@Name": "Subuser Group 1",
-                        "com.ritense.smartdocuments.domain.GroupsAccess": {
-                          "TemplateGroups": [],
-                          "HeaderGroups": []
-                        },
-                        "com.ritense.smartdocuments.domain.UserGroups": [],
-                        "com.ritense.smartdocuments.domain.Users": {
-                          "User": {
-                            "@ID": "user1",
-                            "@Name": "User 1"
-                          }
-                        }
-                      }
-                    ],
-                    "com.ritense.smartdocuments.domain.Users": {
-                      "User": {
-                        "@ID": "user2",
-                        "@Name": "User 2"
-                      }
-                    }
-                  }
-                }
-              }
-            }
+<SmartDocuments>
+    <DocumentsStructure>
+        <TemplatesStructure IsAccessible="true">
+            <TemplateGroups>
+                <TemplateGroup IsAccessible="true" ID="34" Name="Werkzaamheden">
+                    <TemplateGroups>
+                        <TemplateGroup IsAccessible="true" ID="34" Name="AI">
+                            <TemplateGroups/>
+                            <Templates>
+                                <Template ID="3523" Name="Bla"/>
+                                <Template ID="223" Name="Plan intakegesprek"/>
+                                <!-- More templates here... -->
+                            </Templates>
+                        </TemplateGroup>
+                        <TemplateGroup IsAccessible="true" ID="F6F9A5AE24834A2AA9612894506AC681" Name="ANW">
+                            <TemplateGroups/>
+                            <Templates>
+                                <Template ID="234" Name="Plan intakegesprek"/>
+                                <Template ID="43" Name="Plan intakegesprek"/>
+                            </Templates>
+                        </TemplateGroup>
+                    </TemplateGroups>
+                    <Templates>
+                        <Template ID="343" Name="Voorbeeld sjabloon"/>
+                        <Template ID="43" Name="Voorbeeld sjabloon 2"/>
+                    </Templates>
+                </TemplateGroup>
+            </TemplateGroups>
+        </TemplatesStructure>
+    </DocumentsStructure>
+    <UsersStructure IsAccessible="true">
+        <GroupsAccess>
+            <TemplateGroups/>
+            <HeaderGroups/>
+        </GroupsAccess>
+        <UserGroups>
+            <UserGroup IsAccessible="true" ID="342" Name="Test">
+                <GroupsAccess>
+                    <TemplateGroups>
+                        <TemplateGroup ID="343" Name="Test" AllDescendants="true"/>
+                        <TemplateGroup ID="324" Name="Werkzaamheden" AllDescendants="true"/>
+                    </TemplateGroups>
+                    <HeaderGroups/>
+                </GroupsAccess>
+        </UserGroups>
+    </UsersStructure>
+</SmartDocuments>
         """.trimIndent()
 
     private fun pluginProperties(): SmartDocumentsPropertiesDto = SmartDocumentsPropertiesDto(
         username = "username",
         password = "password",
-        url = "www.test.com"
+        url = "www.test.com/"
     )
-
 }
