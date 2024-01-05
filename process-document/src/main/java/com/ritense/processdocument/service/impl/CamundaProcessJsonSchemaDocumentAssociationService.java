@@ -251,14 +251,15 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
                         .singleResult();
                     var camundaProcessDefinition = runWithoutAuthorization(() -> repositoryService.findLatestProcessDefinition(camundaProcess.getProcessDefinitionKey()));
                     var startDateTime = LocalDateTime.ofInstant(camundaProcess.getStartTime().toInstant(), ZoneId.systemDefault());
-                    var startedByUser = userManagementService.findByEmail(camundaProcess.getStartUserId()).orElseThrow();
+                    var startedBy = camundaProcess.getStartUserId() == null ? null :
+                        userManagementService.findByEmail(camundaProcess.getStartUserId()).orElseThrow().getFullName();
                     return new ProcessDocumentInstanceDto(
                         process.getId(),
                         process.processName(),
                         process.isActive(),
                         camundaProcess.getProcessDefinitionVersion(),
                         camundaProcessDefinition.getVersion(),
-                        startedByUser.getFullName(),
+                        startedBy,
                         startDateTime
                     );
                 }
