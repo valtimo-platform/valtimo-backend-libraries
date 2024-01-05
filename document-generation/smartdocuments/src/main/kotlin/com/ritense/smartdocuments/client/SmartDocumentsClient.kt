@@ -19,8 +19,12 @@ package com.ritense.smartdocuments.client
 import com.fasterxml.jackson.core.JsonFactory
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
-import com.ritense.smartdocuments.domain.*
 import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
+import com.ritense.smartdocuments.domain.DocumentFormatOption
+import com.ritense.smartdocuments.domain.FileStreamResponse
+import com.ritense.smartdocuments.domain.FilesResponse
+import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.domain.DocumentsStructure
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
@@ -32,11 +36,16 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.codec.ClientCodecConfigurer
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.BodyExtractors
-import org.springframework.web.reactive.function.client.*
+import org.springframework.web.reactive.function.client.ClientResponse
+import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
+import org.springframework.web.reactive.function.client.ExchangeStrategies
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import java.io.InputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
-import java.util.*
+import java.util.Base64
+import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 class SmartDocumentsClient(
