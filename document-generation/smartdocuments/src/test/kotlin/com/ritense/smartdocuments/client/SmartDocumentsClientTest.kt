@@ -310,10 +310,11 @@ internal class SmartDocumentsClientTest : BaseTest() {
     @Test
     fun `200 ok response should return DocumentStructure`() {
         // given
-        val responseBody = smartDocumentsTemplateXml()
-
-        mockDocumentenApi.enqueue(mockResponse(
-            body = responseBody)
+        mockDocumentenApi.enqueue(
+            mockResponse(
+                body = smartDocumentsTemplateXml(),
+                contentType = "application/xml"
+            )
         )
 
         // when
@@ -389,6 +390,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
     private fun pluginProperties(): SmartDocumentsPropertiesDto = SmartDocumentsPropertiesDto(
         username = "username",
         password = "password",
-        url = "www.test.com/"
+        url = "www.test.com"
     )
 }
