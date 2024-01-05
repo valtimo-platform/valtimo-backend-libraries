@@ -98,6 +98,7 @@ allprojects {
                 dependency "org.yaml:snakeyaml:${snakeYamlVersionOverride}"
                 dependency "io.netty:netty-codec:${nettyCodecVersionOverride}"
                 dependency "org.liquibase:liquibase-core:${liquibaseVersion}"
+                dependency "com.rabbitmq:amqp-client:${amqpCLientVersion}"
             }
         }
 

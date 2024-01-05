@@ -51,6 +51,7 @@ dependencies {
 
     // Spring cloud stream RabbitMQ
     implementation "org.springframework.cloud:spring-cloud-starter-stream-rabbit:${springCloudStreamVersion}"
+    implementation "com.rabbitmq:amqp-client:$amqpCLientVersion"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
