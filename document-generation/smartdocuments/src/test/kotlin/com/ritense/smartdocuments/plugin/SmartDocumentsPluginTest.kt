@@ -34,6 +34,10 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
 
+const val TEMPLATE_NAME_LIST = "templateNameList"
+const val TEMPLATE_GROUP_NAME = "Group 1"
+const val TEMPLATE_NAME = "Template 1"
+
 @ExtendWith(MockitoExtension::class)
 internal class SmartDocumentsPluginTest {
 
@@ -72,12 +76,18 @@ internal class SmartDocumentsPluginTest {
         smartDocumentsPlugin.password = "password"
 
         // when
-        val result = smartDocumentsPlugin.getTemplateNames("Group 1")
+        smartDocumentsPlugin.getTemplateNames(
+            execution = delegateExecution,
+            templateGroupName = TEMPLATE_GROUP_NAME,
+            resultingTemplateNameListProcessVariableName = TEMPLATE_NAME_LIST
+        )
 
         // then
+        val result = delegateExecution.getVariable(TEMPLATE_NAME_LIST) as List<String>
+
         assertThat(result).isNotNull
         assertThat(result.size).isEqualTo(2)
-        assertThat(result.first()).isEqualTo("Template 1")
+        assertThat(result.first()).isEqualTo(TEMPLATE_NAME)
 
     }@Test
     fun `list should be empty`() {
@@ -88,9 +98,15 @@ internal class SmartDocumentsPluginTest {
         smartDocumentsPlugin.password = "password"
 
         // when
-        val result = smartDocumentsPlugin.getTemplateNames("No group")
+        smartDocumentsPlugin.getTemplateNames(
+            execution = delegateExecution,
+            templateGroupName = "Nope",
+            resultingTemplateNameListProcessVariableName = TEMPLATE_NAME_LIST
+        )
 
         // then
+        val result = delegateExecution.getVariable(TEMPLATE_NAME_LIST) as List<String>
+
         assertThat(result).isNotNull
         assertThat(result).isEmpty()
     }

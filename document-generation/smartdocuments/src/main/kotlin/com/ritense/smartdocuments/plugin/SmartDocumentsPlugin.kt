@@ -95,17 +95,29 @@ class SmartDocumentsPlugin(
         activityTypes = [ActivityType.SERVICE_TASK_START]
     )
     fun getTemplateNames(
+        execution: DelegateExecution,
         @PluginActionProperty templateGroupName: String,
-    ): List<String> {
+        @PluginActionProperty resultingTemplateNameListProcessVariableName: String
+    ) {
         val pluginProperties = SmartDocumentsPropertiesDto(
             username = username,
             password = password,
             url = url
         )
 
-        val documentsStructure = smartDocumentsClient.getDocumentStructure(pluginProperties) ?: return emptyList()
-        val templateGroup = findTemplateGroupByName(documentsStructure.templatesStructure.templateGroups, templateGroupName)
-        return templateGroup?.templates?.map { it.name } ?: emptyList()
+        val documentsStructure = smartDocumentsClient.getDocumentStructure(pluginProperties)
+
+        val templateNameList = if (documentsStructure != null) {
+            val templateGroup = findTemplateGroupByName(
+                templateGroups = documentsStructure.templatesStructure.templateGroups,
+                groupName = templateGroupName
+            )
+                templateGroup?.templates?.map { it.name } ?: emptyList()
+        } else {
+            emptyList()
+        }
+
+        execution.setVariable(resultingTemplateNameListProcessVariableName, templateNameList)
     }
 
     private fun findTemplateGroupByName(
