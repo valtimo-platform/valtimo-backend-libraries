@@ -55,9 +55,9 @@ data class Template(
 data class UsersStructure(
     @JsonProperty("@IsAccessible")
     val isAccessible: String,
-    @JsonProperty("com.ritense.smartdocuments.domain.GroupsAccess")
+    @JsonProperty("GroupsAccess")
     val groupsAccess: GroupsAccess,
-    @JsonProperty("com.ritense.smartdocuments.domain.UserGroups")
+    @JsonProperty("UserGroups")
     val userGroups: UserGroups
 )
 
@@ -69,7 +69,7 @@ data class GroupsAccess(
 )
 
 data class UserGroups(
-    @JsonProperty("com.ritense.smartdocuments.domain.UserGroup")
+    @JsonProperty("UserGroup")
     val userGroup: UserGroup
 )
 
@@ -80,11 +80,11 @@ data class UserGroup(
     val id: String,
     @JsonProperty("@Name")
     val name: String,
-    @JsonProperty("com.ritense.smartdocuments.domain.GroupsAccess")
+    @JsonProperty("GroupsAccess")
     val groupsAccess: GroupsAccess,
-    @JsonProperty("com.ritense.smartdocuments.domain.UserGroups")
+    @JsonProperty("UserGroups")
     val userGroups: List<UserGroup>,
-    @JsonProperty("com.ritense.smartdocuments.domain.Users")
+    @JsonProperty("Users")
     val users: Users
 )
 
