@@ -34,6 +34,7 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.RepositoryService
@@ -142,8 +143,9 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CamundaTaskDocumentMapper::class)
     fun camundaTaskDocumentMapper(
-        @Lazy processDocumentService: CamundaProcessJsonSchemaDocumentService
+        @Lazy processDocumentService: CamundaProcessJsonSchemaDocumentService,
+        queryDialectHelper: QueryDialectHelper
     ): CamundaTaskDocumentMapper {
-        return CamundaTaskDocumentMapper(processDocumentService)
+        return CamundaTaskDocumentMapper(processDocumentService, queryDialectHelper)
     }
 }
