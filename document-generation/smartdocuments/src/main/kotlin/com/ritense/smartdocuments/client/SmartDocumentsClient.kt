@@ -180,7 +180,6 @@ class SmartDocumentsClient(
         return smartDocumentsWebClientBuilder
             .clone()
             .baseUrl(pluginProperties.url)
-            .defaultHeader("Content-Type", "application/json")
             .filter(basicAuthentication)
             .build()
     }
