@@ -25,6 +25,7 @@ import com.ritense.case.domain.CaseTab
 import com.ritense.case.service.CaseTabService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import java.util.UUID
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
@@ -38,7 +39,7 @@ class CaseTabSpecification(
 ) : AuthorizationSpecification<CaseTab>(authRequest, permissions) {
     override fun toPredicate(
         root: Root<CaseTab>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
         // Filter the permissions for the relevant ones and use those to  find the filters that are required

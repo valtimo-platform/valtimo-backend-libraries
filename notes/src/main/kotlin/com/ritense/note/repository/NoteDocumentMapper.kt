@@ -24,8 +24,8 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.note.domain.Note
 import java.util.UUID
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Root
 
 class NoteDocumentMapper(
@@ -35,7 +35,7 @@ class NoteDocumentMapper(
         return runWithoutAuthorization { listOf(documentService.get(entity.documentId.toString()) as JsonSchemaDocument) }
     }
 
-    override fun mapQuery(root: Root<Note>, query: CriteriaQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<JsonSchemaDocument> {
+    override fun mapQuery(root: Root<Note>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): AuthorizationEntityMapperResult<JsonSchemaDocument> {
         val documentRoot: Root<JsonSchemaDocument> = query.from(JsonSchemaDocument::class.java)
         val groupList = query.groupList.toMutableList()
         groupList.add(root.get<UUID>("documentId"))

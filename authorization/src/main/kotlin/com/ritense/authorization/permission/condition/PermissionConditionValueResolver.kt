@@ -20,11 +20,12 @@ import com.ritense.authorization.UserManagementServiceHolder
 
 object PermissionConditionValueResolver {
 
-    fun <V> resolveValue(value: V?): V? {
+    fun <V> resolveValue(value: V?): Any? {
         if (value is String) {
             return when (value) {
-                "\${currentUserId}" -> UserManagementServiceHolder.currentInstance.currentUser.id as V
-                "\${currentUserEmail}" -> UserManagementServiceHolder.currentInstance.currentUser.email as V
+                "\${currentUserId}" -> UserManagementServiceHolder.currentInstance.currentUser.id
+                "\${currentUserEmail}" -> UserManagementServiceHolder.currentInstance.currentUser.email
+                "\${currentUserRoles}" -> UserManagementServiceHolder.currentInstance.currentUser.roles
                 else -> value
             }
         }

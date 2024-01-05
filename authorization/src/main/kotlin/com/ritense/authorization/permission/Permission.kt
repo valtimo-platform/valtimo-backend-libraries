@@ -19,7 +19,6 @@ package com.ritense.authorization.permission
 import com.ritense.authorization.Action
 import com.ritense.authorization.role.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import org.hibernate.annotations.Type
 import java.util.UUID
 import javax.persistence.Column
 import javax.persistence.Embedded
@@ -29,10 +28,11 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.persistence.Table
+import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
 import javax.persistence.criteria.Predicate
 import javax.persistence.criteria.Root
+import org.hibernate.annotations.Type
 
 @Entity
 @Table(name = "permission")
@@ -71,7 +71,7 @@ data class Permission(
 
     fun <T : Any> toPredicate(
         root: Root<T>,
-        query: CriteriaQuery<*>,
+        query: AbstractQuery<*>,
         criteriaBuilder: CriteriaBuilder,
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper
