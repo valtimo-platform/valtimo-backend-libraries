@@ -20,4 +20,7 @@ class PluginPropertyParseException(
     propertyName: String,
     pluginName: String,
     throwable: Throwable,
-) : Exception("Plugin property with name '$propertyName' failed to parse for plugin '$pluginName'", throwable)
+) : Exception(
+    "Plugin property with name '$propertyName' failed to parse for plugin '$pluginName'. ${throwable.message}",
+    throwable
+)
