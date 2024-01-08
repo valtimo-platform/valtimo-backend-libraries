@@ -187,8 +187,7 @@ data class FormIoSubmission(
                         submission.processDefinitionKey,
                         ModifyDocumentRequest(
                             submission.document?.id().toString(),
-                            submission.documentContent,
-                            submission.document?.version().toString()
+                            submission.documentContent
                         ).withJsonPatch(submission.preJsonPatch)
                     ).withProcessVars(submission.formDefinedProcessVariables)
                 }
@@ -196,8 +195,7 @@ data class FormIoSubmission(
                 return ModifyDocumentAndCompleteTaskRequest(
                     ModifyDocumentRequest(
                         submission.document?.id().toString(),
-                        submission.documentContent,
-                        submission.document?.version().toString()
+                        submission.documentContent
                     ).withJsonPatch(submission.preJsonPatch),
                     submission.taskInstanceId
                 ).withProcessVars(submission.formDefinedProcessVariables)

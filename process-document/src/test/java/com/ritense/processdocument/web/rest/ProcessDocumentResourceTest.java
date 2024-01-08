@@ -269,8 +269,7 @@ class ProcessDocumentResourceTest extends BaseTest {
         final JsonNode jsonDataUpdate = objectMapper.readTree("{\"street\": \"Funenparks\"}");
         var modifyRequest = new ModifyDocumentRequest(
             UUID.randomUUID().toString(),
-            jsonDataUpdate,
-            "1"
+            jsonDataUpdate
         );
         var request = new ModifyDocumentAndCompleteTaskRequest(modifyRequest, "task-id");
 
@@ -345,8 +344,7 @@ class ProcessDocumentResourceTest extends BaseTest {
         final JsonNode jsonDataUpdate = objectMapper.readTree("{\"street\": \"Funenparks\"}");
         var modifyRequest = new ModifyDocumentRequest(
             UUID.randomUUID().toString(),
-            jsonDataUpdate,
-            "1"
+            jsonDataUpdate
         );
         var request = new ModifyDocumentAndStartProcessRequest("some-key", modifyRequest);
 

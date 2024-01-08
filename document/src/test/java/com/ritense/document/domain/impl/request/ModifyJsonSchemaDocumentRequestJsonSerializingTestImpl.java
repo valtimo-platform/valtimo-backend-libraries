@@ -42,19 +42,16 @@ public class ModifyJsonSchemaDocumentRequestJsonSerializingTestImpl {
         jsonString = """
             {
             \t"documentId": "4bd8f762-0f83-42a6-8640-741b3f848752",
-            \t"content": {},
-            \t"versionBasedOn": "4bed17666ef48cf38080015e993ef25452a840a35e81c5d013c3dfcdd6098dd4"
+            \t"content": {}
             }""";
     }
 
     @Test
     public void shouldParseJson() throws IOException {
         final var jsonData = objectMapper.createObjectNode();
-        final var versionBasedOn = "4bed17666ef48cf38080015e993ef25452a840a35e81c5d013c3dfcdd6098dd4";
         final ModifyDocumentRequest request = new ModifyDocumentRequest(
             UUID,
-            jsonData,
-            versionBasedOn
+            jsonData
         );
         ObjectContent<ModifyDocumentRequest> modifyDocumentRequestObjectContent = jacksonTester.parse(jsonString);
         assertThat(modifyDocumentRequestObjectContent.getObject()).isEqualTo(request);
@@ -63,11 +60,9 @@ public class ModifyJsonSchemaDocumentRequestJsonSerializingTestImpl {
     @Test
     public void shouldMarshalObjectToJson() throws IOException {
         final var jsonData = objectMapper.createObjectNode();
-        final var versionBasedOn = "4bed17666ef48cf38080015e993ef25452a840a35e81c5d013c3dfcdd6098dd4";
         final ModifyDocumentRequest request = new ModifyDocumentRequest(
             UUID,
-            jsonData,
-            versionBasedOn
+            jsonData
         );
         JsonContent<ModifyDocumentRequest> modifyDocumentRequestJsonContent = jacksonTester.write(request);
         JSONAssert.assertEquals(modifyDocumentRequestJsonContent.getJson(), jsonString, JSONCompareMode.STRICT);

@@ -35,29 +35,22 @@ public class ModifyDocumentRequest {
     @NotNull
     private final JsonNode content;
 
-    @JsonProperty
-    @NotNull
-    private final String versionBasedOn;
-
     @JsonIgnore
     private JsonPatch jsonPatch;
 
     @JsonCreator
     public ModifyDocumentRequest(
         @JsonProperty(value = "documentId", required = true) String documentId,
-        @JsonProperty(value = "content", required = true) JsonNode content,
-        @JsonProperty(value = "versionBasedOn", required = true) String versionBasedOn
+        @JsonProperty(value = "content", required = true) JsonNode content
     ) {
         this.documentId = documentId;
         this.content = content;
-        this.versionBasedOn = versionBasedOn;
     }
 
     public static ModifyDocumentRequest create(Document document, JsonNode jsonNode) {
         return new ModifyDocumentRequest(
             document.id().toString(),
-            jsonNode,
-            document.version().toString()
+            jsonNode
         );
     }
 
@@ -67,10 +60,6 @@ public class ModifyDocumentRequest {
 
     public JsonNode content() {
         return content;
-    }
-
-    public String versionBasedOn() {
-        return versionBasedOn;
     }
 
     public ModifyDocumentRequest withJsonPatch(JsonPatch jsonPatch) {
@@ -87,16 +76,14 @@ public class ModifyDocumentRequest {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ModifyDocumentRequest)) {
+        if (!(o instanceof ModifyDocumentRequest request)) {
             return false;
         }
-        ModifyDocumentRequest request = (ModifyDocumentRequest) o;
-        return documentId.equals(request.documentId) &&
-            versionBasedOn.equals(request.versionBasedOn);
+        return documentId.equals(request.documentId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(documentId, versionBasedOn);
+        return Objects.hash(documentId);
     }
 }

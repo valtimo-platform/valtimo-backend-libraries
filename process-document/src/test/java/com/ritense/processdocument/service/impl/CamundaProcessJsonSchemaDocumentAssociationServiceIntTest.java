@@ -354,8 +354,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             var modifyRequest = new ModifyDocumentAndCompleteTaskRequest(
                 new ModifyDocumentRequest(
                     document.id().toString(),
-                    jsonDataUpdate,
-                    document.version().toString()
+                    jsonDataUpdate
                 ),
                 processInstanceTasks.iterator().next().getTaskDto().getId()
             );
@@ -411,8 +410,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             var modifyRequest = new ModifyDocumentAndCompleteTaskRequest(
                 new ModifyDocumentRequest(
                     document.id().toString(),
-                    jsonDataUpdate,
-                    document.version().toString()
+                    jsonDataUpdate
                 ),
                 processInstanceTasks.iterator().next().getTaskDto().getId()
             );

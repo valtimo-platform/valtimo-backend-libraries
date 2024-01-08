@@ -44,16 +44,14 @@ public class JsonSchemaDocumentCreatedEvent extends AuditMetaData implements Doc
         LocalDateTime occurredOn,
         String user,
         JsonSchemaDocumentId documentId,
-        JsonSchemaDocumentDefinitionId definitionId,
-        JsonSchemaDocumentVersion version
+        JsonSchemaDocumentDefinitionId definitionId
     ) {
         super(id, origin, occurredOn, user);
         assertArgumentNotNull(documentId, "documentId is required");
         assertArgumentNotNull(definitionId, "definitionId is required");
-        assertArgumentNotNull(version, "version is required");
         this.documentId = documentId;
         this.definitionId = definitionId;
-        this.version = version;
+        this.version = null;
     }
 
     @Override
