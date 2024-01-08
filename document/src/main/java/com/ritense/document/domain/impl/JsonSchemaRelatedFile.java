@@ -19,10 +19,7 @@ package com.ritense.document.domain.impl;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.valtimo.contract.resource.Resource;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 public class JsonSchemaRelatedFile implements RelatedFile {
@@ -32,21 +29,6 @@ public class JsonSchemaRelatedFile implements RelatedFile {
     private final Long sizeInBytes;
     private final LocalDateTime createdOn;
     private String createdBy;
-    private final String author;
-    private final String title;
-    private final String status;
-    private final String language;
-    private final String identification;
-    private final String description;
-    private final String informatieobjecttype;
-    private final List<String> keywords;
-    private final String format;
-
-    private final LocalDate sendDate;
-
-    private final LocalDate receiptDate;
-
-    private final String confidentialityLevel;
 
     @JsonCreator
     public JsonSchemaRelatedFile(
@@ -54,37 +36,13 @@ public class JsonSchemaRelatedFile implements RelatedFile {
         final String fileName,
         final Long sizeInBytes,
         final LocalDateTime createdOn,
-        final String createdBy,
-        final String author,
-        final String title,
-        final String status,
-        final String language,
-        final String identification,
-        final String description,
-        final String informatieobjecttype,
-        final List<String> keywords,
-        final String format,
-        final LocalDate sendDate,
-        final LocalDate receiptDate,
-        final String confidentialityLevel
+        final String createdBy
     ) {
         this.fileId = fileId;
         this.fileName = fileName;
         this.sizeInBytes = sizeInBytes;
         this.createdOn = createdOn;
         this.createdBy = createdBy;
-        this.author = author;
-        this.title = title;
-        this.status = status;
-        this.language = language;
-        this.identification = identification;
-        this.description = description;
-        this.informatieobjecttype = informatieobjecttype;
-        this.keywords = keywords;
-        this.format = format;
-        this.sendDate = sendDate;
-        this.receiptDate = receiptDate;
-        this.confidentialityLevel = confidentialityLevel;
     }
 
     public static JsonSchemaRelatedFile from(final RelatedFile relatedFile) {
@@ -93,19 +51,7 @@ public class JsonSchemaRelatedFile implements RelatedFile {
             relatedFile.getFileName(),
             relatedFile.getSizeInBytes(),
             relatedFile.getCreatedOn(),
-            relatedFile.getCreatedBy(),
-            relatedFile.getAuthor(),
-            relatedFile.getTitle(),
-            relatedFile.getStatus(),
-            relatedFile.getLanguage(),
-            relatedFile.getIdentification(),
-            relatedFile.getDescription(),
-            relatedFile.getInformatieobjecttype(),
-            relatedFile.getKeywords(),
-            relatedFile.getFormat(),
-            relatedFile.getSendDate(),
-            relatedFile.getReceiptDate(),
-            relatedFile.getConfidentialityLevel()
+            relatedFile.getCreatedBy()
         );
     }
 
@@ -115,19 +61,7 @@ public class JsonSchemaRelatedFile implements RelatedFile {
             resource.name(),
             resource.sizeInBytes(),
             resource.createdOn(),
-            null,
-            null,
-            resource.title(),
-            resource.status(),
-            resource.language(),
-            resource.identification(),
-            resource.description(),
-            resource.informatieobjecttype(),
-            resource.keywords(),
-            resource.extension(),
-            resource.sendDate(),
-            resource.receiptDate(),
-            resource.confidentialityLevel()
+            null
         );
     }
 
@@ -160,30 +94,6 @@ public class JsonSchemaRelatedFile implements RelatedFile {
     public String getCreatedBy() {
         return createdBy;
     }
-    public String getAuthor() { return author; }
-
-    public String getTitle() { return title; }
-
-    public String getStatus() { return status; }
-
-    public String getLanguage() { return language; }
-
-    public String getIdentification() { return identification; }
-
-    public String getDescription() { return description; }
-
-    public String getInformatieobjecttype() { return informatieobjecttype; }
-
-    public List<String> getKeywords() { return keywords; }
-
-    public String getFormat() { return format; }
-
-    public LocalDate getSendDate() { return sendDate; }
-
-    public LocalDate getReceiptDate() { return receiptDate; }
-
-    public String getConfidentialityLevel() { return confidentialityLevel; }
-
 
     @Override
     public boolean equals(Object o) {

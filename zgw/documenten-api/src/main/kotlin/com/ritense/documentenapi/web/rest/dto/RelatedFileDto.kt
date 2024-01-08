@@ -27,21 +27,21 @@ data class RelatedFileDto(
     private val sizeInBytes: Long?,
     private val createdOn: LocalDateTime,
     private val createdBy: String,
-    private val pluginConfigurationId: UUID,
-    private val author: String? = null,
-    private val title: String? = null,
-    private val status: String? = null,
-    private val language: String? = null,
-    private val identification: String? = null,
-    private val description: String? = null,
-    private val informatieobjecttype: String? = null,
-    private val keywords: List<String>? = null,
-    private val format: String? = null,
-    private val sendDate: LocalDate? = null,
-    private val receiptDate: LocalDate? = null,
-    private val confidentialityLevel: String? = null,
-    private val version: Int? = null,
-    private val indicationUsageRights: Boolean? = null,
+    val pluginConfigurationId: UUID,
+    val author: String? = null,
+    val title: String? = null,
+    val status: String? = null,
+    val language: String? = null,
+    val identification: String? = null,
+    val description: String? = null,
+    val informatieobjecttype: String? = null,
+    val keywords: List<String>? = null,
+    val format: String? = null,
+    val sendDate: LocalDate? = null,
+    val receiptDate: LocalDate? = null,
+    val confidentialityLevel: String? = null,
+    val version: Int? = null,
+    val indicationUsageRights: Boolean? = null,
 ):  RelatedFile {
     override fun getFileId(): UUID {
         return fileId
@@ -61,57 +61,5 @@ data class RelatedFileDto(
 
     override fun getCreatedBy(): String {
         return createdBy
-    }
-
-    override fun getAuthor(): String? {
-        return author
-    }
-
-    override fun getTitle(): String? {
-        return title
-    }
-
-    override fun getStatus(): String? {
-        return status
-    }
-
-    override fun getLanguage(): String? {
-        return language
-    }
-
-    override fun getIdentification(): String? {
-        return identification
-    }
-
-    override fun getDescription(): String? {
-        return description
-    }
-
-    override fun getInformatieobjecttype(): String? {
-        return informatieobjecttype
-    }
-
-    override fun getKeywords(): List<String>? {
-        return keywords
-    }
-
-    override fun getFormat(): String? {
-        return format
-    }
-
-    override fun getSendDate(): LocalDate? {
-        return sendDate
-    }
-
-    override fun getReceiptDate(): LocalDate? {
-        return receiptDate
-    }
-
-    override fun getConfidentialityLevel(): String? {
-        return confidentialityLevel
-    }
-
-    fun getPluginConfigurationId(): UUID {
-        return pluginConfigurationId
     }
 }
