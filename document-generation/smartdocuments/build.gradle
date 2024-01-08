@@ -69,7 +69,7 @@ dependencies {
     implementation "commons-io:commons-io:${commonsIoVersion}"
 
     testImplementation "org.springframework.security:spring-security-test"
-    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:5.16.0")
+    testImplementation("org.camunda.bpm.extension.mockito:camunda-bpm-mockito:${camundaBpmMockitoVersion}")
     testImplementation("org.camunda.bpm.assert:camunda-bpm-assert:${camundaBpmAssertVersion}")
     testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
