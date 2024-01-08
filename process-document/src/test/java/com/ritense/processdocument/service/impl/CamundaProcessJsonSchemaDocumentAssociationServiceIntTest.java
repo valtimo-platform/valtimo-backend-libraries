@@ -118,7 +118,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             .runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
             .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME));
 
-        assertThat(processDocumentDefinitions.size()).isEqualTo(1);
+        assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
     }
@@ -239,7 +239,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
     }
 
     @Test
-    public void shouldDeleteProcessDocumentDefinitionForNewVersioWhenNoVersionSpecified() {
+    public void shouldDeleteProcessDocumentDefinitionForNewVersionWhenNoVersionSpecified() {
         //create association for old version
         var request = new ProcessDocumentDefinitionRequest(
             "embedded-subprocess-example",

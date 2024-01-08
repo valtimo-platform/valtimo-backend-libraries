@@ -20,7 +20,9 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.BaseTest
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
+import com.ritense.smartdocuments.domain.DocumentsStructure
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import java.time.Instant
 import java.util.concurrent.TimeUnit.MILLISECONDS
@@ -49,9 +51,9 @@ import org.springframework.web.reactive.function.client.WebClient
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class SmartDocumentsClientTest : BaseTest() {
 
-    lateinit var mockDocumentenApi: MockWebServer
-    lateinit var client: SmartDocumentsClient
-    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+    private lateinit var mockDocumentenApi: MockWebServer
+    private lateinit var client: SmartDocumentsClient
+    private lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
 
     @BeforeAll
     fun setUp() {
@@ -70,7 +72,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
             properties,
             WebClient.builder(),
             5,
-            temporaryResourceStorageService
+            temporaryResourceStorageService,
         ))
     }
 
@@ -305,6 +307,24 @@ internal class SmartDocumentsClientTest : BaseTest() {
         verify(temporaryResourceStorageService, never()).store(any(), any())
     }
 
+    @Test
+    fun `200 ok response should return DocumentStructure`() {
+        // given
+        mockDocumentenApi.enqueue(
+            mockResponse(
+                body = smartDocumentsTemplateXml(),
+                contentType = "application/xml"
+            )
+        )
+
+        // when
+        val response = client.getSmartDocumentsTemplateData(pluginProperties())
+
+        // then
+        assertThat(response).isNotNull
+        assertThat(response).isInstanceOf(DocumentsStructure::class.java)
+    }
+
     private fun mockResponse(
         body: String,
         contentType: String = "application/json",
@@ -315,4 +335,61 @@ internal class SmartDocumentsClientTest : BaseTest() {
             .addHeader("Content-Type", contentType)
             .setBody(body)
     }
+
+    private fun smartDocumentsTemplateXml() =
+        """
+<SmartDocuments>
+    <DocumentsStructure>
+        <TemplatesStructure IsAccessible="true">
+            <TemplateGroups>
+                <TemplateGroup IsAccessible="true" ID="34" Name="Werkzaamheden">
+                    <TemplateGroups>
+                        <TemplateGroup IsAccessible="true" ID="34" Name="AI">
+                            <TemplateGroups/>
+                            <Templates>
+                                <Template ID="3523" Name="Bla"/>
+                                <Template ID="223" Name="Plan intakegesprek"/>
+                                <!-- More templates here... -->
+                            </Templates>
+                        </TemplateGroup>
+                        <TemplateGroup IsAccessible="true" ID="F6F9A5AE24834A2AA9612894506AC681" Name="ANW">
+                            <TemplateGroups/>
+                            <Templates>
+                                <Template ID="234" Name="Plan intakegesprek"/>
+                                <Template ID="43" Name="Plan intakegesprek"/>
+                            </Templates>
+                        </TemplateGroup>
+                    </TemplateGroups>
+                    <Templates>
+                        <Template ID="343" Name="Voorbeeld sjabloon"/>
+                        <Template ID="43" Name="Voorbeeld sjabloon 2"/>
+                    </Templates>
+                </TemplateGroup>
+            </TemplateGroups>
+        </TemplatesStructure>
+    </DocumentsStructure>
+    <UsersStructure IsAccessible="true">
+        <GroupsAccess>
+            <TemplateGroups/>
+            <HeaderGroups/>
+        </GroupsAccess>
+        <UserGroups>
+            <UserGroup IsAccessible="true" ID="342" Name="Test">
+                <GroupsAccess>
+                    <TemplateGroups>
+                        <TemplateGroup ID="343" Name="Test" AllDescendants="true"/>
+                        <TemplateGroup ID="324" Name="Werkzaamheden" AllDescendants="true"/>
+                    </TemplateGroups>
+                    <HeaderGroups/>
+                </GroupsAccess>
+        </UserGroups>
+    </UsersStructure>
+</SmartDocuments>
+        """.trimIndent()
+
+    private fun pluginProperties(): SmartDocumentsPropertiesDto = SmartDocumentsPropertiesDto(
+        username = "username",
+        password = "password",
+        url = "www.test.com"
+    )
 }
