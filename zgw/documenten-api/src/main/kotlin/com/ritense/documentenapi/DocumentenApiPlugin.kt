@@ -192,7 +192,15 @@ class DocumentenApiPlugin(
     }
 
     fun modifyInformatieObject(documentUrl: URI, patchDocumentRequest: PatchDocumentRequest): DocumentInformatieObject {
-        return client.modifyInformatieObject(authenticationPluginConfiguration, documentUrl, patchDocumentRequest)
+        val documentLock = client.lockInformatieObject(authenticationPluginConfiguration, documentUrl)
+        try {
+            patchDocumentRequest.lock = documentLock.lock
+            val modifiedDocument =
+                client.modifyInformatieObject(authenticationPluginConfiguration, documentUrl, patchDocumentRequest)
+            return modifiedDocument
+        } finally {
+            client.unlockInformatieObject(authenticationPluginConfiguration, documentUrl, documentLock)
+        }
     }
 
     private fun storeDocument(

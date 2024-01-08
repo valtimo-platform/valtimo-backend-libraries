@@ -151,6 +151,45 @@ class DocumentenApiClient(
             }
     }
 
+    fun lockInformatieObject(
+        authentication: DocumentenApiAuthentication,
+        objectUrl: URI
+    ): DocumentLock {
+        val result = checkNotNull(
+            webclientBuilder
+                .clone()
+                .filter(authentication)
+                .build()
+                .post()
+                .uri(objectUrl.toString() + "/lock")
+                .retrieve()
+                .toEntity(DocumentLock::class.java)
+                .block()?.body
+        ) {
+            "Could not lock document at $objectUrl"
+        }
+
+        return result
+    }
+
+    fun unlockInformatieObject(
+        authentication: DocumentenApiAuthentication,
+        objectUrl: URI,
+        documentLock: DocumentLock,
+    ) {
+        webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .post()
+            .uri(objectUrl.toString() + "/unlock")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(documentLock))
+            .retrieve()
+            .toBodilessEntity()
+            .block()
+    }
+
     fun deleteInformatieObject(authenticationPluginConfiguration: DocumentenApiAuthentication, url: URI) {
         webclientBuilder
             .clone()
