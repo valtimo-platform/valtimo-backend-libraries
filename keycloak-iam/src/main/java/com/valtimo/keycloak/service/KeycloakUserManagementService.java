@@ -125,13 +125,20 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public Optional<ManageableUser> findByEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            return Optional.empty();
+        }
         List<UserRepresentation> userList;
         try (Keycloak keycloak = keycloakService.keycloak()) {
             userList = keycloakService
                 .usersResource(keycloak)
                 .search(null, null, null, email, 0, 1, true, true);
         }
-        return userList.isEmpty() ? Optional.empty() : Optional.of(toManageableUserByRetrievingRoles(userList.get(0)));
+        if (userList.isEmpty() || !Objects.equals(userList.get(0).getEmail(), email)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(toManageableUserByRetrievingRoles(userList.get(0)));
+        }
     }
 
     @Override

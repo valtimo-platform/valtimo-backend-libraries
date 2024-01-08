@@ -81,7 +81,7 @@ class SmartDocumentsAutoConfiguration {
             smartDocumentsConnectorProperties,
             smartDocumentsWebClientBuilder,
             maxFileSize,
-            temporaryResourceStorageService
+            temporaryResourceStorageService,
         )
     }
 

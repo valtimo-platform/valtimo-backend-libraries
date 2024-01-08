@@ -21,6 +21,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import java.time.temporal.TemporalAccessor;
+import java.util.UUID;
 
 public class MysqlQueryDialectHelper implements QueryDialectHelper {
 
@@ -83,5 +84,10 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
             cb.function("JSON_QUOTE", Object.class, cb.literal(value)),
             cb.literal(path)
         ));
+    }
+
+    @Override
+    public Expression<String> uuidToString(CriteriaBuilder cb, Path<UUID> column) {
+        return cb.function("BIN_TO_UUID", String.class, column);
     }
 }

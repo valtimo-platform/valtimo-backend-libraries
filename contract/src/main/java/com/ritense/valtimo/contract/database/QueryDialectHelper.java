@@ -20,6 +20,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
+import java.util.UUID;
 
 public interface QueryDialectHelper {
 
@@ -30,4 +31,6 @@ public interface QueryDialectHelper {
     Predicate getJsonValueExistsInPathExpression(CriteriaBuilder cb, Path column, String path, String value);
 
     Predicate getJsonArrayContainsExpression(CriteriaBuilder cb, Path column, String path, String value);
+
+    Expression<String> uuidToString(CriteriaBuilder cb, Path<UUID> column);
 }

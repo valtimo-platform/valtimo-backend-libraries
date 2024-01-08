@@ -20,6 +20,7 @@ import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
@@ -94,6 +95,11 @@ public class PostgresQueryDialectHelper implements QueryDialectHelper {
                 cb.literal(value)
             )
         );
+    }
+
+    @Override
+    public Expression<String> uuidToString(CriteriaBuilder cb, Path<UUID> column) {
+        return column.as(String.class);
     }
 
     private Expression<String> getValueForPathText(CriteriaBuilder cb, Path column, String path) {

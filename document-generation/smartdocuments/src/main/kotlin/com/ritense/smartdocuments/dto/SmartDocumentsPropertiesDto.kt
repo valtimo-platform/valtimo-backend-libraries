@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.exception
+package com.ritense.smartdocuments.dto
 
-class PluginPropertyParseException(
-    propertyName: String,
-    pluginName: String,
-    throwable: Throwable,
-) : Exception(
-    "Plugin property with name '$propertyName' failed to parse for plugin '$pluginName'. ${throwable.message}",
-    throwable
+data class SmartDocumentsPropertiesDto(
+    val url: String,
+    val username: String,
+    val password: String
 )
