@@ -45,7 +45,7 @@ dependencies {
     implementation "org.junit.jupiter:junit-jupiter"
     implementation "org.springframework.boot:spring-boot-starter-test"
 
-    implementation "org.liquibase:liquibase-core"
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
     implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
 

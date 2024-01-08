@@ -61,7 +61,7 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "com.jayway.jsonpath:json-path-assert:${jaywayJsonpathVersion}"
 
-    implementation "org.liquibase:liquibase-core"
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 }
 
 apply from: "gradle/publishing.gradle"

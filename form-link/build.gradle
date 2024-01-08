@@ -48,7 +48,7 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     implementation "org.liquibase.ext:liquibase-hibernate6:${liquibaseVersion}"
-    implementation "org.liquibase:liquibase-core"
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlin:kotlin-reflect"

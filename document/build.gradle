@@ -50,13 +50,13 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
-    implementation "org.liquibase:liquibase-core"
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
     implementation "org.liquibase.ext:liquibase-hibernate6:${liquibaseVersion}"
     implementation "com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}"
 
     implementation "io.hypersistence:hypersistence-utils-hibernate-62:${hypersistenceUtilsVersion}"
 
-    implementation "org.hibernate.orm:hibernate-core"
+    implementation "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
 
     implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 

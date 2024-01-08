@@ -104,8 +104,8 @@ dependencies {
     implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jaxbApiVersion}"
 
     // Hibernate
-    implementation "org.hibernate.orm:hibernate-core"
-    implementation "org.hibernate.orm:hibernate-envers"
+    implementation "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
+    implementation "org.hibernate.orm:hibernate-envers:${hibernateCoreVersion}"
 
     // Shedlock
     implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}"
@@ -115,7 +115,7 @@ dependencies {
         exclude(module: 'tools')
     }
 
-    implementation "org.liquibase:liquibase-core"
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
     implementation "io.dropwizard.metrics:metrics-core"
     implementation "io.dropwizard.metrics:metrics-annotation"

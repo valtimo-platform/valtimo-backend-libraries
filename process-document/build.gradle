@@ -62,7 +62,7 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
-    implementation "org.hibernate.orm:hibernate-core"
+    implementation "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
