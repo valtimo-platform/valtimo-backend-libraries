@@ -57,13 +57,13 @@ class SmartDocumentsPlugin(
 
     @URL
     @PluginProperty(key = "url", required = true, secret = false)
-    private lateinit var url: String
+    lateinit var url: String
 
     @PluginProperty(key = "username", required = true, secret = false)
-    private lateinit var username: String
+    lateinit var username: String
 
     @PluginProperty(key = "password", required = true, secret = true)
-    private lateinit var password: String
+    lateinit var password: String
 
     @PluginAction(
         key = "generate-document",
