@@ -27,13 +27,14 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.Companion.BUSINESS_KEY
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.ID
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.PROCESS_INSTANCE
-import java.util.UUID
+import com.ritense.valtimo.contract.database.QueryDialectHelper
 import javax.persistence.criteria.AbstractQuery
 import javax.persistence.criteria.CriteriaBuilder
 import javax.persistence.criteria.Root
 
 class CamundaTaskDocumentMapper(
-    private val processDocumentService: CamundaProcessJsonSchemaDocumentService
+    private val processDocumentService: CamundaProcessJsonSchemaDocumentService,
+    private val queryDialectHelper: QueryDialectHelper
 ) : AuthorizationEntityMapper<CamundaTask, JsonSchemaDocument> {
 
     override fun mapRelated(entity: CamundaTask): List<JsonSchemaDocument> {
@@ -49,12 +50,16 @@ class CamundaTaskDocumentMapper(
     ): AuthorizationEntityMapperResult<JsonSchemaDocument> {
         val documentRoot = query.from(JsonSchemaDocument::class.java)
         val processBusinessKey = root.get<CamundaExecution>(PROCESS_INSTANCE).get<String>(BUSINESS_KEY)
-        query.groupBy(query.groupList + processBusinessKey)
+        query.groupBy(query.groupList + root.get<String>(ID))
+        val documentId = queryDialectHelper.uuidToString(
+            criteriaBuilder,
+            documentRoot.get<JsonSchemaDocumentId>(ID).get(ID)
+        )
 
         return AuthorizationEntityMapperResult(
             documentRoot,
             query,
-            criteriaBuilder.equal(processBusinessKey, documentRoot.get<JsonSchemaDocumentId>(ID).get<UUID>(ID))
+            criteriaBuilder.equal(processBusinessKey, documentId)
         )
     }
 
