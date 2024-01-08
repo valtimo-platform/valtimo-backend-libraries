@@ -110,4 +110,8 @@ data class RelatedFileDto(
     override fun getConfidentialityLevel(): String? {
         return confidentialityLevel
     }
+
+    fun getPluginConfigurationId(): UUID {
+        return pluginConfigurationId
+    }
 }

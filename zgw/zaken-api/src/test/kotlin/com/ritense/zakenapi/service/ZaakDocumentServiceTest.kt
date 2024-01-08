@@ -96,7 +96,7 @@ class ZaakDocumentServiceTest {
         assertEquals(5, relatedFiles.size)
         relatedFiles.forEachIndexed { index, relatedFile ->
             assertEquals(UUID.fromString("b059092c-9557-431a-9118-97f147903270"), relatedFile.fileId)
-            assertEquals(documentenApiPluginConfiguration.id.id, relatedFile.pluginConfigurationId)
+            assertEquals(documentenApiPluginConfiguration.id.id, relatedFile.getPluginConfigurationId())
             assertEquals("omschrijving", relatedFile.informatieobjecttype)
         }
     }
