@@ -16,22 +16,19 @@
 
 package com.ritense.valtimo.milestones.domain;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.validator.constraints.Range;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Range;
 
 @Entity
 public class Milestone {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
