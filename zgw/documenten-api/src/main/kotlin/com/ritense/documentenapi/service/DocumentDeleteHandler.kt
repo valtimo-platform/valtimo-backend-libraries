@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.repository
+package com.ritense.documentenapi.service
 
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
-import org.springframework.data.jpa.repository.JpaRepository
+import java.net.URI
 
-interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId> {
-    fun findByPluginDefinitionKey(pluginDefinitionKey: String): List<PluginConfiguration>
-    fun findByPluginDefinitionFullyQualifiedClassName(className: String): List<PluginConfiguration>
+interface DocumentDeleteHandler {
+    fun preDocumentDelete(documentUrl: URI)
 }

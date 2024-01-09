@@ -25,6 +25,7 @@ import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.event.DocumentCreated
+import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -52,6 +53,7 @@ class DocumentenApiPlugin(
     private val storageService: TemporaryResourceStorageService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val objectMapper: ObjectMapper,
+    private val documentDeleteHandlers: List<DocumentDeleteHandler>,
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -180,6 +182,7 @@ class DocumentenApiPlugin(
     }
 
     fun deleteInformatieObject(objectUrl: URI) {
+        documentDeleteHandlers.forEach { it.preDocumentDelete(objectUrl) }
         client.deleteInformatieObject(authenticationPluginConfiguration, objectUrl)
     }
 

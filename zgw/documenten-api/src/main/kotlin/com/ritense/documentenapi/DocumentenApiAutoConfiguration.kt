@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.security.DocumentenApiHttpSecurityConfigurer
+import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.web.rest.DocumentenApiResource
 import com.ritense.outbox.OutboxService
@@ -58,13 +59,15 @@ class DocumentenApiAutoConfiguration {
         storageService: TemporaryResourceStorageService,
         applicationEventPublisher: ApplicationEventPublisher,
         objectMapper: ObjectMapper,
+        documentDeleteHandlers: List<DocumentDeleteHandler>
     ): DocumentenApiPluginFactory {
         return DocumentenApiPluginFactory(
             pluginService,
             client,
             storageService,
             applicationEventPublisher,
-            objectMapper
+            objectMapper,
+            documentDeleteHandlers
         )
     }
 

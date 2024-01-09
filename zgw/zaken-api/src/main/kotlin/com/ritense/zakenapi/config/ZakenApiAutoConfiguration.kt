@@ -18,6 +18,7 @@ package com.ritense.zakenapi.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
@@ -31,6 +32,7 @@ import com.ritense.zakenapi.resolver.ZaakStatusValueResolverFactory
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import com.ritense.zakenapi.security.ZakenApiHttpSecurityConfigurer
 import com.ritense.zakenapi.service.ZaakDocumentService
+import com.ritense.zakenapi.service.ZakenDocumentDeleteHandler
 import com.ritense.zakenapi.web.rest.ZaakDocumentResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -125,5 +127,12 @@ class ZakenApiAutoConfiguration {
     @Bean
     fun zakenApiHttpSecurityConfigurer(): ZakenApiHttpSecurityConfigurer {
         return ZakenApiHttpSecurityConfigurer()
+    }
+
+    @Bean
+    fun zakenDocumentDeleteHandler(
+        pluginService: PluginService
+    ): DocumentDeleteHandler {
+        return ZakenDocumentDeleteHandler(pluginService)
     }
 }
