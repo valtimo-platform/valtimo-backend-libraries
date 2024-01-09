@@ -17,6 +17,7 @@
 package com.ritense.authorization.permission
 
 import com.ritense.authorization.Action
+import com.ritense.authorization.criteriabuilder.AbstractQueryWrapper
 import com.ritense.authorization.role.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import io.hypersistence.utils.hibernate.type.json.JsonType
@@ -77,12 +78,13 @@ data class Permission(
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper
     ): Predicate {
+        val customQuery = AbstractQueryWrapper(query)
         return criteriaBuilder
             .and(
                 *conditionContainer.conditions.map {
                     it.toPredicate(
                         root,
-                        query,
+                        customQuery,
                         criteriaBuilder,
                         resourceType,
                         queryDialectHelper
