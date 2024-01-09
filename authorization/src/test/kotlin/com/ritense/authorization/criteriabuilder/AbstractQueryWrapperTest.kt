@@ -17,45 +17,45 @@
 package com.ritense.authorization.criteriabuilder
 
 import com.ritense.authorization.testimpl.TestEntity
-import org.assertj.core.api.Assertions.assertThat
-import org.hibernate.metamodel.model.domain.internal.EntityTypeImpl
-import org.hibernate.query.criteria.internal.CriteriaBuilderImpl
-import org.hibernate.query.criteria.internal.CriteriaQueryImpl
-import org.hibernate.query.criteria.internal.path.RootImpl
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Root
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.RETURNS_DEEP_STUBS
+import org.mockito.Mockito.anyList
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 internal class AbstractQueryWrapperTest {
-
-    private val testEntityType = EntityTypeImpl<TestEntity>(TestEntity::class.java, null, mock(), mock())
-
     @Test
     fun `should only add a single root for 'from'`() {
-        val criteriaBuilder = mock<CriteriaBuilderImpl>(defaultAnswer = RETURNS_DEEP_STUBS)
-        whenever(criteriaBuilder.entityManagerFactory.metamodel.entity(TestEntity::class.java))
-            .thenReturn(testEntityType)
-        val query = CriteriaQueryImpl(criteriaBuilder, TestEntity::class.java)
-        val queryWrapper = AbstractQueryWrapper(query)
+        val clazz = TestEntity::class.java
 
-        queryWrapper.from(TestEntity::class.java)
-        queryWrapper.from(TestEntity::class.java)
+        val query : CriteriaQuery<TestEntity> = mock()
+        val queryWrapper = AbstractQueryWrapper<TestEntity>(query)
 
-        assertThat(query.roots).hasSize(1)
-        assertThat(query.roots.first().javaType).isEqualTo(TestEntity::class.java)
+        val root : Root<TestEntity> = mock()
+        whenever(root.javaType).thenReturn(clazz)
+        whenever(query.from(clazz)).thenReturn(root)
+        whenever(query.roots).thenReturn(setOf())
+            .thenReturn(setOf(root))
+
+        queryWrapper.from(clazz)
+        queryWrapper.from(clazz)
+
+        verify(query, times(1)).from(clazz)
     }
 
     @Test
     fun `should only add a single groupBy`() {
-        val query = CriteriaQueryImpl(mock(), TestEntity::class.java)
-        val queryWrapper = AbstractQueryWrapper(query)
-        val root = RootImpl(mock(), testEntityType)
+        val root : Root<TestEntity> = mock()
+
+        val query : CriteriaQuery<TestEntity> = mock()
+        whenever(query.groupBy(anyList())).thenReturn(query)
+        val queryWrapper = AbstractQueryWrapper<TestEntity>(query)
 
         queryWrapper.groupBy(root, root)
 
-        assertThat(query.groupList).hasSize(1)
-        assertThat(query.groupList.first()).isEqualTo(root)
+        verify(query, times(1)).groupBy(listOf(root))
     }
-
 }
