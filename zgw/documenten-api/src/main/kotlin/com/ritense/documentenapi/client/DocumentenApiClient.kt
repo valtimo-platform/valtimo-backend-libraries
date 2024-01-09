@@ -213,6 +213,7 @@ class DocumentenApiClient(
             webclientBuilder
                 .clone()
                 .filter(authenticationPluginConfiguration)
+                .filter(ClientTools.zgwErrorHandler())
                 .build()
                 .patch()
                 .uri(documentUrl)

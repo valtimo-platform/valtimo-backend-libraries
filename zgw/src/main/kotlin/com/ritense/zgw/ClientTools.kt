@@ -16,17 +16,46 @@
 
 package com.ritense.zgw
 
+import com.ritense.zgw.domain.ZgwErrorResponse
+import com.ritense.zgw.exceptions.BadRequestException
+import com.ritense.zgw.exceptions.RequestFailedException
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.ResolvableType
+import org.springframework.web.reactive.function.client.ClientResponse
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction
 import org.springframework.web.util.UriBuilder
+import reactor.core.publisher.Mono
 import java.net.URI
 
 class ClientTools {
     companion object {
+        val logger = mu.KotlinLogging.logger {}
+
         fun <T> getTypedPage(responseClass: Class<out T>): ParameterizedTypeReference<Page<T>> {
             return ParameterizedTypeReference.forType(
                 ResolvableType.forClassWithGenerics(Page::class.java, responseClass).type
             )
+        }
+
+        fun zgwErrorHandler(): ExchangeFilterFunction {
+            return ExchangeFilterFunction.ofResponseProcessor { clientResponse: ClientResponse ->
+                if (clientResponse.statusCode().is2xxSuccessful) {
+                    return@ofResponseProcessor Mono.just<ClientResponse>(
+                        clientResponse
+                    )
+                } else if (clientResponse.statusCode().is4xxClientError) {
+                    return@ofResponseProcessor clientResponse.bodyToMono<ZgwErrorResponse>(ZgwErrorResponse::class.java)
+                        .flatMap<ClientResponse>({ errorBody: ZgwErrorResponse ->
+                            Mono.error(BadRequestException(errorBody, clientResponse.statusCode()))
+                        })
+                } else {
+                    return@ofResponseProcessor clientResponse.bodyToMono<String>(String::class.java)
+                        .flatMap<ClientResponse>({ errorBody: String ->
+                            logger.error { "Request failed. Response body: $errorBody" }
+                            Mono.error(RequestFailedException(errorBody, clientResponse.statusCode()))
+                        })
+                }
+            }
         }
 
         fun baseUrlToBuilder(builder: UriBuilder, uri: URI): UriBuilder {

@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-dependencies {
-    api project(':plugin')
+package com.ritense.zgw.domain
 
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
-    implementation "org.springframework.boot:spring-boot-starter"
-    implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation "org.springframework.boot:spring-boot-starter-webflux"
-
-    testImplementation "org.jetbrains.kotlin:kotlin-test"
-    testImplementation "org.junit.jupiter:junit-jupiter"
-    testImplementation "org.springframework.boot:spring-boot-starter-test"
+data class ZgwErrorResponse(
+    val code: String,
+    val detail: String,
+    val instance: String,
+    val invalidParams: List<InvalidParam>,
+    val status: Int,
+    val title: String,
+    val type: String
+) {
+    data class InvalidParam(
+        val code: String,
+        val name: String,
+        val reason: String
+    )
 }
-
-apply from: "gradle/publishing.gradle"

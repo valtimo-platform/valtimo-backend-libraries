@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-dependencies {
-    api project(':plugin')
+package com.ritense.zgw.exceptions
 
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
-    implementation "org.springframework.boot:spring-boot-starter"
-    implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation "org.springframework.boot:spring-boot-starter-webflux"
+import org.springframework.http.HttpStatus
 
-    testImplementation "org.jetbrains.kotlin:kotlin-test"
-    testImplementation "org.junit.jupiter:junit-jupiter"
-    testImplementation "org.springframework.boot:spring-boot-starter-test"
-}
-
-apply from: "gradle/publishing.gradle"
+class RequestFailedException(
+    val responseBody: String,
+    val statusCode: HttpStatus,
+) : RuntimeException("Request resulted in ${statusCode.value()} response, with body: $responseBody")
