@@ -19,19 +19,10 @@ package com.ritense.smartdocuments.client
 import com.fasterxml.jackson.core.JsonFactory
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
-import com.ritense.smartdocuments.domain.DocumentFormatOption
-import com.ritense.smartdocuments.domain.FileStreamResponse
-import com.ritense.smartdocuments.domain.FilesResponse
-import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
-import java.io.InputStream
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
-import java.util.Base64
-import java.util.UUID
-import kotlin.jvm.optionals.getOrNull
 import org.apache.commons.io.FilenameUtils
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.HttpStatus
@@ -43,6 +34,19 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunctions
 import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import java.io.InputStream
+import java.io.PipedInputStream
+import java.io.PipedOutputStream
+import java.util.Base64
+import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.ritense.smartdocuments.domain.DocumentFormatOption
+import com.ritense.smartdocuments.domain.FilesResponse
+import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
+import com.ritense.smartdocuments.domain.FileStreamResponse
+
 
 class SmartDocumentsClient(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
@@ -50,6 +54,16 @@ class SmartDocumentsClient(
     private val maxFileSizeMb: Int,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) {
+
+    fun getSmartDocumentsTemplateData(smartDocumentsPropertiesDto: SmartDocumentsPropertiesDto): SmartDocumentsTemplateData? {
+        return pluginWebClient(smartDocumentsPropertiesDto).get()
+            .uri(STRUCTURE_PATH)
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .map { xmlData -> xmlMapper.readValue(xmlData, SmartDocumentsTemplateData::class.java) }
+            .doOnError { throw toHttpClientErrorException(it) }
+            .block()
+    }
 
     fun generateDocument(
         smartDocumentsRequest: SmartDocumentsRequest,
@@ -157,6 +171,19 @@ class SmartDocumentsClient(
         this.smartDocumentsConnectorProperties = smartDocumentsConnectorProperties
     }
 
+    private fun pluginWebClient(pluginProperties: SmartDocumentsPropertiesDto): WebClient {
+        val basicAuthentication = ExchangeFilterFunctions.basicAuthentication(
+            pluginProperties.username,
+            pluginProperties.password
+        )
+
+        return smartDocumentsWebClientBuilder
+            .clone()
+            .baseUrl(pluginProperties.url)
+            .filter(basicAuthentication)
+            .build()
+    }
+
     private fun webClient(): WebClient {
         val basicAuthentication = ExchangeFilterFunctions.basicAuthentication(
             smartDocumentsConnectorProperties.username!!,
@@ -230,5 +257,11 @@ class SmartDocumentsClient(
         val documentDataStart: Long,
         val documentDataEnd: Long,
     )
+
+    companion object {
+        private val xmlMapper = XmlMapper()
+
+        private const val STRUCTURE_PATH = "sdapi/structure"
+    }
 
 }

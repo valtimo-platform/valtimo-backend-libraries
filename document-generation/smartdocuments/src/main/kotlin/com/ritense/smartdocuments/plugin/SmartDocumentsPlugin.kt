@@ -30,6 +30,8 @@ import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.FileStreamResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.domain.TemplateGroup
+import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.utils.RequestHelper
@@ -55,13 +57,13 @@ class SmartDocumentsPlugin(
 
     @URL
     @PluginProperty(key = "url", required = true, secret = false)
-    private lateinit var url: String
+    lateinit var url: String
 
     @PluginProperty(key = "username", required = true, secret = false)
-    private lateinit var username: String
+    lateinit var username: String
 
     @PluginProperty(key = "password", required = true, secret = true)
-    private lateinit var password: String
+    lateinit var password: String
 
     @PluginAction(
         key = "generate-document",
@@ -87,6 +89,54 @@ class SmartDocumentsPlugin(
             saveGeneratedDocumentToTempFile(generatedDocument)
         }
         execution.setVariable(resultingDocumentProcessVariableName, resourceId)
+    }
+
+    @PluginAction(
+        key = "get-template-names",
+        title = "Get Template Names",
+        description = "Fetch the template names of a template group.",
+        activityTypes = [ActivityType.SERVICE_TASK_START]
+    )
+    fun getTemplateNames(
+        execution: DelegateExecution,
+        @PluginActionProperty templateGroupName: String,
+        @PluginActionProperty resultingTemplateNameListProcessVariableName: String
+    ) {
+        val pluginProperties = SmartDocumentsPropertiesDto(
+            username = username,
+            password = password,
+            url = url
+        )
+
+        val smartDocumentsTemplateData = smartDocumentsClient.getSmartDocumentsTemplateData(pluginProperties)
+
+        val templateNameList = if (smartDocumentsTemplateData != null) {
+            val templateGroup = findTemplateGroupByName(
+                templateGroups = smartDocumentsTemplateData.documentsStructure.templatesStructure.templateGroups,
+                groupName = templateGroupName
+            )
+                templateGroup?.templates?.map { it.name } ?: emptyList()
+        } else {
+            emptyList()
+        }
+        execution.setVariable(resultingTemplateNameListProcessVariableName, templateNameList)
+    }
+
+    private fun findTemplateGroupByName(
+        templateGroups: List<TemplateGroup>,
+        groupName: String
+    ): TemplateGroup? {
+        for (group in templateGroups) {
+            if (group.name == groupName) {
+                return group
+            }
+
+            val foundInChildGroups = group.templateGroups?.let { findTemplateGroupByName(it, groupName) }
+            if (foundInChildGroups != null) {
+                return foundInChildGroups
+            }
+        }
+        return null
     }
 
     private fun saveGeneratedDocumentToTempFile(generatedDocument: FileStreamResponse): String {

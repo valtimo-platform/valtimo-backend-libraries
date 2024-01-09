@@ -111,6 +111,10 @@ class PluginService(
         val pluginDefinition = pluginDefinitionRepository.getById(pluginDefinitionKey)
         validateProperties(properties, pluginDefinition)
 
+        if (pluginConfigurationRepository.existsById(id)) {
+            throw IllegalStateException("Failed to create plugin. Plugin ID '${id.id}' is already used by another plugin.")
+        }
+
         val pluginConfiguration = pluginConfigurationRepository.save(
             PluginConfiguration(id, title, properties, pluginDefinition)
         )
@@ -348,6 +352,9 @@ class PluginService(
         val oldPluginConfiguration = pluginConfigurationRepository.findById(oldPluginConfigurationId).orElseThrow()
         if (newPluginConfigurationId == oldPluginConfigurationId) {
             return oldPluginConfiguration
+        }
+        if (pluginConfigurationRepository.existsById(newPluginConfigurationId)) {
+            throw IllegalStateException("Failed to update plugin. Plugin ID '${newPluginConfigurationId.id}' is already used by another plugin.")
         }
         pluginConfigurationRepository.deleteById(oldPluginConfigurationId)
         val newPluginConfiguration = pluginConfigurationRepository.save(
