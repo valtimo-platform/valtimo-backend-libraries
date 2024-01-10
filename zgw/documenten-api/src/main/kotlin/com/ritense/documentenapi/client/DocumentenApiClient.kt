@@ -159,6 +159,7 @@ class DocumentenApiClient(
             webclientBuilder
                 .clone()
                 .filter(authentication)
+                .filter(ClientTools.zgwErrorHandler())
                 .build()
                 .post()
                 .uri(objectUrl.toString() + "/lock")
@@ -180,6 +181,7 @@ class DocumentenApiClient(
         webclientBuilder
             .clone()
             .filter(authentication)
+            .filter(ClientTools.zgwErrorHandler())
             .build()
             .post()
             .uri(objectUrl.toString() + "/unlock")
@@ -194,6 +196,7 @@ class DocumentenApiClient(
         webclientBuilder
             .clone()
             .filter(authenticationPluginConfiguration)
+            .filter(ClientTools.zgwErrorHandler())
             .build()
             .delete()
             .uri(url)

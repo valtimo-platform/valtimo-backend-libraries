@@ -16,6 +16,7 @@
 
 dependencies {
     api project(':plugin')
+    api project(':contract')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter"
@@ -23,6 +24,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-webflux"
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 }

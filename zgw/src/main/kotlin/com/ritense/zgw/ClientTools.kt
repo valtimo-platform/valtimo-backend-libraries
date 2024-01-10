@@ -16,8 +16,9 @@
 
 package com.ritense.zgw
 
+import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zgw.domain.ZgwErrorResponse
-import com.ritense.zgw.exceptions.BadRequestException
+import com.ritense.zgw.exceptions.ClientErrorException
 import com.ritense.zgw.exceptions.RequestFailedException
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.ResolvableType
@@ -44,14 +45,18 @@ class ClientTools {
                         clientResponse
                     )
                 } else if (clientResponse.statusCode().is4xxClientError) {
-                    return@ofResponseProcessor clientResponse.bodyToMono<ZgwErrorResponse>(ZgwErrorResponse::class.java)
-                        .flatMap<ClientResponse>({ errorBody: ZgwErrorResponse ->
-                            Mono.error(BadRequestException(errorBody, clientResponse.statusCode()))
-                        })
+                    clientResponse.bodyToMono(String::class.java)
+                        .flatMap { errorBody: String ->
+                            try {
+                                val zgwError = Mapper.INSTANCE.get().readValue(errorBody, ZgwErrorResponse::class.java)
+                                Mono.error(ClientErrorException(zgwError, clientResponse.statusCode()))
+                            } catch (e: Exception) {
+                                Mono.error(RequestFailedException(errorBody, clientResponse.statusCode()))
+                            }
+                        }
                 } else {
                     return@ofResponseProcessor clientResponse.bodyToMono<String>(String::class.java)
                         .flatMap<ClientResponse>({ errorBody: String ->
-                            logger.error { "Request failed. Response body: $errorBody" }
                             Mono.error(RequestFailedException(errorBody, clientResponse.statusCode()))
                         })
                 }
