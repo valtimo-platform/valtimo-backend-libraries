@@ -107,8 +107,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     public void shouldCreateSnapshotWhenModifyingDocument() throws InterruptedException {
         final var request = new ModifyDocumentRequest(
             document.id().toString(),
-            new JsonDocumentContent("{\"street\": \"Kanaalkade\"}").asJson(),
-            document.version().toString()
+            new JsonDocumentContent("{\"street\": \"Kanaalkade\"}").asJson()
         );
 
         final var modifiedDocument = (JsonSchemaDocument) documentService.modifyDocument(request).resultingDocument().orElseThrow();

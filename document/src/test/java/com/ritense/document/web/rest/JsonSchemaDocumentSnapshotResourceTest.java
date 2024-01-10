@@ -40,7 +40,9 @@ import java.util.Optional;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -70,7 +72,9 @@ public class JsonSchemaDocumentSnapshotResourceTest extends BaseTest {
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
             .build();
 
-        document = createDocument(new JsonDocumentContent("{\"street\": \"Funenpark\"}"));
+        document = spy(createDocument(new JsonDocumentContent("{\"street\": \"Funenpark\"}")));
+        doReturn(1).when(document).version();
+
         documentDefinition = definition();
         documentSnapshot = new JsonSchemaDocumentSnapshot(document, LocalDateTime.now(), "user", documentDefinition);
         documentSnapshotPage = new PageImpl<>(List.of(documentSnapshot), Pageable.unpaged(), 1);

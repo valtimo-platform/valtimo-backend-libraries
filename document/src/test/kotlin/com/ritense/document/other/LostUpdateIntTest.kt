@@ -35,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.dao.CannotAcquireLockException
 import org.springframework.security.test.context.support.WithMockUser
 import java.sql.SQLException
 import kotlin.test.assertEquals
@@ -82,6 +83,11 @@ internal class LostUpdateIntTest : BaseIntegrationTest() {
             assertEquals(
                 "ERROR: could not serialize access due to concurrent update",
                 exception.getRootCause().message
+            )
+            assertTrue(exception is CannotAcquireLockException)
+            assertEquals(
+                "could not execute statement; SQL [n/a]; nested exception is org.hibernate.exception.LockAcquisitionException: could not execute statement",
+                exception.message
             )
         }
         val modifiedDocument = runWithoutAuthorization { documentService.get(documentId.id.toString()) }

@@ -135,8 +135,7 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
 
         final var modifyRequest = new ModifyDocumentRequest(
             document.id().toString(),
-            document.content().asJson(),
-            document.version().toString()
+            document.content().asJson()
         );
 
         mockMvc.perform(
