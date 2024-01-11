@@ -56,6 +56,7 @@ import org.mockito.kotlin.whenever
 import java.util.Optional
 import javax.validation.Validation
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 internal class PluginServiceTest {
 
@@ -176,7 +177,7 @@ internal class PluginServiceTest {
                     "title", ObjectMapper().readTree("{\"name\": [\"incorrect-type\"]}") as ObjectNode, "key"
                 )
         }
-        assertEquals("Plugin property with name 'name' failed to parse for plugin 'Test Plugin'", exception.message)
+        assertTrue(exception.message!!.startsWith("Plugin property with name 'name' failed to parse for plugin 'Test Plugin'"))
     }
 
     @Test

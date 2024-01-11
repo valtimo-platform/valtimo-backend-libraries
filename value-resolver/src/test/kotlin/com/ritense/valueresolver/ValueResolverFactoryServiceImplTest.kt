@@ -61,11 +61,13 @@ internal class ValueResolverFactoryServiceImplTest {
             variableScope = DelegateTaskFake()
                 .withVariable("firstName", "John")
                 .withVariable("lastName", "Doe")
-                .withVariable("active", true),
+                .withVariable("active", true)
+                .withVariable("nullValue", null),
             listOf(
                 "pv:firstName",
                 "pv:lastName",
                 "pv:active",
+                "pv:nullValue",
                 "fixedValue",
                 "pv:nonexistant"
             )
@@ -76,7 +78,9 @@ internal class ValueResolverFactoryServiceImplTest {
                 "pv:firstName" to "John",
                 "pv:lastName" to "Doe",
                 "pv:active" to true,
+                "pv:nullValue" to null,
                 "fixedValue" to "fixedValue",
+                "pv:nonexistant" to null,
             )
         )
     }

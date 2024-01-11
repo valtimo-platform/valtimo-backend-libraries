@@ -261,7 +261,7 @@ class SmartDocumentsClient(
     companion object {
         private val xmlMapper = XmlMapper()
 
-        private const val STRUCTURE_PATH = "sdapi/structure"
+        private const val STRUCTURE_PATH = "/sdapi/structure"
     }
 
 }

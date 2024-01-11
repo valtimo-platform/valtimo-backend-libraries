@@ -436,7 +436,7 @@ class PluginService(
         }.toMap()
 
         // We want to process all placeholder values together to improve performance if external sources are needed.
-        val placeHolderValueMap = method.parameters.filter { param ->
+        val resolvedValueMap = method.parameters.filter { param ->
             param.isAnnotationPresent(PluginActionProperty::class.java)
         }.mapNotNull { param ->
             param to actionProperties.get(param.name)
@@ -449,7 +449,7 @@ class PluginService(
                 valueResolverService.resolveValues(execution.processInstanceId, execution, values.toList())
             }
 
-        return mapActionParamValues(paramValues, placeHolderValueMap)
+        return mapActionParamValues(paramValues, resolvedValueMap)
     }
 
     private fun resolveActionParamValues(
@@ -470,7 +470,7 @@ class PluginService(
         }.toMap()
 
         // We want to process all placeholder values together to improve performance if external sources are needed.
-        val placeHolderValueMap = method.parameters.filter { param ->
+        val resolvedValueMap = method.parameters.filter { param ->
             param.isAnnotationPresent(PluginActionProperty::class.java)
         }.mapNotNull { param ->
             param to actionProperties.get(param.name)
@@ -483,19 +483,18 @@ class PluginService(
                 valueResolverService.resolveValues(task.execution.processInstanceId, task.execution, values.toList())
             }
 
-        return mapActionParamValues(paramValues, placeHolderValueMap)
+        return mapActionParamValues(paramValues, resolvedValueMap)
     }
 
     private fun mapActionParamValues(
         paramValues: Map<Parameter, JsonNode>,
-        placeHolderValueMap: Map<String, Any>
+        resolvedValueMap: Map<String, Any?>
     ): Map<Parameter, Any> {
         return paramValues.mapValues { (param, value) ->
             if (value.isTextual) {
-                val placeHolderValueAsString = placeHolderValueMap[value.textValue()]
-                if (placeHolderValueAsString != null) {
+                if (resolvedValueMap.containsKey(value.textValue())) {
                     objectMapper.convertValue(
-                        placeHolderValueAsString,
+                        resolvedValueMap[value.textValue()],
                         objectMapper.constructType(param.parameterizedType)
                     )
                 } else {
