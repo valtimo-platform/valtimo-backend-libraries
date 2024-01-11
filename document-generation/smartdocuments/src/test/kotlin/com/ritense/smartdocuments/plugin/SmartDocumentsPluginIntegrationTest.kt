@@ -34,7 +34,6 @@ import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.json.Mapper
-import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.BeforeEach
@@ -44,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.http.HttpMethod
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Transactional
 @AutoConfigureWebTestClient(timeout = "36000")
@@ -201,7 +201,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
     }
 
     @Test
-    fun `should respond with placeholder when template-name contains process-variable that doesn't exist`() {
+    fun `should throw error when template-name contains process-variable that doesn't exist`() {
         // given
         saveProcessLink(
             """
@@ -218,14 +218,13 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when
-        runWithoutAuthorization {
+        val result = runWithoutAuthorization {
             processDocumentService.newDocumentAndStartProcess(request)
         }
 
         // then
-        val requestBody =
-            findRequestBody(HttpMethod.POST, "/wsxmldeposit/deposit/unattended", SmartDocumentsRequest::class.java)
-        assertThat(requestBody.smartDocument.selection.template).isEqualTo("pv:non-existing-process-variable")
+        assertThat(result.errors()).hasSize(1)
+        assertThat(result.errors()[0].asString()).startsWith("Unexpected error occurred, please contact support")
     }
 
     private fun saveProcessLink(generateDocumentActionProperties: String) {
