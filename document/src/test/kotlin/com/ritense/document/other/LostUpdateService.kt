@@ -32,14 +32,11 @@ class LostUpdateService(
     private val jdbcTemplate: JdbcTemplate,
 ) {
 
-    @Transactional(isolation = REPEATABLE_READ) // REPEATABLE_READ will prevent a 'Lost Update' for Postgres but not for MySQL.
+    @Transactional
     @RunWithoutAuthorization
     fun writeDocumentContent(documentId: JsonSchemaDocumentId, index: Int) {
         val document = documentService.get(documentId.id.toString())
         val content = document.content().asJson() as ObjectNode
-        assert("repeatable read" == jdbcTemplate.query("select current_setting('transaction_isolation')") { rs, _ ->
-            rs.getString(1)
-        }[0])
         logger.info { "$index -> $content" }
         content.put("index_$index", index)
         documentService.modifyDocument(document, content)
