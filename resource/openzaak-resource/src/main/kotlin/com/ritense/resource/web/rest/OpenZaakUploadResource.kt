@@ -17,6 +17,7 @@
 package com.ritense.resource.web.rest
 
 import com.ritense.resource.service.ResourceService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.contract.resource.Resource
 import org.springframework.http.MediaType
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
+@SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class OpenZaakUploadResource(
     val resourceService: ResourceService

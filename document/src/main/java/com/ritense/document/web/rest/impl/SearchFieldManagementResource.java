@@ -21,6 +21,8 @@ import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.DocumentSearchFieldsManagement;
 import java.util.List;
+
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @Controller
+@SkipComponentScan
 @RequestMapping(value = "/api/management", produces = APPLICATION_JSON_UTF8_VALUE)
 public class SearchFieldManagementResource implements DocumentSearchFieldsManagement {
 

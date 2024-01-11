@@ -17,6 +17,7 @@
 package com.ritense.documentenapi.web.rest
 
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.HttpHeaders
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.net.URLConnection
 
 @RestController
+@SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class DocumentenApiResource(
     val documentenApiService: DocumentenApiService

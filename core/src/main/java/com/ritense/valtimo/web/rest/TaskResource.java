@@ -18,6 +18,7 @@ package com.ritense.valtimo.web.rest;
 
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.dto.TaskExtended;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
@@ -51,6 +52,7 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_J
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class TaskResource extends AbstractTaskResource {
 

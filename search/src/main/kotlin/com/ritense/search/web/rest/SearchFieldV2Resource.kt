@@ -18,6 +18,7 @@ package com.ritense.search.web.rest
 
 import com.ritense.search.domain.SearchFieldV2
 import com.ritense.search.service.SearchFieldV2Service
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -31,6 +32,7 @@ import jakarta.validation.Valid
 import org.springframework.stereotype.Controller
 
 @Controller
+@SkipComponentScan
 @RequestMapping("/api/v1/search/field", produces = [APPLICATION_JSON_UTF8_VALUE])
 class SearchFieldV2Resource(
     private val searchFieldV2Service: SearchFieldV2Service

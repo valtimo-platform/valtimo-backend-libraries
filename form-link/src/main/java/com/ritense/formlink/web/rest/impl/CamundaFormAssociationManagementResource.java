@@ -21,6 +21,7 @@ import com.ritense.formlink.domain.request.CreateFormAssociationRequest;
 import com.ritense.formlink.domain.request.ModifyFormAssociationRequest;
 import com.ritense.formlink.service.FormAssociationService;
 import com.ritense.formlink.web.rest.FormAssociationManagementResource;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,6 +42,7 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_J
 
 @Deprecated(since = "10.6.0", forRemoval = true)
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class CamundaFormAssociationManagementResource implements FormAssociationManagementResource {
 

@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.emailnotificationsettings.web.rest;
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettings;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettingsRequestImpl;
@@ -30,6 +31,7 @@ import jakarta.validation.Valid;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api/v1", produces = APPLICATION_JSON_UTF8_VALUE)
 public class EmailNotificationSettingsResource {
 

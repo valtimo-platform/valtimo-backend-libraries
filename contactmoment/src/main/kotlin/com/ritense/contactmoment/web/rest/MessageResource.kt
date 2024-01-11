@@ -17,6 +17,7 @@
 package com.ritense.contactmoment.web.rest
 
 import com.ritense.contactmoment.domain.request.SendMessageRequest
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = ["/api/v1/document/{documentId}/message"], produces = [APPLICATION_JSON_UTF8_VALUE])
 interface MessageResource {
 

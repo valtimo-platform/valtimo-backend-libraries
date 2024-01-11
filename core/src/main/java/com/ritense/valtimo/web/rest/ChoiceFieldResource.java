@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.domain.choicefield.ChoiceField;
 import com.ritense.valtimo.service.ChoiceFieldService;
 import com.ritense.valtimo.web.rest.dto.ChoiceFieldCreateRequestDTO;
@@ -48,6 +49,7 @@ import java.util.Optional;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ChoiceFieldResource {
 

@@ -17,6 +17,7 @@
 package com.ritense.formlink.web.rest;
 
 import com.ritense.formlink.domain.TaskOpenResult;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_J
 
 @Deprecated(since = "10.6.0", forRemoval = true)
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public interface ProcessLinkResource {
     @GetMapping("/v1/process-link/task/{taskId}")

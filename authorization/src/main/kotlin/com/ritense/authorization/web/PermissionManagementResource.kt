@@ -19,6 +19,7 @@ package com.ritense.authorization.web
 import com.ritense.authorization.permission.PermissionRepository
 import com.ritense.authorization.deployment.PermissionDto
 import com.ritense.authorization.web.request.SearchPermissionsRequest
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
+@SkipComponentScan
 @RequestMapping("/api/management", produces = [ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE])
 class PermissionManagementResource(
     val permissionRepository: PermissionRepository
