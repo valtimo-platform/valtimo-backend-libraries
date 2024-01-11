@@ -95,7 +95,6 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
 
     // MyBatis (for camunda and our custom queries)
-//    implementation "org.mybatis:mybatis:${mybatisVersion}"
     implementation "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisSpringBootStarterVersion}"
 
     implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
