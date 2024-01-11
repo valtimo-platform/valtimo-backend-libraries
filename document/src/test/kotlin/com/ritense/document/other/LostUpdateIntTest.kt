@@ -35,7 +35,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.dao.CannotAcquireLockException
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.security.test.context.support.WithMockUser
 import java.sql.SQLException
