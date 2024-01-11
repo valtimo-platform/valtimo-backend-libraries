@@ -53,7 +53,7 @@ public interface Document {
     DocumentContent content();
 
     @JsonProperty
-    DocumentVersion version();
+    Integer version();
 
     @JsonProperty
     Long sequence();

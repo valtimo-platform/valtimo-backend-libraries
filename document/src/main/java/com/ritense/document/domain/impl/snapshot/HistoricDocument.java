@@ -24,7 +24,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
 import com.ritense.document.domain.relation.DocumentRelation;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import org.hibernate.annotations.Type;
@@ -55,7 +54,7 @@ public class HistoricDocument implements Document {
     private DocumentDefinition documentDefinition;
 
     @Transient
-    private JsonSchemaDocumentVersion version;
+    private int version;
 
     @Column(name = "document_created_on", columnDefinition = "DATETIME", nullable = false)
     private LocalDateTime createdOn;
@@ -126,7 +125,7 @@ public class HistoricDocument implements Document {
     }
 
     @Override
-    public JsonSchemaDocumentVersion version() {
+    public Integer version() {
         return version;
     }
 
