@@ -6,6 +6,13 @@
       "dataType": "date",
       "fieldType": "single",
       "matchType": "exact"
+    },
+    {
+      "key": "buildDates",
+      "path": "doc:buildDate",
+      "dataType": "date",
+      "fieldType": "range",
+      "matchType": "exact"
     }
   ]
 }

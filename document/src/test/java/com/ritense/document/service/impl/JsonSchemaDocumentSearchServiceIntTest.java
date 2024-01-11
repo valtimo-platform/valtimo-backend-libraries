@@ -1167,6 +1167,56 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         }
     }
 
+    @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
+    void shouldSearchWithSearchRequestAndFromDateRangeWithZoneOffset() {
+        try (MockedStatic<RequestHelper> mocked = Mockito.mockStatic(RequestHelper.class, Mockito.CALLS_REAL_METHODS)) {
+            // set UTC offset of request to +02:00
+            mocked.when(() -> RequestHelper.getZoneOffset()).thenReturn(ZoneOffset.of("+02:00"));
+
+            documentRepository.deleteAllInBatch();
+
+            /*
+            documents build dates are:
+            - 1st of January 22:30 UTC+0
+            - 2nd January 14:30 UTC+0
+            - 2nd January 23:30 UTC+0
+            - 4th January 01:30 UTC+0
+            - 4th  January 22:30 UTC+0
+             */
+            createDocument("{\"buildDate\": \"2024-01-01T22:30:00\"}").resultingDocument().get();
+            createDocument("{\"buildDate\": \"2024-01-02T14:30:00\"}").resultingDocument().get();
+            createDocument("{\"buildDate\": \"2024-01-02T23:30:00\"}").resultingDocument().get();
+            createDocument("{\"buildDate\": \"2024-01-04T01:30:00\"}").resultingDocument().get();
+            createDocument("{\"buildDate\": \"2024-01-04T22:30:00\"}").resultingDocument().get();
+
+            var request = new SearchWithConfigRequest();
+
+            var filter = new SearchWithConfigRequest.SearchWithConfigFilter();
+            filter.setKey("buildDates");
+            /*
+            Searching for documents with build date between 2nd of January 00:00 UTC+2 and 4th of January 00:00 UTC+2,
+            which will correspond to time range 1st of January 22:00 UTC+0 <-> 4th of January 22:00 UTC+0.
+            To the tail end of the range, 1 day is added, because the user is looking for a range up to and including the latter date.
+             */
+            filter.setRangeFrom("2024-01-02");
+            filter.setRangeTo("2024-01-04");
+
+            request.setOtherFilters(List.of(filter));
+
+            var result = documentSearchService.search(
+                    definition.id().name(),
+                    request,
+                    PageRequest.of(0, 10));
+
+            assertThat(result).isNotNull();
+            /*
+            should return 4 of out of 5 mocked documents.
+            */
+            assertThat(result.getTotalElements()).isEqualTo(4);
+        }
+    }
+
 
     private CreateDocumentResult createDocument(String content) {
         var documentContent = new JsonDocumentContent(content);
