@@ -83,7 +83,8 @@ internal class DocumentenApiPluginFactoryTest {
             client,
             storageService,
             applicationEventPublisher,
-            jacksonObjectMapper()
+            jacksonObjectMapper(),
+            listOf()
         )
 
         val plugin = factory.create(configuration)
