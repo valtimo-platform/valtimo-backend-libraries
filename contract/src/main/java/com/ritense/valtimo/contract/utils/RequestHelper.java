@@ -16,9 +16,12 @@
 
 package com.ritense.valtimo.contract.utils;
 
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import javax.servlet.http.HttpServletRequest;
+import java.time.ZoneOffset;
 import java.util.Set;
 
 public class RequestHelper {
@@ -34,4 +37,23 @@ public class RequestHelper {
         return ipList.toString();
     }
 
+    public static ZoneOffset getZoneOffset() {
+        ZoneOffset zoneOffset;
+
+        try {
+            RequestAttributes attribs = RequestContextHolder.getRequestAttributes();
+            HttpServletRequest request = ((ServletRequestAttributes) attribs).getRequest();
+            String zoneOffsetHeader = request.getHeader("Zone-Offset");
+
+            if (zoneOffsetHeader != null) {
+                zoneOffset = ZoneOffset.of(zoneOffsetHeader);
+            } else {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            zoneOffset = ZoneOffset.UTC;
+        }
+
+        return zoneOffset;
+    }
 }
