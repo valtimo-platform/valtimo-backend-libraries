@@ -18,11 +18,11 @@ package com.ritense.zakenapi.service
 
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.DocumentenApiPlugin
+import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
-import com.ritense.zakenapi.domain.RelatedFileDto
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException

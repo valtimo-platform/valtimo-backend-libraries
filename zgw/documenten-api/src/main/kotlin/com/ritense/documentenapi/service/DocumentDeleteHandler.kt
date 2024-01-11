@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.document.domain;
+package com.ritense.documentenapi.service
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.net.URI
 
-public interface RelatedFile {
-
-    @JsonProperty
-    UUID getFileId();
-
-    @JsonProperty
-    String getFileName();
-
-    @JsonProperty
-    Long getSizeInBytes();
-
-    @JsonProperty
-    LocalDateTime getCreatedOn();
-
-    @JsonProperty
-    String getCreatedBy();
-
+interface DocumentDeleteHandler {
+    fun preDocumentDelete(documentUrl: URI)
 }

@@ -14,27 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.document.domain;
+package com.ritense.documentenapi.client
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-public interface RelatedFile {
-
-    @JsonProperty
-    UUID getFileId();
-
-    @JsonProperty
-    String getFileName();
-
-    @JsonProperty
-    Long getSizeInBytes();
-
-    @JsonProperty
-    LocalDateTime getCreatedOn();
-
-    @JsonProperty
-    String getCreatedBy();
-
-}
+class DocumentLock(
+    val lock: String,
+)

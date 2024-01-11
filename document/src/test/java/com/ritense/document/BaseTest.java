@@ -83,19 +83,7 @@ public abstract class BaseTest {
             "Some-Name",
             1L,
             LocalDateTime.now(),
-            "some-body",
-            "some-body",
-            "some-title",
-            "some-status",
-            "some-language",
-            "some-identification",
-            "some-description",
-            "some-type",
-            List.of("some-keyword", "some-keyword"),
-            "some-mime-type",
-            LocalDate.now(),
-            LocalDate.now(),
-            "some-level"
+            "some-body"
         );
     }
 

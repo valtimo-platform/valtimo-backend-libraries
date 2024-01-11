@@ -127,7 +127,8 @@ class ZakenApiClient(
     fun getZaakInformatieObjecten(
         authentication: ZakenApiAuthentication,
         baseUrl: URI,
-        zaakUrl: URI
+        zaakUrl: URI? = null,
+        informatieobjectUrl: URI? = null,
     ): List<ZaakInformatieObject> {
         val result = webclientBuilder
             .clone()
@@ -136,8 +137,15 @@ class ZakenApiClient(
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
-                    .path("zaakinformatieobjecten")
-                    .queryParam("zaak", zaakUrl)
+                    .path("zaakinformatieobjecten").also {
+                        zaakUrl?.let { url ->
+                            it.queryParam("zaak", url)
+                        }
+                    }.also {
+                        informatieobjectUrl?.let { url ->
+                            it.queryParam("informatieobject", url)
+                        }
+                    }
                     .build()
             }
             .retrieve()
@@ -410,5 +418,20 @@ class ZakenApiClient(
     private fun defaultHeaders(headers: HttpHeaders) {
         headers.set("Accept-Crs", "EPSG:4326")
         headers.set("Content-Crs", "EPSG:4326")
+    }
+
+    fun deleteZaakInformatieObject(authentication: ZakenApiAuthentication, baseUrl: URI, zaakInformatieobjectUrl: URI) {
+        assert(zaakInformatieobjectUrl.toString().startsWith(baseUrl.toString())) {
+            "zaakInformatieobjectUrl '$zaakInformatieobjectUrl' does not start with baseUrl '$baseUrl'"
+        }
+        webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .delete()
+            .uri(zaakInformatieobjectUrl)
+            .retrieve()
+            .toEntity(Void::class.java)
+            .block()
     }
 }

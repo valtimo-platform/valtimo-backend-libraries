@@ -22,4 +22,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface PluginConfigurationRepository: JpaRepository<PluginConfiguration, PluginConfigurationId> {
     fun findByPluginDefinitionKey(pluginDefinitionKey: String): List<PluginConfiguration>
+    fun findByPluginDefinitionFullyQualifiedClassName(className: String): List<PluginConfiguration>
 }

@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.document.domain;
+package com.ritense.zgw.domain
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-public interface RelatedFile {
-
-    @JsonProperty
-    UUID getFileId();
-
-    @JsonProperty
-    String getFileName();
-
-    @JsonProperty
-    Long getSizeInBytes();
-
-    @JsonProperty
-    LocalDateTime getCreatedOn();
-
-    @JsonProperty
-    String getCreatedBy();
-
+data class ZgwErrorResponse(
+    val code: String,
+    val detail: String,
+    val instance: String,
+    val invalidParams: List<InvalidParam>,
+    val status: Int,
+    val title: String,
+    val type: String
+) {
+    data class InvalidParam(
+        val code: String,
+        val name: String,
+        val reason: String
+    )
 }

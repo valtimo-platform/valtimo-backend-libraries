@@ -14,27 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.document.domain;
+package com.ritense.zgw.exceptions
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import org.springframework.http.HttpStatus
 
-public interface RelatedFile {
-
-    @JsonProperty
-    UUID getFileId();
-
-    @JsonProperty
-    String getFileName();
-
-    @JsonProperty
-    Long getSizeInBytes();
-
-    @JsonProperty
-    LocalDateTime getCreatedOn();
-
-    @JsonProperty
-    String getCreatedBy();
-
-}
+class RequestFailedException(
+    val responseBody: String,
+    val statusCode: HttpStatus,
+) : RuntimeException("Request resulted in ${statusCode.value()} response, with body: $responseBody")
