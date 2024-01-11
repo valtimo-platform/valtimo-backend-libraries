@@ -178,8 +178,6 @@ public class SearchRequestMapper {
         otherFilter.setRangeTo(rangeTo);
         otherFilter.setSearchRequestValues(emptySearchRequestValues);
 
-        SearchRequestValidator.validate(otherFilter);
-
         return otherFilter;
     }
 
@@ -195,8 +193,6 @@ public class SearchRequestMapper {
         otherFilter.setRangeFrom(rangeFromDateTime);
         otherFilter.setRangeTo(rangeToDateTime);
         otherFilter.setSearchRequestValues(emptySearchRequestValues);
-
-        SearchRequestValidator.validate(otherFilter);
 
         return otherFilter;
     }
