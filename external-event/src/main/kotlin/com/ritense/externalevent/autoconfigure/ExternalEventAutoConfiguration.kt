@@ -36,7 +36,7 @@ import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Scope
 import org.springframework.messaging.Message
 import org.springframework.messaging.support.MessageBuilder
@@ -45,7 +45,7 @@ import reactor.core.publisher.Sinks
 import java.util.function.Consumer
 import java.util.function.Supplier
 
-@Configuration
+@AutoConfiguration
 class ExternalEventAutoConfiguration {
 
     @Bean

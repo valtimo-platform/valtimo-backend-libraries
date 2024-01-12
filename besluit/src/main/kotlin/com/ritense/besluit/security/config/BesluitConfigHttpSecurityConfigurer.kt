@@ -19,15 +19,18 @@ package com.ritense.besluit.security.config
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import javax.ws.rs.HttpMethod.GET
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class BesluitConfigHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/besluittype").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/besluittype")).hasAuthority(ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

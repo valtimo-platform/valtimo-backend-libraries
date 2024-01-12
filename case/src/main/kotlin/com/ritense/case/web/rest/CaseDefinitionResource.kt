@@ -26,6 +26,7 @@ import com.ritense.exporter.ExportService
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.importer.ImportService
 import com.ritense.importer.exception.ImportServiceException
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import mu.KotlinLogging
 import java.time.LocalDateTime
@@ -45,6 +46,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 
 @Controller
+@SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class CaseDefinitionResource(
     private val service: CaseDefinitionService,

@@ -49,7 +49,7 @@ import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
 import java.util.Optional
 import java.util.UUID
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 
 @Transactional
 internal class DocumentenApiResourceIT : BaseIntegrationTest() {

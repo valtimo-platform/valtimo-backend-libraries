@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import javax.sql.DataSource;
 import java.util.List;
 
@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author Tom Bokma
  */
-@Configuration
+@AutoConfiguration
 @AutoConfigureAfter({DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableConfigurationProperties(LiquibaseProperties.class)
 public class LiquibaseRunnerAutoConfiguration {

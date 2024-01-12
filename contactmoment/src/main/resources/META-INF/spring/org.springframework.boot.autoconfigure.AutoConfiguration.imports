@@ -1,0 +1,2 @@
+com.ritense.contactmoment.autoconfigure.ContactMomentAutoConfiguration
+com.ritense.contactmoment.autoconfigure.ContactMomentSecurityAutoConfiguration

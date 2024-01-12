@@ -19,6 +19,7 @@ package com.ritense.valtimo.formflow
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import com.ritense.resource.service.ResourceService
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -43,7 +44,9 @@ class TestApplication {
         @Bean
         @ConditionalOnMissingBean(ObjectMapper::class)
         fun objectMapper(): ObjectMapper {
-            return jacksonObjectMapper().registerModule(JavaTimeModule())
+            return jacksonObjectMapper()
+                .registerModule(JavaTimeModule())
+                .registerModule(ParameterNamesModule())
         }
     }
 }

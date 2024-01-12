@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static org.assertj.core.api.Assertions.assertThat;

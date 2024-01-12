@@ -20,6 +20,7 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.resource.web.rest.response.ResourceDto
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import org.springframework.context.ApplicationEventPublisher
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
+@SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class TemporaryResourceStorageResource(
     private val resourceService: TemporaryResourceStorageService,

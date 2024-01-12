@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.valtimo.formflow.autoconfigure.FormFlowValtimoAutoConfiguration, \
-  com.ritense.valtimo.formflow.autoconfigure.LiquibaseAutoConfiguration

@@ -9,15 +9,15 @@ import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementForm
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink
 import com.ritense.valtimo.contract.json.Mapper
+import java.sql.Types
+import java.util.UUID
 import liquibase.change.custom.CustomTaskChange
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
 import liquibase.exception.ValidationErrors
 import liquibase.resource.ResourceAccessor
 import mu.KotlinLogging
-import org.hibernate.type.descriptor.java.UUIDTypeDescriptor
-import java.sql.Types
-import java.util.UUID
+import org.hibernate.type.descriptor.java.UUIDJavaType
 
 /**
  * This class is used in a liquibase changelog see 20220630-storage-performance-improvement-changelog.xml
@@ -162,7 +162,7 @@ internal class MigrationV2Table : CustomTaskChange {
     }
 
     private fun UUID.asBytes(): ByteArray {
-        return UUIDTypeDescriptor.ToBytesTransformer().transform(this)
+        return UUIDJavaType.ToBytesTransformer.INSTANCE.transform(this)
     }
 
     private fun FormAssociation.asType(): String {

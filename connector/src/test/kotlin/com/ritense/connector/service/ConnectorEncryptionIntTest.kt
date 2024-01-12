@@ -9,7 +9,7 @@ import com.ritense.connector.impl.ObjectApiProperties
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.http.converter.json.SpringHandlerInstantiator
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 internal class ConnectorEncryptionIntTest : BaseIntegrationTest() {
 

@@ -16,9 +16,9 @@
 
 package com.ritense.authorization
 
-import javax.persistence.criteria.AbstractQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.AbstractQuery
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 
 class AuthorizationEntityMapperResult<T>(
     val root: Root<T>,

@@ -17,8 +17,8 @@
 package com.ritense.case.domain
 
 import com.ritense.valtimo.contract.domain.AbstractId
-import javax.persistence.Column
-import javax.persistence.Embeddable
+import jakarta.persistence.Column
+import jakarta.persistence.Embeddable
 
 @Embeddable
 data class CaseTabId(

@@ -41,6 +41,9 @@ import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valueresolver.ValueResolverService
+import jakarta.validation.Validation
+import java.util.Optional
+import kotlin.test.assertEquals
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -53,9 +56,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.Optional
-import javax.validation.Validation
-import kotlin.test.assertEquals
 
 internal class PluginServiceTest {
 
@@ -217,7 +217,7 @@ internal class PluginServiceTest {
         val plugin2 = TestPlugin2()
         plugin2.name = "whatever"
 
-        whenever(pluginConfigurationRepository.getById(pluginConfiguration.id)).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getReferenceById(pluginConfiguration.id)).thenReturn(pluginConfiguration)
         doReturn(plugin2).whenever(pluginService).createInstance(any<PluginConfiguration>())
 
         pluginService.deletePluginConfiguration(pluginConfigurationId)
@@ -296,7 +296,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(execution.processInstanceId).thenReturn("test")
@@ -324,7 +324,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(execution.processInstanceId).thenReturn("test")
@@ -352,7 +352,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(execution.processInstanceId).thenReturn("test")
@@ -380,7 +380,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(execution.processInstanceId).thenReturn("test")
@@ -408,7 +408,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(task.processInstanceId).thenReturn("test")
@@ -439,7 +439,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(task.processInstanceId).thenReturn("test")
@@ -470,7 +470,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
         val testDependency = mock<TestDependency>()
 
-        whenever(pluginConfigurationRepository.getById(any())).thenReturn(pluginConfiguration)
+        whenever(pluginConfigurationRepository.getReferenceById(any())).thenReturn(pluginConfiguration)
         whenever(pluginFactory.canCreate(any())).thenReturn(true)
         whenever(pluginFactory.create(any())).thenReturn(TestPlugin(testDependency))
         whenever(task.processInstanceId).thenReturn("test")
@@ -490,7 +490,7 @@ internal class PluginServiceTest {
             TestPlugin::class.java.name,
             mutableSetOf()
         )
-        whenever(pluginDefinitionRepository.getById("key")).thenReturn(pluginDefinition)
+        whenever(pluginDefinitionRepository.getReferenceById("key")).thenReturn(pluginDefinition)
         return pluginDefinition
     }
 

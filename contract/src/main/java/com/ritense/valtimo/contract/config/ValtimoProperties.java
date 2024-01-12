@@ -17,9 +17,8 @@
 package com.ritense.valtimo.contract.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "valtimo")
 public class ValtimoProperties {
 
@@ -33,6 +32,7 @@ public class ValtimoProperties {
 
     private final Process process;
 
+    @ConstructorBinding
     public ValtimoProperties(
         App app,
         Mandrill mandrill,

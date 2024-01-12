@@ -41,7 +41,7 @@ import com.ritense.valtimo.contract.authentication.model.ValtimoUser
 import com.ritense.valtimo.contract.json.Mapper
 import java.util.UUID
 import java.util.function.Supplier
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag

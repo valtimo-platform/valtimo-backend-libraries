@@ -21,17 +21,17 @@ import com.ritense.valtimo.config.HibernateObjectMapperSupplier;
 import java.util.function.Supplier;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@AutoConfiguration
 public class HibernateJsonMapperConfiguration {
 
     /*
      * Sets up hibernate to use the HibernateObjectMapperSupplier to get the ObjectMapper
      */
     static {
-        System.setProperty("hibernate.types.jackson.object.mapper", HibernateObjectMapperSupplier.class.getName());
+        System.setProperty("hypersistence.utils.jackson.object.mapper", HibernateObjectMapperSupplier.class.getName());
     }
 
     /*

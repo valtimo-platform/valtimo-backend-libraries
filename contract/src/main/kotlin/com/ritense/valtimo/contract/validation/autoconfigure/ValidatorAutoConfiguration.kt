@@ -17,11 +17,11 @@
 package com.ritense.valtimo.contract.validation.autoconfigure
 
 import com.ritense.valtimo.contract.validation.listener.ValidatorReadyEventListener
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
-@Configuration
+@AutoConfiguration
 class ValidatorAutoConfiguration {
 
     @Bean

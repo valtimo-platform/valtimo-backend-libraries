@@ -36,11 +36,11 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
 
-@Configuration
+@AutoConfiguration
 @ConditionalOnOutboxEnabled
 @EnableJpaRepositories(
     basePackageClasses = [

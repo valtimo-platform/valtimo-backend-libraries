@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.milestones.web.rest;
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.milestones.service.MilestoneInstanceService;
 import com.ritense.valtimo.milestones.web.rest.dto.FlowNodeDTO;
 import com.ritense.valtimo.milestones.web.rest.dto.MilestoneInstanceDTO;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class MilestoneInstanceResource {
 

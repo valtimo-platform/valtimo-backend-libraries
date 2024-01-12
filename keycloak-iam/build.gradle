@@ -20,7 +20,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:${javaxInjectVersion}"
+    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -50,7 +50,7 @@ dependencies {
 
     testImplementation project(":core")
     testImplementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
 }
 
 apply from: "gradle/publishing.gradle"

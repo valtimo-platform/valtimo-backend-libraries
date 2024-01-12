@@ -39,7 +39,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;

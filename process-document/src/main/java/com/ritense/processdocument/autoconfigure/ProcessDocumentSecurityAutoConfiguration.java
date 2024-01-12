@@ -19,10 +19,10 @@ package com.ritense.processdocument.autoconfigure;
 import com.ritense.processdocument.security.config.ProcessDocumentHttpSecurityConfigurer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.annotation.Order;
 
-@Configuration
+@AutoConfiguration
 public class ProcessDocumentSecurityAutoConfiguration {
 
     @Order(250)

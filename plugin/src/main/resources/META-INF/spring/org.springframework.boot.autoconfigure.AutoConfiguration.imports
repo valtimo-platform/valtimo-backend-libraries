@@ -1,0 +1,2 @@
+com.ritense.plugin.configuration.PluginAutoConfiguration
+com.ritense.plugin.configuration.LiquibaseAutoConfiguration

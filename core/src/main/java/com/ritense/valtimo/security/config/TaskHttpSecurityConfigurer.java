@@ -22,6 +22,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class TaskHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
@@ -29,17 +30,18 @@ public class TaskHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/task").authenticated()
-                .antMatchers(POST, "/api/v1/task/assign/batch-assign").authenticated()
-                .antMatchers(POST, "/api/v1/task/batch-complete").authenticated()
-                .antMatchers(GET, "/api/v1/task/{taskId}").authenticated()
-                .antMatchers(POST, "/api/v1/task/{taskId}/assign").authenticated()
-                .antMatchers(GET, "/api/v1/task/{taskId}/comments").authenticated()
-                .antMatchers(POST, "/api/v1/task/{taskId}/complete").authenticated()
-                .antMatchers(POST, "/api/v1/task/{taskId}/unassign").authenticated()
-                .antMatchers(GET, "/api/v1/task/{taskId}/candidate-user").authenticated()
-                .antMatchers(GET, "/api/v2/task/{taskId}/candidate-user").authenticated();
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/task")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/task/assign/batch-assign")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/task/batch-complete")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/task/{taskId}")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/task/{taskId}/assign")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/task/{taskId}/comments")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/task/{taskId}/complete")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/task/{taskId}/unassign")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/task/{taskId}/candidate-user")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v2/task/{taskId}/candidate-user")).authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

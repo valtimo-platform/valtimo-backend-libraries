@@ -49,7 +49,7 @@ dependencies {
     testImplementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation "org.mockito:mockito-inline"
+    testImplementation "org.mockito:mockito-inline:${mockitoInlineVersion}"
 
     jar {
         enabled = true

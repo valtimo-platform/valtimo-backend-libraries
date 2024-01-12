@@ -27,7 +27,7 @@ import com.ritense.processlink.repository.BaseProcessLinkRepository
 class PluginProcessLinkRepository(
     private val pluginProcessLinkRepositoryImpl: PluginProcessLinkRepositoryImpl
 ) {
-    fun getById(id: PluginProcessLinkId) = pluginProcessLinkRepositoryImpl.getById(id.id)
+    fun getById(id: PluginProcessLinkId) = pluginProcessLinkRepositoryImpl.getReferenceById(id.id)
     fun save(entity: PluginProcessLink) = pluginProcessLinkRepositoryImpl.save(entity)
     fun saveAll(entities: List<PluginProcessLink>) = pluginProcessLinkRepositoryImpl.saveAll(entities)
     fun deleteById(id: PluginProcessLinkId) = pluginProcessLinkRepositoryImpl.deleteById(id.id)

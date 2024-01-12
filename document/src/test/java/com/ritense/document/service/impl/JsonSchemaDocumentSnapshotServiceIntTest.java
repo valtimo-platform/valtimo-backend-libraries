@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static org.assertj.core.api.Assertions.assertThat;

@@ -23,9 +23,9 @@ import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 
-@Configuration
+@AutoConfiguration
 class OpenZaakPluginAutoConfiguration {
 
     @Bean

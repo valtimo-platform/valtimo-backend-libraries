@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.search.autoconfigure.SearchAutoConfiguration, \
-  com.ritense.search.autoconfigure.SearchLiquibaseAutoConfiguration

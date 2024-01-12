@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.processdocument.service.ProcessDocumentAuditService;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,7 @@ import java.util.UUID;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ProcessDocumentAuditResource {
 

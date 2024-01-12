@@ -39,7 +39,7 @@ import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResu
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;

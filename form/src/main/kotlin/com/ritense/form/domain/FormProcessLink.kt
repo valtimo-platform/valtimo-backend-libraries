@@ -20,20 +20,17 @@ import com.ritense.form.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.DiscriminatorValue
-import javax.persistence.Entity
+import jakarta.persistence.Column
+import jakarta.persistence.DiscriminatorValue
+import jakarta.persistence.Entity
 
 @Entity
 @DiscriminatorValue(PROCESS_LINK_TYPE_FORM)
-data class FormProcessLink(
-    override val id: UUID,
-
-    override val processDefinitionId: String,
-
-    override val activityId: String,
-
-    override val activityType: ActivityTypeWithEventName,
+class FormProcessLink(
+    id: UUID,
+    processDefinitionId: String,
+    activityId: String,
+    activityType: ActivityTypeWithEventName,
 
     @Column(name = "form_definition_id")
     val formDefinitionId: UUID
@@ -52,8 +49,36 @@ data class FormProcessLink(
     ) = copy(
         id = id,
         processDefinitionId = processDefinitionId,
+        activityId = activityId
+    )
+
+    fun copy(
+        id: UUID = this.id,
+        processDefinitionId: String = this.processDefinitionId,
+        activityId: String = this.activityId,
+        activityType: ActivityTypeWithEventName = this.activityType,
+        formDefinitionId: UUID = this.formDefinitionId
+    ) = FormProcessLink(
+        id = id,
+        processDefinitionId = processDefinitionId,
         activityId = activityId,
         activityType = activityType,
         formDefinitionId = formDefinitionId
     )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as FormProcessLink
+
+        return formDefinitionId == other.formDefinitionId
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + formDefinitionId.hashCode()
+        return result
+    }
 }

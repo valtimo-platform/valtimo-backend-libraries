@@ -22,7 +22,7 @@ import com.ritense.valtimo.contract.hardening.service.impl.HardeningServiceImpl;
 import com.ritense.valtimo.contract.hardening.throwable.UnsanitizedThrowable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashSet;

@@ -26,7 +26,7 @@ import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import org.springframework.http.ResponseEntity;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 

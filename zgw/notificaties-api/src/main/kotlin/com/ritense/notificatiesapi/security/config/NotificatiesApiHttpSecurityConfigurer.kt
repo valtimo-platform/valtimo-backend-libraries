@@ -20,13 +20,14 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class NotificatiesApiHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/api/v1/notificatiesapi/callback")
-                .permitAll()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/notificatiesapi/callback")).permitAll()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

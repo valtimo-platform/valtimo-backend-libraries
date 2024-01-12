@@ -17,11 +17,10 @@
 package com.ritense.klant.client
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.boot.context.properties.bind.ConstructorBinding
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "valtimo.openklant")
-data class OpenKlantClientProperties(
+data class OpenKlantClientProperties (
     val url: String,
     val clientId: String,
     val secret: String,

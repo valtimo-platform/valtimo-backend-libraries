@@ -39,7 +39,7 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import java.net.URI
 import java.util.UUID
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.fail

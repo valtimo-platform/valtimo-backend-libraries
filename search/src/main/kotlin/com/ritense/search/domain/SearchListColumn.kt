@@ -16,13 +16,14 @@
 
 package com.ritense.search.domain
 
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.Id
-import javax.persistence.Table
 import org.hibernate.annotations.Type
 
 @Entity
@@ -41,7 +42,7 @@ data class SearchListColumn(
     val path: String,
     @Column(name = "column_order")
     val order: Int,
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "display_type")
     val displayType: DisplayType,
     @Column(name = "sortable")

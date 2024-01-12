@@ -20,9 +20,9 @@ import com.ritense.resource.service.OpenZaakResourceProvider
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.zakenapi.ResourceProvider
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 
-@Configuration
+@AutoConfiguration
 class OpenZaakZakenApiPluginAutoConfiguration {
     @Bean
     fun openZaakResourceProvider(

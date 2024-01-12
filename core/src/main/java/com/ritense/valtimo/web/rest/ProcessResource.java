@@ -25,6 +25,7 @@ import com.ritense.valtimo.camunda.dto.CamundaProcessDefinitionDto;
 import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
@@ -105,6 +106,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ProcessResource extends AbstractProcessResource {
 

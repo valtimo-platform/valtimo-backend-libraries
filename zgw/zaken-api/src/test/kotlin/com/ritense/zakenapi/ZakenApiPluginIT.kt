@@ -39,7 +39,7 @@ import reactor.core.publisher.Mono
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 import kotlin.test.assertEquals
 
 @Transactional

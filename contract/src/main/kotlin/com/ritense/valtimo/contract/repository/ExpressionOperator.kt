@@ -17,9 +17,9 @@
 package com.ritense.valtimo.contract.repository
 
 import com.fasterxml.jackson.annotation.JsonValue
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.Expression
-import javax.persistence.criteria.Predicate
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Expression
+import jakarta.persistence.criteria.Predicate
 
 enum class ExpressionOperator(
     @JsonValue val asText: String,

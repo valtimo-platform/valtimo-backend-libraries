@@ -20,6 +20,7 @@ import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
+@SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class PluginDefinitionResource(
     private var pluginService: PluginService

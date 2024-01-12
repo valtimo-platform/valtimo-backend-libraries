@@ -22,7 +22,7 @@ import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.web.rest.FormManagementResource;
 import java.util.UUID;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;

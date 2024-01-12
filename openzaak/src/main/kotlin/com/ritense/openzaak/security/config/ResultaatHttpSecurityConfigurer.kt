@@ -21,13 +21,15 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class ResultaatHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(POST, "/api/v1/openzaak/resultaat").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(antMatcher(POST, "/api/v1/openzaak/resultaat")).hasAuthority(ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

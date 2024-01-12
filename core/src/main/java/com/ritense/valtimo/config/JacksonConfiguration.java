@@ -16,19 +16,20 @@
 
 package com.ritense.valtimo.config;
 
-import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
+import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import com.ritense.valtimo.contract.json.serializer.PageSerializer;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
+
 import java.time.format.DateTimeFormatter;
 
-@Configuration
+@AutoConfiguration
 public class JacksonConfiguration {
 
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -62,8 +63,8 @@ public class JacksonConfiguration {
      * Support for Hibernate types in Jackson.
      */
     @Bean
-    public Hibernate5Module hibernate5Module() {
-        return new Hibernate5Module();
+    public Hibernate6Module hibernateModule() {
+        return new Hibernate6Module();
     }
 
     /*

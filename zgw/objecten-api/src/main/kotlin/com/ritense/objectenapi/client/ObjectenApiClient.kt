@@ -304,7 +304,7 @@ class ObjectenApiClient(
             }
         }
 
-        return result?.statusCode!!
+        return HttpStatus.valueOf(result?.statusCode!!.value())
     }
 
     companion object {

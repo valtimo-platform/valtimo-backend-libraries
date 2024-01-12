@@ -24,6 +24,7 @@ import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCrite
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import jakarta.ws.rs.NotFoundException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RoleResource;
@@ -34,8 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import javax.ws.rs.NotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -43,7 +42,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
@@ -92,11 +90,6 @@ public class KeycloakUserManagementService implements UserManagementService {
         throw new NotImplementedException();
     }
 
-    @Override
-    public Page<ManageableUser> getAllUsers(Pageable pageable) {
-        throw new NotImplementedException();
-    }
-
     public Integer countUsers() {
         try (Keycloak keycloak = keycloakService.keycloak()) {
             return keycloakService.usersResource(keycloak).count();
@@ -118,6 +111,11 @@ public class KeycloakUserManagementService implements UserManagementService {
         }
 
         return users;
+    }
+
+    @Override
+    public Page<ManageableUser> getAllUsers(Pageable pageable) {
+        throw new NotImplementedException();
     }
 
     @Override

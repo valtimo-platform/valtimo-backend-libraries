@@ -20,10 +20,10 @@ import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZaakUrlProvider
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.web.reactive.function.client.WebClient
 
-@Configuration
+@AutoConfiguration
 class BesluitenApiAutoConfiguration {
 
     @Bean

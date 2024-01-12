@@ -41,7 +41,7 @@ import com.ritense.processdocument.service.ProcessDocumentService;
 import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaTaskService;
 import java.util.UUID;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;

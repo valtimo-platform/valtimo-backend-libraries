@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.smartdocuments.autoconfigure.SmartDocumentsAutoConfiguration,\
-  com.ritense.smartdocuments.autoconfigure.SmartDocumentsPluginAutoConfiguration

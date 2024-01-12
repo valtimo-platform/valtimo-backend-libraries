@@ -22,16 +22,18 @@ import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class LocalResourceHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/resource/pre-signed-url/{fileName}").authenticated()
-                .antMatchers(GET, "/api/v1/resource/{resourceId}").authenticated()
-                .antMatchers(DELETE, "/api/v1/resource/{resourceId}").authenticated()
-                .antMatchers(PUT, "/api/v1/resource").authenticated()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/resource/pre-signed-url/{fileName}")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/resource/{resourceId}")).authenticated()
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/resource/{resourceId}")).authenticated()
+                    .requestMatchers(antMatcher(PUT, "/api/v1/resource")).authenticated()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

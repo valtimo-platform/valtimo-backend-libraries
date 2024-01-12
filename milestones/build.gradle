@@ -29,7 +29,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:${javaxInjectVersion}"
+    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -63,8 +63,8 @@ dependencies {
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
     // Hibernate
-    implementation "org.hibernate:hibernate-core"
-    implementation "org.hibernate:hibernate-envers"
+    implementation "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
+    implementation "org.hibernate.orm:hibernate-envers:${hibernateCoreVersion}"
 
     implementation "io.dropwizard.metrics:metrics-core"
     implementation "io.dropwizard.metrics:metrics-annotation"

@@ -24,18 +24,20 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class ObjectSyncConfigHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/object/sync/config/{id}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/object/sync/config").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/object/sync/config").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/object/sync/config").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/object/sync/config/{id}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/notification").permitAll()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/object/sync/config/{id}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/object/sync/config")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/object/sync/config")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/v1/object/sync/config")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/object/sync/config/{id}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/notification")).permitAll()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

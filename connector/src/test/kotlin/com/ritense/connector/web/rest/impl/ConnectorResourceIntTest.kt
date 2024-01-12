@@ -58,7 +58,7 @@ import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 import org.springframework.transaction.annotation.Transactional
 import java.nio.charset.StandardCharsets
 import java.util.UUID
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 @Transactional
 internal class ConnectorResourceIntTest : BaseIntegrationTest() {

@@ -16,7 +16,6 @@
 
 package com.ritense.case.repository
 
-import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
@@ -25,11 +24,10 @@ import com.ritense.case.domain.CaseTab
 import com.ritense.case.service.CaseTabService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import java.util.UUID
-import javax.persistence.criteria.AbstractQuery
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.AbstractQuery
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 
 class CaseTabSpecification(
     authRequest: AuthorizationRequest<CaseTab>,

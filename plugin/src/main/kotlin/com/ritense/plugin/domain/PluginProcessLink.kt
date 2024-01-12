@@ -20,25 +20,23 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
-import org.hibernate.annotations.Type
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.Column
+import jakarta.persistence.DiscriminatorValue
+import jakarta.persistence.Embedded
+import jakarta.persistence.Entity
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.DiscriminatorValue
-import javax.persistence.Embedded
-import javax.persistence.Entity
+import org.hibernate.annotations.Type
 
 @Entity
 @DiscriminatorValue(PROCESS_LINK_TYPE_PLUGIN)
-data class PluginProcessLink(
-    override val id: UUID,
+class PluginProcessLink(
+    id: UUID,
+    processDefinitionId: String,
+    activityId: String,
+    activityType: ActivityTypeWithEventName,
 
-    override val processDefinitionId: String,
-
-    override val activityId: String,
-
-    override val activityType: ActivityTypeWithEventName,
-
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "action_properties", columnDefinition = "JSON")
     val actionProperties: ObjectNode? = null,
 
@@ -81,10 +79,46 @@ data class PluginProcessLink(
     ) = copy(
         id = id,
         processDefinitionId = processDefinitionId,
+        activityId = activityId
+    )
+
+    fun copy(
+        id: UUID = this.id,
+        processDefinitionId: String = this.processDefinitionId,
+        activityId: String = this.activityId,
+        activityType: ActivityTypeWithEventName = this.activityType,
+        actionProperties: ObjectNode? = this.actionProperties,
+        pluginConfigurationId: PluginConfigurationId = this.pluginConfigurationId,
+        pluginActionDefinitionKey: String = this.pluginActionDefinitionKey,
+    ) = PluginProcessLink(
+        id = id,
+        processDefinitionId = processDefinitionId,
         activityId = activityId,
         activityType = activityType,
         actionProperties = actionProperties,
         pluginConfigurationId = pluginConfigurationId,
         pluginActionDefinitionKey = pluginActionDefinitionKey
     )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as PluginProcessLink
+
+        if (actionProperties != other.actionProperties) return false
+        if (pluginConfigurationId != other.pluginConfigurationId) return false
+        if (pluginActionDefinitionKey != other.pluginActionDefinitionKey) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + (actionProperties?.hashCode() ?: 0)
+        result = 31 * result + pluginConfigurationId.hashCode()
+        result = 31 * result + pluginActionDefinitionKey.hashCode()
+        return result
+    }
 }

@@ -17,7 +17,7 @@
 package com.ritense.openzaak.repository.converter
 
 import java.net.URI
-import javax.persistence.AttributeConverter
+import jakarta.persistence.AttributeConverter
 
 class UriAttributeConverter : AttributeConverter<URI, String> {
 

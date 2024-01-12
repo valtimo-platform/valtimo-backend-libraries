@@ -27,7 +27,7 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.spring.web.advice.ProblemHandling;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 import java.util.Optional;
 
 @ControllerAdvice

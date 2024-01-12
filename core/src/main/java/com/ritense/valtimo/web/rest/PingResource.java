@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,7 @@ import static com.ritense.valtimo.contract.domain.ValtimoMediaType.TEXT_PLAIN_UT
  * nor does it require authentication to access (which is important for some types of health checks).
  */
 @RestController
+@SkipComponentScan
 @RequestMapping("/api/v1/ping")
 public class PingResource {
 

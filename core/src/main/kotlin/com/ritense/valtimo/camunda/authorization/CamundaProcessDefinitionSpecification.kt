@@ -22,10 +22,10 @@ import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionRepository
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import javax.persistence.criteria.AbstractQuery
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.AbstractQuery
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 
 class CamundaProcessDefinitionSpecification(
     authRequest: AuthorizationRequest<CamundaProcessDefinition>,

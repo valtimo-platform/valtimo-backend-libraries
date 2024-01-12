@@ -5,9 +5,9 @@
 
     <logger name="com.ritense.valtimo" level="#logback.loglevel#"/>
 
-    <logger name="javax.activation" level="WARN"/>
-    <logger name="javax.mail" level="WARN"/>
-    <logger name="javax.xml.bind" level="WARN"/>
+    <logger name="jakarta.activation" level="WARN"/>
+    <logger name="jakarta.mail" level="WARN"/>
+    <logger name="jakarta.xml.bind" level="WARN"/>
     <logger name="ch.qos.logback" level="WARN"/>
     <logger name="com.codahale.metrics" level="WARN"/>
     <logger name="com.ryantenney" level="WARN"/>
@@ -39,7 +39,7 @@
     <logger name="com.github.dockerjava" level="WARN"/>
     <logger name="okhttp3" level="WARN"/>
     <logger name="org.hibernate.engine.jdbc.spi" level="INFO"/>
-    <logger name="com.vladmihalcea.hibernate" level="WARN"/>
+    <logger name="io.hypersistence.utils.hibernate" level="WARN"/>
 
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
         <resetJUL>true</resetJUL>

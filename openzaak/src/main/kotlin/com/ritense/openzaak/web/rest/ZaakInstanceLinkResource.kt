@@ -17,6 +17,7 @@
 package com.ritense.openzaak.web.rest
 
 import com.ritense.openzaak.web.rest.response.ZaakInstanceLinkDTO
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.springframework.http.ResponseEntity
@@ -28,6 +29,7 @@ import java.net.URI
 import java.util.UUID
 
 @RestController
+@SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class ZaakInstanceLinkResource(
     val zaakInstanceLinkService: ZaakInstanceLinkService,

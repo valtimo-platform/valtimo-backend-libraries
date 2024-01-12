@@ -20,9 +20,9 @@ import com.ritense.document.listener.DocumentEventListener
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 
-@Configuration
+@AutoConfiguration
 class DocumentEventAutoConfiguration {
 
     @Bean

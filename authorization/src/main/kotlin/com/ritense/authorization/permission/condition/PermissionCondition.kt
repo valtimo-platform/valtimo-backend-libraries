@@ -21,11 +21,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import javax.persistence.criteria.AbstractQuery
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.Path
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.AbstractQuery
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Path
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,

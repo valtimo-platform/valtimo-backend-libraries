@@ -27,7 +27,7 @@ import com.ritense.authorization.role.RoleRepository
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityActionProvider
 import java.util.UUID
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 import org.hamcrest.CoreMatchers.hasItems
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat

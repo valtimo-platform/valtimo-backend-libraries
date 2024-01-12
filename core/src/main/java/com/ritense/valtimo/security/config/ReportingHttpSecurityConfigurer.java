@@ -20,20 +20,22 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class ReportingHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/reporting/instancecount").authenticated()
-                .antMatchers(GET, "/api/v1/reporting/instancesstatistics").authenticated()
-                .antMatchers(GET, "/api/v1/reporting/tasksAverage").authenticated()
-                .antMatchers(GET, "/api/v1/reporting/tasksPerPerson").authenticated()
-                .antMatchers(GET, "/api/v1/reporting/pendingTasksByRole").authenticated()
-                .antMatchers(GET, "/api/v1/reporting/unfinishedTasksPerType").authenticated()
-                .antMatchers(GET, "/api/v1/reporting/finishedAndUnfinishedInstances").authenticated();
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/reporting/instancecount")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/reporting/instancesstatistics")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/reporting/tasksAverage")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/reporting/tasksPerPerson")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/reporting/pendingTasksByRole")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/reporting/unfinishedTasksPerType")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/reporting/finishedAndUnfinishedInstances")).authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

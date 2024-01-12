@@ -29,10 +29,10 @@ import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.impl.SearchFieldResource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.io.ResourceLoader;
 
-@Configuration
+@AutoConfiguration
 public class SearchFieldAutoConfiguration {
 
     @Bean

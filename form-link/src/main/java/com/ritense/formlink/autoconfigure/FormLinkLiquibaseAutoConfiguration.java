@@ -20,7 +20,7 @@ import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.annotation.Order;
 
 import javax.sql.DataSource;
@@ -28,7 +28,7 @@ import javax.sql.DataSource;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
-@Configuration
+@AutoConfiguration
 @ConditionalOnClass(DataSource.class)
 public class FormLinkLiquibaseAutoConfiguration {
 

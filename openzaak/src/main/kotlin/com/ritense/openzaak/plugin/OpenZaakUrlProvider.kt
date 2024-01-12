@@ -28,6 +28,7 @@ class OpenZaakUrlProvider(
     val zaakInstanceLinkService: ZaakInstanceLinkService,
     val zaakTypeLinkService: ZaakTypeLinkService
 ): ZaakUrlProvider, ZaaktypeUrlProvider {
+    @Deprecated("Marked for removal since 10.5.0")
     override fun getZaak(documentId: UUID): String {
         return zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl.toString()
     }

@@ -22,11 +22,11 @@ import com.ritense.valtimo.contract.validation.Validatable
 import org.springframework.data.domain.Persistable
 import java.net.URI
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Convert
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import jakarta.persistence.Column
+import jakarta.persistence.Convert
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "zaak_instance_link")

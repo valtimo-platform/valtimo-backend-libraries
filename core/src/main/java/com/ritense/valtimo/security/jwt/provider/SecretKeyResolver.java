@@ -46,7 +46,7 @@ public class SecretKeyResolver implements SigningKeyResolver {
     }
 
     @Override
-    public Key resolveSigningKey(JwsHeader header, String plaintext) {
+    public Key resolveSigningKey(JwsHeader header, byte[] content) {
         throw new UnsupportedOperationException();
     }
 

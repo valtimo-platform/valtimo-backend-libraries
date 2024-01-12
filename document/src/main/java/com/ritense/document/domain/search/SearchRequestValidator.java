@@ -21,7 +21,7 @@ import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.exception.SearchConfigRequestException;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;

@@ -56,9 +56,9 @@ import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import java.util.UUID
-import javax.validation.ConstraintViolationException
-import javax.validation.ValidationException
-import javax.validation.Validator
+import jakarta.validation.ConstraintViolationException
+import jakarta.validation.ValidationException
+import jakarta.validation.Validator
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 
@@ -108,7 +108,7 @@ class PluginService(
         properties: ObjectNode,
         pluginDefinitionKey: String
     ): PluginConfiguration {
-        val pluginDefinition = pluginDefinitionRepository.getById(pluginDefinitionKey)
+        val pluginDefinition = pluginDefinitionRepository.getReferenceById(pluginDefinitionKey)
         validateProperties(properties, pluginDefinition)
 
         if (pluginConfigurationRepository.existsById(id)) {
@@ -132,7 +132,7 @@ class PluginService(
 
     fun deployPluginConfigurations(deploymentDto: PluginAutoDeploymentDto) {
         val plugin: PluginConfiguration
-        val pluginDefinition = pluginDefinitionRepository.getById(deploymentDto.pluginDefinitionKey)
+        val pluginDefinition = pluginDefinitionRepository.getReferenceById(deploymentDto.pluginDefinitionKey)
         if (deploymentDto.id != null && pluginConfigurationRepository.existsById(
                 PluginConfigurationId.existingId(deploymentDto.id)
             )
@@ -520,7 +520,7 @@ class PluginService(
     }
 
     fun createInstance(pluginConfigurationId: PluginConfigurationId): Any {
-        val configuration = pluginConfigurationRepository.getById(pluginConfigurationId)
+        val configuration = pluginConfigurationRepository.getReferenceById(pluginConfigurationId)
         return createInstance(configuration)
     }
 

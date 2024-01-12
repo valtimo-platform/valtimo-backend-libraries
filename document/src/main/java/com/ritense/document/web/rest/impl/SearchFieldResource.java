@@ -20,7 +20,9 @@ import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.DocumentSearchFields;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +35,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
-
+@Controller
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class SearchFieldResource implements DocumentSearchFields {
 

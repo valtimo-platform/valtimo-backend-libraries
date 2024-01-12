@@ -18,10 +18,11 @@ package com.ritense.formflow.domain.definition
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
-import javax.persistence.Column
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.Column
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
 import org.hibernate.annotations.Type
 
 @Entity
@@ -32,23 +33,23 @@ data class FormFlowStep(
     @JsonProperty("key")
     val id: FormFlowStepId,
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "next_steps", columnDefinition = "JSON")
     val nextSteps: List<FormFlowNextStep> = listOf(),
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "on_back", columnDefinition = "JSON")
     val onBack: List<String> = listOf(),
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "on_open", columnDefinition = "JSON")
     val onOpen: List<String> = listOf(),
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "on_complete", columnDefinition = "JSON")
     val onComplete: List<String> = listOf(),
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "type", columnDefinition = "JSON", nullable = false)
     val type: FormFlowStepType
 )

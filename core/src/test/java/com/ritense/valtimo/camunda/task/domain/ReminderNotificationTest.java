@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.mockito.internal.util.JavaEightUtil.emptyOptional;
 
 class ReminderNotificationTest {
 
@@ -63,14 +61,14 @@ class ReminderNotificationTest {
         reminderNotification.assignRoleBasedTasks(roleBasedTasks);
         Optional<TemplatedMailMessage> mailMessage = reminderNotification.asTemplatedMailMessage();
 
-        assertThat(mailMessage, is(not(emptyOptional())));
+        assertThat(mailMessage.isPresent(), is(true));
     }
 
     @Test
     void shouldReturnEmptyOptionalWithoutTasks() {
         Optional<TemplatedMailMessage> mailMessage = reminderNotification.asTemplatedMailMessage();
 
-        assertThat(mailMessage, is(emptyOptional()));
+        assertThat(mailMessage.isEmpty(), is(true));
     }
 
     private RoleBasedTask getRoleBasedTask() {

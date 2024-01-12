@@ -36,7 +36,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:${javaxInjectVersion}"
+    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -63,11 +63,12 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
     // Camunda
-    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter:${camundaVersion}"
-    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${camundaVersion}"
-
-    // Cockpit
-    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:${camundaVersion}"
+    api ("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${camundaVersion}") {
+        exclude group: "com.sun.xml.bind"
+    }
+    api ("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:${camundaVersion}") {
+        exclude group: "com.sun.xml.bind"
+    }
 
     // Camunda plugins
     implementation "org.camunda.bpm:camunda-engine-plugin-spin:${camundaVersion}"
@@ -88,23 +89,22 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-json-org"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-hppc"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml"
     implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
 
     // MyBatis (for camunda and our custom queries)
-    implementation "org.mybatis:mybatis:${mybatisVersion}"
     implementation "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisSpringBootStarterVersion}"
 
     implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 
     // Removed since JDK 9, explicitly need it to go through XML
-    implementation "javax.xml.bind:jaxb-api:${jaxbApiVersion}"
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jaxbApiVersion}"
 
     // Hibernate
-    implementation "org.hibernate:hibernate-core"
-    implementation "org.hibernate:hibernate-envers"
+    implementation "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
+    implementation "org.hibernate.orm:hibernate-envers:${hibernateCoreVersion}"
 
     // Shedlock
     implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}"
@@ -114,7 +114,7 @@ dependencies {
         exclude(module: 'tools')
     }
 
-    implementation "org.liquibase:liquibase-core"
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
     implementation "io.dropwizard.metrics:metrics-core"
     implementation "io.dropwizard.metrics:metrics-annotation"

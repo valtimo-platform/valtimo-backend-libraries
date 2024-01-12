@@ -21,9 +21,9 @@ import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.Companion.byDocumentDefinitionIdName
 import com.ritense.valtimo.contract.dashboard.WidgetDataSource
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 
 class DocumentWidgetDataSource(
     private val documentRepository: JsonSchemaDocumentRepository,

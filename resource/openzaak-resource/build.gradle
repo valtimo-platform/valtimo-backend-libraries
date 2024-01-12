@@ -24,7 +24,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:${javaxInjectVersion}"
+    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -47,14 +47,14 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
-    implementation "org.hibernate:hibernate-core"
+    implementation "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 
-    testImplementation "org.liquibase:liquibase-core"
-    testImplementation "org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}"
+    testImplementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+    testImplementation "org.liquibase.ext:liquibase-hibernate6:${liquibaseVersion}"
     testImplementation "com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}"
 
     testImplementation "org.springframework.security:spring-security-test"

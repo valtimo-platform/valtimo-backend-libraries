@@ -37,10 +37,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 
-@Configuration
+@AutoConfiguration
 @ConditionalOnProperty(prefix = "valtimo.versioning", name = "enabled", havingValue = "true", matchIfMissing = true)
 @AutoConfigureAfter(DocumentAutoConfiguration.class)
 public class DocumentSnapshotAutoConfiguration {
