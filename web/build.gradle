@@ -29,6 +29,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-validation"
 
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
     implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
@@ -48,9 +49,7 @@ dependencies {
 
     api "com.google.guava:guava:${guavaVersion}"
 
-    implementation "org.springdoc:springdoc-openapi-webmvc-core:${springDocVersion}"
-    implementation "org.springdoc:springdoc-openapi-kotlin:${springDocVersion}"
-    implementation "org.springdoc:springdoc-openapi-security:${springDocVersion}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:${springDocVersion}"
 
     implementation "org.zalando:problem-spring-web:${problemSpringWebVersion}"
     implementation "org.zalando:jackson-datatype-problem:${jacksonDatatypeProblemVersion}"
