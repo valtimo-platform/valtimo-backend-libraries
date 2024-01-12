@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-//@SkipComponentScan
+@SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class PermissionResource(
     private var authorizationService: AuthorizationService
