@@ -28,7 +28,7 @@ import com.ritense.document.exception.DocumentDefinitionNameMismatchException;
 import org.everit.json.schema.ValidationException;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.domain.Persistable;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;

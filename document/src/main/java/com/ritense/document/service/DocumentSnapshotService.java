@@ -22,7 +22,7 @@ import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.Optional;
 

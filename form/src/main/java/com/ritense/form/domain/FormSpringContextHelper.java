@@ -20,7 +20,7 @@ import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import java.util.Map;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public class FormSpringContextHelper implements ApplicationContextAware {
 
