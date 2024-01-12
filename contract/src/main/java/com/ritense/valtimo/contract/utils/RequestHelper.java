@@ -45,11 +45,7 @@ public class RequestHelper {
             HttpServletRequest request = ((ServletRequestAttributes) attribs).getRequest();
             String zoneOffsetHeader = request.getHeader("Zone-Offset");
 
-            if (zoneOffsetHeader != null) {
-                zoneOffset = ZoneOffset.of(zoneOffsetHeader);
-            } else {
-                throw new Exception();
-            }
+            zoneOffset = ZoneOffset.of(zoneOffsetHeader);
         } catch (Exception e) {
             zoneOffset = ZoneOffset.UTC;
         }
