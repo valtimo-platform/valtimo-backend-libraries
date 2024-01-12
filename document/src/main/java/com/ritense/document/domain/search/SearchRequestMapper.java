@@ -80,24 +80,31 @@ public class SearchRequestMapper {
 
         var rangeFrom = mapWhenTemporalField(searchFilter.getRangeFromSearchRequestValue());
         var rangeTo = mapWhenTemporalField(searchFilter.getRangeToSearchRequestValue());
+        LocalDate singleDateField;
 
-        List<SearchRequestValue> searchRequestValues = null;
+        List<SearchRequestValue> searchRequestValues;
+
         if (searchFilter.getSearchRequestValues() != null) {
             searchRequestValues = searchFilter.getSearchRequestValues().stream()
                     .map(SearchRequestMapper::mapWhenTemporalField)
                     .collect(Collectors.toList());
+
+            singleDateField = findSingleDateSearchFieldLocalDate(searchField, searchRequestValues);
+        } else {
+            searchRequestValues = null;
+            singleDateField = null;
         }
 
-        var isSingleDateField = isSingleDateSearchField(searchField, searchRequestValues);
         var isRangeDateField = isRangeDateSearchField(searchField, rangeFrom, rangeTo);
 
-        var otherFilter = new AdvancedSearchRequest.OtherFilter();
+        AdvancedSearchRequest.OtherFilter otherFilter;
 
-        if (isSingleDateField) {
-            otherFilter = singleDateToDateTimeRangeFilter(otherFilter, searchField, searchRequestValues, zoneOffset);
+        if (searchRequestValues != null && singleDateField != null) {
+            otherFilter = singleDateToDateTimeRangeFilter(searchField, singleDateField, zoneOffset);
         } else if (isRangeDateField) {
-            otherFilter = rangeDateToDateTimeRangeFilter(otherFilter, searchField, rangeFrom, rangeTo, zoneOffset);
+            otherFilter = rangeDateToDateTimeRangeFilter(searchField, rangeFrom, rangeTo, zoneOffset);
         } else {
+            otherFilter = new AdvancedSearchRequest.OtherFilter();
             otherFilter.setPath(searchField.getPath());
             otherFilter.setSearchType(findDatabaseSearchType(searchFilter, searchField));
             otherFilter.setRangeFrom(rangeFrom.getComparableValue());
@@ -156,21 +163,25 @@ public class SearchRequestMapper {
         }
     }
 
-    private static Boolean isSingleDateSearchField(SearchField searchField, List<SearchRequestValue> searchRequestValues) {
+    private static LocalDate findSingleDateSearchFieldLocalDate(SearchField searchField, List<SearchRequestValue> searchRequestValues) {
         Optional<SearchRequestValue> firstEntry = searchRequestValues.stream().findFirst();
 
-        return !firstEntry.isEmpty() && firstEntry.get().getComparableValue() instanceof LocalDate && searchField.getDataType() == SearchFieldDataType.DATE && searchField.getFieldType() == SearchFieldFieldType.SINGLE;
+        if (firstEntry.isPresent() && firstEntry.get().getComparableValue() instanceof LocalDate && searchField.getDataType() == SearchFieldDataType.DATE && searchField.getFieldType() == SearchFieldFieldType.SINGLE) {
+            return firstEntry.get().getComparableValue();
+        }
+
+        return null;
     }
 
     private static Boolean isRangeDateSearchField(SearchField searchField, SearchRequestValue rangeFrom, SearchRequestValue rangeTo) {
         return rangeFrom.getComparableValue() instanceof LocalDate && rangeTo.getComparableValue() instanceof LocalDate && searchField.getDataType() == SearchFieldDataType.DATE && searchField.getFieldType() == SearchFieldFieldType.RANGE;
     }
 
-    private static AdvancedSearchRequest.OtherFilter singleDateToDateTimeRangeFilter(AdvancedSearchRequest.OtherFilter otherFilter, SearchField searchField, List<SearchRequestValue> searchRequestValues, ZoneOffset zoneOffset) {
-        LocalDate localDate = searchRequestValues.stream().findFirst().get().getComparableValue();
-        Instant rangeFrom = localDate.atStartOfDay().toInstant(zoneOffset);
+    private static AdvancedSearchRequest.OtherFilter singleDateToDateTimeRangeFilter(SearchField searchField, LocalDate localDateValue, ZoneOffset zoneOffset) {
+        AdvancedSearchRequest.OtherFilter otherFilter = new AdvancedSearchRequest.OtherFilter();
+        Instant rangeFrom = localDateValue.atStartOfDay().toInstant(zoneOffset);
         Instant rangeTo = rangeFrom.plus(1, ChronoUnit.DAYS);
-        List<SearchRequestValue> emptySearchRequestValues = Collections.<SearchRequestValue>emptyList();
+        List<SearchRequestValue> emptySearchRequestValues = Collections.emptyList();
 
         otherFilter.setPath(searchField.getPath());
         otherFilter.setSearchType(DatabaseSearchType.BETWEEN);
@@ -181,12 +192,13 @@ public class SearchRequestMapper {
         return otherFilter;
     }
 
-    private static AdvancedSearchRequest.OtherFilter rangeDateToDateTimeRangeFilter(AdvancedSearchRequest.OtherFilter otherFilter, SearchField searchField, SearchRequestValue rangeFrom, SearchRequestValue rangeTo, ZoneOffset zoneOffset) {
+    private static AdvancedSearchRequest.OtherFilter rangeDateToDateTimeRangeFilter(SearchField searchField, SearchRequestValue rangeFrom, SearchRequestValue rangeTo, ZoneOffset zoneOffset) {
+        AdvancedSearchRequest.OtherFilter otherFilter = new AdvancedSearchRequest.OtherFilter();
         LocalDate rangeFromValue = rangeFrom.getComparableValue();
         LocalDate rangeToValue = rangeTo.getComparableValue();
         Instant rangeFromDateTime = rangeFromValue.atStartOfDay().toInstant(zoneOffset);
         Instant rangeToDateTime = rangeToValue.atStartOfDay().plus(1, ChronoUnit.DAYS).toInstant(zoneOffset);
-        List<SearchRequestValue> emptySearchRequestValues = Collections.<SearchRequestValue>emptyList();
+        List<SearchRequestValue> emptySearchRequestValues = Collections.emptyList();
 
         otherFilter.setPath(searchField.getPath());
         otherFilter.setSearchType(DatabaseSearchType.BETWEEN);
