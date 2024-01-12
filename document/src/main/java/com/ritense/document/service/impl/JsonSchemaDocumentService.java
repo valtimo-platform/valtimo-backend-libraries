@@ -31,7 +31,6 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile;
 import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
 import com.ritense.document.domain.impl.request.DocumentRelationRequest;
@@ -298,7 +297,6 @@ public class JsonSchemaDocumentService implements DocumentService {
         ModifyDocumentRequest request
     ) {
         final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(request.documentId()));
-        final var version = JsonSchemaDocumentVersion.from(request.versionBasedOn());
         final var document = runWithoutAuthorization(
             () -> findBy(documentId)
                 .orElseThrow(
@@ -324,8 +322,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
         final var result = document.applyModifiedContent(
             modifiedContent,
-            documentDefinition,
-            version
+            documentDefinition
         );
 
         result.resultingDocument().ifPresent(modifiedDocument -> {

@@ -21,7 +21,6 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
-import com.ritense.document.domain.DocumentVersion
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
@@ -44,7 +43,7 @@ class DocumentDelegateService(
 
     private val mapper = Mapper.INSTANCE.get()
 
-    fun getDocumentVersion(execution: DelegateExecution): DocumentVersion? {
+    fun getDocumentVersion(execution: DelegateExecution): Int? {
         logger.debug("Get version of document {}", execution.processBusinessKey)
         return getDocument(execution).version()
     }

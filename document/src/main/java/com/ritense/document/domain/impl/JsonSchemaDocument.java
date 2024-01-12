@@ -18,7 +18,6 @@ package com.ritense.document.domain.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.document.domain.Document;
-import com.ritense.document.domain.DocumentVersion;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentCreatedEvent;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent;
@@ -29,7 +28,6 @@ import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
-import com.ritense.document.service.result.error.ConflictedDocumentVersion;
 import com.ritense.document.service.result.error.DocumentOperationError;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileAddedEvent;
@@ -49,7 +47,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.Version;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,8 +87,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Embedded
     private JsonSchemaDocumentDefinitionId documentDefinitionId;
 
-    @Transient
-    private JsonSchemaDocumentVersion version;
+    @Version
+    private Integer version;
 
     @Column(name = "created_on", columnDefinition = "DATETIME", nullable = false)
     private LocalDateTime createdOn;
@@ -149,8 +147,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
                 this.createdOn,
                 this.createdBy,
                 this.id,
-                this.documentDefinitionId,
-                version()
+                this.documentDefinitionId
             )
         );
     }
@@ -196,22 +193,13 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
      * Note: Distributed locking mechanism (currently assumes only one application instance doing a document modification)
      *
      * @param modifiedContent The new (unvalidated) content
-     * @param versionCheck    The version on which the content was based on (in other words: this's ver)
      * @return Object representing the result of the operation (either resulting document or errors)
      */
     public ModifyDocumentResultImpl applyModifiedContent(
         final JsonDocumentContent modifiedContent,
-        final JsonSchemaDocumentDefinition documentDefinition,
-        final DocumentVersion versionCheck
+        final JsonSchemaDocumentDefinition documentDefinition
     ) {
         assertArgumentNotNull(modifiedContent, "modifiedContent is required");
-        assertArgumentNotNull(versionCheck, "versionCheck is required");
-
-        boolean versionCheckFailed = !this.version().equals(versionCheck);
-        if (versionCheckFailed) {
-            ConflictedDocumentVersion versionMismatchError = () -> "Document modification rejected, the document has been updated in the meanwhile";
-            return new ModifyDocumentResultImpl(List.of(versionMismatchError));
-        }
 
         if (!content.equals(modifiedContent)) {
             final var result = documentDefinition.validate(modifiedContent);
@@ -221,7 +209,6 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
             }
             var originalContent = this.content;
             this.content = modifiedContent;
-            this.version = JsonSchemaDocumentVersion.of(this);
             this.modifiedOn = LocalDateTime.now();
 
             //Full re-Diff
@@ -351,10 +338,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     }
 
     @Override
-    public JsonSchemaDocumentVersion version() {
-        if (version == null) {
-            this.version = JsonSchemaDocumentVersion.of(this);
-        }
+    public Integer version() {
         return version;
     }
 

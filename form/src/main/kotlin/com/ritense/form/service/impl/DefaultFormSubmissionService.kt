@@ -384,8 +384,7 @@ open class DefaultFormSubmissionService(
             processDefinitionKey,
             ModifyDocumentRequest(
                 document.id().toString(),
-                submittedDocumentContent,
-                document.version().toString()
+                submittedDocumentContent
             ).withJsonPatch(preJsonPatch)
         ).withProcessVars(formDefinedProcessVariables)
     }
@@ -400,8 +399,7 @@ open class DefaultFormSubmissionService(
         return ModifyDocumentAndCompleteTaskRequest(
             ModifyDocumentRequest(
                 document.id().toString(),
-                submittedDocumentContent,
-                document.version().toString()
+                submittedDocumentContent
             ).withJsonPatch(preJsonPatch),
             taskInstanceId
         ).withProcessVars(formDefinedProcessVariables)

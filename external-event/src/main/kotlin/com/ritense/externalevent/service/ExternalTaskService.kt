@@ -90,8 +90,7 @@ class ExternalTaskService(
 
         val modifyDocumentRequest = ModifyDocumentRequest(
             completeTaskMessage.externalCaseId,
-            completeTaskMessage.submission,
-            document.version().toString()
+            completeTaskMessage.submission
         )
         val request = ModifyDocumentAndCompleteTaskRequest(modifyDocumentRequest, completeTaskMessage.taskId)
 
