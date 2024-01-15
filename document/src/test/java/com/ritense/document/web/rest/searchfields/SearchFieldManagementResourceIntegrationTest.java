@@ -29,6 +29,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
@@ -82,6 +83,8 @@ class SearchFieldManagementResourceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldRetrieveSearchFieldsByDocumentDefinitionNameForAdmin() throws Exception {
+        searchFieldRepository.deleteAllInBatch();
+
         runWithoutAuthorization(() -> {
             searchFieldService.addSearchField(DOCUMENT_DEFINITION_NAME, SEARCH_FIELD);
             return null;

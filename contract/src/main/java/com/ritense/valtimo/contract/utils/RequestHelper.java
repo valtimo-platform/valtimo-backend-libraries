@@ -16,12 +16,19 @@
 
 package com.ritense.valtimo.contract.utils;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import javax.servlet.http.HttpServletRequest;
+import java.time.ZoneOffset;
 import java.util.Set;
 
 public class RequestHelper {
+    private static final Logger logger = LoggerFactory.getLogger(RequestHelper.class);
 
     public static String getOrigin() {
         Set<String> ipList;
@@ -34,4 +41,25 @@ public class RequestHelper {
         return ipList.toString();
     }
 
+    public static ZoneOffset getZoneOffset() {
+        ZoneOffset zoneOffset = ZoneOffset.UTC;
+
+        try {
+            RequestAttributes attribs = RequestContextHolder.getRequestAttributes();
+
+            if (attribs != null) {
+                HttpServletRequest request = ((ServletRequestAttributes) attribs).getRequest();
+                String zoneOffsetHeader = request.getHeader("Zone-Offset");
+
+                if (StringUtils.isNotBlank(zoneOffsetHeader)) {
+                    zoneOffset = ZoneOffset.of(zoneOffsetHeader);
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return zoneOffset;
+    }
 }
