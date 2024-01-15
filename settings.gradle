@@ -30,7 +30,6 @@ include(
     "dashboard",
     "data-provider",
     "document",
-    "document-export",
     "document-generation",
     "document-generation:local-document-generation",
     "document-generation:smartdocuments",
