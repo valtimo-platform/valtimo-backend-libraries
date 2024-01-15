@@ -17,18 +17,33 @@
 package com.ritense.valtimo.camunda.authorization
 
 import com.ritense.valtimo.BaseIntegrationTest
+import org.camunda.bpm.engine.DecisionService
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import java.util.UUID
 import javax.transaction.Transactional
+import kotlin.test.assertEquals
 
 @Transactional
 class CamundaBeanAuthorizationIT: BaseIntegrationTest() {
 
+    @Autowired
+    lateinit var decisionService: DecisionService
+
     @Test
-    fun `should be able to execute process bean without authorizing`() {
+    fun `should be able to execute process bean in bpmn without authorizing`() {
         runtimeService.startProcessInstanceByKey(
             "authorization-test",
             UUID.randomUUID().toString()
         )
+    }
+
+    @Test
+    fun `should be able to execute process bean in dmn using juel without authorizing`() {
+        val evaluateResult = decisionService
+            .evaluateDecisionTableByKey("authorization-test-juel")
+            .evaluate()
+
+        assertEquals("High", evaluateResult.singleResult.getSingleEntry())
     }
 }

@@ -23,7 +23,7 @@ import com.ritense.authorization.request.EntityAuthorizationRequest
 class UnauthorizedProcessBean(
     private val authorizationService: AuthorizationService,
 ) {
-    fun doSomething() {
+    fun doSomething(): Int {
         authorizationService
             .requirePermission(
                 EntityAuthorizationRequest(
@@ -31,5 +31,6 @@ class UnauthorizedProcessBean(
                     deny()
                 )
             )
+        return 123
     }
 }
