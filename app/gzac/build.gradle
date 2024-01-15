@@ -1,6 +1,11 @@
 dependencies {
     api(platform(project(":dependencies:valtimo-dependency-versions")))
-    api(project(":dependencies:valtimo-gzac-dependencies"))
+
+    implementation(project(":dependencies:valtimo-gzac-dependencies"))
+    implementation(project(":mail:local-mail"))
+    implementation(project(":resource:openzaak-resource"))
+    implementation(project(":resource:temporary-resource-storage"))
+    implementation(project(":document-generation:smartdocuments"))
 
     // Database
     implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
