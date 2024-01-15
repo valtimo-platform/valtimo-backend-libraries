@@ -31,9 +31,25 @@ class CamundaBeanAuthorizationIT: BaseIntegrationTest() {
     lateinit var decisionService: DecisionService
 
     @Test
-    fun `should be able to execute process bean in bpmn without authorizing`() {
+    fun `should be able to execute process bean in bpmn service task without authorizing`() {
         runtimeService.startProcessInstanceByKey(
-            "authorization-test",
+            "authorization-test-service-task",
+            UUID.randomUUID().toString()
+        )
+    }
+
+    @Test
+    fun `should be able to execute process bean in bpmn script task without authorizing`() {
+        runtimeService.startProcessInstanceByKey(
+            "authorization-test-script-task",
+            UUID.randomUUID().toString()
+        )
+    }
+
+    @Test
+    fun `should be able to execute process bean in bpmn execution listener without authorizing`() {
+        runtimeService.startProcessInstanceByKey(
+            "authorization-test-execution-listener",
             UUID.randomUUID().toString()
         )
     }
