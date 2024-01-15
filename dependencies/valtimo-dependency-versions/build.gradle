@@ -19,37 +19,10 @@ javaPlatform {
 }
 
 dependencies {
-    api("com.ritense.valtimo:audit")
-    api("com.ritense.valtimo:authorization")
-    api("com.ritense.valtimo:case")
-    api("com.ritense.valtimo:changelog")
-    api("com.ritense.valtimo:connector")
-    api("com.ritense.valtimo:contract")
-    api("com.ritense.valtimo:core")
-    api("com.ritense.valtimo:dashboard")
-    api("com.ritense.valtimo:data-provider")
-    api("com.ritense.valtimo:document")
-    api("com.ritense.valtimo:exporter")
-    api("com.ritense.valtimo:form")
-    api("com.ritense.valtimo:form-flow")
-    api("com.ritense.valtimo:form-flow-valtimo")
-    api("com.ritense.valtimo:form-link")
-    api("com.ritense.valtimo:importer")
-    api("com.ritense.valtimo:keycloak-iam")
-    api("com.ritense.valtimo:notes")
-    api("com.ritense.valtimo:plugin")
-    api("com.ritense.valtimo:plugin-valtimo")
-    api("com.ritense.valtimo:process-document")
-    api("com.ritense.valtimo:process-link")
-    api("com.ritense.valtimo:search")
-    api("com.ritense.valtimo:temporary-resource-storage")
-    api("com.ritense.valtimo:value-resolver")
-    api("com.ritense.valtimo:web")
-
-    // api(platform(...)) lines will end up as an maven import at dependencyManagement
     api(platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}"))
-    api(platform("com.fasterxml.jackson:jackson-bom${jacksonVersion}"))
+    api(platform("com.fasterxml.jackson:jackson-bom:${jacksonVersion}"))
     api(platform("org.junit:junit-bom:${junitVersion}"))
+    api(platform("software.amazon.awssdk:bom:${awssdkVersion}"))
     constraints {
         api("com.ritense.valtimo:audit:${projectVersion}")
         api("com.ritense.valtimo:authorization:${projectVersion}")
@@ -90,6 +63,7 @@ dependencies {
         api("com.ritense.valtimo:temporary-resource-storage:${projectVersion}")
         api("com.ritense.valtimo:test-utils-common:${projectVersion}")
         api("com.ritense.valtimo:value-resolver:${projectVersion}")
+        api("com.ritense.valtimo:valtimo-dependencies:${projectVersion}")
         api("com.ritense.valtimo:web:${projectVersion}")
         api("com.ritense.valtimo:wordpress-mail:${projectVersion}")
 
@@ -114,20 +88,28 @@ dependencies {
         api("com.ritense.valtimo:objecttypen-api:${projectVersion}")
         api("com.ritense.valtimo:verzoek:${projectVersion}")
         api("com.ritense.valtimo:zaken-api:${projectVersion}")
+        api("com.ritense.valtimo:valtimo-gzac-dependencies:${projectVersion}")
+
         //!GZAC
 
-        api("de.codecentric:spring-boot-admin-starter-client:${springBootAdminStarterClientVersion}")
+        api("org.liquibase:liquibase-core:${liquibaseVersion}")
 
+        api("org.liquibase.ext:liquibase-hibernate6:${liquibaseVersion}")
+        api("org.hibernate.orm:hibernate-core:${hibernateCoreVersion}")
+
+        //ShedLock
+        api("net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}")
+        api("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:${shedlockVersion}")
+
+        api("de.codecentric:spring-boot-admin-starter-client:${springBootAdminStarterClientVersion}")
         api "org.json:json:${orgJsonJsonVersion}"
         api("org.yaml:snakeyaml:${snakeYamlVersionOverride}")
         api("io.netty:netty-codec:${nettyCodecVersionOverride}")
 
-        api("org.liquibase:liquibase-core:${liquibaseVersion}")
-        api("org.liquibase.ext:liquibase-hibernate6:${liquibaseVersion}")
-
-        api("org.hibernate.orm:hibernate-core:${hibernateCoreVersion}")
-
         api("com.rabbitmq:amqp-client:${amqpCLientVersion}")
+        api("jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}")
+        api("io.github.microutils:kotlin-logging:${kotlinLoggingVersion}")
+        api("io.netty:netty-resolver-dns-native-macos:${nettyResolverAarch64Version}")
     }
 }
 

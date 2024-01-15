@@ -1,0 +1,76 @@
+/*
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+dependencies {
+    api("com.ritense.valtimo:audit")
+    api("com.ritense.valtimo:authorization")
+    api("com.ritense.valtimo:case")
+    api("com.ritense.valtimo:changelog")
+    api("com.ritense.valtimo:connector")
+    api("com.ritense.valtimo:contract")
+    api("com.ritense.valtimo:core")
+    api("com.ritense.valtimo:dashboard")
+    api("com.ritense.valtimo:data-provider")
+    api("com.ritense.valtimo:document")
+    api("com.ritense.valtimo:exporter")
+    api("com.ritense.valtimo:form")
+    api("com.ritense.valtimo:form-flow")
+    api("com.ritense.valtimo:form-flow-valtimo")
+    api("com.ritense.valtimo:form-link")
+    api("com.ritense.valtimo:importer")
+    api("com.ritense.valtimo:keycloak-iam")
+    api("com.ritense.valtimo:notes")
+    api("com.ritense.valtimo:plugin")
+    api("com.ritense.valtimo:plugin-valtimo")
+    api("com.ritense.valtimo:process-document")
+    api("com.ritense.valtimo:process-link")
+    api("com.ritense.valtimo:search")
+    api("com.ritense.valtimo:temporary-resource-storage")
+    api("com.ritense.valtimo:value-resolver")
+    api("com.ritense.valtimo:web")
+
+    api("org.springframework.security:spring-security-core")
+    api("org.springframework.boot:spring-boot")
+    api("org.springframework.data:spring-data-commons")
+    api("jakarta.inject:jakarta.inject-api")
+
+    api("org.springframework.boot:spring-boot-starter")
+    api("org.springframework.boot:spring-boot-starter-web")
+    api("org.springframework.boot:spring-boot-starter-actuator")
+    api("org.springframework.boot:spring-boot-starter-data-jpa")
+    api("org.springframework.boot:spring-boot-starter-security")
+    api("org.springframework.boot:spring-boot-starter-validation")
+
+    api("com.fasterxml.jackson.module:jackson-module-blackbird")
+    api("com.fasterxml.jackson.module:jackson-module-parameter-names")
+    api("com.fasterxml.jackson.module:jackson-module-jaxb-annotations")
+    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
+    api("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    api("org.jetbrains.kotlin:kotlin-reflect")
+
+    api("io.github.microutils:kotlin-logging")
+
+    //ShedLock
+    api("net.javacrumbs.shedlock:shedlock-spring")
+    api("net.javacrumbs.shedlock:shedlock-provider-jdbc-template")
+
+    api("io.netty:netty-resolver-dns-native-macos") {
+        artifact { classifier = "osx-aarch_64" }
+    }
+}
+
+apply from: "gradle/publishing.gradle"

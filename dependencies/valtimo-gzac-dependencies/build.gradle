@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-javaPlatform {
-    allowDependencies()
-}
-
 dependencies {
-    api(platform(project(":valtimo-dependencies")))
+    api(project(":dependencies:valtimo-dependencies"))
     api("com.ritense.valtimo:besluit")
     api("com.ritense.valtimo:contactmoment")
     api("com.ritense.valtimo:haalcentraal-brp")

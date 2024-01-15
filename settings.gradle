@@ -1,4 +1,6 @@
-/*
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.5.0'
+}/*
  * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
@@ -71,8 +73,9 @@ include(
     "search",
     "test-utils-common",
     "value-resolver",
-    "valtimo-dependencies",
-    "valtimo-gzac-dependencies",
+    "dependencies:valtimo-dependencies",
+    "dependencies:valtimo-dependency-versions",
+    "dependencies:valtimo-gzac-dependencies",
     "web",
     "zgw:catalogi-api",
     "zgw:documenten-api",
@@ -85,4 +88,5 @@ include(
     "zgw:portaaltaak",
     "zgw:besluiten-api"
 )
+include 'dependencies'
 
