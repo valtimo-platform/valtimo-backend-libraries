@@ -29,9 +29,6 @@ import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.error.DocumentModuleExceptionTranslator;
 import com.ritense.document.web.rest.impl.SearchFieldMapper;
 import com.ritense.document.web.rest.impl.SearchFieldResource;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +38,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.NUMBER;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
@@ -101,6 +103,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldStoreSearchField() throws Exception {
+        searchFieldRepository.deleteAllInBatch();
+
         var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
 
         mockMvc.perform(
@@ -189,6 +193,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldRetrieveSearchFieldsByDocumentDefinitionName() throws Exception {
+        searchFieldRepository.deleteAllInBatch();
+
         var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
@@ -231,6 +237,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldUpdateSearchField() throws Exception {
+        searchFieldRepository.deleteAllInBatch();
+
         AuthorizationContext.runWithoutAuthorization(() -> {
                 searchFieldService.addSearchField(DOCUMENT_DEFINITION_NAME, SEARCH_FIELD);
                 return null;
