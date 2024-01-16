@@ -124,7 +124,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             .collect(toMap(SearchField::getKey, searchField -> searchField));
 
         var searchCriteria = searchWithConfigRequest.getOtherFilters().stream()
-            .map(otherFilter -> SearchRequestMapper.toOtherFilter(otherFilter, searchFieldMap.get(otherFilter.getKey())))
+            .map(otherFilter -> SearchRequestMapper.toOtherFilter(otherFilter, searchFieldMap.get(otherFilter.getKey()), zoneOffset))
             .toList();
 
         var advancedSearchRequest = SearchRequestMapper.toAdvancedSearchRequest(searchWithConfigRequest, searchCriteria);
