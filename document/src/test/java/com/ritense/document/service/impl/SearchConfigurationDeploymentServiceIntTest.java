@@ -73,6 +73,8 @@ class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {
 
     @Test
     void shouldFailToDeployDueToDuplicateKeys() {
+        searchFieldRepository.deleteAllInBatch();
+
         Function<Integer, SearchField> searchFieldFactory = i -> {
             SearchField searchField = new SearchField(
                 "street",
