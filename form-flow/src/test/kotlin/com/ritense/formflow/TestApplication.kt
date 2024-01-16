@@ -64,7 +64,7 @@ class TestApplication {
         companion object {
             init {
                 System.setProperty(
-                    "hibernate.types.jackson.object.mapper",
+                    "hypersistence.utils.jackson.object.mapper",
                     HibernateObjectMapperSupplier::class.java.name
                 )
             }

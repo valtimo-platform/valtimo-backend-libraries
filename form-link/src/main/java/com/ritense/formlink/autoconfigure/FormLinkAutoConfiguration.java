@@ -54,7 +54,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -62,7 +62,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import java.util.List;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(basePackages = "com.ritense.formlink.repository")
 @EntityScan("com.ritense.formlink.domain")
 public class FormLinkAutoConfiguration {

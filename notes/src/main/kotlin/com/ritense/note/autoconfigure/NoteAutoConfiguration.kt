@@ -32,12 +32,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(basePackages = ["com.ritense.note.repository"])
 @EntityScan("com.ritense.note.domain")
 class NoteAutoConfiguration {

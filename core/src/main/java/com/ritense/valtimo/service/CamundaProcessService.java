@@ -35,6 +35,7 @@ import com.ritense.valtimo.exception.NoFileExtensionFoundException;
 import com.ritense.valtimo.exception.ProcessDefinitionNotFoundException;
 import com.ritense.valtimo.exception.ProcessNotDeployableException;
 import com.ritense.valtimo.service.util.FormUtils;
+import jakarta.validation.constraints.NotNull;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -51,8 +52,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.Comparator;
@@ -71,7 +71,6 @@ import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpe
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
-import static org.camunda.bpm.engine.impl.util.EnsureUtil.ensureNotNull;
 
 public class CamundaProcessService {
 

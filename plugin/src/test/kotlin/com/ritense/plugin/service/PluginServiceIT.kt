@@ -84,7 +84,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
 
     @BeforeEach
     fun init() {
-        pluginDefinition = pluginDefinitionRepository.getById("test-plugin")
+        pluginDefinition = pluginDefinitionRepository.getReferenceById("test-plugin")
         pluginConfiguration = pluginConfigurationRepository.save(
             PluginConfiguration(
                 PluginConfigurationId.newId(),
@@ -94,7 +94,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             )
         )
 
-        val categoryPluginDefinition = pluginDefinitionRepository.getById("test-category-plugin")
+        val categoryPluginDefinition = pluginDefinitionRepository.getReferenceById("test-category-plugin")
         categoryPluginConfiguration = pluginConfigurationRepository.save(
             PluginConfiguration(
                 PluginConfigurationId.newId(),

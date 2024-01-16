@@ -26,10 +26,10 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Lazy
 
-@Configuration
+@AutoConfiguration
 class DocumentAuthorizationAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(JsonSchemaDocumentSpecificationFactory::class)

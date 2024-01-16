@@ -24,6 +24,7 @@ import java.util.UUID
 
 @Service
 class ZaakMockUrlProvider : ZaakUrlProvider, ZaaktypeUrlProvider {
+    @Deprecated("Marked for removal since 10.5.0")
     override fun getZaak(documentId: UUID): String {
         return "http://localhost:56273/zaken/57f66ff6-db7f-43bc-84ef-6847640d3609"
     }

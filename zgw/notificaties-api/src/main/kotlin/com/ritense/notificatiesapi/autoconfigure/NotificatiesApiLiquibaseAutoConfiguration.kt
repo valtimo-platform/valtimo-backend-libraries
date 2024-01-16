@@ -20,11 +20,11 @@ import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import javax.sql.DataSource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 
-@Configuration
+@AutoConfiguration
 @ConditionalOnClass(DataSource::class)
 class NotificatiesApiLiquibaseAutoConfiguration {
 

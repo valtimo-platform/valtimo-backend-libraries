@@ -17,12 +17,12 @@
 package com.ritense.contactmoment.autoconfigure
 
 import com.ritense.contactmoment.security.config.ContactMomentHttpSecurityConfigurer
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 
-@Configuration
+@AutoConfiguration
 class ContactMomentSecurityAutoConfiguration {
 
     @Bean

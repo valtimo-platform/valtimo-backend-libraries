@@ -22,6 +22,7 @@ import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.DocumentVersionsResult;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResult;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -33,13 +34,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public interface DocumentDefinitionResource {
 

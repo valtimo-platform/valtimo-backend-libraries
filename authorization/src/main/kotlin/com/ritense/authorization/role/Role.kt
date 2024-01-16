@@ -19,10 +19,10 @@ package com.ritense.authorization.role
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.permission.PermissionView
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "role")

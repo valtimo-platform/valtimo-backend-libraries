@@ -4,7 +4,7 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -30,7 +30,7 @@ class CaseDefinitionDeploymentServiceIntTest @Autowired constructor(
             )
         }
 
-        val settings = caseDefinitionSettingsRepository.getById("all-properties-present")
+        val settings = caseDefinitionSettingsRepository.getReferenceById("all-properties-present")
 
         assertEquals("all-properties-present", settings.name)
         assertTrue(settings.canHaveAssignee)
@@ -67,7 +67,7 @@ class CaseDefinitionDeploymentServiceIntTest @Autowired constructor(
             )
         }
 
-        val settings = caseDefinitionSettingsRepository.getById("all-properties-present")
+        val settings = caseDefinitionSettingsRepository.getReferenceById("all-properties-present")
 
         assertEquals("all-properties-present", settings.name)
         assertTrue(settings.canHaveAssignee)
@@ -101,7 +101,7 @@ class CaseDefinitionDeploymentServiceIntTest @Autowired constructor(
             )
         }
 
-        val settings = caseDefinitionSettingsRepository.getById("empty-properties")
+        val settings = caseDefinitionSettingsRepository.getReferenceById("empty-properties")
 
         assertEquals("empty-properties", settings.name)
         assertFalse(settings.canHaveAssignee)
@@ -119,7 +119,7 @@ class CaseDefinitionDeploymentServiceIntTest @Autowired constructor(
             )
         }
 
-        val settings = caseDefinitionSettingsRepository.getById("no-settings-present")
+        val settings = caseDefinitionSettingsRepository.getReferenceById("no-settings-present")
 
         assertEquals("no-settings-present", settings.name)
         assertFalse(settings.canHaveAssignee)

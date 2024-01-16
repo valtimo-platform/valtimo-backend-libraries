@@ -16,15 +16,15 @@
 
 package com.ritense.plugin.domain
 
-import javax.persistence.CollectionTable
-import javax.persistence.Column
-import javax.persistence.ElementCollection
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.JoinColumn
-import javax.persistence.Table
+import jakarta.persistence.CollectionTable
+import jakarta.persistence.Column
+import jakarta.persistence.ElementCollection
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "plugin_action_definition")

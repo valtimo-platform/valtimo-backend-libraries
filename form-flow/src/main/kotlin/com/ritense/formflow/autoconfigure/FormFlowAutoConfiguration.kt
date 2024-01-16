@@ -39,12 +39,12 @@ import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(
     basePackageClasses = [
         FormFlowDefinitionRepository::class,

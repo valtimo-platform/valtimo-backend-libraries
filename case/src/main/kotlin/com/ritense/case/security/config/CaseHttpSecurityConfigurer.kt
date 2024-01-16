@@ -25,33 +25,36 @@ import org.springframework.http.HttpMethod.PATCH
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/list-column").authenticated()
-                .antMatchers(POST, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN) // Deprecated
-                .antMatchers(PUT, "/api/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN) // Deprecated
-                .antMatchers(DELETE, "/api/v1/case/{caseDefinitionName}/list-column/{columnKey}").hasAuthority(ADMIN) // Deprecated
-                .antMatchers(GET, "/api/v1/case/{caseDefinitionName}/settings").authenticated()
-                .antMatchers(GET, "/api/v1/case-definition/{caseDefinitionName}/tab").authenticated()
-                .antMatchers(PATCH, "/api/v1/case/{caseDefinitionName}/settings").hasAuthority(ADMIN) // Deprecated
-                .antMatchers(POST, "/api/v1/case/{caseDefinitionName}/search").authenticated()
-                .antMatchers(GET, "/api/management/v1/case/{caseDefinitionName}/settings").hasAuthority(ADMIN)
-                .antMatchers(PATCH, "/api/management/v1/case/{caseDefinitionName}/settings").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/management/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/management/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/management/v1/case/{caseDefinitionName}/list-column").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/management/v1/case/{caseDefinitionName}/list-column/{columnKey}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/management/v1/case-definition/{caseDefinitionName}/tab").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/tab").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/tab/{tabKey}").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/management/v1/case-definition/{caseDefinitionName}/tab/{tabKey}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/management/v1/case-definition/{caseDefinitionName}/tab").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/management/v1/case/{caseDefinitionName}/{caseDefinitionVersion}/export").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/management/v1/case/import").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/case/{caseDefinitionName}/list-column")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/case/{caseDefinitionName}/list-column")).hasAuthority(ADMIN) // Deprecated
+                    .requestMatchers(antMatcher(PUT, "/api/v1/case/{caseDefinitionName}/list-column")).hasAuthority(ADMIN) // Deprecated
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/case/{caseDefinitionName}/list-column/{columnKey}")).hasAuthority(ADMIN) // Deprecated
+                    .requestMatchers(antMatcher(GET, "/api/v1/case/{caseDefinitionName}/settings")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/tab")).authenticated()
+                    .requestMatchers(antMatcher(PATCH, "/api/v1/case/{caseDefinitionName}/settings")).hasAuthority(ADMIN) // Deprecated
+                    .requestMatchers(antMatcher(POST, "/api/v1/case/{caseDefinitionName}/search")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case/{caseDefinitionName}/settings")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PATCH, "/api/management/v1/case/{caseDefinitionName}/settings")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case/{caseDefinitionName}/list-column")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/case/{caseDefinitionName}/list-column")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/case/{caseDefinitionName}/list-column")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/case/{caseDefinitionName}/list-column/{columnKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/case-definition/{caseDefinitionName}/tab")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/tab")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/case-definition/{caseDefinitionName}/tab/{tabKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/tab")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case/{caseDefinitionName}/{caseDefinitionVersion}/export")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/case/import")).hasAuthority(ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

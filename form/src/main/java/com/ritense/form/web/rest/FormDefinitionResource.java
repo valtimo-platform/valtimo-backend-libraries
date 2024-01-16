@@ -17,6 +17,7 @@
 package com.ritense.form.web.rest;
 
 import com.ritense.form.web.rest.dto.FormOption;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ import java.util.List;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public interface FormDefinitionResource {
     @GetMapping(value = "/v1/form-definition")

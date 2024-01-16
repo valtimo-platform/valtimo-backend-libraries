@@ -34,7 +34,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:${javaxInjectVersion}"
+    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -50,13 +50,13 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
-    implementation "org.liquibase:liquibase-core"
-    implementation "org.liquibase.ext:liquibase-hibernate5:${liquibaseVersion}"
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+    implementation "org.liquibase.ext:liquibase-hibernate6:${liquibaseVersion}"
     implementation "com.mattbertolini:liquibase-slf4j:${liquibaseSlf4jVersion}"
 
-    implementation "com.vladmihalcea:hibernate-types-55:${hibernateTypesVersion}"
+    implementation "io.hypersistence:hypersistence-utils-hibernate-62:${hypersistenceUtilsVersion}"
 
-    implementation "org.hibernate:hibernate-core"
+    implementation "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
 
     implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 

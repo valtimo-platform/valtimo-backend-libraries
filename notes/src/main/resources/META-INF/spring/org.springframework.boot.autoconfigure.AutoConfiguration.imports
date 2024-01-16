@@ -1,0 +1,2 @@
+com.ritense.note.autoconfigure.NoteAutoConfiguration
+com.ritense.note.autoconfigure.NoteLiquibaseAutoConfiguration

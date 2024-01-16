@@ -23,7 +23,7 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;

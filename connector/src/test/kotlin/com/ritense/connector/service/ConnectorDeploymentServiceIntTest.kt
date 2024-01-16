@@ -22,7 +22,7 @@ import com.ritense.connector.domain.ConnectorProperties
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.annotation.Transactional
-import javax.inject.Inject
+import jakarta.inject.Inject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 

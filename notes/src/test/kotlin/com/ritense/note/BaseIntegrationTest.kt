@@ -40,7 +40,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.web.servlet.config.annotation.EnableWebMvc
 import java.util.UUID
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)

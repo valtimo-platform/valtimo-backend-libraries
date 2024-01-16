@@ -16,9 +16,9 @@
 
 package com.ritense.valtimo.contract.validation
 
+import jakarta.validation.ConstraintValidator
+import jakarta.validation.ConstraintValidatorContext
 import java.net.URI
-import javax.validation.ConstraintValidator
-import javax.validation.ConstraintValidatorContext
 
 open class URIUrlValidator : ConstraintValidator<Url, URI> {
 

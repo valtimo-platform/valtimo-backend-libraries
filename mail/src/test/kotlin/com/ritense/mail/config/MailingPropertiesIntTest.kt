@@ -3,7 +3,7 @@ package com.ritense.mail.config
 import com.ritense.mail.BaseIntegrationTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 internal class MailingPropertiesIntTest : BaseIntegrationTest() {
 

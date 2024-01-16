@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.domain.choicefield.ChoiceFieldValue;
 import com.ritense.valtimo.service.ChoiceFieldValueService;
 import com.ritense.valtimo.web.rest.dto.ChoiceFieldValueCreateRequestDTO;
@@ -38,7 +39,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -46,6 +47,7 @@ import java.util.List;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ChoiceFieldValueResource {
 

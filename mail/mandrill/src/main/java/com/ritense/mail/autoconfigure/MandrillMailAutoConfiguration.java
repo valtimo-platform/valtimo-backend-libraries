@@ -28,10 +28,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(basePackages = "com.ritense.mail.repository")
 @EntityScan("com.ritense.mail.domain")
 @EnableConfigurationProperties(MandrillProperties.class)

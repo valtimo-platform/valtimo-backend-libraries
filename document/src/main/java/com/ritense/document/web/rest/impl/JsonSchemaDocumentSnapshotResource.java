@@ -22,6 +22,7 @@ import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.document.web.rest.DocumentSnapshotResource;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,7 @@ import java.util.UUID;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 @ConditionalOnBean(DocumentSnapshotService.class)
 public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResource {

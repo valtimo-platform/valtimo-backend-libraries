@@ -17,9 +17,9 @@
 package com.ritense.document.repository.impl.specification
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
 
 class JsonSchemaDocumentDefinitionSpecificationHelper {

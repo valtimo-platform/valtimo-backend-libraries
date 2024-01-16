@@ -146,7 +146,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-        val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -176,7 +176,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-        val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -209,7 +209,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(true))
-        val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -242,7 +242,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(true))
-        val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -1221,7 +1221,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             zipStream.closeEntry()
         }
 
-        return outputStream.toByteArray();
+        return outputStream.toByteArray()
     }
 
     private fun createListColumn(caseDefinitionName: String, json: String, expectedStatus: ResultMatcher) {

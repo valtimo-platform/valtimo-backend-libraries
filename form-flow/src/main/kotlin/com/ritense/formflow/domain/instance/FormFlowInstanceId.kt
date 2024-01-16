@@ -18,8 +18,8 @@ package com.ritense.formflow.domain.instance
 
 import com.ritense.formflow.domain.AbstractId
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Embeddable
+import jakarta.persistence.Column
+import jakarta.persistence.Embeddable
 
 @Embeddable
 class FormFlowInstanceId(

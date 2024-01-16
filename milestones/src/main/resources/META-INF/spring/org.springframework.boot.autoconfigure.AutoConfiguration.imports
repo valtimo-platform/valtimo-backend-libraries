@@ -1,0 +1,3 @@
+com.ritense.valtimo.milestones.autoconfigure.MilestonesAutoConfiguration
+com.ritense.valtimo.milestones.autoconfigure.MilestonesSecurityAutoConfiguration
+com.ritense.valtimo.milestones.autoconfigure.MilestonesLiquibaseAutoConfiguration

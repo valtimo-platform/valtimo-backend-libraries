@@ -20,14 +20,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.view.AuditView;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
+import jakarta.persistence.GeneratedValue;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GeneratedColumn;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -53,13 +57,17 @@ public class AuditRecord implements Persistable<AuditRecordId> {
     @Column(name = "created_on", updatable = false)
     private LocalDateTime createdOn = LocalDateTime.now();
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType.class)
     @Column(name = "audit_event", columnDefinition = "json", updatable = false)
     @JsonView(AuditView.Public.class)
     private AuditEvent auditEvent;
 
     @Column(name = "document_id", updatable = false)
     private UUID documentId;
+
+    @Generated
+    @Column(name = "classname", updatable = false)
+    private String className;
 
     public AuditRecord(
         AuditRecordId auditRecordId,
@@ -135,6 +143,10 @@ public class AuditRecord implements Persistable<AuditRecordId> {
 
     public UUID getDocumentId() {
         return this.documentId;
+    }
+
+    public String getClassName() {
+        return className;
     }
 
     public static AuditRecordBuilder builder() {

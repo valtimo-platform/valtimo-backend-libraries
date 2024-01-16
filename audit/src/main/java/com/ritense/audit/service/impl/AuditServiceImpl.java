@@ -74,7 +74,7 @@ public class AuditServiceImpl implements AuditService {
             )
         );
 
-        return auditRecordRepository.findByEventAndDocumentId(eventTypes, documentId, pageable);
+        return auditRecordRepository.findByEventAndDocumentId(eventTypes.stream().map(Class::getName).toList(), documentId, pageable);
     }
 
     @Override

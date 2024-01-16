@@ -23,17 +23,19 @@ import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class DataProviderHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/data/{category}/provider").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/data/{category}/all").authenticated()
-                .antMatchers(GET, "/api/v1/data/{category}").authenticated()
-                .antMatchers(POST, "/api/v1/data/{category}").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/data/{category}").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/data/{category}/provider")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/data/{category}/all")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/data/{category}")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/data/{category}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/data/{category}")).hasAuthority(ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

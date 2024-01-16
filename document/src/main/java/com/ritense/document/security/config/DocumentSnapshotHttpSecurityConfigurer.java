@@ -20,15 +20,16 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class DocumentSnapshotHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/document-snapshot/{id}").authenticated()
-                .antMatchers(GET, "/api/v1/document-snapshot").authenticated();
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/document-snapshot/{id}")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/document-snapshot")).authenticated());
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

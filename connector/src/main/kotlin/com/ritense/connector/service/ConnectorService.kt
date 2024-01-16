@@ -39,7 +39,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.interceptor.TransactionAspectSupport
 import java.util.UUID
-import javax.validation.ConstraintViolationException
+import jakarta.validation.ConstraintViolationException
 
 open class ConnectorService(
     private val context: ApplicationContext,

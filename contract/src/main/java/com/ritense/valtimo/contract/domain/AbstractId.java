@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.contract.domain;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 
 public abstract class AbstractId<SELF> implements Identity, Serializable {

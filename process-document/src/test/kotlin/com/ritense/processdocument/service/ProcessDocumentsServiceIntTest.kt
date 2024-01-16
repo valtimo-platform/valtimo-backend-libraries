@@ -137,7 +137,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
             )
         }
         assertEquals(
-            "java.lang.IllegalStateException: No process definition found with key: 'non-existing-key'",
+            "No process definition found with key: 'non-existing-key'",
             exception.cause?.message
         )
     }
@@ -153,7 +153,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
             )
         }
         assertEquals(
-            "com.ritense.document.exception.DocumentNotFoundException: No Document found with id $uuid",
+            "No Document found with id $uuid",
             exception.cause?.message
         )
     }

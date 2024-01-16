@@ -19,11 +19,11 @@ package com.ritense.mail.autoconfigure;
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.annotation.Order;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
-@Configuration
+@AutoConfiguration
 public class MandrillMailLiquibaseAutoConfiguration {
 
     @Order(HIGHEST_PRECEDENCE + 7)

@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.resource.autoconfigure.LocalResourceAutoConfiguration, \
-  com.ritense.resource.autoconfigure.LocalResourceSecurityAutoConfiguration

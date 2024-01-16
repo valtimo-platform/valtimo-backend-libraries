@@ -21,15 +21,17 @@ import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class EmailNotificationSettingsSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/email-notification-settings").authenticated()
-                .antMatchers(PUT, "/api/v1/email-notification-settings").authenticated();
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/email-notification-settings")).authenticated()
+                .requestMatchers(antMatcher(PUT, "/api/v1/email-notification-settings")).authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

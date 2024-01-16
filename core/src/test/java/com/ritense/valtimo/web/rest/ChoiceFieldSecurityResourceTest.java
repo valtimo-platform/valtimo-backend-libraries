@@ -26,6 +26,7 @@ import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.OK;
 
 class ChoiceFieldSecurityResourceTest extends SecuritySpecificEndpointIntegrationTest {
 
@@ -58,7 +59,7 @@ class ChoiceFieldSecurityResourceTest extends SecuritySpecificEndpointIntegratio
     @Test
     @WithMockUser(username = USER_EMAIL, authorities = {ADMIN})
     void deleteChoiceFieldAsAdmin() throws Exception {
-        assertHttpStatus(DELETE, "/api/v1/choice-fields/1", INTERNAL_SERVER_ERROR);
+        assertHttpStatus(DELETE, "/api/v1/choice-fields/1", OK);
     }
 
     @Test

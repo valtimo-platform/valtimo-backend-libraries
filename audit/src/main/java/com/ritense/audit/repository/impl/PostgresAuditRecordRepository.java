@@ -54,7 +54,7 @@ public interface PostgresAuditRecordRepository extends AuditRecordRepository<Aud
         "    AND     documentId = :documentId " +
         "    ORDER BY ar.metaData.occurredOn DESC")
     Page<AuditRecord> findByEventAndDocumentId(
-        List<Class<? extends AuditEvent>> eventTypes,
+        List<String> eventTypes,
         UUID documentId,
         Pageable pageable
     );

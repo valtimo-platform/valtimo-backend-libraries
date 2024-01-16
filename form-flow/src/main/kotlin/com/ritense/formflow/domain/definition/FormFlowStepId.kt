@@ -19,12 +19,12 @@ package com.ritense.formflow.domain.definition
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.ritense.formflow.domain.AbstractId
 import java.util.Objects
-import javax.persistence.Column
-import javax.persistence.Embeddable
-import javax.persistence.FetchType
-import javax.persistence.JoinColumn
-import javax.persistence.JoinColumns
-import javax.persistence.ManyToOne
+import jakarta.persistence.Column
+import jakarta.persistence.Embeddable
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.JoinColumns
+import jakarta.persistence.ManyToOne
 
 @Embeddable
 data class FormFlowStepId(

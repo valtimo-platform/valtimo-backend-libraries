@@ -19,11 +19,11 @@ package com.ritense.plugin.service
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.plugin.domain.PluginConfiguration
 import mu.KotlinLogging
-import javax.persistence.PostLoad
-import javax.persistence.PostPersist
-import javax.persistence.PostUpdate
-import javax.persistence.PrePersist
-import javax.persistence.PreUpdate
+import jakarta.persistence.PostLoad
+import jakarta.persistence.PostPersist
+import jakarta.persistence.PostUpdate
+import jakarta.persistence.PrePersist
+import jakarta.persistence.PreUpdate
 
 class PluginConfigurationEntityListener(
     val encryptionService: EncryptionService,

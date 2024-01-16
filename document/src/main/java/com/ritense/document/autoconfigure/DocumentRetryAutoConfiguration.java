@@ -16,10 +16,10 @@
 
 package com.ritense.document.autoconfigure;
 
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.retry.annotation.EnableRetry;
 
-@Configuration
+@AutoConfiguration
 @EnableRetry
 public class DocumentRetryAutoConfiguration {
 }

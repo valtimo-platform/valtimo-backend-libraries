@@ -21,9 +21,9 @@ import com.ritense.resource.listener.DocumentCreatedListener
 import com.ritense.resource.service.OpenZaakService
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 
-@Configuration
+@AutoConfiguration
 @ConditionalOnClass(DocumentCreated::class)
 class OpenZaakDocumentenApiPluginAutoConfiguration {
 

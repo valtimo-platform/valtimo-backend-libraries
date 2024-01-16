@@ -26,16 +26,16 @@ import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementForm
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink
 import com.ritense.formlink.repository.ProcessFormAssociationRepository
+import java.sql.ResultSet
+import java.sql.Types
+import java.util.UUID
 import mu.KotlinLogging
-import org.hibernate.type.descriptor.java.UUIDTypeDescriptor
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.SqlParameterValue
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.transaction.annotation.Transactional
-import java.sql.ResultSet
-import java.sql.Types
-import java.util.UUID
+import org.hibernate.type.descriptor.java.UUIDJavaType.ToBytesTransformer.INSTANCE as UUID_TRANSFORMER
 
 @Deprecated("Since 10.6.0", ReplaceWith("com.ritense.processlink.repository.ProcessLinkRepository"))
 @Transactional
@@ -205,10 +205,10 @@ class JdbcProcessFormAssociationRepository(
     }
 
     private fun camundaFormAssociation(rs: ResultSet) = FormAssociationFactory.getFormAssociation(
-        if (rs.getBytes(FORM_ASSOCIATION_ID) != null) UUIDTypeDescriptor.ToBytesTransformer().parse(rs.getBytes(FORM_ASSOCIATION_ID)) else null,
+        if (rs.getBytes(FORM_ASSOCIATION_ID) != null) UUID_TRANSFORMER.parse(rs.getBytes(FORM_ASSOCIATION_ID)) else null,
         FormAssociationType.fromString(rs.getString(FORM_ASSOCIATION_TYPE)),
         rs.getString(FORM_LINK_ELEMENT_ID),
-        if (rs.getBytes(FORM_LINK_FORM_ID) != null) UUIDTypeDescriptor.ToBytesTransformer().parse(rs.getBytes(FORM_LINK_FORM_ID)) else null,
+        if (rs.getBytes(FORM_LINK_FORM_ID) != null) UUID_TRANSFORMER.parse(rs.getBytes(FORM_LINK_FORM_ID)) else null,
         rs.getString(FORM_LINK_FLOW_ID),
         rs.getString(FORM_LINK_CUSTOM_URL),
         rs.getString(FORM_LINK_ANGULAR_STATE_URL)
@@ -228,7 +228,7 @@ class JdbcProcessFormAssociationRepository(
     }
 
     private fun UUID.asBytes(): ByteArray {
-        return UUIDTypeDescriptor.ToBytesTransformer().transform(this)
+        return UUID_TRANSFORMER.transform(this)
     }
 
     private fun FormAssociation.asType(): String {

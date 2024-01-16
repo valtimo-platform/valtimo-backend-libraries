@@ -17,9 +17,9 @@
 package com.ritense.authorization.permission.condition
 
 import com.fasterxml.jackson.annotation.JsonValue
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.Expression
-import javax.persistence.criteria.Predicate
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Expression
+import jakarta.persistence.criteria.Predicate
 import kotlin.reflect.full.isSubclassOf
 
 enum class PermissionConditionOperator(@JsonValue val asText: String) {

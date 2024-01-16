@@ -49,7 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 
 @Transactional
 internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {

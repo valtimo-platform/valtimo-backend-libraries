@@ -26,8 +26,8 @@ import com.ritense.plugin.domain.EventType
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import com.ritense.zgw.Rsin
-import javax.validation.Valid
-import javax.validation.ValidationException
+import jakarta.validation.Valid
+import jakarta.validation.ValidationException
 
 @Plugin(
     key = "verzoek",

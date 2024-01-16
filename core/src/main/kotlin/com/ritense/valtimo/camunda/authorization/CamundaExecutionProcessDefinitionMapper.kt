@@ -20,9 +20,9 @@ import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationEntityMapperResult
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
-import javax.persistence.criteria.AbstractQuery
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.AbstractQuery
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Root
 
 class CamundaExecutionProcessDefinitionMapper : AuthorizationEntityMapper<CamundaExecution, CamundaProcessDefinition> {
     override fun mapRelated(entity: CamundaExecution): List<CamundaProcessDefinition> {

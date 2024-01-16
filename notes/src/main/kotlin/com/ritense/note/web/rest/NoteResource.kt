@@ -22,6 +22,7 @@ import com.ritense.note.service.NoteService
 import com.ritense.note.web.rest.dto.NoteCreateRequestDto
 import com.ritense.note.web.rest.dto.NoteResponseDto
 import com.ritense.note.web.rest.dto.NoteUpdateRequestDto
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -40,6 +41,7 @@ import java.util.UUID
 
 
 @RestController
+@SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class NoteResource(
     private val noteService: NoteService,

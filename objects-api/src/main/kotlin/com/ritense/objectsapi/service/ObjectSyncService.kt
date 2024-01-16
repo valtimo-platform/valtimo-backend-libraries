@@ -33,7 +33,7 @@ import com.ritense.valtimo.contract.result.OperationError
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.util.UUID
-import javax.validation.ConstraintViolationException
+import jakarta.validation.ConstraintViolationException
 
 open class ObjectSyncService(
     private val objectSyncConfigRepository: ObjectSyncConfigRepository,
@@ -41,7 +41,7 @@ open class ObjectSyncService(
 ) {
 
     fun getObjectSyncConfig(id: UUID): ObjectSyncConfig? {
-        return objectSyncConfigRepository.getById(ObjectSyncConfigId.existingId(id))
+        return objectSyncConfigRepository.getReferenceById(ObjectSyncConfigId.existingId(id))
     }
 
     fun getObjectSyncConfig(documentDefinitionName: String, pageable: Pageable = Pageable.unpaged()): Page<ObjectSyncConfig> {

@@ -19,12 +19,12 @@ package com.ritense.valtimo.contract.hardening.autoconfigure;
 import com.ritense.valtimo.contract.hardening.config.HardeningProperties;
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
 import com.ritense.valtimo.contract.hardening.service.impl.HardeningServiceImpl;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(HardeningProperties.class)
 public class HardeningAutoConfiguration {
 

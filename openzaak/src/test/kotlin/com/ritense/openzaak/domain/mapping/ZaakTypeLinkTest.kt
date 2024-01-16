@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.MockitoAnnotations
 import java.net.URI
 import java.util.UUID
-import javax.validation.ConstraintViolationException
+import jakarta.validation.ConstraintViolationException
 
 class ZaakTypeLinkTest {
 

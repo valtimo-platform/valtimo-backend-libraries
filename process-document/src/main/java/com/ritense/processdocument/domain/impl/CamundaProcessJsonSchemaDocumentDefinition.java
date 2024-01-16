@@ -21,10 +21,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
 import org.hibernate.annotations.Formula;
 import org.springframework.data.domain.Persistable;
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import java.util.Objects;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 

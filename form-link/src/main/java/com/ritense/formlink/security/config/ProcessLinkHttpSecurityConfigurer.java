@@ -22,6 +22,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
 public class ProcessLinkHttpSecurityConfigurer implements HttpSecurityConfigurer {
@@ -33,9 +34,10 @@ public class ProcessLinkHttpSecurityConfigurer implements HttpSecurityConfigurer
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/process-link/task/{taskId}").authenticated()
-                .antMatchers(POST, "/api/v1/process-definition/{processDefinitionKey}/form-flow").authenticated();
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/process-link/task/{taskId}")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/process-definition/{processDefinitionKey}/form-flow")).authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

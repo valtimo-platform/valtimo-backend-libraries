@@ -22,6 +22,7 @@ import com.ritense.connector.web.rest.request.CreateConnectorInstanceRequest
 import com.ritense.connector.web.rest.request.ModifyConnectorInstanceRequest
 import com.ritense.connector.web.rest.result.CreateConnectorInstanceResult
 import com.ritense.connector.web.rest.result.ModifyConnectorInstanceResult
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -38,9 +39,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
-import javax.validation.Valid
+import jakarta.validation.Valid
 
 @RestController
+@SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface ConnectorResource {
 

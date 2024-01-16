@@ -22,16 +22,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginConfigurationEntityListener
+import io.hypersistence.utils.hibernate.type.json.JsonType
 import org.hibernate.annotations.Type
-import javax.persistence.Column
-import javax.persistence.Embedded
-import javax.persistence.Entity
-import javax.persistence.EntityListeners
-import javax.persistence.FetchType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
-import javax.persistence.Table
+import jakarta.persistence.Column
+import jakarta.persistence.Embedded
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.FetchType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
 
 @Entity
 @EntityListeners(PluginConfigurationEntityListener::class)
@@ -42,7 +43,7 @@ class PluginConfiguration(
     val id: PluginConfigurationId,
     @Column(name = "title")
     var title: String,
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "properties", columnDefinition = "JSON")
     internal var rawProperties: ObjectNode? = null,
     @JoinColumn(name = "plugin_definition_key", updatable = false, nullable = false)

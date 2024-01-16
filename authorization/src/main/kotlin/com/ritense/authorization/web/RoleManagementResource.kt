@@ -28,6 +28,7 @@ import com.ritense.authorization.web.request.SaveRoleRequest
 import com.ritense.authorization.web.request.UpdateRolePermissionRequest
 import com.ritense.authorization.web.request.UpdateRoleRequest
 import com.ritense.authorization.web.result.RoleResult
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -42,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
+@SkipComponentScan
 @RequestMapping("/api/management", produces = [ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE])
 class RoleManagementResource(
     val roleRepository: RoleRepository,

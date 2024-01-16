@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -35,7 +35,7 @@ import org.zalando.problem.violations.ConstraintViolationProblemModule;
 import java.util.List;
 import java.util.Optional;
 
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(WebProperties.class)
 public class WebAutoConfiguration {
 

@@ -18,6 +18,8 @@ package com.ritense.valtimo.security.jwt.token;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.impl.DefaultClaims;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.NAME_KEY;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
@@ -34,10 +36,11 @@ public class PublicFormAccessToken implements TokenClaims {
 
     @Override
     public Claims getClaims() {
-        final Claims claims = new DefaultClaims();
+        var claims = new HashMap<String, Object>();
         claims.put(NAME_KEY, this.username);
         claims.put(ROLES_SCOPE, this.roles);
-        return claims;
+
+        return new DefaultClaims(claims);
     }
 
 }

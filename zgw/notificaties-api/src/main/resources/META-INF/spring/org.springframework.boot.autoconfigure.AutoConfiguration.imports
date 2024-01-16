@@ -1,0 +1,2 @@
+com.ritense.notificatiesapi.autoconfigure.NotificatiesApiAutoConfiguration
+com.ritense.notificatiesapi.autoconfigure.NotificatiesApiLiquibaseAutoConfiguration

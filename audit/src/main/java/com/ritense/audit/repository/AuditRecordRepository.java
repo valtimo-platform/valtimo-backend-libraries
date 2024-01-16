@@ -40,7 +40,7 @@ public interface AuditRecordRepository<T extends AuditRecord>
     );
 
     Page<AuditRecord> findByEventAndDocumentId(
-        List<Class<? extends AuditEvent>> eventTypes,
+        List<String> eventTypes,
         UUID documentId,
         Pageable pageable
     );

@@ -47,9 +47,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.test.context.support.WithMockUser;
-
-import javax.transaction.Transactional;
-import javax.validation.ValidationException;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;

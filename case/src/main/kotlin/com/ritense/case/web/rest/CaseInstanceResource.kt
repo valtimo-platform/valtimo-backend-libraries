@@ -19,6 +19,7 @@ package com.ritense.case.web.rest
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.search.SearchWithConfigRequest
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
+@SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class CaseInstanceResource(
     private val service: CaseInstanceService

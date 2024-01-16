@@ -17,7 +17,7 @@
 package com.ritense.formflow.domain
 
 import java.io.Serializable
-import javax.persistence.Transient
+import jakarta.persistence.Transient
 
 abstract class AbstractId<SELF> : Identity, Serializable {
 

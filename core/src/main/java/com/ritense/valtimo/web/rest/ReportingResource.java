@@ -19,6 +19,7 @@ package com.ritense.valtimo.web.rest;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.repository.CamundaReportingRepository;
 import com.ritense.valtimo.repository.camunda.dto.ChartInstance;
 import com.ritense.valtimo.repository.camunda.dto.ChartInstanceSeries;
@@ -56,6 +57,7 @@ import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInsta
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 @Transactional
 public class ReportingResource {

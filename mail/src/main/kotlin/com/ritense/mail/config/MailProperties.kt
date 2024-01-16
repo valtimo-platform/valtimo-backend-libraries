@@ -17,11 +17,10 @@
 package com.ritense.mail.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.boot.context.properties.bind.ConstructorBinding
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "mailing", ignoreUnknownFields = false)
-data class MailingProperties(
+data class MailingProperties (
     var onlyAllowWhitelistedRecipients: Boolean = false,
     /**
      * The priority determines the order in which filters will get executed.

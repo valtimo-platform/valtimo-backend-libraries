@@ -34,23 +34,21 @@ import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import com.ritense.valtimo.contract.utils.RequestHelper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.query.criteria.internal.OrderImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -65,7 +63,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
@@ -93,12 +90,12 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private final ObjectMapper objectMapper;
 
     public JsonSchemaDocumentSearchService(
-            EntityManager entityManager,
-            QueryDialectHelper queryDialectHelper,
-            SearchFieldService searchFieldService,
-            UserManagementService userManagementService,
-            AuthorizationService authorizationService, OutboxService outboxService,
-            ObjectMapper objectMapper
+        EntityManager entityManager,
+        QueryDialectHelper queryDialectHelper,
+        SearchFieldService searchFieldService,
+        UserManagementService userManagementService,
+        AuthorizationService authorizationService, OutboxService outboxService,
+        ObjectMapper objectMapper
     ) {
         this.entityManager = entityManager;
         this.queryDialectHelper = queryDialectHelper;
@@ -111,12 +108,12 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     @Override
     public Page<JsonSchemaDocument> search(
-            final SearchRequest searchRequest,
-            final Pageable pageable
+        final SearchRequest searchRequest,
+        final Pageable pageable
     ) {
         return search(
-                (cb, query, documentRoot) -> buildQueryWhere(searchRequest, cb, query, documentRoot),
-                pageable
+            (cb, query, documentRoot) -> buildQueryWhere(searchRequest, cb, query, documentRoot),
+            pageable
         );
     }
 
@@ -124,11 +121,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     public Page<JsonSchemaDocument> search(String documentDefinitionName, SearchWithConfigRequest searchWithConfigRequest, Pageable pageable) {
         ZoneOffset zoneOffset = RequestHelper.getZoneOffset();
         var searchFieldMap = searchFieldService.getSearchFields(documentDefinitionName).stream()
-                .collect(toMap(SearchField::getKey, searchField -> searchField));
+            .collect(toMap(SearchField::getKey, searchField -> searchField));
 
         var searchCriteria = searchWithConfigRequest.getOtherFilters().stream()
-                .map(otherFilter -> SearchRequestMapper.toOtherFilter(otherFilter, searchFieldMap.get(otherFilter.getKey()), zoneOffset))
-                .toList();
+            .map(otherFilter -> SearchRequestMapper.toOtherFilter(otherFilter, searchFieldMap.get(otherFilter.getKey()), zoneOffset))
+            .toList();
 
         var advancedSearchRequest = SearchRequestMapper.toAdvancedSearchRequest(searchWithConfigRequest, searchCriteria);
 
@@ -139,15 +136,15 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     public Page<JsonSchemaDocument> search(String documentDefinitionName, AdvancedSearchRequest advancedSearchRequest, Pageable pageable) {
         SearchRequestValidator.validate(advancedSearchRequest);
         return search(
-                (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, advancedSearchRequest, cb, query, documentRoot),
-                pageable
+            (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, advancedSearchRequest, cb, query, documentRoot),
+            pageable
         );
     }
 
     @Override
     public Long count(String documentDefinitionName, AdvancedSearchRequest advancedSearchRequest) {
         return count(
-                (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, advancedSearchRequest, cb, query, documentRoot)
+            (cb, query, documentRoot) -> buildQueryWhere(documentDefinitionName, advancedSearchRequest, cb, query, documentRoot)
         );
     }
 
@@ -164,21 +161,21 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         if (pageable.isPaged()) {
             typedQuery
-                    .setFirstResult((int) pageable.getOffset())
-                    .setMaxResults(pageable.getPageSize());
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize());
         }
 
         List<JsonSchemaDocument> documents = typedQuery.getResultList();
         outboxService.send(() ->
-                new DocumentsListed(
-                        objectMapper.valueToTree(documents)
-                )
+            new DocumentsListed(
+                objectMapper.valueToTree(documents)
+            )
         );
         return new PageImpl<>(documents, pageable, count(queryWhereBuilder));
     }
 
     private Long count(
-            QueryWhereBuilder queryWhereBuilder
+        QueryWhereBuilder queryWhereBuilder
     ) {
         final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         final CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
@@ -205,24 +202,24 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         addJsonFieldPredicates(cb, documentRoot, searchRequest, predicates);
 
         predicates.add(
-                authorizationService
-                        .getAuthorizationSpecification(
-                                new EntityAuthorizationRequest<>(
-                                        JsonSchemaDocument.class,
-                                        VIEW_LIST
-                                ),
-                                null
-                        ).toPredicate(documentRoot, query, cb));
+            authorizationService
+                .getAuthorizationSpecification(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        VIEW_LIST
+                    ),
+                    null
+                ).toPredicate(documentRoot, query, cb));
 
         query.where(predicates.toArray(new Predicate[0]));
     }
 
     private void buildQueryWhere(
-            String documentDefinitionName,
-            AdvancedSearchRequest searchRequest,
-            CriteriaBuilder cb,
-            CriteriaQuery<?> query,
-            Root<JsonSchemaDocument> documentRoot
+        String documentDefinitionName,
+        AdvancedSearchRequest searchRequest,
+        CriteriaBuilder cb,
+        CriteriaQuery<?> query,
+        Root<JsonSchemaDocument> documentRoot
     ) {
         final List<Predicate> predicates = new ArrayList<>();
 
@@ -231,14 +228,14 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         }
 
         predicates.add(
-                authorizationService
-                        .getAuthorizationSpecification(
-                                new EntityAuthorizationRequest<>(
-                                        JsonSchemaDocument.class,
-                                        VIEW_LIST
-                                ),
-                                null
-                        ).toPredicate(documentRoot, query, cb));
+            authorizationService
+                .getAuthorizationSpecification(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        VIEW_LIST
+                    ),
+                    null
+                ).toPredicate(documentRoot, query, cb));
 
         if (searchRequest.getAssigneeFilter() != null && searchRequest.getAssigneeFilter() != AssigneeFilter.ALL) {
             predicates.add(getAssigneeFilterPredicate(cb, documentRoot, searchRequest.getAssigneeFilter()));
@@ -255,7 +252,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         if (!StringUtils.isEmpty(searchRequest.getDocumentDefinitionName())) {
             predicates.add(cb.equal(root.get(DOCUMENT_DEFINITION_ID).get(NAME),
-                    searchRequest.getDocumentDefinitionName()));
+                searchRequest.getDocumentDefinitionName()));
         }
 
         if (!StringUtils.isEmpty(searchRequest.getCreatedBy())) {
@@ -276,26 +273,26 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         if (searchRequest.getOtherFilters() != null && !searchRequest.getOtherFilters().isEmpty()) {
             Map<String, List<SearchCriteria>> criteriaPerPath = searchRequest.getOtherFilters()
-                    .stream()
-                    .collect(groupingBy(SearchCriteria::getPath));
+                .stream()
+                .collect(groupingBy(SearchCriteria::getPath));
 
             List<Predicate> criteriaPredicates = criteriaPerPath.entrySet()
-                    .stream()
-                    .flatMap(pathEntry -> {
-                        if (pathEntry.getValue().size() == 1) {
-                            return Stream.of(
-                                    findJsonPathValue(cb, root, pathEntry.getKey(), pathEntry.getValue().get(0).getValue()));
-                        } else {
-                            return Stream.of(cb.or(
-                                    pathEntry.getValue().stream()
-                                            .map(currentCriteria -> findJsonPathValue(cb, root, currentCriteria.getPath(),
-                                                    currentCriteria.getValue()))
-                                            .toList()
-                                            .toArray(Predicate[]::new)
-                            ));
-                        }
-                    })
-                    .toList();
+                .stream()
+                .flatMap(pathEntry -> {
+                    if (pathEntry.getValue().size() == 1) {
+                        return Stream.of(
+                            findJsonPathValue(cb, root, pathEntry.getKey(), pathEntry.getValue().get(0).getValue()));
+                    } else {
+                        return Stream.of(cb.or(
+                            pathEntry.getValue().stream()
+                                .map(currentCriteria -> findJsonPathValue(cb, root, currentCriteria.getPath(),
+                                    currentCriteria.getValue()))
+                                .toList()
+                                .toArray(Predicate[]::new)
+                        ));
+                    }
+                })
+                .toList();
 
             predicates.add(cb.and(criteriaPredicates.toArray(Predicate[]::new)));
         }
@@ -313,14 +310,14 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     private Predicate getOtherFilersPredicate(
-            CriteriaBuilder cb,
-            Root<JsonSchemaDocument> root,
-            AdvancedSearchRequest searchRequest
+        CriteriaBuilder cb,
+        Root<JsonSchemaDocument> root,
+        AdvancedSearchRequest searchRequest
     ) {
         var jsonPredicates = searchRequest.getOtherFilters().stream()
-                .map(currentCriteria -> buildQueryForSearchCriteria(cb, root, currentCriteria))
-                .toList()
-                .toArray(Predicate[]::new);
+            .map(currentCriteria -> buildQueryForSearchCriteria(cb, root, currentCriteria))
+            .toList()
+            .toArray(Predicate[]::new);
 
         if (searchRequest.getSearchOperator() == SearchOperator.AND) {
             return cb.and(jsonPredicates);
@@ -338,9 +335,9 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     private <T extends Comparable<? super T>> Predicate buildQueryForSearchCriteria(
-            CriteriaBuilder cb,
-            Root<JsonSchemaDocument> root,
-            AdvancedSearchRequest.OtherFilter searchCriteria
+        CriteriaBuilder cb,
+        Root<JsonSchemaDocument> root,
+        AdvancedSearchRequest.OtherFilter searchCriteria
     ) {
         Expression<T> value;
         if (searchCriteria.getPath().startsWith(DOC_PREFIX)) {
@@ -362,27 +359,27 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             case BETWEEN -> searchBetween(cb, value, rangeFrom, rangeTo);
             case IN -> searchIn(cb, value, searchCriteria.getValues());
             default ->
-                    throw new NotImplementedException("Searching for search type '" + searchCriteria.getSearchType() + "' hasn't been implemented.");
+                throw new NotImplementedException("Searching for search type '" + searchCriteria.getSearchType() + "' hasn't been implemented.");
         };
     }
 
     private <T extends Comparable<? super T>> Expression<T> getValueExpressionForDocPrefix(
-            CriteriaBuilder cb,
-            Root<JsonSchemaDocument> documentRoot,
-            AdvancedSearchRequest.OtherFilter searchCriteria
+        CriteriaBuilder cb,
+        Root<JsonSchemaDocument> documentRoot,
+        AdvancedSearchRequest.OtherFilter searchCriteria
     ) {
         var jsonPath = "$." + searchCriteria.getPath().substring(DOC_PREFIX.length());
         return queryDialectHelper.getJsonValueExpression(
-                cb,
-                documentRoot.get(CONTENT).get(CONTENT),
-                jsonPath,
-                searchCriteria.getDataType()
+            cb,
+            documentRoot.get(CONTENT).get(CONTENT),
+            jsonPath,
+            searchCriteria.getDataType()
         );
     }
 
     private <T extends Comparable<? super T>> Expression<T> getValueExpressionForCasePrefix(
-            Root<JsonSchemaDocument> documentRoot,
-            AdvancedSearchRequest.OtherFilter searchCriteria
+        Root<JsonSchemaDocument> documentRoot,
+        AdvancedSearchRequest.OtherFilter searchCriteria
     ) {
         var documentColumnName = searchCriteria.getPath().substring(CASE_PREFIX.length());
         return documentRoot.get(documentColumnName).as(searchCriteria.getDataType());
@@ -394,14 +391,14 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             return new Predicate[0];
         } else if (values.stream().anyMatch(value -> !(value instanceof String))) {
             return values.stream()
-                    .map(value -> cb.equal(jsonValue, value))
-                    .toArray(Predicate[]::new);
+                .map(value -> cb.equal(jsonValue, value))
+                .toArray(Predicate[]::new);
         } else {
             var jsonValueLower = cb.lower((Expression<String>) jsonValue);
             return values.stream()
-                    .map(value -> value.toString().trim().toLowerCase())
-                    .map(stringValue -> cb.equal(jsonValueLower, stringValue))
-                    .toArray(Predicate[]::new);
+                .map(value -> value.toString().trim().toLowerCase())
+                .map(stringValue -> cb.equal(jsonValueLower, stringValue))
+                .toArray(Predicate[]::new);
         }
     }
 
@@ -414,9 +411,9 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         } else {
             var jsonValueLower = cb.lower((Expression<String>) jsonValue);
             return values.stream()
-                    .map(value -> value.toString().trim().toLowerCase())
-                    .map(stringValue -> cb.like(jsonValueLower, "%" + stringValue + "%"))
-                    .toArray(Predicate[]::new);
+                .map(value -> value.toString().trim().toLowerCase())
+                .map(stringValue -> cb.like(jsonValueLower, "%" + stringValue + "%"))
+                .toArray(Predicate[]::new);
         }
     }
 
@@ -475,43 +472,35 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     private List<Order> getOrderBy(
-            CriteriaBuilder cb,
-            Root<JsonSchemaDocument> root,
-            Sort sort
+        CriteriaBuilder cb,
+        Root<JsonSchemaDocument> root,
+        Sort sort
     ) {
         return sort.stream()
-                .map(order -> {
-                    if (order.getProperty().startsWith(DOC_PREFIX)) {
-                        var jsonPath = "$." + order.getProperty().substring(DOC_PREFIX.length());
-                        return new OrderImpl(
-                                queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), jsonPath, String.class),
-                                order.getDirection().isAscending()
-                        );
-                    } else if (order.getProperty().startsWith(CASE_PREFIX)) {
-                        return new OrderImpl(
-                                root.get(order.getProperty().substring(CASE_PREFIX.length())),
-                                order.getDirection().isAscending()
-                        );
-                    } else if (order.getProperty().startsWith("$.")) {
-                        return new OrderImpl(
-                                cb.lower(queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), order.getProperty(), String.class)), order.getDirection().isAscending()
-                        );
-                    } else {
-                        return new OrderImpl(
-                                root.get(order.getProperty()),
-                                order.getDirection().isAscending()
-                        );
-                    }
-                })
-                .collect(Collectors.toList());
+            .map(order -> {
+                Expression<String> expression;
+                if (order.getProperty().startsWith(DOC_PREFIX)) {
+                    var jsonPath = "$." + order.getProperty().substring(DOC_PREFIX.length());
+                    expression = queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), jsonPath, String.class);
+                } else if (order.getProperty().startsWith(CASE_PREFIX)) {
+                    expression = root.get(order.getProperty().substring(CASE_PREFIX.length()));
+                } else if (order.getProperty().startsWith("$.")) {
+                    expression = cb.lower(queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), order.getProperty(), String.class));
+                } else {
+                    expression = root.get(order.getProperty());
+                }
+
+                return order.getDirection().isAscending() ? cb.asc(expression) : cb.desc(expression);
+            })
+            .collect(Collectors.toList());
     }
 
     @FunctionalInterface
     public interface QueryWhereBuilder {
         void apply(
-                CriteriaBuilder criteriaBuilder,
-                CriteriaQuery<?> query,
-                Root<JsonSchemaDocument> documentRoot
+            CriteriaBuilder criteriaBuilder,
+            CriteriaQuery<?> query,
+            Root<JsonSchemaDocument> documentRoot
         );
     }
 }

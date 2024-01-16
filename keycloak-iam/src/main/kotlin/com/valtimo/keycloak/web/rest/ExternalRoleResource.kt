@@ -16,6 +16,7 @@
 
 package com.valtimo.keycloak.web.rest
 
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.valtimo.keycloak.service.ExternalRoleService
 import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
@@ -23,9 +24,10 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import javax.ws.rs.NotFoundException
+import jakarta.ws.rs.NotFoundException
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = ["/api/v1/external-role"])
 class ExternalRoleResource(
     private val externalRoleService: ExternalRoleService

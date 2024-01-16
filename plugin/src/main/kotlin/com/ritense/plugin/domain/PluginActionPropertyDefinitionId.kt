@@ -17,9 +17,9 @@
 package com.ritense.plugin.domain
 
 import com.ritense.valtimo.contract.domain.AbstractId
-import javax.persistence.Column
-import javax.persistence.Embeddable
-import javax.persistence.Embedded
+import jakarta.persistence.Column
+import jakarta.persistence.Embeddable
+import jakarta.persistence.Embedded
 
 @Embeddable
 data class PluginActionPropertyDefinitionId(

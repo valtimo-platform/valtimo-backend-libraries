@@ -24,7 +24,7 @@ import com.ritense.connector.impl.ObjectApiProperties
 import com.ritense.valtimo.contract.json.Mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 internal class ConnectorPropertiesSerialisationIntTest : BaseIntegrationTest() {
 

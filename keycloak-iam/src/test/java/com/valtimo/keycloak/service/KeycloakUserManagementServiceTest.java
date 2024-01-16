@@ -18,12 +18,12 @@ package com.valtimo.keycloak.service;
 
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
+import jakarta.ws.rs.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
-import javax.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -141,7 +141,7 @@ class KeycloakUserManagementServiceTest {
     }
 
     @Test
-    void findByRoleShouldReturnEmptyListWhenNotFoundExceptionIsThrown() {
+    void findByRoleShouldReturnEmptyListWhenExceptionIsThrown() {
         when(keycloakService.realmRolesResource(any()).get("some-role").getUserMembers(0, MAX_USERS))
             .thenThrow(new NotFoundException());
 

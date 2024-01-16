@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import java.security.Key;
 import java.security.KeyPair;
 import java.util.List;
+import java.util.Map;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
 import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.REALM_ACCESS;
@@ -61,7 +62,7 @@ public class KeycloakSecretKeyProviderTest {
     @Test
     public void supportsNoRoleClaim() {
         //given
-        final Claims emptyClaim = new DefaultClaims();
+        final Claims emptyClaim = new DefaultClaims(Map.of());
 
         //when
         boolean supports = keycloakSecretKeyProvider.supports(signatureAlgorithm, emptyClaim);
@@ -83,15 +84,16 @@ public class KeycloakSecretKeyProviderTest {
     }
 
     private Claims claimsWithRealmAccessRoles() {
-        final Claims roles = new DefaultClaims();
-        roles.put(ROLES_SCOPE, List.of(USER));
+        final Claims roles = new DefaultClaims(Map.of(
+            ROLES_SCOPE, List.of(USER)
+        ));
         return buildRealmClain(roles);
     }
 
     private Claims buildRealmClain(Claims role) {
-        final Claims claims = new DefaultClaims();
-        claims.put(REALM_ACCESS, role);
-        return claims;
+        return new DefaultClaims(Map.of(
+            REALM_ACCESS, role
+        ));
     }
 
 }

@@ -25,6 +25,7 @@ import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
 public class FormAssociationManagementHttpSecurityConfigurer implements HttpSecurityConfigurer {
@@ -36,12 +37,13 @@ public class FormAssociationManagementHttpSecurityConfigurer implements HttpSecu
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/form-association-management").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/form-association-management/{formAssociationId}").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/form-association-management").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/form-association-management").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/form-association-management/{processDefinitionKey}/{formAssociationId}").hasAuthority(ADMIN);
+            http.authorizeHttpRequests((requests) ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/form-association-management")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/v1/form-association-management/{formAssociationId}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(PUT, "/api/v1/form-association-management")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(POST, "/api/v1/form-association-management")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(DELETE, "/api/v1/form-association-management/{processDefinitionKey}/{formAssociationId}")).hasAuthority(ADMIN)
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

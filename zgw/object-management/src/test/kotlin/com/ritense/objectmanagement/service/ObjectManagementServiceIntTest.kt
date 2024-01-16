@@ -46,7 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import java.net.URI
 import java.util.UUID
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

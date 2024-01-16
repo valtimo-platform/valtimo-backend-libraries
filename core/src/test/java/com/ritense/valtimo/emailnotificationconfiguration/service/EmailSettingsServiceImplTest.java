@@ -31,7 +31,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.util.JavaEightUtil.emptyOptional;
 
 class EmailSettingsServiceImplTest {
 
@@ -49,7 +48,7 @@ class EmailSettingsServiceImplTest {
     @Test
     void shouldGetEmptyConfigurationForUser() {
         Optional<EmailNotificationSettings> configuration = emailNotificationService.getSettingsFor(emailAddress);
-        assertThat(configuration, is(emptyOptional()));
+        assertThat(configuration.isEmpty(), is(true));
     }
 
     @Test

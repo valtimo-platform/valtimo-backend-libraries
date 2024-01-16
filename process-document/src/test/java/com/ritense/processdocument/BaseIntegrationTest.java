@@ -24,7 +24,7 @@ import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocument
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.service.CamundaTaskService;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;

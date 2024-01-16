@@ -18,7 +18,7 @@ package com.ritense.form.web.rest;
 
 import com.ritense.form.BaseIntegrationTest;
 import java.util.UUID;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;

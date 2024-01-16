@@ -21,7 +21,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 @Transactional
 internal class BlacklistServiceIntTest : BaseIntegrationTest() {

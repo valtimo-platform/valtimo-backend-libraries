@@ -19,8 +19,8 @@ package com.ritense.processdocument.domain.impl;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.processdocument.domain.ProcessDocumentInstanceId;
 import com.ritense.valtimo.contract.domain.AbstractId;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import java.util.Objects;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 

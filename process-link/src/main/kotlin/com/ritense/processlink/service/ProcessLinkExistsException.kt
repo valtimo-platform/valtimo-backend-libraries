@@ -15,6 +15,6 @@
  */
 package com.ritense.processlink.service
 
-import javax.validation.ValidationException
+import jakarta.validation.ValidationException
 
 class ProcessLinkExistsException(message: String?, val contentsDiffer:Boolean) : ValidationException(message)

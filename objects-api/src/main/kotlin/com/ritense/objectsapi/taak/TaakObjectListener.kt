@@ -42,7 +42,7 @@ import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.springframework.context.event.EventListener
 import java.net.MalformedURLException
 import java.net.URI
-import javax.persistence.EntityNotFoundException
+import jakarta.persistence.EntityNotFoundException
 
 class TaakObjectListener(
     private val openNotificatieService: OpenNotificatieService,

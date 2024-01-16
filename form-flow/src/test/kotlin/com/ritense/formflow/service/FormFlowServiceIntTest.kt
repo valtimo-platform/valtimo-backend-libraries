@@ -23,12 +23,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-internal class FormFlowServiceIntTest: BaseIntegrationTest() {
-    @Autowired
-    lateinit var formFlowService: FormFlowService
-
-    @Autowired
-    lateinit var formFlowInstanceRepository: FormFlowInstanceRepository
+internal class FormFlowServiceIntTest @Autowired constructor(
+    private val formFlowService: FormFlowService,
+    private val formFlowInstanceRepository: FormFlowInstanceRepository
+): BaseIntegrationTest() {
 
     @BeforeEach
     fun setUp() {

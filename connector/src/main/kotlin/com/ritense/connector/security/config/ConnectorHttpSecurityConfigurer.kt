@@ -24,19 +24,21 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class ConnectorHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/connector/instance").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/connector/instance").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/connector/instance").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/connector/type").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/connector/instance/{typeId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/connector/instance/{instanceId}").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/connector/instance/{instanceId}").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/connector/instance")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/connector/instance")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/v1/connector/instance")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/connector/type")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/connector/instance/{typeId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/connector/instance/{instanceId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/connector/instance/{instanceId}")).hasAuthority(ADMIN)
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
