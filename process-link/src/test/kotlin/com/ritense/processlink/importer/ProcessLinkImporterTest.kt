@@ -16,10 +16,10 @@
 
 package com.ritense.processlink.importer
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -42,7 +42,7 @@ class ProcessLinkImporterTest(
         importer = ProcessLinkImporter(
             processLinkService,
             repositoryService,
-            jacksonObjectMapper()
+            MapperSingleton.get()
         )
     }
 

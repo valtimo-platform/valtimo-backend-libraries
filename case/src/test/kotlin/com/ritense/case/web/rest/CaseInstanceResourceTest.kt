@@ -16,10 +16,10 @@
 
 package com.ritense.case.web.rest
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.case.service.CaseInstanceService
 import com.ritense.case.web.rest.dto.CaseListRowDto
 import com.ritense.document.domain.search.SearchWithConfigRequest
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -27,14 +27,14 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 
 class CaseInstanceResourceTest {
     lateinit var mockMvc: MockMvc
@@ -64,7 +64,7 @@ class CaseInstanceResourceTest {
             .perform(
                 MockMvcRequestBuilders
                     .post("/api/v1/case/{caseDefinitionName}/search", caseDefinitionName)
-                    .content(jacksonObjectMapper().writeValueAsString(searchRequest))
+                    .content(MapperSingleton.get().writeValueAsString(searchRequest))
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
             )
             .andDo(MockMvcResultHandlers.print())

@@ -29,7 +29,7 @@ import com.ritense.objectsapi.domain.Object
 import com.ritense.objectsapi.domain.Record
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
 import com.ritense.objectsapi.domain.request.ModifyObjectRequest
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.springframework.core.ParameterizedTypeReference
 import java.net.URI
 import java.time.LocalDate
@@ -73,7 +73,7 @@ class ObjectsApiConnector(
     fun executeCreateObjectRequest(): Object {
         val typeVersion = this.typeVersion.ifBlank { objectsApiProperties.objectType.typeVersion }
         val payload = this.payload.ifEmpty {
-            Mapper.INSTANCE.get().convertValue(rawPayload, object : TypeReference<Map<String, Any>>() {})
+            MapperSingleton.get().convertValue(rawPayload, object : TypeReference<Map<String, Any>>() {})
         }
         return createObject(
             CreateObjectRequest(
@@ -90,7 +90,7 @@ class ObjectsApiConnector(
     fun executeModifyObjectRequest(uuid: UUID): Object {
         val typeVersion = this.typeVersion.ifBlank { objectsApiProperties.objectType.typeVersion }
         val payload = this.payload.ifEmpty {
-            Mapper.INSTANCE.get().convertValue(rawPayload, object : TypeReference<Map<String, Any>>() {})
+            MapperSingleton.get().convertValue(rawPayload, object : TypeReference<Map<String, Any>>() {})
         }
         return modifyObject(
             ModifyObjectRequest(

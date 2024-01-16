@@ -16,6 +16,7 @@
 
 package com.ritense.objectsapi.taak
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
@@ -27,13 +28,13 @@ import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
-import kotlin.contracts.ExperimentalContracts
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
+import kotlin.contracts.ExperimentalContracts
 
 @Configuration
 class TaakObjectAutoConfiguration {
@@ -50,6 +51,7 @@ class TaakObjectAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         zaakService: ZaakService,
         openZaakService: OpenZaakService,
+        objectMapper: ObjectMapper,
     ): TaakObjectListener {
         return TaakObjectListener(
             openNotificatieService,
@@ -61,6 +63,7 @@ class TaakObjectAutoConfiguration {
             processDocumentService,
             zaakService,
             openZaakService,
+            objectMapper
         )
     }
 

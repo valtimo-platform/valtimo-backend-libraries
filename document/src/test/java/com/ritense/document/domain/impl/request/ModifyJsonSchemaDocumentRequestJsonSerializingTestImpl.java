@@ -17,6 +17,7 @@
 package com.ritense.document.domain.impl.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -26,6 +27,7 @@ import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.json.ObjectContent;
 
 import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModifyJsonSchemaDocumentRequestJsonSerializingTestImpl {
@@ -37,7 +39,7 @@ public class ModifyJsonSchemaDocumentRequestJsonSerializingTestImpl {
 
     @BeforeEach
     public void setUp() {
-        objectMapper = new ObjectMapper();
+        objectMapper = MapperSingleton.INSTANCE.get();
         JacksonTester.initFields(this, objectMapper);
         jsonString = """
             {

@@ -28,7 +28,7 @@ import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
@@ -60,7 +60,7 @@ class ZaakObjectListenerTest {
         val currentZaakObjectData = mapOf("person" to
             mapOf("firstname" to TextNode("Current"),
                   "lastname" to TextNode("Value")))
-        val zaakObjectJsonData =  Mapper.INSTANCE.get().valueToTree<JsonNode>(currentZaakObjectData)
+        val zaakObjectJsonData =  MapperSingleton.get().valueToTree<JsonNode>(currentZaakObjectData)
         val objectWrapper = ObjectWrapper(
             objectUrl,
             UUID.randomUUID(),

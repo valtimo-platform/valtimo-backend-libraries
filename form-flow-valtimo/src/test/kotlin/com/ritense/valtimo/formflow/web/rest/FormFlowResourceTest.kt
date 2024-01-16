@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.formflow.web.rest
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
@@ -26,6 +25,7 @@ import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.formflow.BaseTest
 import com.ritense.valtimo.formflow.handler.FormTypeProperties
 import org.junit.jupiter.api.BeforeEach
@@ -58,7 +58,7 @@ class FormFlowResourceTest : BaseTest() {
         formFlowService = mock()
         whenever(formFlowService.getTypeProperties(any())).thenReturn(
             FormTypeProperties(
-                jacksonObjectMapper().readTree(
+                MapperSingleton.get().readTree(
                     readFileAsString("/config/form/user-task-lening-aanvragen.json")
                 )
             )

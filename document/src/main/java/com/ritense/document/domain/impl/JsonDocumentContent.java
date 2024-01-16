@@ -21,12 +21,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.diff.JsonDifferenceService;
 import com.ritense.document.domain.patch.JsonPatchService;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
-import java.util.Objects;
-import java.util.Optional;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import org.hibernate.annotations.Type;
+import java.util.Objects;
+import java.util.Optional;
+
 import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowArrayRemovalOperations;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
@@ -89,7 +92,7 @@ public class JsonDocumentContent implements DocumentContent {
     @Override
     public JsonNode asJson() {
         try {
-            return Mapper.INSTANCE.get().readTree(content);
+            return MapperSingleton.INSTANCE.get().readTree(content);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.repository.DocumentDefinitionRepository;
 import com.ritense.document.service.DocumentDefinitionService;
@@ -150,9 +151,15 @@ public class ProcessDocumentAutoConfiguration {
     public StartEventListenerImpl startEventListener(
         ProcessDocumentService processDocumentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        ApplicationEventPublisher applicationEventPublisher
+        ApplicationEventPublisher applicationEventPublisher,
+        ObjectMapper objectMapper
     ) {
-        return new StartEventListenerImpl(processDocumentService, processDocumentAssociationService, applicationEventPublisher);
+        return new StartEventListenerImpl(
+            processDocumentService,
+            processDocumentAssociationService,
+            applicationEventPublisher,
+            objectMapper
+        );
     }
 
     @Bean
@@ -182,12 +189,14 @@ public class ProcessDocumentAutoConfiguration {
     public ProcessDocumentDeploymentService processDocumentDeploymentService(
             ResourceLoader resourceLoader,
             ProcessDocumentAssociationService processDocumentAssociationService,
-            DocumentDefinitionService documentDefinitionService
+            DocumentDefinitionService documentDefinitionService,
+            ObjectMapper objectMapper
     ) {
         return new CamundaProcessJsonSchemaDocumentDeploymentService(
-                resourceLoader,
-                processDocumentAssociationService,
-                documentDefinitionService
+            resourceLoader,
+            processDocumentAssociationService,
+            documentDefinitionService,
+            objectMapper
         );
     }
 
@@ -196,9 +205,15 @@ public class ProcessDocumentAutoConfiguration {
     public ValueResolverFactory documentJsonValueResolver(
         ProcessDocumentService processDocumentService,
         DocumentService documentService,
-        JsonSchemaDocumentDefinitionService documentDefinitionService
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        ObjectMapper objectMapper
     ) {
-        return new DocumentJsonValueResolverFactory(processDocumentService, documentService, documentDefinitionService);
+        return new DocumentJsonValueResolverFactory(
+            processDocumentService,
+            documentService,
+            documentDefinitionService,
+            objectMapper
+        );
     }
 
     @Bean

@@ -16,15 +16,15 @@
 
 package com.ritense.valtimo.changelog
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
 import com.ritense.valtimo.changelog.domain.ChangesetDetails
+import com.ritense.valtimo.contract.json.MapperSingleton
 
 class TestTypeChangesetDeployer : ChangesetDeployer {
     override fun getPath() = "classpath*:**/*.testtype.json"
 
     override fun getChangelogDetails(filename: String, content: String): List<ChangesetDetails> {
-        val jsonNode = jacksonObjectMapper().readTree(content)
+        val jsonNode = MapperSingleton.get().readTree(content)
         return listOf(
             ChangesetDetails(
                 changesetId = jsonNode.get("changesetId").textValue(),

@@ -17,17 +17,17 @@
 package com.ritense.authorization.permission.condition
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.AuthorizationServiceHolder
-import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.LESS_THAN_OR_EQUAL_TO
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.NOT_EQUAL_TO
+import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.testimpl.RelatedTestEntity
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
@@ -51,7 +51,7 @@ class ContainerPermissionConditionTest {
 
     @BeforeEach
     fun setup() {
-        mapper = jacksonObjectMapper().apply {
+        mapper = MapperSingleton.get().copy().apply {
             this.registerSubtypes(ContainerPermissionCondition::class.java)
             this.registerSubtypes(FieldPermissionCondition::class.java)
             this.registerSubtypes(ExpressionPermissionCondition::class.java)

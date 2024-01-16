@@ -16,7 +16,7 @@
 
 package com.ritense.documentenapi.client
 
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -24,14 +24,14 @@ internal class DocumentStatusTypeTest {
 
     @Test
     fun `should serialize as api value`() {
-        val output = Mapper.INSTANCE.get().writeValueAsString(Wrapper(DocumentStatusType.DEFINITIEF))
+        val output = MapperSingleton.get().writeValueAsString(Wrapper(DocumentStatusType.DEFINITIEF))
         assertEquals("{\"status\":\"definitief\"}", output)
     }
 
     @Test
     fun `should deserialize from api value`() {
         val input = "{\"status\":\"definitief\"}"
-        val output = Mapper.INSTANCE.get().readValue(input, Wrapper::class.java)
+        val output = MapperSingleton.get().readValue(input, Wrapper::class.java)
         assertEquals(DocumentStatusType.DEFINITIEF, output.status)
     }
 

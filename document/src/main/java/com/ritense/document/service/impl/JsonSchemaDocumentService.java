@@ -39,9 +39,11 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.event.DocumentAssigned;
 import com.ritense.document.event.DocumentAssigneeChangedEvent;
+import com.ritense.document.event.DocumentCreated;
 import com.ritense.document.event.DocumentDeleted;
 import com.ritense.document.event.DocumentUnassigned;
 import com.ritense.document.event.DocumentUnassignedEvent;
+import com.ritense.document.event.DocumentUpdated;
 import com.ritense.document.event.DocumentViewed;
 import com.ritense.document.event.DocumentsListed;
 import com.ritense.document.exception.DocumentNotFoundException;
@@ -50,13 +52,10 @@ import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentService;
 import com.ritense.outbox.OutboxService;
-import com.ritense.document.event.DocumentCreated;
-import com.ritense.document.event.DocumentUpdated;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.json.Mapper;
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
@@ -106,7 +105,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final OutboxService outboxService;
 
-    private final ObjectMapper objectMapper = Mapper.INSTANCE.get();
+    private final ObjectMapper objectMapper;
 
     public JsonSchemaDocumentService(
         JsonSchemaDocumentRepository documentRepository,
@@ -116,7 +115,8 @@ public class JsonSchemaDocumentService implements DocumentService {
         UserManagementService userManagementService,
         AuthorizationService authorizationService,
         ApplicationEventPublisher applicationEventPublisher,
-        OutboxService outboxService
+        OutboxService outboxService,
+        ObjectMapper objectMapper
     ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
@@ -126,6 +126,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         this.authorizationService = authorizationService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.outboxService = outboxService;
+        this.objectMapper = objectMapper;
     }
 
     @Override

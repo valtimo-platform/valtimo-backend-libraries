@@ -21,13 +21,13 @@ import com.fasterxml.jackson.databind.node.BooleanNode
 import com.fasterxml.jackson.databind.node.IntNode
 import com.fasterxml.jackson.databind.node.MissingNode
 import com.fasterxml.jackson.databind.node.TextNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.BeforeEach
@@ -57,7 +57,12 @@ internal class DocumentJsonValueResolverTest {
         processDocumentService = mock()
         documentService = mock()
         documentDefinitionService = mock()
-        documentValueResolver = DocumentJsonValueResolverFactory(processDocumentService, documentService, documentDefinitionService)
+        documentValueResolver = DocumentJsonValueResolverFactory(
+            processDocumentService,
+            documentService,
+            documentDefinitionService,
+            MapperSingleton.get()
+        )
 
         processInstanceId = UUID.randomUUID().toString()
         variableScope = DelegateTaskFake()
@@ -457,7 +462,7 @@ internal class DocumentJsonValueResolverTest {
 
         val captor = argumentCaptor<JsonNode>()
         verify(documentService).modifyDocument(eq(document), captor.capture())
-        val objectNode = jacksonObjectMapper().readTree("{\"field\":\"My field\",\"list\":[\"My item 1\",\"My item 2\"]}")
+        val objectNode = MapperSingleton.get().readTree("{\"field\":\"My field\",\"list\":[\"My item 1\",\"My item 2\"]}")
         assertThat(captor.firstValue.at("/myList/0")).isEqualTo(objectNode)
     }
 }

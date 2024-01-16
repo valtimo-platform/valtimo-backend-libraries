@@ -17,8 +17,6 @@
 package com.ritense.connector.web.rest.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.ritense.connector.BaseIntegrationTest
 import com.ritense.connector.config.SpringHandlerInstantiatorImpl
 import com.ritense.connector.domain.ConnectorInstance
@@ -31,21 +29,19 @@ import com.ritense.connector.impl.ObjectApiProperties
 import com.ritense.connector.service.ConnectorService
 import com.ritense.connector.web.rest.request.CreateConnectorInstanceRequest
 import com.ritense.connector.web.rest.result.CreateConnectorInstanceResultSucceeded
-import com.ritense.valtimo.contract.json.serializer.PageSerializer
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.anyString
+import org.mockito.Mockito.`when`
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver
 import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -78,16 +74,16 @@ internal class ConnectorResourceIntTest : BaseIntegrationTest() {
 
     @BeforeEach
     fun init() {
-        mapper = JsonMapper.builder()
-            .addModule(KotlinModule())
-            .build()
+        mapper = MapperSingleton.get().copy()
         mapper.setHandlerInstantiator(springHandlerInstantiatorImpl)
+        val converter = MappingJackson2HttpMessageConverter()
+        converter.objectMapper = mapper
 
         mockMvc = MockMvcBuilders
             .standaloneSetup(connectorResource)
             .alwaysDo<StandaloneMockMvcBuilder>(print())
             .setCustomArgumentResolvers(PageableHandlerMethodArgumentResolver())
-            .setMessageConverters(jacksonMessageConverter())
+            .setMessageConverters(converter)
             .build()
     }
 
@@ -217,17 +213,6 @@ internal class ConnectorResourceIntTest : BaseIntegrationTest() {
             .andExpect(jsonPath("$.connectorTypeInstance.type.id").value(request.typeId.toString()))
             .andExpect(jsonPath("$.connectorTypeInstance.name").value(request.name))
             .andExpect(jsonPath("$.errors").isEmpty)
-    }
-
-    private fun jacksonMessageConverter(): MappingJackson2HttpMessageConverter {
-        val objectMapper = Jackson2ObjectMapperBuilder()
-            .failOnUnknownProperties(false)
-            .serializerByType(Page::class.java, PageSerializer()).build<ObjectMapper>()
-
-        objectMapper.setHandlerInstantiator(springHandlerInstantiatorImpl)
-        val converter = MappingJackson2HttpMessageConverter()
-        converter.objectMapper = objectMapper
-        return converter
     }
 
     private fun <T> any(type: Class<T>): T = Mockito.any(type)

@@ -16,7 +16,6 @@
 
 package com.ritense.notificatiesapi
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.notificatiesapi.client.NotificatiesApiClient
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import com.ritense.plugin.domain.PluginConfiguration
@@ -24,11 +23,12 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
-import java.net.URI
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.net.URI
 
 internal class NotificatiesApiPluginFactoryTest {
 
@@ -38,7 +38,7 @@ internal class NotificatiesApiPluginFactoryTest {
         val client = mock<NotificatiesApiClient>()
         val abonnementLinkRepository = mock<NotificatiesApiAbonnementLinkRepository>()
 
-        whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
+        whenever(pluginService.getObjectMapper()).thenReturn(MapperSingleton.get())
 
         val factory = NotificatiesApiPluginFactory(
             pluginService,
@@ -56,7 +56,7 @@ internal class NotificatiesApiPluginFactoryTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            jacksonObjectMapper()
+            MapperSingleton.get()
                 .readTree(notificatiesApiPluginProperties)
                 .deepCopy(),
             pluginDefinition

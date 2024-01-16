@@ -24,7 +24,7 @@ import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.model.zaak.Eigenschap
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import com.ritense.valtimo.contract.form.DataResolvingContext
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import org.assertj.core.api.Assertions.assertThat
@@ -91,7 +91,7 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
             DataResolvingContext(
                 "house",
                 document.id!!.id,
-                Mapper.INSTANCE.get().createObjectNode()
+                MapperSingleton.get().createObjectNode()
             ),
             "unknownVarName"
         )
@@ -105,7 +105,7 @@ internal class OpenZaakFormFieldDataResolverTest : BaseTest() {
             DataResolvingContext(
                 "house",
                 document.id!!.id,
-                Mapper.INSTANCE.get().createObjectNode()
+                MapperSingleton.get().createObjectNode()
             ),
             "varNaam"
         )

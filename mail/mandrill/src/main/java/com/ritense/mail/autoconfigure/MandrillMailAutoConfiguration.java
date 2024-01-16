@@ -16,6 +16,7 @@
 
 package com.ritense.mail.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.mail.MailDispatcher;
 import com.ritense.mail.config.MandrillProperties;
 import com.ritense.mail.service.BlacklistService;
@@ -50,9 +51,10 @@ public class MandrillMailAutoConfiguration {
     @ConditionalOnMissingBean(WebhookService.class)
     public WebhookService webhookService(
         final MandrillProperties mandrillProperties,
-        final BlacklistService blacklistService
-    ) {
-        return new WebhookService(mandrillProperties, blacklistService);
+        final BlacklistService blacklistService,
+        final ObjectMapper objectMapper
+        ) {
+        return new WebhookService(mandrillProperties, blacklistService, objectMapper);
     }
 
     @Bean

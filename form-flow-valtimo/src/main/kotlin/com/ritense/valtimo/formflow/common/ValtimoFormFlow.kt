@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.MissingNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
@@ -31,6 +30,7 @@ import com.ritense.formflow.expression.FormFlowBean
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.transaction.annotation.Transactional
@@ -106,7 +106,7 @@ open class ValtimoFormFlow(
             "documentDefinitionName"
         ).toString()
 
-        val submission = jacksonObjectMapper().readValue<JsonNode>(formFlowInstance.getSubmissionDataContext())
+        val submission = MapperSingleton.get().readValue<JsonNode>(formFlowInstance.getSubmissionDataContext())
 
         val submissionValues = submissionSavePath.entries
             .associate { it.key to getValue(submission, it.value) }
@@ -163,7 +163,7 @@ open class ValtimoFormFlow(
             "documentId"
         ).toString()
 
-        val submission = jacksonObjectMapper().readValue<JsonNode>(formFlowInstance.getSubmissionDataContext())
+        val submission = MapperSingleton.get().readValue<JsonNode>(formFlowInstance.getSubmissionDataContext())
         val submissionValues = submissionSavePath.entries
             .associate { it.key to getValue(submission, it.value) }
             .filter { it.value !is MissingNode }

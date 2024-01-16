@@ -17,8 +17,6 @@
 package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
@@ -26,6 +24,7 @@ import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
 import com.ritense.documentenapi.event.DocumentStored
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zgw.Rsin
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import okhttp3.mockwebserver.MockResponse
@@ -69,8 +68,7 @@ internal class DocumentenApiClientTest {
     fun setUp() {
         mockDocumentenApi = MockWebServer()
         mockDocumentenApi.start()
-        objectMapper = jacksonObjectMapper()
-        objectMapper.registerModule(JavaTimeModule())
+        objectMapper = MapperSingleton.get()
         outboxService = Mockito.mock(OutboxService::class.java)
     }
 

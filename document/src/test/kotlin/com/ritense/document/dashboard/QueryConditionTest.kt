@@ -1,6 +1,6 @@
 package com.ritense.document.dashboard
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -8,7 +8,7 @@ class QueryConditionTest {
 
     @Test
     fun `should deserialize with number value`() {
-        val value = jacksonObjectMapper().readValue(
+        val value = MapperSingleton.get().readValue(
             """
             {
                 "queryPath": "/xyz",
@@ -25,7 +25,7 @@ class QueryConditionTest {
 
     @Test
     fun `should deserialize with string value`() {
-        val value = jacksonObjectMapper().readValue(
+        val value = MapperSingleton.get().readValue(
             """
             {
                 "queryPath": "/xyz",

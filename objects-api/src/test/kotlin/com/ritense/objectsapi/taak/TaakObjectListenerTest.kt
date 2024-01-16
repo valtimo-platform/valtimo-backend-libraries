@@ -13,6 +13,7 @@ import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
@@ -60,6 +61,7 @@ internal class TaakObjectListenerTest {
             processDocumentService,
             zaakService,
             openZaakService,
+            MapperSingleton.get()
         )
     }
 

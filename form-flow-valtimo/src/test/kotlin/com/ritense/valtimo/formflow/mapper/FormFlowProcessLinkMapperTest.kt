@@ -16,18 +16,15 @@
 
 package com.ritense.valtimo.formflow.mapper
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.exporter.request.FormFlowDefinitionExportRequest
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkExportResponseDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkResponseDto
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkUpdateRequestDto
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,6 +33,9 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 internal class FormFlowProcessLinkMapperTest {
 
@@ -48,7 +48,7 @@ internal class FormFlowProcessLinkMapperTest {
     fun beforeEach() {
         MockitoAnnotations.openMocks(this)
         formFlowProcessLinkMapper = FormFlowProcessLinkMapper(
-            jacksonObjectMapper(),
+            MapperSingleton.get(),
             formFlowService,
         )
     }
