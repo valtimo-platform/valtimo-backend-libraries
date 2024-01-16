@@ -31,10 +31,10 @@ class CamundaBeansPlugin(
         requireNotNull(processEngineConfiguration) { "No process engine configuration found. Failed to register process beans." }
 
         val processBeansAny = processBeans as Map<Any, Any>
-        //val expressionManager = ValtimoExpressionManager(applicationContext, processBeansAny)
         processEngineConfiguration.beans = processBeansAny
         processEngineConfiguration.setExpressionManager(SpringExpressionManager(applicationContext, processBeansAny))
 
+        // Register custom command interceptor to be able to use the beans without authorization
         processEngineConfiguration.setCustomPreCommandInterceptorsTxRequired(
             listOf(ValtimoCommandInterceptor())
         )
