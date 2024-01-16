@@ -33,12 +33,12 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.service.CamundaTaskService
-import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Transactional
 internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {

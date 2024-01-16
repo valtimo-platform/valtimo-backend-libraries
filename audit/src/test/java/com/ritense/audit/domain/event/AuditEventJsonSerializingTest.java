@@ -30,6 +30,7 @@ import org.springframework.boot.test.json.ObjectContent;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AuditEventJsonSerializingTest extends AbstractTestHelper {

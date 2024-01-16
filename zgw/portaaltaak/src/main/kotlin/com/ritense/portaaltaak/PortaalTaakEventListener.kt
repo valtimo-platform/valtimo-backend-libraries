@@ -37,12 +37,12 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
-import java.net.MalformedURLException
-import java.net.URI
-import java.util.UUID
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.context.event.EventListener
+import java.net.MalformedURLException
+import java.net.URI
+import java.util.UUID
 
 open class PortaalTaakEventListener(
     private val objectManagementService: ObjectManagementService,

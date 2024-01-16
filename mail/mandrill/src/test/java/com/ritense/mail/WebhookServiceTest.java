@@ -25,7 +25,9 @@ import com.ritense.mail.service.WebhookService;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
+
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.HARD_BOUNCE;
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.SOFT_BOUNCE;
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.UNSUB;

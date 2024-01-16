@@ -24,13 +24,13 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.form.BaseIntegrationTest
 import com.ritense.valtimo.service.CamundaProcessService
-import java.time.LocalDate
 import org.camunda.bpm.engine.TaskService
 import org.hamcrest.CoreMatchers.hasItem
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 class PrefillFormServiceIntTest @Autowired constructor(
     private val prefillFormService: PrefillFormService,

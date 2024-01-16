@@ -37,9 +37,9 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.valueresolver.exception.ValueResolverValidationException
+import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.UUID
 import java.util.function.Function
-import org.camunda.bpm.engine.delegate.VariableScope
 
 /**
  * This resolver can resolve requestedValues against the Document JSON content

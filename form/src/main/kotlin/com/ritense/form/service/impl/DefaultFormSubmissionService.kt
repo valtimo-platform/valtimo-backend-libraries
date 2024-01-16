@@ -62,11 +62,11 @@ import com.ritense.valtimo.contract.result.OperationError.FromException
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.ValueResolverServiceImpl
-import java.util.UUID
-import kotlin.jvm.optionals.getOrNull
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
 import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 
