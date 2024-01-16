@@ -17,7 +17,6 @@
 package com.ritense.valtimo.formflow.common
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
@@ -257,7 +256,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         formFlowResource.completeStep(
             formFlowInstance.id.id.toString(),
             formFlowInstance.currentFormFlowStepInstanceId!!.id.toString(),
-            if (submission == null) null else jacksonObjectMapper().readTree(submission)
+            if (submission == null) null else objectMapper.readTree(submission)
         )
     }
 

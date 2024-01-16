@@ -17,7 +17,6 @@
 package com.ritense.processlink.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.CustomProcessLink
 import com.ritense.processlink.domain.CustomProcessLinkCreateRequestDto
@@ -56,7 +55,7 @@ internal class ProcessLinkResourceTest {
 
     @BeforeEach
     fun init() {
-        objectMapper = jacksonObjectMapper()
+        objectMapper = MapperSingleton.get()
         processLinkService = mock()
         processLinkMappers = listOf(CustomProcessLinkMapper(objectMapper))
         processLinkResource = ProcessLinkResource(processLinkService, processLinkMappers)

@@ -17,8 +17,6 @@
 package com.ritense.zakenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
@@ -96,8 +94,7 @@ internal class ZakenApiClientTest {
     fun setUp() {
         mockApi = MockWebServer()
         mockApi.start()
-        objectMapper = jacksonObjectMapper()
-        objectMapper.registerModule(JavaTimeModule())
+        objectMapper = MapperSingleton.get()
         outboxService = Mockito.mock(OutboxService::class.java)
     }
 

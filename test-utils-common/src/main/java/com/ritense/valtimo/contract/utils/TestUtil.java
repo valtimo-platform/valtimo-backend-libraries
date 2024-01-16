@@ -16,9 +16,9 @@
 
 package com.ritense.valtimo.contract.utils;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.valtimo.contract.json.MapperSingleton;
+
 import java.io.IOException;
 
 public class TestUtil {
@@ -32,8 +32,6 @@ public class TestUtil {
      */
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
         ObjectMapper mapper = MapperSingleton.INSTANCE.get();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        mapper.findAndRegisterModules();
         return mapper.writeValueAsBytes(object);
     }
 

@@ -16,7 +16,6 @@
 
 package com.ritense.plugin.domain
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.plugin.service.EncryptionService
 import com.ritense.valtimo.contract.json.MapperSingleton
@@ -97,7 +96,7 @@ internal class PluginConfigurationTest {
         val encryptionService = mock<EncryptionService>()
         whenever(encryptionService.encrypt(any())).thenAnswer { it.arguments[0] }
         whenever(encryptionService.decrypt(any())).thenAnswer { it.arguments[0] }
-        configuration.objectMapper = ObjectMapper()
+        configuration.objectMapper = MapperSingleton.get()
         configuration.encryptionService = encryptionService
     }
 

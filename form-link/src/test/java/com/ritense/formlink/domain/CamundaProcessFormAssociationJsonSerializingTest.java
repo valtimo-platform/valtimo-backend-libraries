@@ -19,6 +19,7 @@ package com.ritense.formlink.domain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.formlink.BaseTest;
 import com.ritense.formlink.domain.impl.formassociation.FormAssociations;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
@@ -62,7 +63,7 @@ public class CamundaProcessFormAssociationJsonSerializingTest extends BaseTest {
 
     @BeforeEach
     public void setUp() {
-        objectMapper = new ObjectMapper().findAndRegisterModules();
+        objectMapper = MapperSingleton.INSTANCE.get();
         JacksonTester.initFields(this, objectMapper);
     }
 

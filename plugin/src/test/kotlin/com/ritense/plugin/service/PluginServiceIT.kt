@@ -18,7 +18,6 @@ package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.TestPlugin
@@ -34,7 +33,6 @@ import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
-import com.ritense.valtimo.contract.json.MapperSingleton
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.camunda.community.mockito.delegate.DelegateTaskFake
@@ -93,7 +91,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             PluginConfiguration(
                 PluginConfigurationId.newId(),
                 "title",
-                jacksonObjectMapper().createObjectNode(),
+                objectMapper.createObjectNode(),
                 pluginDefinition
             )
         )
@@ -103,7 +101,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             PluginConfiguration(
                 PluginConfigurationId.newId(),
                 "title",
-                jacksonObjectMapper().createObjectNode(),
+                objectMapper.createObjectNode(),
                 categoryPluginDefinition
             )
         )
@@ -278,7 +276,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "test-action-with-uri-parameter",
-            actionProperties = jacksonObjectMapper().readTree("""{"uriParam": "pv:exampleUrl"}""") as ObjectNode,
+            actionProperties = objectMapper.readTree("""{"uriParam": "pv:exampleUrl"}""") as ObjectNode,
             activityType = ActivityType.SERVICE_TASK_START
         )
 
@@ -295,7 +293,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
     @Transactional
     fun `should invoke all plugin events on a plugin configuration creation, update and deletion`() {
 
-        val pluginProperties = jacksonObjectMapper().readTree(
+        val pluginProperties = objectMapper.readTree(
             """
             {
                 "property1": "test123",
@@ -350,7 +348,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
         assertFailsWith<PluginEventInvocationException> {
             pluginService.createPluginConfiguration(
                 "title",
-                jacksonObjectMapper().readTree(input) as ObjectNode,
+                objectMapper.readTree(input) as ObjectNode,
                 "test-plugin",
             )
         }
@@ -380,7 +378,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
                 id = pluginConfigurationId,
                 title = "My test plugin",
                 pluginDefinitionKey = "auto-deployment-test-plugin",
-                properties = jacksonObjectMapper().readTree(properties) as ObjectNode
+                properties = objectMapper.readTree(properties) as ObjectNode
             )
         )
 
@@ -392,7 +390,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
     @Test
     @Transactional
     fun `should update plugin configuration id`() {
-        val pluginProperties = jacksonObjectMapper().readTree("""{ "property1": "updated" }""") as ObjectNode
+        val pluginProperties = objectMapper.readTree("""{ "property1": "updated" }""") as ObjectNode
         val newPluginConfigurationId = PluginConfigurationId(UUID.fromString("ec9c12f3-5617-4184-88cc-e314dd9f4de2"))
         val update = """
             {
@@ -406,7 +404,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             PluginConfiguration(
                 PluginConfigurationId.newId(),
                 "title",
-                jacksonObjectMapper().readTree(update) as ObjectNode,
+                objectMapper.readTree(update) as ObjectNode,
                 pluginDefinition
             )
         )

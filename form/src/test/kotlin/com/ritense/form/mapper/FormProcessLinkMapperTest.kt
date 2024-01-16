@@ -16,7 +16,6 @@
 
 package com.ritense.form.mapper
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.exporter.request.FormDefinitionExportRequest
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.domain.FormProcessLink
@@ -25,10 +24,7 @@ import com.ritense.form.web.rest.dto.FormProcessLinkCreateRequestDto
 import com.ritense.form.web.rest.dto.FormProcessLinkResponseDto
 import com.ritense.form.web.rest.dto.FormProcessLinkUpdateRequestDto
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
-import java.util.Optional
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,6 +32,10 @@ import org.junit.jupiter.api.assertThrows
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.whenever
+import java.util.Optional
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 internal class FormProcessLinkMapperTest {
 
@@ -48,7 +48,7 @@ internal class FormProcessLinkMapperTest {
     fun beforeEach() {
         MockitoAnnotations.openMocks(this)
         formProcessLinkMapper = FormProcessLinkMapper(
-            jacksonObjectMapper(),
+            MapperSingleton.get(),
             formDefinitionService,
         )
     }

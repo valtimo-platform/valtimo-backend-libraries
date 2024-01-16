@@ -17,7 +17,6 @@
 package com.ritense.objectenapi.service
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.objectenapi.client.ObjectRecord
@@ -39,7 +38,7 @@ import kotlin.test.assertTrue
 internal class ZaakObjectDataResolverTest {
 
     val zaakObjectService = mock<ZaakObjectService>()
-    val resolver = ZaakObjectDataResolver(zaakObjectService, ObjectMapper())
+    val resolver = ZaakObjectDataResolver(zaakObjectService, MapperSingleton.get())
 
     @Test
     fun `should support zaakobject prefix`() {

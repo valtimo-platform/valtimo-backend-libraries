@@ -17,7 +17,6 @@
 package com.ritense.note.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.ritense.audit.service.AuditService
 import com.ritense.authorization.AuthorizationContext
@@ -102,7 +101,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         mockMvc.perform(
             post("/api/v1/document/{documentId}/note", documentId)
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(note))
+                .content(objectMapper.writeValueAsString(note))
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -122,7 +121,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         val responseBody = mockMvc.perform(
             post("/api/v1/document/{documentId}/note", documentId.toString())
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(note))
+                .content(objectMapper.writeValueAsString(note))
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -144,7 +143,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         mockMvc.perform(
             post("/api/v1/document/{documentId}/note", documentId.toString())
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(note))
+                .content(objectMapper.writeValueAsString(note))
         )
             .andDo(print())
             // For some reason, the @ExceptionHandler is not picked up when using mockMvc
@@ -182,7 +181,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         mockMvc.perform(
             put("/api/v1/note/{noteId}", note.id)
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(noteUpdateRequestDto))
+                .content(objectMapper.writeValueAsString(noteUpdateRequestDto))
         )
             .andDo(print())
             .andExpect(status().isOk)

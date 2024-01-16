@@ -18,6 +18,7 @@ package com.ritense.objectsapi.taak
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile
@@ -31,7 +32,6 @@ import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
@@ -54,6 +54,7 @@ class TaakObjectListener(
     private val processDocumentService: ProcessDocumentService,
     private val zaakService: ZaakService,
     private val openZaakService: OpenZaakService,
+    private val objectMapper: ObjectMapper,
 ) {
 
     @EventListener(OpenNotificationEvent::class)
@@ -93,7 +94,7 @@ class TaakObjectListener(
         if (!taakObject.verzondenData.isNullOrEmpty()) {
             val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
             val variableScope = getVariableScope(task)
-            val taakObjectData = MapperSingleton.get().valueToTree<JsonNode>(taakObject.verzondenData)
+            val taakObjectData = objectMapper.valueToTree<JsonNode>(taakObject.verzondenData)
             val resolvedValues = getResolvedValues(task, taakObjectData)
             loadTaakObjectDocuments(processInstanceId, variableScope, taakObjectData)
             handleTaakObjectData(processInstanceId, variableScope, resolvedValues)
@@ -178,7 +179,7 @@ class TaakObjectListener(
         if (valueNode.isMissingNode) {
             throw RuntimeException("Failed to do '$camundaName' for task '${task.taskDefinitionKey}'. Missing data on path '$path'")
         }
-        return MapperSingleton.get().treeToValue(valueNode, Object::class.java)
+        return objectMapper.treeToValue(valueNode, Object::class.java)
     }
 
     private fun getVariableScope(task: CamundaTask): VariableScope {

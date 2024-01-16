@@ -16,8 +16,6 @@
 
 package com.ritense.objectenapi.service
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.MapperSingleton
@@ -36,7 +34,7 @@ internal class ZaakObjectValueResolverFactoryTest {
 
     val zaakObjectService = mock<ZaakObjectService>()
     val processDocumentService = mock<ProcessDocumentService>()
-    val resolverFactory = ZaakObjectValueResolverFactory(zaakObjectService, ObjectMapper(), processDocumentService)
+    val resolverFactory = ZaakObjectValueResolverFactory(zaakObjectService, MapperSingleton.get(), processDocumentService)
 
     @Test
     fun `should support zaakobject prefix`() {

@@ -1,11 +1,11 @@
 package com.ritense.case.web.rest
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.exporter.ExportService
 import com.ritense.importer.ImportService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.utils.TestUtil
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -104,7 +104,7 @@ class CaseDefinitionResourceTest {
                         caseDefinitionName
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content(jacksonObjectMapper().writeValueAsString(caseSettingsDto))
+                    .content(MapperSingleton.get().writeValueAsString(caseSettingsDto))
             )
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)

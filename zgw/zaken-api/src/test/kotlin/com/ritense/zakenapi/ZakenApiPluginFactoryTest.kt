@@ -16,22 +16,21 @@
 
 package com.ritense.zakenapi
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import kotlin.test.assertEquals
 
 internal class ZakenApiPluginFactoryTest {
 
@@ -40,7 +39,7 @@ internal class ZakenApiPluginFactoryTest {
         val pluginService: PluginService = mock()
         val authenticationMock = mock<ZakenApiAuthentication>()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authenticationMock)
-        whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
+        whenever(pluginService.getObjectMapper()).thenReturn(MapperSingleton.get())
 
         val client: ZakenApiClient = mock()
         val zaakUrlProvider: ZaakUrlProvider = mock()
@@ -65,7 +64,7 @@ internal class ZakenApiPluginFactoryTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().readTree(zakenApiPluginProperties) as ObjectNode,
+            MapperSingleton.get().readTree(zakenApiPluginProperties) as ObjectNode,
             pluginDefinition
         )
 

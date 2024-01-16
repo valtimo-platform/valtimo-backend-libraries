@@ -16,15 +16,14 @@
 
 package com.ritense.zakenapi.domain
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 class ZaakResponseTest {
-    private val objectMapper = jacksonObjectMapper()
-        .findAndRegisterModules()
+    private val objectMapper = MapperSingleton.get()
 
     @Test
     fun `should deserialize JSON into ZaakResponse`() {

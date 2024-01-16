@@ -35,7 +35,6 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService
-import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.resource.Resource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -108,7 +107,7 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
     private fun startCreateBesluitProcess(content: String): Document {
         val newDocumentRequest = NewDocumentRequest(
             "testschema",
-            MapperSingleton.get().readTree(content)
+            objectMapper.readTree(content)
         )
         return runWithoutAuthorization {
             processDocumentService.newDocumentAndStartProcess(

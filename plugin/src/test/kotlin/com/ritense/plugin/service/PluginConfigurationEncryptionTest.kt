@@ -16,7 +16,6 @@
 
 package com.ritense.plugin.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -48,7 +47,7 @@ internal class PluginConfigurationEncryptionTest {
 
         listener = PluginConfigurationEntityListener(
             encryptionService,
-            ObjectMapper()
+            MapperSingleton.get()
         )
 
         val props = mutableSetOf<PluginProperty>()

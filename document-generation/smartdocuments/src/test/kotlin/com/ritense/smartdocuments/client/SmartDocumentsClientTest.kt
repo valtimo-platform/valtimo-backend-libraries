@@ -23,6 +23,7 @@ import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.DocumentsStructure
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import java.time.Instant
 import java.util.concurrent.TimeUnit.MILLISECONDS
@@ -65,7 +66,8 @@ internal class SmartDocumentsClientTest : BaseTest() {
         )
 
         temporaryResourceStorageService = spy( TemporaryResourceStorageService(
-            uploadProperties = ValtimoUploadProperties()
+            uploadProperties = ValtimoUploadProperties(),
+            objectMapper = MapperSingleton.get(),
         ))
 
         client = spy( SmartDocumentsClient(

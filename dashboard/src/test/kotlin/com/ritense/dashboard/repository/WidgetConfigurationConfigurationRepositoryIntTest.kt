@@ -16,7 +16,7 @@
 
 package com.ritense.dashboard.repository
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.dashboard.BaseIntegrationTest
 import com.ritense.dashboard.domain.Dashboard
 import com.ritense.dashboard.domain.WidgetConfiguration
@@ -35,6 +35,9 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
     @Autowired
     lateinit var widgetConfigurationRepository: WidgetConfigurationRepository
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     @WithMockUser(username = USER_EMAIL)
     @Test
     fun `should save and get widget configuration with dashboard`() {
@@ -52,9 +55,9 @@ class WidgetConfigurationConfigurationRepositoryIntTest : BaseIntegrationTest() 
                 title = "Doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
-                dataSourceProperties = jacksonObjectMapper().createObjectNode(),
+                dataSourceProperties = objectMapper.createObjectNode(),
                 displayType = "gauge",
-                displayTypeProperties = jacksonObjectMapper().createObjectNode(),
+                displayTypeProperties = objectMapper.createObjectNode(),
                 order = 2
             )
         )

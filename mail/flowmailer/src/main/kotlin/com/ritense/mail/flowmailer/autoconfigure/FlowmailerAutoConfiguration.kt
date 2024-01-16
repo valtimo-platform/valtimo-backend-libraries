@@ -26,7 +26,6 @@ import com.ritense.mail.flowmailer.connector.FlowmailerConnectorProperties
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
 import com.ritense.mail.flowmailer.service.FlowmailerTokenService
 import com.ritense.resource.service.ResourceService
-import com.ritense.valtimo.contract.json.MapperSingleton
 import org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -52,7 +51,7 @@ class FlowmailerAutoConfiguration {
         flowmailerProperties: FlowmailerProperties,
         flowmailerTokenService: FlowmailerTokenService,
         restTemplate: RestTemplate,
-        objectMapper: ObjectMapper = MapperSingleton.get()
+        objectMapper: ObjectMapper
     ): MailDispatcher {
         return FlowmailerMailDispatcher(flowmailerProperties, flowmailerTokenService, restTemplate, objectMapper)
     }

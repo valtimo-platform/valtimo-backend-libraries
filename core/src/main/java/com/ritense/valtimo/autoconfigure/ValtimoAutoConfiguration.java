@@ -78,6 +78,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
 import javax.persistence.EntityManager;
 import java.util.Collection;
 import java.util.Optional;
@@ -320,8 +321,16 @@ public class ValtimoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(UserResource.class)
-    public UserResource userResource(UserManagementService userManagementService, UserSettingsService userSettingsService) {
-        return new UserResource(userManagementService, userSettingsService);
+    public UserResource userResource(
+        UserManagementService userManagementService,
+        UserSettingsService userSettingsService,
+        ObjectMapper objectMapper
+    ) {
+        return new UserResource(
+            userManagementService,
+            userSettingsService,
+            objectMapper
+        );
     }
 
     @Bean

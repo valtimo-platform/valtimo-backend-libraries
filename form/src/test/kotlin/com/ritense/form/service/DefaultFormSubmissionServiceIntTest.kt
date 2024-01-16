@@ -17,7 +17,7 @@
 package com.ritense.form.service
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.service.impl.JsonSchemaDocumentService
@@ -40,7 +40,8 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
     private val processLinkService: ProcessLinkService,
     private val documentService: JsonSchemaDocumentService,
     private val processService: CamundaProcessService,
-    private val testValueResolverFactory: TestValueResolverFactory
+    private val testValueResolverFactory: TestValueResolverFactory,
+    private val objectMapper: ObjectMapper,
 ) : BaseIntegrationTest() {
 
 
@@ -66,7 +67,7 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
 
         val document = runWithoutAuthorization { documentService.get(submissionResult.documentId()) }
         val businessKey = document.id.id.toString()
-        val json = jacksonObjectMapper().writeValueAsString(document.content().asJson())
+        val json = objectMapper.writeValueAsString(document.content().asJson())
         assertThat(json, hasJsonPath("""${'$'}.personalInformation.firstName""", equalTo("John")))
 
         val processExecution = runWithoutAuthorization {
@@ -85,7 +86,7 @@ class DefaultFormSubmissionServiceIntTest @Autowired constructor(
     }
 
     private fun createFormData(): JsonNode {
-        return jacksonObjectMapper().readTree("""
+        return objectMapper.readTree("""
             {
                 "vrDocFirstName": "John",
                 "vrPvLastName": "Doe",

@@ -17,7 +17,6 @@
 package com.ritense.objectenapi.web.rest
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
@@ -35,10 +34,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -197,7 +196,7 @@ internal class ZaakObjectResourceTest {
         val objectManagementId = UUID.randomUUID()
         val data = """{"key": 1, "value":1}"""
 
-        val actualObj: JsonNode = jacksonObjectMapper().readTree(data)
+        val actualObj: JsonNode = MapperSingleton.get().readTree(data)
 
         val url = URI("http://example.com/object/123")
 
@@ -240,7 +239,7 @@ internal class ZaakObjectResourceTest {
         val data = """{"key": 1, "value":1}"""
         val objectUrl = URI("http://example.com/object/123")
 
-        val actualObj: JsonNode = jacksonObjectMapper().readTree(data)
+        val actualObj: JsonNode = MapperSingleton.get().readTree(data)
 
         val updatedObjectUrl = URI("http://example.com/object/456")
 

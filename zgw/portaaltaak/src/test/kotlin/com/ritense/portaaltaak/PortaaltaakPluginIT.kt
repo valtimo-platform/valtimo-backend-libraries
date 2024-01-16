@@ -17,9 +17,8 @@
 package com.ritense.portaaltaak
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath
 import com.ritense.BaseIntegrationTest
@@ -109,6 +108,9 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     @Autowired
     lateinit var taskService: CamundaTaskService
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     lateinit var server: MockWebServer
 
     lateinit var processDefinitionId: String
@@ -124,8 +126,6 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     lateinit var objectManagement: ObjectManagement
 
     protected var executedRequests: MutableList<RecordedRequest> = mutableListOf()
-
-    private val objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
 
     @BeforeEach
     internal fun setUp() {

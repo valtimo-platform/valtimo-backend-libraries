@@ -17,24 +17,34 @@
 package com.ritense.formflow.json
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
+import java.time.format.DateTimeFormatter
 
 object MapperSingleton {
-    private var mapper: ObjectMapper = ObjectMapper()
+
+    const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+
+    val customizer = Jackson2ObjectMapperBuilderCustomizer { builder ->
+        builder.simpleDateFormat(DATE_TIME_FORMAT)
+        builder.serializers(LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
+        builder.defaultViewInclusion(false)
+    }
+
+    private var mapper: ObjectMapper
 
     fun set(mapper: ObjectMapper) {
-        this.mapper = mapper
+        MapperSingleton.mapper = mapper
     }
 
     fun get(): ObjectMapper = mapper
 
     init {
-        mapper
-            .findAndRegisterModules()
-            .registerModule(JavaTimeModule())
-            .registerModule(KotlinModule.Builder().build())
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        val builder = Jackson2ObjectMapperBuilder()
+        customizer.customize(builder)
+        builder.findModulesViaServiceLoader(true)
+        mapper = builder.build()
     }
+
 }

@@ -151,9 +151,15 @@ public class ProcessDocumentAutoConfiguration {
     public StartEventListenerImpl startEventListener(
         ProcessDocumentService processDocumentService,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        ApplicationEventPublisher applicationEventPublisher
+        ApplicationEventPublisher applicationEventPublisher,
+        ObjectMapper objectMapper
     ) {
-        return new StartEventListenerImpl(processDocumentService, processDocumentAssociationService, applicationEventPublisher);
+        return new StartEventListenerImpl(
+            processDocumentService,
+            processDocumentAssociationService,
+            applicationEventPublisher,
+            objectMapper
+        );
     }
 
     @Bean

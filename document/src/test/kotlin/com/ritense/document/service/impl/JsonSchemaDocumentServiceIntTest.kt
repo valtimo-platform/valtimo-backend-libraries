@@ -16,7 +16,6 @@
 package com.ritense.document.service.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
@@ -270,7 +269,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
     @WithMockUser(username = USERNAME, authorities = [ADMIN])
     fun `should send outboxMessage when updating document`() {
         val document = createDocument("""{"street": "Admin street"}""")
-        val modifiedContent = jacksonObjectMapper().readTree("""{"street": "MODIFIED street"}""")
+        val modifiedContent = objectMapper.readTree("""{"street": "MODIFIED street"}""")
         val documentRequest = ModifyDocumentRequest.create(document, modifiedContent)
         reset(outboxService)
 
