@@ -1,19 +1,25 @@
 dependencies {
-    api(platform(project(":dependencies:valtimo-dependency-versions")))
+    implementation(platform(project(":dependencies:valtimo-dependency-versions")))
 
     implementation(project(":dependencies:valtimo-gzac-dependencies"))
     implementation(project(":mail:local-mail"))
     implementation(project(":resource:openzaak-resource"))
     implementation(project(":resource:temporary-resource-storage"))
     implementation(project(":document-generation:smartdocuments"))
+    implementation(project(":zgw:portaaltaak"))
 
     // Database
     implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
 
+    if (System.getProperty("os.arch") == "aarch64") {
+        runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.104.Final") {
+            artifact { classifier = "osx-aarch_64" }
+        }
+    }
+
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
-
 }
 
 apply from: "gradle/publishing.gradle"

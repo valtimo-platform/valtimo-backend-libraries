@@ -107,7 +107,7 @@ dependencies {
     implementation "org.hibernate.orm:hibernate-envers:${hibernateCoreVersion}"
 
     // Shedlock
-    implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}"
+    api "net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}"
     implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:${shedlockVersion}"
 
     implementation('com.zaxxer:HikariCP') {

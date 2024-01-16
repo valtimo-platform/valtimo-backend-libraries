@@ -39,36 +39,12 @@ dependencies {
     api(project(":plugin-valtimo"))
     api(project(":process-document"))
     api(project(":process-link"))
-    api(project(":search"))
     api(project(":resource:temporary-resource-storage"))
+    api(project(":search"))
     api(project(":value-resolver"))
     api(project(":web"))
 
-    api("org.springframework.security:spring-security-core")
-    api("org.springframework.boot:spring-boot")
-    api("org.springframework.data:spring-data-commons")
-    api("jakarta.inject:jakarta.inject-api")
-
-    api("org.springframework.boot:spring-boot-starter")
-    api("org.springframework.boot:spring-boot-starter-web")
-    api("org.springframework.boot:spring-boot-starter-actuator")
-    api("org.springframework.boot:spring-boot-starter-data-jpa")
-    api("org.springframework.boot:spring-boot-starter-security")
-    api("org.springframework.boot:spring-boot-starter-validation")
-
-    api("com.fasterxml.jackson.module:jackson-module-blackbird")
-    api("com.fasterxml.jackson.module:jackson-module-parameter-names")
-    api("com.fasterxml.jackson.module:jackson-module-jaxb-annotations")
-    api("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-
-    api("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    api("org.jetbrains.kotlin:kotlin-reflect")
-
     api("io.github.microutils:kotlin-logging")
-
-    //ShedLock
-    api("net.javacrumbs.shedlock:shedlock-spring")
-    api("net.javacrumbs.shedlock:shedlock-provider-jdbc-template")
 
     api("io.netty:netty-resolver-dns-native-macos") {
         artifact { classifier = "osx-aarch_64" }
