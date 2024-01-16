@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 
+@Deprecated("Since 11.2.0", ReplaceWith("com.ritense.valtimo.contract.json.MapperSingleton"))
 object Mapper {
 
     private val mapper = ObjectMapper()

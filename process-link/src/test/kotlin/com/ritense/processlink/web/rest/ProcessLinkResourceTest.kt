@@ -25,7 +25,7 @@ import com.ritense.processlink.domain.CustomProcessLinkMapper
 import com.ritense.processlink.domain.CustomProcessLinkUpdateRequestDto
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -128,7 +128,7 @@ internal class ProcessLinkResourceTest {
             post("/api/v1/process-link")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(Mapper.INSTANCE.get().writeValueAsString(processLinkDto))
+                .content(MapperSingleton.get().writeValueAsString(processLinkDto))
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())
@@ -147,7 +147,7 @@ internal class ProcessLinkResourceTest {
             put("/api/v1/process-link")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(Mapper.INSTANCE.get().writeValueAsString(processLinkDto))
+                .content(MapperSingleton.get().writeValueAsString(processLinkDto))
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())

@@ -26,6 +26,7 @@ import com.ritense.processdocument.BaseTest
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -78,7 +79,8 @@ internal class DocumentDelegateServiceTest : BaseTest() {
             processDocumentService,
             documentService,
             jsonSchemaDocumentService,
-            userManagementService
+            userManagementService,
+            MapperSingleton.get()
         )
         delegateExecutionFake =
             DelegateExecutionFake("id").withProcessBusinessKey("56f29315-c581-4c26-9b70-8bc818e8c86e")

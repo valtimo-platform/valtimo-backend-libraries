@@ -22,6 +22,7 @@ import com.ritense.mail.domain.webhook.MandrillMessageEventMessage;
 import com.ritense.mail.domain.webhook.MandrillWebhookRequest;
 import com.ritense.mail.service.BlacklistService;
 import com.ritense.mail.service.WebhookService;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.io.IOException;
@@ -50,7 +51,11 @@ public class WebhookServiceTest {
     public void setUp() {
         blacklistService = mock(BlacklistService.class);
         mandrillProperties = mock(MandrillProperties.class);
-        webhookService = new WebhookService(mandrillProperties, blacklistService);
+        webhookService = new WebhookService(
+            mandrillProperties,
+            blacklistService,
+            MapperSingleton.INSTANCE.get()
+        );
     }
 
     @Test

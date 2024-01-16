@@ -18,6 +18,7 @@ package com.ritense.form.service
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -27,7 +28,6 @@ import com.ritense.document.domain.patch.JsonPatchFilterFlag
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentService
 import com.ritense.form.domain.FormIoFormDefinition
-import com.ritense.form.domain.Mapper
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.camunda.domain.CamundaExecution
@@ -51,7 +51,8 @@ class PrefillFormService(
     private val taskService: CamundaTaskService,
     private val formFieldDataResolvers: List<FormFieldDataResolver>,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
-    private val valueResolverService: ValueResolverService
+    private val valueResolverService: ValueResolverService,
+    private val objectMapper: ObjectMapper
 ) {
 
     fun getPrefilledFormDefinition(
@@ -202,7 +203,7 @@ class PrefillFormService(
                                     externalFormFieldType + FormIoFormDefinition.EXTERNAL_FORM_FIELD_TYPE_SEPARATOR + contentItem.name
                                 dataNode.set<JsonNode>(
                                     fieldName,
-                                    Mapper.INSTANCE.get().valueToTree(externalDataMap[contentItem.name])
+                                    objectMapper.valueToTree(externalDataMap[contentItem.name])
                                 )
                                 externalDataMap.remove(contentItem.name)
                             }
@@ -215,7 +216,7 @@ class PrefillFormService(
                             JsonPointerHelper.appendJsonPointerTo(
                                 prefillDataNode,
                                 externalContentItem.jsonPointer,
-                                Mapper.INSTANCE.get().valueToTree(externalDataMap[externalContentItem.name])
+                                objectMapper.valueToTree(externalDataMap[externalContentItem.name])
                             )
                         }
                         formDefinition.preFill(prefillDataNode)
@@ -230,7 +231,7 @@ class PrefillFormService(
         extendedDocumentContent: JsonNode
     ) {
         val taskVariables = runWithoutAuthorization { taskService.getVariables(taskInstanceId) }
-        val placeholders = Mapper.INSTANCE.get().valueToTree<ObjectNode>(taskVariables)
+        val placeholders = objectMapper.valueToTree<ObjectNode>(taskVariables)
         formDefinition.preFillWith("pv", taskVariables)
         prePreFillTransform(formDefinition, placeholders, extendedDocumentContent)
     }

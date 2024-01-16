@@ -8,7 +8,7 @@ import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementAngu
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormFlowIdLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementFormIdLink
 import com.ritense.formlink.domain.impl.formassociation.formlink.BpmnElementUrlLink
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import liquibase.change.custom.CustomTaskChange
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
@@ -32,7 +32,7 @@ internal class MigrationV2Table : CustomTaskChange {
         while (result.next()) {
             val processDefinitionKey = result.getString("process_definition_key")
             val formAssociationsJson = result.getString("form_associations")
-            val formAssociations: List<FormAssociation> = Mapper.INSTANCE.get().readValue(formAssociationsJson)
+            val formAssociations: List<FormAssociation> = MapperSingleton.get().readValue(formAssociationsJson)
             logger.info("Processing formAssociations json:\n${formAssociations}")
             formAssociations.forEach { formAssociation ->
                 if (formAssociationExists(connection, processDefinitionKey, formAssociation)) {

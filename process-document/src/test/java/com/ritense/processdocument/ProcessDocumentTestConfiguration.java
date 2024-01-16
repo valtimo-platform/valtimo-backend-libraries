@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.config.DeadlockService;
 import com.ritense.resource.service.ResourceService;
@@ -50,9 +51,13 @@ public class ProcessDocumentTestConfiguration {
         @ProcessBean
         @Bean
         public DeadlockService deadlockService(
-            DocumentService documentService
+            DocumentService documentService,
+            ObjectMapper objectMapper
         ) {
-            return new DeadlockService(documentService);
+            return new DeadlockService(
+                documentService,
+                objectMapper
+            );
         }
 
     }

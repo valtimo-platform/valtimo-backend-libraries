@@ -27,7 +27,6 @@ import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.ZaakTypeLinkService
-import com.ritense.openzaak.service.impl.Mapper
 import com.ritense.openzaak.service.impl.model.documenten.InformatieObject
 import com.ritense.openzaak.service.result.CreateServiceTaskHandlerResult
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
@@ -36,6 +35,7 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.resource.Resource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -108,7 +108,7 @@ class BesluitServiceTaskListenerIntTest : BaseIntegrationTest() {
     private fun startCreateBesluitProcess(content: String): Document {
         val newDocumentRequest = NewDocumentRequest(
             "testschema",
-            Mapper.get().readTree(content)
+            MapperSingleton.get().readTree(content)
         )
         return runWithoutAuthorization {
             processDocumentService.newDocumentAndStartProcess(

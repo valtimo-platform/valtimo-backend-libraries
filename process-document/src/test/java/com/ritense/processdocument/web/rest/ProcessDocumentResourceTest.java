@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.valtimo.contract.json.Mapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.service.result.CreateDocumentResult;
@@ -118,7 +118,7 @@ class ProcessDocumentResourceTest extends BaseTest {
 
         mockMvc = MockMvcBuilders.standaloneSetup(processDocumentResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-            .setMessageConverters(new MappingJackson2HttpMessageConverter(Mapper.INSTANCE.get()))
+            .setMessageConverters(new MappingJackson2HttpMessageConverter(MapperSingleton.INSTANCE.get()))
             .build();
 
         documentDefinitionId = JsonSchemaDocumentDefinitionId.newId(DOCUMENT_DEFINITION_NAME);
@@ -221,7 +221,7 @@ class ProcessDocumentResourceTest extends BaseTest {
             .andExpect(jsonPath("$.[0].version").value(1))
             .andExpect(jsonPath("$.[0].latestVersion").value(2))
             .andExpect(jsonPath("$.[0].startedBy").value("John Doe"))
-            .andExpect(jsonPath("$.[0].startedOn").value("2024-01-01T12:10:00"));
+            .andExpect(jsonPath("$.[0].startedOn").value("2024-01-01T12:10:00.000Z"));
     }
 
     @Test

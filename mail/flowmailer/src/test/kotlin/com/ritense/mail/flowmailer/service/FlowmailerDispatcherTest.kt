@@ -20,7 +20,7 @@ import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.valtimo.contract.basictype.EmailAddress
 import com.ritense.valtimo.contract.basictype.SimpleName
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.mail.model.MailMessageStatus
 import com.ritense.valtimo.contract.mail.model.value.Recipient
 import org.apache.commons.lang3.NotImplementedException
@@ -58,7 +58,7 @@ class FlowmailerDispatcherTest : BaseTest() {
             flowmailerProperties,
             flowmailerTokenService,
             restTemplate,
-            Mapper.INSTANCE.get()
+            MapperSingleton.get()
         )
     }
 

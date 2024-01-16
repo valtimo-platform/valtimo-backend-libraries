@@ -18,7 +18,7 @@ package com.ritense.resource.service
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.ritense.resource.domain.MetadataType
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.upload.MimeTypeDeniedException
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import java.io.BufferedInputStream
@@ -65,7 +65,7 @@ class TemporaryResourceStorageService(
             MetadataType.FILE_PATH.key to dataFile.absolutePathString()
         )
         val metaDataFile = Files.createTempFile(tempDir, "${random.nextLong().toULong()}-", ".json")
-        metaDataFile.toFile().writeText(Mapper.INSTANCE.get().writeValueAsString(metaDataContent))
+        metaDataFile.toFile().writeText(MapperSingleton.get().writeValueAsString(metaDataContent))
 
         return metaDataFile.nameWithoutExtension
     }
@@ -76,7 +76,7 @@ class TemporaryResourceStorageService(
             return false
         }
         val typeRef = object : TypeReference<Map<String, Any>>() {}
-        val metadata = Mapper.INSTANCE.get().readValue(metaDataFile.readText(), typeRef)
+        val metadata = MapperSingleton.get().readValue(metaDataFile.readText(), typeRef)
         val dataFile = Path(metadata[MetadataType.FILE_PATH.key] as String)
         val deleted = Files.deleteIfExists(dataFile)
         Files.deleteIfExists(metaDataFile)
@@ -99,7 +99,7 @@ class TemporaryResourceStorageService(
             throw IllegalArgumentException("No resource found with id '$id'")
         }
         val typeRef = object : TypeReference<Map<String, Any>>() {}
-        return Mapper.INSTANCE.get().readValue(metaDataFile.readText(), typeRef)
+        return MapperSingleton.get().readValue(metaDataFile.readText(), typeRef)
             .filter {
                 !filterPath || it.key != MetadataType.FILE_PATH.key
             }

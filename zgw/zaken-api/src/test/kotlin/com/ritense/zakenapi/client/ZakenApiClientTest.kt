@@ -22,7 +22,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.ZakenApiAuthentication
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResponse
@@ -144,7 +144,7 @@ internal class ZakenApiClientTest {
 
         val recordedRequest = mockApi.takeRequest()
         val requestString = recordedRequest.body.readUtf8()
-        val parsedOutput = Mapper.INSTANCE.get().readValue(requestString, Map::class.java)
+        val parsedOutput = MapperSingleton.get().readValue(requestString, Map::class.java)
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
 

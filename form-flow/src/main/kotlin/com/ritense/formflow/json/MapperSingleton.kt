@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-package com.ritense.connector.config
+package com.ritense.formflow.json
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.valtimo.contract.json.MapperSingleton
-class ObjectMapperHolder(springHandlerInstantiatorImpl: SpringHandlerInstantiatorImpl) {
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 
-    companion object {
-        lateinit var objectMapper: ObjectMapper
+object MapperSingleton {
+    private var mapper: ObjectMapper = ObjectMapper()
+
+    fun set(mapper: ObjectMapper) {
+        this.mapper = mapper
     }
 
+    fun get(): ObjectMapper = mapper
+
     init {
-        objectMapper = MapperSingleton.get()
-        objectMapper.setHandlerInstantiator(springHandlerInstantiatorImpl)
+        mapper
+            .findAndRegisterModules()
+            .registerModule(JavaTimeModule())
+            .registerModule(KotlinModule.Builder().build())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     }
 }

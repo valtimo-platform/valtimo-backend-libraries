@@ -56,7 +56,7 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.json.Mapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
@@ -106,7 +106,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final OutboxService outboxService;
 
-    private final ObjectMapper objectMapper = Mapper.INSTANCE.get();
+    private final ObjectMapper objectMapper;
 
     public JsonSchemaDocumentService(
         JsonSchemaDocumentRepository documentRepository,
@@ -116,7 +116,8 @@ public class JsonSchemaDocumentService implements DocumentService {
         UserManagementService userManagementService,
         AuthorizationService authorizationService,
         ApplicationEventPublisher applicationEventPublisher,
-        OutboxService outboxService
+        OutboxService outboxService,
+        ObjectMapper objectMapper
     ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
@@ -126,6 +127,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         this.authorizationService = authorizationService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.outboxService = outboxService;
+        this.objectMapper = objectMapper;
     }
 
     @Override

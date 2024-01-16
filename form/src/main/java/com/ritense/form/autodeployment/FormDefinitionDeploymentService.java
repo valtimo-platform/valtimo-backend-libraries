@@ -18,8 +18,8 @@ package com.ritense.form.autodeployment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.form.domain.FormDefinition;
-import com.ritense.form.domain.Mapper;
 import com.ritense.form.domain.event.FormsAutoDeploymentFinishedEvent;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
@@ -46,13 +46,18 @@ public class FormDefinitionDeploymentService {
     private final FormDefinitionService formDefinitionService;
     private final FormDefinitionRepository formDefinitionRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final ObjectMapper objectMapper;
 
-    public FormDefinitionDeploymentService(ResourceLoader resourceLoader, FormDefinitionService formDefinitionService,
-        FormDefinitionRepository formDefinitionRepository, ApplicationEventPublisher applicationEventPublisher) {
+    public FormDefinitionDeploymentService(
+        ResourceLoader resourceLoader, FormDefinitionService formDefinitionService,
+        FormDefinitionRepository formDefinitionRepository, ApplicationEventPublisher applicationEventPublisher,
+        ObjectMapper objectMapper
+    ) {
         this.resourceLoader = resourceLoader;
         this.formDefinitionService = formDefinitionService;
         this.formDefinitionRepository = formDefinitionRepository;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.objectMapper = objectMapper;
     }
 
     void deployAllFromResourceFiles() {
@@ -113,7 +118,7 @@ public class FormDefinitionDeploymentService {
     }
 
     private JsonNode getJson(String rawJson) throws JsonProcessingException {
-        return Mapper.INSTANCE.get().readTree(rawJson);
+        return objectMapper.readTree(rawJson);
     }
 
     private String getFormName(Resource resource) {

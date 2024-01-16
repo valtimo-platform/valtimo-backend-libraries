@@ -16,6 +16,7 @@
 
 package com.ritense.objectmanagement.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.objectmanagement.autodeployment.ObjectManagementDefinitionDeploymentService
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
@@ -92,13 +93,15 @@ class ObjectManagementAutoConfiguration {
         resourceLoader: ResourceLoader,
         objectManagementService: ObjectManagementService,
         objectManagementRepository: ObjectManagementRepository,
-        applicationEventPublisher: ApplicationEventPublisher
+        applicationEventPublisher: ApplicationEventPublisher,
+        objectMapper: ObjectMapper,
     ): ObjectManagementDefinitionDeploymentService {
         return ObjectManagementDefinitionDeploymentService(
             resourceLoader,
             objectManagementService,
             objectManagementRepository,
-            applicationEventPublisher
+            applicationEventPublisher,
+            objectMapper,
         )
     }
 

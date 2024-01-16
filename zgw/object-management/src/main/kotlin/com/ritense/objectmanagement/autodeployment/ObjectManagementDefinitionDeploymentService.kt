@@ -15,7 +15,7 @@
  */
 package com.ritense.objectmanagement.autodeployment
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.domain.ObjectManagementConfigurationAutoDeploymentFinishedEvent
@@ -36,7 +36,8 @@ class ObjectManagementDefinitionDeploymentService(
     private val resourceLoader: ResourceLoader,
     private val objectManagementService: ObjectManagementService,
     private val objectManagementRepository: ObjectManagementRepository,
-    private val applicationEventPublisher: ApplicationEventPublisher
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val objectMapper: ObjectMapper,
 ) {
     @EventListener(ApplicationReadyEvent::class)
     @Order(Ordered.LOWEST_PRECEDENCE-2)
@@ -47,7 +48,7 @@ class ObjectManagementDefinitionDeploymentService(
         val objectManagementList = resources.map { resource ->
             try {
                 require(resource != null)
-                val objectManagement = jacksonObjectMapper().readValue<ObjectManagement>(resource.inputStream)
+                val objectManagement = objectMapper.readValue<ObjectManagement>(resource.inputStream)
                 if (
                     objectManagementRepository.findByObjecttypeId(objectManagement.objecttypeId) == null &&
                     objectManagementRepository.findByTitle(objectManagement.title) == null

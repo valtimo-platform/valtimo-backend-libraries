@@ -18,7 +18,7 @@ package com.ritense.processdocument.domain.impl.listener;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.document.domain.impl.Mapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.document.domain.impl.request.DocumentRelationRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.relation.DocumentRelationType;
@@ -122,7 +122,7 @@ public class StartEventListenerImpl extends ReactorExecutionListener implements 
         final String rawJsonData = (String) execution.getVariable(PAYLOAD);
         JsonNode jsonData;
         try {
-            jsonData = Mapper.INSTANCE.get().readTree(rawJsonData);
+            jsonData = MapperSingleton.INSTANCE.get().readTree(rawJsonData);
         } catch (IOException e) {
             throw new RuntimeException("extractJsonDocumentData failed");
         }

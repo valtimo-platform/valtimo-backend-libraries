@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.mock
@@ -53,7 +53,7 @@ internal class ZaakObjectValueResolverFactoryTest {
                 "path" to "test-value-2"
             )
         )
-        whenever(object1.record.data).thenReturn(Mapper.INSTANCE.get().valueToTree(objectData1))
+        whenever(object1.record.data).thenReturn(MapperSingleton.get().valueToTree(objectData1))
         whenever(zaakObjectService.getZaakObjectOfTypeByName(documentId, "sometype"))
             .thenReturn(object1)
 

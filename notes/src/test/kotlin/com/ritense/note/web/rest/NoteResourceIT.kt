@@ -16,12 +16,12 @@
 
 package com.ritense.note.web.rest
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.ritense.audit.service.AuditService
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
-import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
@@ -73,6 +73,9 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     @Autowired
     lateinit var auditService: AuditService
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     lateinit var mockMvc: MockMvc
     lateinit var documentId: UUID
 
@@ -84,7 +87,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
 
         documentId = AuthorizationContext.runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest(PROFILE_DOCUMENT_DEFINITION_NAME, Mapper.INSTANCE.get().createObjectNode())
+                NewDocumentRequest(PROFILE_DOCUMENT_DEFINITION_NAME, objectMapper.createObjectNode())
             ).resultingDocument().get().id()!!.id
         }
         whenever(userManagementService.currentUser)

@@ -29,7 +29,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
 import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
 import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -208,7 +208,7 @@ internal class PluginConfigurationResourceTest {
             post("/api/v1/plugin/configuration")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(Mapper.INSTANCE.get().writeValueAsString(pluginConfiguratieDto))
+            .content(MapperSingleton.get().writeValueAsString(pluginConfiguratieDto))
             .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())
@@ -255,7 +255,7 @@ internal class PluginConfigurationResourceTest {
             put("/api/v1/plugin/configuration/$pluginConfigurationId")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(Mapper.INSTANCE.get().writeValueAsString(pluginConfiguratieDto))
+                .content(MapperSingleton.get().writeValueAsString(pluginConfiguratieDto))
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())

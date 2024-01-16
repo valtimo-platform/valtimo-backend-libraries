@@ -28,6 +28,7 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.BeforeEach
@@ -57,7 +58,12 @@ internal class DocumentJsonValueResolverTest {
         processDocumentService = mock()
         documentService = mock()
         documentDefinitionService = mock()
-        documentValueResolver = DocumentJsonValueResolverFactory(processDocumentService, documentService, documentDefinitionService)
+        documentValueResolver = DocumentJsonValueResolverFactory(
+            processDocumentService,
+            documentService,
+            documentDefinitionService,
+            MapperSingleton.get()
+        )
 
         processInstanceId = UUID.randomUUID().toString()
         variableScope = DelegateTaskFake()

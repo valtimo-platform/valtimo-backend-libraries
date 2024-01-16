@@ -16,16 +16,18 @@
 
 package com.ritense.valtimo.contract.json
 
-import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
-class JsonMerger {
+@Configuration
+class MapperSingletonAutoConfiguration {
 
-    companion object {
-        @JvmStatic
-        fun merge(first: JsonNode, second: JsonNode): JsonNode {
-            val mapper = MapperSingleton.get()
-            return mapper.readerForUpdating(first)
-                .readValue<JsonNode>(second)
-        }
+    @ConditionalOnMissingBean(name = ["mapperSingleton"])
+    @Bean
+    fun mapperSingleton(objectMapper: ObjectMapper): MapperSingleton {
+        MapperSingleton.set(objectMapper)
+        return MapperSingleton
     }
 }

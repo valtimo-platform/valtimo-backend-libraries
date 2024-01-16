@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.formflow
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentDefinitionService
@@ -31,7 +32,6 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.CamundaTaskService
 import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -62,6 +62,9 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
 
     @Autowired
     lateinit var taskService: CamundaTaskService
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @Test
     fun `should not create form flow instance when Camunda user task is created`() {
@@ -98,7 +101,7 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
         processDocumentService.newDocumentAndStartProcess(
             NewDocumentAndStartProcessRequest("formflow-one-task-process",
                 NewDocumentRequest("testing",
-                    Mapper.INSTANCE.get().readTree("{}"))
+                    objectMapper.readTree("{}"))
             )
         )
 
@@ -146,7 +149,7 @@ internal class FormFlowFormLinkTaskProviderIntTest: BaseIntegrationTest() {
                     "formflow-one-task-process",
                     NewDocumentRequest(
                         "testing",
-                        Mapper.INSTANCE.get().readTree("{}")
+                        objectMapper.readTree("{}")
                     )
                 )
             )

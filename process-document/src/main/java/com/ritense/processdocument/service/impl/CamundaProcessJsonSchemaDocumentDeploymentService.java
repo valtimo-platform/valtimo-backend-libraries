@@ -18,10 +18,10 @@ package com.ritense.processdocument.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.annotation.RunWithoutAuthorization;
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent;
-import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.domain.config.ProcessDocumentLinkConfigItem;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
@@ -45,15 +45,18 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
     private final ResourceLoader resourceLoader;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final DocumentDefinitionService documentDefinitionService;
+    private final ObjectMapper objectMapper;
 
     public CamundaProcessJsonSchemaDocumentDeploymentService(
         ResourceLoader resourceLoader,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        DocumentDefinitionService documentDefinitionService
+        DocumentDefinitionService documentDefinitionService,
+        ObjectMapper objectMapper
     ) {
         this.resourceLoader = resourceLoader;
         this.processDocumentAssociationService = processDocumentAssociationService;
         this.documentDefinitionService = documentDefinitionService;
+        this.objectMapper = objectMapper;
     }
 
     @EventListener(DocumentDefinitionDeployedEvent.class)
@@ -137,7 +140,7 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
     private List<ProcessDocumentLinkConfigItem> getJson(String rawJson) throws JsonProcessingException {
         TypeReference<List<ProcessDocumentLinkConfigItem>> typeRef = new TypeReference<>() {
         };
-        return Mapper.INSTANCE.get().readValue(rawJson, typeRef);
+        return objectMapper.readValue(rawJson, typeRef);
     }
 
     private Resource loadResource(String locationPattern) throws IOException {

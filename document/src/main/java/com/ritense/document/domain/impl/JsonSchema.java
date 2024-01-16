@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.config.validator.UuidValidator;
 import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.impl.meta.MetaJsonSchemaV7Draft;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import org.everit.json.schema.ReadWriteContext;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.Validator;
@@ -94,7 +95,7 @@ public final class JsonSchema {
 
     public JsonNode asJson() {
         try {
-            return Mapper.INSTANCE.get().readTree(schema);
+            return MapperSingleton.INSTANCE.get().readTree(schema);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

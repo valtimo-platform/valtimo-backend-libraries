@@ -24,7 +24,7 @@ import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.plugin.service.PluginService
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -110,7 +110,7 @@ internal class ZaakObjectResourceTest {
         whenever(object1.record).thenReturn(objectRecord1)
         whenever(objectRecord1.index).thenReturn(1)
         whenever(objectRecord1.registrationAt).thenReturn(LocalDate.of(2020, 2, 3))
-        whenever(objectRecord1.data).thenReturn(Mapper.INSTANCE.get().valueToTree(mapOf("title" to "some object")))
+        whenever(objectRecord1.data).thenReturn(MapperSingleton.get().valueToTree(mapOf("title" to "some object")))
 
         val object2 = mock<ObjectWrapper>()
         whenever(object2.url).thenReturn(URI("http://example.com/2"))
@@ -118,7 +118,7 @@ internal class ZaakObjectResourceTest {
         whenever(object2.record).thenReturn(objectRecord2)
         whenever(objectRecord2.index).thenReturn(null)
         whenever(objectRecord2.registrationAt).thenReturn(null)
-        whenever(objectRecord2.data).thenReturn(Mapper.INSTANCE.get().valueToTree(""))
+        whenever(objectRecord2.data).thenReturn(MapperSingleton.get().valueToTree(""))
 
         whenever(zaakObjectService.getZaakObjectenOfType(documentId, URI("http://example.com/objecttype")))
             .thenReturn(listOf(object1, object2))
@@ -294,7 +294,7 @@ internal class ZaakObjectResourceTest {
 
     private fun jacksonMessageConverter(): MappingJackson2HttpMessageConverter {
         val converter = MappingJackson2HttpMessageConverter()
-        converter.objectMapper = Mapper.INSTANCE.get()
+        converter.objectMapper = MapperSingleton.get()
         return converter
     }
 

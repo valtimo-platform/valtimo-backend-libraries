@@ -20,9 +20,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.kotlin.KotlinModule;
-import com.fasterxml.jackson.module.kotlin.KotlinModuleKt;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
+/**
+ * @deprecated Replaced by {@link com.ritense.valtimo.contract.json.MapperSingleton }
+ */
+@Deprecated(since = "11.2.0", forRemoval = true)
 public enum Mapper {
     INSTANCE;
     private final ObjectMapper mapper = new ObjectMapper()

@@ -16,11 +16,11 @@
 
 package com.ritense.objectsapi.taak
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
-import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.objectsapi.BaseIntegrationTest
 import com.ritense.openzaak.domain.configuration.Rsin
@@ -67,6 +67,9 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
     lateinit var connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
 
     @Autowired
+    lateinit var objectMapper: ObjectMapper
+
+    @Autowired
     @Qualifier("openZaakConnector")
     lateinit var openZaakConnector: Connector
 
@@ -103,7 +106,7 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
                 true
             )
         )
-        val jsonContent = Mapper.INSTANCE.get().readTree("{\"voornaam\": \"Peter\"}")
+        val jsonContent = objectMapper.readTree("{\"voornaam\": \"Peter\"}")
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, jsonContent)
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("age" to 38))

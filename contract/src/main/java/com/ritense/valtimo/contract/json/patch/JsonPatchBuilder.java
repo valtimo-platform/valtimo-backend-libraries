@@ -18,14 +18,15 @@ package com.ritense.valtimo.contract.json.patch;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.json.patch.operation.AddOperation;
 import com.ritense.valtimo.contract.json.patch.operation.CopyOperation;
 import com.ritense.valtimo.contract.json.patch.operation.JsonPatchOperation;
 import com.ritense.valtimo.contract.json.patch.operation.MoveOperation;
 import com.ritense.valtimo.contract.json.patch.operation.RemoveOperation;
 import com.ritense.valtimo.contract.json.patch.operation.ReplaceOperation;
+
 import java.util.LinkedHashSet;
-import static com.fasterxml.jackson.module.kotlin.ExtensionsKt.jacksonObjectMapper;
 
 /**
  * A builder for constructing a JSON Patch by adding
@@ -122,9 +123,9 @@ public final class JsonPatchBuilder {
             var propertyName = path.last().getMatchingProperty();
             JsonNode newValue;
             if (propertyName.matches("\\d+")) {
-                newValue = jacksonObjectMapper().createArrayNode();
+                newValue = MapperSingleton.INSTANCE.get().createArrayNode();
             } else {
-                newValue = jacksonObjectMapper().createObjectNode();
+                newValue = MapperSingleton.INSTANCE.get().createObjectNode();
             }
 
             addJsonNodeValueInternal(destination, path.head(), newValue);

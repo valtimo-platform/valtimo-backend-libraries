@@ -16,13 +16,13 @@
 
 package com.ritense.form.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.form.BaseIntegrationTest
-import com.ritense.form.domain.Mapper
 import com.ritense.valtimo.service.CamundaProcessService
 import java.time.LocalDate
 import org.camunda.bpm.engine.TaskService
@@ -36,7 +36,8 @@ class PrefillFormServiceIntTest @Autowired constructor(
     private val prefillFormService: PrefillFormService,
     private val documentService: DocumentService,
     private val processService: CamundaProcessService,
-    private val taskService: TaskService
+    private val taskService: TaskService,
+    private val objectMapper: ObjectMapper,
 ): BaseIntegrationTest() {
 
     @Test
@@ -130,7 +131,7 @@ class PrefillFormServiceIntTest @Autowired constructor(
     private fun createDocument(definitionName: String, content: String): Document {
         return runWithoutAuthorization { documentService.createDocument(NewDocumentRequest(
             definitionName,
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 content.trimIndent()
             )
         )

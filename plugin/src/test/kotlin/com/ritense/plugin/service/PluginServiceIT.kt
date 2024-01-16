@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.BaseIntegrationTest
@@ -33,7 +34,7 @@ import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.camunda.community.mockito.delegate.DelegateTaskFake
@@ -78,6 +79,9 @@ internal class PluginServiceIT : BaseIntegrationTest() {
     @Autowired
     lateinit var pluginFactory: PluginFactory<TestPlugin>
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     lateinit var pluginConfiguration: PluginConfiguration
     lateinit var categoryPluginConfiguration: PluginConfiguration
     lateinit var pluginDefinition: PluginDefinition
@@ -110,7 +114,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
     fun `should be able to save configuration with encypted property and decrypt on load`() {
         val categoryConfiguration = pluginService.createPluginConfiguration(
             "title",
-            Mapper.INSTANCE.get().readTree("{}") as ObjectNode,
+            objectMapper.readTree("{}") as ObjectNode,
             "test-category-plugin",
         )
 
@@ -125,7 +129,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
 
         val configuration = pluginService.createPluginConfiguration(
             "title",
-            Mapper.INSTANCE.get().readTree(input) as ObjectNode,
+            objectMapper.readTree(input) as ObjectNode,
             "test-plugin",
         )
 
@@ -147,7 +151,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
         pluginService.updatePluginConfiguration(
             configurationFromDatabase.id,
             "test",
-            Mapper.INSTANCE.get().readTree(update) as ObjectNode
+            objectMapper.readTree(update) as ObjectNode
         )
 
         val configurations2 = pluginService.getPluginConfigurations(PluginConfigurationSearchParameters())
@@ -166,7 +170,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("{}") as ObjectNode,
+            actionProperties = objectMapper.readTree("{}") as ObjectNode,
             activityType = ActivityType.SERVICE_TASK_START
         )
 
@@ -185,7 +189,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "test-action-task",
-            actionProperties = Mapper.INSTANCE.get().readTree("{}") as ObjectNode,
+            actionProperties = objectMapper.readTree("{}") as ObjectNode,
             activityType = ActivityType.USER_TASK_CREATE
         )
 
@@ -206,7 +210,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "test123"}""") as ObjectNode,
+            actionProperties = objectMapper.readTree("""{"someString": "test123"}""") as ObjectNode,
             activityType = ActivityType.SERVICE_TASK_START
         )
 
@@ -227,7 +231,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
-            actionProperties = Mapper.INSTANCE.get().readTree("""{"someString": "pv:placeholder"}""") as ObjectNode,
+            actionProperties = objectMapper.readTree("""{"someString": "pv:placeholder"}""") as ObjectNode,
             activityType = ActivityType.SERVICE_TASK_START
         )
 

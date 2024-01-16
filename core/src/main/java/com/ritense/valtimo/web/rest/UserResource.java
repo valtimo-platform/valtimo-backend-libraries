@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
-import com.ritense.valtimo.contract.json.Mapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.service.UserSettingsService;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
@@ -151,14 +151,14 @@ public class UserResource {
             settings = result.get().getSettings();
         }
 
-        return ResponseEntity.ok(Mapper.INSTANCE.get().writeValueAsString(settings));
+        return ResponseEntity.ok(MapperSingleton.INSTANCE.get().writeValueAsString(settings));
     }
 
     @PutMapping("/v1/user/settings")
     public ResponseEntity<Object> saveCurrentUserSettings(@RequestBody String settings){
         logger.debug("Request to create settings for current user");
         try{
-            Map<String, Object> settingsMap = Mapper.INSTANCE.get().readValue(settings, new TypeReference<>() {});
+            Map<String, Object> settingsMap = MapperSingleton.INSTANCE.get().readValue(settings, new TypeReference<>() {});
             userSettingsService.saveUserSettings(userManagementService.getCurrentUser(), settingsMap);
         } catch (Exception e){
             return ResponseEntity.badRequest().build();

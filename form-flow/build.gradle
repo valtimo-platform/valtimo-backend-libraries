@@ -33,6 +33,7 @@ dependencies {
     implementation "com.vladmihalcea:hibernate-types-55:${hibernateTypesVersion}"
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
     implementation "org.springframework:spring-expression"

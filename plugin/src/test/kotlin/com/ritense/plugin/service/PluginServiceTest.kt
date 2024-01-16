@@ -39,7 +39,7 @@ import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginConfigurationSearchRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
@@ -286,7 +286,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{\"test\":123}") as ObjectNode,
+            MapperSingleton.get().readTree("{\"test\":123}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action",
             ActivityType.SERVICE_TASK_START
@@ -314,7 +314,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{}") as ObjectNode,
+            MapperSingleton.get().readTree("{}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action-optional",
             ActivityType.SERVICE_TASK_START
@@ -342,7 +342,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
+            MapperSingleton.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action",
             ActivityType.SERVICE_TASK_START
@@ -370,7 +370,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
+            MapperSingleton.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action",
             ActivityType.SERVICE_TASK_START
@@ -398,7 +398,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{\"test\":123}") as ObjectNode,
+            MapperSingleton.get().readTree("{\"test\":123}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action-task",
             ActivityType.SERVICE_TASK_START
@@ -429,7 +429,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
+            MapperSingleton.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action-task",
             ActivityType.SERVICE_TASK_START
@@ -460,7 +460,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
+            MapperSingleton.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action-task",
             ActivityType.SERVICE_TASK_START

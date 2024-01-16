@@ -23,7 +23,7 @@ import com.ritense.openzaak.service.impl.EigenschapService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.springframework.context.event.EventListener
 import java.net.URI
@@ -63,7 +63,7 @@ class EigenschappenSubmittedListener(
 
     private fun getStringValue(value: Any): String {
         return if (value is JsonNode) {
-            Mapper.INSTANCE.get().treeToValue<String>(value)
+            MapperSingleton.get().treeToValue<String>(value)
         } else {
             value.toString()
         }

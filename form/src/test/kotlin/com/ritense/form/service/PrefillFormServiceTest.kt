@@ -25,7 +25,6 @@ import com.ritense.document.domain.impl.JsonSchema
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
-import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentSequenceGeneratorService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
@@ -34,6 +33,7 @@ import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.json.patch.operation.AddOperation
 import com.ritense.valtimo.contract.json.patch.operation.Operation
 import com.ritense.valtimo.contract.json.patch.operation.ReplaceOperation
@@ -78,7 +78,8 @@ class PrefillFormServiceTest : BaseTest() {
             taskService,
             listOf(formFieldDataResolver),
             processDocumentAssociationService,
-            valueResolverService
+            valueResolverService,
+            MapperSingleton.get()
         )
     }
 
@@ -342,7 +343,7 @@ class PrefillFormServiceTest : BaseTest() {
                     "additionalProperties": true
                 }
             """.trimIndent()))
-        val content = JsonDocumentContent.build(Mapper.INSTANCE.get().createObjectNode())
+        val content = JsonDocumentContent.build(MapperSingleton.get().createObjectNode())
 
         return JsonSchemaDocument.create(
             schema,

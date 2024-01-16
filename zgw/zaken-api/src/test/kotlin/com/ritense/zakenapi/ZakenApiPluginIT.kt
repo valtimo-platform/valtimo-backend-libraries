@@ -1,5 +1,6 @@
 package com.ritense.zakenapi
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -13,7 +14,6 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultSucceeded
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.resource.Resource
 import java.net.URI
 import okhttp3.mockwebserver.Dispatcher
@@ -57,6 +57,9 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
     @Autowired
     lateinit var documentService: DocumentService
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     lateinit var server: MockWebServer
 
     lateinit var processDefinitionId: String
@@ -83,7 +86,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
         val configuration = pluginService.createPluginConfiguration(
             "Zaken API plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 pluginPropertiesJson
             ) as ObjectNode,
             "zakenapi"
@@ -108,7 +111,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
                 PluginProcessLinkId(UUID.randomUUID()),
                 processDefinitionId,
                 "LinkDocument",
-                Mapper.INSTANCE.get().readTree(actionPropertiesJson) as ObjectNode,
+                objectMapper.readTree(actionPropertiesJson) as ObjectNode,
                 configuration.id,
                 "link-document-to-zaak",
                 ActivityType.SERVICE_TASK_START
@@ -123,7 +126,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
     @Test
     fun `should link document to zaak`() {
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // Make a record in the database about a document that is matched to the open zaak
@@ -144,7 +147,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         // Check the request that was sent to the open zaak api
         val recordedRequest = server.takeRequest()
         val requestString = recordedRequest.body.readUtf8()
-        val parsedOutput = Mapper.INSTANCE.get().readValue(requestString, Map::class.java)
+        val parsedOutput = objectMapper.readValue(requestString, Map::class.java)
 
         assertEquals(4, parsedOutput.size)
         assertEquals(INFORMATIE_OBJECT_URL, parsedOutput["informatieobject"])
@@ -161,7 +164,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
     @Test
     fun `should link uploaded document to zaak`() {
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // Make a record in1 the database about a document that is matched to the open zaak
@@ -182,7 +185,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         // Check the request that was sent to the open zaak api
         val recordedRequest = server.takeRequest()
         val requestString = recordedRequest.body.readUtf8()
-        val parsedOutput = Mapper.INSTANCE.get().readValue(requestString, Map::class.java)
+        val parsedOutput = objectMapper.readValue(requestString, Map::class.java)
 
         assertEquals(4, parsedOutput.size)
         assertEquals(INFORMATIE_OBJECT_URL, parsedOutput["informatieobject"])

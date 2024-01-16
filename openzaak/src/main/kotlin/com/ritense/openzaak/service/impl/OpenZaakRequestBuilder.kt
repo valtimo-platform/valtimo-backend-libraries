@@ -18,6 +18,7 @@ package com.ritense.openzaak.service.impl
 
 import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import com.ritense.openzaak.service.impl.model.ResultWrapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.ResolvableType
 import org.springframework.http.HttpEntity
@@ -75,7 +76,7 @@ data class OpenZaakRequestBuilder(
         requestEntity = if (body == null || (body is Map<*, *> && (body as Map<*, *>).isEmpty()))
             HttpEntity(buildHeaders(this.config!!))
         else
-            HttpEntity(Mapper.get().writeValueAsString(body), buildPostHeaders(this.config!!))
+            HttpEntity(MapperSingleton.get().writeValueAsString(body), buildPostHeaders(this.config!!))
     }
 
     fun <T> execute(responseClass: Class<out T>): T {

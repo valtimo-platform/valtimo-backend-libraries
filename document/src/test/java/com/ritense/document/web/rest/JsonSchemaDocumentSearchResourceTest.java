@@ -20,7 +20,7 @@ import com.ritense.document.BaseTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.domain.impl.Mapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
@@ -144,7 +144,7 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
 
         doReturn(documentPage).when(documentSearchService).search(any(), any(SearchWithConfigRequest.class), any());
 
-        var jsonRequest = Mapper.INSTANCE.get().writeValueAsString(request);
+        var jsonRequest = MapperSingleton.INSTANCE.get().writeValueAsString(request);
 
         mockMvc.perform(
             post("/api/v1/document-definition/name/search")
