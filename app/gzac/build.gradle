@@ -4,7 +4,6 @@ dependencies {
     implementation(project(":dependencies:valtimo-gzac-dependencies"))
     implementation(project(":mail:local-mail"))
     implementation(project(":resource:openzaak-resource"))
-    implementation(project(":resource:temporary-resource-storage"))
     implementation(project(":document-generation:smartdocuments"))
     implementation(project(":zgw:portaaltaak"))
 
