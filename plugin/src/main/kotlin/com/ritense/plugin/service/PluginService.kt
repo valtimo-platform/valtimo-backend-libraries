@@ -35,6 +35,7 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
+import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
@@ -568,22 +569,7 @@ class PluginService(
                 errors.add(PluginPropertyRequiredException(pluginProperty.fieldName, pluginDefinition.title))
             } else {
                 try {
-                    val propertyClass = Class.forName(pluginProperty.fieldType)
-                    val propertyClassIsPlugin = propertyClass.isAnnotationPresent(Plugin::class.java)
-                    val propertyClassIsPluginCategory = propertyClass.isAnnotationPresent(PluginCategory::class.java)
-                    if (propertyClassIsPlugin || propertyClassIsPluginCategory) {
-                        val propertyConfigurationId =
-                            PluginConfigurationId.existingId(UUID.fromString(propertyNode.textValue()))
-                        val propertyConfiguration = pluginConfigurationRepository.findById(propertyConfigurationId)
-                        assert(propertyConfiguration.isPresent) { "Plugin configuration with id ${propertyConfigurationId.id} does not exist!" }
-                    } else {
-                        val propertyValue = objectMapper.treeToValue(propertyNode, propertyClass)
-                        val validationErrors =
-                            validator.validateValue(pluginClass, pluginProperty.fieldName, propertyValue)
-                        if (validationErrors.isNotEmpty()) {
-                            throw ConstraintViolationException(validationErrors)
-                        }
-                    }
+                    validateProperty(pluginProperty, propertyNode, pluginClass)
                 } catch (e: Exception) {
                     errors.add(PluginPropertyParseException(pluginProperty.fieldName, pluginDefinition.title, e))
                 }
@@ -593,6 +579,26 @@ class PluginService(
         if (errors.isNotEmpty()) {
             errors.forEach { logger.error { it } }
             throw errors.first()
+        }
+    }
+
+    @Throws(ConstraintViolationException::class)
+    private fun validateProperty(pluginProperty: PluginProperty, propertyNode: JsonNode?, pluginClass: Class<*>) {
+        val propertyClass = Class.forName(pluginProperty.fieldType)
+        val propertyClassIsPlugin = propertyClass.isAnnotationPresent(Plugin::class.java)
+        val propertyClassIsPluginCategory = propertyClass.isAnnotationPresent(PluginCategory::class.java)
+        if (propertyClassIsPlugin || propertyClassIsPluginCategory) {
+            val propertyConfigurationId =
+                PluginConfigurationId.existingId(UUID.fromString(propertyNode?.textValue()))
+            val propertyConfiguration = pluginConfigurationRepository.findById(propertyConfigurationId)
+            assert(propertyConfiguration.isPresent) { "Plugin configuration with id ${propertyConfigurationId.id} does not exist!" }
+        } else {
+            val propertyValue = objectMapper.treeToValue(propertyNode, propertyClass)
+            val validationErrors =
+                validator.validateValue(pluginClass, pluginProperty.fieldName, propertyValue)
+            if (validationErrors.isNotEmpty()) {
+                throw ConstraintViolationException(validationErrors)
+            }
         }
     }
 
