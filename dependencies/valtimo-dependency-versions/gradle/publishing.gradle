@@ -19,8 +19,8 @@ pluginManager.withPlugin('maven-publish') {
         publications {
             maven(MavenPublication) {
                 pom {
-                    name = 'Valtimo dependencies versions'
-                    description = 'Valtimo dependencies version constraints'
+                    name = 'Valtimo dependency versions'
+                    description = 'Valtimo dependency version constraints'
                     developers {
                         developer {
                             id = "team-valtimo"
