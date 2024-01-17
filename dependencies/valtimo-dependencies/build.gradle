@@ -45,10 +45,6 @@ dependencies {
     api(project(":web"))
 
     api("io.github.microutils:kotlin-logging")
-
-    api("io.netty:netty-resolver-dns-native-macos") {
-        artifact { classifier = "osx-aarch_64" }
-    }
 }
 
 apply from: "gradle/publishing.gradle"
