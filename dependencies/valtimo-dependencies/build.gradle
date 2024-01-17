@@ -15,8 +15,6 @@
  */
 
 dependencies {
-    api(platform(project(":dependencies:valtimo-dependency-versions")))
-
     api(project(":audit"))
     api(project(":authorization"))
     api(project(":case"))
@@ -43,8 +41,6 @@ dependencies {
     api(project(":search"))
     api(project(":value-resolver"))
     api(project(":web"))
-
-    api("io.github.microutils:kotlin-logging")
 }
 
 apply from: "gradle/publishing.gradle"
