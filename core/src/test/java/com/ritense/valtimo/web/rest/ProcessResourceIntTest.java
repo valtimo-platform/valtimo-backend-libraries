@@ -53,10 +53,10 @@ class ProcessResourceIntTest extends BaseIntegrationTest {
                 .accept(APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.[0].key").value("identity-link-mapper-test-process"))
-            .andExpect(jsonPath("$.[0].readOnly").value(false))
-            .andExpect(jsonPath("$.[1].key").value("one-task-process"))
-            .andExpect(jsonPath("$.[1].readOnly").value(false));
+            .andExpect(jsonPath("$.[?(@.key=='identity-link-mapper-test-process')].key").value("identity-link-mapper-test-process"))
+            .andExpect(jsonPath("$.[?(@.key=='identity-link-mapper-test-process')].readOnly").value(false))
+            .andExpect(jsonPath("$.[?(@.key=='one-task-process')].key").value("one-task-process"))
+            .andExpect(jsonPath("$.[?(@.key=='one-task-process')].readOnly").value(false));
     }
 
     @Test

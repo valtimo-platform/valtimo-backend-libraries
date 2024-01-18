@@ -121,6 +121,7 @@ dependencies {
     testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.junit.jupiter:junit-jupiter-engine"
+    testImplementation "org.apache.groovy:groovy-all:${groovyVersion}"
 }
 
 apply from: "gradle/publishing.gradle"
