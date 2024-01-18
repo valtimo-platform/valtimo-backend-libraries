@@ -228,8 +228,8 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldSortTasksByAssignee() throws IllegalAccessException {
-        startProcessAndModifyTask(task1 -> task1.setAssignee("userA@ritense.com"));
-        startProcessAndModifyTask(task2 -> task2.setAssignee("userB@ritense.com"));
+        startProcessAndModifyTask(task1 -> task1.setAssignee("AAAA-1111"));
+        startProcessAndModifyTask(task2 -> task2.setAssignee("BBBB-2222"));
 
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
@@ -237,8 +237,8 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         );
 
         var tasks = pagedTasks.toList();
-        assertThat(tasks.get(0).getAssignee()).isEqualTo("userB@ritense.com");
-        assertThat(tasks.get(1).getAssignee()).isEqualTo("userA@ritense.com");
+        assertThat(tasks.get(0).getAssignee()).isEqualTo("BBBB-2222");
+        assertThat(tasks.get(1).getAssignee()).isEqualTo("AAAA-1111");
     }
 
     @Test

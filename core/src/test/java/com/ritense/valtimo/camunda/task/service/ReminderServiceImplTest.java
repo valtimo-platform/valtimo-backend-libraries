@@ -142,8 +142,8 @@ class ReminderServiceImplTest {
     }
 
     private List<CamundaTask> assignedTasks() {
-        CamundaTask taskId0 = assignedTaskEntity("id1", "test1@test.com", "task1");
-        CamundaTask taskId2 = assignedTaskEntity("id3", "test2@test.com", "task3");
+        CamundaTask taskId0 = assignedTaskEntity("id1", "AAAA-1111", "task1");
+        CamundaTask taskId2 = assignedTaskEntity("id3", "BBBB-2222", "task3");
         return List.of(taskId0, taskId2);
     }
 

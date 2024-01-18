@@ -49,6 +49,7 @@ import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
 import com.ritense.valtimo.service.util.FormUtils;
 import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Order;
@@ -71,7 +72,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.annotation.Nullable;
+
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -80,6 +81,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGN;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGNABLE;
@@ -162,12 +164,21 @@ public class CamundaTaskService {
     }
 
     @Transactional
+    public void assignByEmail(String taskId, String assigneeEmail) throws IllegalStateException {
+        var assignee = userManagementService.findNamedUserByEmail(assigneeEmail)
+            .orElseThrow(() -> new IllegalStateException("Error. No registered user found with email: " + assigneeEmail));
+        assign(taskId, assignee.getId());
+    }
+
+    @Transactional
     public void assign(String taskId, String assignee) throws IllegalStateException {
         if (assignee == null) {
             unassign(taskId);
+        } else if (assignee.matches("[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}")) {
+            throw new IllegalStateException("Task assignee must be an ID. Not an email: '" + assignee + "'");
         } else {
             final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
-            final String currentUser = SecurityUtils.getCurrentUserLogin();
+            final String currentUser = userManagementService.getCurrentUserId();
             if (assignee.equals(currentUser)) {
                 try {
                     requirePermission(task, CLAIM);
@@ -501,14 +512,11 @@ public class CamundaTaskService {
     }
 
     private Specification<CamundaTask> buildTaskFilterSpecification(TaskFilter taskFilter) {
-        String currentUserLogin = SecurityUtils.getCurrentUserLogin();
         var filterSpec = all();
 
         if (taskFilter == TaskFilter.MINE) {
-            if (currentUserLogin == null) {
-                throw new IllegalStateException("Cannot find currentUserLogin");
-            }
-            return filterSpec.and(byAssignee(currentUserLogin));
+            String currentUserId = userManagementService.getCurrentUserId();
+            return filterSpec.and(byAssignee(currentUserId));
         } else if (taskFilter == TaskFilter.ALL) {
             return filterSpec;
         } else if (taskFilter == TaskFilter.OPEN) {
@@ -518,8 +526,8 @@ public class CamundaTaskService {
         return filterSpec;
     }
 
-    private ValtimoUser getValtimoUser(String assigneeEmail) {
-        return userManagementService.findByEmail(assigneeEmail).map(user ->
+    private ValtimoUser getValtimoUser(String assigneeId) {
+        return Optional.ofNullable(userManagementService.findById(assigneeId)).map(user ->
                 new ValtimoUserBuilder()
                     .id(user.getId())
                     .firstName(user.getFirstName())

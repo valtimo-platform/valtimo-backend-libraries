@@ -73,7 +73,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
     @BeforeEach
     fun init() {
         testUser = ValtimoUserBuilder()
-            .id(UUID.randomUUID().toString())
+            .id("AAAA-1111")
             .firstName("Test")
             .lastName("User")
             .email("test@valtimo.nl")
@@ -81,7 +81,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
             .build()
 
         testUser2 = ValtimoUserBuilder()
-            .id(UUID.randomUUID().toString())
+            .id("BBBB-2222")
             .firstName("Test")
             .lastName("User 2")
             .email("test2@valtimo.nl")
@@ -137,7 +137,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
         val task = runWithoutAuthorization {
             taskService.findTask(byName("child process user task"))
         }
-        assertEquals(task.assignee, testUser.email)
+        assertEquals(task.assignee, testUser.id)
     }
 
     @Test
@@ -196,7 +196,7 @@ class CaseAssigneeListenerIntTest : BaseIntegrationTest() {
 
             taskService.findTask(byName("child process user task"))
         }
-        assertEquals(updatedTask.assignee, testUser2.email)
+        assertEquals(updatedTask.assignee, testUser2.id)
     }
 
     @Test

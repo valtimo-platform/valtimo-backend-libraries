@@ -62,7 +62,7 @@ class CaseAssigneeListener(
             tasks.forEach { task ->
                 camundaTaskService.assign(
                     task.id,
-                    assignee.email
+                    assignee.id
                 )
             }
         }

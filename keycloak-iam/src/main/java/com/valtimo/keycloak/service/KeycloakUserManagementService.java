@@ -125,20 +125,12 @@ public class KeycloakUserManagementService implements UserManagementService {
 
     @Override
     public Optional<ManageableUser> findByEmail(String email) {
-        if (email == null || !email.contains("@")) {
-            return Optional.empty();
-        }
-        List<UserRepresentation> userList;
-        try (Keycloak keycloak = keycloakService.keycloak()) {
-            userList = keycloakService
-                .usersResource(keycloak)
-                .search(null, null, null, email, 0, 1, true, true);
-        }
-        if (userList.isEmpty() || !Objects.equals(userList.get(0).getEmail(), email)) {
-            return Optional.empty();
-        } else {
-            return Optional.of(toManageableUserByRetrievingRoles(userList.get(0)));
-        }
+        return findUserRepresentationByEmail(email).map(this::toManageableUserByRetrievingRoles);
+    }
+
+    @Override
+    public Optional<NamedUser> findNamedUserByEmail(String email) {
+        return findUserRepresentationByEmail(email).map(this::toNamedUser);
     }
 
     @Override
@@ -196,6 +188,34 @@ public class KeycloakUserManagementService implements UserManagementService {
             );
         } else {
             return new ValtimoUserBuilder().id(SYSTEM_ACCOUNT).lastName(SYSTEM_ACCOUNT).build();
+        }
+    }
+
+    @Override
+    public String getCurrentUserId() {
+        if (SecurityUtils.getCurrentUserAuthentication() != null) {
+            return findUserRepresentationByEmail(SecurityUtils.getCurrentUserLogin()).orElseThrow(() ->
+                new IllegalStateException("No user found for email: " + SecurityUtils.getCurrentUserLogin())
+            ).getId();
+        } else {
+            return SYSTEM_ACCOUNT;
+        }
+    }
+
+    private Optional<UserRepresentation> findUserRepresentationByEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            return Optional.empty();
+        }
+        List<UserRepresentation> userList;
+        try (Keycloak keycloak = keycloakService.keycloak()) {
+            userList = keycloakService
+                .usersResource(keycloak)
+                .search(null, null, null, email, 0, 1, true, true);
+        }
+        if (userList.isEmpty() || !Objects.equals(userList.get(0).getEmail(), email)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(userList.get(0));
         }
     }
 
