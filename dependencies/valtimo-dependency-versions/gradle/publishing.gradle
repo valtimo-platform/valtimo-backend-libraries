@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-tasks.withType(PublishToMavenRepository) {
-    enabled = false
-}
-tasks.withType(PublishToMavenLocal) {
-    enabled = false
+pluginManager.withPlugin('maven-publish') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                pom {
+                    name = 'Valtimo dependency versions'
+                    description = 'Valtimo dependency version constraints'
+                    developers {
+                        developer {
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

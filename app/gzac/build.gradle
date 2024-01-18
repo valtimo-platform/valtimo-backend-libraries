@@ -1,81 +1,24 @@
 dependencies {
-    implementation(project(":app"))
-    implementation(project(":audit"))
-    implementation(project(":besluit"))
-    implementation(project(":case"))
-    implementation(project(":contactmoment"))
-    implementation(project(":contract"))
-    implementation(project(":connector"))
-    implementation(project(":core"))
-    implementation(project(":dashboard"))
-    implementation(project(":document"))
-    implementation(project(":document-generation:smartdocuments"))
-    implementation(project(":form"))
-    implementation(project(":form-flow-valtimo"))
-    implementation(project(":haalcentraal:haalcentraal-brp"))
-    implementation(project(":keycloak-iam"))
+    implementation(platform(project(":dependencies:valtimo-dependency-versions")))
+
+    implementation(project(":dependencies:valtimo-gzac-dependencies"))
     implementation(project(":mail:local-mail"))
-    implementation(project(":notes"))
-    implementation(project(":objects-api"))
-    implementation(project(":openzaak"))
-    implementation(project(":outbox"))
-    implementation(project(":outbox:outbox-rabbitmq"))
-    implementation(project(":plugin-authentication:notificaties-api-authentication"))
-    implementation(project(":plugin-authentication:objecten-api-authentication"))
-    implementation(project(":plugin-valtimo"))
-    implementation(project(":process-document"))
     implementation(project(":resource:openzaak-resource"))
-    implementation(project(":resource:temporary-resource-storage"))
-    implementation(project(":search"))
-    implementation(project(":web"))
-    implementation(project(":zgw:catalogi-api"))
-    implementation(project(":zgw:documenten-api"))
-    implementation(project(":zgw:notificaties-api"))
-    implementation(project(":zgw:object-management"))
-    implementation(project(":zgw:objecten-api"))
-    implementation(project(":zgw:objecttypen-api"))
+    implementation(project(":document-generation:smartdocuments"))
     implementation(project(":zgw:portaaltaak"))
-    implementation(project(":zgw:verzoek"))
-    implementation(project(":zgw:zaken-api"))
-    implementation(project(":zgw:besluiten-api"))
 
-    api "org.springframework.security:spring-security-core"
-    api "org.springframework.boot:spring-boot"
-    api "org.springframework.data:spring-data-commons"
-    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
+    implementation("io.github.microutils:kotlin-logging")
 
-    implementation "org.springframework.boot:spring-boot-starter"
-    implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-    implementation "org.springframework.boot:spring-boot-starter-security"
-    implementation "org.springframework.boot:spring-boot-starter-validation"
+    // Database
+    implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
 
-    implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
-    implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
-    implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation "org.jetbrains.kotlin:kotlin-reflect"
-
-    implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
-
-    implementation("io.netty:netty-resolver-dns-native-macos:4.1.90.Final") {
-        artifact { classifier = "osx-aarch_64" }
+    if (System.getProperty("os.arch") == "aarch64") {
+        runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.105.Final:osx-aarch_64")
     }
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
-
-    //ShedLock
-    implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}"
-    implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:${shedlockVersion}"
-
-
-    // Database
-    implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
 }
 
 apply from: "gradle/publishing.gradle"
