@@ -50,4 +50,16 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="Tom Bokma" id="outbox-v2-4">
+        <dropColumn tableName="outbox_message" columnName="message" />
+    </changeSet>
+
+    <changeSet author="Tom Bokma" id="outbox-v2-5">
+        <addColumn tableName="outbox_message">
+            <column name="message" type="MEDIUMTEXT">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

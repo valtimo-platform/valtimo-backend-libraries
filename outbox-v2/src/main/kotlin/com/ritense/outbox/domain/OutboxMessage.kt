@@ -31,7 +31,7 @@ class OutboxMessage(
     @Column(name = "id", columnDefinition = "BINARY(16)", updatable = false)
     val id: UUID,
 
-    @Column(name = "message", columnDefinition = "TEXT", updatable = false)
+    @Column(name = "message", updatable = false)
     val message: String,
 
     @Column(name = "aggregate_root_id", columnDefinition = "VARCHAR(1024)", updatable = false)
