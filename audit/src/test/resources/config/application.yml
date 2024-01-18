@@ -1,19 +1,11 @@
 spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:3307/audit-test
-        username: valtimo
-        password: password
-        hikari:
-            auto-commit: false
     liquibase:
         enabled: true
         change-log: classpath:/config/liquibase/audit-master.xml
         contexts: unit-test
     jpa:
-        database-platform: org.hibernate.dialect.PostgreSQL10Dialect
-        database: postgresql
         show_sql: true
         open-in-view: false
         properties:
@@ -49,6 +41,3 @@ scheduling:
     job:
         cron:
             cleanupAuditEvents: 0 0 4 * * ? # Every day at 00:00
-
-valtimo:
-    database: postgres

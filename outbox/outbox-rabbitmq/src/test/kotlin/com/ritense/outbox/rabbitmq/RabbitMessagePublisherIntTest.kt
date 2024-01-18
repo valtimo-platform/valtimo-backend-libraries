@@ -27,6 +27,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.amqp.rabbit.core.RabbitAdmin
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 import org.springframework.test.context.ActiveProfiles
 
 class RabbitMessagePublisherIntTest {
@@ -54,7 +55,8 @@ class RabbitMessagePublisherIntTest {
     @Nested
     @ActiveProfiles("invalidrouting")
     inner class InvalidRouting @Autowired constructor(
-        val springCloudMessagePublisher: RabbitMessagePublisher
+        val springCloudMessagePublisher: RabbitMessagePublisher,
+        val environment: Environment
     ) : BaseIntegrationTest() {
         @Test
         fun `should not send message to rabbitmq`() {
