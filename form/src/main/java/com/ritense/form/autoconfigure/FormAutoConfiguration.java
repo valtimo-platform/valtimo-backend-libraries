@@ -87,9 +87,16 @@ public class FormAutoConfiguration {
         ResourceLoader resourceLoader,
         FormDefinitionService formDefinitionService,
         FormDefinitionRepository formDefinitionRepository,
-        ApplicationEventPublisher applicationEventPublisher
+        ApplicationEventPublisher applicationEventPublisher,
+        ObjectMapper objectMapper
     ) {
-        return new FormDefinitionDeploymentService(resourceLoader, formDefinitionService, formDefinitionRepository, applicationEventPublisher);
+        return new FormDefinitionDeploymentService(
+            resourceLoader,
+            formDefinitionService,
+            formDefinitionRepository,
+            applicationEventPublisher,
+            objectMapper
+        );
     }
 
     @Bean
@@ -140,7 +147,8 @@ public class FormAutoConfiguration {
         CamundaTaskService taskService,
         List<FormFieldDataResolver> formFieldDataResolvers,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        ValueResolverService valueResolverService
+        ValueResolverService valueResolverService,
+        ObjectMapper objectMapper
     ) {
         return new PrefillFormService(
             documentService,
@@ -149,7 +157,8 @@ public class FormAutoConfiguration {
             taskService,
             formFieldDataResolvers,
             processDocumentAssociationService,
-            valueResolverService
+            valueResolverService,
+            objectMapper
         );
     }
 

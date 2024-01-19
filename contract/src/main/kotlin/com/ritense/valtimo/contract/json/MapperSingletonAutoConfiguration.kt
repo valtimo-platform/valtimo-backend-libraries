@@ -14,35 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.formflow
+package com.ritense.valtimo.contract.json
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.resource.service.ResourceService
-import com.ritense.valtimo.contract.json.MapperSingleton
-import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.runApplication
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
-@SpringBootApplication
-class TestApplication {
+@Configuration
+class MapperSingletonAutoConfiguration {
 
-    fun main(args: Array<String>) {
-        runApplication<TestApplication>(*args)
-    }
-
-    @TestConfiguration
-    class TestConfig {
-
-        @MockBean
-        lateinit var resourceService: ResourceService
-
-        @Bean
-        @ConditionalOnMissingBean(ObjectMapper::class)
-        fun objectMapper(): ObjectMapper {
-            return MapperSingleton.get()
-        }
+    @ConditionalOnMissingBean(name = ["mapperSingleton"])
+    @Bean
+    fun mapperSingleton(objectMapper: ObjectMapper): MapperSingleton {
+        MapperSingleton.set(objectMapper)
+        return MapperSingleton
     }
 }

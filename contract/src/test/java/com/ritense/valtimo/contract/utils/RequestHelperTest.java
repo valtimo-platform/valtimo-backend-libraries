@@ -44,7 +44,7 @@ class RequestHelperTest {
 
     @Test
     void getZoneOffsetShouldDefaultToUtcIfHeaderInvalid() {
-        mockRequest.addHeader("Zone-Offset", "invalid zone offset");
+        mockRequest.addHeader("X-Timezone-Offset", "invalid zone offset");
 
         ZoneOffset zoneOffset = RequestHelper.getZoneOffset();
 
@@ -53,7 +53,7 @@ class RequestHelperTest {
 
     @Test
     void getZoneOffsetShouldReturnZoneOffsetSetIfValidHeader() {
-        mockRequest.addHeader("Zone-Offset", "+01:00");
+        mockRequest.addHeader("X-Timezone-Offset", "+01:00");
 
         ZoneOffset zoneOffset = RequestHelper.getZoneOffset();
 

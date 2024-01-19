@@ -44,10 +44,16 @@ public class WebhookService {
     private static final Logger logger = LoggerFactory.getLogger(WebhookService.class);
     private final MandrillProperties mandrillProperties;
     private final BlacklistService blacklistService;
+    private final ObjectMapper objectMapper;
 
-    public WebhookService(MandrillProperties mandrillProperties, BlacklistService blacklistService) {
+    public WebhookService(
+        MandrillProperties mandrillProperties,
+        BlacklistService blacklistService,
+        ObjectMapper objectMapper
+    ) {
         this.mandrillProperties = mandrillProperties;
         this.blacklistService = blacklistService;
+        this.objectMapper = objectMapper;
     }
 
     public boolean isRequestValid(String authenticationKey, MultiValueMap<String, String> body) {
@@ -64,7 +70,6 @@ public class WebhookService {
     }
 
     public MandrillWebhookRequest getMandrillEventsFromJson(String json) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(json);
         MandrillWebhookRequest events = new MandrillWebhookRequest();
 

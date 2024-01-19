@@ -49,7 +49,7 @@ public class RequestHelper {
 
             if (attribs != null) {
                 HttpServletRequest request = ((ServletRequestAttributes) attribs).getRequest();
-                String zoneOffsetHeader = request.getHeader("Zone-Offset");
+                String zoneOffsetHeader = request.getHeader("X-Timezone-Offset");
 
                 if (StringUtils.isNotBlank(zoneOffsetHeader)) {
                     zoneOffset = ZoneOffset.of(zoneOffsetHeader);

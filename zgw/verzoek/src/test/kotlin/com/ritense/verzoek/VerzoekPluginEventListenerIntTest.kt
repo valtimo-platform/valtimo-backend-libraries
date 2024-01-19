@@ -17,7 +17,7 @@
 package com.ritense.verzoek
 
 import com.fasterxml.jackson.core.JsonPointer
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.DocumentDefinition
@@ -79,6 +79,9 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var processService: RuntimeService
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     lateinit var mockNotificatiesApi: MockWebServer
 
@@ -335,7 +338,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     private fun createRecord(withMetaData: Boolean, withType: String, withObjectData: Boolean): ObjectRecord {
         return ObjectRecord(
             typeVersion = 1,
-            data = if (withMetaData) jacksonObjectMapper().readTree(
+            data = if (withMetaData) objectMapper.readTree(
                 """
                 {
                     "type": "$withType",
@@ -363,7 +366,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     private fun createPluginConfiguration(pluginDefinitionKey: String, pluginProperties: String): PluginConfiguration {
         return pluginService.createPluginConfiguration(
             "my-configuration-$pluginDefinitionKey-${pluginProperties.hashCode()}",
-            jacksonObjectMapper().readTree(pluginProperties).deepCopy(),
+            objectMapper.readTree(pluginProperties).deepCopy(),
             pluginDefinitionKey
         )
     }

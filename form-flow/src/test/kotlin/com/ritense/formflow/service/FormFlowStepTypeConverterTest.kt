@@ -17,16 +17,16 @@
 package com.ritense.formflow.service
 
 import com.fasterxml.jackson.databind.jsontype.NamedType
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.definition.configuration.step.StepTypeProperties
+import com.ritense.formflow.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class ObjectMapperConfigurerTest {
 
-    private val mapper = jacksonObjectMapper()
+    private val mapper = MapperSingleton.get().copy()
     private val objectMapperConfigurer = ObjectMapperConfigurer(
         mapper,
         listOf(

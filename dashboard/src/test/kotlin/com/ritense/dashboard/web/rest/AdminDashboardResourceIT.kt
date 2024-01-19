@@ -16,8 +16,8 @@
 
 package com.ritense.dashboard.web.rest
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.dashboard.BaseIntegrationTest
 import com.ritense.dashboard.domain.Dashboard
 import com.ritense.dashboard.domain.WidgetConfiguration
@@ -63,6 +63,9 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var widgetConfigurationRepository: WidgetConfigurationRepository
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     lateinit var mockMvc: MockMvc
 
@@ -123,7 +126,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         mockMvc.perform(
             post("/api/management/v1/dashboard")
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(dashboard))
+                .content(objectMapper.writeValueAsString(dashboard))
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -142,7 +145,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         mockMvc.perform(
             put("/api/management/v1/dashboard")
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(updateRequest))
+                .content(objectMapper.writeValueAsString(updateRequest))
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -176,7 +179,7 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         mockMvc.perform(
             put("/api/management/v1/dashboard/{dashboardKey}", dashboard1.key)
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(updateRequest))
+                .content(objectMapper.writeValueAsString(updateRequest))
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -210,15 +213,15 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         val widgetConfiguration = WidgetConfigurationCreateRequestDto(
             title = "Doorlooptijd",
             dataSourceKey = "doorlooptijd",
-            dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
+            dataSourceProperties = objectMapper.readTree("""{ "threshold": 50 }""") as ObjectNode,
             displayType = "gauge",
-            displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
+            displayTypeProperties = objectMapper.readTree("""{ "useKpi": true }""") as ObjectNode,
         )
 
         mockMvc.perform(
             post("/api/management/v1/dashboard/{dashboardKey}/widget-configuration", "test_dashboard")
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(widgetConfiguration))
+                .content(objectMapper.writeValueAsString(widgetConfiguration))
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -239,16 +242,16 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
                 key = "doorlooptijd",
                 title = "Doorlooptijd",
                 dataSourceKey = "doorlooptijd2",
-                dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 500 }""") as ObjectNode,
+                dataSourceProperties = objectMapper.readTree("""{ "threshold": 500 }""") as ObjectNode,
                 displayType = "donut",
-                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": false }""") as ObjectNode,
+                displayTypeProperties = objectMapper.readTree("""{ "useKpi": false }""") as ObjectNode,
             )
         )
 
         mockMvc.perform(
             put("/api/management/v1/dashboard/{dashboardKey}/widget-configuration", "test_dashboard")
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(widgetConfigurations))
+                .content(objectMapper.writeValueAsString(widgetConfigurations))
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -268,15 +271,15 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
         val updateRequest = SingleWidgetConfigurationUpdateRequestDto(
                 title = "Doorlooptijd",
                 dataSourceKey = "doorlooptijd2",
-                dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 500 }""") as ObjectNode,
+                dataSourceProperties = objectMapper.readTree("""{ "threshold": 500 }""") as ObjectNode,
                 displayType = "donut",
-                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": false }""") as ObjectNode,
+                displayTypeProperties = objectMapper.readTree("""{ "useKpi": false }""") as ObjectNode,
             )
 
         mockMvc.perform(
             put("/api/management/v1/dashboard/{dashboardKey}/widget-configuration/{widgetKey}", "test_dashboard", "doorlooptijd")
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(updateRequest))
+                .content(objectMapper.writeValueAsString(updateRequest))
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -326,10 +329,10 @@ class AdminDashboardResourceIT : BaseIntegrationTest() {
             title = "Doorlooptijd",
             dashboard = dashboard,
             dataSourceKey = "doorlooptijd",
-            dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
+            dataSourceProperties = objectMapper.readTree("""{ "threshold": 50 }""") as ObjectNode,
             displayType = "gauge",
             order = 1,
-            displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
+            displayTypeProperties = objectMapper.readTree("""{ "useKpi": true }""") as ObjectNode,
         ))
     }
 

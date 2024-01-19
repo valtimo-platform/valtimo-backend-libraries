@@ -17,15 +17,15 @@
 package com.ritense.zakenapi.domain
 
 import com.fasterxml.jackson.databind.node.TextNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.treeToValue
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
 class BetalingsindicatieTest {
 
-    private val objectMapper = jacksonObjectMapper()
+    private val objectMapper = MapperSingleton.get()
 
     @Test
     fun `should deserialize to null when empty`() {

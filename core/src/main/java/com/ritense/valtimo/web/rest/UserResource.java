@@ -18,10 +18,10 @@ package com.ritense.valtimo.web.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
-import com.ritense.valtimo.contract.json.Mapper;
 import com.ritense.valtimo.service.UserSettingsService;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
@@ -40,11 +40,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriUtils;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
@@ -54,10 +56,16 @@ public class UserResource {
     private static final Logger logger = LoggerFactory.getLogger(UserResource.class);
     private final UserManagementService userManagementService;
     private final UserSettingsService userSettingsService;
+    private final ObjectMapper objectMapper;
 
-    public UserResource(UserManagementService userManagementService, UserSettingsService userSettingsService) {
+    public UserResource(
+        UserManagementService userManagementService,
+        UserSettingsService userSettingsService,
+        ObjectMapper objectMapper
+    ) {
         this.userManagementService = userManagementService;
         this.userSettingsService = userSettingsService;
+        this.objectMapper = objectMapper;
     }
 
     @PostMapping("/v1/users")
@@ -151,14 +159,14 @@ public class UserResource {
             settings = result.get().getSettings();
         }
 
-        return ResponseEntity.ok(Mapper.INSTANCE.get().writeValueAsString(settings));
+        return ResponseEntity.ok(objectMapper.writeValueAsString(settings));
     }
 
     @PutMapping("/v1/user/settings")
     public ResponseEntity<Object> saveCurrentUserSettings(@RequestBody String settings){
         logger.debug("Request to create settings for current user");
         try{
-            Map<String, Object> settingsMap = Mapper.INSTANCE.get().readValue(settings, new TypeReference<>() {});
+            Map<String, Object> settingsMap = objectMapper.readValue(settings, new TypeReference<>() {});
             userSettingsService.saveUserSettings(userManagementService.getCurrentUser(), settingsMap);
         } catch (Exception e){
             return ResponseEntity.badRequest().build();

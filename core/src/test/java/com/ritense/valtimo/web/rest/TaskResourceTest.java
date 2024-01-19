@@ -17,6 +17,7 @@
 package com.ritense.valtimo.web.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.request.AssigneeRequest;
@@ -62,7 +63,7 @@ class TaskResourceTest {
             camundaTaskService,
             camundaProcessService
         );
-        objectMapper = new ObjectMapper();
+        objectMapper = MapperSingleton.INSTANCE.get();
 
         assigneeRequest = new AssigneeRequest(assigneeEmail);
 

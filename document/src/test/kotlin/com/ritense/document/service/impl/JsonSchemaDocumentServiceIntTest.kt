@@ -15,7 +15,7 @@
  */
 package com.ritense.document.service.impl
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
@@ -38,10 +38,6 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.authentication.NamedUser
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser
-import com.ritense.valtimo.contract.json.Mapper
-import java.util.UUID
-import java.util.function.Supplier
-import javax.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
@@ -53,12 +49,20 @@ import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.security.test.context.support.WithMockUser
+import java.util.UUID
+import java.util.function.Supplier
+import javax.transaction.Transactional
 
 @Tag("integration")
 @Transactional
 internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     lateinit var definition: JsonSchemaDocumentDefinition
     lateinit var originalDocument: JsonSchemaDocument
     lateinit var ashaMiller: NamedUser
@@ -154,7 +158,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val event = eventCapture.allValues.map { it.get() }
             .single { it is DocumentViewed }
         assertThat(event.resultId).isEqualTo(document.id.toString())
-        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
+        assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
     }
 
     @Test
@@ -170,7 +174,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val event = eventCapture.allValues.map { it.get() }
             .single { it is DocumentViewed }
         assertThat(event.resultId).isEqualTo(document.id.toString())
-        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
+        assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
     }
 
     @Test
@@ -201,7 +205,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val event = eventCapture.allValues.map { it.get() }
             .single { it is DocumentViewed }
         assertThat(event.resultId).isEqualTo(document.id.toString())
-        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
+        assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
     }
 
     @Test
@@ -219,7 +223,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         verify(outboxService, atLeastOnce()).send(eventCapture.capture())
         val event = eventCapture.allValues.map { it.get() }
             .single() { it is DocumentsListed }
-        val result = Mapper.INSTANCE.get().writeValueAsString(event.result)
+        val result = objectMapper.writeValueAsString(event.result)
         documents.forEach { document ->
             assertThat(result).contains("\"${document.id}\"")
         }
@@ -240,7 +244,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         verify(outboxService, atLeastOnce()).send(eventCapture.capture())
         val event = eventCapture.allValues.map { it.get() }
             .single() { it is DocumentsListed }
-        val result = Mapper.INSTANCE.get().writeValueAsString(event.result)
+        val result = objectMapper.writeValueAsString(event.result)
         documents.forEach { document ->
             assertThat(result).contains("\"${document.id}\"")
         }
@@ -258,14 +262,14 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val event = eventCapture.allValues.map { it.get() }
             .single { it is DocumentCreated }
         assertThat(event.resultId).isEqualTo(document.id.toString())
-        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
+        assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
     }
 
     @Test
     @WithMockUser(username = USERNAME, authorities = [ADMIN])
     fun `should send outboxMessage when updating document`() {
         val document = createDocument("""{"street": "Admin street"}""")
-        val modifiedContent = jacksonObjectMapper().readTree("""{"street": "MODIFIED street"}""")
+        val modifiedContent = objectMapper.readTree("""{"street": "MODIFIED street"}""")
         val documentRequest = ModifyDocumentRequest.create(document, modifiedContent)
         reset(outboxService)
 
@@ -276,7 +280,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val event = eventCapture.allValues.map { it.get() }
             .single { it is DocumentUpdated }
         assertThat(event.resultId).isEqualTo(document.id.toString())
-        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(modifiedDocument))
+        assertThat(event.result).isEqualTo(objectMapper.valueToTree(modifiedDocument))
     }
 
     @Test
@@ -293,7 +297,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val event = eventCapture.allValues.map { it.get() }
             .single { it is DocumentAssigned }
         assertThat(event.resultId).isEqualTo(document.id.toString())
-        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
+        assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
     }
 
     @Test
@@ -310,7 +314,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val event = eventCapture.allValues.map { it.get() }
             .single { it is DocumentAssigned }
         assertThat(event.resultId).isEqualTo(document.id.toString())
-        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
+        assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
     }
 
     @Test
@@ -330,7 +334,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
             .filterIsInstance<DocumentAssigned>()
         documents.forEach { document ->
             val event = events.single { it.resultId == document.id.toString() }
-            assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
+            assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
         }
     }
 
@@ -349,7 +353,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val event = eventCapture.allValues.map { it.get() }
             .single { it is DocumentUnassigned }
         assertThat(event.resultId).isEqualTo(document.id.toString())
-        assertThat(event.result).isEqualTo(Mapper.INSTANCE.get().valueToTree(document))
+        assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
     }
 
     private fun createDocument(content: String): JsonSchemaDocument {

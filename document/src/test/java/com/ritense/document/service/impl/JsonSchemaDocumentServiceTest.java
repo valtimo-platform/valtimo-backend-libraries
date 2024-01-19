@@ -28,6 +28,7 @@ import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.resource.Resource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,12 +38,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -91,7 +94,8 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
             userManagementService,
             authorizationService,
             applicationEventPublisher,
-            outboxService
+            outboxService,
+            MapperSingleton.INSTANCE.get()
         ));
 
         var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");

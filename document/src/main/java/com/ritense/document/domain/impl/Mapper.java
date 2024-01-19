@@ -19,6 +19,10 @@ package com.ritense.document.domain.impl;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * @deprecated Replaced by {@link com.ritense.valtimo.contract.json.MapperSingleton }
+ */
+@Deprecated(since = "11.2.0", forRemoval = true)
 public enum Mapper {
     INSTANCE;
     private final ObjectMapper mapper = new ObjectMapper();

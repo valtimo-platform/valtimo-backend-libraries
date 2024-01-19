@@ -16,7 +16,7 @@
 
 package com.ritense.processdocument.camunda.authorization
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.processdocument.BaseIntegrationTest
@@ -35,6 +35,9 @@ internal class CamundaTaskDocumentMapperIntTest : BaseIntegrationTest() {
     @Autowired
     private lateinit var processDocumentService: ProcessDocumentService
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = [AuthoritiesConstants.USER])
     fun `should map CamundaTask to Document`() {
@@ -44,7 +47,7 @@ internal class CamundaTaskDocumentMapperIntTest : BaseIntegrationTest() {
                     "single-user-task-process",
                     NewDocumentRequest(
                         "house",
-                        jacksonObjectMapper().readTree("""{"city":"Amsterdam"}""")
+                        objectMapper.readTree("""{"city":"Amsterdam"}""")
                     )
                 )
             )
@@ -68,7 +71,7 @@ internal class CamundaTaskDocumentMapperIntTest : BaseIntegrationTest() {
                     "single-user-task-process",
                     NewDocumentRequest(
                         "house",
-                        jacksonObjectMapper().readTree("""{"city":"Utrecht"}""")
+                        objectMapper.readTree("""{"city":"Utrecht"}""")
                     )
                 )
             )

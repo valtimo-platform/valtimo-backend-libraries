@@ -17,7 +17,7 @@
 
 package com.ritense.valtimo.formflow.event
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.service.FormFlowService
@@ -39,6 +39,9 @@ internal class FormFlowStepCompletedIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var formFlowService: FormFlowService
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     @Test
     fun `should send outbox event when completing formflow step`() {
         val formFlowInstance = startFormFlow("loan:latest")
@@ -53,7 +56,7 @@ internal class FormFlowStepCompletedIntTest : BaseIntegrationTest() {
         assertThat(event.get().resultType).isEqualTo("com.ritense.valtimo.formflow.event.FormFlowStepCompletedResult")
         assertThat(event.get().resultId).isEqualTo(formFlowStepInstance.id.id.toString())
         assertThat(event.get().result).isEqualTo(
-            jacksonObjectMapper().valueToTree(
+            objectMapper.valueToTree(
                 FormFlowStepCompletedResult.of(
                     formFlowStepInstance
                 )
