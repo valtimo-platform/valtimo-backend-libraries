@@ -23,6 +23,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Transient;
 import java.util.Objects;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentRange;
@@ -100,8 +101,12 @@ public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumen
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         JsonSchemaDocumentDefinitionId that = (JsonSchemaDocumentDefinitionId) o;
         return version == that.version && Objects.equals(name, that.name);
     }

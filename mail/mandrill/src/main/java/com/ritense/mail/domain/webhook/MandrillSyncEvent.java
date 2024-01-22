@@ -19,6 +19,7 @@ package com.ritense.mail.domain.webhook;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
+
 import static com.ritense.mail.domain.webhook.SyncEventEnum.ADD;
 import static com.ritense.mail.domain.webhook.SyncEventEnum.BLACKLIST;
 
@@ -75,8 +76,12 @@ public class MandrillSyncEvent {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         MandrillSyncEvent that = (MandrillSyncEvent) o;
         return Objects.equals(getType(), that.getType()) && Objects.equals(getAction(), that.getAction()) && Objects.equals(getReject(), that.getReject());
     }

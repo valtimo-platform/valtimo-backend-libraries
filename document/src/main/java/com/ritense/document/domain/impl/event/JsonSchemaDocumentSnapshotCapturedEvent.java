@@ -50,8 +50,12 @@ public class JsonSchemaDocumentSnapshotCapturedEvent implements DocumentSnapshot
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         JsonSchemaDocumentSnapshotCapturedEvent that = (JsonSchemaDocumentSnapshotCapturedEvent) o;
         return Objects.equals(documentId, that.documentId) && Objects.equals(createdOn, that.createdOn) && Objects.equals(createdBy, that.createdBy);
     }

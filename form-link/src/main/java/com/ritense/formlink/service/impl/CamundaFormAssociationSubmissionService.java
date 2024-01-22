@@ -130,17 +130,16 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
                 final ProcessDocumentDefinition processDocumentDefinition = runWithoutAuthorization(
                     () -> {
                         if (document == null) {
-                            return processDocumentAssociationService
-                                .findProcessDocumentDefinition(new CamundaProcessDefinitionKey(processDefinitionKey)).orElse(
-                                    null);
+                            return processDocumentAssociationService.findProcessDocumentDefinition(
+                                new CamundaProcessDefinitionKey(processDefinitionKey)
+                            ).orElse(null);
                         } else {
                             var documentVersion = document.definitionId().version();
 
-                            return processDocumentAssociationService
-                                .findProcessDocumentDefinition(
-                                    new CamundaProcessDefinitionKey(processDefinitionKey),
-                                    documentVersion
-                                ).orElse(null);
+                            return processDocumentAssociationService.findProcessDocumentDefinition(
+                                new CamundaProcessDefinitionKey(processDefinitionKey),
+                                documentVersion
+                            ).orElse(null);
                         }
                     });
                 if (processDocumentDefinition != null) {
