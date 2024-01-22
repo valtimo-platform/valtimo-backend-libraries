@@ -66,8 +66,8 @@ class NotificationServiceImplTest {
     @Test
     void shouldSendNotification() {
         when(delegateTaskHelper.isTaskBeingAssigned(ArgumentMatchers.any())).thenReturn(true);
-        when(userManagementService.findByEmail(null))
-            .thenReturn(Optional.of(user("test1@test.com", List.of("dev"))));
+        when(userManagementService.findById("AAAA-1111"))
+            .thenReturn(user("test1@test.com", List.of("dev")));
         when(emailNotificationService.existsByEmailAddressAndTaskNotificationsEnabled(anyString())).thenReturn(true);
         when(valtimoProperties.getApp().getBaselUrl()).thenReturn("http://baseUrl");
 

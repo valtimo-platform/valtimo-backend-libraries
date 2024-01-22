@@ -60,10 +60,11 @@ public class NotificationServiceImpl implements NotificationService {
         logger.info("send notification for task: {} using template: {}", task.getName(), template);
 
         if (delegateTaskHelper.isTaskBeingAssigned(task)) {
-            final String emailAddress = task.getAssignee();
-            userManagementService.findByEmail(emailAddress).ifPresent(
-                user -> notifyUserAboutTaskAssignment(user, task, template, "nl")
-            );
+            final String userId = task.getAssignee();
+            if (userId != null) {
+                var user = userManagementService.findById(userId);
+                notifyUserAboutTaskAssignment(user, task, template, "nl");
+            }
         } else if (delegateTaskHelper.isTaskBeingCreated(task)) {
             notifyCandidateGroupAboutTaskAssignment(task, template);
         }
