@@ -55,6 +55,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Root;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.camunda.bpm.engine.AuthorizationException;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.ProcessEngineException;
@@ -174,7 +175,7 @@ public class CamundaTaskService {
     public void assign(String taskId, String assignee) throws IllegalStateException {
         if (assignee == null) {
             unassign(taskId);
-        } else if (assignee.matches("[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}")) {
+        } else if (EmailValidator.getInstance().isValid(assignee)) {
             throw new IllegalStateException("Task assignee must be an ID. Not an email: '" + assignee + "'");
         } else {
             final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
