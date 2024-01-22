@@ -141,7 +141,8 @@ public class CamundaTaskService {
         UserManagementService userManagementService,
         EntityManager entityManager,
         AuthorizationService authorizationService,
-        OutboxService outboxService, ObjectMapper objectMapper) {
+        OutboxService outboxService, ObjectMapper objectMapper
+    ) {
         this.taskService = taskService;
         this.formService = formService;
         this.delegateTaskHelper = delegateTaskHelper;
@@ -435,6 +436,7 @@ public class CamundaTaskService {
 
     /**
      * Retrieve a list of comments that are associated to the task.
+     *
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
@@ -447,6 +449,7 @@ public class CamundaTaskService {
 
     /**
      * Retrieve a list of comments that are associated to a process instance.
+     *
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
@@ -464,6 +467,7 @@ public class CamundaTaskService {
 
     /**
      * Create a comment and associate that comment to either a task or a process instance.
+     *
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
