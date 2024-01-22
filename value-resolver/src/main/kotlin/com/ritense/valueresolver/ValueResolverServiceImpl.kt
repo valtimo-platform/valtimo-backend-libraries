@@ -56,13 +56,12 @@ open class ValueResolverServiceImpl(
         processInstanceId: String,
         variableScope: VariableScope,
         requestedValues: Collection<String>
-    ): Map<String, Any> {
+    ): Map<String, Any?> {
         return toResolverFactoryMap(requestedValues).map { (resolverFactory, requestedValues) ->
             val resolver = resolverFactory.createResolver(processInstanceId, variableScope)
             //Create a list of resolved Map entries
-            requestedValues.mapNotNull { requestedValue ->
-                resolver.apply(trimPrefix(requestedValue))
-                    ?.let { requestedValue to it }
+            requestedValues.map { requestedValue ->
+                requestedValue to resolver.apply(trimPrefix(requestedValue))
             }
         }.flatten().toMap()
     }
@@ -106,13 +105,12 @@ open class ValueResolverServiceImpl(
     override fun resolveValues(
         documentInstanceId: String,
         requestedValues: Collection<String>
-    ): Map<String, Any> {
+    ): Map<String, Any?> {
         return toResolverFactoryMap(requestedValues).map { (resolverFactory, requestedValues) ->
             val resolver = resolverFactory.createResolver(documentInstanceId)
             //Create a list of resolved Map entries
-            requestedValues.mapNotNull { requestedValue ->
-                resolver.apply(trimPrefix(requestedValue))
-                    ?.let { requestedValue to it }
+            requestedValues.map { requestedValue ->
+                requestedValue to resolver.apply(trimPrefix(requestedValue))
             }
         }.flatten().toMap()
     }

@@ -33,7 +33,11 @@ class TestPlugin {
         description = "This is a test action",
         activityTypes = [SERVICE_TASK_START]
     )
-    fun testAction(@PluginActionProperty testActionProperty: String) {
-        //do nothing
+    fun testAction(@PluginActionProperty attachmentIds: List<String>?) {
+        Companion.attachmentIds = attachmentIds
+    }
+
+    companion object {
+        var attachmentIds: List<String>? = null
     }
 }

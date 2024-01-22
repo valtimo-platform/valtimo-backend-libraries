@@ -20,8 +20,8 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.BaseTest
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
-import com.ritense.smartdocuments.domain.DocumentsStructure
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
 import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import java.time.Instant
@@ -217,8 +217,8 @@ internal class SmartDocumentsClientTest : BaseTest() {
         assertEquals(
             "400 The server cannot or will not process the request due to something that is perceived to be a client " +
                     "error (e.g., no valid template specified, user has no privileges for the template, malformed request syntax, " +
-                    "invalid request message framing, or deceptive request routing). Response received from server:\n" + responseBody,
-            exception.message
+                    "invalid request message framing, or deceptive request routing). Response received from server:\n$responseBody",
+            exception.message?.trimIndent()
         )
     }
 
@@ -322,7 +322,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
 
         // then
         assertThat(response).isNotNull
-        assertThat(response).isInstanceOf(DocumentsStructure::class.java)
+        assertThat(response).isInstanceOf(SmartDocumentsTemplateData::class.java)
     }
 
     private fun mockResponse(
@@ -382,6 +382,7 @@ internal class SmartDocumentsClientTest : BaseTest() {
                     </TemplateGroups>
                     <HeaderGroups/>
                 </GroupsAccess>
+            </UserGroup>
         </UserGroups>
     </UsersStructure>
 </SmartDocuments>
@@ -390,6 +391,6 @@ internal class SmartDocumentsClientTest : BaseTest() {
     private fun pluginProperties(): SmartDocumentsPropertiesDto = SmartDocumentsPropertiesDto(
         username = "username",
         password = "password",
-        url = "www.test.com"
+        url = mockDocumentenApi.url("/").toString()
     )
 }

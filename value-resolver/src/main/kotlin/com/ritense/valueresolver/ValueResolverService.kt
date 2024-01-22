@@ -37,7 +37,7 @@ interface ValueResolverService {
         processInstanceId: String,
         variableScope: VariableScope,
         requestedValues: Collection<String>
-    ): Map<String, Any>
+    ): Map<String, Any?>
 
     /**
      * This method provides a way of validating a propertyName using defined resolvers.
@@ -69,7 +69,7 @@ interface ValueResolverService {
     fun resolveValues(
         documentInstanceId: String,
         requestedValues: Collection<String>
-    ): Map<String, Any>
+    ): Map<String, Any?>
 
     /**
      * Handle values. Usually by storing them somewhere.
