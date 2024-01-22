@@ -21,5 +21,5 @@ import java.util.UUID
 
 data class FormTaskOpenResultProperties(
     val formDefinitionId: UUID,
-    val prefilledForm: JsonNode,
+    val prefilledForm: JsonNode
 )

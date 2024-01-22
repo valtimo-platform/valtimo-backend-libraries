@@ -60,6 +60,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.CREATE;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.DELETE;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.MODIFY;
@@ -126,14 +127,13 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         final var definition = documentDefinitionRepository.findById(id).orElse(null);
 
         if (definition != null) {
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocumentDefinition.class,
-                        VIEW,
-                        definition
-                    )
-                );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW,
+                    definition
+                )
+            );
         }
 
         return Optional.ofNullable(definition);
@@ -146,14 +146,13 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         ).orElse(null);
 
         if (definition != null) {
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocumentDefinition.class,
-                        VIEW,
-                        definition
-                    )
-                );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    VIEW,
+                    definition
+                )
+            );
         }
 
         return Optional.ofNullable(definition);
@@ -330,14 +329,13 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
     @Override
     public void removeDocumentDefinition(String documentDefinitionName) {
         findLatestByName(documentDefinitionName).ifPresent(documentDefinition -> {
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocumentDefinition.class,
-                        DELETE,
-                        documentDefinition
-                    )
-                );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentDefinition.class,
+                    DELETE,
+                    documentDefinition
+                )
+            );
         });
 
         documentDefinitionRepository.deleteByIdName(documentDefinitionName);

@@ -32,7 +32,7 @@ public class StaticResourcesHttpSecurityConfigurer implements HttpSecurityConfig
                 requests.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
             );
         } catch (Exception e) {
-           throw new HttpConfigurerConfigurationException(e);
+            throw new HttpConfigurerConfigurationException(e);
         }
     }
 

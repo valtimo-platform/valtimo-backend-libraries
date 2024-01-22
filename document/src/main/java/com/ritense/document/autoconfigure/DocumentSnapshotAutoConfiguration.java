@@ -53,7 +53,12 @@ public class DocumentSnapshotAutoConfiguration {
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
         final AuthorizationService authorizationService
     ) {
-        return new JsonSchemaDocumentSnapshotService(documentSnapshotRepository, documentService, documentDefinitionService, authorizationService);
+        return new JsonSchemaDocumentSnapshotService(
+            documentSnapshotRepository,
+            documentService,
+            documentDefinitionService,
+            authorizationService
+        );
     }
 
     @Bean
@@ -95,7 +100,7 @@ public class DocumentSnapshotAutoConfiguration {
         DocumentSnapshotRepository<JsonSchemaDocumentSnapshot>,
         JsonSchemaDocumentSnapshot,
         DocumentSnapshot.Id
-    > postgresJsonSchemaDocumentSnapshotRepository() {
+        > postgresJsonSchemaDocumentSnapshotRepository() {
         return new JpaRepositoryFactoryBean<>(PostgresJsonSchemaDocumentSnapshotRepository.class);
     }
 
@@ -105,7 +110,7 @@ public class DocumentSnapshotAutoConfiguration {
         DocumentSnapshotRepository<JsonSchemaDocumentSnapshot>,
         JsonSchemaDocumentSnapshot,
         DocumentSnapshot.Id
-    > mysqlJsonSchemaDocumentSnapshotRepository() {
+        > mysqlJsonSchemaDocumentSnapshotRepository() {
         return new JpaRepositoryFactoryBean<>(MysqlJsonSchemaDocumentSnapshotRepository.class);
     }
 }

@@ -45,6 +45,8 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
 
 @Deprecated(since = "10.6.0", forRemoval = true)
@@ -70,7 +72,8 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
         CamundaTaskService camundaTaskService,
         SubmissionTransformerService submissionTransformerService,
         ApplicationEventPublisher applicationEventPublisher,
-        AuthorizationService authorizationService) {
+        AuthorizationService authorizationService
+    ) {
         this.formDefinitionService = formDefinitionService;
         this.documentService = documentService;
         this.processDocumentAssociationService = processDocumentAssociationService;
@@ -103,38 +106,43 @@ public class CamundaFormAssociationSubmissionService implements FormAssociationS
 
             final JsonSchemaDocument document;
             if (documentId != null) {
-                document = (JsonSchemaDocument) AuthorizationContext
-                    .runWithoutAuthorization(
-                        () -> documentService.findBy(
-                            JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
-                        )
-                    ).orElseThrow(() -> new DocumentNotFoundException(String.format("Unable to find a Document for document ID '%s'", documentId)));
+                document = (JsonSchemaDocument) runWithoutAuthorization(
+                    () -> documentService.findBy(
+                        JsonSchemaDocumentId.existingId(UUID.fromString(documentId))
+                    )
+                ).orElseThrow(() -> new DocumentNotFoundException(String.format(
+                    "Unable to find a Document for document ID '%s'",
+                    documentId
+                )));
 
-                authorizationService
-                    .requirePermission(
-                        new EntityAuthorizationRequest<>(
-                            JsonSchemaDocument.class,
-                            CREATE,
-                            document
-                        )
-                    );
+                authorizationService.requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        CREATE,
+                        document
+                    )
+                );
             } else {
                 document = null;
             }
 
             if (documentDefinitionName == null) {
-                final ProcessDocumentDefinition processDocumentDefinition = AuthorizationContext.runWithoutAuthorization(() -> {
-                    if (document == null) {
-                        return processDocumentAssociationService
-                            .findProcessDocumentDefinition(new CamundaProcessDefinitionKey(processDefinitionKey)).orElse(null);
-                    } else {
-                        var documentVersion = document.definitionId().version();
+                final ProcessDocumentDefinition processDocumentDefinition = runWithoutAuthorization(
+                    () -> {
+                        if (document == null) {
+                            return processDocumentAssociationService
+                                .findProcessDocumentDefinition(new CamundaProcessDefinitionKey(processDefinitionKey)).orElse(
+                                    null);
+                        } else {
+                            var documentVersion = document.definitionId().version();
 
-                        return processDocumentAssociationService
-                            .findProcessDocumentDefinition(
-                                new CamundaProcessDefinitionKey(processDefinitionKey), documentVersion).orElse(null);
-                    }
-                });
+                            return processDocumentAssociationService
+                                .findProcessDocumentDefinition(
+                                    new CamundaProcessDefinitionKey(processDefinitionKey),
+                                    documentVersion
+                                ).orElse(null);
+                        }
+                    });
                 if (processDocumentDefinition != null) {
                     documentDefinitionName = processDocumentDefinition.processDocumentDefinitionId().documentDefinitionId().name();
                 }

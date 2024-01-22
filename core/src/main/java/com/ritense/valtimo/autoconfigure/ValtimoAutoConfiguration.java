@@ -119,17 +119,13 @@ public class ValtimoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(AuthorizedUsersService.class)
-    public AuthorizedUsersService authorizedUsersService(
-        final Collection<AuthorizedUserRepository> authorizedUserRepositories
-    ) {
+    public AuthorizedUsersService authorizedUsersService(final Collection<AuthorizedUserRepository> authorizedUserRepositories) {
         return new AuthorizedUsersServiceImpl(authorizedUserRepositories);
     }
 
     @Bean
     @ConditionalOnMissingBean(CurrentUserService.class)
-    public CurrentUserService currentUserService(
-        final Collection<CurrentUserRepository> currentUserRepositories
-    ) {
+    public CurrentUserService currentUserService(final Collection<CurrentUserRepository> currentUserRepositories) {
         return new CurrentUserServiceImpl(currentUserRepositories);
     }
 
@@ -177,7 +173,7 @@ public class ValtimoAutoConfiguration {
         final AuthorizationService authorizationService,
         final OutboxService outboxService,
         final ObjectMapper objectMapper
-        ) {
+    ) {
         return new CamundaTaskService(
             taskService,
             formService,
@@ -191,14 +187,13 @@ public class ValtimoAutoConfiguration {
             entityManager,
             authorizationService,
             outboxService,
-            objectMapper);
+            objectMapper
+        );
     }
 
     @Bean
     @ConditionalOnMissingBean(ProcessShortTimerService.class)
-    public ProcessShortTimerService processShortTimerService(
-        final RepositoryService repositoryService
-    ) {
+    public ProcessShortTimerService processShortTimerService(final RepositoryService repositoryService) {
         return new ProcessShortTimerService(repositoryService);
     }
 
@@ -229,9 +224,7 @@ public class ValtimoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(CamundaSearchProcessInstanceRepository.class)
-    public CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository(
-        final SqlSession sqlSession
-    ) {
+    public CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository(final SqlSession sqlSession) {
         return new CamundaSearchProcessInstanceRepository(sqlSession);
     }
 
@@ -249,11 +242,7 @@ public class ValtimoAutoConfiguration {
         final CamundaTaskService camundaTaskService,
         final CamundaProcessService camundaProcessService
     ) {
-        return new TaskResource(
-            formService,
-            camundaTaskService,
-            camundaProcessService
-        );
+        return new TaskResource(formService, camundaTaskService, camundaProcessService);
     }
 
     @Bean
@@ -264,12 +253,7 @@ public class ValtimoAutoConfiguration {
         final CamundaHistoryService camundaHistoryService,
         final CamundaReportingRepository camundaReportingRepository
     ) {
-        return new ReportingResource(
-            sqlSession,
-            historyService,
-            camundaHistoryService,
-            camundaReportingRepository
-        );
+        return new ReportingResource(sqlSession, historyService, camundaHistoryService, camundaReportingRepository);
     }
 
     @Bean
@@ -325,11 +309,7 @@ public class ValtimoAutoConfiguration {
         UserSettingsService userSettingsService,
         ObjectMapper objectMapper
     ) {
-        return new UserResource(
-            userManagementService,
-            userSettingsService,
-            objectMapper
-        );
+        return new UserResource(userManagementService, userSettingsService, objectMapper);
     }
 
     @Bean
@@ -346,9 +326,7 @@ public class ValtimoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ValtimoApplicationReadyEventListener.class)
-    public ValtimoApplicationReadyEventListener valtimoApplicationReadyEventListener(
-        @Value("${timezone:}") Optional<String> timeZone
-    ) {
+    public ValtimoApplicationReadyEventListener valtimoApplicationReadyEventListener(@Value("${timezone:}") Optional<String> timeZone) {
         return new ValtimoApplicationReadyEventListener(timeZone);
     }
 
@@ -359,7 +337,11 @@ public class ValtimoAutoConfiguration {
         final RepositoryService repositoryService,
         final CamundaRepositoryService camundaRepositoryService
     ) {
-        return new ProcessDefinitionPropertyListener(processDefinitionPropertiesRepository, repositoryService, camundaRepositoryService);
+        return new ProcessDefinitionPropertyListener(
+            processDefinitionPropertiesRepository,
+            repositoryService,
+            camundaRepositoryService
+        );
     }
 
     @Bean
@@ -369,11 +351,7 @@ public class ValtimoAutoConfiguration {
         final ValtimoProperties valtimoProperties,
         final CamundaRepositoryService repositoryService
     ) {
-        return new ProcessPropertyService(
-            processDefinitionPropertiesRepository,
-            valtimoProperties,
-            repositoryService
-        );
+        return new ProcessPropertyService(processDefinitionPropertiesRepository, valtimoProperties, repositoryService);
     }
 
 }

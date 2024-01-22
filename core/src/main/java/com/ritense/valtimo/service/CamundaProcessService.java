@@ -285,8 +285,11 @@ public class CamundaProcessService {
     }
 
     @Transactional
-    public void deploy(String fileName, ByteArrayInputStream fileInput)
-        throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
+    public void deploy(
+        String fileName,
+        ByteArrayInputStream fileInput
+    ) throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
+
         denyAuthorization();
 
         if (fileName.endsWith(".bpmn")) {
