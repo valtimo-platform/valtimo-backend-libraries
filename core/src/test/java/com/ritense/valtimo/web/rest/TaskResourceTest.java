@@ -49,7 +49,7 @@ class TaskResourceTest {
     private CamundaProcessService camundaProcessService;
     private AssigneeRequest assigneeRequest;
     private ObjectMapper objectMapper;
-    private String assigneeEmail = "A@A.com";
+    private String assigneeId = "AAAA-1111";
     private String taskId = UUID.randomUUID().toString();
 
     @BeforeEach
@@ -65,7 +65,7 @@ class TaskResourceTest {
         );
         objectMapper = MapperSingleton.INSTANCE.get();
 
-        assigneeRequest = new AssigneeRequest(assigneeEmail);
+        assigneeRequest = new AssigneeRequest(assigneeId);
 
         mockMvc = MockMvcBuilders.standaloneSetup(taskResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -83,7 +83,7 @@ class TaskResourceTest {
             .andDo(print())
             .andExpect(status().isOk());
 
-        verify(camundaTaskService, times(1)).assign(eq(taskId), eq(assigneeEmail));
+        verify(camundaTaskService, times(1)).assign(taskId, assigneeId);
     }
 
 }

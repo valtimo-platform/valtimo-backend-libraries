@@ -49,7 +49,8 @@ public class NotificationTestHelper {
         return new DelegateTaskFake(id)
             .withExecution(execution)
             .withVariables(Map.of("variables", "variables"))
-            .withName("taskName");
+            .withName("taskName")
+            .withAssignee("AAAA-1111");
     }
 
 }

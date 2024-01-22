@@ -39,6 +39,8 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
@@ -51,6 +53,9 @@ dependencies {
     testImplementation project(":core")
     testImplementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+
+    testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
+    testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
 }
 
 apply from: "gradle/publishing.gradle"

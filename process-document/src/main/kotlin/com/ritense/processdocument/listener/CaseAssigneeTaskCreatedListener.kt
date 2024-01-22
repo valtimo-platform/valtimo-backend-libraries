@@ -64,7 +64,7 @@ open class CaseAssigneeTaskCreatedListener(
                 taskService
                     .setAssignee(
                         delegateTask.id,
-                        assignee.email
+                        assignee.id
                     )
                     .also {
                         logger.debug { "Setting assignee for task with id ${delegateTask.id}" }

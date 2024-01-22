@@ -72,7 +72,7 @@ import static org.mockito.Mockito.when;
 
 class CamundaTaskServiceTest {
     private static final String TASK_ID = "task";
-    private static final String ASSIGNEE = "theAssignee";
+    private static final String ASSIGNEE = "AAAA-1111";
     private CamundaTask task;
     private TaskService taskService;
     private FormService formService;
