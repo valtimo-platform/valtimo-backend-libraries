@@ -45,7 +45,11 @@ public class FormLinkDeploymentService {
     private final FormAssociationService formAssociationService;
     private final FormDefinitionService formDefinitionService;
 
-    public FormLinkDeploymentService(ResourceLoader resourceLoader, FormAssociationService formAssociationService, FormDefinitionService formDefinitionService) {
+    public FormLinkDeploymentService(
+        ResourceLoader resourceLoader,
+        FormAssociationService formAssociationService,
+        FormDefinitionService formDefinitionService
+    ) {
         this.resourceLoader = resourceLoader;
         this.formAssociationService = formAssociationService;
         this.formDefinitionService = formDefinitionService;

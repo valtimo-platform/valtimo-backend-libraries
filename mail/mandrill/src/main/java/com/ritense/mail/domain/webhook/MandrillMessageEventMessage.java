@@ -96,10 +96,17 @@ public class MandrillMessageEventMessage {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         MandrillMessageEventMessage that = (MandrillMessageEventMessage) o;
-        return Objects.equals(getSubject(), that.getSubject()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getSender(), that.getSender()) && Objects.equals(getState(), that.getState()) && Objects.equals(getBounceDescription(), that.getBounceDescription());
+        return Objects.equals(getSubject(), that.getSubject()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(
+            getSender(),
+            that.getSender()
+        ) && Objects.equals(getState(), that.getState()) && Objects.equals(getBounceDescription(), that.getBounceDescription());
     }
 
     @Override

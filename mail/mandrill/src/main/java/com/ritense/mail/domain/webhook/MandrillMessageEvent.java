@@ -19,6 +19,7 @@ package com.ritense.mail.domain.webhook;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
+
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.HARD_BOUNCE;
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.REJECT;
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.SPAM;
@@ -81,10 +82,17 @@ public class MandrillMessageEvent {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         MandrillMessageEvent that = (MandrillMessageEvent) o;
-        return Objects.equals(getEvent(), that.getEvent()) && Objects.equals(getTimestamp(), that.getTimestamp()) && Objects.equals(getMessage(), that.getMessage());
+        return Objects.equals(getEvent(), that.getEvent()) && Objects.equals(getTimestamp(), that.getTimestamp()) && Objects.equals(
+            getMessage(),
+            that.getMessage()
+        );
     }
 
     @Override

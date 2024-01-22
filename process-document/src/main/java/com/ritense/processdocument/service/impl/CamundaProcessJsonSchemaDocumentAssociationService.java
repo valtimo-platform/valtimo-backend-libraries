@@ -153,7 +153,10 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
 
         return findProcessDocumentDefinition(processDefinitionKey, documentDefinitionVersion)
-            .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException("for processDefinitionKey '" + processDefinitionKey + "' and version '" + documentDefinitionVersion + "'"));
+            .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException(
+                    "for processDefinitionKey '" + processDefinitionKey + "' and version '" + documentDefinitionVersion + "'"
+                )
+            );
     }
 
     @Override

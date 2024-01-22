@@ -195,8 +195,11 @@ public class SearchRequestValidator {
     }
 
     private static void validateSearchFieldType(SearchWithConfigRequest.SearchWithConfigFilter searchFilter, SearchField searchField) {
-        if ((searchField.getFieldType() == MULTI_SELECT_DROPDOWN || searchField.getFieldType() == MULTIPLE || searchField.getFieldType() == SINGLE || searchField.getFieldType() == SINGLE_SELECT_DROPDOWN)
-            && (searchFilter.getRangeFrom() != null || searchFilter.getRangeTo() != null)) {
+        if ((searchField.getFieldType() == MULTI_SELECT_DROPDOWN ||
+            searchField.getFieldType() == MULTIPLE ||
+            searchField.getFieldType() == SINGLE ||
+            searchField.getFieldType() == SINGLE_SELECT_DROPDOWN) &&
+            (searchFilter.getRangeFrom() != null || searchFilter.getRangeTo() != null)) {
             throw new SearchConfigRequestException(searchField, searchField.getFieldType().toString(), "range parameters were found");
         }
         if ((searchField.getFieldType() == SINGLE || searchField.getFieldType() == SINGLE_SELECT_DROPDOWN) && searchFilter.getValues().isEmpty()) {
@@ -261,7 +264,9 @@ public class SearchRequestValidator {
                     }
                 }
                 if (!hasDateFormat) {
-                    throw new ValidationException("Search values '" + Arrays.toString(allValues.toArray()) + "' don't have the correct '" + dataType + "' format");
+                    throw new ValidationException(
+                        "Search values '" + Arrays.toString(allValues.toArray()) + "' don't have the correct '" + dataType + "' format"
+                    );
                 }
             }
         }
@@ -270,7 +275,11 @@ public class SearchRequestValidator {
 
     private static void validateDataType(SearchField searchField, List<?> allValues, Class<?>... types) {
         if (Arrays.stream(types).noneMatch(type -> hasType(allValues, type))) {
-            throw new SearchConfigRequestException(searchField, searchField.getDataType().toString(), "values '" + Arrays.toString(allValues.toArray()) + "' was not of type " + Arrays.toString(types));
+            throw new SearchConfigRequestException(
+                searchField,
+                searchField.getDataType().toString(),
+                "values '" + Arrays.toString(allValues.toArray()) + "' was not of type " + Arrays.toString(types)
+            );
         }
     }
 

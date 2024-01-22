@@ -56,9 +56,9 @@ public class ExceptionTranslator implements ProblemHandling {
             return entity;
         }
         ProblemBuilder builder = Problem.builder()
-                .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
-                .withStatus(problem.getStatus())
-                .withTitle(problem.getTitle());
+            .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
+            .withStatus(problem.getStatus())
+            .withTitle(problem.getTitle());
         final HttpServletRequest httpServletRequest;
         if ((httpServletRequest = request.getNativeRequest(HttpServletRequest.class)) != null) {
             builder.with("path", httpServletRequest.getRequestURI());
@@ -80,7 +80,11 @@ public class ExceptionTranslator implements ProblemHandling {
         }
 
         builder.withCause(((DefaultProblem) problem).getCause());
-        hardeningServiceOptional.ifPresent((hardeningService) -> hardeningService.harden((ThrowableProblem) problem, builder, (HttpServletRequest) request.getNativeRequest()));
+        hardeningServiceOptional.ifPresent((hardeningService) -> hardeningService.harden(
+            (ThrowableProblem) problem,
+            builder,
+            (HttpServletRequest) request.getNativeRequest()
+        ));
 
         return new ResponseEntity<>(builder.build(), entity.getHeaders(), entity.getStatusCode());
     }

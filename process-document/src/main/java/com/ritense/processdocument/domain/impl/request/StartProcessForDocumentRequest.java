@@ -46,10 +46,17 @@ public class StartProcessForDocumentRequest implements Request {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         StartProcessForDocumentRequest that = (StartProcessForDocumentRequest) o;
-        return Objects.equals(getDocumentId(), that.getDocumentId()) && Objects.equals(getProcessDefinitionKey(), that.getProcessDefinitionKey()) && Objects.equals(getProcessVars(), that.getProcessVars());
+        return Objects.equals(getDocumentId(), that.getDocumentId()) && Objects.equals(
+            getProcessDefinitionKey(),
+            that.getProcessDefinitionKey()
+        ) && Objects.equals(getProcessVars(), that.getProcessVars());
     }
 
     @Override

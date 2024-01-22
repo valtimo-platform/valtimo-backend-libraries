@@ -63,6 +63,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toMap;
@@ -124,7 +125,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             .collect(toMap(SearchField::getKey, searchField -> searchField));
 
         var searchCriteria = searchWithConfigRequest.getOtherFilters().stream()
-            .map(otherFilter -> SearchRequestMapper.toOtherFilter(otherFilter, searchFieldMap.get(otherFilter.getKey()), zoneOffset))
+            .map(otherFilter -> SearchRequestMapper.toOtherFilter(
+                otherFilter,
+                searchFieldMap.get(otherFilter.getKey()),
+                zoneOffset
+            ))
             .toList();
 
         var advancedSearchRequest = SearchRequestMapper.toAdvancedSearchRequest(searchWithConfigRequest, searchCriteria);
@@ -247,12 +252,16 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         query.where(predicates.toArray(new Predicate[0]));
     }
 
-    private void addNonJsonFieldPredicates(CriteriaBuilder cb, Root<JsonSchemaDocument> root,
-                                           SearchRequest searchRequest, List<Predicate> predicates) {
+    private void addNonJsonFieldPredicates(
+        CriteriaBuilder cb, Root<JsonSchemaDocument> root,
+        SearchRequest searchRequest, List<Predicate> predicates
+    ) {
 
         if (!StringUtils.isEmpty(searchRequest.getDocumentDefinitionName())) {
-            predicates.add(cb.equal(root.get(DOCUMENT_DEFINITION_ID).get(NAME),
-                searchRequest.getDocumentDefinitionName()));
+            predicates.add(cb.equal(
+                root.get(DOCUMENT_DEFINITION_ID).get(NAME),
+                searchRequest.getDocumentDefinitionName()
+            ));
         }
 
         if (!StringUtils.isEmpty(searchRequest.getCreatedBy())) {
@@ -268,8 +277,10 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         }
     }
 
-    private void addJsonFieldPredicates(CriteriaBuilder cb, Root<JsonSchemaDocument> root,
-                                        SearchRequest searchRequest, List<Predicate> predicates) {
+    private void addJsonFieldPredicates(
+        CriteriaBuilder cb, Root<JsonSchemaDocument> root,
+        SearchRequest searchRequest, List<Predicate> predicates
+    ) {
 
         if (searchRequest.getOtherFilters() != null && !searchRequest.getOtherFilters().isEmpty()) {
             Map<String, List<SearchCriteria>> criteriaPerPath = searchRequest.getOtherFilters()
@@ -281,12 +292,21 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 .flatMap(pathEntry -> {
                     if (pathEntry.getValue().size() == 1) {
                         return Stream.of(
-                            findJsonPathValue(cb, root, pathEntry.getKey(), pathEntry.getValue().get(0).getValue()));
+                            findJsonPathValue(
+                                cb,
+                                root,
+                                pathEntry.getKey(),
+                                pathEntry.getValue().get(0).getValue()
+                            ));
                     } else {
                         return Stream.of(cb.or(
                             pathEntry.getValue().stream()
-                                .map(currentCriteria -> findJsonPathValue(cb, root, currentCriteria.getPath(),
-                                    currentCriteria.getValue()))
+                                .map(currentCriteria -> findJsonPathValue(
+                                    cb,
+                                    root,
+                                    currentCriteria.getPath(),
+                                    currentCriteria.getValue()
+                                ))
                                 .toList()
                                 .toArray(Predicate[]::new)
                         ));
@@ -358,8 +378,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             case LESS_THAN_OR_EQUAL_TO -> searchLessThanOrEqualTo(cb, value, rangeTo);
             case BETWEEN -> searchBetween(cb, value, rangeFrom, rangeTo);
             case IN -> searchIn(cb, value, searchCriteria.getValues());
-            default ->
-                throw new NotImplementedException("Searching for search type '" + searchCriteria.getSearchType() + "' hasn't been implemented.");
+            default -> throw new NotImplementedException("Searching for search type '" + searchCriteria.getSearchType() + "' hasn't been implemented.");
         };
     }
 
@@ -485,7 +504,12 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 } else if (order.getProperty().startsWith(CASE_PREFIX)) {
                     expression = root.get(order.getProperty().substring(CASE_PREFIX.length()));
                 } else if (order.getProperty().startsWith("$.")) {
-                    expression = cb.lower(queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), order.getProperty(), String.class));
+                    expression = cb.lower(queryDialectHelper.getJsonValueExpression(
+                        cb,
+                        root.get(CONTENT).get(CONTENT),
+                        order.getProperty(),
+                        String.class
+                    ));
                 } else {
                     expression = root.get(order.getProperty());
                 }

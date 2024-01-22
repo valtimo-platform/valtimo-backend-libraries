@@ -65,10 +65,17 @@ public class FormLinkConfigItem {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         FormLinkConfigItem that = (FormLinkConfigItem) o;
-        return Objects.equals(getFormName(), that.getFormName()) && Objects.equals(getFormLinkElementId(), that.getFormLinkElementId()) && getFormAssociationType() == that.getFormAssociationType();
+        return Objects.equals(getFormName(), that.getFormName()) && Objects.equals(
+            getFormLinkElementId(),
+            that.getFormLinkElementId()
+        ) && getFormAssociationType() == that.getFormAssociationType();
     }
 
     @Override

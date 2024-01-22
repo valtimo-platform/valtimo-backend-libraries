@@ -68,7 +68,12 @@ public class ReportingResource {
     private final CamundaHistoryService camundaHistoryService;
     private final CamundaReportingRepository camundaReportingRepository;
 
-    public ReportingResource(SqlSession session, HistoryService historyService, CamundaHistoryService camundaHistoryService, CamundaReportingRepository camundaReportingRepository) {
+    public ReportingResource(
+        SqlSession session,
+        HistoryService historyService,
+        CamundaHistoryService camundaHistoryService,
+        CamundaReportingRepository camundaReportingRepository
+    ) {
         this.session = session;
         this.historyService = historyService;
         this.camundaHistoryService = camundaHistoryService;
@@ -308,7 +313,7 @@ public class ReportingResource {
         return query.orderByActivityName().asc().list();
     }
 
-    private List<HistoricActivityInstance> getUnfinishedHistoricTaskInstances(LocalDate fromDate, LocalDate toDate){
+    private List<HistoricActivityInstance> getUnfinishedHistoricTaskInstances(LocalDate fromDate, LocalDate toDate) {
         HistoricActivityInstanceQuery historicActivityInstanceQuery = historyService.createHistoricActivityInstanceQuery()
             .unfinished()
             .activityType(ACTIVITY_USER_TASK);
