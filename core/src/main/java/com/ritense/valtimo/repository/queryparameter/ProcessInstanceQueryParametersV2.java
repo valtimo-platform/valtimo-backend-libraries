@@ -64,7 +64,7 @@ public class ProcessInstanceQueryParametersV2 {
         if (Optional.ofNullable(processDefinitionId).isPresent()) {
             parameters.put("processDefinitionId", processDefinitionId);
         }
-        if (processVariables != null && processVariables.size() > 0) {
+        if (processVariables != null && !processVariables.isEmpty()) {
             List<ProcessVariableQueryParameterV2> processVariableQueryParameterV2s = new ArrayList<>();
             processVariables.forEach(processVariable -> createProcessVariableQueryParameter(processVariableQueryParameterV2s, processVariable));
             parameters.put("variables", processVariableQueryParameterV2s);

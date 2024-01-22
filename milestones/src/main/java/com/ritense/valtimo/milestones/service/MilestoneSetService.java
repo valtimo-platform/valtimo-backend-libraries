@@ -64,7 +64,7 @@ public class MilestoneSetService {
             return;
         }
         List<Milestone> milestones = milestoneRepository.findMilestonesByMilestoneSet(milestoneSet.get());
-        if (milestones.size() == 0) {
+        if (milestones.isEmpty()) {
             milestoneSetRepository.deleteById(id);
         } else {
             throw new IllegalMilestoneSetDeletionException();

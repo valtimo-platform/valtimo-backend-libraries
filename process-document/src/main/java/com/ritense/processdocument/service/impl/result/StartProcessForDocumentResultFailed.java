@@ -29,11 +29,11 @@ import java.util.Optional;
 
 public class StartProcessForDocumentResultFailed implements StartProcessForDocumentResult, TransactionalResult {
 
-    private List<OperationError> errors;
+    private final List<OperationError> errors;
 
     public StartProcessForDocumentResultFailed(List<? extends OperationError> errors) {
         assertArgumentNotNull(errors, "errors may not be null");
-        assertStateTrue(errors.size() > 0, "errors may not be empty");
+        assertStateTrue(!errors.isEmpty(), "errors may not be empty");
         this.errors = new ArrayList<>(errors);
         rollback();
     }

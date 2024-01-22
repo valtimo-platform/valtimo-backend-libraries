@@ -47,6 +47,6 @@ public class AttachmentCollection extends Value<Collection<Attachment>> {
 
     @Override
     public boolean isPresent() {
-        return super.isPresent() && super.get().size() > 0;
+        return super.isPresent() && !super.get().isEmpty();
     }
 }
