@@ -1,0 +1,7 @@
+version: '3.9'
+services:
+    db:
+        ports:
+            - "3336:3306"
+        environment:
+            - MYSQL_DATABASE=plugin-valtimo-test
