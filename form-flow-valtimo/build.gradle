@@ -63,7 +63,6 @@ dependencies {
     implementation project(':contract')
     implementation project(':core')
     implementation project(':form')
-    implementation project(':form-link')
     implementation project(':document')
     implementation project(':value-resolver')
 

@@ -22,9 +22,7 @@ import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
-import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
 import com.ritense.processdocument.domain.delegate.ProcessDocumentStartEventMessageDelegate;
-import com.ritense.processdocument.domain.impl.delegate.DocumentVariableDelegateImpl;
 import com.ritense.processdocument.domain.impl.delegate.ProcessDocumentStartEventMessageDelegateImpl;
 import com.ritense.processdocument.domain.impl.listener.StartEventFromCallActivityListenerImpl;
 import com.ritense.processdocument.domain.impl.listener.StartEventListenerImpl;
@@ -46,7 +44,6 @@ import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocument
 import com.ritense.processdocument.service.impl.DocumentDefinitionProcessLinkServiceImpl;
 import com.ritense.processdocument.web.rest.ProcessDocumentResource;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
-import com.ritense.valtimo.contract.annotation.ProcessBean;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
@@ -54,11 +51,11 @@ import com.ritense.valueresolver.ValueResolverFactory;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.extension.reactor.spring.EnableCamundaEventBus;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
@@ -112,15 +109,6 @@ public class ProcessDocumentAutoConfiguration {
             documentService,
             userManagementService
         );
-    }
-
-    @Bean
-    @ProcessBean
-    @ConditionalOnMissingBean(DocumentVariableDelegate.class)
-    public DocumentVariableDelegateImpl documentVariableDelegate(
-        DocumentService documentService
-    ) {
-        return new DocumentVariableDelegateImpl(documentService);
     }
 
     @Bean
@@ -180,14 +168,14 @@ public class ProcessDocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(ProcessDocumentDeploymentService.class)
     public ProcessDocumentDeploymentService processDocumentDeploymentService(
-            ResourceLoader resourceLoader,
-            ProcessDocumentAssociationService processDocumentAssociationService,
-            DocumentDefinitionService documentDefinitionService
+        ResourceLoader resourceLoader,
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        DocumentDefinitionService documentDefinitionService
     ) {
         return new CamundaProcessJsonSchemaDocumentDeploymentService(
-                resourceLoader,
-                processDocumentAssociationService,
-                documentDefinitionService
+            resourceLoader,
+            processDocumentAssociationService,
+            documentDefinitionService
         );
     }
 
@@ -215,7 +203,7 @@ public class ProcessDocumentAutoConfiguration {
     public DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService(
         DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository,
         CamundaRepositoryService repositoryService
-    )  {
+    ) {
         return new DocumentDefinitionProcessLinkServiceImpl(documentDefinitionProcessLinkRepository, repositoryService);
     }
 

@@ -62,15 +62,16 @@ import com.ritense.valtimo.contract.result.OperationError;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import org.camunda.bpm.engine.delegate.BaseDelegateExecution;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.camunda.bpm.engine.delegate.VariableScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
 import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
@@ -345,15 +346,6 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
         }
     }
 
-    /**
-     * @deprecated Replaced by {@link com.ritense.processdocument.service.DocumentDelegateService#getDocument(DelegateExecution)}  }
-     */
-    @Deprecated(since = "10.6.0", forRemoval = true)
-    public Document getDocument(DelegateExecution execution) {
-        denyAuthorization();
-        return getDocument(ProcessInstanceId.fromExecution(execution, CamundaProcessInstanceId.class), execution);
-    }
-
     public JsonSchemaDocumentId getDocumentId(ProcessInstanceId processInstanceId, VariableScope variableScope) {
         denyAuthorization();
         var processDocumentInstance = processDocumentAssociationService
@@ -385,6 +377,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
 
         return document;
     }
+
     @Override
     public Optional<ProcessDocumentDefinition> findProcessDocumentDefinition(ProcessInstanceId processInstanceId) {
         denyAuthorization();
