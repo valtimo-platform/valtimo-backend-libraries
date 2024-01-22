@@ -57,17 +57,17 @@ public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
         final var jsonSchemaDocumentId = JsonSchemaDocumentId.existingId(UUID.fromString(execution.getProcessBusinessKey()));
         logger.debug("Retrieving value for key {} from documentId {}", jsonPointer, execution.getProcessBusinessKey());
         return AuthorizationContext.runWithoutAuthorization(() -> documentService
-            .findBy(jsonSchemaDocumentId))
+                .findBy(jsonSchemaDocumentId))
             .flatMap(jsonSchemaDocument -> jsonSchemaDocument.content().getValueBy(JsonPointer.valueOf(jsonPointer)))
             .map(this::transform)
             .orElse(defaultValue);
     }
 
     private Object transform(JsonNode jsonNode) {
-        if(jsonNode.isNumber()) {
+        if (jsonNode.isNumber()) {
             // Removing this would result in a breaking change, as 3.0 will become an int when using treeToValue
             return jsonNode.asDouble();
-        } else if(jsonNode.isValueNode() || jsonNode.isContainerNode()) {
+        } else if (jsonNode.isValueNode() || jsonNode.isContainerNode()) {
             try {
                 return mapper.treeToValue(jsonNode, Object.class);
             } catch (JsonProcessingException e) {

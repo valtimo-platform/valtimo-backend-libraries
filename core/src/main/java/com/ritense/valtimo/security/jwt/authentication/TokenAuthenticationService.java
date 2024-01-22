@@ -48,7 +48,8 @@ public class TokenAuthenticationService {
             .orElseThrow(() -> {
                 String errorMessage = "No suitable token authenticator found";
                 logger.info(errorMessage);
-                return new TokenAuthenticatorNotFoundException(errorMessage);});
+                return new TokenAuthenticatorNotFoundException(errorMessage);
+            });
     }
 
     public boolean validateToken(final String jwt) {

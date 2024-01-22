@@ -27,6 +27,7 @@ import com.ritense.formlink.service.SubmissionTransformerService;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder;
 import org.apache.commons.lang3.StringUtils;
+
 import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowRemovalOperations;
 import static com.ritense.form.domain.FormIoFormDefinition.PROPERTY_KEY;
 
@@ -74,89 +75,89 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
     }
 
     /**
-     *   FormDefinition can utilize value array operation by implementing the property section.
-     *   note: In the Form IO builder this is called custom property on the API tab.
-     *
-     *     Adding a new array item - configuration:
-     *     {
-     *          "label": "Bread name",
-     *          "key": "name", -{@literal >} Name of the property to ADD a value to, this should match object property name of an array item.
-     *          "properties": {
-     *              "container": "/favorites/-/" -{@literal >} indicating an new item should be added at the end of the array
-     *          },
-     *          "type": "textfield",
-     *          "input": true
-     *     }
-     *
-     *     Update existing array item - configuration:
-     *     {
-     *          "label": "Bread name",
-     *          "key": "name",  -{@literal >} Name of the property to REPLACE its value, this should match object property name of an array item.
-     *          "properties": {
-     *              "container": "/favorites/{indexOf(/pv/breadId)}/" -{@literal >} indicating an existing items location to be modified
-     *          },
-     *          "type": "textfield",
-     *          "input": true
-     *     },
-     *
-     *    Source example:
-     *    {
-     *      "favorites" : [
-     *          { "_id" : "1", "name": "White bread"},
-     *          { "_id" : "2", "name": "Pita bread"}
-     *      ]
-     *    }
-     *
-     *    Submission payload:
-     *    "data":
-     *      { "name" : "Focaccia" }
-     *    }
-     *
-     *    Placeholder:
-     *    "pv":
-     *      { "breadId" : "2" }
-     *    }
-     *
-     *    Results:
-     *
-     *    Submission will be sanitized as so:
-     *    "data": {} // removed name property because patch will hold its modification
-     *
-     *    New array item configuration - Patch result :
-     *    [
-     *      {
-     *          "op" : "add",
-     *          "path" : "/favorites/-/name",
-     *          "value" : "Focaccia"
-     *      }
-     *    ]
-     *
-     *    Update existing array item/object configuration: - Patch result
-     *    [
-     *      {
-     *          "op" : "replace",
-     *          "path" : "/favorites/1/name",
-     *          "value" : "Focaccia"
-     *      }
-     *    ]
-     *
-     *   Adding a new array item:
-     *      Example: /favorites/-/name
-     *      Notes:
-     *      - Creates a patch ADD operation for appending (last) an item to an existing array.
-     *
-     *   Update existing array item/object:
-     *     Example usage: /favorites/{indexOf(pv/key)}/name
-     *     Notes:
-     *     - This will create a REPLACE patch operation of a item to a specific index of a existing array.
-     *     - pv.key = the key to use as matcher in the source document array item.
-     *     - If index doesnt exist it will get the last index.
-     *     - The name of the id to check is fixed '_id'.
+     * FormDefinition can utilize value array operation by implementing the property section.
+     * note: In the Form IO builder this is called custom property on the API tab.
+     * <p>
+     * Adding a new array item - configuration:
+     * {
+     * "label": "Bread name",
+     * "key": "name", -{@literal >} Name of the property to ADD a value to, this should match object property name of an array item.
+     * "properties": {
+     * "container": "/favorites/-/" -{@literal >} indicating an new item should be added at the end of the array
+     * },
+     * "type": "textfield",
+     * "input": true
+     * }
+     * <p>
+     * Update existing array item - configuration:
+     * {
+     * "label": "Bread name",
+     * "key": "name",  -{@literal >} Name of the property to REPLACE its value, this should match object property name of an array item.
+     * "properties": {
+     * "container": "/favorites/{indexOf(/pv/breadId)}/" -{@literal >} indicating an existing items location to be modified
+     * },
+     * "type": "textfield",
+     * "input": true
+     * },
+     * <p>
+     * Source example:
+     * {
+     * "favorites" : [
+     * { "_id" : "1", "name": "White bread"},
+     * { "_id" : "2", "name": "Pita bread"}
+     * ]
+     * }
+     * <p>
+     * Submission payload:
+     * "data":
+     * { "name" : "Focaccia" }
+     * }
+     * <p>
+     * Placeholder:
+     * "pv":
+     * { "breadId" : "2" }
+     * }
+     * <p>
+     * Results:
+     * <p>
+     * Submission will be sanitized as so:
+     * "data": {} // removed name property because patch will hold its modification
+     * <p>
+     * New array item configuration - Patch result :
+     * [
+     * {
+     * "op" : "add",
+     * "path" : "/favorites/-/name",
+     * "value" : "Focaccia"
+     * }
+     * ]
+     * <p>
+     * Update existing array item/object configuration: - Patch result
+     * [
+     * {
+     * "op" : "replace",
+     * "path" : "/favorites/1/name",
+     * "value" : "Focaccia"
+     * }
+     * ]
+     * <p>
+     * Adding a new array item:
+     * Example: /favorites/-/name
+     * Notes:
+     * - Creates a patch ADD operation for appending (last) an item to an existing array.
+     * <p>
+     * Update existing array item/object:
+     * Example usage: /favorites/{indexOf(pv/key)}/name
+     * Notes:
+     * - This will create a REPLACE patch operation of a item to a specific index of a existing array.
+     * - pv.key = the key to use as matcher in the source document array item.
+     * - If index doesnt exist it will get the last index.
+     * - The name of the id to check is fixed '_id'.
      *
      * @param formDefinition The form definition
-     * @param submission The data structure to process, will be sanitized to avoid issues.
-     * @param placeholders The container to retrieve the indexOf(jsonPointerValue) input var. This value is used to match against _id.
-     * @param source the Json to use for determining index value of an array.
+     * @param submission     The data structure to process, will be sanitized to avoid issues.
+     * @param placeholders   The container to retrieve the indexOf(jsonPointerValue) input var. This value is used to match against _id.
+     * @param source         the Json to use for determining index value of an array.
      * @return JsonPatch a patch containing patch operations for array modifications.
      */
     @Override
@@ -189,7 +190,7 @@ public class FormIoJsonPatchSubmissionTransformerService implements SubmissionTr
                 } else if (container.contains("/-/")) {
                     final JsonPointer arrayPointer = JsonPointer.compile(StringUtils.substringBefore(container, "/-"));
                     JsonNode array = source.at(arrayPointer);
-                    if(array.isMissingNode()) {
+                    if (array.isMissingNode()) {
                         sourceJsonPatchBuilder.add(arrayPointer, JsonNodeFactory.instance.arrayNode());
                     }
 

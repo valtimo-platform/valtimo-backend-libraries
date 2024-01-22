@@ -38,7 +38,7 @@ public interface SearchFieldRepository extends JpaRepository<SearchField, Search
 
     void deleteAllByIdDocumentDefinitionName(String documentDefinitionName);
 
-    static Specification<SearchField> byIdDocumentDefinitionName(String documentDefinitionName){
+    static Specification<SearchField> byIdDocumentDefinitionName(String documentDefinitionName) {
         return new Specification<SearchField>() {
             @Override
             public Predicate toPredicate(Root<SearchField> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {

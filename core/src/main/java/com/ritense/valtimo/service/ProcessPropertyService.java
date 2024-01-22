@@ -67,7 +67,7 @@ public class ProcessPropertyService {
         return processDefinition.getKey();
     }
 
-    public ProcessDefinitionProperties findByProcessDefinitionKey(String processDefinitionKey){
+    public ProcessDefinitionProperties findByProcessDefinitionKey(String processDefinitionKey) {
         return processDefinitionPropertiesRepository.findByProcessDefinitionKey(processDefinitionKey);
     }
 
