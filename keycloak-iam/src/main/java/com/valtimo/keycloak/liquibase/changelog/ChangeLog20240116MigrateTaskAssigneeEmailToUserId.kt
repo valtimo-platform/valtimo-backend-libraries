@@ -26,6 +26,7 @@ import org.jboss.resteasy.client.jaxrs.internal.ResteasyClientBuilderImpl
 import org.keycloak.OAuth2Constants.CLIENT_CREDENTIALS
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
+import org.keycloak.utils.EmailValidationUtil
 import org.yaml.snakeyaml.Yaml
 
 class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange {
@@ -41,7 +42,7 @@ class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange {
             val taskId = result.getString("id_")
             val taskAssigneeEmail = result.getString("assignee_")
             if (taskAssigneeEmail != null) {
-                if (!taskAssigneeEmail.matches("[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}".toRegex())) {
+                if (!EmailValidationUtil.isValidEmail(taskAssigneeEmail)) {
                     logger.error { "Failed to migrate task assignee. Invalid email: '$taskAssigneeEmail' for task '$taskId'" }
                 } else {
                     val taskAssigneeUserId = getKeycloakUserIdByEmail(taskAssigneeEmail)
