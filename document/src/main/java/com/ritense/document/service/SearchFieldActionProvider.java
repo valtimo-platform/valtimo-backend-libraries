@@ -23,7 +23,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public class SearchFieldActionProvider implements ResourceActionProvider<SearchField> {
-    public static Action<SearchField> VIEW_LIST = new Action<>(Action.VIEW_LIST);
+    public static final Action<SearchField> VIEW_LIST = new Action<>(Action.VIEW_LIST);
 
     @NotNull
     @Override

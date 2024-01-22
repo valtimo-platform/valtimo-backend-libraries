@@ -22,7 +22,7 @@ public class FileExtensionNotSupportedException extends Exception {
      * @param fileExtension The name of the file extension that is not supported
      */
 
-    private static String BASE_MESSAGE = "The file extension '%s' is not supported for this operation.";
+    private static final String BASE_MESSAGE = "The file extension '%s' is not supported for this operation.";
 
     public FileExtensionNotSupportedException(String fileExtension) {
         super(String.format(BASE_MESSAGE, fileExtension));

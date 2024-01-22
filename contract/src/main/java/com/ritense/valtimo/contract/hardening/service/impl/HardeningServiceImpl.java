@@ -32,7 +32,7 @@ import java.util.UUID;
 public class HardeningServiceImpl implements HardeningService {
     private static final Logger logger = LoggerFactory.getLogger(HardeningServiceImpl.class);
     private final HardeningProperties hardeningProperties;
-    private static String WHITELIST_MESSSAGE = "IP address is whitelisted: ";
+    private static final String WHITELIST_MESSSAGE = "IP address is whitelisted: ";
 
     public HardeningServiceImpl(HardeningProperties hardeningProperties) {
         this.hardeningProperties = hardeningProperties;

@@ -22,7 +22,7 @@ public class ProcessNotDeployableException extends Exception {
      * @param fileName The name of the bpmn file that was to be deployed
      */
 
-    private static String BASE_MESSAGE = "Process with file name '%s' is not eligible to be deployed.";
+    private static final String BASE_MESSAGE = "Process with file name '%s' is not eligible to be deployed.";
 
     public ProcessNotDeployableException(String fileName) {
         super(String.format(BASE_MESSAGE, fileName));

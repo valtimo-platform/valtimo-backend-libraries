@@ -22,7 +22,7 @@ public class NoFileExtensionFoundException extends Exception {
      * @param fileName The name of the file which has no extension
      */
 
-    private static String BASE_MESSAGE = "No file extension found for file with name '%s'.";
+    private static final String BASE_MESSAGE = "No file extension found for file with name '%s'.";
 
     public NoFileExtensionFoundException(String fileName) {
         super(String.format(BASE_MESSAGE, fileName));
