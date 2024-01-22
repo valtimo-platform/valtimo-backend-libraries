@@ -65,7 +65,7 @@ public class MandrillMailDispatcher implements MailDispatcher {
 
         try {
             var mandrillMessageStatuses = mandrillApi.messages().send(mandrillMessage, true);
-            logger.info(String.format("mail sent to %s", rawMailMessage.recipients.toString()));
+            logger.info("mail sent to {}", rawMailMessage.recipients.toString());
             return appendMailStatusus(mailStatus, mandrillMessageStatuses);
         } catch (MandrillApiError mandrillApiError) {
             logger.error("MandrilMailservice API error {}", mandrillApiError.getMandrillErrorMessage());
@@ -90,7 +90,7 @@ public class MandrillMailDispatcher implements MailDispatcher {
         try {
             MandrillMessageStatus[] mandrillMessageStatuses = mandrillApi.messages()
                 .sendTemplate(templatedMailMessage.templateIdentifier.get(), null, mandrillMessage, true);
-            logger.info(String.format("mail sent to %s", templatedMailMessage.recipients.toString()));
+            logger.info("mail sent to {}", templatedMailMessage.recipients.toString());
             return appendMailStatusus(mailStatus, mandrillMessageStatuses);
         } catch (MandrillApiError mandrillApiError) {
             logger.error("MandrillMailService API error {}", mandrillApiError.getMandrillErrorMessage());

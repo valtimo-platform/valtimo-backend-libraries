@@ -95,7 +95,7 @@ public class ProcessDocumentStartEventMessageDelegateImpl implements ProcessDocu
                 logger.info("Skipping var: cannot parse key/value to jsonPointer {} - {}", key, value);
             }
         });
-        logger.info("Parsed all process variables to json string: {}", rootNode.toString());
+        logger.info("Parsed all process variables to json string: {}", rootNode);
         return rootNode;
     }
 

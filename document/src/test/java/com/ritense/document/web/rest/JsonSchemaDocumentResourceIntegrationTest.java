@@ -41,6 +41,7 @@ import java.util.function.Supplier;
 import static com.ritense.valtimo.contract.utils.TestUtil.convertObjectToJsonBytes;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -79,7 +80,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         document = result.resultingDocument().orElseThrow();
         documentRepository.save(document);
 
-        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService, outboxService);
+        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService);
         mockMvc = MockMvcBuilders
             .standaloneSetup(jsonSchemaDocumentResource)
             .build();
@@ -106,7 +107,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var result = documentRepository.findById(document.id());
 
         assertTrue(result.isPresent());
-        assertTrue(result.get() instanceof JsonSchemaDocument);
+        assertInstanceOf(JsonSchemaDocument.class, result.get());
 
         var savedDocument = (JsonSchemaDocument) result.get();
         assertNotNull(savedDocument.assigneeId());
@@ -149,9 +150,9 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var result2 = documentRepository.findById(document2.id());
 
         assertTrue(result1.isPresent());
-        assertTrue(result1.get() instanceof JsonSchemaDocument);
+        assertInstanceOf(JsonSchemaDocument.class, result1.get());
         assertTrue(result2.isPresent());
-        assertTrue(result2.get() instanceof JsonSchemaDocument);
+        assertInstanceOf(JsonSchemaDocument.class, result2.get());
 
         var savedDocument = (JsonSchemaDocument) result1.get();
         assertNotNull(savedDocument.assigneeId());
@@ -200,9 +201,9 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var result2 = documentRepository.findById(document2.id());
 
         assertTrue(result1.isPresent());
-        assertTrue(result1.get() instanceof JsonSchemaDocument);
+        assertInstanceOf(JsonSchemaDocument.class, result1.get());
         assertTrue(result2.isPresent());
-        assertTrue(result2.get() instanceof JsonSchemaDocument);
+        assertInstanceOf(JsonSchemaDocument.class, result2.get());
 
         var savedDocument = (JsonSchemaDocument) result1.get();
         assertNotNull(savedDocument.assigneeId());
@@ -247,7 +248,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var result = documentRepository.findById(document.id());
 
         assertTrue(result.isPresent());
-        assertTrue(result.get() instanceof JsonSchemaDocument);
+        assertInstanceOf(JsonSchemaDocument.class, result.get());
 
         var savedDocument = (JsonSchemaDocument) result.get();
         assertNull(savedDocument.assigneeId());
