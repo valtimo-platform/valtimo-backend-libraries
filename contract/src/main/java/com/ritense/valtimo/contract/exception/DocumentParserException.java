@@ -18,7 +18,7 @@ package com.ritense.valtimo.contract.exception;
 
 public class DocumentParserException extends Exception {
 
-    private String message;
+    private final String message;
 
     public DocumentParserException(String message) {
         this.message = message;

@@ -162,7 +162,7 @@ public class CamundaTaskService {
     public CamundaTask findTaskById(String taskId) {
         var spec = getAuthorizationSpecification(VIEW);
         return Optional.ofNullable(findTask(spec.and(byId(taskId))))
-            .orElseThrow(() -> new TaskNotFoundException(String.format("Cannot find task %s", taskId)));
+            .orElseThrow(() -> new TaskNotFoundException(taskId));
     }
 
     @Transactional

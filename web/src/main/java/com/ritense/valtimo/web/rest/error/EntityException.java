@@ -19,8 +19,8 @@ package com.ritense.valtimo.web.rest.error;
 import org.zalando.problem.AbstractThrowableProblem;
 
 public class EntityException extends AbstractThrowableProblem {
-    private String translationKey;
-    private String entityName;
+    private final String translationKey;
+    private final String entityName;
 
     public EntityException(String message, String translationKey, String entityName) {
         this.translationKey = translationKey;
