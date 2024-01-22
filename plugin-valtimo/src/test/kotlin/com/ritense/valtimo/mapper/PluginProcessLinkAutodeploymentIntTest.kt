@@ -50,6 +50,6 @@ internal class PluginProcessLinkAutodeploymentIntTest : BaseIntegrationTest() {
         assertEquals(PROCESS_LINK_TYPE_PLUGIN, pluginProcessLink.processLinkType)
         assertEquals("0a750334-a065-48fa-bb02-293d21df2213", pluginProcessLink.pluginConfigurationId.id.toString())
         assertEquals("test-action", pluginProcessLink.pluginActionDefinitionKey)
-        assertEquals("""{"testActionProperty":"test-value"}""", objectMapper.writeValueAsString(pluginProcessLink.actionProperties))
+        assertEquals("""{"attachmentIds":"pv:attachmentIds"}""", objectMapper.writeValueAsString(pluginProcessLink.actionProperties))
     }
 }
