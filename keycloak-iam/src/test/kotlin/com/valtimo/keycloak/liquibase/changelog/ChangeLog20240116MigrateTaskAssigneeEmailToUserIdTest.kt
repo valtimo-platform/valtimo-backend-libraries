@@ -29,6 +29,7 @@ import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.core.env.ConfigurableEnvironment
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
@@ -43,7 +44,14 @@ internal class ChangeLog20240116MigrateTaskAssigneeEmailToUserIdTest {
         server = MockWebServer()
         setupMockKeycloakApiServer()
         server.start()
-        System.setProperty("keycloak.authserverurl", server.url("/").toString())
+
+        val configurableEnvironment: ConfigurableEnvironment = mock()
+
+        ChangeLog20240116MigrateTaskAssigneeEmailToUserId().postProcessEnvironment(configurableEnvironment, mock())
+        whenever(configurableEnvironment.getProperty("keycloak.auth-server-url")).thenReturn(server.url("/").toString())
+        whenever(configurableEnvironment.getProperty("keycloak.realm")).thenReturn("example-realm")
+        whenever(configurableEnvironment.getProperty("keycloak.resource")).thenReturn("example-resource")
+        whenever(configurableEnvironment.getProperty("keycloak.credentials.secret")).thenReturn("example-secret")
 
         changeLog = ChangeLog20240116MigrateTaskAssigneeEmailToUserId()
     }

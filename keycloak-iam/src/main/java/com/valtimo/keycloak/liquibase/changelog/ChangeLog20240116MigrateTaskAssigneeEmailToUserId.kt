@@ -27,9 +27,16 @@ import org.keycloak.OAuth2Constants.CLIENT_CREDENTIALS
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.admin.client.KeycloakBuilder
 import org.keycloak.utils.EmailValidationUtil
-import org.yaml.snakeyaml.Yaml
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.env.EnvironmentPostProcessor
+import org.springframework.core.env.ConfigurableEnvironment
+import org.springframework.core.env.Environment
 
-class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange {
+class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange, EnvironmentPostProcessor {
+
+    override fun postProcessEnvironment(environment: ConfigurableEnvironment, application: SpringApplication) {
+        Companion.environment = environment
+    }
 
     override fun execute(database: Database) {
         logger.info("Starting ${this::class.simpleName}")
@@ -50,7 +57,6 @@ class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange {
                 }
             }
         }
-        applicationYmlMaps.clear()
         logger.info("Finished ${this::class.simpleName}")
     }
 
@@ -103,83 +109,9 @@ class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange {
     }
 
     private fun getProperty(name: String): String {
-        val envVarValue = System.getenv(toEnvVarName(name))
-        if (envVarValue != null) {
-            return envVarValue
-        }
-        val sysPropValue = System.getProperty(toJoinedLowercase(name))
-        if (sysPropValue != null) {
-            return sysPropValue
-        }
-        listOf(name, toCamelCase(name), toSnakeCase(name), toJoinedLowercase(name)).forEach {
-            val ymlValue = getApplicationYmlProperty(it)
-            if (ymlValue != null) {
-                return ymlValue
-            }
-        }
-        throw IllegalStateException("Failed to find application property: '$name'")
+        return environment.getProperty(name)!!
     }
 
-    private fun getApplicationYmlProperty(propertyPath: String): String? {
-        var ymlProps: List<Any?> = getApplicationYmlMaps()
-        propertyPath.split('.')
-            .forEach { path -> ymlProps = ymlProps.map { (it as Map<*, *>)[path] } }
-        return ymlProps.firstOrNull() as String?
-    }
-
-    private fun getApplicationYmlMaps(): List<Map<String, Any?>> {
-        if (applicationYmlMaps.isNotEmpty()) {
-            return applicationYmlMaps
-        }
-        val applicationYml = Yaml()
-        applicationYmlMaps = getApplicationYmlNames()
-            .mapNotNull { javaClass.getClassLoader().getResourceAsStream(it) }
-            .map { applicationYml.load<Map<String, Any>>(it) }
-            .toMutableList()
-        check(applicationYmlMaps.isNotEmpty()) { "Failed to find application.yml" }
-        return applicationYmlMaps
-    }
-
-    private fun getApplicationYmlNames(): List<String> {
-        val names = mutableListOf<String>()
-        val activeProfile = System.getProperty("spring.profiles.active", null)
-        if (activeProfile != null) {
-            names.add("application-$activeProfile.yml")
-            names.add("config/application-$activeProfile.yml")
-        }
-        names.add("application.yml")
-        names.add("config/application.yml")
-        return names
-    }
-
-    private fun toCamelCase(propertyNameKebabCase: String): String {
-        return propertyNameKebabCase
-            .lowercase()
-            .split('-')
-            .joinToString("") { group -> group.replaceFirstChar { it.uppercase() } }
-            .replaceFirstChar { it.lowercase() }
-    }
-
-    private fun toSnakeCase(propertyNameKebabCase: String): String {
-        return propertyNameKebabCase
-            .replace("-", "_")
-            .lowercase()
-    }
-
-    private fun toJoinedLowercase(propertyNameKebabCase: String): String {
-        return propertyNameKebabCase
-            .replace("[-_]".toRegex(), "")
-            .lowercase()
-    }
-
-    private fun toEnvVarName(propertyName: String): String {
-        return propertyName
-            .replace("[.\\[\\]]+".toRegex(), "_")
-            .replace("_+".toRegex(), "_")
-            .replace("[^a-zA-Z0-9]+".toRegex(), "")
-            .trim('_')
-            .uppercase()
-    }
 
     companion object {
         private const val KEYCLOAK_AUTH_SERVER_URL_PROPERTY = "keycloak.auth-server-url"
@@ -188,6 +120,7 @@ class ChangeLog20240116MigrateTaskAssigneeEmailToUserId : CustomTaskChange {
         private const val KEYCLOAK_SECRET_PROPERTY = "keycloak.credentials.secret"
 
         private val logger = KotlinLogging.logger {}
-        private var applicationYmlMaps: MutableList<Map<String, Any?>> = mutableListOf()
+
+        private lateinit var environment: Environment
     }
 }

@@ -1,6 +1,0 @@
-keycloak:
-    realm: example-realm
-    auth-server-url: https://example.com/auth-server-url
-    resource: example-resource
-    credentials:
-        secret: example-secret
