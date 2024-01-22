@@ -25,12 +25,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 import static java.lang.String.format;
 
 public class FormUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(FormUtils.class);
     private static final String FORM_KEY_DELIMETER = ":";
+
+    private FormUtils() {
+    }
 
     public static String getFormLocation(String formkey, HttpServletRequest request) {
         final String[] formKeyArray = formkey.split(FORM_KEY_DELIMETER);

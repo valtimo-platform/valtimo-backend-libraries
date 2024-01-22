@@ -22,8 +22,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class IpUtils {
-
     static final String X_FORWARDED_FOR = "X-Forwarded-For";
+
+    private IpUtils() {
+    }
 
     public static Set<String> extractSourceIpsFrom(HttpServletRequest request) {
         final String header = request.getHeader(X_FORWARDED_FOR);
@@ -38,5 +40,4 @@ public class IpUtils {
         }
         return ipList;
     }
-
 }

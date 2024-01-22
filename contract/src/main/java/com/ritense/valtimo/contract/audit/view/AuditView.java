@@ -18,6 +18,9 @@ package com.ritense.valtimo.contract.audit.view;
 
 public class AuditView {
 
+    private AuditView() {
+    }
+
     public static class Public {
 
     }

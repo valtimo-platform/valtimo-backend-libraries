@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 
 public class QueryUtils {
 
+    private QueryUtils() {
+    }
+
     public static String toOrders(Sort sort) {
         ArrayList<String> sqlOrders = new ArrayList<>();
         Iterator<Sort.Order> sortOrder = sort.iterator();

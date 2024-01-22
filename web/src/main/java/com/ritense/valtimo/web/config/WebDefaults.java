@@ -17,11 +17,18 @@
 package com.ritense.valtimo.web.config;
 
 import java.util.Set;
+
 import static java.util.Set.of;
 
 public class WebDefaults {
 
+    private WebDefaults() {
+    }
+
     public static final class Cors {
+        private Cors() {
+        }
+
         public static final Set<String> paths = of("/api/**", "management/**", "/v3/api-docs");
     }
 }

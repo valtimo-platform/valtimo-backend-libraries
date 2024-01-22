@@ -23,6 +23,9 @@ import java.io.IOException;
 
 public class TestUtil {
 
+    private TestUtil() {
+    }
+
     /**
      * Convert an object to JSON byte array.
      *

@@ -28,8 +28,7 @@ public final class HeaderUtil {
     private static final String APPLICATION_NAME = "valtimoConsoleApp";
     private static final Logger logger = LoggerFactory.getLogger(HeaderUtil.class);
 
-    public HeaderUtil() {
-        //Default constructor
+    private HeaderUtil() {
     }
 
     public static HttpHeaders createAlert(String message, String param) {

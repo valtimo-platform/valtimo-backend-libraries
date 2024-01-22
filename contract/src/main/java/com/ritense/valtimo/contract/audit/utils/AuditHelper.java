@@ -20,6 +20,9 @@ import com.ritense.valtimo.contract.utils.SecurityUtils;
 
 public class AuditHelper {
 
+    private AuditHelper() {
+    }
+
     public static String getActor() {
         final String userLogin = SecurityUtils.getCurrentUserLogin();
         if (userLogin != null) {

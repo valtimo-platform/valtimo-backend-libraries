@@ -29,6 +29,9 @@ import java.util.Set;
 public class RequestHelper {
     private static final Logger logger = LoggerFactory.getLogger(RequestHelper.class);
 
+    private RequestHelper() {
+    }
+
     public static String getOrigin() {
         Set<String> ipList;
         try {

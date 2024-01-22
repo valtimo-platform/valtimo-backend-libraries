@@ -27,6 +27,9 @@ import java.util.UUID;
 @Deprecated(since = "10.6.0", forRemoval = true)
 public class FormAssociationFactory {
 
+    private FormAssociationFactory() {
+    }
+
     public static CamundaFormAssociation getFormAssociation(
         UUID formAssociationId,
         FormAssociationType type,

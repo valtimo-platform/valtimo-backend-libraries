@@ -25,6 +25,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public abstract class JsonPointerHelper {
 
+    private JsonPointerHelper() {
+    }
+
     public static void appendJsonPointerTo(ObjectNode node, JsonPointer pointer, JsonNode value) {
         final JsonPointer parentPointer = pointer.head();
         JsonNode parentNode = node.at(parentPointer);
