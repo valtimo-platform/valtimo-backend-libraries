@@ -55,8 +55,7 @@ class RabbitMessagePublisherIntTest {
     @Nested
     @ActiveProfiles("invalidrouting")
     inner class InvalidRouting @Autowired constructor(
-        val springCloudMessagePublisher: RabbitMessagePublisher,
-        val environment: Environment
+        val springCloudMessagePublisher: RabbitMessagePublisher
     ) : BaseIntegrationTest() {
         @Test
         fun `should not send message to rabbitmq`() {
