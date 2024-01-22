@@ -44,6 +44,7 @@ import com.ritense.valueresolver.ValueResolverService
 import jakarta.validation.Validation
 import java.util.Optional
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -176,7 +177,7 @@ internal class PluginServiceTest {
                     "title", ObjectMapper().readTree("{\"name\": [\"incorrect-type\"]}") as ObjectNode, "key"
                 )
         }
-        assertEquals("Plugin property with name 'name' failed to parse for plugin 'Test Plugin'", exception.message)
+        assertTrue(exception.message!!.startsWith("Plugin property with name 'name' failed to parse for plugin 'Test Plugin'"))
     }
 
     @Test

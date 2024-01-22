@@ -240,6 +240,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
                     var camundaProcess = historyService.createHistoricProcessInstanceQuery()
                         .processInstanceId(process.getId().processInstanceId().toString())
                         .singleResult();
+                    process.setActive(camundaProcess != null && camundaProcess.getEndTime() == null);
                     var camundaProcessDefinition = runWithoutAuthorization(() ->
                         repositoryService.findLatestProcessDefinition(camundaProcess.getProcessDefinitionKey())
                     );
