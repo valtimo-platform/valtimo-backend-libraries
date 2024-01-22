@@ -17,7 +17,7 @@
 package com.ritense.klant.client
 
 import com.ritense.klant.domain.ResultPage
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import mu.KotlinLogging
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.core.ParameterizedTypeReference
@@ -84,7 +84,7 @@ class RequestBuilder {
             }
             url = builder.build().normalize().toUriString()
             requestEntity = if (body != null)
-                HttpEntity(Mapper.INSTANCE.get().writeValueAsString(body), buildPostHeaders())
+                HttpEntity(MapperSingleton.get().writeValueAsString(body), buildPostHeaders())
             else
                 HttpEntity(buildHeaders())
         }

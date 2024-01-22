@@ -1,9 +1,9 @@
 package com.ritense.openzaak.service.impl.model.zaak
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.ritense.openzaak.service.impl.model.zaak.betrokkene.RolNatuurlijkPersoon
 import com.ritense.openzaak.service.impl.model.zaak.betrokkene.RolNietNatuurlijkPersoon
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -16,7 +16,7 @@ internal class RolTest {
 
     @BeforeEach
     fun setUp() {
-        mapper = ObjectMapper().registerModule(KotlinModule())
+        mapper = MapperSingleton.get()
     }
 
     @Test

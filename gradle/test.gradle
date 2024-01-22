@@ -26,9 +26,29 @@ test {
     }
 }
 
-tasks.register("integrationTesting", Test) {
+tasks.register("integrationTesting") {
+    dependsOn("integrationTestingPostgresql")
+}
+
+tasks.register("integrationTestingPostgresql", Test) {
     group = 'verification'
+    systemProperty("spring.profiles.include", "postgresql")
     ignoreFailures = false
+    useJUnitPlatform {
+        includeTags "integration"
+        excludeTags "security"
+    }
+    mustRunAfter check
+
+    doLast {
+        composeDownForced
+    }
+}
+
+tasks.register("integrationTestingMysql", Test) {
+    group = 'verification'
+    systemProperty("spring.profiles.include", "mysql")
+    ignoreFailures = true
     useJUnitPlatform {
         includeTags "integration"
         excludeTags "security"

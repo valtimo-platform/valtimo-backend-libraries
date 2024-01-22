@@ -9,7 +9,7 @@ class JsonMergerTest {
 
     @Test
     fun `should do a deep merge of objects`() {
-        val mapper = Mapper.INSTANCE.get()
+        val mapper = MapperSingleton.get()
         val first = mapper.readTree(
             """
             {

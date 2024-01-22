@@ -16,11 +16,11 @@
 
 package com.ritense.objectsapi.taak
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
-import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.objectsapi.BaseIntegrationTest
 import com.ritense.openzaak.domain.configuration.Rsin
@@ -32,9 +32,6 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
-import java.net.URI
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -45,6 +42,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
+import java.net.URI
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
 
@@ -65,6 +65,9 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @Autowired
     @Qualifier("openZaakConnector")
@@ -103,7 +106,7 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
                 true
             )
         )
-        val jsonContent = Mapper.INSTANCE.get().readTree("{\"voornaam\": \"Peter\"}")
+        val jsonContent = objectMapper.readTree("{\"voornaam\": \"Peter\"}")
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, jsonContent)
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("age" to 38))

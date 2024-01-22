@@ -16,10 +16,8 @@
 
 package com.ritense.plugin.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -39,7 +37,7 @@ import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginConfigurationSearchRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.validation.Validation
 import java.util.Optional
@@ -84,7 +82,7 @@ internal class PluginServiceTest {
             pluginActionDefinitionRepository,
             pluginProcessLinkRepository,
             listOf(pluginFactory),
-            jacksonObjectMapper(),
+            MapperSingleton.get(),
             valueResolverService,
             pluginConfigurationSearchRepository,
             Validation.buildDefaultValidatorFactory().validator
@@ -115,7 +113,7 @@ internal class PluginServiceTest {
 
         pluginService
             .createPluginConfiguration(
-                "title", ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode, "key"
+                "title", MapperSingleton.get().readTree("{\"name\": \"whatever\" }") as ObjectNode, "key"
             )
         verify(pluginConfigurationRepository).save(any())
     }
@@ -129,7 +127,7 @@ internal class PluginServiceTest {
         val exception = assertThrows(PluginPropertyRequiredException::class.java) {
             pluginService
                 .createPluginConfiguration(
-                    "title", ObjectMapper().readTree("{}") as ObjectNode, "key"
+                    "title", MapperSingleton.get().readTree("{}") as ObjectNode, "key"
                 )
         }
         assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
@@ -144,7 +142,7 @@ internal class PluginServiceTest {
         val exception = assertThrows(PluginPropertyRequiredException::class.java) {
             pluginService
                 .createPluginConfiguration(
-                    "title", ObjectMapper().readTree("{\"name\": null}") as ObjectNode, "key"
+                    "title", MapperSingleton.get().readTree("{\"name\": null}") as ObjectNode, "key"
                 )
         }
         assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
@@ -159,7 +157,7 @@ internal class PluginServiceTest {
         val exception = assertThrows(PluginPropertyRequiredException::class.java) {
             pluginService
                 .createPluginConfiguration(
-                    "title", ObjectMapper().readTree("{\"name\": \"\"}") as ObjectNode, "key"
+                    "title", MapperSingleton.get().readTree("{\"name\": \"\"}") as ObjectNode, "key"
                 )
         }
         assertEquals("Plugin property with name 'name' is required for plugin 'Test Plugin'", exception.message)
@@ -174,7 +172,7 @@ internal class PluginServiceTest {
         val exception = assertThrows(PluginPropertyParseException::class.java) {
             pluginService
                 .createPluginConfiguration(
-                    "title", ObjectMapper().readTree("{\"name\": [\"incorrect-type\"]}") as ObjectNode, "key"
+                    "title", MapperSingleton.get().readTree("{\"name\": [\"incorrect-type\"]}") as ObjectNode, "key"
                 )
         }
         assertTrue(exception.message!!.startsWith("Plugin property with name 'name' failed to parse for plugin 'Test Plugin'"))
@@ -187,7 +185,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
 
         val pluginConfigurationCaptor = argumentCaptor<PluginConfiguration>()
-        val newProperties = ObjectMapper().readTree("{\"name\": \"whatever\" }")  as ObjectNode
+        val newProperties = MapperSingleton.get().readTree("{\"name\": \"whatever\" }")  as ObjectNode
 
         whenever(pluginConfigurationRepository.findById(pluginConfiguration.id)).thenReturn(Optional.of(pluginConfiguration))
 
@@ -287,7 +285,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{\"test\":123}") as ObjectNode,
+            MapperSingleton.get().readTree("{\"test\":123}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action",
             ActivityType.SERVICE_TASK_START
@@ -315,7 +313,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{}") as ObjectNode,
+            MapperSingleton.get().readTree("{}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action-optional",
             ActivityType.SERVICE_TASK_START
@@ -343,7 +341,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
+            MapperSingleton.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action",
             ActivityType.SERVICE_TASK_START
@@ -371,7 +369,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
+            MapperSingleton.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action",
             ActivityType.SERVICE_TASK_START
@@ -399,7 +397,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{\"test\":123}") as ObjectNode,
+            MapperSingleton.get().readTree("{\"test\":123}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action-task",
             ActivityType.SERVICE_TASK_START
@@ -430,7 +428,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
+            MapperSingleton.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action-task",
             ActivityType.SERVICE_TASK_START
@@ -461,7 +459,7 @@ internal class PluginServiceTest {
             PluginProcessLinkId.newId(),
             "process",
             "activity",
-            Mapper.INSTANCE.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
+            MapperSingleton.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action-task",
             ActivityType.SERVICE_TASK_START
@@ -513,7 +511,7 @@ internal class PluginServiceTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode,
+            MapperSingleton.get().readTree("{\"name\": \"whatever\" }") as ObjectNode,
             pluginDefinition
         )
         whenever(pluginConfigurationRepository.save(any())).thenReturn(pluginConfiguration)

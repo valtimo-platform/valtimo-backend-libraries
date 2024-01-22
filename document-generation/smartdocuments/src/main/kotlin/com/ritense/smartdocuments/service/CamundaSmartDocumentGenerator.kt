@@ -17,13 +17,13 @@
 package com.ritense.smartdocuments.service
 
 import com.fasterxml.jackson.core.JsonPointer
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.smartdocuments.domain.DocumentFormatOption
-import com.ritense.valtimo.contract.json.Mapper
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 
@@ -31,6 +31,7 @@ class CamundaSmartDocumentGenerator(
     private val smartDocumentGenerator: SmartDocumentGenerator,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val documentService: DocumentService,
+    private val objectMapper: ObjectMapper,
 ) {
 
     fun generate(execution: DelegateExecution, templateGroup: String, templateId: String, format: DocumentFormatOption) {
@@ -87,7 +88,7 @@ class CamundaSmartDocumentGenerator(
         return if (node == null || node.isMissingNode || node.isNull) {
             ""
         } else if (node.isValueNode || node.isArray || node.isObject) {
-            Mapper.INSTANCE.get().treeToValue(node, Object::class.java)
+            objectMapper.treeToValue(node, Object::class.java)
         } else {
             node.asText()
         }

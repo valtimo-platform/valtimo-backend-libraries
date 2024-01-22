@@ -19,8 +19,9 @@ package com.ritense.valtimo.contract.json.patch;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.valtimo.contract.json.Mapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.json.patch.operation.JsonPatchOperation;
+
 import java.util.LinkedHashSet;
 
 public class JsonPatch {
@@ -41,7 +42,7 @@ public class JsonPatch {
     }
 
     public JsonNode toJson() {
-        ObjectMapper mapper = Mapper.INSTANCE.get();
+        ObjectMapper mapper = MapperSingleton.INSTANCE.get();
         return mapper.convertValue(this, JsonNode.class);
     }
 

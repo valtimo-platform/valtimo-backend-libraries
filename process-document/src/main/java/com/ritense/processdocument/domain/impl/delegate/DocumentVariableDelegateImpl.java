@@ -24,10 +24,11 @@ import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.domain.delegate.DocumentVariableDelegate;
-import com.ritense.valtimo.contract.json.Mapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,7 +39,7 @@ import java.util.UUID;
 public class DocumentVariableDelegateImpl implements DocumentVariableDelegate {
 
     private static final Logger logger = LoggerFactory.getLogger(DocumentVariableDelegateImpl.class);
-    private static final ObjectMapper mapper = Mapper.INSTANCE.get();
+    private static final ObjectMapper mapper = MapperSingleton.INSTANCE.get();
     private final DocumentService documentService;
 
     public DocumentVariableDelegateImpl(DocumentService documentService) {

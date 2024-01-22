@@ -1,6 +1,6 @@
 package com.ritense.zakenapi.domain.rol
 
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.net.URI
@@ -10,7 +10,7 @@ import kotlin.test.assertEquals
 
 internal class RolTest {
 
-    private val mapper = Mapper.INSTANCE.get()
+    private val mapper = MapperSingleton.get()
 
     @Test
     fun `should serialize natuurlijk persoon`() {
@@ -44,7 +44,7 @@ internal class RolTest {
                 "omschrijving": "omschrijving",
                 "omschrijvingGeneriek": "initiator",
                 "roltoelichting": "role-description",
-                "registratiedatum": "2023-02-15T10:23:43",
+                "registratiedatum": "2023-02-15T10:23:43.000Z",
                 "indicatieMachtiging": "gemachtigde",
                 "betrokkeneIdentificatie": {
                     "inpBsn": "bsn"
@@ -88,7 +88,7 @@ internal class RolTest {
                 "omschrijving": "omschrijving",
                 "omschrijvingGeneriek": "initiator",
                 "roltoelichting": "roltoelichting",
-                "registratiedatum": "2023-02-15T10:23:43",
+                "registratiedatum": "2023-02-15T10:23:43.000Z",
                 "indicatieMachtiging": "gemachtigde",
                 "betrokkeneIdentificatie": {
                     "annIdentificatie": "kvk",

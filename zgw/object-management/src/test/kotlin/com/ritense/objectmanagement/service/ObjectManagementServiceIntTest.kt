@@ -64,6 +64,9 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var pluginService: PluginService
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     lateinit var mockApi: MockWebServer
 
     @BeforeAll
@@ -119,7 +122,7 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
 
         val authenticationPlugin = pluginService.createPluginConfiguration(
             title = "Objecten authentication",
-            properties = ObjectMapper().readTree(
+            properties = objectMapper.readTree(
                 """{"token":"some-secret-token-long"},
                     "pluginDefinition": {
                     "key": "objecttokenauthentication",
@@ -132,7 +135,7 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
 
         val objectApiPlugin = pluginService.createPluginConfiguration(
             title = "objectsApi",
-            properties = ObjectMapper().readTree(
+            properties = objectMapper.readTree(
                 """{
                     "url":"$objectUrl",
                     "authenticationPluginConfiguration":"${authenticationPlugin.id.id}"},
@@ -149,7 +152,7 @@ internal class ObjectManagementServiceIntTest : BaseIntegrationTest() {
 
         val objectTypeApiPlugin = pluginService.createPluginConfiguration(
             title = "objectTypenApi",
-            properties = ObjectMapper().readTree(
+            properties = objectMapper.readTree(
                 """{
                     "url":"$objectTypesApiUrl",
                     "authenticationPluginConfiguration":"${authenticationPlugin.id.id}"},

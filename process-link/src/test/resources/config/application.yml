@@ -1,18 +1,10 @@
 spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:3342/process-link-test
-        username: valtimo
-        password: password
-        hikari:
-            auto-commit: false
     liquibase:
         enabled: true
         change-log: classpath:/config/liquibase/process-link-master.xml
     jpa:
-        database-platform: org.hibernate.dialect.PostgreSQL10Dialect
-        database: postgresql
         show_sql: true
         open-in-view: false
         properties:
@@ -33,7 +25,6 @@ spring:
             ddl-auto: none
 
 valtimo:
-    database: postgres
     processlink:
         encryption-secret: "abcdefghijklmnop"
 

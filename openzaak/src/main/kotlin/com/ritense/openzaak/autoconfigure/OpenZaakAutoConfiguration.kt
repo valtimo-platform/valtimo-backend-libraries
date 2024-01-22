@@ -16,6 +16,7 @@
 
 package com.ritense.openzaak.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.connector.repository.ConnectorTypeInstanceRepository
 import com.ritense.connector.repository.ConnectorTypeRepository
 import com.ritense.document.service.DocumentService
@@ -228,9 +229,16 @@ class OpenZaakAutoConfiguration {
         zaakTypeLinkService: ZaakTypeLinkService,
         eigenschapService: EigenschapService,
         zaakService: ZaakService,
-        zaakInstanceLinkService: ZaakInstanceLinkService
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        objectMapper: ObjectMapper,
     ): EigenschappenSubmittedListener {
-        return EigenschappenSubmittedListener(zaakTypeLinkService, eigenschapService, zaakService, zaakInstanceLinkService)
+        return EigenschappenSubmittedListener(
+            zaakTypeLinkService,
+            eigenschapService,
+            zaakService,
+            zaakInstanceLinkService,
+            objectMapper
+        )
     }
 
     @Bean

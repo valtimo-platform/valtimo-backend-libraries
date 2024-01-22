@@ -30,6 +30,14 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.ritense.form.autoconfigure.FormAutoConfiguration;
 import com.ritense.form.domain.event.FormRegisteredEvent;
 import com.ritense.form.domain.exception.FormDefinitionParsingException;
+import com.ritense.valtimo.contract.json.MapperSingleton;
+import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.AbstractAggregateRoot;
+import org.springframework.data.domain.Persistable;
+import org.springframework.web.util.HtmlUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -182,7 +190,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                     String fieldKey = getFieldKey(fieldNode);
                     Object value = valueMap.get(fieldKey);
                     if(value != null) {
-                        JsonNode valueNode = Mapper.INSTANCE.get().valueToTree(value);
+                        JsonNode valueNode = MapperSingleton.INSTANCE.get().valueToTree(value);
                         fieldNode.set(DEFAULT_VALUE_FIELD, htmlEscape(valueNode));
                     }
                 });
@@ -191,7 +199,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public FormDefinition preFillWith(final String prefix, final Map<String, Object> variableMap) {
         final ObjectNode rootNode = JsonNodeFactory.instance.objectNode();
         final ObjectNode objectNode = JsonNodeFactory.instance.objectNode();
-        variableMap.forEach((fieldName, value) -> objectNode.set(fieldName, Mapper.INSTANCE.get().valueToTree(value)));
+        variableMap.forEach((fieldName, value) -> objectNode.set(fieldName, MapperSingleton.INSTANCE.get().valueToTree(value)));
         rootNode.set(prefix, objectNode);
         return preFill(rootNode);
     }
@@ -268,7 +276,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     public JsonNode asJson() {
         if (this.workingCopy == null) {
             try {
-                this.workingCopy = Mapper.INSTANCE.get().readTree(formDefinition);
+                this.workingCopy = MapperSingleton.INSTANCE.get().readTree(formDefinition);
             } catch (Exception e) {
                 throw new FormDefinitionParsingException(e);
             }
@@ -282,7 +290,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     private void appendFieldIds(JsonNode workingCopy) {
         getInputFields(workingCopy).forEach(inputNode -> {
             var attributes = inputNode.has(PROPERTY_ATTRIBUTES) ? (ObjectNode) inputNode.get(
-                PROPERTY_ATTRIBUTES) : Mapper.INSTANCE.get().createObjectNode();
+                PROPERTY_ATTRIBUTES) : MapperSingleton.INSTANCE.get().createObjectNode();
 
             inputNode.putIfAbsent(PROPERTY_ATTRIBUTES, attributes);
             attributes.putIfAbsent(PROPERTY_TESTID, new TextNode(name + "-" + inputNode.get(PROPERTY_KEY).asText()));
@@ -341,7 +349,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
 
     private void setFormDefinition(String formDefinition) {
         try {
-            this.workingCopy = Mapper.INSTANCE.get().readTree(formDefinition);
+            this.workingCopy = MapperSingleton.INSTANCE.get().readTree(formDefinition);
         } catch (Exception e) {
             throw new IllegalArgumentException("The formDefinition argument could not be parsed as JSON.", e);
         }

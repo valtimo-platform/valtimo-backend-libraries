@@ -16,7 +16,7 @@
 
 package com.ritense.documentenapi.client
 
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -38,9 +38,9 @@ internal class CreateDocumentRequestTest {
             beschrijving = "beschrijving",
             informatieobjecttype = "type",
         )
-        val output = Mapper.INSTANCE.get().writeValueAsString(requestToSerialize)
+        val output = MapperSingleton.get().writeValueAsString(requestToSerialize)
 
-        val parsedOutput = Mapper.INSTANCE.get().readValue(output, Map::class.java)
+        val parsedOutput = MapperSingleton.get().readValue(output, Map::class.java)
 
         assertEquals("dGVzdA==", parsedOutput["inhoud"])
         assertEquals("2020-05-03", parsedOutput["creatiedatum"])

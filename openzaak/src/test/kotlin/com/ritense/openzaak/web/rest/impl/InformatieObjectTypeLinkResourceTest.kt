@@ -22,7 +22,7 @@ import com.ritense.openzaak.service.impl.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.impl.result.CreateInformatieObjectTypeLinkResultFailed
 import com.ritense.openzaak.service.impl.result.CreateInformatieObjectTypeLinkResultSucceeded
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.result.OperationError
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -120,7 +120,7 @@ internal class InformatieObjectTypeLinkResourceTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/v1/openzaak/informatie-object-type-link")
-                .content(Mapper.INSTANCE.get().writeValueAsString(createInformatieObjectTypeRequest))
+                .content(MapperSingleton.get().writeValueAsString(createInformatieObjectTypeRequest))
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -147,7 +147,7 @@ internal class InformatieObjectTypeLinkResourceTest {
 
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/v1/openzaak/informatie-object-type-link")
-                .content(Mapper.INSTANCE.get().writeValueAsString(createInformatieObjectTypeRequest))
+                .content(MapperSingleton.get().writeValueAsString(createInformatieObjectTypeRequest))
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)

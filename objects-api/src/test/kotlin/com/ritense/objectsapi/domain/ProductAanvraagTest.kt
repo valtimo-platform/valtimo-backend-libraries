@@ -16,12 +16,12 @@
 
 package com.ritense.objectsapi.domain
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import java.net.URI
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.contains
 import org.junit.jupiter.api.Test
+import java.net.URI
 
 class ProductAanvraagTest {
 
@@ -29,7 +29,7 @@ class ProductAanvraagTest {
     fun `should return all files`() {
         val productAanvraag = ProductAanvraag(
             "type",
-            ObjectMapper().createObjectNode(),
+            MapperSingleton.get().createObjectNode(),
             listOf(URI("http://test.com")),
             URI("http://example.com"),
             "123",

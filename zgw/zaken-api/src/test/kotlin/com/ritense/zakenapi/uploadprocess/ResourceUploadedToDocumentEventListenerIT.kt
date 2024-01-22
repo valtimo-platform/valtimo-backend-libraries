@@ -16,9 +16,8 @@
 
 package com.ritense.zakenapi.uploadprocess
 
-import com.ritense.authorization.AuthorizationContext
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
@@ -47,7 +46,8 @@ class ResourceUploadedToDocumentEventListenerIT @Autowired constructor(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val historyService: HistoryService,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
-    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
+    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+    private val objectMapper: ObjectMapper,
 ): BaseIntegrationTest() {
 
     @BeforeEach
@@ -76,7 +76,7 @@ class ResourceUploadedToDocumentEventListenerIT @Autowired constructor(
             documentService.createDocument(
                 NewDocumentRequest(
                     DOCUMENT_DEFINITION_KEY,
-                    Mapper.INSTANCE.get().createObjectNode()
+                    objectMapper.createObjectNode()
                 )
             ).resultingDocument().get().id!!.id.toString()
         }
@@ -96,7 +96,7 @@ class ResourceUploadedToDocumentEventListenerIT @Autowired constructor(
             documentService.createDocument(
                 NewDocumentRequest(
                     DOCUMENT_DEFINITION_KEY,
-                    Mapper.INSTANCE.get().createObjectNode()
+                    objectMapper.createObjectNode()
                 )
             ).resultingDocument().get().id!!.id.toString()
         }

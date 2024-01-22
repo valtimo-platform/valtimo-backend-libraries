@@ -26,14 +26,17 @@ import com.ritense.form.BaseTest;
 import com.ritense.form.autoconfigure.FormAutoConfiguration;
 import com.ritense.valtimo.contract.form.DataResolvingContext;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -375,8 +378,8 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     public JsonNode content(Object content) throws JsonProcessingException {
-        String jsonString = Mapper.INSTANCE.get().writeValueAsString(content);
-        return Mapper.INSTANCE.get().readTree(jsonString);
+        String jsonString = MapperSingleton.INSTANCE.get().writeValueAsString(content);
+        return MapperSingleton.INSTANCE.get().readTree(jsonString);
     }
 
     private static class FormFieldDataResolverImpl implements FormFieldDataResolver {

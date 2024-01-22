@@ -16,14 +16,13 @@
 
 package com.ritense.plugin
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -53,7 +52,7 @@ internal class PluginFactoryTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode,
+            MapperSingleton.get().readTree("{\"name\": \"whatever\" }") as ObjectNode,
             pluginDefinition
         )
 
@@ -66,7 +65,7 @@ internal class PluginFactoryTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().readTree("{\"name\": \"whatever\" }") as ObjectNode,
+            MapperSingleton.get().readTree("{\"name\": \"whatever\" }") as ObjectNode,
             pluginDefinition
         )
 
@@ -135,11 +134,11 @@ internal class PluginFactoryTest {
         val categoryPluginConfigurationId = PluginConfigurationId.newId()
         val pluginCategory = object : TestPluginCategory {}
         whenever(pluginService.createInstance(categoryPluginConfigurationId)).thenReturn(pluginCategory)
-        whenever((pluginService.getObjectMapper())).thenReturn(jacksonObjectMapper())
+        whenever((pluginService.getObjectMapper())).thenReturn(MapperSingleton.get())
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().valueToTree(
+            MapperSingleton.get().valueToTree(
                     TestPluginConfiguredProperties(property1 = "whatever", property3 = 2, property4= categoryPluginConfigurationId.id.toString())
             ),
             pluginDefinition

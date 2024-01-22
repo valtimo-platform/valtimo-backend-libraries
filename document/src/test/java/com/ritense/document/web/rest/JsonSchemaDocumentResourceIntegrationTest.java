@@ -16,6 +16,7 @@
 
 package com.ritense.document.web.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -24,7 +25,6 @@ import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
 import com.ritense.document.repository.DocumentRepository;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
 import com.ritense.outbox.domain.BaseEvent;
-import com.ritense.valtimo.contract.json.Mapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -62,6 +62,9 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private DocumentRepository documentRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
@@ -264,6 +267,6 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         assertEquals("com.ritense.valtimo.document.viewed", event.getType());
         assertEquals("com.ritense.document.domain.impl.JsonSchemaDocument", event.getResultType());
         assertEquals(document.id().toString(), event.getResultId());
-        assertEquals(Mapper.INSTANCE.get().valueToTree(document), event.getResult());
+        assertEquals(objectMapper.valueToTree(document), event.getResult());
     }
 }

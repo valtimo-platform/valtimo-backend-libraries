@@ -17,6 +17,7 @@
 package com.ritense.valtimo.emailnotificationconfiguration.web.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettings;
 import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettingsRequestImpl;
 import com.ritense.valtimo.emailnotificationsettings.service.impl.EmailNotificationSettingsServiceImpl;
@@ -57,7 +58,7 @@ class EmailNotificationSettingsResourceTest {
 
     @BeforeEach
     void setUp() {
-        objectMapper = new ObjectMapper();
+        objectMapper = MapperSingleton.INSTANCE.get();
         emailNotificationService = mock(EmailNotificationSettingsServiceImpl.class);
         emailNotificationSettingsResource = new EmailNotificationSettingsResource(emailNotificationService);
         mockMvc = MockMvcBuilders
