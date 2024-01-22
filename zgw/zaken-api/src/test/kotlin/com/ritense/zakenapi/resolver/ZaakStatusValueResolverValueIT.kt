@@ -16,7 +16,7 @@
 
 package com.ritense.zakenapi.resolver
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -40,6 +40,7 @@ class ZaakStatusValueResolverValueIT @Autowired constructor(
     private val documentService: JsonSchemaDocumentService,
     private val formDefinitionRepository: FormDefinitionRepository,
     private val prefillFormService: PrefillFormService,
+    private val objectMapper: ObjectMapper,
 ) : BaseIntegrationTest() {
 
     lateinit var server: MockWebServer
@@ -60,7 +61,7 @@ class ZaakStatusValueResolverValueIT @Autowired constructor(
     fun `should prefill form with status data from the Zaken API`() {
         val documentId = runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest("profile", jacksonObjectMapper().createObjectNode())
+                NewDocumentRequest("profile", objectMapper.createObjectNode())
             ).resultingDocument().get().id.id
         }
         val formDefinition = formDefinitionRepository.findByName("form-with-zaak-fields").get()

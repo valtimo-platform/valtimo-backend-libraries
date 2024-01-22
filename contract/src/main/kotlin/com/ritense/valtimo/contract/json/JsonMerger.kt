@@ -23,7 +23,7 @@ class JsonMerger {
     companion object {
         @JvmStatic
         fun merge(first: JsonNode, second: JsonNode): JsonNode {
-            val mapper = Mapper.INSTANCE.get()
+            val mapper = MapperSingleton.get()
             return mapper.readerForUpdating(first)
                 .readValue<JsonNode>(second)
         }

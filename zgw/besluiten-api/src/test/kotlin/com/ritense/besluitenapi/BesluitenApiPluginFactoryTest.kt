@@ -16,15 +16,14 @@
 
 package com.ritense.besluitenapi
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.ZaakUrlProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -40,7 +39,7 @@ internal class BesluitenApiPluginFactoryTest {
         val urlProvider: ZaakUrlProvider = mock()
         val authentication: BesluitenApiAuthentication = mock()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authentication)
-        whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
+        whenever(pluginService.getObjectMapper()).thenReturn(MapperSingleton.get())
 
         val pluginProperties: String = """
             {
@@ -56,7 +55,7 @@ internal class BesluitenApiPluginFactoryTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().readTree(pluginProperties) as ObjectNode,
+            MapperSingleton.get().readTree(pluginProperties) as ObjectNode,
             pluginDefinition
         )
 

@@ -1,17 +1,9 @@
 spring:
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:3331/flowmailer-test
-        username: valtimo
-        password: password
-        hikari:
-            auto-commit: false
     liquibase:
         enabled: false
     jpa:
-        database-platform: org.hibernate.dialect.PostgreSQL10Dialect
-        database: postgresql
         show_sql: true
         open-in-view: false
         properties:
@@ -39,7 +31,6 @@ spring-actuator:
 # Flowmailer configuration
 ##
 valtimo:
-    database: postgres
     flowmailer:
         client-id: clientId
         client-secret: clientSecret

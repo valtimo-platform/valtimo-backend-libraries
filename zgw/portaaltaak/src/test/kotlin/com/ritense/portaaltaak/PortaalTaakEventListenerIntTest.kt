@@ -38,7 +38,6 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byActive
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.CamundaTaskService
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
@@ -50,8 +49,6 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.containsInAnyOrder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeast
@@ -70,7 +67,6 @@ import reactor.core.publisher.Mono
 import java.net.URI
 import java.time.LocalDateTime
 import java.util.*
-import java.util.function.Supplier
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -229,7 +225,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
 
         val configuration = pluginService.createPluginConfiguration(
             "Notificaties API plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 pluginPropertiesJson
             ) as ObjectNode,
             "notificatiesapi"
@@ -247,7 +243,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
 
         val configuration = pluginService.createPluginConfiguration(
             "Objecttype plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 pluginPropertiesJson
             ) as ObjectNode,
             "objectenapi"
@@ -282,7 +278,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
 
         val configuration = pluginService.createPluginConfiguration(
             "Portaaltaak plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 pluginPropertiesJson
             ) as ObjectNode,
             "portaaltaak"
@@ -300,7 +296,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
 
         val configuration = pluginService.createPluginConfiguration(
             "Objecten plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 pluginPropertiesJson
             ) as ObjectNode,
             "objecttypenapi"
@@ -403,7 +399,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     private fun startPortaalTaakProcess(content: String): CamundaTask {
         return runWithoutAuthorization {
             val newDocumentRequest =
-                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().readTree(content))
+                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.readTree(content))
             val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             val processResult = processDocumentService.newDocumentAndStartProcess(request)
             documentId = processResult.resultingDocument().get().id().id
@@ -426,7 +422,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
                 PluginProcessLinkId(UUID.randomUUID()),
                 processDefinitionId,
                 "user_task",
-                Mapper.INSTANCE.get().readTree(propertiesConfig) as ObjectNode,
+                objectMapper.readTree(propertiesConfig) as ObjectNode,
                 portaalTaakPluginConfiguration.id,
                 "create-portaaltaak",
                 activityType = ActivityType.USER_TASK_CREATE

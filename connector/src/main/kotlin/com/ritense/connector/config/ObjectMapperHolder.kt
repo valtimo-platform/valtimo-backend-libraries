@@ -17,8 +17,7 @@
 package com.ritense.connector.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.valtimo.contract.json.Mapper
-
+import com.ritense.valtimo.contract.json.MapperSingleton
 class ObjectMapperHolder(springHandlerInstantiatorImpl: SpringHandlerInstantiatorImpl) {
 
     companion object {
@@ -26,7 +25,7 @@ class ObjectMapperHolder(springHandlerInstantiatorImpl: SpringHandlerInstantiato
     }
 
     init {
-        objectMapper = Mapper.INSTANCE.get()
+        objectMapper = MapperSingleton.get()
         objectMapper.setHandlerInstantiator(springHandlerInstantiatorImpl)
     }
 }

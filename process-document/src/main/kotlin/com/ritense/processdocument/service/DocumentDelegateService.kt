@@ -19,6 +19,7 @@ package com.ritense.processdocument.service
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
@@ -26,7 +27,6 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.authentication.UserManagementService
-import com.ritense.valtimo.contract.json.Mapper
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.time.LocalDateTime
@@ -39,9 +39,8 @@ class DocumentDelegateService(
     private val documentService: DocumentService,
     private val jsonSchemaDocumentService: JsonSchemaDocumentService,
     private val userManagementService: UserManagementService,
+    private val objectMapper: ObjectMapper,
 ) {
-
-    private val mapper = Mapper.INSTANCE.get()
 
     fun getDocumentVersion(execution: DelegateExecution): Int? {
         logger.debug("Get version of document {}", execution.processBusinessKey)
@@ -126,7 +125,7 @@ class DocumentDelegateService(
             return jsonNode.asDouble()
         } else if (jsonNode.isValueNode || jsonNode.isContainerNode) {
             try {
-                return mapper.treeToValue(jsonNode, Any::class.java)
+                return objectMapper.treeToValue(jsonNode, Any::class.java)
             } catch (e: JsonProcessingException) {
                 logger.error("Could not transform JsonNode of type \"" + jsonNode.nodeType + "\"", e)
             }

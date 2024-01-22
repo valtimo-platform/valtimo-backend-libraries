@@ -1,18 +1,10 @@
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:3339/dataprovider-test
-    username: valtimo
-    password: password
-    hikari:
-      auto-commit: false
   liquibase:
     enabled: true
     change-log: classpath:/config/liquibase/dataprovider-master.xml
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
-    database: postgresql
     show_sql: true
     open-in-view: false
     properties:
@@ -35,6 +27,3 @@ spring:
 spring-actuator:
   username: test
   password: test
-
-valtimo:
-  database: postgres

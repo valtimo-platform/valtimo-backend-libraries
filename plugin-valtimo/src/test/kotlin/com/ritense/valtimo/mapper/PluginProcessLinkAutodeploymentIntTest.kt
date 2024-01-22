@@ -16,23 +16,26 @@
 
 package com.ritense.valtimo.mapper
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.BaseIntegrationTest
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 
 internal class PluginProcessLinkAutodeploymentIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var processLinkService: ProcessLinkService
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @Test
     fun `should deploy plugin process link on startup`() {
@@ -47,6 +50,6 @@ internal class PluginProcessLinkAutodeploymentIntTest : BaseIntegrationTest() {
         assertEquals(PROCESS_LINK_TYPE_PLUGIN, pluginProcessLink.processLinkType)
         assertEquals("0a750334-a065-48fa-bb02-293d21df2213", pluginProcessLink.pluginConfigurationId.id.toString())
         assertEquals("test-action", pluginProcessLink.pluginActionDefinitionKey)
-        assertEquals("""{"attachmentIds":"pv:attachmentIds"}""", jacksonObjectMapper().writeValueAsString(pluginProcessLink.actionProperties))
+        assertEquals("""{"testActionProperty":"test-value"}""", objectMapper.writeValueAsString(pluginProcessLink.actionProperties))
     }
 }

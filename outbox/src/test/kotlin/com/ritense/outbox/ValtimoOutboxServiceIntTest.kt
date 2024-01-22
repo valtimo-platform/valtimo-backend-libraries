@@ -20,11 +20,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.outbox.domain.BaseEvent
+import com.ritense.outbox.exception.OutboxTransactionReadOnlyException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.transaction.IllegalTransactionStateException
 import org.springframework.transaction.annotation.Transactional
 
 class ValtimoOutboxServiceIntTest : BaseIntegrationTest() {
@@ -50,18 +52,16 @@ class ValtimoOutboxServiceIntTest : BaseIntegrationTest() {
     fun `should throw error when read-only transaction`() {
         val event = OrderCreatedEvent("textBook")
 
-        val exception = assertThrows<RuntimeException> {
+        assertThrows<OutboxTransactionReadOnlyException> {
             outboxService.send(objectMapper.writeValueAsString(event))
         }
-
-        assertThat(exception.message).isEqualTo("Failed to send outbox message. Reason: current transaction is read-only")
     }
 
     @Test
     fun `should throw error when no transaction exists`() {
         val event = OrderCreatedEvent("textBook")
 
-        val exception = assertThrows<RuntimeException> {
+        val exception = assertThrows<IllegalTransactionStateException> {
             outboxService.send(objectMapper.writeValueAsString(event))
         }
 
@@ -92,7 +92,7 @@ class ValtimoOutboxServiceIntTest : BaseIntegrationTest() {
 
     @Test
     @Transactional
-    fun `should set user id to "System" if no user is available`() {
+    fun `should set user id to 'System' if no user is available`() {
         outboxService.send { TestEvent() }
 
         val messages = outboxMessageRepository.findAll()

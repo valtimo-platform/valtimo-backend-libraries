@@ -17,7 +17,7 @@
 package com.ritense.valtimo.web.rest.parameters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
 import com.ritense.valtimo.web.rest.dto.processvariable.ProcessVariableDTOV2;
 import com.ritense.valtimo.web.rest.dto.processvariable.type.DateProcessVariableDTOV2;
@@ -25,6 +25,7 @@ import com.ritense.valtimo.web.rest.dto.processvariable.type.LongProcessVariable
 import com.ritense.valtimo.web.rest.dto.processvariable.type.StringProcessVariableDTOV2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -51,9 +52,7 @@ class ProcessInstanceSearchDTOTest {
 
     @BeforeEach
     void setup() {
-        mapper = new ObjectMapper();
-        JavaTimeModule module = new JavaTimeModule();
-        mapper.registerModule(module);
+        mapper = MapperSingleton.INSTANCE.get();
     }
 
     @Test

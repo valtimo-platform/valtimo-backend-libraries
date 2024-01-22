@@ -16,8 +16,8 @@
 
 package com.ritense.plugin.web.rest
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -53,6 +53,9 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
     @Autowired
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     lateinit var categoryPluginConfiguration: PluginConfiguration
     lateinit var pluginConfiguration: PluginConfiguration
     lateinit var mockMvc: MockMvc
@@ -69,7 +72,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
             PluginConfiguration(
                 PluginConfigurationId.newId(),
                 "some-config",
-                jacksonObjectMapper().readTree(
+                objectMapper.readTree(
                     """
                     {
                         "property1": "my-secret",

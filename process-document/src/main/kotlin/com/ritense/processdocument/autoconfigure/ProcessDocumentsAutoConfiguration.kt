@@ -87,13 +87,15 @@ class ProcessDocumentsAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         documentService: DocumentService,
         jsonSchemaDocumentService: JsonSchemaDocumentService,
-        userManagementService: UserManagementService
+        userManagementService: UserManagementService,
+        objectMapper: ObjectMapper,
     ): DocumentDelegateService {
         return DocumentDelegateService(
             processDocumentService,
             documentService,
             jsonSchemaDocumentService,
-            userManagementService
+            userManagementService,
+            objectMapper,
         )
     }
     @ProcessBean

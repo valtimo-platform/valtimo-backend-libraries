@@ -21,7 +21,6 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.notificatiesapi.event.NotificatiesApiNotificationReceivedEvent
@@ -38,12 +37,12 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
-import java.net.MalformedURLException
-import java.net.URI
-import java.util.UUID
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.context.event.EventListener
+import java.net.MalformedURLException
+import java.net.URI
+import java.util.UUID
 
 open class PortaalTaakEventListener(
     private val objectManagementService: ObjectManagementService,
@@ -207,7 +206,7 @@ open class PortaalTaakEventListener(
             "portaalTaakObjectUrl" to portaalTaakObjectUrl,
             "objectenApiPluginConfigurationId" to objectenApiPluginConfigurationId,
             "verwerkerTaakId" to taakObject.verwerkerTaakId,
-            "documentUrls" to getDocumentenUrls(jacksonObjectMapper().valueToTree(taakObject.verzondenData))
+            "documentUrls" to getDocumentenUrls(objectMapper.valueToTree(taakObject.verzondenData))
         )
         try {
             runWithoutAuthorization {

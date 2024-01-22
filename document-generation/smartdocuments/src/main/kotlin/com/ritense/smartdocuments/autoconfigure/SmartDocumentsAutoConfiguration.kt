@@ -16,6 +16,7 @@
 
 package com.ritense.smartdocuments.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
@@ -45,11 +46,13 @@ class SmartDocumentsAutoConfiguration {
         smartDocumentGenerator: SmartDocumentGenerator,
         processDocumentAssociationService: ProcessDocumentAssociationService,
         documentService: DocumentService,
+        objectMapper: ObjectMapper,
     ): CamundaSmartDocumentGenerator {
         return CamundaSmartDocumentGenerator(
             smartDocumentGenerator,
             processDocumentAssociationService,
             documentService,
+            objectMapper,
         )
     }
 

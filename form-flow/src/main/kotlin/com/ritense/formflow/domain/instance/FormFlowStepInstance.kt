@@ -17,13 +17,13 @@
 package com.ritense.formflow.domain.instance
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.formflow.domain.definition.FormFlowNextStep
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.event.ApplicationEventPublisherHolder
 import com.ritense.formflow.event.FormFlowStepCompletedEvent
 import com.ritense.formflow.expression.ExpressionProcessorFactoryHolder
+import com.ritense.formflow.json.MapperSingleton
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.Column
 import jakarta.persistence.EmbeddedId
@@ -118,7 +118,7 @@ data class FormFlowStepInstance(
             "step" to mapOf(
                 "id" to id,
                 "key" to stepKey,
-                "submissionData" to jacksonObjectMapper().readValue<JsonNode>(instance.getSubmissionDataContext())
+                "submissionData" to MapperSingleton.get().readValue<JsonNode>(instance.getSubmissionDataContext())
             ),
             "instance" to mapOf(
                 "id" to instance.id

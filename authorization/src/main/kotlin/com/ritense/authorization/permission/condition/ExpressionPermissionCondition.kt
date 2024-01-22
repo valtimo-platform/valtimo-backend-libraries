@@ -19,13 +19,13 @@ package com.ritense.authorization.permission.condition
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonView
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
 import com.ritense.authorization.jackson.ComparableDeserializer
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.permission.condition.ExpressionPermissionCondition.Companion.EXPRESSION
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Path
@@ -100,7 +100,7 @@ data class ExpressionPermissionCondition<V : Comparable<V>>(
             fieldValue
         } else {
             try {
-                jacksonObjectMapper().writeValueAsString(fieldValue) ?: return null
+                MapperSingleton.get().writeValueAsString(fieldValue) ?: return null
             } catch (e: Exception) {
                 null
             }

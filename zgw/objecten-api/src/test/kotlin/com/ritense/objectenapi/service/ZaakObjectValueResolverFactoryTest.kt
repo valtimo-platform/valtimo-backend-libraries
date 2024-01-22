@@ -16,11 +16,9 @@
 
 package com.ritense.objectenapi.service
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.mock
@@ -36,7 +34,7 @@ internal class ZaakObjectValueResolverFactoryTest {
 
     val zaakObjectService = mock<ZaakObjectService>()
     val processDocumentService = mock<ProcessDocumentService>()
-    val resolverFactory = ZaakObjectValueResolverFactory(zaakObjectService, ObjectMapper(), processDocumentService)
+    val resolverFactory = ZaakObjectValueResolverFactory(zaakObjectService, MapperSingleton.get(), processDocumentService)
 
     @Test
     fun `should support zaakobject prefix`() {
@@ -53,7 +51,7 @@ internal class ZaakObjectValueResolverFactoryTest {
                 "path" to "test-value-2"
             )
         )
-        whenever(object1.record.data).thenReturn(Mapper.INSTANCE.get().valueToTree(objectData1))
+        whenever(object1.record.data).thenReturn(MapperSingleton.get().valueToTree(objectData1))
         whenever(zaakObjectService.getZaakObjectOfTypeByName(documentId, "sometype"))
             .thenReturn(object1)
 

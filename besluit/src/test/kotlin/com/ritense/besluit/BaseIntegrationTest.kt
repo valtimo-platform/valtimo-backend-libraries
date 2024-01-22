@@ -16,7 +16,7 @@
 
 package com.ritense.besluit
 
-import com.ritense.authorization.AuthorizationService
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.besluit.connector.BesluitConnector
 import com.ritense.besluit.connector.BesluitProperties
 import com.ritense.connector.domain.ConnectorInstance
@@ -28,11 +28,9 @@ import com.ritense.openzaak.catalogi.CatalogiClient
 import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.connector.OpenZaakConnector
 import com.ritense.openzaak.domain.connector.OpenZaakProperties
-import com.ritense.openzaak.service.impl.Mapper
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
-import java.util.UUID
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -46,6 +44,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.HttpMethod
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.util.UUID
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
@@ -78,6 +77,9 @@ class BaseIntegrationTest : BaseTest() {
 
     @Autowired
     lateinit var connectorTypeInstanceRepository: ConnectorTypeInstanceRepository
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @MockBean
     lateinit var mailSender: MailSender
@@ -169,7 +171,7 @@ class BaseIntegrationTest : BaseTest() {
     }
 
     fun <T> getRequestBody(method: HttpMethod, path: String, clazz: Class<T>): T {
-        return Mapper.get().readValue(findRequest(method, path)!!.body.readUtf8(), clazz)
+        return objectMapper.readValue(findRequest(method, path)!!.body.readUtf8(), clazz)
     }
 }
 

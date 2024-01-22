@@ -16,6 +16,7 @@
 
 package com.ritense.processdocument;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.config.DeadlockService;
 import com.ritense.resource.service.ResourceService;
@@ -26,6 +27,7 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+
 import static org.mockito.Mockito.mock;
 
 @SpringBootConfiguration
@@ -50,9 +52,13 @@ public class ProcessDocumentTestConfiguration {
         @ProcessBean
         @Bean
         public DeadlockService deadlockService(
-            DocumentService documentService
+            DocumentService documentService,
+            ObjectMapper objectMapper
         ) {
-            return new DeadlockService(documentService);
+            return new DeadlockService(
+                documentService,
+                objectMapper
+            );
         }
 
     }

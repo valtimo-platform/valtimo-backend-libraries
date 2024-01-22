@@ -17,8 +17,8 @@
 package com.ritense.processdocument.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.processdocument.BaseIntegrationTest;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
@@ -40,6 +40,9 @@ class CamundaProcessJsonSchemaDocumentServiceIntTest extends BaseIntegrationTest
     @Autowired
     protected CamundaProcessService camundaProcessService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private static final String DOCUMENT_DEFINITION_NAME = "house";
     private static final String PROCESS_DEFINITION_KEY = "unassociated-process";
 
@@ -47,7 +50,7 @@ class CamundaProcessJsonSchemaDocumentServiceIntTest extends BaseIntegrationTest
     void shouldNewDocumentAndStartProcessForUnassociatedProcess() throws JsonProcessingException {
         var startRequest = new NewDocumentAndStartProcessRequest(
             PROCESS_DEFINITION_KEY,
-            new NewDocumentRequest(DOCUMENT_DEFINITION_NAME, Mapper.INSTANCE.get().readTree("{}"))
+            new NewDocumentRequest(DOCUMENT_DEFINITION_NAME, objectMapper.readTree("{}"))
         );
         var result = runWithoutAuthorization(() ->
             camundaProcessJsonSchemaDocumentService.newDocumentAndStartProcess(startRequest)

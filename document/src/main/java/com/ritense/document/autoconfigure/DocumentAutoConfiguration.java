@@ -79,7 +79,8 @@ public class DocumentAutoConfiguration {
         final UserManagementService userManagementService,
         final AuthorizationService authorizationService,
         final ApplicationEventPublisher applicationEventPublisher,
-        final OutboxService outboxService
+        final OutboxService outboxService,
+        final ObjectMapper objectMapper
     ) {
         return new JsonSchemaDocumentService(
             documentRepository,
@@ -89,7 +90,8 @@ public class DocumentAutoConfiguration {
             userManagementService,
             authorizationService,
             applicationEventPublisher,
-            outboxService
+            outboxService,
+            objectMapper
         );
     }
 

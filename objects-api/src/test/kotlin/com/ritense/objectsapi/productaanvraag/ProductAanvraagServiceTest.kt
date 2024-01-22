@@ -1,6 +1,5 @@
 package com.ritense.objectsapi.productaanvraag
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.domain.Document
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.result.CreateDocumentResult
@@ -12,6 +11,7 @@ import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.result.StartProcessForDocumentResult
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.junit.jupiter.api.BeforeEach
@@ -133,7 +133,7 @@ internal class ProductAanvraagServiceTest {
     }
 
     fun getProductAanvraag(bsn: String? = null, kvk: String? = null): ProductAanvraag {
-        val mapper = ObjectMapper()
+        val mapper = MapperSingleton.get()
         return ProductAanvraag(
             "type",
             mapper.createObjectNode(),

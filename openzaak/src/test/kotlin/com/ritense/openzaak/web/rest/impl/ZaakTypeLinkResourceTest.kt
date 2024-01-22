@@ -25,7 +25,7 @@ import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.result.CreateServiceTaskHandlerResultSucceeded
 import com.ritense.openzaak.service.impl.result.ModifyServiceTaskHandlerResultSucceeded
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
@@ -85,7 +85,7 @@ internal class ZaakTypeLinkResourceTest {
             .thenReturn(CreateServiceTaskHandlerResultSucceeded(zaaktypeLink))
 
         mockMvc.perform(post("/api/v1/openzaak/link/{id}/service-handler", id)
-            .content(Mapper.INSTANCE.get().writeValueAsString(serviceTaskHandlerRequest))
+            .content(MapperSingleton.get().writeValueAsString(serviceTaskHandlerRequest))
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -115,7 +115,7 @@ internal class ZaakTypeLinkResourceTest {
             .thenReturn(ModifyServiceTaskHandlerResultSucceeded(zaaktypeLink))
 
         mockMvc.perform(put("/api/v1/openzaak/link/{id}/service-handler", id)
-            .content(Mapper.INSTANCE.get().writeValueAsString(serviceTaskHandlerRequest))
+            .content(MapperSingleton.get().writeValueAsString(serviceTaskHandlerRequest))
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON_VALUE))

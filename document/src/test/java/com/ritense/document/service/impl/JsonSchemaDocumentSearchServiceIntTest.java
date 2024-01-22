@@ -18,13 +18,13 @@ package com.ritense.document.service.impl;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
 import com.ritense.document.domain.search.AssigneeFilter;
@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -77,6 +78,10 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     private static final String USER_ID = "a28994a3-31f9-4327-92a4-210c479d3055";
     private static final String USERNAME = "john@ritense.com";
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private JsonSchemaDocumentDefinition definition;
     private CreateDocumentResult originalDocument;
 
@@ -1121,7 +1126,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         assertThat(documentsListedEvents).hasSize(1);
         DocumentsListed documentsListed = (DocumentsListed) documentsListedEvents.stream().findFirst().orElseThrow();
-        String resultJson = Mapper.INSTANCE.get().writeValueAsString(documentsListed.getResult());
+        String resultJson = objectMapper.writeValueAsString(documentsListed.getResult());
         documents.forEach(document -> {
             assertThat(resultJson).contains("\"" + document.id() + "\"");
         });

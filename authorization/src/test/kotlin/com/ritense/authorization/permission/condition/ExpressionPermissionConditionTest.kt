@@ -17,13 +17,12 @@
 package com.ritense.authorization.permission.condition
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.ritense.authorization.permission.condition.PermissionConditionOperator.LIST_CONTAINS
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.EQUAL_TO
+import com.ritense.authorization.permission.condition.PermissionConditionOperator.LIST_CONTAINS
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
-import kotlin.test.assertEquals
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
@@ -31,6 +30,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
+import kotlin.test.assertEquals
 
 class ExpressionPermissionConditionTest {
 
@@ -40,7 +40,7 @@ class ExpressionPermissionConditionTest {
 
     @BeforeEach
     fun setup() {
-        mapper = jacksonObjectMapper().apply {
+        mapper = MapperSingleton.get().copy().apply {
             this.registerSubtypes(ExpressionPermissionCondition::class.java)
         }
         //TODO: The entity or child objects can't be a Map, don't we want to support this?

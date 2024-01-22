@@ -16,9 +16,7 @@
 
 package com.ritense.documentenapi
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -26,6 +24,7 @@ import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -45,7 +44,7 @@ internal class DocumentenApiPluginFactoryTest {
         val authentication = mock<DocumentenApiAuthentication>()
 
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authentication)
-        whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
+        whenever(pluginService.getObjectMapper()).thenReturn(MapperSingleton.get())
 
         val propertyString = """
           {
@@ -74,7 +73,7 @@ internal class DocumentenApiPluginFactoryTest {
         val configuration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().readTree(propertyString) as ObjectNode,
+            MapperSingleton.get().readTree(propertyString) as ObjectNode,
             pluginDefinition
         )
 
@@ -83,7 +82,7 @@ internal class DocumentenApiPluginFactoryTest {
             client,
             storageService,
             applicationEventPublisher,
-            jacksonObjectMapper()
+            MapperSingleton.get()
         )
 
         val plugin = factory.create(configuration)

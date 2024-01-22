@@ -16,12 +16,12 @@
 
 package com.ritense.documentenapi.web.rest
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.documentenapi.BaseIntegrationTest
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
-import com.ritense.valtimo.contract.json.Mapper
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -57,6 +57,9 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     lateinit var mockMvc: MockMvc
 
     lateinit var server: MockWebServer
@@ -80,7 +83,7 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
 
         pluginConfiguration = pluginService.createPluginConfiguration(
             "Documenten API plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 """
                     {
                         "url": "${server.url("/")}",
