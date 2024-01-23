@@ -23,7 +23,7 @@ import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objectsapi.web.rest.impl.ObjectSyncConfigResource
 import com.ritense.objectsapi.web.rest.request.CreateObjectSyncConfigRequest
 import com.ritense.objectsapi.web.rest.result.CreateObjectSyncConfigResultSucceeded
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
@@ -129,7 +129,7 @@ internal class ObjectSyncConfigResourceTest : BaseTest() {
         mockMvc.perform(
             post(
                 "/api/v1/object/sync/config")
-                .content(Mapper.INSTANCE.get().writeValueAsString(request))
+                .content(MapperSingleton.get().writeValueAsString(request))
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(APPLICATION_JSON_VALUE)
                 .accept(APPLICATION_JSON_VALUE)

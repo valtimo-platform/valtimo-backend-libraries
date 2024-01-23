@@ -33,7 +33,6 @@ import com.ritense.smartdocuments.BaseSmartDocumentsIntegrationTest
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.contract.json.Mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.BeforeEach
@@ -55,7 +54,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
     private val pluginProcessLinkRepository: PluginProcessLinkRepository,
     private val camundaRepositoryService: CamundaRepositoryService,
     private val runtimeService: RuntimeService,
-    private val temporaryResourceStorageService: TemporaryResourceStorageService
+    private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ): BaseSmartDocumentsIntegrationTest() {
 
     lateinit var smartDocumentsPlugin: SmartDocumentsPlugin
@@ -67,7 +66,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
         startMockServer()
         pluginConfiguration = pluginService.createPluginConfiguration(
             "Smart documents plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 "{\"url\":\"${server.url("/")}\",\"username\":\"test-username\",\"password\":\"test-password\"}"
             ) as ObjectNode,
             "smartdocuments"
@@ -114,7 +113,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
     @Test
     fun `should generate document`() {
         // given
-        val documentContent = Mapper.INSTANCE.get().readTree("{\"lastname\": \"Klaveren\"}")
+        val documentContent = objectMapper.readTree("{\"lastname\": \"Klaveren\"}")
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, documentContent)
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("age" to 138))
@@ -141,7 +140,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
     @Test
     fun `should create temp file when generating document`() {
         // given
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when
@@ -185,7 +184,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
             }
         """.trimIndent()
         )
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("my-template-name-variable" to "my-custom-template-name"))
 
@@ -214,7 +213,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
             }
         """.trimIndent()
         )
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // when
@@ -233,7 +232,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
                 PluginProcessLinkId(UUID.fromString("aad69a1b-0325-40ff-91df-27762305dcc1")),
                 processDefinition.id,
                 "GenerateDocument",
-                Mapper.INSTANCE.get().readTree(generateDocumentActionProperties) as ObjectNode,
+                objectMapper.readTree(generateDocumentActionProperties) as ObjectNode,
                 pluginConfiguration.id,
                 "generate-document",
                 ActivityType.SERVICE_TASK_START

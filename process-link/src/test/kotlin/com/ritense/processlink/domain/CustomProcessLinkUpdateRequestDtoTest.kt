@@ -16,10 +16,10 @@
 
 package com.ritense.processlink.domain
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.processlink.domain.CustomProcessLink.Companion.PROCESS_LINK_TYPE_TEST
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.instanceOf
@@ -30,7 +30,7 @@ import java.util.UUID
 
 class CustomProcessLinkUpdateRequestDtoTest {
 
-    private val mapper = jacksonObjectMapper().apply {
+    private val mapper = MapperSingleton.get().copy().apply {
         this.registerSubtypes(CustomProcessLinkCreateRequestDto::class.java, CustomProcessLinkUpdateRequestDto::class.java)
     }
 

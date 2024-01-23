@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valueresolver.ValueResolverFactory
 import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.UUID
@@ -68,7 +67,7 @@ class ZaakObjectValueResolverFactory(
         return if (node == null || node.isMissingNode || node.isNull) {
             null
         } else if (node.isValueNode || node.isArray || node.isObject) {
-            Mapper.INSTANCE.get().treeToValue(node, Object::class.java)
+            objectMapper.treeToValue(node, Object::class.java)
         } else {
             node.asText()
         }

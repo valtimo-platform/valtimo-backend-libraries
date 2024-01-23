@@ -16,6 +16,7 @@
 
 package com.ritense.resource.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.security.config.TemporaryResourceStorageHttpSecurityConfigurer
 import com.ritense.resource.service.TemporaryResourceStorageDeletionService
 import com.ritense.resource.service.TemporaryResourceStorageService
@@ -40,10 +41,12 @@ class TemporaryResourceStorageAutoConfiguration {
     fun temporaryResourceStorageService(
         @Value("\${valtimo.resource.temp.directory:}") valtimoResourceTempDirectory: String,
         uploadProperties: ValtimoUploadProperties,
+        objectMapper: ObjectMapper,
     ): TemporaryResourceStorageService {
         return TemporaryResourceStorageService(
             valtimoResourceTempDirectory = valtimoResourceTempDirectory,
-            uploadProperties = uploadProperties
+            uploadProperties = uploadProperties,
+            objectMapper = objectMapper,
         )
     }
 

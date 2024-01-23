@@ -19,14 +19,16 @@ package com.ritense.document.domain;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class NewDocumentRequestTest {
 
     @Test
     public void shouldHaveEqualGetters() throws Exception {
-        final ObjectMapper objectMapper = new ObjectMapper();
+        final ObjectMapper objectMapper = MapperSingleton.INSTANCE.get();
         final JsonNode jsonData = objectMapper.readTree("{\"key\":123,\"somethingelse\":\"henk\",\"nested\":{\"henk\":\"jan\"}}");
         final String definitionName = "some-name";
 

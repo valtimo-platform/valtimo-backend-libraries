@@ -16,6 +16,7 @@
 
 package com.ritense.documentenapi
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
@@ -29,7 +30,6 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
-import com.ritense.valtimo.contract.json.Mapper
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -62,7 +62,8 @@ internal class DocumentenApiPluginIT @Autowired constructor(
     private val runtimeService: RuntimeService,
     private val processDocumentService: ProcessDocumentService,
     private val pluginProcessLinkRepository: PluginProcessLinkRepository,
-    private val temporaryResourceStorageService: TemporaryResourceStorageService
+    private val temporaryResourceStorageService: TemporaryResourceStorageService,
+    private val objectMapper: ObjectMapper,
 ) : BaseIntegrationTest() {
 
     lateinit var server: MockWebServer
@@ -93,7 +94,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
 
         pluginConfiguration = pluginService.createPluginConfiguration(
             "Documenten API plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 pluginPropertiesJson
             ) as ObjectNode,
             "documentenapi"
@@ -127,7 +128,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
             "test".byteInputStream()
         )
 
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("localDocumentVariableName" to documentId))
 
@@ -141,7 +142,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         val recordedRequest = server.takeRequest()
         val requestString = recordedRequest.body.readUtf8()
 
-        val parsedOutput = Mapper.INSTANCE.get().readValue(requestString, Map::class.java)
+        val parsedOutput = objectMapper.readValue(requestString, Map::class.java)
 
         verify(consumer).consumeEvent(any())
         assertEquals("123456789", parsedOutput["bronorganisatie"])
@@ -182,13 +183,13 @@ internal class DocumentenApiPluginIT @Autowired constructor(
             mapOf(MetadataType.FILE_NAME.key to "my-document.pdf")
         )
 
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("localDocumentVariableName" to documentId))
 
         runWithoutAuthorization { processDocumentService.newDocumentAndStartProcess(request) }
 
-        val parsedOutput = Mapper.INSTANCE.get().readValue(server.takeRequest().body.readUtf8(), Map::class.java)
+        val parsedOutput = objectMapper.readValue(server.takeRequest().body.readUtf8(), Map::class.java)
         assertEquals("my-document.pdf", parsedOutput["bestandsnaam"])
     }
 
@@ -197,7 +198,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         saveProcessLink("download-document", "{}")
         val documentUrl = "${server.url("/")}enkelvoudiginformatieobjecten/$DOCUMENT_ID"
 
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("documentUrl" to documentUrl))
 
@@ -227,7 +228,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         )
         val documentUrl = "${server.url("/")}enkelvoudiginformatieobjecten/$DOCUMENT_ID"
 
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
             .withProcessVars(mapOf("documentUrl" to documentUrl))
 
@@ -252,7 +253,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
                 PluginProcessLinkId(UUID.fromString("71997298-163c-4a67-b52a-1dcc2af72b40")),
                 processDefinitionId,
                 "serviceTask",
-                Mapper.INSTANCE.get().readTree(generateDocumentActionProperties) as ObjectNode,
+                objectMapper.readTree(generateDocumentActionProperties) as ObjectNode,
                 pluginConfiguration.id,
                 pluginActionDefinitionKey,
                 ActivityType.SERVICE_TASK_START

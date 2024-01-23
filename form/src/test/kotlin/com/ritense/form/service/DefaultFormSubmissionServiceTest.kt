@@ -29,8 +29,8 @@ import com.ritense.document.service.DocumentSequenceGeneratorService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.domain.FormProcessLink
-import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.service.impl.DefaultFormSubmissionService
+import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.form.web.rest.dto.FormSubmissionResultFailed
 import com.ritense.form.web.rest.dto.FormSubmissionResultSucceeded
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
@@ -49,6 +49,7 @@ import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
@@ -113,7 +114,8 @@ class DefaultFormSubmissionServiceTest {
             applicationEventPublisher,
             prefillFormService,
             authorizationService,
-            valueResolverService
+            valueResolverService,
+            MapperSingleton.get()
         )
 
         documentSequenceGeneratorService = mock()

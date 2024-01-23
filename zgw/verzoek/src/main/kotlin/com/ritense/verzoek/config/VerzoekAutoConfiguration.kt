@@ -16,6 +16,7 @@
 
 package com.ritense.verzoek.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
@@ -47,14 +48,16 @@ class VerzoekAutoConfiguration {
         objectManagementService: ObjectManagementService,
         documentService: DocumentService,
         zaaktypeUrlProvider: ZaaktypeUrlProvider,
-        processDocumentService: ProcessDocumentService
+        processDocumentService: ProcessDocumentService,
+        objectMapper: ObjectMapper,
     ): VerzoekPluginEventListener {
         return VerzoekPluginEventListener(
             pluginService,
             objectManagementService,
             documentService,
             zaaktypeUrlProvider,
-            processDocumentService
+            processDocumentService,
+            objectMapper,
         )
     }
 }

@@ -18,7 +18,7 @@ package com.ritense.document.domain.patch
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.node.TextNode
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -27,7 +27,7 @@ class JsonPatchServiceKTest {
     @Test
     @Throws(JsonProcessingException::class)
     fun `should patch existing object`() {
-        val mapper = Mapper.INSTANCE.get()
+        val mapper = MapperSingleton.get()
         val jsonPatchBuilder = JsonPatchBuilder()
         val obj = mapper.readTree("""
             {

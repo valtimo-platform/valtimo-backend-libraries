@@ -16,6 +16,7 @@
 
 package com.ritense.openzaak.listener
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.service.impl.EigenschapService
 import com.ritense.openzaak.service.impl.ZaakService
@@ -61,6 +62,9 @@ internal class EigenschappenSubmittedListenerTest {
 
     @Mock
     lateinit var zaakTypeLink: ZaakTypeLink
+
+    @Mock
+    lateinit var objectMapper: ObjectMapper
 
     val documentDefinition = "documentDefinition"
     val documentId = UUID.randomUUID()

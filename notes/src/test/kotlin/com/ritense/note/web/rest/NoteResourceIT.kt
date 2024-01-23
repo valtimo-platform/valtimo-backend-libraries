@@ -16,12 +16,11 @@
 
 package com.ritense.note.web.rest
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.ritense.audit.service.AuditService
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
-import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.DocumentService
@@ -73,6 +72,9 @@ internal class NoteResourceIT : BaseIntegrationTest() {
     @Autowired
     lateinit var auditService: AuditService
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     lateinit var mockMvc: MockMvc
     lateinit var documentId: UUID
 
@@ -84,7 +86,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
 
         documentId = AuthorizationContext.runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest(PROFILE_DOCUMENT_DEFINITION_NAME, Mapper.INSTANCE.get().createObjectNode())
+                NewDocumentRequest(PROFILE_DOCUMENT_DEFINITION_NAME, objectMapper.createObjectNode())
             ).resultingDocument().get().id()!!.id
         }
         whenever(userManagementService.currentUser)
@@ -99,7 +101,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         mockMvc.perform(
             post("/api/v1/document/{documentId}/note", documentId)
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(note))
+                .content(objectMapper.writeValueAsString(note))
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -119,7 +121,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         val responseBody = mockMvc.perform(
             post("/api/v1/document/{documentId}/note", documentId.toString())
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(note))
+                .content(objectMapper.writeValueAsString(note))
         )
             .andDo(print())
             .andExpect(status().isOk)
@@ -141,7 +143,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         mockMvc.perform(
             post("/api/v1/document/{documentId}/note", documentId.toString())
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(note))
+                .content(objectMapper.writeValueAsString(note))
         )
             .andDo(print())
             // For some reason, the @ExceptionHandler is not picked up when using mockMvc
@@ -179,7 +181,7 @@ internal class NoteResourceIT : BaseIntegrationTest() {
         mockMvc.perform(
             put("/api/v1/note/{noteId}", note.id)
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(noteUpdateRequestDto))
+                .content(objectMapper.writeValueAsString(noteUpdateRequestDto))
         )
             .andDo(print())
             .andExpect(status().isOk)

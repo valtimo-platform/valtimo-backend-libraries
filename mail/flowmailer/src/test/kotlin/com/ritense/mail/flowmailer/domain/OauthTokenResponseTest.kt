@@ -18,7 +18,7 @@ package com.ritense.mail.flowmailer.domain
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.mail.flowmailer.BaseTest
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -46,7 +46,7 @@ class OauthTokenResponseTest : BaseTest() {
         {"access_token":"abc","token_type":"bearer","expires_in":59,"scope":"api"}
         """.trimIndent()
 
-        val oauthTokenResponse: OauthTokenResponse = Mapper.INSTANCE.get().readValue(response)
+        val oauthTokenResponse: OauthTokenResponse = MapperSingleton.get().readValue(response)
         assertThat(oauthTokenResponse).isNotNull
     }
 

@@ -320,8 +320,16 @@ public class ValtimoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(UserResource.class)
-    public UserResource userResource(UserManagementService userManagementService, UserSettingsService userSettingsService) {
-        return new UserResource(userManagementService, userSettingsService);
+    public UserResource userResource(
+        UserManagementService userManagementService,
+        UserSettingsService userSettingsService,
+        ObjectMapper objectMapper
+    ) {
+        return new UserResource(
+            userManagementService,
+            userSettingsService,
+            objectMapper
+        );
     }
 
     @Bean

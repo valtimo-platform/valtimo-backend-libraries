@@ -90,7 +90,8 @@ class FormAutoConfigurationKotlin {
         applicationEventPublisher: ApplicationEventPublisher,
         prefillFormService: PrefillFormService,
         authorizationService: AuthorizationService,
-        valueResolverService: ValueResolverService
+        valueResolverService: ValueResolverService,
+        objectMapper: ObjectMapper,
     ) = DefaultFormSubmissionService(
         processLinkService,
         formDefinitionService,
@@ -102,7 +103,8 @@ class FormAutoConfigurationKotlin {
         applicationEventPublisher,
         prefillFormService,
         authorizationService,
-        valueResolverService
+        valueResolverService,
+        objectMapper,
     )
 
     @Bean

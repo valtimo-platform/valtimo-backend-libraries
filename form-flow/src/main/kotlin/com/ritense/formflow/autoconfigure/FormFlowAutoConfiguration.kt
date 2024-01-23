@@ -23,6 +23,7 @@ import com.ritense.formflow.domain.definition.configuration.step.FormStepTypePro
 import com.ritense.formflow.event.ApplicationEventPublisherHolder
 import com.ritense.formflow.handler.ApplicationReadyEventHandler
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
+import com.ritense.formflow.json.MapperSingleton
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
@@ -136,5 +137,12 @@ class FormFlowAutoConfiguration {
         return ApplicationEventPublisherHolder(
             applicationEventPublisher
         )
+    }
+
+    @ConditionalOnMissingBean(name = ["mapperSingleton"])
+    @Bean
+    fun mapperSingleton(objectMapper: ObjectMapper): MapperSingleton {
+        MapperSingleton.set(objectMapper)
+        return MapperSingleton
     }
 }

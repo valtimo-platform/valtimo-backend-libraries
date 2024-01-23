@@ -18,11 +18,11 @@ package com.ritense.processdocument.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
-import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.service.DocumentDefinitionService;
@@ -71,6 +71,9 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private DocumentDefinition oldDocumentDefinition;
     private DocumentDefinition newDocumentDefinition;
@@ -318,7 +321,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(processDocumentRequest)
         );
 
-        final JsonNode jsonContent = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
+        final JsonNode jsonContent = objectMapper.readTree("{\"street\": \"Funenparks\"}");
         var newDocumentRequest = new NewDocumentRequest(
             DOCUMENT_DEFINITION_NAME,
             jsonContent
@@ -350,7 +353,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
 
             final Document document = newDocumentAndStartProcessResult.resultingDocument().orElseThrow();
 
-            final JsonNode jsonDataUpdate = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
+            final JsonNode jsonDataUpdate = objectMapper.readTree("{\"street\": \"Funenparks\"}");
             var modifyRequest = new ModifyDocumentAndCompleteTaskRequest(
                 new ModifyDocumentRequest(
                     document.id().toString(),
@@ -388,7 +391,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             );
             camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(processDocumentRequest);
 
-            final JsonNode jsonContent = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
+            final JsonNode jsonContent = objectMapper.readTree("{\"street\": \"Funenparks\"}");
             var newDocumentRequest = new NewDocumentRequest(
                 DOCUMENT_DEFINITION_NAME,
                 jsonContent
@@ -406,7 +409,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
 
             final Document document = newDocumentAndStartProcessResult.resultingDocument().orElseThrow();
 
-            final JsonNode jsonDataUpdate = Mapper.INSTANCE.get().readTree("{\"street\": \"Funenparks\"}");
+            final JsonNode jsonDataUpdate = objectMapper.readTree("{\"street\": \"Funenparks\"}");
             var modifyRequest = new ModifyDocumentAndCompleteTaskRequest(
                 new ModifyDocumentRequest(
                     document.id().toString(),

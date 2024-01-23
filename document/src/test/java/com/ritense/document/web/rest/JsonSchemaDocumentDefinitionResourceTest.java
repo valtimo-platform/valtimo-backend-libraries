@@ -30,6 +30,7 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceed
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -41,9 +42,11 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -207,7 +210,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
     @Test
     void shouldReturnCreateSuccessResult() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = MapperSingleton.INSTANCE.get();
         DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest("{\n" +
             "  \"$id\": \"person.schema\",\n" +
             "  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
@@ -247,7 +250,7 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 
     @Test
     void shouldReturnCreateFailedResult() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = MapperSingleton.INSTANCE.get();
         DocumentDefinitionCreateRequest documentDefinitionCreateRequest = new DocumentDefinitionCreateRequest("{\n" +
             "  \"$id\": \"person.schema\",\n" +
             "  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +

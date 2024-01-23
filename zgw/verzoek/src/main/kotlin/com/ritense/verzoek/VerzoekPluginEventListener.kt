@@ -18,7 +18,7 @@ package com.ritense.verzoek
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
@@ -47,7 +47,8 @@ open class VerzoekPluginEventListener(
     private val objectManagementService: ObjectManagementService,
     private val documentService: DocumentService,
     private val zaaktypeUrlProvider: ZaaktypeUrlProvider,
-    private val processDocumentService: ProcessDocumentService
+    private val processDocumentService: ProcessDocumentService,
+    private val objectMapper: ObjectMapper,
 ) {
 
     @RunWithoutAuthorization
@@ -167,7 +168,7 @@ open class VerzoekPluginEventListener(
         return if (verzoekTypeProperties.copyStrategy == CopyStrategy.FULL) {
             verzoekDataData
         } else {
-            val documentContent = jacksonObjectMapper().createObjectNode()
+            val documentContent = objectMapper.createObjectNode()
             val jsonPatchBuilder = JsonPatchBuilder()
             verzoekTypeProperties.mapping?.map {
                 val verzoekDataItem = verzoekDataData.at(it.source)

@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.formflow.common
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
@@ -36,7 +36,6 @@ import com.ritense.processlink.service.ProcessLinkActivityService
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.formflow.BaseIntegrationTest
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
@@ -90,6 +89,9 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var processLinkActivityService: ProcessLinkActivityService
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @Test
     @WithMockUser(username = TEST_USER, authorities = [AuthoritiesConstants.USER])
@@ -204,7 +206,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
             documentService.createDocument(
                 NewDocumentRequest(
                     "profile",
-                    Mapper.INSTANCE.get().readTree("{}")
+                    objectMapper.readTree("{}")
                 )
             ).resultingDocument().get()
         }
@@ -248,7 +250,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         formFlowResource.completeStep(
             formFlowInstance.id.id.toString(),
             formFlowInstance.currentFormFlowStepInstanceId!!.id.toString(),
-            if (submission == null) null else jacksonObjectMapper().readTree(submission)
+            if (submission == null) null else objectMapper.readTree(submission)
         )
     }
 
@@ -299,7 +301,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
                     "formflow-one-task-process",
                     NewDocumentRequest(
                         "profile",
-                        Mapper.INSTANCE.get().readTree("{}")
+                        objectMapper.readTree("{}")
                     )
                 )
             )
