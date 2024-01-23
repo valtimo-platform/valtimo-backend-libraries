@@ -19,13 +19,9 @@ projectVersion = 1.0
 dockerCompose {
     projectName = "connector"
 
-    integrationTestingPostgresql {
-        isRequiredBy(project.tasks.integrationTestingPostgresql)
-        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
-    }
-
-    securityTesting {
+    [integrationTestingPostgresql, securityTesting].forEach {
         isRequiredBy(project.tasks.securityTesting)
+        isRequiredBy(project.tasks.integrationTestingPostgresql)
         useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
     }
 
