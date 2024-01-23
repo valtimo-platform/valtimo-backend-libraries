@@ -22,7 +22,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-//TODO: unused? @Marijn
+@Deprecated(since = "Since 12.0.0", forRemoval = true)
 public interface AuditSearchService {
 
     Page<AuditRecord> search(List<SearchCriteria> criteriaList, Pageable pageable);

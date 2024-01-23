@@ -16,6 +16,7 @@
 
 package com.ritense.smartdocuments.plugin
 
+import com.ritense.processdocument.service.DocumentDelegateService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
@@ -46,7 +47,7 @@ const val TEMPLATE_NAME = "Template 1"
 internal class SmartDocumentsPluginTest {
 
     @Mock
-    lateinit var processDocumentService: ProcessDocumentService
+    lateinit var documentDelegateService: DocumentDelegateService
 
     @Mock
     lateinit var applicationEventPublisher: ApplicationEventPublisher

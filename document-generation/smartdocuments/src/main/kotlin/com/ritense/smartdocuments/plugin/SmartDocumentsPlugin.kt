@@ -22,7 +22,7 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
-import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.processdocument.service.DocumentDelegateService
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
@@ -48,7 +48,7 @@ import java.util.UUID
     description = "Generate documents with smart templates."
 )
 class SmartDocumentsPlugin(
-    private val processDocumentService: ProcessDocumentService,
+    private val documentDelegateService: DocumentDelegateService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val smartDocumentsClient: SmartDocumentsClient,
     private val valueResolverService: ValueResolverService,
@@ -80,10 +80,11 @@ class SmartDocumentsPlugin(
         @PluginActionProperty resultingDocumentProcessVariableName: String,
     ) {
         val document = runWithoutAuthorization {
-            processDocumentService.getDocument(execution)
+            documentDelegateService.getDocument(execution)
         }
         val resolvedTemplateData = resolveTemplateData(templateData, execution)
-        val generatedDocument = generateDocument(templateGroup, templateName, resolvedTemplateData, DocumentFormatOption.valueOf(format))
+        val generatedDocument =
+            generateDocument(templateGroup, templateName, resolvedTemplateData, DocumentFormatOption.valueOf(format))
         publishDossierDocumentGeneratedEvent(document.id(), templateName)
         val resourceId = generatedDocument.use {
             saveGeneratedDocumentToTempFile(generatedDocument)
@@ -115,7 +116,7 @@ class SmartDocumentsPlugin(
                 templateGroups = smartDocumentsTemplateData.documentsStructure.templatesStructure.templateGroups,
                 groupName = templateGroupName
             )
-                templateGroup?.templates?.map { it.name } ?: emptyList()
+            templateGroup?.templates?.map { it.name } ?: emptyList()
         } else {
             emptyList()
         }
