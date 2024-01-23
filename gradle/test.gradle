@@ -62,6 +62,7 @@ tasks.register("integrationTestingMysql", Test) {
 
 tasks.register("securityTesting", Test) {
     group = 'verification'
+    systemProperty("spring.profiles.include", "postgresql")
     ignoreFailures = false
     useJUnitPlatform {
         includeTags "security"
