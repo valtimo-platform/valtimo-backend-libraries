@@ -30,13 +30,13 @@ public interface AuditService {
 
     Page<AuditRecord> findByEventAndDocumentId(List<Class<? extends AuditEvent>> eventTypes, UUID documentId, Pageable pageable);
 
-    //TODO: unused? @Marijn
+    @Deprecated(since = "Since 12.0.0", forRemoval = true)
     List<AuditRecord> findByEventAndOccurredBetween(Class<? extends AuditEvent> event, LocalDateTime from, LocalDateTime until, Pageable pageable);
 
-    //TODO: unused? @Marijn
+    @Deprecated(since = "Since 12.0.0", forRemoval = true)
     Page<AuditRecord> findByProperty(String key, Object value, Pageable pageable);
 
-    //TODO: unused? @Marijn
+    @Deprecated(since = "Since 12.0.0", forRemoval = true)
     List<AuditRecord> findByEventTypeAndProperty(Class<? extends AuditEvent> event, String key, Object value);
 
     void deleteAllBefore(LocalDateTime date);
