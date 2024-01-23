@@ -38,7 +38,7 @@ import com.ritense.valtimo.service.CamundaProcessService
 import org.camunda.bpm.engine.TaskService
 import java.util.UUID
 
-class PrefillFormService(
+open class PrefillFormService(
     private val documentService: DocumentService,
     private val formDefinitionService: FormIoFormDefinitionService,
     private val camundaProcessService: CamundaProcessService,
@@ -47,7 +47,7 @@ class PrefillFormService(
     private val processDocumentAssociationService: ProcessDocumentAssociationService
 ) {
 
-    fun getPrefilledFormDefinition(
+    open fun getPrefilledFormDefinition(
         formDefinitionId: UUID,
         processInstanceId: String,
         taskInstanceId: String,
@@ -63,7 +63,7 @@ class PrefillFormService(
         return formDefinition
     }
 
-    fun getPrefilledFormDefinition(
+    open fun getPrefilledFormDefinition(
         formDefinitionId: UUID,
         documentId: UUID?,
         tenantId: String
@@ -77,7 +77,7 @@ class PrefillFormService(
         return formDefinition
     }
 
-    private fun prefillFormDefinition(
+    open fun prefillFormDefinition(
         formDefinition: FormIoFormDefinition,
         document: Document,
         taskInstanceId: String? = null,
@@ -96,7 +96,7 @@ class PrefillFormService(
         }
     }
 
-    fun prefillProcessVariables(formDefinition: FormIoFormDefinition, document: Document) {
+    open fun prefillProcessVariables(formDefinition: FormIoFormDefinition, document: Document) {
         val processVarsNames = formDefinition.extractProcessVarNames()
         val processInstanceVariables = processDocumentAssociationService.findProcessDocumentInstances(document.id())
             .map { it.processDocumentInstanceId().processInstanceId().toString() }
@@ -107,7 +107,7 @@ class PrefillFormService(
         }
     }
 
-    fun prefillDataResolverFields(
+    open fun prefillDataResolverFields(
         formDefinition: FormIoFormDefinition,
         document: Document,
         extendedDocumentContent: JsonNode?
@@ -163,7 +163,7 @@ class PrefillFormService(
         formDefinition.preFill(extendedDocumentContent)
     }
 
-    fun prefillTaskVariables(
+    open fun prefillTaskVariables(
         formDefinition: FormIoFormDefinition,
         taskInstanceId: String,
         extendedDocumentContent: JsonNode
@@ -174,7 +174,7 @@ class PrefillFormService(
         prePreFillTransform(formDefinition, placeholders, extendedDocumentContent)
     }
 
-    fun prePreFillTransform(formDefinition: FormIoFormDefinition, placeholders: JsonNode, source: JsonNode) {
+    open fun prePreFillTransform(formDefinition: FormIoFormDefinition, placeholders: JsonNode, source: JsonNode) {
         val formDefinitionData = formDefinition.formDefinition
         val inputFields = FormIoFormDefinition.getInputFields(formDefinitionData)
         val dataToPreFill = JsonNodeFactory.instance.objectNode()
@@ -289,7 +289,7 @@ class PrefillFormService(
      * @param source the Json to use for determining index value of an array.
      * @return JsonPatch a patch containing patch operations for array modifications.
      */
-    fun preSubmissionTransform(
+    open fun preSubmissionTransform(
         formDefinition: FormIoFormDefinition,
         submission: JsonNode,
         placeholders: JsonNode,
@@ -349,7 +349,7 @@ class PrefillFormService(
     private fun lookupIndexForIdValue(list: ArrayNode, id: String) =
         list.indexOfFirst { item -> item[ID_KEY].textValue().equals(id, ignoreCase = true) }.toString()
 
-    private fun buildMetaDataObject(document: Document): ObjectNode {
+    open fun buildMetaDataObject(document: Document): ObjectNode {
         val metaDataNode = JsonNodeFactory.instance.objectNode()
         metaDataNode.put("id", document.id().toString())
         metaDataNode.put("createdOn", document.createdOn().toString())
