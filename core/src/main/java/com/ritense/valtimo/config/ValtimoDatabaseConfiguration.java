@@ -43,7 +43,7 @@ public class ValtimoDatabaseConfiguration extends AbstractCamundaConfiguration i
         configuration.setDataSource(dataSource);
         configuration.setDatabaseType(database.getType());
         configuration.setDatabaseSchemaUpdate(database.getSchemaUpdate());
-        if (!StringUtils.isEmpty(database.getTablePrefix())) {
+        if (StringUtils.hasText(database.getTablePrefix())) {
             configuration.setDatabaseTablePrefix(database.getTablePrefix());
         }
     }

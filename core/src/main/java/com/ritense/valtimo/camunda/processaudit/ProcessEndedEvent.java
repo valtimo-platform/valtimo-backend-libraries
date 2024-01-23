@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ProcessEndedEvent extends ProcessInstanceEvent {
@@ -46,5 +47,25 @@ public class ProcessEndedEvent extends ProcessInstanceEvent {
     @JsonView(AuditView.Public.class)
     public String getProcessDefinitionKey() {
         return processDefinitionKey;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        ProcessEndedEvent that = (ProcessEndedEvent) o;
+        return Objects.equals(processDefinitionKey, that.processDefinitionKey);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), processDefinitionKey);
     }
 }

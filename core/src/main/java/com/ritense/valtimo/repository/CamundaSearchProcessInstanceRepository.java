@@ -30,8 +30,8 @@ import java.util.List;
 public class CamundaSearchProcessInstanceRepository {
 
     private final SqlSession session;
-    private final static String SEARCH_INSTANCE_COUNT_STATEMENT = "com.ritense.valtimo.camunda.processinstance.searchInstancesCount";
-    private final static String SEARCH_INSTANCES_STATEMENT = "com.ritense.valtimo.camunda.processinstance.searchInstances";
+    private static final String SEARCH_INSTANCE_COUNT_STATEMENT = "com.ritense.valtimo.camunda.processinstance.searchInstancesCount";
+    private static final String SEARCH_INSTANCES_STATEMENT = "com.ritense.valtimo.camunda.processinstance.searchInstances";
 
     public CamundaSearchProcessInstanceRepository(SqlSession session) {
         this.session = session;

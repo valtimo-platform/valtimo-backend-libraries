@@ -36,11 +36,6 @@ public class CustomRepositoryServiceImpl extends RepositoryServiceImpl {
     }
 
     @Override
-    public DeploymentWithDefinitions deployWithResult(DeploymentBuilderImpl deploymentBuilder) {
-        return super.deployWithResult(deploymentBuilder);
-    }
-
-    @Override
     public void deleteProcessDefinition(String processDefinitionId, boolean cascade, boolean skipCustomListeners) {
         ProcessDefinition processDefinition = getProcessDefinition(processDefinitionId);
         super.deleteProcessDefinition(processDefinitionId, cascade, skipCustomListeners);

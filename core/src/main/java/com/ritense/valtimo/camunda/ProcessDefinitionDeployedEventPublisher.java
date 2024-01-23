@@ -47,7 +47,7 @@ public class ProcessDefinitionDeployedEventPublisher implements Deployer {
     @Override
     public void deploy(DeploymentEntity deployment) {
         if (deployment.isNew() && deployment.getDeployedArtifacts() != null) {
-            final var processDefinitions = (List<ProcessDefinitionEntity>) deployment.getDeployedArtifacts(ProcessDefinitionEntity.class);
+            final var processDefinitions = deployment.getDeployedArtifacts(ProcessDefinitionEntity.class);
             if (processDefinitions != null) {
                 processDefinitions.forEach(definition -> publishEvent(deployment, definition));
             }

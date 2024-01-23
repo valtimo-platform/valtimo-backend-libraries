@@ -22,11 +22,13 @@ public class AuditView {
     }
 
     public static class Public {
-
+        private Public() {
+        }
     }
 
     public static class Internal extends Public {
-
+        private Internal() {
+        }
     }
 
 }

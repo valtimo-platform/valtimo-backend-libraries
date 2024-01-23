@@ -19,10 +19,10 @@ package com.ritense.valtimo.contract.security.jwt;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.Authentication;
 
-public abstract class TokenAuthenticator {
+public interface TokenAuthenticator {
 
-    public abstract boolean supports(Claims claims);
+    boolean supports(Claims claims);
 
-    public abstract Authentication authenticate(String jwt, Claims claims);
+    Authentication authenticate(String jwt, Claims claims);
 
 }

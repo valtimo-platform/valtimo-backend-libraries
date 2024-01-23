@@ -23,7 +23,9 @@ import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class DocumentRelatedFileRemovedEvent extends AuditMetaData implements AuditEvent {
@@ -64,5 +66,28 @@ public class DocumentRelatedFileRemovedEvent extends AuditMetaData implements Au
 
     public String getFileName() {
         return fileName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        DocumentRelatedFileRemovedEvent that = (DocumentRelatedFileRemovedEvent) o;
+        return Objects.equals(documentId, that.documentId) && Objects.equals(fileId, that.fileId) && Objects.equals(
+            fileName,
+            that.fileName
+        );
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), documentId, fileId, fileName);
     }
 }
