@@ -6,6 +6,8 @@ spring:
         password: password
         hikari:
             auto-commit: false
+            data-source-properties:
+                serverTimezone: UTC
     jpa:
         database-platform: org.hibernate.dialect.MySQLDialect
         database: mysql
