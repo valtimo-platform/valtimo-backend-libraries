@@ -288,7 +288,9 @@ public class JsonSchemaDocumentService implements DocumentService {
         final var documentRequest = ModifyDocumentRequest.create(document, jsonNode);
         final var modifyResult = runWithoutAuthorization(() -> modifyDocument(documentRequest));
         if (!modifyResult.errors().isEmpty()) {
-            throw new ModifyDocumentException(modifyResult.errors());
+            var exception = new ModifyDocumentException(modifyResult.errors());
+            logger.error("Document could not be modified", exception);
+            throw exception;
         }
     }
 
