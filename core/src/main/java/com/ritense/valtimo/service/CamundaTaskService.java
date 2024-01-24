@@ -55,6 +55,14 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Root;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.camunda.bpm.engine.AuthorizationException;
 import org.camunda.bpm.engine.FormService;
@@ -73,15 +81,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGN;
@@ -141,7 +140,8 @@ public class CamundaTaskService {
         UserManagementService userManagementService,
         EntityManager entityManager,
         AuthorizationService authorizationService,
-        OutboxService outboxService, ObjectMapper objectMapper) {
+        OutboxService outboxService, ObjectMapper objectMapper
+    ) {
         this.taskService = taskService;
         this.formService = formService;
         this.delegateTaskHelper = delegateTaskHelper;
@@ -161,7 +161,7 @@ public class CamundaTaskService {
     public CamundaTask findTaskById(String taskId) {
         var spec = getAuthorizationSpecification(VIEW);
         return Optional.ofNullable(findTask(spec.and(byId(taskId))))
-            .orElseThrow(() -> new TaskNotFoundException(String.format("Cannot find task %s", taskId)));
+            .orElseThrow(() -> new TaskNotFoundException(taskId));
     }
 
     @Transactional
@@ -435,6 +435,7 @@ public class CamundaTaskService {
 
     /**
      * Retrieve a list of comments that are associated to the task.
+     *
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
@@ -447,6 +448,7 @@ public class CamundaTaskService {
 
     /**
      * Retrieve a list of comments that are associated to a process instance.
+     *
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
@@ -464,6 +466,7 @@ public class CamundaTaskService {
 
     /**
      * Create a comment and associate that comment to either a task or a process instance.
+     *
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)

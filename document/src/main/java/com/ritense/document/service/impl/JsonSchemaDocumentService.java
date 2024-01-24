@@ -344,13 +344,12 @@ public class JsonSchemaDocumentService implements DocumentService {
         Document.Id documentId,
         DocumentRelation documentRelation
     ) {
-        authorizationService
-            .requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocument.class,
-                    Action.deny()
-                )
-            );
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                Action.deny()
+            )
+        );
 
         final JsonSchemaDocumentRelation jsonSchemaDocumentRelation = JsonSchemaDocumentRelation.from(
             new DocumentRelationRequest(
@@ -484,31 +483,28 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         // TODO: Expand authorizationRequest to accept a list of actions, which is handled like OR
         try {
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocument.class,
-                        CLAIM,
-                        document
-                    )
-                );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    CLAIM,
+                    document
+                )
+            );
         } catch (Exception e) {
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocument.class,
-                        ASSIGN,
-                        document
-                    )
-                );
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocument.class,
-                        ASSIGNABLE,
-                        document
-                    )
-                );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    ASSIGN,
+                    document
+                )
+            );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    ASSIGNABLE,
+                    document
+                )
+            );
         }
         var assignee = userManagementService.getCurrentUser();
 
@@ -541,50 +537,45 @@ public class JsonSchemaDocumentService implements DocumentService {
         }
         if (assigneeId.equals(userManagementService.getCurrentUser().getId())) {
             try {
-                authorizationService
-                    .requirePermission(
-                        new EntityAuthorizationRequest<>(
-                            JsonSchemaDocument.class,
-                            CLAIM,
-                            document
-                        )
-                    );
+                authorizationService.requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        CLAIM,
+                        document
+                    )
+                );
             } catch (AccessDeniedException e) {
-                authorizationService
-                    .requirePermission(
-                        new EntityAuthorizationRequest<>(
-                            JsonSchemaDocument.class,
-                            ASSIGN,
-                            document
-                        )
-                    );
-                authorizationService
-                    .requirePermission(
-                        new EntityAuthorizationRequest<>(
-                            JsonSchemaDocument.class,
-                            ASSIGNABLE,
-                            document
-                        )
-                    );
-            }
-        } else {
-            authorizationService
-                .requirePermission(
+                authorizationService.requirePermission(
                     new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         ASSIGN,
                         document
                     )
                 );
-            authorizationService
-                .requirePermission(
-                    new DelegateUserEntityAuthorizationRequest<>(
+                authorizationService.requirePermission(
+                    new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         ASSIGNABLE,
-                        assignee.getEmail(),
                         document
                     )
                 );
+            }
+        } else {
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    ASSIGN,
+                    document
+                )
+            );
+            authorizationService.requirePermission(
+                new DelegateUserEntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    ASSIGNABLE,
+                    assignee.getEmail(),
+                    document
+                )
+            );
         }
 
         document.setAssignee(assigneeId, assignee.getFullName());
@@ -607,14 +598,13 @@ public class JsonSchemaDocumentService implements DocumentService {
             () -> getDocumentBy(JsonSchemaDocumentId.existingId(documentId))
         );
 
-        authorizationService
-            .requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocument.class,
-                    ASSIGN,
-                    document
-                )
-            );
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                ASSIGN,
+                document
+            )
+        );
 
         document.unassign();
         documentRepository.save(document);
@@ -719,53 +709,48 @@ public class JsonSchemaDocumentService implements DocumentService {
         if (assigneeId.equals(userManagementService.getCurrentUser().getId())) {
             documents.forEach(document -> {
                 try {
-                    authorizationService
-                        .requirePermission(
-                            new EntityAuthorizationRequest<>(
-                                JsonSchemaDocument.class,
-                                CLAIM,
-                                document
-                            )
-                        );
+                    authorizationService.requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            CLAIM,
+                            document
+                        )
+                    );
                 } catch (AccessDeniedException e) {
-                    authorizationService
-                        .requirePermission(
-                            new EntityAuthorizationRequest<>(
-                                JsonSchemaDocument.class,
-                                ASSIGN,
-                                document
-                            )
-                        );
-                    authorizationService
-                        .requirePermission(
-                            new EntityAuthorizationRequest<>(
-                                JsonSchemaDocument.class,
-                                ASSIGNABLE,
-                                document
-                            )
-                        );
+                    authorizationService.requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            ASSIGN,
+                            document
+                        )
+                    );
+                    authorizationService.requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            ASSIGNABLE,
+                            document
+                        )
+                    );
                 }
 
                 document.setAssignee(assigneeId, assignee.getFullName());
             });
         } else {
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocument.class,
-                        ASSIGN,
-                        documents
-                    )
-                );
-            authorizationService
-                .requirePermission(
-                    new DelegateUserEntityAuthorizationRequest<>(
-                        JsonSchemaDocument.class,
-                        ASSIGNABLE,
-                        assignee.getEmail(),
-                        documents
-                    )
-                );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    ASSIGN,
+                    documents
+                )
+            );
+            authorizationService.requirePermission(
+                new DelegateUserEntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    ASSIGNABLE,
+                    assignee.getEmail(),
+                    documents
+                )
+            );
 
             documents.forEach(document -> document.setAssignee(assigneeId, assignee.getFullName()));
         }

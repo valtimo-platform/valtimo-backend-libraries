@@ -16,25 +16,23 @@
 
 package com.ritense.valtimo.repository.utils;
 
-import org.springframework.data.domain.Sort;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Sort;
 
 public class QueryUtils {
 
+    private QueryUtils() {
+    }
+
     public static String toOrders(Sort sort) {
         ArrayList<String> sqlOrders = new ArrayList<>();
-        Iterator<Sort.Order> sortOrder = sort.iterator();
-        while (sortOrder.hasNext()) {
-            Sort.Order order = sortOrder.next();
+        for (Sort.Order order : sort) {
             String property = order.getProperty();
             if (property != null && property.matches("^[0-9a-zA-Z$_]+$")) {
                 sqlOrders.add(property + " " + order.getDirection().name());
             }
         }
-        String sqlOrderStatement = sqlOrders.stream().collect(Collectors.joining(","));
-        return sqlOrderStatement;
+        return String.join(",", sqlOrders);
     }
 
 }

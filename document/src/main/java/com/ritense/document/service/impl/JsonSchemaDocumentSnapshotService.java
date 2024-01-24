@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.Optional;
+
 import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSnapshotSpecificationHelper.bySearch;
 import static com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider.VIEW;
 import static com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider.VIEW_LIST;
@@ -43,7 +44,12 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
     private final AuthorizationService authorizationService;
 
-    public JsonSchemaDocumentSnapshotService(DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository, JsonSchemaDocumentService documentService, JsonSchemaDocumentDefinitionService documentDefinitionService, AuthorizationService authorizationService) {
+    public JsonSchemaDocumentSnapshotService(
+        DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository,
+        JsonSchemaDocumentService documentService,
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        AuthorizationService authorizationService
+    ) {
         this.documentSnapshotRepository = documentSnapshotRepository;
         this.documentService = documentService;
         this.documentDefinitionService = documentDefinitionService;
@@ -54,14 +60,13 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     public Optional<JsonSchemaDocumentSnapshot> findById(DocumentSnapshot.Id id) {
         final var snapshot = documentSnapshotRepository.findById(id).orElse(null);
         if (snapshot != null) {
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocumentSnapshot.class,
-                        VIEW,
-                        snapshot
-                    )
-                );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentSnapshot.class,
+                    VIEW,
+                    snapshot
+                )
+            );
         }
 
         return Optional.ofNullable(snapshot);
@@ -106,7 +111,12 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
         var documentDefinition = documentDefinitionService.findBy(document.definitionId())
             .orElseThrow();
 
-        documentSnapshotRepository.saveAndFlush(new JsonSchemaDocumentSnapshot(document, createdOn, createdBy, documentDefinition));
+        documentSnapshotRepository.saveAndFlush(new JsonSchemaDocumentSnapshot(
+            document,
+            createdOn,
+            createdBy,
+            documentDefinition
+        ));
     }
 
     @Transactional

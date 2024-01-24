@@ -23,9 +23,13 @@ import org.camunda.bpm.engine.query.QueryProperty;
 import org.springframework.data.domain.Sort;
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.apache.commons.lang3.exception.ExceptionUtils.rethrow;
 
 public class CamundaOrderByHelper {
+
+    private CamundaOrderByHelper() {
+    }
 
     public static String orderBy(QueryOrderingProperty orderingProperty, String tableAlias) {
         QueryProperty queryProperty = orderingProperty.getQueryProperty();

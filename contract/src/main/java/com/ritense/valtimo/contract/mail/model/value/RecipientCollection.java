@@ -66,7 +66,7 @@ public class RecipientCollection extends Value<Collection<Recipient>> {
      */
     @Override
     public boolean isPresent() {
-        return super.isPresent() && super.get().size() > 0;
+        return super.isPresent() && !super.get().isEmpty();
     }
 
     private Collection<Recipient> filterType(Recipient.Type typeToFilterOn) {

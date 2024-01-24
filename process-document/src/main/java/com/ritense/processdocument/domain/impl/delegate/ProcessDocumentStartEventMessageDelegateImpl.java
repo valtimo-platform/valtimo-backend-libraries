@@ -33,6 +33,7 @@ import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class ProcessDocumentStartEventMessageDelegateImpl implements ProcessDocumentStartEventMessageDelegate {
@@ -46,7 +47,11 @@ public class ProcessDocumentStartEventMessageDelegateImpl implements ProcessDocu
     private final DocumentService documentService;
     private final RuntimeService runtimeService;
 
-    public ProcessDocumentStartEventMessageDelegateImpl(ProcessDocumentAssociationService processDocumentAssociationService, DocumentService documentService, RuntimeService runtimeService) {
+    public ProcessDocumentStartEventMessageDelegateImpl(
+        ProcessDocumentAssociationService processDocumentAssociationService,
+        DocumentService documentService,
+        RuntimeService runtimeService
+    ) {
         this.processDocumentAssociationService = processDocumentAssociationService;
         this.documentService = documentService;
         this.runtimeService = runtimeService;
@@ -90,7 +95,7 @@ public class ProcessDocumentStartEventMessageDelegateImpl implements ProcessDocu
                 logger.info("Skipping var: cannot parse key/value to jsonPointer {} - {}", key, value);
             }
         });
-        logger.info("Parsed all process variables to json string: {}", rootNode.toString());
+        logger.info("Parsed all process variables to json string: {}", rootNode);
         return rootNode;
     }
 

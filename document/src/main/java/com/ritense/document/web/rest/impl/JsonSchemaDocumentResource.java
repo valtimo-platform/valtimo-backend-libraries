@@ -49,6 +49,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @Controller
@@ -59,14 +60,9 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentResource.class);
 
     private final DocumentService documentService;
-    private final OutboxService outboxService;
 
-    public JsonSchemaDocumentResource(
-        final DocumentService documentService,
-        final OutboxService outboxService
-    ) {
+    public JsonSchemaDocumentResource(final DocumentService documentService) {
         this.documentService = documentService;
-        this.outboxService = outboxService;
     }
 
     @Transactional
@@ -121,8 +117,9 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     @PostMapping("/v1/document/{documentId}/assign")
     public ResponseEntity<Void> assignHandlerToDocument(
         @PathVariable(name = "documentId") UUID documentId,
-        @RequestBody @Valid UpdateAssigneeRequest request) {
-        logger.debug(String.format("REST call /api/v1/document/%s/assign", documentId));
+        @RequestBody @Valid UpdateAssigneeRequest request
+    ) {
+        logger.debug("REST call /api/v1/document/{}/assign", documentId);
         documentService.assignUserToDocument(documentId, request.getAssigneeId());
         return ResponseEntity.ok().build();
     }
@@ -137,7 +134,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     @Override
     @PostMapping("/v1/document/{documentId}/unassign")
     public ResponseEntity<Void> unassignHandlerFromDocument(@PathVariable(name = "documentId") UUID documentId) {
-        logger.debug(String.format("REST call /api/v1/document/%s/unassign", documentId));
+        logger.debug("REST call /api/v1/document/{}/unassign", documentId);
 
         try {
             documentService.unassignUserFromDocument(documentId);

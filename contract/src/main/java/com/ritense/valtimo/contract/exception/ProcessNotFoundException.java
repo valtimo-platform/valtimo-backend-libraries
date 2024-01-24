@@ -18,7 +18,7 @@ package com.ritense.valtimo.contract.exception;
 
 public class ProcessNotFoundException extends Exception {
 
-    private String message;
+    private final String message;
 
     public ProcessNotFoundException(String message) {
         this.message = message;

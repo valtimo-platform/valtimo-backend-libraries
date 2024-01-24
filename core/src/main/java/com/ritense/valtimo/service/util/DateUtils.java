@@ -26,6 +26,9 @@ public class DateUtils {
 
     private static final TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
 
+    private DateUtils() {
+    }
+
     public static SimpleDateFormat getSimpleUtcDateFormat(String format) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
         simpleDateFormat.setTimeZone(utcTimeZone);

@@ -24,14 +24,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class JsonSchemaDocumentActionProvider implements ResourceActionProvider<JsonSchemaDocument> {
 
-    public static Action<JsonSchemaDocument> VIEW = new Action<>(Action.VIEW);
-    public static Action<JsonSchemaDocument> VIEW_LIST = new Action<>(Action.VIEW_LIST);
-    public static Action<JsonSchemaDocument> CREATE = new Action<>(Action.CREATE);
-    public static Action<JsonSchemaDocument> MODIFY = new Action<>(Action.MODIFY);
-    public static Action<JsonSchemaDocument> DELETE = new Action<>(Action.DELETE);
-    public static Action<JsonSchemaDocument> CLAIM = new Action<>(Action.CLAIM);
-    public static Action<JsonSchemaDocument> ASSIGN = new Action<>(Action.ASSIGN);
-    public static Action<JsonSchemaDocument> ASSIGNABLE = new Action<>(Action.ASSIGNABLE);
+    public static final Action<JsonSchemaDocument> VIEW = new Action<>(Action.VIEW);
+    public static final Action<JsonSchemaDocument> VIEW_LIST = new Action<>(Action.VIEW_LIST);
+    public static final Action<JsonSchemaDocument> CREATE = new Action<>(Action.CREATE);
+    public static final Action<JsonSchemaDocument> MODIFY = new Action<>(Action.MODIFY);
+    public static final Action<JsonSchemaDocument> DELETE = new Action<>(Action.DELETE);
+    public static final Action<JsonSchemaDocument> CLAIM = new Action<>(Action.CLAIM);
+    public static final Action<JsonSchemaDocument> ASSIGN = new Action<>(Action.ASSIGN);
+    public static final Action<JsonSchemaDocument> ASSIGNABLE = new Action<>(Action.ASSIGNABLE);
 
     @NotNull
     @Override

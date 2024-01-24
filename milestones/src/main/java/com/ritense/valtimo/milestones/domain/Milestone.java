@@ -51,18 +51,19 @@ public class Milestone {
     @ManyToOne
     private MilestoneSet milestoneSet;
 
-    @SuppressWarnings({"squid:S2637","java:S2637"})
-    public Milestone(){
+    @SuppressWarnings({"squid:S2637", "java:S2637"})
+    public Milestone() {
     }
 
-    @SuppressWarnings({"squid:S2637","java:S2637"})
+    @SuppressWarnings({"squid:S2637", "java:S2637"})
     public Milestone(
-            String title,
-            String processDefinitionKey,
-            String taskDefinitionKey,
-            Integer plannedIntervalInDays,
-            String color,
-            MilestoneSet milestoneSet) {
+        String title,
+        String processDefinitionKey,
+        String taskDefinitionKey,
+        Integer plannedIntervalInDays,
+        String color,
+        MilestoneSet milestoneSet
+    ) {
         this.title = title;
         this.processDefinitionKey = processDefinitionKey;
         this.taskDefinitionKey = taskDefinitionKey;

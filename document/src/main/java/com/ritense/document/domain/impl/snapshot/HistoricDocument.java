@@ -166,14 +166,39 @@ public class HistoricDocument implements Document {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         HistoricDocument that = (HistoricDocument) o;
-        return Objects.equals(id, that.id) && Objects.equals(content, that.content) && Objects.equals(documentDefinitionId, that.documentDefinitionId) && Objects.equals(documentDefinition, that.documentDefinition) && Objects.equals(version, that.version) && Objects.equals(createdOn, that.createdOn) && Objects.equals(modifiedOn, that.modifiedOn) && Objects.equals(createdBy, that.createdBy) && Objects.equals(sequence, that.sequence) && Objects.equals(documentRelations, that.documentRelations) && Objects.equals(relatedFiles, that.relatedFiles);
+        return Objects.equals(id, that.id) && Objects.equals(content, that.content) && Objects.equals(
+            documentDefinitionId,
+            that.documentDefinitionId
+        ) && Objects.equals(documentDefinition, that.documentDefinition) && Objects.equals(version, that.version) && Objects.equals(
+            createdOn,
+            that.createdOn
+        ) && Objects.equals(modifiedOn, that.modifiedOn) && Objects.equals(createdBy, that.createdBy) && Objects.equals(
+            sequence,
+            that.sequence
+        ) && Objects.equals(documentRelations, that.documentRelations) && Objects.equals(relatedFiles, that.relatedFiles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, content, documentDefinitionId, documentDefinition, version, createdOn, modifiedOn, createdBy, sequence, documentRelations, relatedFiles);
+        return Objects.hash(
+            id,
+            content,
+            documentDefinitionId,
+            documentDefinition,
+            version,
+            createdOn,
+            modifiedOn,
+            createdBy,
+            sequence,
+            documentRelations,
+            relatedFiles
+        );
     }
 }

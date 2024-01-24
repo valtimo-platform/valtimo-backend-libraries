@@ -53,8 +53,12 @@ public class JsonSchemaDocumentSnapshotId extends AbstractId<JsonSchemaDocumentS
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         JsonSchemaDocumentSnapshotId that = (JsonSchemaDocumentSnapshotId) o;
         return id.equals(that.id);
     }

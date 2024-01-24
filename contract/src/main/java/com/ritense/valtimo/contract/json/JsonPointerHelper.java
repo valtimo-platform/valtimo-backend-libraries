@@ -23,9 +23,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.StringUtils;
 
-public abstract class JsonPointerHelper {
+public interface JsonPointerHelper {
 
-    public static void appendJsonPointerTo(ObjectNode node, JsonPointer pointer, JsonNode value) {
+    static void appendJsonPointerTo(ObjectNode node, JsonPointer pointer, JsonNode value) {
         final JsonPointer parentPointer = pointer.head();
         JsonNode parentNode = node.at(parentPointer);
         final String fieldName = pointer.last().toString().substring(1);

@@ -18,11 +18,15 @@ package com.ritense.document.domain.patch;
 
 import com.flipkart.zjsonpatch.CompatibilityFlags;
 import java.util.EnumSet;
+
 import static com.flipkart.zjsonpatch.CompatibilityFlags.ALLOW_MISSING_TARGET_OBJECT_ON_REPLACE;
 import static com.flipkart.zjsonpatch.CompatibilityFlags.MISSING_VALUES_AS_NULLS;
 import static com.flipkart.zjsonpatch.CompatibilityFlags.REMOVE_NONE_EXISTING_ARRAY_ELEMENT;
 
 class JsonPatchFlag {
+
+    private JsonPatchFlag() {
+    }
 
     static EnumSet<CompatibilityFlags> defaultCompatibilityFlags() {
         return EnumSet.of(

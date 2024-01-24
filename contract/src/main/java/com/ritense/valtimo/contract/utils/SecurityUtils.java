@@ -72,6 +72,13 @@ public final class SecurityUtils {
         return roles;
     }
 
+    /**
+     * Get the GrantedAuthorities from the current security context
+     *
+     * @deprecated Please use <code>getCurrentUserRoles()</code> instead
+     * @return GrantedAuthorities
+     */
+    @Deprecated(since = "12.0.0", forRemoval = true)
     public static Collection<? extends GrantedAuthority> getCurrentUserRoles(String login) {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
@@ -105,6 +112,13 @@ public final class SecurityUtils {
         return true;
     }
 
+    /**
+     * Get the GrantedAuthorities from the current security context
+     *
+     * @deprecated Please use <code>getCurrentUserRoles()</code> instead
+     * @return GrantedAuthorities
+     */
+    @Deprecated(since = "12.0.0", forRemoval = true)
     public static Collection<? extends GrantedAuthority> getCurrentUserAuthorities() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();

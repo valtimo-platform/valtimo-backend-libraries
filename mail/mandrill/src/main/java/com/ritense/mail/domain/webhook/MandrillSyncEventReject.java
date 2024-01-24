@@ -60,8 +60,12 @@ public class MandrillSyncEventReject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         MandrillSyncEventReject that = (MandrillSyncEventReject) o;
         return Objects.equals(getReason(), that.getReason()) && Objects.equals(getDetail(), that.getDetail()) && Objects.equals(getEmail(), that.getEmail());
     }

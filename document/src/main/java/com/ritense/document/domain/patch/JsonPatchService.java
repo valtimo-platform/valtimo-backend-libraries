@@ -19,6 +19,7 @@ package com.ritense.document.domain.patch;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.flipkart.zjsonpatch.JsonPatch;
 import java.util.EnumSet;
+
 import static com.ritense.document.domain.patch.JsonPatchFilterFlag.defaultPatchFlags;
 import static com.ritense.document.domain.patch.JsonPatchFlag.defaultCompatibilityFlags;
 
@@ -34,7 +35,7 @@ public interface JsonPatchService {
     }
 
     static void apply(com.ritense.valtimo.contract.json.patch.JsonPatch patch, JsonNode source) {
-       apply(patch.toJson(), source);
+        apply(patch.toJson(), source);
     }
 
     static void apply(

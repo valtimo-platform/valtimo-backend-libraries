@@ -56,17 +56,16 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
-import org.camunda.bpm.engine.HistoryService;
-import org.camunda.bpm.engine.RuntimeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.camunda.bpm.engine.HistoryService;
+import org.camunda.bpm.engine.RuntimeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
@@ -133,18 +132,30 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
-    public Optional<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion) {
+    public Optional<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinition(
+        ProcessDefinitionKey processDefinitionKey,
+        long documentDefinitionVersion
+    ) {
         denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
 
-        return processDocumentDefinitionRepository.findByProcessDefinitionKeyAndDocumentDefinitionVersion(processDefinitionKey, documentDefinitionVersion);
+        return processDocumentDefinitionRepository.findByProcessDefinitionKeyAndDocumentDefinitionVersion(
+            processDefinitionKey,
+            documentDefinitionVersion
+        );
     }
 
     @Override
-    public CamundaProcessJsonSchemaDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion) {
+    public CamundaProcessJsonSchemaDocumentDefinition getProcessDocumentDefinition(
+        ProcessDefinitionKey processDefinitionKey,
+        long documentDefinitionVersion
+    ) {
         denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
 
         return findProcessDocumentDefinition(processDefinitionKey, documentDefinitionVersion)
-            .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException("for processDefinitionKey '" + processDefinitionKey + "' and version '" + documentDefinitionVersion + "'"));
+            .orElseThrow(() -> new ProcessDocumentDefinitionNotFoundException(
+                    "for processDefinitionKey '" + processDefinitionKey + "' and version '" + documentDefinitionVersion + "'"
+                )
+            );
     }
 
     @Override
@@ -172,7 +183,10 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
-    public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName, Long documentDefinitionVersion) {
+    public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(
+        String documentDefinitionName,
+        Long documentDefinitionVersion
+    ) {
         return processDocumentDefinitionRepository
             .findAllByDocumentDefinitionNameAndVersion(documentDefinitionName, documentDefinitionVersion);
     }
@@ -244,7 +258,10 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
                     var camundaProcessDefinition = runWithoutAuthorization(() ->
                         repositoryService.findLatestProcessDefinition(camundaProcess.getProcessDefinitionKey())
                     );
-                    var startDateTime = LocalDateTime.ofInstant(camundaProcess.getStartTime().toInstant(), ZoneId.systemDefault());
+                    var startDateTime = LocalDateTime.ofInstant(
+                        camundaProcess.getStartTime().toInstant(),
+                        ZoneId.systemDefault()
+                    );
                     var startedBy = camundaProcess.getStartUserId() == null ? null :
                         userManagementService.findByEmail(camundaProcess.getStartUserId()).orElseThrow().getFullName();
                     return new ProcessDocumentInstanceDto(
@@ -278,7 +295,9 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     @Transactional
-    public Optional<CamundaProcessJsonSchemaDocumentDefinition> createProcessDocumentDefinition(ProcessDocumentDefinitionRequest request) {
+    public Optional<CamundaProcessJsonSchemaDocumentDefinition> createProcessDocumentDefinition(
+        ProcessDocumentDefinitionRequest request
+    ) {
         denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
 
         JsonSchemaDocumentDefinitionId documentDefinitionId;
@@ -317,14 +336,20 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
         var knownProcessDocumentDefinitions = processDocumentDefinitionRepository
             .findAllByProcessDefinitionKeyAndLatestDocumentDefinitionVersion(processDefinitionKey);
 
-        assertStateTrue(knownProcessDocumentDefinitions.isEmpty(), "Process is already in use within the context of another dossier.");
+        assertStateTrue(
+            knownProcessDocumentDefinitions.isEmpty(),
+            "Process is already in use within the context of another dossier."
+        );
 
         final var id = CamundaProcessJsonSchemaDocumentDefinitionId.newId(
             processDefinitionKey,
             documentDefinitionId
         );
         if (processDocumentDefinitionRepository.existsById(id)) {
-            throw new DuplicateProcessDocumentDefinitionException(processDefinitionKey.toString(), documentDefinitionId.toString());
+            throw new DuplicateProcessDocumentDefinitionException(
+                processDefinitionKey.toString(),
+                documentDefinitionId.toString()
+            );
         }
 
         final var association = processDocumentDefinitionRepository.saveAndFlush(
@@ -343,7 +368,12 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     public void deleteProcessDocumentDefinition(ProcessDocumentDefinitionRequest request) {
         denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
 
-        logger.debug("Remove process document definition for document definition: {}", request.documentDefinitionName());
+        if(logger.isDebugEnabled()) {
+            logger.debug(
+                "Remove process document definition for document definition: {}",
+                request.documentDefinitionName()
+            );
+        }
 
         JsonSchemaDocumentDefinitionId documentDefinitionId;
         if (request.getDocumentDefinitionVersion().isPresent()) {
@@ -411,12 +441,11 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     private <T> void denyAuthorization(Class<T> clazz) {
-        authorizationService
-            .requirePermission(
-                new EntityAuthorizationRequest(
-                    clazz,
-                    Action.deny()
-                )
-            );
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest(
+                clazz,
+                Action.deny()
+            )
+        );
     }
 }

@@ -50,6 +50,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -132,7 +133,8 @@ public class ProcessDocumentResource {
     public ResponseEntity<ProcessDocumentDefinition> getProcessDocumentDefinition(
         @PathVariable String processInstanceId
     ) {
-        return AuthorizationContext.runWithoutAuthorization(() -> processDocumentService.findProcessDocumentDefinition(new CamundaProcessInstanceId(processInstanceId)))
+        return AuthorizationContext.runWithoutAuthorization(() -> processDocumentService.findProcessDocumentDefinition(new CamundaProcessInstanceId(
+                processInstanceId)))
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.badRequest().build());
     }

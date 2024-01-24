@@ -36,7 +36,9 @@ public class JsonSchemaDocumentDefinitionSequenceGeneratorService implements Doc
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentDefinitionSequenceGeneratorService.class);
     private final DocumentDefinitionSequenceRepository<JsonSchemaDocumentDefinitionSequenceRecord> documentDefinitionSequenceRepository;
 
-    public JsonSchemaDocumentDefinitionSequenceGeneratorService(DocumentDefinitionSequenceRepository<JsonSchemaDocumentDefinitionSequenceRecord> documentDefinitionSequenceRepository) {
+    public JsonSchemaDocumentDefinitionSequenceGeneratorService(
+        DocumentDefinitionSequenceRepository<JsonSchemaDocumentDefinitionSequenceRecord> documentDefinitionSequenceRepository
+    ) {
         this.documentDefinitionSequenceRepository = documentDefinitionSequenceRepository;
     }
 

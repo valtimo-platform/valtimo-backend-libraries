@@ -41,6 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byProcessInstanceId;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byVersion;
@@ -56,7 +57,12 @@ public abstract class AbstractProcessResource {
     private final CamundaRepositoryService camundaRepositoryService;
     private final CamundaTaskService taskService;
 
-    public AbstractProcessResource(CamundaHistoryService historyService, RepositoryService repositoryService, CamundaRepositoryService camundaRepositoryService, CamundaTaskService taskService) {
+    public AbstractProcessResource(
+        CamundaHistoryService historyService,
+        RepositoryService repositoryService,
+        CamundaRepositoryService camundaRepositoryService,
+        CamundaTaskService taskService
+    ) {
         this.historyService = historyService;
         this.repositoryService = repositoryService;
         this.camundaRepositoryService = camundaRepositoryService;
@@ -75,7 +81,10 @@ public abstract class AbstractProcessResource {
         InputStream processModelIn = repositoryService.getProcessModel(processDefinitionId);
         if (processModelIn != null) {
             byte[] processModel = IoUtil.readInputStream(processModelIn, "processModelBpmn20Xml");
-            return ProcessDefinitionDiagramDto.create(processDefinitionId, new String(processModel, StandardCharsets.UTF_8));
+            return ProcessDefinitionDiagramDto.create(
+                processDefinitionId,
+                new String(processModel, StandardCharsets.UTF_8)
+            );
         } else {
             return null;
         }
@@ -101,7 +110,10 @@ public abstract class AbstractProcessResource {
         return flowNodeMap;
     }
 
-    public Map<String, String> getUniqueFlowNodeMap(Map<String, String> sourceFlowNodeMap, Map<String, String> targetFlowNodeMap) {
+    public Map<String, String> getUniqueFlowNodeMap(
+        Map<String, String> sourceFlowNodeMap,
+        Map<String, String> targetFlowNodeMap
+    ) {
         Map<String, String> uniqueFlowNodeMap = new HashMap<>();
         for (Map.Entry<String, String> flowNode : sourceFlowNodeMap.entrySet()) {
             if (!targetFlowNodeMap.containsKey(flowNode.getKey())) {

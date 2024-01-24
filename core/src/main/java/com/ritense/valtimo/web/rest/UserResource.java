@@ -165,12 +165,13 @@ public class UserResource {
     }
 
     @PutMapping("/v1/user/settings")
-    public ResponseEntity<Object> saveCurrentUserSettings(@RequestBody String settings){
+    public ResponseEntity<Object> saveCurrentUserSettings(@RequestBody String settings) {
         logger.debug("Request to create settings for current user");
-        try{
-            Map<String, Object> settingsMap = objectMapper.readValue(settings, new TypeReference<>() {});
+        try {
+            Map<String, Object> settingsMap = objectMapper.readValue(settings, new TypeReference<>() {
+            });
             userSettingsService.saveUserSettings(userManagementService.getCurrentUser(), settingsMap);
-        } catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
 

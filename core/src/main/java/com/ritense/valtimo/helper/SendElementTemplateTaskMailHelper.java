@@ -36,8 +36,11 @@ public class SendElementTemplateTaskMailHelper {
 
     private static final Pattern camundaExpressionPattern = Pattern.compile("^\\$\\{([a-zA-Z0-9_\\-\\.]+)\\}$");
 
+    private SendElementTemplateTaskMailHelper() {
+    }
+
     public static void validateExpectedKeys(Map<String, Object> camundaProperties)
-            throws ExpectedElementTemplatePropertyNotFoundException, IllegalElementTemplatePropertyValueException {
+        throws ExpectedElementTemplatePropertyNotFoundException, IllegalElementTemplatePropertyValueException {
         validateExpectedKey(RECEIVER_KEY, camundaProperties);
         validateExpectedKey(SENDER_KEY, camundaProperties);
         validateExpectedKey(SUBJECT_KEY, camundaProperties);
@@ -68,7 +71,7 @@ public class SendElementTemplateTaskMailHelper {
     }
 
     private static void validateExpectedKey(String keyName, Map<String, Object> camundaProperties)
-            throws ExpectedElementTemplatePropertyNotFoundException, IllegalElementTemplatePropertyValueException {
+        throws ExpectedElementTemplatePropertyNotFoundException, IllegalElementTemplatePropertyValueException {
         if (!camundaProperties.containsKey(keyName)) {
             throw new ExpectedElementTemplatePropertyNotFoundException("Expected property key '" + keyName + "' not found!");
         }

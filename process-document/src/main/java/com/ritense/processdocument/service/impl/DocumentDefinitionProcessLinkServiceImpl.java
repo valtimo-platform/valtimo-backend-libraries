@@ -36,8 +36,10 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
     private final DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository;
     private final CamundaRepositoryService repositoryService;
 
-    public DocumentDefinitionProcessLinkServiceImpl(DocumentDefinitionProcessLinkRepository repo,
-                                                    CamundaRepositoryService repositoryService) {
+    public DocumentDefinitionProcessLinkServiceImpl(
+        DocumentDefinitionProcessLinkRepository repo,
+        CamundaRepositoryService repositoryService
+    ) {
         this.documentDefinitionProcessLinkRepository = repo;
         this.repositoryService = repositoryService;
     }
@@ -80,7 +82,8 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
     @Override
     public DocumentDefinitionProcessLinkResponse saveDocumentDefinitionProcess(
         String documentDefinitionName,
-        DocumentDefinitionProcessRequest request) {
+        DocumentDefinitionProcessRequest request
+    ) {
 
         var processDefinition = AuthorizationContext
             .runWithoutAuthorization(
@@ -102,7 +105,10 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         if (currentLink.isPresent()) {
             // If there is already a link set for this document definition then delete the current link
             // before storing the new one
-            documentDefinitionProcessLinkRepository.deleteByIdDocumentDefinitionNameAndIdProcessDefinitionKey(documentDefinitionName, request.getProcessDefinitionKey());
+            documentDefinitionProcessLinkRepository.deleteByIdDocumentDefinitionNameAndIdProcessDefinitionKey(
+                documentDefinitionName,
+                request.getProcessDefinitionKey()
+            );
         }
 
         var link = new DocumentDefinitionProcessLink(

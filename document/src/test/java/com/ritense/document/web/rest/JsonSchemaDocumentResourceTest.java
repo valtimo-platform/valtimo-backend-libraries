@@ -22,21 +22,16 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
-import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.utils.TestUtil;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.hamcrest.Matchers.hasSize;
@@ -57,18 +52,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class JsonSchemaDocumentResourceTest extends BaseTest {
 
     private JsonSchemaDocumentService documentService;
-    private DocumentResource documentResource;
     private MockMvc mockMvc;
-    private Page<JsonSchemaDocument> documentPage;
     private JsonSchemaDocument document;
-    private OutboxService outboxService;
 
     @BeforeEach
     void setUp() {
 
         documentService = mock(JsonSchemaDocumentService.class);
-        outboxService = mock(OutboxService.class);
-        documentResource = new JsonSchemaDocumentResource(documentService, outboxService);
+        DocumentResource documentResource = new JsonSchemaDocumentResource(documentService);
 
         mockMvc = MockMvcBuilders.standaloneSetup(documentResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
@@ -85,10 +76,6 @@ class JsonSchemaDocumentResourceTest extends BaseTest {
         document = result.resultingDocument().orElseThrow();
         document.setAssignee("test-assignee-id", "John Doe");
         document.addRelatedFile(relatedFile());
-        List<JsonSchemaDocument> documents = List.of(document);
-        Pageable unpaged = Pageable.unpaged();
-
-        documentPage = new PageImpl<>(documents, unpaged, 1);
     }
 
     @Test

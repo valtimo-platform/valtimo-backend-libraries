@@ -34,6 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.of;
@@ -72,6 +73,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
 
     /**
      * This keeps the API backwards compatible with old jpa entity columns in the sort.
+     *
      * @param pageable
      * @return
      */
@@ -119,7 +121,7 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     public ResponseEntity<DocumentVersionsResult> getDocumentDefinitionVersions(String name) {
         List<Long> versions = runWithoutAuthorization(() -> documentDefinitionService.findVersionsByName(name));
 
-        if(versions.isEmpty()) {
+        if (versions.isEmpty()) {
             return notFound().build();
         }
 

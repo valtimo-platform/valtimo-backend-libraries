@@ -27,7 +27,7 @@ public class UserSettingsService {
 
     private final UserSettingsRepository userSettingsRepository;
 
-    public UserSettingsService(UserSettingsRepository userSettingsRepository){
+    public UserSettingsService(UserSettingsRepository userSettingsRepository) {
         this.userSettingsRepository = userSettingsRepository;
     }
 

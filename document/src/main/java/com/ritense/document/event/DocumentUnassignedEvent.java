@@ -23,19 +23,23 @@ import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class DocumentUnassignedEvent extends AuditMetaData implements AuditEvent {
 
-    private UUID documentId;
+    private final UUID documentId;
 
     @JsonCreator
-    public DocumentUnassignedEvent(UUID id,
-                                   String origin,
-                                   LocalDateTime occurredOn,
-                                   String user,
-                                   UUID documentId) {
+    public DocumentUnassignedEvent(
+        UUID id,
+        String origin,
+        LocalDateTime occurredOn,
+        String user,
+        UUID documentId
+    ) {
         super(id, origin, occurredOn, user);
         assertArgumentNotNull(documentId, "documentId is required");
         this.documentId = documentId;
@@ -46,5 +50,25 @@ public class DocumentUnassignedEvent extends AuditMetaData implements AuditEvent
     @JsonIgnore(false)
     public UUID getDocumentId() {
         return documentId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        DocumentUnassignedEvent that = (DocumentUnassignedEvent) o;
+        return Objects.equals(documentId, that.documentId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), documentId);
     }
 }

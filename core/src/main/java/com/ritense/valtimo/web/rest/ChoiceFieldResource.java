@@ -62,7 +62,9 @@ public class ChoiceFieldResource {
     }
 
     @PostMapping("/v1/choice-fields")
-    public ResponseEntity<ChoiceField> createChoiceField(@Valid @RequestBody ChoiceFieldCreateRequestDTO choiceFieldCreateRequestDTO) throws URISyntaxException {
+    public ResponseEntity<ChoiceField> createChoiceField(
+        @Valid @RequestBody ChoiceFieldCreateRequestDTO choiceFieldCreateRequestDTO
+    ) throws URISyntaxException {
         logger.debug("REST request to save ChoiceField : {}", choiceFieldCreateRequestDTO);
         ChoiceField result = choiceFieldService.create(choiceFieldCreateRequestDTO);
         return ResponseEntity.created(new URI("/api/v1/choice-fields/" + result.getId()))
@@ -109,7 +111,10 @@ public class ChoiceFieldResource {
     public ResponseEntity<Void> deleteChoiceField(@PathVariable Long id) {
         logger.debug("REST request to delete ChoiceField : {}", id);
         choiceFieldService.delete(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(CHOICEFIELD_ENTITY_NAME, id.toString())).build();
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(
+            CHOICEFIELD_ENTITY_NAME,
+            id.toString()
+        )).build();
     }
 
 }

@@ -18,12 +18,17 @@ package com.ritense.valtimo.contract.audit.view;
 
 public class AuditView {
 
-    public static class Public {
+    private AuditView() {
+    }
 
+    public static class Public {
+        private Public() {
+        }
     }
 
     public static class Internal extends Public {
-
+        private Internal() {
+        }
     }
 
 }

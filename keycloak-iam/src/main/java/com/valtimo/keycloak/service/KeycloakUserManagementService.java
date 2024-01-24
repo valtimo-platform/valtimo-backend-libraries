@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
@@ -255,7 +256,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             }
         });
 
-        var users  = usersList.stream()
+        var users = usersList.stream()
             .flatMap(Collection::stream)
             .filter(UserRepresentation::isEnabled)
             .map(UserRepresentationWrapper::new)
@@ -335,8 +336,12 @@ public class KeycloakUserManagementService implements UserManagementService {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             UserRepresentationWrapper that = (UserRepresentationWrapper) o;
             return Objects.equals(getId(), that.getId())
                 && Objects.equals(getUsername(), that.getUsername())

@@ -77,7 +77,7 @@ public class MilestoneInstance {
     @Optional
     private ZonedDateTime reachedDate;
 
-    public MilestoneInstance(){
+    public MilestoneInstance() {
         // Empty constructor that is used by JPA
     }
 
@@ -87,20 +87,21 @@ public class MilestoneInstance {
         LocalDate referenceDate,
         boolean reached,
         Boolean reachedInTime,
-        ZonedDateTime reachedDate) {
+        ZonedDateTime reachedDate
+    ) {
         MilestoneInstance newMilestone = new MilestoneInstance();
 
         newMilestone.milestoneSet = milestone.getMilestoneSet();
         newMilestone.title = milestone.getTitle();
-        newMilestone.processDefinitionKey =  milestone.getProcessDefinitionKey();
-        newMilestone.taskDefinitionKey =  milestone.getTaskDefinitionKey();
-        newMilestone.plannedIntervalInDays =  milestone.getPlannedIntervalInDays();
+        newMilestone.processDefinitionKey = milestone.getProcessDefinitionKey();
+        newMilestone.taskDefinitionKey = milestone.getTaskDefinitionKey();
+        newMilestone.plannedIntervalInDays = milestone.getPlannedIntervalInDays();
         newMilestone.setColor(milestone.getColor());
         newMilestone.processInstanceId = processInstanceId;
         newMilestone.referenceDate = referenceDate;
-        newMilestone.reached =  reached;
-        newMilestone.reachedInTime =  reachedInTime;
-        newMilestone.reachedDate =  reachedDate;
+        newMilestone.reached = reached;
+        newMilestone.reachedInTime = reachedInTime;
+        newMilestone.reachedDate = reachedDate;
 
         return newMilestone;
     }

@@ -24,6 +24,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
@@ -65,8 +66,12 @@ public class JsonSchemaDocumentId extends AbstractId<JsonSchemaDocumentId> imple
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         JsonSchemaDocumentId that = (JsonSchemaDocumentId) o;
         return Objects.equals(getId(), that.getId());
     }

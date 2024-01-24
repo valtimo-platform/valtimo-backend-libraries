@@ -53,7 +53,7 @@ public class MandrillMailAutoConfiguration {
         final MandrillProperties mandrillProperties,
         final BlacklistService blacklistService,
         final ObjectMapper objectMapper
-        ) {
+    ) {
         return new WebhookService(mandrillProperties, blacklistService, objectMapper);
     }
 

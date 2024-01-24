@@ -32,7 +32,7 @@ public class MilestoneSet {
     @NotNull
     private String title;
 
-    public MilestoneSet(){
+    public MilestoneSet() {
     }
 
     public MilestoneSet(String title) {
