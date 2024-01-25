@@ -16,9 +16,21 @@
 
 dockerCompose {
     projectName = "core"
-    isRequiredBy(integrationTesting)
-    isRequiredBy(securityTesting)
-    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+
+    securityTesting {
+        isRequiredBy(project.tasks.securityTesting)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingPostgresql {
+        isRequiredBy(project.tasks.integrationTestingPostgresql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingMysql {
+        isRequiredBy(project.tasks.integrationTestingMysql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-mysql.yml", "docker-compose-override-mysql.yml")
+    }
 }
 
 dependencies {
@@ -126,6 +138,7 @@ dependencies {
     testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.junit.jupiter:junit-jupiter-engine"
+    testImplementation("com.mysql:mysql-connector-j")
 }
 
 apply from: "gradle/publishing.gradle"

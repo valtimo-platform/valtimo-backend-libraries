@@ -18,9 +18,21 @@ projectVersion = 1.0
 
 dockerCompose {
     projectName = "openzaak"
-    isRequiredBy(integrationTesting)
-    isRequiredBy(securityTesting)
-    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+
+    securityTesting {
+        isRequiredBy(project.tasks.securityTesting)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingPostgresql {
+        isRequiredBy(project.tasks.integrationTestingPostgresql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingMysql {
+        isRequiredBy(project.tasks.integrationTestingMysql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-mysql.yml", "docker-compose-override-mysql.yml")
+    }
 }
 
 dependencies {
@@ -82,6 +94,7 @@ dependencies {
     testImplementation "org.mockito:mockito-inline"
 
     testImplementation project(':test-utils-common')
+    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true
