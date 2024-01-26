@@ -20,30 +20,15 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
-import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 
-public class UserHttpSecurityConfigurer implements HttpSecurityConfigurer {
+public class GlobalHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
     public void configure(HttpSecurity http) {
         try {
             http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/users").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/users").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/users").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/users/{userId}/activate").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/users/{userId}/deactivate").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/users/email/{email}/").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/users/{userId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/users/authority/{authority}").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/users/{userId}").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/users/send-verification-email/{userId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/user/settings").authenticated()
-                .antMatchers(PUT, "/api/v1/user/settings").authenticated()
                 .antMatchers(GET, "/api/v1/settings").authenticated()
                 .antMatchers(PUT, "/api/v1/settings").authenticated();
         } catch (Exception e) {

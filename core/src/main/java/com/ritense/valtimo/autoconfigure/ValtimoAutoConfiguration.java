@@ -43,16 +43,19 @@ import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.processdefinition.repository.ProcessDefinitionPropertiesRepository;
 import com.ritense.valtimo.repository.CamundaReportingRepository;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
+import com.ritense.valtimo.repository.GlobalSettingsRepository;
 import com.ritense.valtimo.repository.UserSettingsRepository;
 import com.ritense.valtimo.service.AuthorizedUsersServiceImpl;
 import com.ritense.valtimo.service.BpmnModelService;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.CurrentUserServiceImpl;
+import com.ritense.valtimo.service.GlobalSettingsService;
 import com.ritense.valtimo.service.ProcessPropertyService;
 import com.ritense.valtimo.service.ProcessShortTimerService;
 import com.ritense.valtimo.service.UserSettingsService;
 import com.ritense.valtimo.web.rest.AccountResource;
+import com.ritense.valtimo.web.rest.GlobalResource;
 import com.ritense.valtimo.web.rest.PingResource;
 import com.ritense.valtimo.web.rest.ProcessInstanceResource;
 import com.ritense.valtimo.web.rest.ProcessResource;
@@ -320,16 +323,36 @@ public class ValtimoAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(GlobalSettingsService.class)
+    public GlobalSettingsService globalSettingsService(GlobalSettingsRepository globalSettingsRepository) {
+        return new GlobalSettingsService(globalSettingsRepository);
+    }
+
+    @Bean
     @ConditionalOnMissingBean(UserResource.class)
     public UserResource userResource(
         UserManagementService userManagementService,
         UserSettingsService userSettingsService,
-        ObjectMapper objectMapper
+        ObjectMapper objectMapper,
+        GlobalSettingsService globalSettingsService
     ) {
         return new UserResource(
             userManagementService,
             userSettingsService,
-            objectMapper
+            objectMapper,
+            globalSettingsService
+        );
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(UserResource.class)
+    public GlobalResource globalResource(
+        ObjectMapper objectMapper,
+        GlobalSettingsService globalSettingsService
+    ) {
+        return new GlobalResource(
+            objectMapper,
+            globalSettingsService
         );
     }
 

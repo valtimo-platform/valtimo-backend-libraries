@@ -32,6 +32,7 @@ import com.ritense.valtimo.security.config.CsrfHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.DenyAllHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.EmailNotificationSettingsSecurityConfigurer;
 import com.ritense.valtimo.security.config.ErrorHttpSecurityConfigurer;
+import com.ritense.valtimo.security.config.GlobalHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.JwtHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.OpenApiHttpSecurityConfigurer;
 import com.ritense.valtimo.security.config.PingHttpSecurityConfigurer;
@@ -59,6 +60,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+
 import java.util.List;
 
 @Configuration
@@ -131,6 +133,13 @@ public class HttpSecurityAutoConfiguration {
     @ConditionalOnMissingBean(UserHttpSecurityConfigurer.class)
     public UserHttpSecurityConfigurer userHttpSecurityConfigurer() {
         return new UserHttpSecurityConfigurer();
+    }
+
+    @Order(315)
+    @Bean
+    @ConditionalOnMissingBean(GlobalHttpSecurityConfigurer.class)
+    public GlobalHttpSecurityConfigurer globalHttpSecurityConfigurer() {
+        return new GlobalHttpSecurityConfigurer();
     }
 
     @Order(320)
