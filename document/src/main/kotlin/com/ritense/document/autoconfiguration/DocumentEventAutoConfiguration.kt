@@ -16,7 +16,9 @@
 
 package com.ritense.document.autoconfiguration
 
+import com.ritense.document.listener.DocumentEventListener
 import com.ritense.document.mapper.DocumentSseEventMapper
+import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
 
@@ -26,5 +28,12 @@ class DocumentEventAutoConfiguration {
     @Bean
     fun documentSseEventMapper(): DocumentSseEventMapper {
         return DocumentSseEventMapper()
+    }
+
+    @Bean
+    fun sseDocumentEventListener(
+        subscriptionService: SseSubscriptionService
+    ): DocumentEventListener {
+        return DocumentEventListener(subscriptionService)
     }
 }

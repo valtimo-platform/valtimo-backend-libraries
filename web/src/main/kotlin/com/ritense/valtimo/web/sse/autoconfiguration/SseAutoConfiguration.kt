@@ -16,11 +16,13 @@
 
 package com.ritense.valtimo.web.sse.autoconfiguration
 
+import com.ritense.inbox.InboxHandlingService
 import com.ritense.valtimo.web.sse.domain.SseEventMapper
 import com.ritense.valtimo.web.sse.security.config.SseHttpSecurityConfigurer
 import com.ritense.valtimo.web.sse.service.SseEventHandler
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import com.ritense.valtimo.web.sse.web.rest.SseResource
+import com.ritense.valtimo.web.sse.web.rest.TempEventResource
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -50,4 +52,10 @@ class SseAutoConfiguration {
         sseEventMappers: List<SseEventMapper>,
         subscriptionService: SseSubscriptionService
     ) = SseEventHandler(sseEventMappers, subscriptionService)
+
+    //TODO: delete this
+    @Bean
+    fun tempEventResource(
+        inboxHandlingService: InboxHandlingService
+    ) = TempEventResource(inboxHandlingService)
 }
