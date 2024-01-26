@@ -26,7 +26,7 @@ class DocumentSseEventMapperTest {
     @Test
     fun `should map to sse event for a case created`(){
         val valtimoEvent = mock<ValtimoEvent>()
-        whenever { valtimoEvent.type }.thenReturn { DocumentCreated.TYPE }
+        whenever(valtimoEvent.type).thenReturn(DocumentCreated.TYPE)
 
         val sseEvent = documentSseEventMapper.map(valtimoEvent)
         assertInstanceOf(CaseCreatedEvent::class.java, sseEvent)
@@ -35,7 +35,7 @@ class DocumentSseEventMapperTest {
     @Test
     fun `should map to sse event for a case assigned`() {
         val valtimoEvent = mock<ValtimoEvent>()
-        whenever { valtimoEvent.type }.thenReturn { DocumentAssigned.TYPE }
+        whenever(valtimoEvent.type).thenReturn(DocumentAssigned.TYPE)
 
         val sseEvent = documentSseEventMapper.map(valtimoEvent)
         assertInstanceOf(CaseAssignedEvent::class.java, sseEvent)
@@ -44,7 +44,7 @@ class DocumentSseEventMapperTest {
     @Test
     fun `should map to sse event for a case unassigned`() {
         val valtimoEvent = mock<ValtimoEvent>()
-        whenever { valtimoEvent.type }.thenReturn { DocumentUnassigned.TYPE }
+        whenever(valtimoEvent.type).thenReturn(DocumentUnassigned.TYPE)
 
         val sseEvent = documentSseEventMapper.map(valtimoEvent)
         assertInstanceOf(CaseUnassignedEvent::class.java, sseEvent)
@@ -53,7 +53,7 @@ class DocumentSseEventMapperTest {
     @Test
     fun `should map to null with unknown type event`() {
         val valtimoEvent = mock<ValtimoEvent>()
-        whenever { valtimoEvent.type }.thenReturn { "unknown" }
+        whenever(valtimoEvent.type).thenReturn("unknown")
 
         val sseEvent = documentSseEventMapper.map(valtimoEvent)
         assertNull(sseEvent)
