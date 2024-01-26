@@ -1,7 +1,7 @@
 version: '3.9'
 services:
     db:
-        image: mysql:8.0-oracle
+        image: mysql:8.3.0
         cap_add:
             - SYS_NICE  # CAP_SYS_NICE
         command:

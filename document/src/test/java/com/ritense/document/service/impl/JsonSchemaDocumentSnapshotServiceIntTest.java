@@ -23,7 +23,8 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
-import com.ritense.document.repository.impl.PostgresJsonSchemaDocumentSnapshotRepository;
+import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot;
+import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
 import org.junit.jupiter.api.AfterEach;
@@ -47,7 +48,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     @Inject
     private DocumentDefinitionService documentDefinitionService;
     @Inject
-    private PostgresJsonSchemaDocumentSnapshotRepository documentSnapshotRepository;
+    private DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository;
     @Inject
     protected DocumentSnapshotService documentSnapshotService;
 

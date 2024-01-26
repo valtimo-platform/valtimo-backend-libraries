@@ -90,7 +90,7 @@ open class ValtimoOutboxService(
         outboxMessageRepository.save(outboxMessage)
     }
 
-    open fun getOldestMessage() = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+    open fun getOldestMessage() = outboxMessageRepository.findFirstBy()
 
     open fun deleteMessage(id: UUID) = outboxMessageRepository.deleteById(id)
 

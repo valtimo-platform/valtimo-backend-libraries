@@ -269,6 +269,7 @@ public class CamundaTaskService {
         Hibernate.initialize(task.getVariableInstances());
         Hibernate.initialize(task.getIdentityLinks());
         entityManager.detach(task);
+        task.getIdentityLinks().forEach(entityManager::detach);
         outboxService.send(() -> new TaskCompleted(taskId, objectMapper.valueToTree(task)));
     }
 

@@ -25,6 +25,7 @@ class CamundaTaskSpecificationHelperIntTest @Autowired constructor(
     @BeforeEach
     fun prepare() {
         createDate = LocalDateTime.now()
+        Thread.sleep(1000)
 
         oneTaskInstances = (1..3)
             .map {

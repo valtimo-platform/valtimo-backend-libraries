@@ -48,7 +48,7 @@ class PollingPublisherServiceIntTest : BaseIntegrationTest() {
         insertOutboxMessage(OrderCreatedEvent("event 1"))
         insertOutboxMessage(OrderCreatedEvent("event 2"))
         whenever(messagePublisher.publish(any())).then { Thread.sleep(1000) }
-        verify(outboxMessageRepository, times(0)).findTopByOrderByCreatedOnAsc()
+        verify(outboxMessageRepository, times(0)).findFirstBy()
 
         listOf(
             async(Dispatchers.IO) { pollingPublisherService.pollAndPublishAll() },
@@ -60,7 +60,7 @@ class PollingPublisherServiceIntTest : BaseIntegrationTest() {
         // Poller 2: Polling is blocked. NO database read
         // Poller 1: read database. Find event 2
         // Poller 1: read database. Find NULL
-        verify(outboxMessageRepository, times(3)).findTopByOrderByCreatedOnAsc()
+        verify(outboxMessageRepository, times(3)).findFirstBy()
     }
 
     @Test
@@ -68,7 +68,7 @@ class PollingPublisherServiceIntTest : BaseIntegrationTest() {
         insertOutboxMessage(OrderCreatedEvent("event 1"))
         insertOutboxMessage(OrderCreatedEvent("event 2"))
         whenever(messagePublisher.publish(any())).then { Thread.sleep(1000) }
-        verify(outboxMessageRepository, times(0)).findTopByOrderByCreatedOnAsc()
+        verify(outboxMessageRepository, times(0)).findFirstBy()
 
         pollingPublisherService.pollAndPublishAll()
         pollingPublisherService.pollAndPublishAll()
@@ -78,6 +78,6 @@ class PollingPublisherServiceIntTest : BaseIntegrationTest() {
         // Poller 1: read database. Find event 2
         // Poller 1: read database. Find NULL
         // Poller 2: read database. Find NULL
-        verify(outboxMessageRepository, times(4)).findTopByOrderByCreatedOnAsc()
+        verify(outboxMessageRepository, times(4)).findFirstBy()
     }
 }

@@ -31,7 +31,7 @@ interface OutboxMessageRepository : JpaRepository<OutboxMessage, UUID> {
      */
     @QueryHints(value = [QueryHint(name = JPA_LOCK_TIMEOUT, value = SKIP_LOCKED)])
     @Lock(PESSIMISTIC_WRITE)
-    fun findTopByOrderByCreatedOnAsc(): OutboxMessage?
+    fun findFirstBy(): OutboxMessage?
 
     companion object {
         const val SKIP_LOCKED = "-2"
