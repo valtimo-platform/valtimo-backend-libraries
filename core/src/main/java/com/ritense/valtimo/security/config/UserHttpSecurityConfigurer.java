@@ -43,9 +43,7 @@ public class UserHttpSecurityConfigurer implements HttpSecurityConfigurer {
                 .antMatchers(DELETE, "/api/v1/users/{userId}").hasAuthority(ADMIN)
                 .antMatchers(POST, "/api/v1/users/send-verification-email/{userId}").hasAuthority(ADMIN)
                 .antMatchers(GET, "/api/v1/user/settings").authenticated()
-                .antMatchers(PUT, "/api/v1/user/settings").authenticated()
-                .antMatchers(GET, "/api/v1/settings").authenticated()
-                .antMatchers(PUT, "/api/v1/settings").authenticated();
+                .antMatchers(PUT, "/api/v1/user/settings").authenticated();
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

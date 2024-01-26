@@ -333,19 +333,17 @@ public class ValtimoAutoConfiguration {
     public UserResource userResource(
         UserManagementService userManagementService,
         UserSettingsService userSettingsService,
-        ObjectMapper objectMapper,
-        GlobalSettingsService globalSettingsService
+        ObjectMapper objectMapper
     ) {
         return new UserResource(
             userManagementService,
             userSettingsService,
-            objectMapper,
-            globalSettingsService
+            objectMapper
         );
     }
 
     @Bean
-    @ConditionalOnMissingBean(UserResource.class)
+    @ConditionalOnMissingBean(GlobalResource.class)
     public GlobalResource globalResource(
         ObjectMapper objectMapper,
         GlobalSettingsService globalSettingsService

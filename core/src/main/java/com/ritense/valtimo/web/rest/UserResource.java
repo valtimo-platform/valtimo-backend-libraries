@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
-import com.ritense.valtimo.service.GlobalSettingsService;
 import com.ritense.valtimo.service.UserSettingsService;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
@@ -57,19 +56,16 @@ public class UserResource {
     private static final Logger logger = LoggerFactory.getLogger(UserResource.class);
     private final UserManagementService userManagementService;
     private final UserSettingsService userSettingsService;
-    private final GlobalSettingsService globalSettingsService;
     private final ObjectMapper objectMapper;
 
     public UserResource(
         UserManagementService userManagementService,
         UserSettingsService userSettingsService,
-        ObjectMapper objectMapper,
-        GlobalSettingsService globalSettingsService
+        ObjectMapper objectMapper
     ) {
         this.userManagementService = userManagementService;
         this.userSettingsService = userSettingsService;
         this.objectMapper = objectMapper;
-        this.globalSettingsService = globalSettingsService;
     }
 
     @PostMapping("/v1/users")
@@ -172,31 +168,6 @@ public class UserResource {
         try{
             Map<String, Object> settingsMap = objectMapper.readValue(settings, new TypeReference<>() {});
             userSettingsService.saveUserSettings(userManagementService.getCurrentUser(), settingsMap);
-        } catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
-
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/v1/settings")
-    public ResponseEntity<String> getGlobalSettings() throws JsonProcessingException {
-        logger.debug("Request to get global settings");
-        var result = globalSettingsService.getGlobalSettings();
-        Map<String, Object> settings = Map.of();
-        if (result.isPresent()) {
-            settings = result.get().getSettings();
-        }
-
-        return ResponseEntity.ok(objectMapper.writeValueAsString(settings));
-    }
-
-    @PutMapping("/v1/settings")
-    public ResponseEntity<Object> saveGlobalSettings(@RequestBody String settings){
-        logger.debug("Request to create global settings");
-        try{
-            Map<String, Object> settingsMap = objectMapper.readValue(settings, new TypeReference<>() {});
-            globalSettingsService.saveGlobalSettings(settingsMap);
         } catch (Exception e){
             return ResponseEntity.badRequest().build();
         }
