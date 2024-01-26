@@ -31,7 +31,7 @@ import java.util.LinkedHashSet;
  * A builder for constructing a JSON Patch by adding
  * JSON Patch operations incrementally.
  *
- * <p>The following illustrates the approach.
+ * <p>The following illustrates the approach.</p>
  * <pre>
  *   JsonPatchBuilder builder = new JsonPatchBuilder();
  *   JsonPatch patch = builder.add("/John/phones/office", "1234-567")
@@ -43,7 +43,7 @@ import java.util.LinkedHashSet;
  * [
  *    {"op" = "add", "path" = "/John/phones/office", "value" = "1234-567"},
  *    {"op" = "remove", "path" = "/Amy/age"}
- * ] </pre></p>
+ * ] </pre>
  */
 public final class JsonPatchBuilder {
 

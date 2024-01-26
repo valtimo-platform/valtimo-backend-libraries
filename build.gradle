@@ -63,7 +63,7 @@ htmlDependencyReport {
 }
 
 //Sonarqube
-sonarqube {
+sonar {
     properties {
         property "sonar.scm.provider", "git"
         property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
@@ -82,7 +82,7 @@ configurations {
 }
 
 allprojects {
-    if (!(project.name.endsWith("-dependencies") || project.name.endsWith("-dependency-versions"))) {
+    if (!project.name.endsWith("-dependency-versions")) {
         apply plugin: "java"
         apply plugin: "org.springframework.boot"
         apply plugin: "io.spring.dependency-management"
@@ -181,7 +181,7 @@ subprojects { subproject ->
             }
         }
 
-        sonarqube {
+        sonar {
             properties {
                 property "sonar.coverage.jacoco.xmlReportPaths", allTestCoverageFile
             }
