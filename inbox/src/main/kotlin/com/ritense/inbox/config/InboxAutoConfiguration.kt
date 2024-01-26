@@ -19,6 +19,7 @@ package com.ritense.outbox.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.inbox.InboxEventHandler
 import com.ritense.inbox.InboxHandlingService
+import com.ritense.inbox.ValtimoEventHandler
 import com.ritense.inbox.ValtimoInboxEventHandler
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Bean
@@ -35,7 +36,7 @@ class InboxAutoConfiguration {
 
     @Bean
     fun valtimoInboxEventHandler(
-        eventHandlers: List<InboxEventHandler>,
+        eventHandlers: List<ValtimoEventHandler>,
         objectMapper: ObjectMapper
     ): InboxEventHandler {
         return ValtimoInboxEventHandler(eventHandlers, objectMapper)

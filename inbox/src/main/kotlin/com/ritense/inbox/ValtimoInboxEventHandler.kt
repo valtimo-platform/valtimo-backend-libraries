@@ -22,7 +22,7 @@ import io.cloudevents.core.provider.EventFormatProvider
 import io.cloudevents.jackson.JsonFormat
 
 class ValtimoInboxEventHandler(
-    private val eventHandlers: List<InboxEventHandler>,
+    private val eventHandlers: List<ValtimoEventHandler>,
     private val objectMapper: ObjectMapper
 ): InboxEventHandler {
     val cloudEventFormat = EventFormatProvider
@@ -47,8 +47,11 @@ class ValtimoInboxEventHandler(
             )
         } catch (e: Exception) {
             //ignore messages that can't be parsed as cloud events
+            null
         }
 
-        eventHandlers.forEach { it.handle(deserializedEvent) }
+        deserializedEvent?.let {
+            eventHandlers.forEach { handler -> handler.handle(it) }
+        }
     }
 }

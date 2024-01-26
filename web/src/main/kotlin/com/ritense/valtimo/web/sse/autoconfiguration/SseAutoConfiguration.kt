@@ -16,7 +16,9 @@
 
 package com.ritense.valtimo.web.sse.autoconfiguration
 
+import com.ritense.valtimo.web.sse.domain.SseEventMapper
 import com.ritense.valtimo.web.sse.security.config.SseHttpSecurityConfigurer
+import com.ritense.valtimo.web.sse.service.SseEventHandler
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
 import com.ritense.valtimo.web.sse.web.rest.SseResource
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -42,4 +44,10 @@ class SseAutoConfiguration {
     fun camundaEventResource(
         sseSubscriptionService: SseSubscriptionService
     ) = SseResource(sseSubscriptionService)
+
+    @Bean
+    fun sseEventHandler(
+        sseEventMappers: List<SseEventMapper>,
+        subscriptionService: SseSubscriptionService
+    ) = SseEventHandler(sseEventMappers, subscriptionService)
 }

@@ -20,7 +20,7 @@ import com.ritense.inbox.ValtimoEvent
 import com.ritense.inbox.ValtimoEventHandler
 import com.ritense.valtimo.web.sse.domain.SseEventMapper
 
-class SseValtimoEventHandler(
+class SseEventHandler(
     private val sseEventMappers: List<SseEventMapper>,
     private val subscriptionService: SseSubscriptionService
 ): ValtimoEventHandler {
