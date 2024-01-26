@@ -22,12 +22,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.patch.JsonPatchFilterFlag
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentService
 import com.ritense.form.domain.FormIoFormDefinition
+import com.ritense.valtimo.script.ValtimoScriptRepository
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.camunda.domain.CamundaExecution
@@ -52,7 +54,8 @@ class PrefillFormService(
     private val formFieldDataResolvers: List<FormFieldDataResolver>,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val valueResolverService: ValueResolverService,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val valtimoScriptRepository: ValtimoScriptRepository
 ) {
 
     fun getPrefilledFormDefinition(
@@ -79,11 +82,17 @@ class PrefillFormService(
     ): FormIoFormDefinition {
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
+        val newFormDef = FormIoFormDefinition(
+            UUID.randomUUID(),
+            "_",
+            prefillValtimoScript(formDefinition.asJson()).toString(),
+        true
+        )
         if (documentId != null) {
             val document = runWithoutAuthorization { documentService.get(documentId.toString()) }
-            prefillFormDefinition(formDefinition, document, null, null)
+            prefillFormDefinition(newFormDef, document, null, null)
         }
-        return formDefinition
+        return newFormDef
     }
 
     fun prefillFormDefinition(
@@ -112,6 +121,40 @@ class PrefillFormService(
             prefillTaskVariables(formDefinition, taskInstanceId, extendedDocumentContent)
         } else {
             prefillProcessVariables(formDefinition, document)
+        }
+    }
+
+    private fun prefillValtimoScript(node: JsonNode): JsonNode {
+        when (node) {
+            is ObjectNode -> {
+                val n = node.deepCopy()
+                node.fields().forEach { n.replace(it.key, prefillValtimoScript(it.value)) }
+                return n
+            }
+
+            is ArrayNode -> {
+                val n = node.deepCopy()
+                node.forEachIndexed { i, value -> n.set(i, prefillValtimoScript(value)) }
+                return n
+            }
+
+            is TextNode -> {
+                var result = node.textValue()
+                val matcher = "[^(@@@@)]*\\{\\{([a-zA-Z0-9-_]+)}}[^(@@@@)]*".toRegex().matchEntire(node.textValue())
+                val scriptKeys = matcher?.groups
+                    ?.filterIndexed { i, _ -> i > 0 }
+                    ?.filterNotNull()
+                    ?.map { it.value }
+                    ?: emptyList()
+                scriptKeys.forEach { key ->
+                    val script = valtimoScriptRepository.findById(key).orElseThrow()
+                    result = result.replace("\\{\\{$key}}".toRegex(), script.content)
+                }
+                return TextNode(result)
+            }
+
+            else ->
+                return node
         }
     }
 

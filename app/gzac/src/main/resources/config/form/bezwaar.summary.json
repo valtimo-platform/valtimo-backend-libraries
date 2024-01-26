@@ -8,7 +8,7 @@
     },
     "components": [
         {
-            "content": "<strong>Behandelaar</strong>",
+            "content": "<strong>Scripting</strong>",
             "type": "htmlelement"
         },
         {
@@ -17,43 +17,7 @@
                 {
                     "components": [
                         {
-                            "placeholder": "Naam behandelaar",
-                            "hideLabel": true,
-                            "disabled": true,
-                            "attributes": {
-                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
-                            },
-                            "type": "textfield"
-                        },
-                        {
-                            "placeholder": "E-mailadres behandelaar",
-                            "hideLabel": true,
-                            "disabled": true,
-                            "attributes": {
-                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
-                            },
-                            "type": "textfield"
-                        },
-                        {
-                            "placeholder": "De beslissing over het bezwaar",
-                            "hideLabel": true,
-                            "disabled": true,
-                            "attributes": {
-                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
-                            },
-                            "type": "textfield"
-                        },
-                        {
-                            "placeholder": "Aanvullende informatie over het bezwaar",
-                            "hideLabel": true,
-                            "disabled": true,
-                            "attributes": {
-                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 400;"
-                            },
-                            "type": "textfield"
-                        },
-                        {
-                            "placeholder": "Portal aangevulde informatie",
+                            "placeholder": "Result",
                             "hideLabel": true,
                             "disabled": true,
                             "attributes": {
@@ -73,43 +37,7 @@
                         {
                             "hideLabel": true,
                             "disabled": true,
-                            "key": "naamBehandelaar",
-                            "attributes": {
-                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 700;"
-                            },
-                            "type": "textfield"
-                        },
-                        {
-                            "hideLabel": true,
-                            "disabled": true,
-                            "key": "e-mailBehandelaar",
-                            "attributes": {
-                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 700;"
-                            },
-                            "type": "textfield"
-                        },
-                        {
-                            "hideLabel": true,
-                            "disabled": true,
-                            "key": "beslissingBezwaar",
-                            "attributes": {
-                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 700;"
-                            },
-                            "type": "textfield"
-                        },
-                        {
-                            "hideLabel": true,
-                            "disabled": true,
-                            "key": "aanvullendeInfo",
-                            "attributes": {
-                                "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 700;"
-                            },
-                            "type": "textfield"
-                        },
-                        {
-                            "hideLabel": true,
-                            "disabled": true,
-                            "key": "portalTaakInformatie",
+                            "key": "result",
                             "attributes": {
                                 "style": "height: 24px !important; background-color: white; border: 0px; margin:0px; padding: 0px !important; font-size: 13px; font-family: roboto; font-weight: 700;"
                             },

@@ -24,6 +24,7 @@ import com.ritense.form.domain.FormSpringContextHelper;
 import com.ritense.form.mapper.FormProcessLinkMapper;
 import com.ritense.form.processlink.FormProcessLinkActivityHandler;
 import com.ritense.form.repository.FormDefinitionRepository;
+import com.ritense.valtimo.script.ValtimoScriptRepository;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.service.FormLoaderService;
 import com.ritense.form.service.PrefillFormService;
@@ -148,7 +149,8 @@ public class FormAutoConfiguration {
         List<FormFieldDataResolver> formFieldDataResolvers,
         ProcessDocumentAssociationService processDocumentAssociationService,
         ValueResolverService valueResolverService,
-        ObjectMapper objectMapper
+        ObjectMapper objectMapper,
+        ValtimoScriptRepository valtimoScriptRepository
     ) {
         return new PrefillFormService(
             documentService,
@@ -158,7 +160,8 @@ public class FormAutoConfiguration {
             formFieldDataResolvers,
             processDocumentAssociationService,
             valueResolverService,
-            objectMapper
+            objectMapper,
+            valtimoScriptRepository
         );
     }
 

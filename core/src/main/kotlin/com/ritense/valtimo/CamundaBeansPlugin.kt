@@ -16,15 +16,19 @@
 
 package com.ritense.valtimo
 
+import com.ritense.valtimo.script.ValtimoScriptFactory
+import com.ritense.valtimo.script.ValtimoScriptRepository
 import mu.KotlinLogging
 import org.camunda.bpm.engine.impl.cfg.AbstractProcessEnginePlugin
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
+import org.camunda.bpm.engine.impl.scripting.ScriptFactory
 import org.camunda.bpm.engine.spring.SpringExpressionManager
 import org.springframework.context.ApplicationContext
 
 class CamundaBeansPlugin(
     private val processBeans: Map<String, Any>,
-    private val applicationContext: ApplicationContext
+    private val applicationContext: ApplicationContext,
+    private val valtimoScriptRepository: ValtimoScriptRepository
 ) : AbstractProcessEnginePlugin() {
     override fun preInit(processEngineConfiguration: ProcessEngineConfigurationImpl?) {
         logger.info("Registering process beans...")
@@ -34,6 +38,8 @@ class CamundaBeansPlugin(
         processEngineConfiguration.beans = processBeansAny
         processEngineConfiguration.setExpressionManager(SpringExpressionManager(applicationContext, processBeansAny))
         logger.info("Successfully registered process beans.")
+
+        processEngineConfiguration.scriptFactory = ValtimoScriptFactory(valtimoScriptRepository)
     }
 
     companion object {

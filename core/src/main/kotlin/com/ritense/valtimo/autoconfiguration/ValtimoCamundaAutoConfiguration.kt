@@ -38,6 +38,7 @@ import com.ritense.valtimo.camunda.service.CamundaHistoryService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import com.ritense.valtimo.script.ValtimoScriptRepository
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RuntimeService
@@ -62,6 +63,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         CamundaProcessDefinitionRepository::class,
         CamundaTaskRepository::class,
         CamundaVariableInstanceRepository::class,
+        ValtimoScriptRepository::class,
     ]
 )
 @EntityScan("com.ritense.valtimo.camunda.domain")

@@ -18,6 +18,7 @@ package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.valtimo.CamundaBeansPlugin;
 import com.ritense.valtimo.contract.annotation.ProcessBean;
+import com.ritense.valtimo.script.ValtimoScriptRepository;
 import org.camunda.bpm.spring.boot.starter.configuration.Ordering;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -36,9 +37,10 @@ public class CamundaContextConfiguration {
     @Order(Ordering.DEFAULT_ORDER - 1)
     public CamundaBeansPlugin camundaBeansPlugin(
         @Lazy @ProcessBean Map<String, Object> processBeans,
-        ApplicationContext applicationContext
+        ApplicationContext applicationContext,
+        ValtimoScriptRepository valtimoScriptRepository
     ) {
-        return new CamundaBeansPlugin(processBeans, applicationContext);
+        return new CamundaBeansPlugin(processBeans, applicationContext, valtimoScriptRepository);
     }
 
 }

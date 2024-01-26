@@ -17,8 +17,10 @@ package com.ritense.form.security.config
 
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
+import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
@@ -28,6 +30,11 @@ class FormHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
             http.authorizeHttpRequests { requests ->
                 requests.requestMatchers(antMatcher(POST, "/api/v1/process-link/{processLinkId}/form/submission")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/process-link/form-definition/{formKey}")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/script")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/script")).authenticated()
+                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/script")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/script/{key}/content")).authenticated()
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/script/{key}/content")).authenticated()
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

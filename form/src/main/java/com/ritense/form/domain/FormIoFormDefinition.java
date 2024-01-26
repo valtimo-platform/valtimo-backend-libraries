@@ -352,7 +352,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
         return Collections.unmodifiableList(inputFields);
     }
 
-    private void setFormDefinition(String formDefinition) {
+    public void setFormDefinition(String formDefinition) {
         try {
             this.workingCopy = MapperSingleton.INSTANCE.get().readTree(formDefinition);
         } catch (Exception e) {
