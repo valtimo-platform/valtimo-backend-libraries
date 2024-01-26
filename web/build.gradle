@@ -15,8 +15,9 @@
  */
 
 dependencies {
+    api project(':inbox')
+
     implementation project(':contract')
-    implementation project(':inbox')
 
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"

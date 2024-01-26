@@ -25,7 +25,7 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.resource.domain.MetadataType
-import com.ritense.resource.domain.TemporaryResourceSubmittedEvent
+import com.ritense.resource.domain.TemporaryResourceUploadedEvent
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.DOCUMENT_UPLOAD
@@ -40,7 +40,7 @@ import org.springframework.context.ApplicationEventPublisher
 import jakarta.transaction.Transactional
 
 @Transactional
-class ResourceSubmittedToDocumentEventListenerIT @Autowired constructor(
+class ResourceUploadedToDocumentSseEventMapperIT @Autowired constructor(
     private val documentService: JsonSchemaDocumentService,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
     private val applicationEventPublisher: ApplicationEventPublisher,
@@ -71,6 +71,26 @@ class ResourceSubmittedToDocumentEventListenerIT @Autowired constructor(
     }
 
     @Test
+    fun `should not start upload process when missing documentId or taskId`() {
+        val documentId = runWithoutAuthorization {
+            documentService.createDocument(
+                NewDocumentRequest(
+                    DOCUMENT_DEFINITION_KEY,
+                    objectMapper.createObjectNode()
+                )
+            ).resultingDocument().get().id!!.id.toString()
+        }
+        val resourceId = temporaryResourceStorageService.store("My file data".byteInputStream())
+
+        applicationEventPublisher.publishEvent(TemporaryResourceUploadedEvent(resourceId))
+
+        val documentUploadProcess = historyService.createHistoricProcessInstanceQuery()
+            .processInstanceBusinessKey(documentId)
+            .singleResult()
+        assertThat(documentUploadProcess).isNull()
+    }
+
+    @Test
     fun `should start upload process after publishing TemporaryResourceUploadedEvent`() {
         val documentId = runWithoutAuthorization {
             documentService.createDocument(
@@ -78,23 +98,16 @@ class ResourceSubmittedToDocumentEventListenerIT @Autowired constructor(
                     DOCUMENT_DEFINITION_KEY,
                     objectMapper.createObjectNode()
                 )
-            ).resultingDocument().get().id!!.id
+            ).resultingDocument().get().id!!.id.toString()
         }
         val resourceId = temporaryResourceStorageService.store(
             "My file data".byteInputStream(),
-            mapOf(MetadataType.DOCUMENT_ID.key to documentId.toString())
+            mapOf(MetadataType.DOCUMENT_ID.key to documentId)
         )
 
-        applicationEventPublisher.publishEvent(
-            TemporaryResourceSubmittedEvent(
-                resourceId,
-                documentId,
-                DOCUMENT_DEFINITION_KEY
-            )
-        )
+        applicationEventPublisher.publishEvent(TemporaryResourceUploadedEvent(resourceId))
 
-        val documentUploadProcess =
-            getHistoricProcessInstance(UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY, documentId.toString())
+        val documentUploadProcess = getHistoricProcessInstance(UPLOAD_DOCUMENT_PROCESS_DEFINITION_KEY, documentId)
         val retrievedResourceId =
             getHistoricVariable(documentUploadProcess.rootProcessInstanceId, RESOURCE_ID_PROCESS_VAR) as String
         assertThat(documentUploadProcess.startTime).isNotNull

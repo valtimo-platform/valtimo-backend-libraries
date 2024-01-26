@@ -16,18 +16,15 @@
 
 package com.ritense.document.autoconfiguration
 
-import com.ritense.document.listener.DocumentEventListener
-import com.ritense.valtimo.web.sse.service.SseSubscriptionService
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.context.annotation.Bean
+import com.ritense.document.mapper.DocumentSseEventMapper
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.context.annotation.Bean
 
 @AutoConfiguration
 class DocumentEventAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean(DocumentEventListener::class)
-    fun documentCreatedEventListener(sseSubscritionService: SseSubscriptionService): DocumentEventListener {
-        return DocumentEventListener(sseSubscritionService)
+    fun documentSseEventMapper(): DocumentSseEventMapper {
+        return DocumentSseEventMapper()
     }
 }

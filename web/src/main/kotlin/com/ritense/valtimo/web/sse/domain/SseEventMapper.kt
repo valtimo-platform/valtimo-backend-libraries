@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.document.event
+package com.ritense.valtimo.web.sse.domain
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.outbox.domain.BaseEvent
+import com.ritense.inbox.ValtimoEvent
+import com.ritense.valtimo.web.sse.event.BaseSseEvent
 
-class DocumentAssigned(documentId: String, documentContent: ObjectNode) : BaseEvent(
-    type = TYPE,
-    resultType = "com.ritense.document.domain.impl.JsonSchemaDocument",
-    resultId = documentId,
-    result = documentContent
-) {
-    companion object {
-        const val TYPE = "com.ritense.valtimo.document.assigned"
-    }
+interface SseEventMapper {
+    fun map(event: ValtimoEvent): BaseSseEvent?
 }

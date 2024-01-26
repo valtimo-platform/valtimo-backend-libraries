@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.document.event
+package com.ritense.valtimo.web.sse.service
 
-import com.fasterxml.jackson.databind.node.ObjectNode
-import com.ritense.outbox.domain.BaseEvent
+import com.ritense.inbox.ValtimoEvent
+import com.ritense.inbox.ValtimoEventHandler
+import com.ritense.valtimo.web.sse.domain.SseEventMapper
 
-class DocumentAssigned(documentId: String, documentContent: ObjectNode) : BaseEvent(
-    type = TYPE,
-    resultType = "com.ritense.document.domain.impl.JsonSchemaDocument",
-    resultId = documentId,
-    result = documentContent
-) {
-    companion object {
-        const val TYPE = "com.ritense.valtimo.document.assigned"
+class SseValtimoEventHandler(
+    private val sseEventMappers: List<SseEventMapper>,
+    private val subscriptionService: SseSubscriptionService
+): ValtimoEventHandler {
+
+    override fun handle(event: ValtimoEvent) {
+        sseEventMappers.map {
+            it.map(event)
+        }.filterNotNull().forEach {
+            subscriptionService.notifySubscribers(it)
+        }
     }
 }
