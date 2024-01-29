@@ -74,6 +74,7 @@ include(
     "resource:openzaak-resource",
     "resource:temporary-resource-storage",
     "search",
+    "template",
     "test-utils-common",
     "value-resolver",
     "dependencies:valtimo-dependencies",

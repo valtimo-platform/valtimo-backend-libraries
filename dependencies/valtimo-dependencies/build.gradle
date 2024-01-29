@@ -43,6 +43,7 @@ dependencies {
     api(project(":resource"))
     api(project(":resource:temporary-resource-storage"))
     api(project(":search"))
+    api(project(":template"))
     api(project(":value-resolver"))
     api(project(":web"))
 }

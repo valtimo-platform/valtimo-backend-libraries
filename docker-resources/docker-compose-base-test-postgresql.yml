@@ -1,3 +1,4 @@
+version: '3.9'
 services:
     db:
         image: postgres:14.9
@@ -60,4 +61,5 @@ services:
 #   url: jdbc:postgresql://localhost:3353/command-handling-test
 #   url: jdbc:postgresql://localhost:3354/keycloak-iam-test
 #   url: jdbc:postgresql://localhost:3355/logging-test
+#   url: jdbc:postgresql://localhost:3357/template-test
 #   url: localhost:55672 <--rabbitmq

@@ -221,6 +221,7 @@ valtimo:
             - application/pdf
             - image/jpeg
             - application/xml
+            - application/xhtml+xml
     changelog:
         pbac:
             clear-tables: true

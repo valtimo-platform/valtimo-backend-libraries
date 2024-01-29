@@ -1,34 +1,37 @@
 {
     "display": "form",
-    "settings": {
-        "pdf": {
-            "id": "1ec0f8ee-6685-5d98-a847-26f67b67d6f0",
-            "src": "https://files.form.io/pdf/5692b91fd1028f01000407e3/file/1ec0f8ee-6685-5d98-a847-26f67b67d6f0"
-        }
-    },
     "components": [
         {
-            "label": "HTML",
-            "attrs": [
-                {
-                    "attr": "",
-                    "value": ""
-                }
-            ],
-            "content": "Klik start om uw bezwaar in te dienen.",
-            "refreshOnChange": false,
-            "key": "html",
-            "type": "htmlelement",
-            "input": false,
-            "tableView": false
+            "key": "firstName",
+            "type": "textfield",
+            "input": true,
+            "label": "First name",
+            "tableView": true,
+            "attributes": {
+                "data-testid": "bezwaar.start-firstName"
+            },
+            "applyMaskOn": "change",
+            "defaultValue": "Peter"
         },
         {
-            "type": "button",
-            "label": "Start",
-            "key": "submit",
-            "disableOnInvalid": true,
+            "key": "lastName",
+            "type": "textfield",
             "input": true,
-            "tableView": false
+            "label": "Last name",
+            "tableView": true,
+            "attributes": {
+                "data-testid": "bezwaar.start-lastName"
+            },
+            "applyMaskOn": "change",
+            "defaultValue": "voor Klaver"
+        },
+        {
+            "key": "submit",
+            "type": "button",
+            "input": true,
+            "label": "Submit",
+            "tableView": false,
+            "disableOnInvalid": true
         }
     ]
 }

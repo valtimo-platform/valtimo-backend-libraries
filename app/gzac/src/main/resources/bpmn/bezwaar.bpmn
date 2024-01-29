@@ -1,43 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1p8obyi" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.15.2">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1p8obyi" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.23.0">
   <bpmn:collaboration id="Collaboration_00emdqk">
     <bpmn:participant id="bezwaar-indienen" name="Bezwaar indienen" processRef="bezwaar" />
   </bpmn:collaboration>
   <bpmn:process id="bezwaar" name="Bezwaar" isExecutable="true">
     <bpmn:laneSet id="LaneSet_0hbrp35">
       <bpmn:lane id="Lane_04l6c3s">
-        <bpmn:flowNodeRef>validate-request</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_0m4dd1v</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>in-behandeling</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>start-event-bezwaar-proces-gestart</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>generate-file</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>link-to-case</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
-    <bpmn:userTask id="validate-request" name="Valideer gegevens aanvrager" camunda:candidateGroups="ROLE_USER">
-      <bpmn:extensionElements>
-        <camunda:executionListener expression="${documentDelegateService.setInternalStatus(execution,&#39;aanvraag-ontvangen&#39;)}" event="start" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_162004p</bpmn:incoming>
-      <bpmn:outgoing>Flow_0ytx5d7</bpmn:outgoing>
-    </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_162004p" sourceRef="start-event-bezwaar-proces-gestart" targetRef="validate-request" />
+    <bpmn:sequenceFlow id="Flow_162004p" sourceRef="start-event-bezwaar-proces-gestart" targetRef="generate-file" />
     <bpmn:startEvent id="start-event-bezwaar-proces-gestart" name="Bezwaar proces gestart">
       <bpmn:outgoing>Flow_162004p</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_0ytx5d7" sourceRef="validate-request" targetRef="in-behandeling" />
+    <bpmn:sequenceFlow id="Flow_0ytx5d7" sourceRef="generate-file" targetRef="link-to-case" />
     <bpmn:endEvent id="Event_0m4dd1v">
       <bpmn:extensionElements>
         <camunda:executionListener expression="${documentDelegateService.setInternalStatus(execution,&#39;informatieverzoek-uitgezet&#39;)}" event="start" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_10jcwwq</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_10jcwwq" sourceRef="in-behandeling" targetRef="Event_0m4dd1v" />
-    <bpmn:userTask id="in-behandeling" name="In behandeling" camunda:candidateGroups="ROLE_USER">
+    <bpmn:sequenceFlow id="Flow_10jcwwq" sourceRef="link-to-case" targetRef="Event_0m4dd1v" />
+    <bpmn:serviceTask id="generate-file" name="Generate file from template" camunda:expression="${templateDelegationService.generate(execution, &#39;taak-send-proposal-to-customer&#39;, &#39;resourceId&#39;, &#39;filename&#39;,&#39;Taak - Send proposal to customer.html&#39;,&#39;title&#39;,&#39;Taak - Send proposal to customer&#39;,&#39;informatieobjecttype&#39;,&#39;http://localhost:8001/catalogi/api/v1/informatieobjecttypen/efc332f2-be3b-4bad-9e3c-49a6219c92ad&#39;)}">
+      <bpmn:extensionElements>
+        <camunda:executionListener expression="${documentDelegateService.setInternalStatus(execution,&#39;aanvraag-ontvangen&#39;)}" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_162004p</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ytx5d7</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:callActivity id="link-to-case" name="Link to case" calledElement="document-upload">
       <bpmn:extensionElements>
         <camunda:executionListener expression="${documentDelegateService.setInternalStatus(execution,&#39;in-behandeling&#39;)}" event="start" />
+        <camunda:in businessKey="#{execution.processBusinessKey}" />
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0ytx5d7</bpmn:incoming>
       <bpmn:outgoing>Flow_10jcwwq</bpmn:outgoing>
-    </bpmn:userTask>
+    </bpmn:callActivity>
   </bpmn:process>
   <bpmn:message id="Message_1p8fqc1" name="zaakdossier-created" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
@@ -48,9 +51,6 @@
       <bpmndi:BPMNShape id="Lane_04l6c3s_di" bpmnElement="Lane_04l6c3s" isHorizontal="true">
         <dc:Bounds x="182" y="80" width="508" height="220" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1ij6xo1_di" bpmnElement="validate-request">
-        <dc:Bounds x="310" y="150" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_054suvz_di" bpmnElement="start-event-bezwaar-proces-gestart">
         <dc:Bounds x="226" y="172" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -60,7 +60,11 @@
       <bpmndi:BPMNShape id="Event_0m4dd1v_di" bpmnElement="Event_0m4dd1v">
         <dc:Bounds x="612" y="172" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1px2knc_di" bpmnElement="in-behandeling">
+      <bpmndi:BPMNShape id="Activity_04d1xw2_di" bpmnElement="generate-file">
+        <dc:Bounds x="310" y="150" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1r3efkw_di" bpmnElement="link-to-case">
         <dc:Bounds x="460" y="150" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
