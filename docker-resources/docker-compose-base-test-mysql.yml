@@ -63,4 +63,5 @@ services:
 #   url: jdbc:mysql://localhost:3346/contract-test
 #   url: jdbc:mysql://localhost:3347/outbox-test
 #   url: jdbc:mysql://localhost:3348/outbox-rabbitmq-test
-#   url: localhost:55672 <--rabbitmq
+#   url: localhost:55672 <--outbox rabbitmq
+#   url: localhost:55673 <--inbox rabbitmq

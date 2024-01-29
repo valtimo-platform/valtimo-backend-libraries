@@ -16,17 +16,17 @@
 
 package com.ritense.inbox
 
-import mu.KotlinLogging
+import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
-class InboxHandlingService(
-    private val eventHandlers: List<InboxEventHandler>,
-) {
-    fun handle(message: String) {
-        logger.info("Received message: {}", message)
-        eventHandlers.forEach { it.handle(message) }
-    }
+@SpringBootTest
+@ExtendWith(SpringExtension::class)
+@Tag("integration")
+@Import(TestApplication.TestConfig::class)
+class BaseIntegrationTest {
 
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+
 }

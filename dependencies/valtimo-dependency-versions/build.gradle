@@ -42,6 +42,7 @@ dependencies {
         api(project(":form-flow"))
         api(project(":form-flow-valtimo"))
         api(project(":importer"))
+        api(project(":inbox"))
         api(project(":keycloak-iam"))
         api(project(":document-generation:local-document-generation"))
         api(project(":mail:local-mail"))
