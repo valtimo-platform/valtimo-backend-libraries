@@ -41,7 +41,7 @@ public class CamundaCockpitHttpSecurityConfigurer implements HttpSecurityConfigu
         try {
             //By default cockpit uses BasicAuth using different tech,
             //we just set it open and let Camunda do the rest.
-            http.authorizeHttpRequests((requests) ->
+            http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(
                     whiteListed(
                         antMatcher("/camunda/api/admin/**"),

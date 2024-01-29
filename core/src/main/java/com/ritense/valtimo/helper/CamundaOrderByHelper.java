@@ -16,15 +16,15 @@
 
 package com.ritense.valtimo.helper;
 
+import static org.apache.commons.lang3.exception.ExceptionUtils.asRuntimeException;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.camunda.bpm.engine.impl.Direction;
 import org.camunda.bpm.engine.impl.HistoricProcessInstanceQueryProperty;
 import org.camunda.bpm.engine.impl.QueryOrderingProperty;
 import org.camunda.bpm.engine.query.QueryProperty;
 import org.springframework.data.domain.Sort;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.apache.commons.lang3.exception.ExceptionUtils.rethrow;
 
 public class CamundaOrderByHelper {
 
@@ -59,7 +59,7 @@ public class CamundaOrderByHelper {
                     queryOrderingProperties.add(queryOrderingProperty);
 
                 } catch (IllegalArgumentException e) {
-                    rethrow(e);
+                    asRuntimeException(e);
                 }
             } else {
                 throw (new IllegalArgumentException("Invalid query property name: " + property));

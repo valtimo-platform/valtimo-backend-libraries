@@ -195,11 +195,11 @@ public class SearchRequestValidator {
     }
 
     private static void validateSearchFieldType(SearchWithConfigRequest.SearchWithConfigFilter searchFilter, SearchField searchField) {
-        if ((searchField.getFieldType() == MULTI_SELECT_DROPDOWN ||
-            searchField.getFieldType() == MULTIPLE ||
-            searchField.getFieldType() == SINGLE ||
-            searchField.getFieldType() == SINGLE_SELECT_DROPDOWN) &&
-            (searchFilter.getRangeFrom() != null || searchFilter.getRangeTo() != null)) {
+        if ((searchField.getFieldType() == MULTI_SELECT_DROPDOWN
+            || searchField.getFieldType() == MULTIPLE
+            || searchField.getFieldType() == SINGLE
+            || searchField.getFieldType() == SINGLE_SELECT_DROPDOWN)
+            && (searchFilter.getRangeFrom() != null || searchFilter.getRangeTo() != null)) {
             throw new SearchConfigRequestException(searchField, searchField.getFieldType().toString(), "range parameters were found");
         }
         if ((searchField.getFieldType() == SINGLE || searchField.getFieldType() == SINGLE_SELECT_DROPDOWN) && searchFilter.getValues().isEmpty()) {

@@ -77,12 +77,11 @@ public class CamundaProcessJsonSchemaDocumentInstanceId
         if (this == o) {
             return true;
         }
-        if (!(o instanceof CamundaProcessJsonSchemaDocumentInstanceId)) {
+        if (!(o instanceof CamundaProcessJsonSchemaDocumentInstanceId that)) {
             return false;
         }
-        CamundaProcessJsonSchemaDocumentInstanceId that = (CamundaProcessJsonSchemaDocumentInstanceId) o;
-        return processInstanceId.equals(that.processInstanceId) &&
-            documentId.equals(that.documentId);
+        return processInstanceId.equals(that.processInstanceId)
+            && documentId.equals(that.documentId);
     }
 
     @Override

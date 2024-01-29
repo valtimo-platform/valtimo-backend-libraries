@@ -64,18 +64,18 @@ public class ExceptionTranslator implements ProblemHandling {
             builder.with("path", httpServletRequest.getRequestURI());
         }
 
-        String MESSAGE = "message";
+        final String msg = "message";
         if (problem instanceof ConstraintViolationProblem) {
             builder
                 .with("violations", ((ConstraintViolationProblem) problem).getViolations())
-                .with(MESSAGE, ErrorConstants.ERR_VALIDATION);
+                .with(msg, ErrorConstants.ERR_VALIDATION);
         } else {
             builder
                 .withInstance(problem.getInstance());
 
             problem.getParameters().forEach(builder::with);
-            if (!problem.getParameters().containsKey(MESSAGE) && problem.getStatus() != null) {
-                builder.with(MESSAGE, "error.http." + problem.getStatus().getStatusCode());
+            if (!problem.getParameters().containsKey(msg) && problem.getStatus() != null) {
+                builder.with(msg, "error.http." + problem.getStatus().getStatusCode());
             }
         }
 

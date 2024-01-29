@@ -328,15 +328,13 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
 
     @Override
     public void removeDocumentDefinition(String documentDefinitionName) {
-        findLatestByName(documentDefinitionName).ifPresent(documentDefinition -> {
-            authorizationService.requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocumentDefinition.class,
-                    DELETE,
-                    documentDefinition
-                )
-            );
-        });
+        findLatestByName(documentDefinitionName).ifPresent(documentDefinition -> authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                DELETE,
+                documentDefinition
+            )
+        ));
 
         documentDefinitionRepository.deleteByIdName(documentDefinitionName);
     }

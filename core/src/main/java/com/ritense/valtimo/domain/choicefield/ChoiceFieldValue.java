@@ -25,11 +25,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import java.util.Objects;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.validator.constraints.NotBlank;
-
-import java.util.Objects;
 
 /**
  * A ChoiceFieldValue.

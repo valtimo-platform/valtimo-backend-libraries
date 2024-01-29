@@ -27,7 +27,7 @@ public class ApiLoginHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeHttpRequests((requests) ->
+            http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher("/api/v1/authenticate")).permitAll()
             );
         } catch (Exception e) {

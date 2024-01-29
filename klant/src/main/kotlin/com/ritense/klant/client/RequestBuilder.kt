@@ -172,13 +172,6 @@ class RequestBuilder {
             }
         }
 
-        private fun <T> getType(responseClass: Class<out T>): ParameterizedTypeReference<T> {
-            val type: ParameterizedTypeReference<T> = ParameterizedTypeReference.forType(
-                ResolvableType.forClass(responseClass).type
-            )
-            return type
-        }
-
         private fun <T> getTypeWrapped(responseClass: Class<out T>): ParameterizedTypeReference<ResultPage<T>> {
             val type: ParameterizedTypeReference<ResultPage<T>> = ParameterizedTypeReference.forType(
                 ResolvableType.forClassWithGenerics(ResultPage::class.java, responseClass).type

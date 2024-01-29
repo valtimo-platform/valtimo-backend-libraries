@@ -21,7 +21,6 @@ import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationE
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class BesluitConfigHttpSecurityConfigurer : HttpSecurityConfigurer {

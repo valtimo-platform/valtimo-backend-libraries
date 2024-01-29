@@ -53,7 +53,7 @@ public class ChoiceFieldValueResource {
 
     private static final Logger logger = LoggerFactory.getLogger(ChoiceFieldValueResource.class);
     private final ChoiceFieldValueService choiceFieldValueService;
-    private final static String CHOICE_FIELD_VALUE = "choiceFieldValue";
+    private static final String CHOICE_FIELD_VALUE = "choiceFieldValue";
 
     public ChoiceFieldValueResource(
         ChoiceFieldValueService choiceFieldValueService

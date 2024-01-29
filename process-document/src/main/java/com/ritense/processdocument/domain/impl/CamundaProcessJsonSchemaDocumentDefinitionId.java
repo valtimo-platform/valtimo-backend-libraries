@@ -76,12 +76,11 @@ public class CamundaProcessJsonSchemaDocumentDefinitionId extends AbstractId<Cam
         if (this == o) {
             return true;
         }
-        if (!(o instanceof CamundaProcessJsonSchemaDocumentDefinitionId)) {
+        if (!(o instanceof CamundaProcessJsonSchemaDocumentDefinitionId that)) {
             return false;
         }
-        CamundaProcessJsonSchemaDocumentDefinitionId that = (CamundaProcessJsonSchemaDocumentDefinitionId) o;
-        return processDefinitionKey.equals(that.processDefinitionKey) &&
-            documentDefinitionId.equals(that.documentDefinitionId);
+        return processDefinitionKey.equals(that.processDefinitionKey)
+            && documentDefinitionId.equals(that.documentDefinitionId);
     }
 
     @Override

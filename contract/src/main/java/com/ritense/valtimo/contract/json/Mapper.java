@@ -29,7 +29,7 @@ import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS
 @Deprecated(since = "11.2.0", forRemoval = true)
 public enum Mapper {
     INSTANCE;
-    private final ObjectMapper mapper = new ObjectMapper()
+    private final ObjectMapper objectMapper = new ObjectMapper()
         .findAndRegisterModules()
         .registerModule(new JavaTimeModule())
         .registerModule(new KotlinModule());
@@ -37,11 +37,11 @@ public enum Mapper {
 
     Mapper() {
         // Perform any configuration on the ObjectMapper here.
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        mapper.disable(WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.disable(WRITE_DATES_AS_TIMESTAMPS);
     }
 
     public ObjectMapper get() {
-        return mapper;
+        return objectMapper;
     }
 }

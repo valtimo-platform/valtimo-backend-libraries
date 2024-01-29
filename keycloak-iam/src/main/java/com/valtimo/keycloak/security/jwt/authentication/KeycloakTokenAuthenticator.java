@@ -37,8 +37,8 @@ import static java.util.Objects.requireNonNull;
 public class KeycloakTokenAuthenticator implements TokenAuthenticator {
 
     private static final Logger logger = LoggerFactory.getLogger(KeycloakTokenAuthenticator.class);
-    public final static String REALM_ACCESS = "realm_access";
-    public final static String RESOURCE_ACCESS = "resource_access";
+    public static final String REALM_ACCESS = "realm_access";
+    public static final String RESOURCE_ACCESS = "resource_access";
     private final String clientName;
 
     public KeycloakTokenAuthenticator(String keycloakClient) {

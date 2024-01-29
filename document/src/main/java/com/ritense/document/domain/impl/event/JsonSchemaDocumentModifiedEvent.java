@@ -73,15 +73,14 @@ public class JsonSchemaDocumentModifiedEvent extends AuditMetaData implements Do
         if (this == o) {
             return true;
         }
-        if (!(o instanceof JsonSchemaDocumentModifiedEvent)) {
+        if (!(o instanceof JsonSchemaDocumentModifiedEvent that)) {
             return false;
         }
         if (!super.equals(o)) {
             return false;
         }
-        JsonSchemaDocumentModifiedEvent that = (JsonSchemaDocumentModifiedEvent) o;
-        return changes.equals(that.changes) &&
-            documentId.equals(that.documentId);
+        return changes.equals(that.changes)
+            && documentId.equals(that.documentId);
     }
 
     @Override

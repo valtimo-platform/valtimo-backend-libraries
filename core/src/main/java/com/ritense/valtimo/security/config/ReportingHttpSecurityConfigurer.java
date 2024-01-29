@@ -27,7 +27,7 @@ public class ReportingHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeHttpRequests((requests) ->
+            http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/reporting/instancecount")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/reporting/instancesstatistics")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/reporting/tasksAverage")).authenticated()

@@ -81,16 +81,15 @@ public class JsonSchemaDocumentCreatedEvent extends AuditMetaData implements Doc
         if (this == o) {
             return true;
         }
-        if (!(o instanceof JsonSchemaDocumentCreatedEvent)) {
+        if (!(o instanceof JsonSchemaDocumentCreatedEvent that)) {
             return false;
         }
         if (!super.equals(o)) {
             return false;
         }
-        JsonSchemaDocumentCreatedEvent that = (JsonSchemaDocumentCreatedEvent) o;
-        return documentId.equals(that.documentId) &&
-            definitionId.equals(that.definitionId) &&
-            version.equals(that.version);
+        return documentId.equals(that.documentId)
+            && definitionId.equals(that.definitionId)
+            && version.equals(that.version);
     }
 
     @Override
