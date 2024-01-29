@@ -13,21 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ritense.form.security.config
 
+package com.ritense.script.security.config
+
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
+import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
-class FormHttpSecurityConfigurerKotlin : HttpSecurityConfigurer {
+class ScriptHttpSecurityConfigurer : HttpSecurityConfigurer {
+
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(antMatcher(POST, "/api/v1/process-link/{processLinkId}/form/submission")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/process-link/form-definition/{formKey}")).authenticated()
+                requests
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/script")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/script")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/script")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/script/{key}/content")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/script/{key}/content")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

@@ -21,7 +21,7 @@
 
     <changeSet id="1" author="Ritense">
             <createTable tableName="valtimo_script">
-                <column name="key" type="VARCHAR(255)">
+                <column name="script_key" type="VARCHAR(255)">
                     <constraints primaryKey="true" primaryKeyName="valtimo-scripts_recordPK"/>
                 </column>
                 <column name="content" type="CLOB">

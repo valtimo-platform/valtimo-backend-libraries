@@ -17,24 +17,17 @@
 package com.ritense.form.web.rest
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.ritense.valtimo.camunda.domain.ValtimoScript
-import com.ritense.valtimo.script.ValtimoScriptRepository
 import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.service.FormSubmissionService
 import com.ritense.form.service.PrefillFormService
-import com.ritense.valtimo.script.DeleteValtimoScriptRequest
 import com.ritense.form.web.rest.dto.FormSubmissionResult
-import com.ritense.valtimo.script.ValtimoScriptContentDto
-import com.ritense.valtimo.script.ValtimoScriptDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -48,7 +41,6 @@ class FormResource(
     private val formSubmissionService: FormSubmissionService,
     private val prefillFormService: PrefillFormService,
     private val formDefinitionService: FormDefinitionService,
-    private val valtimoScriptRepository: ValtimoScriptRepository,
 ) {
 
     @PostMapping("/v1/process-link/{processLinkId}/form/submission")
@@ -83,49 +75,6 @@ class FormResource(
         } else {
             ResponseEntity.notFound().build()
         }
-    }
-
-    @GetMapping("/management/v1/script")
-    fun getValtimoScript(
-    ): ResponseEntity<List<ValtimoScriptDto>> {
-        return ResponseEntity.ok(valtimoScriptRepository.findAll().map {
-            ValtimoScriptDto.from(it)
-        })
-    }
-
-    @PostMapping("/management/v1/script")
-    fun createValtimoScript(
-        @RequestBody request: ValtimoScript
-    ): ResponseEntity<ValtimoScript> {
-        return ResponseEntity.ok(valtimoScriptRepository.save(request))
-    }
-
-    @DeleteMapping("/management/v1/script")
-    fun deleteValtimoScripts(
-        @RequestBody request: DeleteValtimoScriptRequest
-    ): ResponseEntity<Unit> {
-        request.scripts.forEach {
-            valtimoScriptRepository.deleteById(it)
-        }
-        return ResponseEntity.ok().build()
-    }
-
-    @GetMapping("/management/v1/script/{key}/content")
-    fun getValtimoScriptContent(
-        @PathVariable key: String
-    ): ResponseEntity<ValtimoScriptContentDto> {
-        val script = valtimoScriptRepository.findById(key).orElseThrow()
-        return ResponseEntity.ok(ValtimoScriptContentDto(script.content))
-    }
-
-    @PutMapping("/management/v1/script/{key}/content")
-    fun updateValtimoScriptContent(
-        @PathVariable key: String,
-        @RequestBody request: ValtimoScriptContentDto,
-    ): ResponseEntity<ValtimoScriptContentDto> {
-        val script = valtimoScriptRepository.findById(key).orElseThrow()
-        script.content = request.content
-        return ResponseEntity.ok(ValtimoScriptContentDto(valtimoScriptRepository.save(script).content))
     }
 
     fun <T : FormSubmissionResult?> applyResult(result: T): ResponseEntity<T> {

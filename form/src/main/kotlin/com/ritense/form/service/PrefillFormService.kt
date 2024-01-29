@@ -29,7 +29,6 @@ import com.ritense.document.domain.patch.JsonPatchFilterFlag
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentService
 import com.ritense.form.domain.FormIoFormDefinition
-import com.ritense.valtimo.script.ValtimoScriptRepository
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.camunda.domain.CamundaExecution
@@ -38,12 +37,12 @@ import com.ritense.valtimo.contract.form.FormFieldDataResolver
 import com.ritense.valtimo.contract.json.JsonPointerHelper
 import com.ritense.valtimo.contract.json.patch.JsonPatch
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
+import com.ritense.valtimo.contract.script.ScriptPrefiller
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
-
 
 @Transactional
 class PrefillFormService(
@@ -55,7 +54,7 @@ class PrefillFormService(
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
     private val valueResolverService: ValueResolverService,
     private val objectMapper: ObjectMapper,
-    private val valtimoScriptRepository: ValtimoScriptRepository
+    private val scriptPrefiller: ScriptPrefiller? = null
 ) {
 
     fun getPrefilledFormDefinition(
@@ -72,6 +71,7 @@ class PrefillFormService(
         val document = runWithoutAuthorization { documentService.get(documentId) }
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
+        prefillScript(formDefinition.asJson())
         prefillFormDefinition(formDefinition, document, processInstanceId, taskInstanceId)
         return formDefinition
     }
@@ -82,17 +82,13 @@ class PrefillFormService(
     ): FormIoFormDefinition {
         val formDefinition = formDefinitionService.getFormDefinitionById(formDefinitionId)
             .orElseThrow { RuntimeException("Form definition not found by id $formDefinitionId") }
-        val newFormDef = FormIoFormDefinition(
-            UUID.randomUUID(),
-            "_",
-            prefillValtimoScript(formDefinition.asJson()).toString(),
-        true
-        )
+        prefillScript(formDefinition.asJson())
+
         if (documentId != null) {
             val document = runWithoutAuthorization { documentService.get(documentId.toString()) }
-            prefillFormDefinition(newFormDef, document, null, null)
+            prefillFormDefinition(formDefinition, document, null, null)
         }
-        return newFormDef
+        return formDefinition
     }
 
     fun prefillFormDefinition(
@@ -124,38 +120,20 @@ class PrefillFormService(
         }
     }
 
-    private fun prefillValtimoScript(node: JsonNode): JsonNode {
-        when (node) {
-            is ObjectNode -> {
-                val n = node.deepCopy()
-                node.fields().forEach { n.replace(it.key, prefillValtimoScript(it.value)) }
-                return n
-            }
+    private fun prefillScript(node: JsonNode): JsonNode {
+        if (scriptPrefiller != null) {
+            when (node) {
+                is ObjectNode ->
+                    node.fields().forEach { node.replace(it.key, prefillScript(it.value)) }
 
-            is ArrayNode -> {
-                val n = node.deepCopy()
-                node.forEachIndexed { i, value -> n.set(i, prefillValtimoScript(value)) }
-                return n
-            }
+                is ArrayNode ->
+                    node.forEachIndexed { i, value -> node.set(i, prefillScript(value)) }
 
-            is TextNode -> {
-                var result = node.textValue()
-                val matcher = "[^(@@@@)]*\\{\\{([a-zA-Z0-9-_]+)}}[^(@@@@)]*".toRegex().matchEntire(node.textValue())
-                val scriptKeys = matcher?.groups
-                    ?.filterIndexed { i, _ -> i > 0 }
-                    ?.filterNotNull()
-                    ?.map { it.value }
-                    ?: emptyList()
-                scriptKeys.forEach { key ->
-                    val script = valtimoScriptRepository.findById(key).orElseThrow()
-                    result = result.replace("\\{\\{$key}}".toRegex(), script.content)
-                }
-                return TextNode(result)
+                is TextNode ->
+                    return TextNode(scriptPrefiller.prefillScript(node.textValue()))
             }
-
-            else ->
-                return node
         }
+        return node
     }
 
     private fun prefillValueResolverFields(

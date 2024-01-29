@@ -24,7 +24,6 @@ import com.ritense.form.domain.FormSpringContextHelper;
 import com.ritense.form.mapper.FormProcessLinkMapper;
 import com.ritense.form.processlink.FormProcessLinkActivityHandler;
 import com.ritense.form.repository.FormDefinitionRepository;
-import com.ritense.valtimo.script.ValtimoScriptRepository;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.service.FormLoaderService;
 import com.ritense.form.service.PrefillFormService;
@@ -39,6 +38,7 @@ import com.ritense.form.web.rest.impl.FormIoFormManagementResource;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
+import com.ritense.valtimo.contract.script.ScriptPrefiller;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valueresolver.ValueResolverService;
@@ -52,6 +52,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.List;
+import java.util.Optional;
 
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = "com.ritense.form.repository")
@@ -150,7 +151,7 @@ public class FormAutoConfiguration {
         ProcessDocumentAssociationService processDocumentAssociationService,
         ValueResolverService valueResolverService,
         ObjectMapper objectMapper,
-        ValtimoScriptRepository valtimoScriptRepository
+        Optional<ScriptPrefiller> scriptPrefiller
     ) {
         return new PrefillFormService(
             documentService,
@@ -161,7 +162,7 @@ public class FormAutoConfiguration {
             processDocumentAssociationService,
             valueResolverService,
             objectMapper,
-            valtimoScriptRepository
+            scriptPrefiller.orElse(null)
         );
     }
 

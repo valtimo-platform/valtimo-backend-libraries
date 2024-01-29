@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService
-import com.ritense.valtimo.script.ValtimoScriptRepository
 import com.ritense.form.security.config.FormHttpSecurityConfigurerKotlin
 import com.ritense.form.service.FormDefinitionExporter
 import com.ritense.form.service.FormDefinitionImporter
@@ -66,12 +65,10 @@ class FormAutoConfigurationKotlin {
         formSubmissionService: FormSubmissionService,
         prefillFormService: PrefillFormService,
         formDefinitionService: FormDefinitionService,
-        valtimoScriptRepository: ValtimoScriptRepository
     ) = FormResource(
         formSubmissionService,
         prefillFormService,
-        formDefinitionService,
-        valtimoScriptRepository
+        formDefinitionService
     )
 
     @Bean

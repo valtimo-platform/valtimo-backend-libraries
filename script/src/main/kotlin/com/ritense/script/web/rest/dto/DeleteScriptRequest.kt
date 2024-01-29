@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.script
+package com.ritense.script.web.rest.dto
 
-data class DeleteValtimoScriptRequest(
+data class DeleteScriptRequest(
     val scripts: List<String>
 )

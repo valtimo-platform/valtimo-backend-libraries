@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.script
-
-import com.ritense.valtimo.camunda.domain.ValtimoScript
-
-data class ValtimoScriptDto(
-    val key: String
-) {
-    companion object {
-        fun from(script: ValtimoScript) : ValtimoScriptDto {
-            return ValtimoScriptDto(script.key)
+pluginManager.withPlugin('maven-publish') {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                pom {
+                    name = 'Script module'
+                    description = 'The script module allows you to manage javascript scripts in a single place'
+                    developers {
+                        developer {
+                            id = "team-valtimo"
+                            name = "Team Valtimo"
+                            email = "team-valtimo@ritense.com"
+                        }
+                    }
+                }
+            }
         }
     }
 }

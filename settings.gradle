@@ -67,6 +67,7 @@ include(
     "resource:local-resource",
     "resource:openzaak-resource",
     "resource:temporary-resource-storage",
+    "script",
     "search",
     "test-utils-common",
     "value-resolver",

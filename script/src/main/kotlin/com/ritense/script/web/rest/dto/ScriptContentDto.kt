@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.valtimo.script
+package com.ritense.script.web.rest.dto
 
-data class ValtimoScriptContentDto(
+import com.ritense.script.domain.Script
+
+data class ScriptContentDto(
     val content: String
-)
+) {
+
+    companion object {
+        fun of(script: Script): ScriptContentDto {
+            return ScriptContentDto(script.content)
+        }
+    }
+}

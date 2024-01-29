@@ -57,6 +57,7 @@ dependencies {
         api(project(":process-document"))
         api(project(":process-link"))
         api(project(":resource"))
+        api(project(":script"))
         api(project(":search"))
         api(project(":document-generation::smartdocuments"))
         api(project(":resource:temporary-resource-storage"))

@@ -18,6 +18,7 @@
 package com.ritense.valtimo.autoconfiguration
 
 import com.ritense.authorization.AuthorizationService
+import com.ritense.valtimo.CamundaScriptPrefillerPlugin
 import com.ritense.valtimo.camunda.authorization.CamundaExecutionProcessDefinitionMapper
 import com.ritense.valtimo.camunda.authorization.CamundaExecutionSpecificationFactory
 import com.ritense.valtimo.camunda.authorization.CamundaIdentityLinkSpecificationFactory
@@ -38,16 +39,17 @@ import com.ritense.valtimo.camunda.service.CamundaHistoryService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import com.ritense.valtimo.script.ValtimoScriptRepository
+import com.ritense.valtimo.contract.script.ScriptPrefiller
+import com.ritense.valtimo.script.CamundaScriptFactory
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Lazy
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
@@ -63,7 +65,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
         CamundaProcessDefinitionRepository::class,
         CamundaTaskRepository::class,
         CamundaVariableInstanceRepository::class,
-        ValtimoScriptRepository::class,
     ]
 )
 @EntityScan("com.ritense.valtimo.camunda.domain")
@@ -163,6 +164,22 @@ class ValtimoCamundaAutoConfiguration {
     @ConditionalOnMissingBean(CamundaTaskIdentityLinkMapper::class)
     fun camundaTaskIdentityLinkMapper(): CamundaTaskIdentityLinkMapper {
         return CamundaTaskIdentityLinkMapper()
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaScriptFactory::class)
+    fun camundaScriptFactory(
+        scriptPrefiller: ScriptPrefiller?
+    ): CamundaScriptFactory {
+        return CamundaScriptFactory(scriptPrefiller)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(CamundaScriptPrefillerPlugin::class)
+    fun camundaScriptPrefillerPlugin(
+        camundaScriptFactory: CamundaScriptFactory
+    ): CamundaScriptPrefillerPlugin {
+        return CamundaScriptPrefillerPlugin(camundaScriptFactory)
     }
 
 }
