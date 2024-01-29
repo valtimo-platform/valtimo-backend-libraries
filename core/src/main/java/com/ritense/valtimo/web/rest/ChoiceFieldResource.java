@@ -81,12 +81,23 @@ public class ChoiceFieldResource {
             .body(result);
     }
 
+    /**
+     * @deprecated since 12.0.0, use v2 instead
+     */
     @GetMapping("/v1/choice-fields")
+    @Deprecated(since = "12.0.0", forRemoval = true)
     public ResponseEntity<List<ChoiceField>> getAllChoiceFields(Pageable pageable) {
         logger.debug("REST request to get a page of ChoiceFields");
         Page<ChoiceField> page = choiceFieldService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/choice-fields");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/v2/choice-fields")
+    public ResponseEntity<Page<ChoiceField>> getAllChoiceFieldsPaged(Pageable pageable) {
+        logger.debug("REST request to get a page of ChoiceFields");
+        Page<ChoiceField> page = choiceFieldService.findAll(pageable);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/v1/choice-fields/{id}")

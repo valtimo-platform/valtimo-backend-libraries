@@ -19,6 +19,7 @@ package com.ritense.valtimo;
 import com.ritense.outbox.OutboxService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
+import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
 import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -48,6 +49,9 @@ public abstract class BaseIntegrationTest {
 
     @SpyBean
     public OutboxService outboxService;
+
+    @SpyBean
+    public CamundaSearchProcessInstanceRepository camundaSearchProcessInstanceRepository;
 
     @BeforeAll
     static void beforeAll() {

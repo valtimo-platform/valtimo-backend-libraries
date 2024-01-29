@@ -479,7 +479,11 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(processInstanceComments);
     }
 
+    /**
+     * @deprecated since 12.0.0, use v2 instead
+     */
     @PostMapping("/v1/process/{processDefinitionName}/search")
+    @Deprecated(since = "12.0.0", forRemoval = true)
     public ResponseEntity<List<ProcessInstance>> searchProcessInstancesV2(
             @PathVariable String processDefinitionName,
             @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO,
@@ -493,6 +497,20 @@ public class ProcessResource extends AbstractProcessResource {
         final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(
                 page, "/v1/process/{processDefinitionName}/search");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @PostMapping("/v2/process/{processDefinitionName}/search")
+    public ResponseEntity<Page<ProcessInstance>> searchProcessInstancesPaged(
+        @PathVariable String processDefinitionName,
+        @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO,
+        Pageable pageable
+    ) {
+        final Page<ProcessInstance> page = camundaSearchProcessInstanceRepository.searchInstances(
+            processDefinitionName,
+            processInstanceSearchDTO,
+            pageable
+        );
+        return ResponseEntity.ok(page);
     }
 
     @PostMapping("/v1/process/{processDefinitionName}/count")

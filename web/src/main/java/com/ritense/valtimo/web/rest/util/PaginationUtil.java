@@ -26,7 +26,11 @@ import org.springframework.web.util.UriComponentsBuilder;
  * <p>
  * Pagination uses the same principles as the <a href="https://developer.github.com/v3/#pagination">GitHub API</a>,
  * and follow <a href="http://tools.ietf.org/html/rfc5988">RFC 5988 (Link header)</a>.
+ *
+ * @deprecated since 12.0.0, functionality will be removed in future version use Spring
+ * {@link org.springframework.data.domain.Page } instead.
  */
+@Deprecated(since = "12.0.0", forRemoval = true)
 public final class PaginationUtil {
 
     private PaginationUtil() {
