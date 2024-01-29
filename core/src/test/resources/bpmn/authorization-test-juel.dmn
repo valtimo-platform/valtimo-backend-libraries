@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="authorization-test-juel-expression" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="5.17.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
+  <decision id="authorization-test-juel" name="Some decision">
+    <decisionTable id="DecisionTable_08dgnho">
+      <input id="Input_1">
+        <inputExpression id="InputExpression_1" typeRef="integer" expressionLanguage="juel">
+          <text>${unauthBean.doSomething()}</text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" name="out" typeRef="string" />
+      <rule id="DecisionRule_0pgz9y3">
+        <inputEntry id="UnaryTests_1mjacnl">
+          <text>&lt;10</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0fwu2qb">
+          <text>"Low"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_06rno1g">
+        <inputEntry id="UnaryTests_1xwmp25">
+          <text>10-20</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0kf3lx3">
+          <text>"Medium"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1rldtrq">
+        <inputEntry id="UnaryTests_0ykvhe3">
+          <text>&gt;20</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0z9f3nu">
+          <text>"High"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="authorization-test-juel">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
