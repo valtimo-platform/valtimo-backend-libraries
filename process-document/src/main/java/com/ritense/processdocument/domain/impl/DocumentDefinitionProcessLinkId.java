@@ -34,11 +34,13 @@ public class DocumentDefinitionProcessLinkId
     @Column(name = "process_definition_key", nullable = false)
     private String processDefinitionKey;
 
-    public DocumentDefinitionProcessLinkId() {}
+    public DocumentDefinitionProcessLinkId() {
+    }
 
     private DocumentDefinitionProcessLinkId(
         final String documentDefinitionName,
-        final String processDefinitionKey) {
+        final String processDefinitionKey
+    ) {
         assertArgumentNotNull(documentDefinitionName, "The documentDefinitionName is required");
         assertArgumentNotNull(processDefinitionKey, "The processDefinitionKey is required");
         this.documentDefinitionName = documentDefinitionName;
@@ -72,12 +74,11 @@ public class DocumentDefinitionProcessLinkId
         if (this == o) {
             return true;
         }
-        if (!(o instanceof DocumentDefinitionProcessLinkId)) {
+        if (!(o instanceof DocumentDefinitionProcessLinkId that)) {
             return false;
         }
-        DocumentDefinitionProcessLinkId that = (DocumentDefinitionProcessLinkId) o;
-        return documentDefinitionName.equals(that.documentDefinitionName) &&
-            processDefinitionKey.equals(that.processDefinitionKey);
+        return documentDefinitionName.equals(that.documentDefinitionName)
+            && processDefinitionKey.equals(that.processDefinitionKey);
     }
 
     @Override

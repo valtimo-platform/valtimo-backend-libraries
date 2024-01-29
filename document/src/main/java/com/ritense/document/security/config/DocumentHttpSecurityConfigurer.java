@@ -30,18 +30,17 @@ public class DocumentHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeHttpRequests((requests) -> {
+            http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/document/{id}")).authenticated()
-                    .requestMatchers(antMatcher(POST, "/api/v1/document")).authenticated()
-                    .requestMatchers(antMatcher(PUT, "/api/v1/document")).authenticated()
-                    .requestMatchers(antMatcher(POST, "/api/v1/document/{document-id}/resource/{resource-id}")).authenticated()
-                    .requestMatchers(antMatcher(DELETE, "/api/v1/document/{document-id}/resource/{resource-id}")).authenticated()
-                    .requestMatchers(antMatcher(POST, "/api/v1/document/{documentId}/assign")).authenticated()
-                    .requestMatchers(antMatcher(POST, "/api/v1/document/assign")).authenticated()
-                    .requestMatchers(antMatcher(POST, "/api/v1/document/{documentId}/unassign")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/document/{document-id}/candidate-user")).authenticated()
-                    .requestMatchers(antMatcher(POST, "/api/v1/document/candidate-user")).authenticated();
-            });
+                .requestMatchers(antMatcher(POST, "/api/v1/document")).authenticated()
+                .requestMatchers(antMatcher(PUT, "/api/v1/document")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/document/{document-id}/resource/{resource-id}")).authenticated()
+                .requestMatchers(antMatcher(DELETE, "/api/v1/document/{document-id}/resource/{resource-id}")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/document/{documentId}/assign")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/document/assign")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/document/{documentId}/unassign")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/document/{document-id}/candidate-user")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/document/candidate-user")).authenticated());
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

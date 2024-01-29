@@ -30,7 +30,7 @@ public class TaskHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeHttpRequests((requests) ->
+            http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/task")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/task/assign/batch-assign")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/task/batch-complete")).authenticated()

@@ -16,7 +16,8 @@
 
 package com.ritense.document.domain.impl.listener;
 
-import com.ritense.authorization.AuthorizationContext;
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile;
 import com.ritense.document.service.DocumentService;
@@ -38,8 +39,7 @@ public class DocumentRelatedFileSubmittedEventListenerImpl implements DocumentRe
     @Override
     public void handle(DocumentRelatedFileSubmittedEvent event) {
         var resource = resourceService.getResource(event.getResourceId());
-        AuthorizationContext.runWithoutAuthorization(() ->
-        {
+        runWithoutAuthorization(() -> {
             documentService.assignRelatedFile(
                 JsonSchemaDocumentId.existingId(event.getDocumentId()),
                 JsonSchemaRelatedFile.from(resource).withCreatedBy(SecurityUtils.getCurrentUserLogin())

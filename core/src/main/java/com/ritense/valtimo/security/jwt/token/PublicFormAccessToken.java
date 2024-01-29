@@ -16,18 +16,18 @@
 
 package com.ritense.valtimo.security.jwt.token;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.impl.DefaultClaims;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.NAME_KEY;
 import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.impl.DefaultClaims;
+import java.util.HashMap;
+import java.util.Set;
+
 public class PublicFormAccessToken implements TokenClaims {
 
-    private String username;
-    private Set<String> roles;
+    private final String username;
+    private final Set<String> roles;
 
     public PublicFormAccessToken(String username, Set<String> roles) {
         this.username = username;

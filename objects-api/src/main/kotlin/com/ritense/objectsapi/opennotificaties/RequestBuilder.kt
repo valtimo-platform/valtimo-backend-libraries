@@ -16,7 +16,6 @@
 
 package com.ritense.objectsapi.opennotificaties
 
-import com.ritense.objectsapi.domain.ResultWrapper
 import com.ritense.valtimo.contract.json.MapperSingleton
 import mu.KotlinLogging
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -136,20 +135,6 @@ class RequestBuilder {
                 logger.error { ex.message }
                 throw ex
             }
-        }
-
-        private fun <T> getType(responseClass: Class<out T>): ParameterizedTypeReference<T> {
-            val type: ParameterizedTypeReference<T> = ParameterizedTypeReference.forType(
-                ResolvableType.forClass(responseClass).type
-            )
-            return type
-        }
-
-        private fun <T> getTypeWrapped(responseClass: Class<out T>): ParameterizedTypeReference<ResultWrapper<T>> {
-            val type: ParameterizedTypeReference<ResultWrapper<T>> = ParameterizedTypeReference.forType(
-                ResolvableType.forClassWithGenerics(ResultWrapper::class.java, responseClass).type
-            )
-            return type
         }
 
         private fun <T> getTypeCollection(responseClass: Class<out T>): ParameterizedTypeReference<Collection<T>> {

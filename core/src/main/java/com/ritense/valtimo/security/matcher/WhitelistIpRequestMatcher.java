@@ -42,13 +42,13 @@ public class WhitelistIpRequestMatcher implements RequestMatcher {
             List<RequestMatcher> ipAddressMatchers = hosts.stream()
                 .filter(host -> host != null && !host.isBlank())
                 .flatMap(host -> {
-                    if(host.contains("/")) {
+                    if (host.contains("/")) {
                         return Stream.of(host);
                     } else {
                         try {
                             return Arrays.stream(InetAddress.getAllByName(host)).map(InetAddress::getHostAddress);
                         } catch (Exception e) {
-                            LOGGER.warn("Could not resolve whitelisted host " + host);
+                            LOGGER.warn("Could not resolve whitelisted host {}", host);
                         }
                         return Stream.of();
                     }
@@ -56,7 +56,7 @@ public class WhitelistIpRequestMatcher implements RequestMatcher {
                 .map(IpAddressMatcher::new)
                 .collect(Collectors.toList());
 
-            if(ipAddressMatchers.isEmpty()) {
+            if (ipAddressMatchers.isEmpty()) {
                 requestMatcher = denyMatcher();
             } else {
                 requestMatcher = new OrRequestMatcher(ipAddressMatchers);

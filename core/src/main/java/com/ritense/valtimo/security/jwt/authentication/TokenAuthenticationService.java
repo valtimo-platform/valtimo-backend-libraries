@@ -57,7 +57,7 @@ public class TokenAuthenticationService {
             jwtSignedParser().parseClaimsJws(jwt);
             return true;
         } catch (SecurityException e) {
-            logger.warn("Invalid JWT signature: " + e.getMessage());
+            logger.warn("Invalid JWT signature: {}", e.getMessage());
             return false;
         } catch (IllegalArgumentException e) {
             logger.warn("Invalid token.", e);

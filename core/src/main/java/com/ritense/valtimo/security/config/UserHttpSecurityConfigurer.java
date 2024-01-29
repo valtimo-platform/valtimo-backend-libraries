@@ -31,7 +31,7 @@ public class UserHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeHttpRequests((requests) ->
+            http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/users")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(POST, "/api/v1/users")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(PUT, "/api/v1/users")).hasAuthority(ADMIN)

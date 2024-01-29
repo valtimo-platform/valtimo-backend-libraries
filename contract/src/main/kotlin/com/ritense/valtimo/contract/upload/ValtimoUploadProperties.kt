@@ -16,7 +16,6 @@
 package com.ritense.valtimo.contract.upload
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.ConstructorBinding
 
 @ConfigurationProperties(prefix = "valtimo.upload")
 data class ValtimoUploadProperties (

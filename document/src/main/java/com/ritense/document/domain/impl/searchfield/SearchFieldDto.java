@@ -27,13 +27,15 @@ public class SearchFieldDto {
     private String dropdownDataProvider;
     private String title;
 
-    public SearchFieldDto(String key,
-                          String path,
-                          SearchFieldDataType dataType,
-                          SearchFieldFieldType fieldType,
-                          SearchFieldMatchType matchType,
-                          String dropdownDataProvider,
-                          String title) {
+    public SearchFieldDto(
+        String key,
+        String path,
+        SearchFieldDataType dataType,
+        SearchFieldFieldType fieldType,
+        SearchFieldMatchType matchType,
+        String dropdownDataProvider,
+        String title
+    ) {
         this.key = key;
         this.path = path;
         this.dataType = dataType;
@@ -43,7 +45,8 @@ public class SearchFieldDto {
         this.title = title;
     }
 
-    public SearchFieldDto() {}
+    public SearchFieldDto() {
+    }
 
     public String getKey() {
         return key;

@@ -18,7 +18,6 @@ package com.ritense.audit.repository.impl;
 
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.repository.AuditRecordRepository;
-import com.ritense.valtimo.contract.audit.AuditEvent;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;

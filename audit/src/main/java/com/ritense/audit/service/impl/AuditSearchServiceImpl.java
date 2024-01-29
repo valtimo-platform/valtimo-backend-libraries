@@ -62,8 +62,7 @@ public class AuditSearchServiceImpl implements AuditSearchService {
 
         final List<Predicate> predicateList = criteriaList
             .stream()
-            .map((searchCriteria) ->
-                cb.and(
+            .map(searchCriteria -> cb.and(
                     isNotNull(cb, root, searchCriteria.getPath(), searchCriteria.getValue()),
                     isNotNull(cb, root, "$.className", searchCriteria.getAuditEvent().getName())
                 )

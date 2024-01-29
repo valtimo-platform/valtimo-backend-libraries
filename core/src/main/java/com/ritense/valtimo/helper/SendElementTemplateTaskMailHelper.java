@@ -61,7 +61,7 @@ public class SendElementTemplateTaskMailHelper {
 
     public static Collection<String> getAttachmentsKeyValue(Map<String, Object> camundaProperties, Map<String, Object> processVariables) {
         String keyValue = getKeyValue(ATTACHMENTS_KEY, camundaProperties, processVariables);
-        return keyValue == null || keyValue.length() == 0
+        return keyValue == null || keyValue.isEmpty()
             ? Collections.singletonList(keyValue)
             : Arrays.asList(keyValue.split("\\s*,\\s*"));
     }

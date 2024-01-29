@@ -170,10 +170,10 @@ public class SearchRequestMapper {
     private static LocalDate findSingleDateSearchFieldLocalDate(SearchField searchField, List<SearchRequestValue> searchRequestValues) {
         Optional<SearchRequestValue> firstEntry = searchRequestValues.stream().findFirst();
 
-        if (firstEntry.isPresent() &&
-            firstEntry.get().getComparableValue() instanceof LocalDate &&
-            searchField.getDataType() == SearchFieldDataType.DATE &&
-            searchField.getFieldType() == SearchFieldFieldType.SINGLE) {
+        if (firstEntry.isPresent()
+            && firstEntry.get().getComparableValue() instanceof LocalDate
+            && searchField.getDataType() == SearchFieldDataType.DATE
+            && searchField.getFieldType() == SearchFieldFieldType.SINGLE) {
 
             return firstEntry.get().getComparableValue();
         }
@@ -182,10 +182,10 @@ public class SearchRequestMapper {
     }
 
     private static Boolean isRangeDateSearchField(SearchField searchField, SearchRequestValue rangeFrom, SearchRequestValue rangeTo) {
-        return rangeFrom.getComparableValue() instanceof LocalDate &&
-            rangeTo.getComparableValue() instanceof LocalDate &&
-            searchField.getDataType() == SearchFieldDataType.DATE &&
-            searchField.getFieldType() == SearchFieldFieldType.RANGE;
+        return rangeFrom.getComparableValue() instanceof LocalDate
+            && rangeTo.getComparableValue() instanceof LocalDate
+            && searchField.getDataType() == SearchFieldDataType.DATE
+            && searchField.getFieldType() == SearchFieldFieldType.RANGE;
     }
 
     private static AdvancedSearchRequest.OtherFilter singleDateToDateTimeRangeFilter(SearchField searchField, LocalDate localDateValue, ZoneOffset zoneOffset) {

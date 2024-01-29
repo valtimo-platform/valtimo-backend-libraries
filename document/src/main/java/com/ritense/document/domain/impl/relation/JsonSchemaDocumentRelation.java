@@ -66,12 +66,11 @@ public class JsonSchemaDocumentRelation implements DocumentRelation {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof JsonSchemaDocumentRelation)) {
+        if (!(o instanceof JsonSchemaDocumentRelation that)) {
             return false;
         }
-        JsonSchemaDocumentRelation that = (JsonSchemaDocumentRelation) o;
-        return id.equals(that.id) &&
-            relationType == that.relationType;
+        return id.equals(that.id)
+            && relationType == that.relationType;
     }
 
     @Override

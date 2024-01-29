@@ -81,15 +81,31 @@ public class SearchRequest {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         SearchRequest that = (SearchRequest) o;
-        return Objects.equals(getDocumentDefinitionName(), that.getDocumentDefinitionName()) && Objects.equals(getCreatedBy(), that.getCreatedBy()) && Objects.equals(getGlobalSearchFilter(), that.getGlobalSearchFilter()) && Objects.equals(getSequence(), that.getSequence()) && Objects.equals(getAssigneeId(), that.getAssigneeId()) && Objects.equals(getOtherFilters(), that.getOtherFilters());
+        return Objects.equals(getDocumentDefinitionName(), that.getDocumentDefinitionName())
+            && Objects.equals(getCreatedBy(), that.getCreatedBy())
+            && Objects.equals(getGlobalSearchFilter(), that.getGlobalSearchFilter())
+            && Objects.equals(getSequence(), that.getSequence())
+            && Objects.equals(getAssigneeId(), that.getAssigneeId())
+            && Objects.equals(getOtherFilters(), that.getOtherFilters());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getDocumentDefinitionName(), getCreatedBy(), getGlobalSearchFilter(), getSequence(), getAssigneeId(), getOtherFilters());
+        return Objects.hash(
+            getDocumentDefinitionName(),
+            getCreatedBy(),
+            getGlobalSearchFilter(),
+            getSequence(),
+            getAssigneeId(),
+            getOtherFilters()
+        );
     }
 
     @Override

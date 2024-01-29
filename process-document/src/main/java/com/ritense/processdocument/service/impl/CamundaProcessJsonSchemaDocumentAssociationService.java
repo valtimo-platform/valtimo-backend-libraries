@@ -368,7 +368,7 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     public void deleteProcessDocumentDefinition(ProcessDocumentDefinitionRequest request) {
         denyAuthorization(CamundaProcessJsonSchemaDocumentDefinition.class);
 
-        if(logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug(
                 "Remove process document definition for document definition: {}",
                 request.documentDefinitionName()

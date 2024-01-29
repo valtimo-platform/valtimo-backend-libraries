@@ -30,7 +30,7 @@ public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeHttpRequests((requests) ->
+            http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/process/definition")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/process/definition/{processDefinitionId}/count")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionId}/xml")).authenticated()
@@ -43,8 +43,10 @@ public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
                 .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionKey}/heatmap/count")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{processDefinitionKey}/heatmap/duration")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/process/definition/{processDefinitionKey}/{businessKey}/start")).authenticated()
-                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/flownodes")).authenticated()
-                .requestMatchers(antMatcher(POST, "/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/migrate")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/flownodes"))
+                    .authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/process/definition/{sourceProcessDefinitionId}/{targetProcessDefinitionId}/migrate"))
+                    .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/history")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/log")).authenticated()

@@ -28,7 +28,7 @@ public class EmailNotificationSettingsSecurityConfigurer implements HttpSecurity
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeHttpRequests((requests) ->
+            http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/email-notification-settings")).authenticated()
                 .requestMatchers(antMatcher(PUT, "/api/v1/email-notification-settings")).authenticated()
             );
