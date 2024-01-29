@@ -30,6 +30,7 @@ dependencies {
     api(project(":form-flow"))
     api(project(":form-flow-valtimo"))
     api(project(":importer"))
+    api(project(":inbox"))
     api(project(":keycloak-iam"))
     api(project(":notes"))
     api(project(":plugin"))

@@ -27,13 +27,12 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.amqp.rabbit.core.RabbitAdmin
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.env.Environment
 import org.springframework.test.context.ActiveProfiles
 
 class RabbitMessagePublisherIntTest {
     @Nested
     inner class Default @Autowired constructor(
-        val springCloudMessagePublisher: RabbitMessagePublisher,
+        val messagePublisher: RabbitMessagePublisher,
         val rabbitTemplate: RabbitTemplate,
         val configurationProperties: RabbitOutboxConfigurationProperties,
         val rabbitAdmin: RabbitAdmin
@@ -43,7 +42,7 @@ class RabbitMessagePublisherIntTest {
             rabbitAdmin.purgeQueue(configurationProperties.routingKey)
 
             val uuid = UUID.randomUUID().toString()
-            springCloudMessagePublisher.publish(
+            messagePublisher.publish(
                 OutboxMessage(message = uuid)
             )
 
@@ -55,13 +54,13 @@ class RabbitMessagePublisherIntTest {
     @Nested
     @ActiveProfiles("invalidrouting")
     inner class InvalidRouting @Autowired constructor(
-        val springCloudMessagePublisher: RabbitMessagePublisher
+        val messagePublisher: RabbitMessagePublisher
     ) : BaseIntegrationTest() {
         @Test
         fun `should not send message to rabbitmq`() {
             val uuid = UUID.randomUUID().toString()
             val ex = assertThrows<MessagePublishingFailed> {
-                springCloudMessagePublisher.publish(
+                messagePublisher.publish(
                     OutboxMessage(message = uuid)
                 )
             }

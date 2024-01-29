@@ -19,16 +19,15 @@ package com.ritense.outbox.rabbitmq
 import com.ritense.outbox.OutboxMessage
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.MessagePublishingFailed
+import mu.KLogger
+import mu.KotlinLogging
+import org.springframework.amqp.core.Message
+import org.springframework.amqp.rabbit.connection.CorrelationData
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import java.time.Duration
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import mu.KLogger
-import mu.KotlinLogging
-import org.springframework.amqp.core.Message
-import org.springframework.amqp.core.MessageBuilder
-import org.springframework.amqp.rabbit.connection.CorrelationData
-import org.springframework.amqp.rabbit.core.RabbitTemplate
 
 
 class RabbitMessagePublisher(
@@ -47,8 +46,9 @@ class RabbitMessagePublisher(
         val correlationData = CorrelationData(UUID.randomUUID().toString())
         logger.trace { "Sending message to RabbitMQ: routingKey=${routingKey}, msgId=${message.id}, correlationId= ${correlationData.id}" }
 
-        val msg = MessageBuilder.withBody(message.message.toByteArray()).build()
-        rabbitTemplate.convertAndSend(routingKey, msg, correlationData)
+        //TODO: In favor of the inbox, changed the message to be created by a converter instead sending a bytearray directly.
+//        val msg = MessageBuilder.withBody(message.message.toByteArray()).build()
+        rabbitTemplate.convertAndSend(routingKey, null, message.message, correlationData)
 
         try {
             val result = correlationData.future.get(deliveryTimeout.toMillis(), TimeUnit.MILLISECONDS)

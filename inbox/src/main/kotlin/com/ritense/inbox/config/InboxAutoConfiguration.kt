@@ -21,13 +21,16 @@ import com.ritense.inbox.InboxEventHandler
 import com.ritense.inbox.InboxHandlingService
 import com.ritense.inbox.ValtimoEventHandler
 import com.ritense.inbox.ValtimoInboxEventHandler
+import com.ritense.inbox.consumer.InboxCloudEventConsumer
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 
 @AutoConfiguration
 class InboxAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(InboxHandlingService::class)
     fun inboxHandlingService(
         eventHandlers: List<InboxEventHandler>
     ): InboxHandlingService {
@@ -40,5 +43,18 @@ class InboxAutoConfiguration {
         objectMapper: ObjectMapper
     ): InboxEventHandler {
         return ValtimoInboxEventHandler(eventHandlers, objectMapper)
+    }
+
+    @Bean
+    fun inboxCloudEventConsumer(inboxHandlingService: InboxHandlingService): InboxCloudEventConsumer {
+        return InboxCloudEventConsumer(inboxHandlingService)
+    }
+
+    /**
+     * This bean exists because Spring Stream does not seem to be able to configure Kotlin classes of (Java) type Consumer.
+     */
+    @Bean
+    fun kotlinInboxCloudEventConsumer(inboxCloudEventConsumer: InboxCloudEventConsumer): (String) -> Unit {
+        return { message -> inboxCloudEventConsumer.accept(message) }
     }
 }

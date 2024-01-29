@@ -1,0 +1,22 @@
+
+spring:
+    cloud:
+        stream:
+            bindings:
+                inboxCloudEventConsumer-in-0:
+                    destination: valtimo-inbox
+                    binder: rabbit
+                messageSupplier-out-0:
+                    destination: valtimo-events
+                    binder: rabbit
+            binders:
+                rabbit:
+                    type: rabbit
+                    environment:
+                        spring:
+                            rabbitmq:
+                                host: localhost
+                                port: 55673
+                                username: guest
+                                password: guest
+                                virtual-host: /
