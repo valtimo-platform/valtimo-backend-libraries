@@ -21,7 +21,6 @@ import com.ritense.valtimo.service.ChoiceFieldService;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
