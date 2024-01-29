@@ -26,8 +26,8 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
-import org.camunda.bpm.engine.RuntimeService
 import java.util.UUID
+import org.camunda.bpm.engine.RuntimeService
 
 class FormFlowProcessLinkActivityHandler(
     private val formFlowService: FormFlowService,

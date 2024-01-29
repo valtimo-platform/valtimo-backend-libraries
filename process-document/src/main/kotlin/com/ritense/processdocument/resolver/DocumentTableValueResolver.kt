@@ -18,13 +18,12 @@ package com.ritense.processdocument.resolver
 
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
-import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.valueresolver.exception.ValueResolverValidationException
 import org.camunda.bpm.engine.delegate.VariableScope
-import java.lang.IllegalArgumentException
 import java.util.function.Function
 
 /**

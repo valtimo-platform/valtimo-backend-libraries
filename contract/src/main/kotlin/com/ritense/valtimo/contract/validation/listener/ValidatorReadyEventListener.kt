@@ -17,9 +17,9 @@
 package com.ritense.valtimo.contract.validation.listener
 
 import com.ritense.valtimo.contract.validation.Validatable
+import jakarta.validation.Validation
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
-import jakarta.validation.Validation
 
 class ValidatorReadyEventListener {
 

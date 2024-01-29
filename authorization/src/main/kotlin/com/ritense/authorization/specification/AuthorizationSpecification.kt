@@ -17,21 +17,21 @@
 package com.ritense.authorization.specification
 
 import com.ritense.authorization.Action
-import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.AuthorizationServiceHolder
+import com.ritense.authorization.permission.ConditionContainer
+import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.condition.ContainerPermissionCondition
+import com.ritense.authorization.permission.condition.PermissionCondition
+import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.request.RelatedEntityAuthorizationRequest
 import com.ritense.authorization.role.Role
-import com.ritense.authorization.permission.ConditionContainer
-import com.ritense.authorization.permission.condition.ContainerPermissionCondition
-import com.ritense.authorization.permission.Permission
-import com.ritense.authorization.permission.condition.PermissionCondition
-import org.springframework.data.jpa.domain.Specification
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
+import org.springframework.data.jpa.domain.Specification
 
 abstract class AuthorizationSpecification<T : Any>(
     protected val authRequest: AuthorizationRequest<T>,

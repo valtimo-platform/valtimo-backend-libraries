@@ -16,10 +16,10 @@
 
 package com.ritense.valtimo.web.util;
 
+import java.util.Optional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import java.util.Optional;
 
 /**
  * Utility class for ResponseEntity creation.

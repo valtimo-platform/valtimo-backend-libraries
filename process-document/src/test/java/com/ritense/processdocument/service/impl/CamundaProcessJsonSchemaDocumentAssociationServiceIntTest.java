@@ -16,6 +16,12 @@
 
 package com.ritense.processdocument.service.impl;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,9 +43,9 @@ import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinition
 import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskResult;
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import jakarta.persistence.EntityManager;
 import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
@@ -48,11 +54,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
 
 @Tag("integration")
 @Transactional
@@ -82,33 +83,33 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
     public void setup() {
         runWithoutAuthorization(() -> {
             String oldDocumentDefinitionVersion = """
-                {
-                    "$id": "some-test.schema",
-                    "$schema": "http://json-schema.org/draft-07/schema#",
-                    "title": "some-test",
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
+                    {
+                        "$id": "some-test.schema",
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "title": "some-test",
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            }
                         }
                     }
-                }
-            """;
+                """;
             oldDocumentDefinition = documentDefinitionService.deploy(oldDocumentDefinitionVersion).documentDefinition();
 
             String newDocumentDefinitionVersion = """
-                {
-                    "$id": "some-test.schema",
-                    "$schema": "http://json-schema.org/draft-07/schema#",
-                    "title": "some-test",
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "integer"
+                    {
+                        "$id": "some-test.schema",
+                        "$schema": "http://json-schema.org/draft-07/schema#",
+                        "title": "some-test",
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "integer"
+                            }
                         }
                     }
-                }
-            """;
+                """;
             newDocumentDefinition = documentDefinitionService.deploy(newDocumentDefinitionVersion).documentDefinition();
 
             return null;
@@ -119,7 +120,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
     public void findProcessDocumentDefinition() {
         final var processDocumentDefinitions = AuthorizationContext
             .runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
-            .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME));
+                .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME));
 
         assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
@@ -424,7 +425,7 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
             assertThat(modifyDocumentAndCompleteTaskResult.errors()).isEmpty();
             final List<CamundaProcessJsonSchemaDocumentInstance> processDocumentInstances =
                 runWithoutAuthorization(() -> camundaProcessJsonSchemaDocumentAssociationService
-                .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id()));
+                    .findProcessDocumentInstances(newDocumentAndStartProcessResult.resultingDocument().orElseThrow().id()));
             assertThat(processDocumentInstances).hasSize(1);
             return null;
         });

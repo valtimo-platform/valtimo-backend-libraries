@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.contract.repository
 
-import java.net.URI
 import jakarta.persistence.AttributeConverter
+import java.net.URI
 
 class UriAttributeConverter : AttributeConverter<URI, String> {
 

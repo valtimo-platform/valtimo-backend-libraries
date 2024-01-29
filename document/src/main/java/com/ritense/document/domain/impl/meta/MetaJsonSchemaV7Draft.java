@@ -17,11 +17,11 @@
 package com.ritense.document.domain.impl.meta;
 
 import com.ritense.document.exception.SchemaValidationException;
+import java.io.InputStream;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import java.io.InputStream;
 
 public class MetaJsonSchemaV7Draft {
 

@@ -16,37 +16,6 @@
 
 package com.ritense.document.web.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.document.BaseTest;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
-import com.ritense.document.service.DocumentStatisticService;
-import com.ritense.document.service.UndeployDocumentDefinitionService;
-import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
-import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionService;
-import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
-import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
-import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
-import com.ritense.document.service.result.UndeployDocumentDefinitionResultFailed;
-import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
-import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
-import com.ritense.valtimo.contract.json.MapperSingleton;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
-
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,6 +32,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.document.BaseTest;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
+import com.ritense.document.service.DocumentStatisticService;
+import com.ritense.document.service.UndeployDocumentDefinitionService;
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
+import com.ritense.document.service.impl.UndeployJsonSchemaDocumentDefinitionService;
+import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
+import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
+import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
+import com.ritense.document.service.result.UndeployDocumentDefinitionResultFailed;
+import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
+import com.ritense.document.web.rest.impl.JsonSchemaDocumentDefinitionResource;
+import com.ritense.valtimo.contract.json.MapperSingleton;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
 

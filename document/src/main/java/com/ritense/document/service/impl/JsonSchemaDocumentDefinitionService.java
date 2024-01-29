@@ -16,6 +16,13 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.CREATE;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.DELETE;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.MODIFY;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.VIEW_LIST;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.internal.path.ArrayPathToken;
 import com.jayway.jsonpath.internal.path.CompiledPath;
@@ -43,6 +50,13 @@ import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultFailed;
 import com.ritense.document.service.result.DeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.service.result.error.DocumentDefinitionError;
+import jakarta.validation.ValidationException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -53,20 +67,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
-import jakarta.validation.ValidationException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
-
-import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.CREATE;
-import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.DELETE;
-import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.MODIFY;
-import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.VIEW;
-import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.VIEW_LIST;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Transactional
 public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionService {

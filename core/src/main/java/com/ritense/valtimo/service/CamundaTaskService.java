@@ -16,6 +16,33 @@
 
 package com.ritense.valtimo.service;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGN;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGNABLE;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.CLAIM;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.COMPLETE;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.VIEW;
+import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.VIEW_LIST;
+import static com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.byTaskId;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.KEY;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessInstanceSpecificationHelper.BUSINESS_KEY;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.CREATE_TIME;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.DUE_DATE;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.EXECUTION;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.ID;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.PROCESS_DEFINITION;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.PROCESS_INSTANCE;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.all;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssignee;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byId;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceId;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byUnassigned;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsLast;
+import static java.util.stream.Collectors.toSet;
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
@@ -81,33 +108,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGN;
-import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGNABLE;
-import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.CLAIM;
-import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.COMPLETE;
-import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.VIEW;
-import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.VIEW_LIST;
-import static com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.byTaskId;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.KEY;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessInstanceSpecificationHelper.BUSINESS_KEY;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.CREATE_TIME;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.DUE_DATE;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.EXECUTION;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.ID;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.PROCESS_DEFINITION;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.PROCESS_INSTANCE;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.all;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssignee;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byId;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceId;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byUnassigned;
-import static java.util.Comparator.comparing;
-import static java.util.Comparator.naturalOrder;
-import static java.util.Comparator.nullsLast;
-import static java.util.stream.Collectors.toSet;
-import static org.springframework.data.domain.Sort.Direction.DESC;
 
 public class CamundaTaskService {
 

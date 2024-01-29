@@ -22,10 +22,10 @@ import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
-import java.util.List;
 
 public class TokenAuthenticationService {
 

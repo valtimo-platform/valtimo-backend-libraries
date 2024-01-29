@@ -20,15 +20,15 @@ import com.ritense.klant.client.OpenKlantClient
 import com.ritense.klant.client.OpenKlantClientProperties
 import com.ritense.klant.client.OpenKlantTokenGenerator
 import com.ritense.klant.service.BedrijfService
-import com.ritense.klant.service.KlantService
 import com.ritense.klant.service.BurgerService
+import com.ritense.klant.service.KlantService
 import com.ritense.openzaak.service.ZaakRolService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
 @AutoConfiguration
 @ConditionalOnProperty("valtimo.openklant.url")

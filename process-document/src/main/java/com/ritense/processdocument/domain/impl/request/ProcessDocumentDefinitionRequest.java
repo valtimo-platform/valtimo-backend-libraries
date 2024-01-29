@@ -19,9 +19,8 @@ package com.ritense.processdocument.domain.impl.request;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.processdocument.domain.request.Request;
-
-import java.util.Optional;
 import jakarta.validation.constraints.NotNull;
+import java.util.Optional;
 
 public class ProcessDocumentDefinitionRequest implements Request {
 

@@ -24,10 +24,10 @@ import com.ritense.objectsapi.repository.AbonnementLinkRepository
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.service.OpenZaakService
-import mu.KotlinLogging
-import org.springframework.context.ApplicationEventPublisher
 import java.net.URI
 import java.util.UUID
+import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 
 class OpenNotificatieService(
     private val connectorService: ConnectorService,

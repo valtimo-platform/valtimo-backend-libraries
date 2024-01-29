@@ -16,6 +16,9 @@
 
 package com.ritense.form;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import org.springframework.boot.SpringApplication;
@@ -23,8 +26,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 @SpringBootApplication
 public class FormTestConfiguration {

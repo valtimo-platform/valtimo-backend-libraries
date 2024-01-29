@@ -19,11 +19,11 @@ package com.ritense.audit.service;
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.domain.AuditRecordId;
 import com.ritense.valtimo.contract.audit.AuditEvent;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.time.LocalDateTime;
-import java.util.List;
 
 public interface AuditService {
     AuditRecord findById(AuditRecordId auditRecordId);

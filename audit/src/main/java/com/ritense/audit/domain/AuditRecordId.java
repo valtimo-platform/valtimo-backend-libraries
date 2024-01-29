@@ -16,6 +16,8 @@
 
 package com.ritense.audit.domain;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import com.ritense.valtimo.contract.domain.AbstractId;
@@ -23,7 +25,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
 import java.util.UUID;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 public final class AuditRecordId extends AbstractId<AuditRecordId> {

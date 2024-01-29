@@ -16,14 +16,13 @@
 
 package com.ritense.document.domain.impl.searchfield;
 
-import org.springframework.data.domain.Persistable;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(name = "search_field")

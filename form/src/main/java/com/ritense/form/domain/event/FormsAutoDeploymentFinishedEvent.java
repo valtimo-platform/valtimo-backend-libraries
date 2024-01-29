@@ -18,7 +18,6 @@ package com.ritense.form.domain.event;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.form.domain.FormDefinition;
-
 import java.util.List;
 
 public class FormsAutoDeploymentFinishedEvent {

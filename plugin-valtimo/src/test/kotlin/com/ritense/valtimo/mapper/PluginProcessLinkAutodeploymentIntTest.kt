@@ -23,11 +23,11 @@ import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUG
 import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.BaseIntegrationTest
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 
 internal class PluginProcessLinkAutodeploymentIntTest : BaseIntegrationTest() {
 

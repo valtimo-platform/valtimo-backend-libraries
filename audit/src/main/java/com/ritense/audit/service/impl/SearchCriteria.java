@@ -16,9 +16,10 @@
 
 package com.ritense.audit.service.impl;
 
-import com.ritense.valtimo.contract.audit.AuditEvent;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
+import com.ritense.valtimo.contract.audit.AuditEvent;
 
 public class SearchCriteria {
 

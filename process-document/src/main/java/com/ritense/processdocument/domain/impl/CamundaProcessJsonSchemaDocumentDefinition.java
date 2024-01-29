@@ -16,17 +16,18 @@
 
 package com.ritense.processdocument.domain.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.processdocument.domain.ProcessDocumentDefinition;
-import org.hibernate.annotations.Formula;
-import org.springframework.data.domain.Persistable;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import java.util.Objects;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import org.hibernate.annotations.Formula;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(name = "camunda_process_json_schema_document_definition")

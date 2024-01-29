@@ -16,9 +16,6 @@
 
 package com.ritense.valtimo.web.rest;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.security.test.context.support.WithMockUser;
-import java.util.UUID;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.http.HttpMethod.DELETE;
@@ -29,6 +26,10 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
+
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
+import org.springframework.security.test.context.support.WithMockUser;
 
 class UserSecurityResourceTest extends SecuritySpecificEndpointIntegrationTest {
 

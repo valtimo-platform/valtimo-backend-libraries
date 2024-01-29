@@ -27,6 +27,7 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
+import java.util.UUID
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -35,7 +36,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
-import java.util.UUID
 
 class BaseSmartDocumentsIntegrationTest : BaseIntegrationTest() {
 

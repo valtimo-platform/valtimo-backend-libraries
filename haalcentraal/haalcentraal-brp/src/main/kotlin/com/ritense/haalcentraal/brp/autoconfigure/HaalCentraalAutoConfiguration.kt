@@ -22,9 +22,9 @@ import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpConnector
 import com.ritense.haalcentraal.brp.connector.HaalCentraalBrpProperties
 import com.ritense.haalcentraal.brp.web.rest.HaalCentraalBrpResource
 import org.springframework.beans.factory.config.BeanDefinition
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Scope
 import org.springframework.web.reactive.function.client.WebClient
 

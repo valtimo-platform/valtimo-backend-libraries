@@ -16,11 +16,12 @@
 
 package com.ritense.valtimo.contract.result;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 /**
  * Object representing the result of a function. The result can either be the expected output data (resultingValue)

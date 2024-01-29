@@ -50,8 +50,8 @@ class ObjectManagementDefinitionDeploymentService(
                 require(resource != null)
                 val objectManagement = objectMapper.readValue<ObjectManagement>(resource.inputStream)
                 if (
-                    objectManagementRepository.findByObjecttypeId(objectManagement.objecttypeId) == null &&
-                    objectManagementRepository.findByTitle(objectManagement.title) == null
+                    objectManagementRepository.findByObjecttypeId(objectManagement.objecttypeId) == null
+                    && objectManagementRepository.findByTitle(objectManagement.title) == null
                 ) {
                     objectManagementService.create(objectManagement)
                 } else {

@@ -18,7 +18,6 @@ package com.ritense.valtimo.importer
 
 import com.ritense.importer.ImportRequest
 import com.ritense.valtimo.service.CamundaProcessService
-import java.io.ByteArrayInputStream
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -27,6 +26,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.verify
+import java.io.ByteArrayInputStream
 
 @ExtendWith(MockitoExtension::class)
 class CamundaDecisionDefinitionImporterTest(

@@ -31,10 +31,10 @@ import com.ritense.valtimo.milestones.web.rest.MilestoneResource;
 import com.ritense.valtimo.milestones.web.rest.MilestoneSetResource;
 import org.camunda.bpm.engine.RepositoryService;
 import org.mapstruct.factory.Mappers;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @AutoConfiguration

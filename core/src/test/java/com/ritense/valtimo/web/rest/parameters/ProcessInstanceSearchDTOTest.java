@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.web.rest.parameters;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
@@ -23,15 +25,13 @@ import com.ritense.valtimo.web.rest.dto.processvariable.ProcessVariableDTOV2;
 import com.ritense.valtimo.web.rest.dto.processvariable.type.DateProcessVariableDTOV2;
 import com.ritense.valtimo.web.rest.dto.processvariable.type.LongProcessVariableDTOV2;
 import com.ritense.valtimo.web.rest.dto.processvariable.type.StringProcessVariableDTOV2;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class ProcessInstanceSearchDTOTest {
 

@@ -28,11 +28,11 @@ import com.ritense.form.processlink.FormProcessLinkActivityHandler
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
-import java.util.UUID
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
+import kotlin.test.assertEquals
 
 @Transactional
 internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {

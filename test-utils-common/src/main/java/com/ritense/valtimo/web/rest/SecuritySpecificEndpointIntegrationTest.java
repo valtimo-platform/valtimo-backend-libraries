@@ -16,6 +16,10 @@
 
 package com.ritense.valtimo.web.rest;
 
+import static com.ritense.valtimo.contract.utils.TestUtil.convertObjectToJsonBytes;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import org.junit.jupiter.api.Tag;
@@ -32,10 +36,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import static com.ritense.valtimo.contract.utils.TestUtil.convertObjectToJsonBytes;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest

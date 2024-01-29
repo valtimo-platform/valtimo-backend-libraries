@@ -19,14 +19,14 @@ package com.ritense.zakenapi.domain
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.valtimo.contract.repository.UriAttributeConverter
 import com.ritense.valtimo.contract.validation.Validatable
-import org.springframework.data.domain.Persistable
-import java.net.URI
-import java.util.UUID
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
+import org.springframework.data.domain.Persistable
+import java.net.URI
+import java.util.UUID
 
 @Entity
 @Table(name = "zaak_instance_link")

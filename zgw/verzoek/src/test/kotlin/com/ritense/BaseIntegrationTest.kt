@@ -16,7 +16,6 @@
 
 package com.ritense
 
-import com.ritense.authorization.AuthorizationService
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.authentication.UserManagementService

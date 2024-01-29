@@ -35,14 +35,14 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
+import jakarta.persistence.EntityNotFoundException
+import java.net.MalformedURLException
+import java.net.URI
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.springframework.context.event.EventListener
-import java.net.MalformedURLException
-import java.net.URI
-import jakarta.persistence.EntityNotFoundException
 
 class TaakObjectListener(
     private val openNotificatieService: OpenNotificatieService,

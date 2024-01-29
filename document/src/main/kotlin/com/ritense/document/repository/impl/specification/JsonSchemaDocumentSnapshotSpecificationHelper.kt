@@ -18,12 +18,12 @@ package com.ritense.document.repository.impl.specification
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshot
-import java.time.LocalDateTime
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
+import java.time.LocalDateTime
 
 class JsonSchemaDocumentSnapshotSpecificationHelper {
 

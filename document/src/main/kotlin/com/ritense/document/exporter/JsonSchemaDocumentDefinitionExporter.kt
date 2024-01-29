@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.exporter.ExportFile
+import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
-import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import com.ritense.exporter.request.FormDefinitionExportRequest
 import org.springframework.transaction.annotation.Transactional
@@ -45,7 +45,7 @@ class JsonSchemaDocumentDefinitionExporter(
             objectMapper.writer(ExportPrettyPrinter()).writeValue(it, documentDefinition.schema.asJson())
 
             ExportFile(
-                PATH.format(documentDefinition.id.name()),
+                PATH.format(documentDefinition.id!!.name()),
                 it.toByteArray()
             )
         }

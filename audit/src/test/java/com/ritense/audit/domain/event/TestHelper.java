@@ -16,10 +16,10 @@
 
 package com.ritense.audit.domain.event;
 
-import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import org.apache.commons.io.IOUtils;
 
 public class TestHelper {
 

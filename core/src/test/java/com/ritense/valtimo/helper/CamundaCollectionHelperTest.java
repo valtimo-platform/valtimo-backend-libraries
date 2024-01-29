@@ -16,17 +16,18 @@
 
 package com.ritense.valtimo.helper;
 
-import org.assertj.core.util.Lists;
-import org.camunda.bpm.engine.delegate.DelegateTask;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.assertj.core.util.Lists;
+import org.camunda.bpm.engine.delegate.DelegateTask;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class CamundaCollectionHelperTest {
 

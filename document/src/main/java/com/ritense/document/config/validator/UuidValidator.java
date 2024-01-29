@@ -16,9 +16,9 @@
 
 package com.ritense.document.config.validator;
 
-import org.everit.json.schema.FormatValidator;
 import java.util.Optional;
 import java.util.UUID;
+import org.everit.json.schema.FormatValidator;
 
 public class UuidValidator implements FormatValidator {
 

@@ -18,7 +18,6 @@ package com.ritense.valtimo.contract.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.valtimo.contract.json.MapperSingleton;
-
 import java.io.IOException;
 
 public class TestUtil {
