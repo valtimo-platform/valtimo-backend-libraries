@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.localization.domain.Localization
 import com.ritense.localization.exception.LocalizationNotFoundException
 import com.ritense.localization.repository.LocalizationRepository
+import com.ritense.localization.web.rest.dto.LocalizationUpdateRequestDto
 import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
@@ -54,6 +55,13 @@ class LocalizationService(
             )
 
         return localizationRepository.save(localization).content
+    }
+
+    fun updateLocalizations(localizations: List<LocalizationUpdateRequestDto>): List<Localization> {
+        val mappedLocalizations = localizations.map {
+            Localization(it.languageKey, it.content)
+        }
+        return localizationRepository.saveAll(mappedLocalizations)
     }
 
     companion object {

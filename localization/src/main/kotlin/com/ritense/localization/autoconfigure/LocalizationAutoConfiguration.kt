@@ -53,6 +53,7 @@ class LocalizationAutoConfiguration {
     fun localizationHttpSecurityConfigurer(): LocalizationHttpSecurityConfigurer {
         return LocalizationHttpSecurityConfigurer()
     }
+
     @Bean
     @ConditionalOnMissingBean(LocalizationService::class)
     fun localizationService(
@@ -62,31 +63,7 @@ class LocalizationAutoConfiguration {
             localizationRepository
         )
     }
-//
-//    @Bean
-//    @ConditionalOnMissingBean(DashboardDataService::class)
-//    fun dashboardDataService(
-//        applicationContext: ApplicationContext,
-//        widgetDataSourceResolver: WidgetDataSourceResolver,
-//        widgetConfigurationRepository: WidgetConfigurationRepository,
-//        objectMapper: ObjectMapper
-//    ): DashboardDataService {
-//        return DashboardDataService(
-//            applicationContext,
-//            widgetDataSourceResolver,
-//            widgetConfigurationRepository,
-//            objectMapper
-//        )
-//    }
-//
-//    @Bean
-//    @ConditionalOnMissingBean(AdminDashboardResource::class)
-//    fun adminDashboardResource(
-//        dashboardService: DashboardService
-//    ): AdminDashboardResource {
-//        return AdminDashboardResource(dashboardService)
-//    }
-//
+
     @Bean
     @ConditionalOnMissingBean(LocalizationResource::class)
     fun localizationResource(
@@ -102,12 +79,7 @@ class LocalizationAutoConfiguration {
     ): AdminLocalizationResource {
         return AdminLocalizationResource(localizationService)
     }
-//
-//    @Bean
-//    @ConditionalOnMissingBean(WidgetDataSourceResolver::class)
-//    fun widgetDataSourceResolver(context: ApplicationContext): WidgetDataSourceResolver {
-//        return WidgetDataSourceResolver(context)
-//    }
+
 //
 //    @Bean
 //    @ConditionalOnMissingBean(DashboardDeployer::class)

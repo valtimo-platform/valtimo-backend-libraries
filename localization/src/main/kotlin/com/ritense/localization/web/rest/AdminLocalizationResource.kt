@@ -18,6 +18,8 @@ package com.ritense.localization.web.rest
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.localization.service.LocalizationService
+import com.ritense.localization.web.rest.dto.LocalizationResponseDto
+import com.ritense.localization.web.rest.dto.LocalizationUpdateRequestDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -40,5 +42,13 @@ class AdminLocalizationResource(
     ): ResponseEntity<ObjectNode> {
         val updatedLocalization = localizationService.updateLocalization(languageKey, content)
         return ResponseEntity.ok(updatedLocalization)
+    }
+
+    @PutMapping("/v1/localization")
+    fun editLocalizations(
+        @RequestBody localizations: List<LocalizationUpdateRequestDto>
+    ): ResponseEntity<List<LocalizationResponseDto>> {
+        val updatedLocalizations = localizationService.updateLocalizations(localizations)
+        return ResponseEntity.ok(updatedLocalizations.map { LocalizationResponseDto.of(it) })
     }
 }
