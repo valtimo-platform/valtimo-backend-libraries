@@ -35,19 +35,22 @@ public class ChoiceFieldHttpSecurityConfigurer implements HttpSecurityConfigurer
                 requests.requestMatchers(
                     antMatcher(GET, "/api/v1/choice-fields"),
                     antMatcher(GET, "/api/v1/choice-fields/{id}"),
-                    antMatcher(GET, "/api/v1/choice-fields/name/{name}")
+                    antMatcher(GET, "/api/v1/choice-fields/name/{name}"),
+                    antMatcher(GET, "/api/v2/choice-fields")
                 ).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/choice-fields")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(PUT, "/api/v1/choice-fields")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(DELETE, "/api/v1/choice-fields/{id}")).hasAuthority(ADMIN)
                 //choice-field-values
                 .requestMatchers(antMatcher(GET, "/api/v1/choice-field-values")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v2/choice-field-values")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/choice-field-values")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(PUT, "/api/v1/choice-field-values")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(GET, "/api/v1/choice-field-values/{id}")).authenticated()
                 .requestMatchers(antMatcher(DELETE, "/api/v1/choice-field-values/{id}")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(GET, "/api/v1/choice-field-values/choice-field/{choicefield_name}/value/{value}")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/choice-field-values/{choice_field_name}/values")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v2/choice-field-values/{choice_field_name}/values")).authenticated()
             );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
