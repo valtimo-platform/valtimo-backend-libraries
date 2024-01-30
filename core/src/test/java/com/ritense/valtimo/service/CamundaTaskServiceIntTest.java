@@ -16,6 +16,16 @@
 
 package com.ritense.valtimo.service;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.permission.ConditionContainer;
 import com.ritense.authorization.permission.Permission;
@@ -29,15 +39,6 @@ import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.NamedUser;
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.task.Task;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.transaction.annotation.Transactional;
-
 import jakarta.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDateTime;
@@ -47,16 +48,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.task.Task;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 class CamundaTaskServiceIntTest extends BaseIntegrationTest {

@@ -23,7 +23,6 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService
 import mu.KotlinLogging
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Isolation.REPEATABLE_READ
 import org.springframework.transaction.annotation.Transactional
 
 @Service

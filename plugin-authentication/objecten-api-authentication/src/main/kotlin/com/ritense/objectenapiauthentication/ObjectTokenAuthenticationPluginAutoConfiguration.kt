@@ -17,8 +17,8 @@
 package com.ritense.objectenapiauthentication
 
 import com.ritense.plugin.service.PluginService
-import org.springframework.context.annotation.Bean
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.context.annotation.Bean
 
 @AutoConfiguration
 class ObjectTokenAuthenticationPluginAutoConfiguration {

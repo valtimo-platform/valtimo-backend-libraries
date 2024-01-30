@@ -23,10 +23,10 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.processdocument.service.ProcessDocumentAuditService;
 import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocumentAuditService;
 import com.ritense.processdocument.web.rest.ProcessDocumentAuditResource;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 
 @AutoConfiguration
 @ConditionalOnClass(AuditSearchService.class)

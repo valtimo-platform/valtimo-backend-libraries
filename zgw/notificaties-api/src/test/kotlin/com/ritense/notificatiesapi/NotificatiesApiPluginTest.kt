@@ -23,11 +23,6 @@ import com.ritense.notificatiesapi.domain.NotificatiesApiAbonnementLink
 import com.ritense.notificatiesapi.domain.NotificatiesApiConfigurationId
 import com.ritense.notificatiesapi.repository.NotificatiesApiAbonnementLinkRepository
 import com.ritense.plugin.domain.PluginConfigurationId
-import java.net.URI
-import java.util.Optional
-import java.util.UUID
-import kotlin.test.assertContains
-import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -39,6 +34,11 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
+import java.net.URI
+import java.util.Optional
+import java.util.UUID
+import kotlin.test.assertContains
+import kotlin.test.assertEquals
 
 internal class NotificatiesApiPluginTest {
     lateinit var notificatiesApiClient: NotificatiesApiClient

@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.config;
 
+import javax.sql.DataSource;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.camunda.bpm.spring.boot.starter.configuration.CamundaDatasourceConfiguration;
 import org.camunda.bpm.spring.boot.starter.configuration.impl.AbstractCamundaConfiguration;
@@ -23,7 +24,6 @@ import org.camunda.bpm.spring.boot.starter.property.DatabaseProperty;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
-import javax.sql.DataSource;
 
 @AutoConfiguration
 public class ValtimoDatabaseConfiguration extends AbstractCamundaConfiguration implements CamundaDatasourceConfiguration {

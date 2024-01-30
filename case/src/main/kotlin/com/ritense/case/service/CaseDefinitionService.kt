@@ -36,8 +36,8 @@ import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valueresolver.ValueResolverService
-import kotlin.jvm.optionals.getOrNull
 import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrNull
 
 @Transactional
 class CaseDefinitionService(

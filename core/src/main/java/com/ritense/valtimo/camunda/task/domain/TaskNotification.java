@@ -17,9 +17,9 @@
 package com.ritense.valtimo.camunda.task.domain;
 
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
 import java.util.Map;
 import java.util.Optional;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public abstract class TaskNotification {
 

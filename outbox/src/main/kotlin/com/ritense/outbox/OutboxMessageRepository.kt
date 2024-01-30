@@ -16,13 +16,13 @@
 
 package com.ritense.outbox
 
+import jakarta.persistence.LockModeType.PESSIMISTIC_WRITE
+import jakarta.persistence.QueryHint
 import org.hibernate.cfg.AvailableSettings.JPA_LOCK_TIMEOUT
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.QueryHints
 import java.util.UUID
-import jakarta.persistence.LockModeType.PESSIMISTIC_WRITE
-import jakarta.persistence.QueryHint
 
 interface OutboxMessageRepository : JpaRepository<OutboxMessage, UUID> {
 

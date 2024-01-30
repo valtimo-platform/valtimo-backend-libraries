@@ -19,9 +19,9 @@ package com.ritense.notificatiesapiauthentication
 import NotificatiesApiAuthenticationPluginFactory
 import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
 import com.ritense.plugin.service.PluginService
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
 @AutoConfiguration
 class NotificatiesApiAuthenticationPluginAutoConfiguration {

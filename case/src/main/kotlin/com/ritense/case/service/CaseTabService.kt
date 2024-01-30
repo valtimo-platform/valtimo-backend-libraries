@@ -30,9 +30,9 @@ import com.ritense.case.web.rest.dto.CaseTabDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.document.service.DocumentDefinitionService
-import kotlin.jvm.optionals.getOrNull
 import org.springframework.data.domain.Sort
 import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrNull
 
 @Transactional
 class CaseTabService(

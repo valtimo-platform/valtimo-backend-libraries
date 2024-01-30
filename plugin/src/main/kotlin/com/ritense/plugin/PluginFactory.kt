@@ -25,11 +25,11 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
+import org.apache.commons.lang3.reflect.FieldUtils
 import java.util.UUID
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaType
-import org.apache.commons.lang3.reflect.FieldUtils
 
 /**
  *  This factory is meant to be extended for a specific type of plugin. It can create a plugin of type T given a

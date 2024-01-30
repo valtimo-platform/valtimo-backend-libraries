@@ -16,15 +16,16 @@
 
 package com.ritense.valtimo.milestones.web.rest;
 
-import com.ritense.valtimo.web.rest.SecuritySpecificEndpointIntegrationTest;
-import org.junit.jupiter.api.Test;
-import org.springframework.security.test.context.support.WithMockUser;
-import java.util.UUID;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
+import com.ritense.valtimo.web.rest.SecuritySpecificEndpointIntegrationTest;
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
+import org.springframework.security.test.context.support.WithMockUser;
 
 class MilestoneInstanceSecurityResourceTest extends SecuritySpecificEndpointIntegrationTest {
 

@@ -17,12 +17,12 @@
 package com.ritense.valtimo.domain.user;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
-import org.hibernate.annotations.Type;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.Map;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "user_settings")

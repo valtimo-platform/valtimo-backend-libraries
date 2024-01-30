@@ -17,17 +17,17 @@
 package com.ritense.authorization
 
 import com.ritense.authorization.permission.ConditionContainer
-import com.ritense.authorization.permission.condition.FieldPermissionCondition
 import com.ritense.authorization.permission.Permission
-import com.ritense.authorization.permission.condition.PermissionConditionOperator
 import com.ritense.authorization.permission.PermissionRepository
+import com.ritense.authorization.permission.condition.FieldPermissionCondition
+import com.ritense.authorization.permission.condition.PermissionConditionOperator
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.role.Role
 import com.ritense.authorization.role.RoleRepository
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityActionProvider
-import java.util.UUID
 import jakarta.transaction.Transactional
+import java.util.UUID
 import org.hamcrest.CoreMatchers.hasItems
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat

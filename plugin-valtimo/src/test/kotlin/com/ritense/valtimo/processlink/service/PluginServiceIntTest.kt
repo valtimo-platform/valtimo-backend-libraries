@@ -19,12 +19,12 @@ package com.ritense.valtimo.processlink.service
 
 import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.TestPlugin
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @Transactional
 class PluginServiceIntTest : BaseIntegrationTest() {

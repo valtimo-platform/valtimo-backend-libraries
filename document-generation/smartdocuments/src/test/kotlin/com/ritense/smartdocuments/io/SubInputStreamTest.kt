@@ -16,9 +16,9 @@
 
 package com.ritense.smartdocuments.io
 
+import kotlin.text.Charsets.UTF_8
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import kotlin.text.Charsets.UTF_8
 
 class SubInputStreamTest {
 

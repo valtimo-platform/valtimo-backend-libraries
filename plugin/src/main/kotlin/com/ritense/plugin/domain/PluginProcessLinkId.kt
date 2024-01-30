@@ -17,8 +17,8 @@
 package com.ritense.plugin.domain
 
 import com.ritense.valtimo.contract.domain.AbstractId
-import java.util.UUID
 import jakarta.persistence.Embeddable
+import java.util.UUID
 
 @Deprecated("Marked for removal since 10.6.0")
 @Embeddable

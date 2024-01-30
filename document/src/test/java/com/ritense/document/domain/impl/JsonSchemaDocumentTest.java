@@ -16,12 +16,12 @@
 
 package com.ritense.document.domain.impl;
 
-import com.ritense.document.BaseTest;
-import com.ritense.document.domain.DocumentVersion;
-import org.junit.jupiter.api.Test;
-import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import com.ritense.document.BaseTest;
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
 
 class JsonSchemaDocumentTest extends BaseTest {
 

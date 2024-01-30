@@ -18,8 +18,8 @@ package com.ritense.valtimo.security;
 
 import com.ritense.valtimo.contract.Constants;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import org.springframework.data.domain.AuditorAware;
 import java.util.Optional;
+import org.springframework.data.domain.AuditorAware;
 
 public class SpringSecurityAuditorAware implements AuditorAware<String> {
 

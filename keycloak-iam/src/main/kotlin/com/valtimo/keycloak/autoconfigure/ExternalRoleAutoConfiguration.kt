@@ -17,13 +17,13 @@
 package com.valtimo.keycloak.autoconfigure
 
 import com.valtimo.keycloak.security.config.ExternalRoleSecurityConfigurer
+import com.valtimo.keycloak.service.ExternalRoleService
 import com.valtimo.keycloak.service.KeycloakRoleService
 import com.valtimo.keycloak.service.KeycloakService
-import com.valtimo.keycloak.service.ExternalRoleService
 import com.valtimo.keycloak.web.rest.ExternalRoleResource
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.annotation.Order
 
 @AutoConfiguration

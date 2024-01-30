@@ -19,7 +19,6 @@ package com.ritense.valtimo.web.rest.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.valtimo.web.rest.dto.processvariable.ProcessVariableDTOV2;
-
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

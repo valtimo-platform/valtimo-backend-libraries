@@ -16,14 +16,15 @@
 
 package com.ritense.valtimo.web.rest;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.security.test.context.support.WithMockUser;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.security.test.context.support.WithMockUser;
 
 class ProcessSecurityResourceTest extends SecuritySpecificEndpointIntegrationTest {
 

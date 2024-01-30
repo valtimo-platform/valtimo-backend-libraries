@@ -18,7 +18,6 @@ package com.ritense.document.exporter
 
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.BaseIntegrationTest
-import com.ritense.document.exporter.SearchFieldExporter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert

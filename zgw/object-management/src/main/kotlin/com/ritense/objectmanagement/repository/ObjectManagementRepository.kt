@@ -17,8 +17,8 @@
 package com.ritense.objectmanagement.repository
 
 import com.ritense.objectmanagement.domain.ObjectManagement
-import java.util.UUID
 import org.springframework.data.jpa.repository.JpaRepository
+import java.util.UUID
 
 interface ObjectManagementRepository: JpaRepository<ObjectManagement, UUID> {
 

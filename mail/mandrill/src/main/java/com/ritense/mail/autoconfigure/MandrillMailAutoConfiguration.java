@@ -25,11 +25,11 @@ import com.ritense.mail.service.MandrillHealthIndicator;
 import com.ritense.mail.service.MandrillMailDispatcher;
 import com.ritense.mail.service.WebhookService;
 import com.ritense.mail.web.rest.WebhookResource;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @AutoConfiguration

@@ -20,8 +20,6 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.web.rest.dto.CaseListColumnDto
-import java.io.FileNotFoundException
-import java.nio.charset.StandardCharsets
 import mu.KotlinLogging
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONArray
@@ -33,6 +31,8 @@ import org.springframework.core.io.Resource
 import org.springframework.core.io.support.ResourcePatternResolver
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StreamUtils
+import java.io.FileNotFoundException
+import java.nio.charset.StandardCharsets
 
 @Transactional
 class CaseListDeploymentService(

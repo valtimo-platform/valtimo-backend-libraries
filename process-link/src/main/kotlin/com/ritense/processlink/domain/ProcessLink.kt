@@ -16,7 +16,6 @@
 
 package com.ritense.processlink.domain
 
-import java.util.UUID
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorColumn
 import jakarta.persistence.DiscriminatorType.STRING
@@ -27,6 +26,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType.SINGLE_TABLE
 import jakarta.persistence.Table
+import java.util.UUID
 
 @Entity
 @Table(name = "process_link")

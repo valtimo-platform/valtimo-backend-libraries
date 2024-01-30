@@ -16,15 +16,14 @@
 
 package com.ritense.valtimo.contract.authentication;
 
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+
 import com.ritense.valtimo.contract.authentication.model.Profile;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
+import java.util.List;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-
-import java.util.List;
-
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 
 public class FakeUserRepository implements CurrentUserRepository {
 

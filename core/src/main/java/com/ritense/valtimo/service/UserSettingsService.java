@@ -19,7 +19,6 @@ package com.ritense.valtimo.service;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.domain.user.UserSettings;
 import com.ritense.valtimo.repository.UserSettingsRepository;
-
 import java.util.Map;
 import java.util.Optional;
 

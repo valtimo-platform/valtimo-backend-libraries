@@ -20,9 +20,9 @@ import com.ritense.dataprovider.domain.DataProvider
 import com.ritense.dataprovider.security.config.DataProviderHttpSecurityConfigurer
 import com.ritense.dataprovider.service.DataProviderService
 import com.ritense.dataprovider.web.rest.DataProviderResource
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.annotation.Order
 
 @AutoConfiguration

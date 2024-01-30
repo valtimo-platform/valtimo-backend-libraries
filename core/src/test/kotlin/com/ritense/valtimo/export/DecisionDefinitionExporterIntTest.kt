@@ -19,13 +19,13 @@ package com.ritense.valtimo.export
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.exporter.request.DecisionDefinitionExportRequest
 import com.ritense.valtimo.BaseIntegrationTest
-import java.io.ByteArrayInputStream
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.model.dmn.Dmn
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.io.ByteArrayInputStream
 
 @Transactional(readOnly = true)
 class DecisionDefinitionExporterIntTest @Autowired constructor(

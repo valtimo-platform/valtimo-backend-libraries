@@ -19,6 +19,7 @@ package com.ritense.authorization
 import com.ritense.authorization.testimpl.TestAuthorizationAutoConfiguration
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
+import javax.sql.DataSource
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -28,7 +29,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import javax.sql.DataSource
 
 @SpringBootApplication
 @Import(LiquibaseRunnerAutoConfiguration::class, TestAuthorizationAutoConfiguration::class, HibernateJsonMapperConfiguration::class)

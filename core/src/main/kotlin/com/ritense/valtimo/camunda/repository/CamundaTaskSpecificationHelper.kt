@@ -19,9 +19,9 @@ package com.ritense.valtimo.camunda.repository
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.KEY
 import com.ritense.valtimo.camunda.repository.CamundaProcessInstanceSpecificationHelper.Companion.BUSINESS_KEY
-import java.time.LocalDateTime
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
 import org.springframework.data.jpa.domain.Specification
+import java.time.LocalDateTime
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.ID as PROCESS_DEFINITION_ID
 import com.ritense.valtimo.camunda.repository.CamundaProcessInstanceSpecificationHelper.Companion.ID as PROCESS_INSTANCE_ID
 

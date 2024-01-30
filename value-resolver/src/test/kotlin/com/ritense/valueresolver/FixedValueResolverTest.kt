@@ -16,11 +16,11 @@
 
 package com.ritense.valueresolver
 
+import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.community.mockito.delegate.DelegateTaskFake
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.UUID
 
 internal class FixedValueResolverTest {
 

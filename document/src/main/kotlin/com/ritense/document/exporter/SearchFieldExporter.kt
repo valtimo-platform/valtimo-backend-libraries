@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.domain.search.SearchConfigurationDto
 import com.ritense.document.service.SearchFieldService
 import com.ritense.exporter.ExportFile
+import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
-import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import org.springframework.transaction.annotation.Transactional
 import java.io.ByteArrayOutputStream

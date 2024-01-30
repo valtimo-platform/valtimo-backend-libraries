@@ -18,11 +18,11 @@ package com.ritense.authorization.web
 
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.AuthorizationSupportedHelper
+import com.ritense.authorization.deployment.PermissionDto
 import com.ritense.authorization.permission.PermissionRepository
+import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.role.Role
 import com.ritense.authorization.role.RoleRepository
-import com.ritense.authorization.deployment.PermissionDto
-import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.web.request.DeleteRolesRequest
 import com.ritense.authorization.web.request.SaveRoleRequest
 import com.ritense.authorization.web.request.UpdateRolePermissionRequest

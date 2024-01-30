@@ -17,9 +17,9 @@
 package com.ritense.haalcentraal.brp.autoconfigure
 
 import com.ritense.haalcentraal.brp.security.config.HaalCentraalBrpSecurityConfigurer
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.annotation.Order
 
 @AutoConfiguration

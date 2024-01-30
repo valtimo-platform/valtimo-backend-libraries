@@ -16,11 +16,11 @@
 
 package com.ritense.valtimo.camunda.domain
 
-import java.util.Collections
 import org.camunda.bpm.engine.variable.VariableMap
 import org.camunda.bpm.engine.variable.Variables
 import org.camunda.bpm.engine.variable.context.VariableContext
 import org.camunda.bpm.engine.variable.value.TypedValue
+import java.util.Collections
 
 class CamundaVariableMap(
     private val typedMap: Map<String, TypedValue?>

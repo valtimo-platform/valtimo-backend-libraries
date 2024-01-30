@@ -16,11 +16,10 @@
 
 package com.ritense.document.exception;
 
-import com.ritense.document.service.result.error.DocumentOperationError;
-
-import java.util.List;
-
 import static java.util.stream.Collectors.joining;
+
+import com.ritense.document.service.result.error.DocumentOperationError;
+import java.util.List;
 
 public class ModifyDocumentException extends RuntimeException {
 

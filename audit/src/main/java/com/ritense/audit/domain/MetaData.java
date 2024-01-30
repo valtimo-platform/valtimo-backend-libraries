@@ -16,14 +16,15 @@
 
 package com.ritense.audit.domain;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
+
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.time.LocalDateTime;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 
 @Embeddable
 public class MetaData {

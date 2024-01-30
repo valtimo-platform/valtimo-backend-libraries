@@ -16,22 +16,6 @@
 
 package com.ritense.document.service.impl;
 
-import com.ritense.authorization.AuthorizationContext;
-import com.ritense.document.BaseIntegrationTest;
-import com.ritense.document.domain.impl.searchfield.SearchField;
-import com.ritense.document.domain.impl.searchfield.SearchFieldId;
-import com.ritense.document.service.SearchConfigurationDeploymentService;
-import com.ritense.document.service.SearchFieldService;
-import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.function.Function;
-
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.NUMBER;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
@@ -39,6 +23,21 @@ import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.
 import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.LIKE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import com.ritense.authorization.AuthorizationContext;
+import com.ritense.document.BaseIntegrationTest;
+import com.ritense.document.domain.impl.searchfield.SearchField;
+import com.ritense.document.domain.impl.searchfield.SearchFieldId;
+import com.ritense.document.service.SearchConfigurationDeploymentService;
+import com.ritense.document.service.SearchFieldService;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.function.Function;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 class SearchConfigurationDeploymentServiceIntTest extends BaseIntegrationTest {

@@ -22,9 +22,9 @@ import com.jayway.jsonpath.JsonPath
 import com.ritense.dataprovider.domain.DataProvider
 import com.ritense.dataprovider.domain.DataProviderConstants
 import com.ritense.dataprovider.domain.DataProviderConstants.Companion.TRANSLATION_CATEGORY
+import java.io.FileNotFoundException
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
-import java.io.FileNotFoundException
 
 class TranslationJsonFileDataProvider(
     private val resourceLoader: ResourceLoader,

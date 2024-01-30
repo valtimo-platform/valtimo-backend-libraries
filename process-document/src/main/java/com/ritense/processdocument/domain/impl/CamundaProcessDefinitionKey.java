@@ -16,13 +16,14 @@
 
 package com.ritense.processdocument.domain.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.ritense.processdocument.domain.ProcessDefinitionKey;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 public class CamundaProcessDefinitionKey implements ProcessDefinitionKey, Serializable {

@@ -16,6 +16,9 @@
 
 package com.ritense.document.domain.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.config.validator.UuidValidator;
@@ -23,6 +26,12 @@ import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.impl.meta.MetaJsonSchemaV7Draft;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import org.everit.json.schema.ReadWriteContext;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.Validator;
@@ -34,14 +43,6 @@ import org.json.JSONTokener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.annotation.Transient;
 import org.springframework.util.StreamUtils;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 public final class JsonSchema {

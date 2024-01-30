@@ -26,7 +26,6 @@ import com.ritense.processdocument.domain.impl.ProcessDocumentInstanceDto;
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import com.ritense.valtimo.contract.result.FunctionResult;
 import com.ritense.valtimo.contract.result.OperationError;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

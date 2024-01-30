@@ -33,13 +33,13 @@ import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverService
-import org.camunda.bpm.engine.delegate.DelegateTask
-import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import java.net.URI
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlin.contracts.ExperimentalContracts
+import org.camunda.bpm.engine.delegate.DelegateTask
+import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 
 @OptIn(ExperimentalContracts::class)
 @ConnectorType(name = TAAK_CONNECTOR_NAME)

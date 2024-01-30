@@ -21,9 +21,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.dataprovider.domain.DataProvider
 import com.ritense.dataprovider.domain.DataProviderConstants
 import com.ritense.dataprovider.domain.DataProviderConstants.Companion.DROPDOWN_CATEGORY
+import java.io.FileNotFoundException
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
-import java.io.FileNotFoundException
 
 class DropdownJsonFileDataProvider(
     private val resourceLoader: ResourceLoader,

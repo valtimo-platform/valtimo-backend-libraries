@@ -5,11 +5,11 @@ import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
 import jakarta.transaction.Transactional
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
 
 @Transactional
 class CaseDefinitionDeploymentServiceIntTest @Autowired constructor(

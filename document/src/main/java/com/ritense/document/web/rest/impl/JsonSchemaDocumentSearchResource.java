@@ -16,6 +16,9 @@
 
 package com.ritense.document.web.rest.impl;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
@@ -32,9 +35,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
 @SkipComponentScan

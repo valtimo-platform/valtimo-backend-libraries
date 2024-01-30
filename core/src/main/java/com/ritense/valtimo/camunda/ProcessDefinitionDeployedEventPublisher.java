@@ -17,14 +17,14 @@
 package com.ritense.valtimo.camunda;
 
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent;
+import java.util.ArrayList;
+import java.util.List;
 import org.camunda.bpm.engine.impl.persistence.deploy.Deployer;
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProcessDefinitionDeployedEventPublisher implements Deployer {
 

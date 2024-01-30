@@ -17,11 +17,11 @@
 package com.ritense.besluitenapi
 
 import com.ritense.besluitenapi.client.Besluit
+import com.ritense.besluitenapi.client.BesluitInformatieObject
 import com.ritense.besluitenapi.client.BesluitenApiClient
+import com.ritense.besluitenapi.client.CreateBesluitInformatieObject
 import com.ritense.besluitenapi.client.CreateBesluitRequest
 import com.ritense.besluitenapi.client.Vervalreden
-import com.ritense.besluitenapi.client.BesluitInformatieObject
-import com.ritense.besluitenapi.client.CreateBesluitInformatieObject
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zgw.Rsin
 import org.camunda.bpm.engine.delegate.DelegateExecution

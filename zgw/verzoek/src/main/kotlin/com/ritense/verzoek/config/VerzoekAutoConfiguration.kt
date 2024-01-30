@@ -25,9 +25,9 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.verzoek.VerzoekPluginEventListener
 import com.ritense.verzoek.VerzoekPluginFactory
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
 @AutoConfiguration
 class VerzoekAutoConfiguration {

@@ -23,6 +23,7 @@ import com.ritense.authorization.permission.condition.PermissionConditionOperato
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.valtimo.contract.json.MapperSingleton
+import kotlin.test.assertEquals
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
@@ -30,7 +31,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
-import kotlin.test.assertEquals
 
 class ExpressionPermissionConditionTest {
 
