@@ -31,7 +31,7 @@ class LocalizationHttpSecurityConfigurer : HttpSecurityConfigurer {
             http.authorizeHttpRequests { requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/localization")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/localization/{languageKey}")).authenticated()
-                    .requestMatchers(antMatcher(PUT, "/api/management/v1/localization")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/localization/{languageKey}")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

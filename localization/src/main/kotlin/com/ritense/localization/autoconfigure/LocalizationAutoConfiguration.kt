@@ -19,6 +19,7 @@ package com.ritense.localization.autoconfigure
 import com.ritense.localization.repository.LocalizationRepository
 import com.ritense.localization.security.config.LocalizationHttpSecurityConfigurer
 import com.ritense.localization.service.LocalizationService
+import com.ritense.localization.web.rest.AdminLocalizationResource
 import com.ritense.localization.web.rest.LocalizationResource
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -92,6 +93,14 @@ class LocalizationAutoConfiguration {
         localizationService: LocalizationService,
     ): LocalizationResource {
         return LocalizationResource(localizationService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(AdminLocalizationResource::class)
+    fun adminLocalizationResource(
+        localizationService: LocalizationService,
+    ): AdminLocalizationResource {
+        return AdminLocalizationResource(localizationService)
     }
 //
 //    @Bean

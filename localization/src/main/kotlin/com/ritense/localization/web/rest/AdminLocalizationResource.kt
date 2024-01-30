@@ -16,10 +16,15 @@
 
 package com.ritense.localization.web.rest
 
+import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.localization.service.LocalizationService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
@@ -28,11 +33,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 class AdminLocalizationResource(
     private val localizationService: LocalizationService,
 ) {
-
-//    @GetMapping("/v1/localization")
-//    fun getDashboards(): ResponseEntity<List<DashboardResponseDto>> {
-//        val dashboardResponseDtos = dashboardService.getDashboards()
-//            .map { DashboardResponseDto.of(it) }
-//        return ResponseEntity.ok(dashboardResponseDtos)
-//    }
+    @PutMapping("/v1/localization/{languageKey}")
+    fun editLocalization(
+        @PathVariable(name = "languageKey") languageKey: String,
+        @RequestBody content: ObjectNode
+    ): ResponseEntity<ObjectNode> {
+        val updatedLocalization = localizationService.updateLocalization(languageKey, content)
+        return ResponseEntity.ok(updatedLocalization)
+    }
 }

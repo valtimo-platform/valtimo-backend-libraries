@@ -23,12 +23,12 @@ import com.ritense.localization.repository.LocalizationRepository
 import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrElse
 
 @Transactional
 class LocalizationService(
     private val localizationRepository: LocalizationRepository
 ) {
-
     @Transactional(readOnly = true)
     fun getLocalizations(): List<Localization> {
         return localizationRepository.findAll()
@@ -43,6 +43,17 @@ class LocalizationService(
         }
 
         return localization.get().content
+    }
+
+    fun updateLocalization(languageKey: String, localizationContent: ObjectNode): ObjectNode {
+        val localization = localizationRepository.findById(languageKey)
+            .getOrElse { Localization(languageKey = languageKey, content = localizationContent) }
+            .copy(
+                languageKey = languageKey,
+                content = localizationContent
+            )
+
+        return localizationRepository.save(localization).content
     }
 
     companion object {
