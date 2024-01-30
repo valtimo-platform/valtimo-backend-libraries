@@ -25,7 +25,7 @@ import jakarta.persistence.Embeddable
 import java.util.UUID
 
 @Embeddable
-class ZaakInstanceLinkId(
+data class ZaakInstanceLinkId(
 
     @Column(name = "zaak_instance_link_id")
     @JsonValue
