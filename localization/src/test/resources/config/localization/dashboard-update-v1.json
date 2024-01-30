@@ -1,0 +1,28 @@
+{
+    "changesetId": "dashboard-v1",
+    "dashboards": [
+        {
+            "key": "team-dashboard",
+            "title": "Team dashboard",
+            "description": "some description",
+            "order": 1,
+            "widgetConfigurations": [
+                {
+                    "key": "test-widget",
+                    "title": "Test widget",
+                    "dataSourceKey": "test-key-single",
+                    "dataSourceProperties": {},
+                    "displayType": "number",
+                    "displayTypeProperties": {
+                        "subtitle": "Some test",
+                        "valueLabel": "Zaken ouder dan 4 weken",
+                        "useKPI": true,
+                        "lowSeverityThreshold": 5,
+                        "mediumSeverityThreshold": 15,
+                        "highSeverityThreshold": 30
+                    }
+                }
+            ]
+        }
+    ]
+}
