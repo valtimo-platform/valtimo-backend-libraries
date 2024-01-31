@@ -21,8 +21,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.localization.domain.Localization
 import com.ritense.localization.repository.LocalizationRepository
 import com.ritense.localization.web.rest.dto.LocalizationUpdateRequestDto
-import mu.KLogger
-import mu.KotlinLogging
 import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrElse
 
@@ -63,9 +61,5 @@ class LocalizationService(
             Localization(it.languageKey, it.content)
         }
         return localizationRepository.saveAll(mappedLocalizations)
-    }
-
-    companion object {
-        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

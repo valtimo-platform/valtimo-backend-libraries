@@ -44,7 +44,6 @@ class LocalizationResourceIntTest @Autowired constructor(
     private val localizationRepository: LocalizationRepository,
     private val objectMapper: ObjectMapper
 ): BaseIntegrationTest() {
-
     lateinit var mockMvc: MockMvc
     lateinit var enLocalization: Localization
     lateinit var nlLocalization: Localization
