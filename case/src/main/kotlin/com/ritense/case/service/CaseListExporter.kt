@@ -18,9 +18,9 @@ package com.ritense.case.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.exporter.ExportFile
+import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.ExportResult
 import com.ritense.exporter.Exporter
-import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.exporter.request.DocumentDefinitionExportRequest
 import java.io.ByteArrayOutputStream
 

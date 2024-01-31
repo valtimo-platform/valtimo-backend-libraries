@@ -17,9 +17,9 @@
 package com.ritense.document.domain.impl.searchfield;
 
 import com.ritense.valtimo.contract.domain.AbstractId;
-import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.util.UUID;
 
 @Embeddable
 public class SearchFieldId extends AbstractId<SearchFieldId> {
@@ -35,7 +35,8 @@ public class SearchFieldId extends AbstractId<SearchFieldId> {
         this.documentDefinitionName = documentDefinitionName;
     }
 
-    public SearchFieldId() {}
+    public SearchFieldId() {
+    }
 
     public static SearchFieldId newId(String documentDefinitionName) {
         return new SearchFieldId(UUID.randomUUID(), documentDefinitionName);

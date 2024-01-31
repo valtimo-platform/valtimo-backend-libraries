@@ -53,10 +53,9 @@ public class StartProcessForDocumentRequest implements Request {
             return false;
         }
         StartProcessForDocumentRequest that = (StartProcessForDocumentRequest) o;
-        return Objects.equals(getDocumentId(), that.getDocumentId()) && Objects.equals(
-            getProcessDefinitionKey(),
-            that.getProcessDefinitionKey()
-        ) && Objects.equals(getProcessVars(), that.getProcessVars());
+        return Objects.equals(getDocumentId(), that.getDocumentId())
+            && Objects.equals(getProcessDefinitionKey(), that.getProcessDefinitionKey())
+            && Objects.equals(getProcessVars(), that.getProcessVars());
     }
 
     @Override
@@ -65,6 +64,8 @@ public class StartProcessForDocumentRequest implements Request {
     }
 
     public String toString() {
-        return "StartProcessForDocumentRequest(documentId=" + this.getDocumentId() + ", processDefinitionKey=" + this.getProcessDefinitionKey() + ", processVars=" + this.getProcessVars() + ")";
+        return "StartProcessForDocumentRequest(documentId=" + this.getDocumentId() +
+            ", processDefinitionKey=" + this.getProcessDefinitionKey() +
+            ", processVars=" + this.getProcessVars() + ")";
     }
 }

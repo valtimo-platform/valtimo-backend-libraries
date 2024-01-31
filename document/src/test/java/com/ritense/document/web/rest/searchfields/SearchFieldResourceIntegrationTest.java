@@ -16,33 +16,6 @@
 
 package com.ritense.document.web.rest.searchfields;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.AuthorizationService;
-import com.ritense.document.BaseIntegrationTest;
-import com.ritense.document.domain.impl.searchfield.SearchField;
-import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
-import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
-import com.ritense.document.domain.impl.searchfield.SearchFieldFieldType;
-import com.ritense.document.domain.impl.searchfield.SearchFieldId;
-import com.ritense.document.service.SearchFieldService;
-import com.ritense.document.web.rest.error.DocumentModuleExceptionTranslator;
-import com.ritense.document.web.rest.impl.SearchFieldMapper;
-import com.ritense.document.web.rest.impl.SearchFieldResource;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.NUMBER;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
@@ -60,6 +33,32 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.document.BaseIntegrationTest;
+import com.ritense.document.domain.impl.searchfield.SearchField;
+import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
+import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
+import com.ritense.document.domain.impl.searchfield.SearchFieldFieldType;
+import com.ritense.document.domain.impl.searchfield.SearchFieldId;
+import com.ritense.document.service.SearchFieldService;
+import com.ritense.document.web.rest.error.DocumentModuleExceptionTranslator;
+import com.ritense.document.web.rest.impl.SearchFieldMapper;
+import com.ritense.document.web.rest.impl.SearchFieldResource;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {

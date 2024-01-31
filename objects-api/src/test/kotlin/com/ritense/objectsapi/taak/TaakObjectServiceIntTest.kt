@@ -32,6 +32,9 @@ import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProces
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
+import java.net.URI
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -42,9 +45,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpMethod
-import java.net.URI
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
 

@@ -20,6 +20,7 @@ import com.ritense.contactmoment.BaseContactMomentIntegrationTest
 import com.ritense.klant.domain.Klant
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import com.ritense.valtimo.contract.mail.model.value.Recipient
+import java.util.UUID
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.hasEntry
@@ -37,7 +38,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.util.UUID
 
 internal class MessageResourceIT: BaseContactMomentIntegrationTest() {
 

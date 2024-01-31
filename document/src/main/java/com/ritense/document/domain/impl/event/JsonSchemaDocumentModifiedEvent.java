@@ -16,6 +16,8 @@
 
 package com.ritense.document.domain.impl.event;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -29,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class JsonSchemaDocumentModifiedEvent extends AuditMetaData implements DocumentModifiedEvent, AuditEvent {
 
@@ -73,15 +74,14 @@ public class JsonSchemaDocumentModifiedEvent extends AuditMetaData implements Do
         if (this == o) {
             return true;
         }
-        if (!(o instanceof JsonSchemaDocumentModifiedEvent)) {
+        if (!(o instanceof JsonSchemaDocumentModifiedEvent that)) {
             return false;
         }
         if (!super.equals(o)) {
             return false;
         }
-        JsonSchemaDocumentModifiedEvent that = (JsonSchemaDocumentModifiedEvent) o;
-        return changes.equals(that.changes) &&
-            documentId.equals(that.documentId);
+        return changes.equals(that.changes)
+            && documentId.equals(that.documentId);
     }
 
     @Override

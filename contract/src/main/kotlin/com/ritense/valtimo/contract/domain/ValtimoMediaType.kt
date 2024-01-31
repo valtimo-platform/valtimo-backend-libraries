@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.contract.domain
 
-import org.springframework.http.MediaType
 import java.nio.charset.StandardCharsets.UTF_8
+import org.springframework.http.MediaType
 
 object ValtimoMediaType {
 

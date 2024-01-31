@@ -21,11 +21,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.view.AuditView;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
-import jakarta.persistence.GeneratedValue;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GeneratedColumn;
-import org.hibernate.annotations.Type;
-import org.springframework.data.domain.Persistable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
@@ -35,6 +30,9 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.Type;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(name = "audit_record", indexes = {
@@ -91,10 +89,9 @@ public class AuditRecord implements Persistable<AuditRecordId> {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof AuditRecord)) {
+        if (!(o instanceof AuditRecord that)) {
             return false;
         }
-        AuditRecord that = (AuditRecord) o;
         return getAuditRecordId().equals(that.getAuditRecordId());
     }
 

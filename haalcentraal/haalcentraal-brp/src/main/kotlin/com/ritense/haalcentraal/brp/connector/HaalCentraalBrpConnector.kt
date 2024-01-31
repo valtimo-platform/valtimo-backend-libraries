@@ -23,10 +23,10 @@ import com.ritense.haalcentraal.brp.client.HaalCentraalBrpClient
 import com.ritense.haalcentraal.brp.domain.Person
 import com.ritense.haalcentraal.brp.domain.Personen
 import com.ritense.haalcentraal.brp.web.rest.request.GetPeopleRequest
-import kotlinx.coroutines.runBlocking
 import java.security.InvalidParameterException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.runBlocking
 
 @ConnectorType(name = "HaalCentraalBrp")
 class HaalCentraalBrpConnector(

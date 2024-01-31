@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.ritense.valtimo.camunda.dto.CamundaIdentityLinkDto;
 import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
-
 import java.util.List;
 
 public class TaskInstanceWithIdentityLink {

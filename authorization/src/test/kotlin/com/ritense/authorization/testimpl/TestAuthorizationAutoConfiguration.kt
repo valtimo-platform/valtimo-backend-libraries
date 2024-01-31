@@ -17,8 +17,8 @@
 package com.ritense.authorization.testimpl
 
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import org.springframework.context.annotation.Bean
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.context.annotation.Bean
 
 @AutoConfiguration
 class TestAuthorizationAutoConfiguration {

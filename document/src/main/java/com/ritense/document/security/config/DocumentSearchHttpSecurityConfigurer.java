@@ -16,10 +16,6 @@
 
 package com.ritense.document.security.config;
 
-import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
-import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
@@ -27,12 +23,16 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
+import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 public class DocumentSearchHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeHttpRequests((requests) -> {
+            http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(POST, "/api/v1/document-search")).authenticated()
                     .requestMatchers(antMatcher(POST, "/api/v1/document-definition/{name}/search")).authenticated()
                     .requestMatchers(antMatcher(POST, "/api/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(
@@ -42,8 +42,7 @@ public class DocumentSearchHttpSecurityConfigurer implements HttpSecurityConfigu
                     .requestMatchers(antMatcher(DELETE, "/api/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(
                         ADMIN)
                     .requestMatchers(antMatcher(
-                        GET, "/api/management/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(ADMIN);
-            });
+                        GET, "/api/management/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(ADMIN));
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

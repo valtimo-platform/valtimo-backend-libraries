@@ -16,6 +16,9 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -26,6 +29,8 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.repository.impl.PostgresJsonSchemaDocumentSnapshotRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
+import jakarta.inject.Inject;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -33,10 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
-import jakarta.inject.Inject;
-import java.time.LocalDateTime;
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")
 @SpringBootTest(properties = {"valtimo.versioning.enabled=true"})

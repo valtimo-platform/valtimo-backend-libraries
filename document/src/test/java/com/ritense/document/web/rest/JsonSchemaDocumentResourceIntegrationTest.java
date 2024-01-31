@@ -16,28 +16,6 @@
 
 package com.ritense.document.web.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.document.BaseIntegrationTest;
-import com.ritense.document.domain.Document;
-import com.ritense.document.domain.impl.JsonDocumentContent;
-import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
-import com.ritense.document.repository.DocumentRepository;
-import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
-import com.ritense.outbox.domain.BaseEvent;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.function.Supplier;
-
 import static com.ritense.valtimo.contract.utils.TestUtil.convertObjectToJsonBytes;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,6 +30,27 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.document.BaseIntegrationTest;
+import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonDocumentContent;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
+import com.ritense.document.repository.DocumentRepository;
+import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
+import com.ritense.outbox.domain.BaseEvent;
+import java.util.List;
+import java.util.function.Supplier;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {

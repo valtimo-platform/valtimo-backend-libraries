@@ -18,6 +18,7 @@ package com.valtimo.keycloak
 
 import com.valtimo.keycloak.service.KeycloakRoleService
 import com.valtimo.keycloak.service.KeycloakService
+import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.keycloak.admin.client.Keycloak
@@ -29,7 +30,6 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import kotlin.test.assertEquals
 
 @ExtendWith(MockitoExtension::class)
 internal class KeycloakExternalRoleServiceTest {

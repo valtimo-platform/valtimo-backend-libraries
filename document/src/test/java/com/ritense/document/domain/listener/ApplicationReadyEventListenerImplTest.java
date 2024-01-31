@@ -16,13 +16,14 @@
 
 package com.ritense.document.domain.listener;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import com.ritense.document.domain.impl.listener.ApplicationReadyEventListenerImpl;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 public class ApplicationReadyEventListenerImplTest {
 

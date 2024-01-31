@@ -16,13 +16,14 @@
 
 package com.ritense.valtimo.helper;
 
-import com.ritense.valtimo.exception.ExpectedElementTemplatePropertyNotFoundException;
-import com.ritense.valtimo.exception.IllegalElementTemplatePropertyValueException;
-import org.junit.jupiter.api.Test;
-import java.util.HashMap;
-import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import com.ritense.valtimo.exception.ExpectedElementTemplatePropertyNotFoundException;
+import com.ritense.valtimo.exception.IllegalElementTemplatePropertyValueException;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 class SendElementTemplateTaskMailHelperTest {
 

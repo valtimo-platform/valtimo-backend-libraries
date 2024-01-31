@@ -24,11 +24,11 @@ import com.ritense.authorization.permission.condition.FieldPermissionCondition
 import com.ritense.authorization.permission.condition.PermissionConditionOperator
 import com.ritense.authorization.testimpl.TestDocument
 import com.ritense.valtimo.changelog.repository.ChangesetRepository
+import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.Instant
 
 internal class PermissionDeployerIntTest : BaseIntegrationTest() {
 

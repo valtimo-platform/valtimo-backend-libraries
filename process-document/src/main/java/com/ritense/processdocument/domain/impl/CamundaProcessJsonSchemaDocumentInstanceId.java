@@ -16,13 +16,14 @@
 
 package com.ritense.processdocument.domain.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.processdocument.domain.ProcessDocumentInstanceId;
 import com.ritense.valtimo.contract.domain.AbstractId;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import java.util.Objects;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 public class CamundaProcessJsonSchemaDocumentInstanceId
@@ -77,12 +78,11 @@ public class CamundaProcessJsonSchemaDocumentInstanceId
         if (this == o) {
             return true;
         }
-        if (!(o instanceof CamundaProcessJsonSchemaDocumentInstanceId)) {
+        if (!(o instanceof CamundaProcessJsonSchemaDocumentInstanceId that)) {
             return false;
         }
-        CamundaProcessJsonSchemaDocumentInstanceId that = (CamundaProcessJsonSchemaDocumentInstanceId) o;
-        return processInstanceId.equals(that.processInstanceId) &&
-            documentId.equals(that.documentId);
+        return processInstanceId.equals(that.processInstanceId)
+            && documentId.equals(that.documentId);
     }
 
     @Override

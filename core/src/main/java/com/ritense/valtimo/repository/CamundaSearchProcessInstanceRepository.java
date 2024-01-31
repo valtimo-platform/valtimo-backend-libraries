@@ -20,12 +20,12 @@ import com.ritense.valtimo.helper.CamundaOrderByHelper;
 import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
 import com.ritense.valtimo.repository.queryparameter.ProcessInstanceQueryParametersV2;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
+import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import java.util.List;
 
 public class CamundaSearchProcessInstanceRepository {
 

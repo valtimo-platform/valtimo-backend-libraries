@@ -21,8 +21,8 @@ import com.ritense.valtimo.contract.authentication.CurrentUserService;
 import com.ritense.valtimo.contract.authentication.model.Profile;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import org.springframework.security.core.Authentication;
 import java.util.Collection;
+import org.springframework.security.core.Authentication;
 
 public class CurrentUserServiceImpl implements CurrentUserService {
 

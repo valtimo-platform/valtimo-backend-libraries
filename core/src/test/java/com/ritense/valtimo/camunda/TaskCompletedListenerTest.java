@@ -16,6 +16,12 @@
 
 package com.ritense.valtimo.camunda;
 
+import static org.camunda.community.mockito.CamundaMockito.delegateExecutionFake;
+import static org.camunda.community.mockito.CamundaMockito.delegateTaskFake;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
 import java.util.Date;
 import org.camunda.bpm.engine.delegate.DelegateTask;
@@ -24,11 +30,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.ApplicationEventPublisher;
-import static org.camunda.community.mockito.CamundaMockito.delegateExecutionFake;
-import static org.camunda.community.mockito.CamundaMockito.delegateTaskFake;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 class TaskCompletedListenerTest {
 

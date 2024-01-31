@@ -25,8 +25,8 @@ import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
-import java.util.UUID
 import org.hibernate.annotations.Type
+import java.util.UUID
 
 @Entity
 @DiscriminatorValue(PROCESS_LINK_TYPE_PLUGIN)

@@ -16,6 +16,9 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.DELETE;
+
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
@@ -26,12 +29,10 @@ import com.ritense.document.service.result.UndeployDocumentDefinitionResultFaile
 import com.ritense.document.service.result.UndeployDocumentDefinitionResultSucceeded;
 import com.ritense.document.service.result.error.DocumentDefinitionError;
 import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.DELETE;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.annotation.Transactional;
 
 public class UndeployJsonSchemaDocumentDefinitionService implements UndeployDocumentDefinitionService {
 

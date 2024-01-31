@@ -20,9 +20,9 @@ import com.ritense.document.security.config.DocumentDefinitionHttpSecurityConfig
 import com.ritense.document.security.config.DocumentHttpSecurityConfigurer;
 import com.ritense.document.security.config.DocumentSearchHttpSecurityConfigurer;
 import com.ritense.document.security.config.DocumentSnapshotHttpSecurityConfigurer;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.annotation.Order;
 
 @AutoConfiguration

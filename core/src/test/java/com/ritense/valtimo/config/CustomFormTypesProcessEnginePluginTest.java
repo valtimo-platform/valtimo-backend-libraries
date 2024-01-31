@@ -16,20 +16,21 @@
 
 package com.ritense.valtimo.config;
 
-import com.ritense.valtimo.domain.formfields.ChoiceFieldFormFieldType;
-import com.ritense.valtimo.domain.formfields.FileUploadFormFieldType;
-import com.ritense.valtimo.domain.formfields.TextAreaFormFieldType;
-import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
-import org.camunda.bpm.engine.impl.form.type.AbstractFormFieldType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
-import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.ritense.valtimo.domain.formfields.ChoiceFieldFormFieldType;
+import com.ritense.valtimo.domain.formfields.FileUploadFormFieldType;
+import com.ritense.valtimo.domain.formfields.TextAreaFormFieldType;
+import java.util.ArrayList;
+import java.util.List;
+import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.camunda.bpm.engine.impl.form.type.AbstractFormFieldType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class CustomFormTypesProcessEnginePluginTest {
 

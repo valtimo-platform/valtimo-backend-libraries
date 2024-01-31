@@ -16,6 +16,11 @@
 
 package com.ritense.document.domain.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentRange;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.valtimo.contract.domain.AbstractId;
@@ -23,11 +28,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Transient;
 import java.util.Objects;
-
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentRange;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
 
 @Embeddable
 public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumentDefinitionId>

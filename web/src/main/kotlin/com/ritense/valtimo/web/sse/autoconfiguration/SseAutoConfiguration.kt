@@ -17,9 +17,9 @@
 package com.ritense.valtimo.web.sse.autoconfiguration
 
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
 @AutoConfiguration
 class SseAutoConfiguration {

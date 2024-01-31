@@ -16,22 +16,22 @@
 
 package com.ritense.valtimo.milestones.security.config;
 
-import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
-import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
+import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
+import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 public class MilestoneInstanceHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeHttpRequests((requests) -> {
-                requests.requestMatchers(antMatcher(GET, "/api/v1/milestone-instances")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/v1/milestones/{processDefinitionId}/flownodes")).hasAuthority(ADMIN);
-            });
+            http.authorizeHttpRequests(requests -> requests
+                .requestMatchers(antMatcher(GET, "/api/v1/milestone-instances")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/v1/milestones/{processDefinitionId}/flownodes")).hasAuthority(ADMIN));
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

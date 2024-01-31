@@ -16,24 +16,6 @@
 
 package com.ritense.valtimo.emailnotificationconfiguration.web.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.valtimo.contract.json.MapperSingleton;
-import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettings;
-import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettingsRequestImpl;
-import com.ritense.valtimo.emailnotificationsettings.service.impl.EmailNotificationSettingsServiceImpl;
-import com.ritense.valtimo.emailnotificationsettings.web.rest.EmailNotificationSettingsResource;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static com.ritense.valtimo.emailnotificationconfiguration.helper.EmailNotificationSettingsHelper.disabledEmailNotificationSettings;
 import static org.mockito.ArgumentMatchers.any;
@@ -45,6 +27,23 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
+import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettings;
+import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettingsRequestImpl;
+import com.ritense.valtimo.emailnotificationsettings.service.impl.EmailNotificationSettingsServiceImpl;
+import com.ritense.valtimo.emailnotificationsettings.web.rest.EmailNotificationSettingsResource;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration

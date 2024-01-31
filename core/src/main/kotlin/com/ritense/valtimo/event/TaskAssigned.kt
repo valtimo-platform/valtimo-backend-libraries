@@ -18,7 +18,6 @@ package com.ritense.valtimo.event
 
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.outbox.domain.BaseEvent
-import com.ritense.valtimo.camunda.domain.CamundaTask
 
 class TaskAssigned(taskId: String, task: ObjectNode) : BaseEvent(
     type = "com.ritense.valtimo.task.assigned",

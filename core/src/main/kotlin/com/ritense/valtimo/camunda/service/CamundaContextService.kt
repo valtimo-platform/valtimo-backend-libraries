@@ -16,10 +16,10 @@
 
 package com.ritense.valtimo.camunda.service
 
-import java.util.concurrent.Callable
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
 import org.camunda.bpm.engine.impl.context.Context
 import org.camunda.bpm.engine.impl.context.ProcessEngineContextImpl
+import java.util.concurrent.Callable
 
 class CamundaContextService(
     processEngineConfiguration: ProcessEngineConfigurationImpl

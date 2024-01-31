@@ -31,12 +31,12 @@ import com.ritense.externalevent.messaging.out.UpdatePortalCaseMessage
 import com.ritense.externalevent.messaging.out.UpdateStatusPortalCaseMessage
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import java.util.UUID
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Sinks
-import java.util.UUID
 
 @Transactional
 class ExternalCaseService(

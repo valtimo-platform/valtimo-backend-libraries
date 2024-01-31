@@ -16,13 +16,13 @@
 
 package com.ritense.document.domain.impl.listener;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentSnapshotCapturedEvent;
 import com.ritense.document.service.DocumentSnapshotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
-
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 
 public class DocumentSnapshotCapturedEventListener {
 

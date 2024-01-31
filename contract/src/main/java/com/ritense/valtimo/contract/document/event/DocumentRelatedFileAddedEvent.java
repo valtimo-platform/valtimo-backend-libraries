@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.contract.document.event;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -26,8 +28,6 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class DocumentRelatedFileAddedEvent extends AuditMetaData implements AuditEvent {
 

@@ -16,10 +16,14 @@
 
 package com.ritense.audit.domain.event;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.audit.AbstractTestHelper;
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
 import com.ritense.valtimo.contract.json.MapperSingleton;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,11 +32,6 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.json.ObjectContent;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class TaskCompletedJsonSerializingTest extends AbstractTestHelper {
 

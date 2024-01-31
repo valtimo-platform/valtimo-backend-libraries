@@ -33,6 +33,7 @@ import com.ritense.smartdocuments.BaseSmartDocumentsIntegrationTest
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.BeforeEach
@@ -42,7 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.http.HttpMethod
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 
 @Transactional
 @AutoConfigureWebTestClient(timeout = "36000")

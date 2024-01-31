@@ -16,18 +16,19 @@
 
 package com.ritense.valtimo.security.config;
 
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 public class ReportingHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeHttpRequests((requests) ->
+            http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/reporting/instancecount")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/reporting/instancesstatistics")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/reporting/tasksAverage")).authenticated()

@@ -16,11 +16,12 @@
 
 package com.ritense.audit.service.impl;
 
+import static java.time.LocalDateTime.now;
+
 import com.ritense.audit.service.AuditRetentionService;
 import com.ritense.audit.service.AuditService;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
-import static java.time.LocalDateTime.now;
 
 public class AuditRetentionServiceImpl implements AuditRetentionService {
 

@@ -24,8 +24,8 @@ import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
 import com.ritense.plugin.service.PluginService
-import java.net.URI
 import mu.KotlinLogging
+import java.net.URI
 
 class CatalogiService(
     val zaaktypeUrlProvider: ZaaktypeUrlProvider,

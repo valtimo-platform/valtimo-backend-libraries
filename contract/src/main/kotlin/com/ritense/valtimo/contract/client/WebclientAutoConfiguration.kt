@@ -16,8 +16,8 @@
 
 package com.ritense.valtimo.contract.client
 
-import org.springframework.context.annotation.Bean
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.context.annotation.Bean
 
 @AutoConfiguration
 class WebclientAutoConfiguration {

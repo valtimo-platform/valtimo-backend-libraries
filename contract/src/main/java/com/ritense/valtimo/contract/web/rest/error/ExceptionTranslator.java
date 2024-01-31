@@ -17,6 +17,9 @@
 package com.ritense.valtimo.contract.web.rest.error;
 
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
+import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -26,9 +29,6 @@ import org.zalando.problem.ProblemBuilder;
 import org.zalando.problem.ThrowableProblem;
 import org.zalando.problem.spring.web.advice.ProblemHandling;
 import org.zalando.problem.violations.ConstraintViolationProblem;
-import jakarta.annotation.Nullable;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Optional;
 
 /**
  * Controller advice to translate the server side exceptions to client-friendly json structures.
@@ -64,18 +64,18 @@ public class ExceptionTranslator implements ProblemHandling {
             builder.with("path", httpServletRequest.getRequestURI());
         }
 
-        String MESSAGE = "message";
+        final String msg = "message";
         if (problem instanceof ConstraintViolationProblem) {
             builder
                 .with("violations", ((ConstraintViolationProblem) problem).getViolations())
-                .with(MESSAGE, ErrorConstants.ERR_VALIDATION);
+                .with(msg, ErrorConstants.ERR_VALIDATION);
         } else {
             builder
                 .withInstance(problem.getInstance());
 
             problem.getParameters().forEach(builder::with);
-            if (!problem.getParameters().containsKey(MESSAGE) && problem.getStatus() != null) {
-                builder.with(MESSAGE, "error.http." + problem.getStatus().getStatusCode());
+            if (!problem.getParameters().containsKey(msg) && problem.getStatus() != null) {
+                builder.with(msg, "error.http." + problem.getStatus().getStatusCode());
             }
         }
 

@@ -17,7 +17,6 @@
 package com.ritense.plugin.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import java.lang.reflect.Field
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -28,6 +27,7 @@ import jakarta.persistence.JoinTable
 import jakarta.persistence.ManyToMany
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import java.lang.reflect.Field
 import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 
 @Entity

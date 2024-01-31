@@ -38,12 +38,12 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.web.rest.error.CamundaExceptionTranslator;
 import org.camunda.bpm.application.impl.event.ProcessApplicationEventListenerPlugin;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 
 @AutoConfiguration
 @AutoConfigureAfter(CamundaBpmAutoConfiguration.class)

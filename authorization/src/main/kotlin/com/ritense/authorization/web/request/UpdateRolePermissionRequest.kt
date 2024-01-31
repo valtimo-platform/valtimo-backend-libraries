@@ -17,10 +17,10 @@
 package com.ritense.authorization.web.request
 
 import com.ritense.authorization.Action
-import com.ritense.authorization.role.Role
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.condition.PermissionCondition
+import com.ritense.authorization.role.Role
 
 data class UpdateRolePermissionRequest(
     val resourceType: Class<*>,

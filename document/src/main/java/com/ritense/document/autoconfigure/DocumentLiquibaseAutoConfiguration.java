@@ -16,14 +16,15 @@
 
 package com.ritense.document.autoconfigure;
 
+import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
+
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation;
+import javax.sql.DataSource;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.annotation.Order;
-import javax.sql.DataSource;
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @AutoConfiguration
 @ConditionalOnClass(DataSource.class)

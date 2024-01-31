@@ -20,9 +20,9 @@ import com.ritense.mail.MailDispatcher
 import com.ritense.mail.service.LocalMailDispatcher
 import com.ritense.mail.service.LocalMailSender
 import com.ritense.valtimo.contract.mail.MailSender
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
 @AutoConfiguration
 class LocalMailAutoConfiguration {

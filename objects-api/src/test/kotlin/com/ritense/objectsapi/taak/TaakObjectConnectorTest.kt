@@ -23,6 +23,8 @@ import com.ritense.objectsapi.service.ObjectsApiProperties
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.valueresolver.ValueResolverService
+import java.util.UUID
+import kotlin.contracts.ExperimentalContracts
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
@@ -38,8 +40,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.UUID
-import kotlin.contracts.ExperimentalContracts
 
 @OptIn(ExperimentalContracts::class)
 internal class TaakObjectConnectorTest {

@@ -19,7 +19,6 @@ package com.ritense.outbox.rabbitmq
 import com.ritense.outbox.OutboxMessage
 import com.ritense.outbox.publisher.MessagePublishingFailed
 import com.ritense.outbox.rabbitmq.config.RabbitOutboxConfigurationProperties
-import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -27,8 +26,8 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.amqp.rabbit.core.RabbitAdmin
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.env.Environment
 import org.springframework.test.context.ActiveProfiles
+import java.util.UUID
 
 class RabbitMessagePublisherIntTest {
     @Nested

@@ -19,9 +19,9 @@ package com.ritense.outbox.config
 import com.ritense.outbox.NoopOutboxService
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.config.condition.ConditionalOnOutboxEnabled
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
 
 @AutoConfiguration

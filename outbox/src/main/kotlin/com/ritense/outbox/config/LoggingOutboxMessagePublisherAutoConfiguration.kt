@@ -19,10 +19,10 @@ package com.ritense.outbox.config
 import com.ritense.outbox.config.condition.ConditionalOnOutboxEnabled
 import com.ritense.outbox.publisher.LoggingMessagePublisher
 import com.ritense.outbox.publisher.MessagePublisher
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.AutoConfigureOrder
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.Ordered
 
 @AutoConfiguration

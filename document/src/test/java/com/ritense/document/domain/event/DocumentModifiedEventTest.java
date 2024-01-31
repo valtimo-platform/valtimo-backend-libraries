@@ -16,24 +16,23 @@
 
 package com.ritense.document.domain.event;
 
-import com.ritense.document.config.DocumentSpringContextHelper;
-import com.ritense.document.domain.impl.JsonSchemaDocumentFieldChangedEvent;
-import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.mock.env.MockEnvironment;
-
-import java.lang.reflect.Field;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.ritense.document.config.DocumentSpringContextHelper;
+import com.ritense.document.domain.impl.JsonSchemaDocumentFieldChangedEvent;
+import com.ritense.document.domain.impl.JsonSchemaDocumentId;
+import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent;
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.mock.env.MockEnvironment;
 
 class DocumentModifiedEventTest {
     private ApplicationContext applicationContext;

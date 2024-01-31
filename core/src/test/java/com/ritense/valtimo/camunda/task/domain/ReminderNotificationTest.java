@@ -16,18 +16,19 @@
 
 package com.ritense.valtimo.camunda.task.domain;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import com.ritense.valtimo.camunda.task.domain.reminder.AssignedTask;
 import com.ritense.valtimo.camunda.task.domain.reminder.ReminderNotification;
 import com.ritense.valtimo.camunda.task.domain.reminder.RoleBasedTask;
 import com.ritense.valtimo.camunda.task.domain.reminder.Task;
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class ReminderNotificationTest {
 

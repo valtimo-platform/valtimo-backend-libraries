@@ -18,7 +18,6 @@ package com.ritense.processdocument.domain.impl;
 
 import com.ritense.processdocument.domain.ProcessDocumentInstance;
 import com.ritense.processdocument.domain.ProcessDocumentInstanceId;
-
 import java.time.LocalDateTime;
 
 public class ProcessDocumentInstanceDto implements ProcessDocumentInstance {

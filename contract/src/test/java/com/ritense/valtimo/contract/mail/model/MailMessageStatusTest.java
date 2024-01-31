@@ -16,10 +16,11 @@
 
 package com.ritense.valtimo.contract.mail.model;
 
-import com.ritense.valtimo.contract.basictype.EmailAddress;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import com.ritense.valtimo.contract.basictype.EmailAddress;
+import org.junit.jupiter.api.Test;
 
 public class MailMessageStatusTest {
     private final String status = "some-external-status";

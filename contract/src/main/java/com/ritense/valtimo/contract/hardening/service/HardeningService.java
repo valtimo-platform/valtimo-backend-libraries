@@ -16,9 +16,9 @@
 
 package com.ritense.valtimo.contract.hardening.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.zalando.problem.ProblemBuilder;
 import org.zalando.problem.ThrowableProblem;
-import jakarta.servlet.http.HttpServletRequest;
 
 public interface HardeningService {
     Throwable harden(Throwable ex, HttpServletRequest request);

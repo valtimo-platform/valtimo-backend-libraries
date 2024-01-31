@@ -19,12 +19,12 @@ package com.ritense.valtimo.milestones.autoconfigure;
 import com.ritense.valtimo.milestones.security.config.MilestoneHttpSecurityConfigurer;
 import com.ritense.valtimo.milestones.security.config.MilestoneInstanceHttpSecurityConfigurer;
 import com.ritense.valtimo.milestones.security.config.MilestoneSetHttpSecurityConfigurer;
+import javax.sql.DataSource;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.annotation.Order;
-import javax.sql.DataSource;
 
 @AutoConfiguration
 @ConditionalOnClass(DataSource.class)

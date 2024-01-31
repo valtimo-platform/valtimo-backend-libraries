@@ -21,11 +21,11 @@ import com.ritense.form.BaseIntegrationTest
 import com.ritense.form.domain.request.CreateFormDefinitionRequest
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @Transactional
 internal class FormSupportedProcessLinksIntTest @Autowired constructor(

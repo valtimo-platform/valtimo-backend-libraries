@@ -28,13 +28,13 @@ import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
+import kotlin.contracts.ExperimentalContracts
 import org.camunda.bpm.engine.RuntimeService
 import org.springframework.beans.factory.config.BeanDefinition
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Scope
-import kotlin.contracts.ExperimentalContracts
 
 @AutoConfiguration
 class TaakObjectAutoConfiguration {

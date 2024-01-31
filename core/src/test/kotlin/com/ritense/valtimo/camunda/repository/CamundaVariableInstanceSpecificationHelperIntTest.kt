@@ -1,13 +1,13 @@
 package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.BaseIntegrationTest
-import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.runtime.ProcessInstance
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 class CamundaVariableInstanceSpecificationHelperIntTest @Autowired constructor(
     private val camundaVariableInstanceRepository: CamundaVariableInstanceRepository

@@ -18,13 +18,13 @@ package com.ritense.valtimo.helper;
 
 import com.ritense.valtimo.exception.ExpectedElementTemplatePropertyNotFoundException;
 import com.ritense.valtimo.exception.IllegalElementTemplatePropertyValueException;
-import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 public class SendElementTemplateTaskMailHelper {
 
@@ -61,7 +61,7 @@ public class SendElementTemplateTaskMailHelper {
 
     public static Collection<String> getAttachmentsKeyValue(Map<String, Object> camundaProperties, Map<String, Object> processVariables) {
         String keyValue = getKeyValue(ATTACHMENTS_KEY, camundaProperties, processVariables);
-        return keyValue == null || keyValue.length() == 0
+        return keyValue == null || keyValue.isEmpty()
             ? Collections.singletonList(keyValue)
             : Arrays.asList(keyValue.split("\\s*,\\s*"));
     }

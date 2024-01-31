@@ -41,8 +41,8 @@ class CamundaTaskSpecification(
     ): Predicate {
         val predicates = permissions
             .filter { permission ->
-                CamundaTask::class.java == permission.resourceType &&
-                    authRequest.action == permission.action
+                CamundaTask::class.java == permission.resourceType
+                    && authRequest.action == permission.action
             }
             .map { permission ->
                 permission.toPredicate(

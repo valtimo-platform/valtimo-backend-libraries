@@ -16,10 +16,11 @@
 
 package com.ritense.document.domain.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ritense.document.BaseTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class JsonSchemaDocumentReferenceTest extends BaseTest {
 

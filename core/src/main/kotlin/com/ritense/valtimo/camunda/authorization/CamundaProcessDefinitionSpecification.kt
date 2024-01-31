@@ -40,8 +40,8 @@ class CamundaProcessDefinitionSpecification(
     override fun toPredicate(root: Root<CamundaProcessDefinition>, query: AbstractQuery<*>, criteriaBuilder: CriteriaBuilder): Predicate {
         val predicates = permissions
             .filter { permission ->
-                CamundaProcessDefinition::class.java == permission.resourceType &&
-                    authRequest.action == permission.action
+                CamundaProcessDefinition::class.java == permission.resourceType
+                    && authRequest.action == permission.action
             }
             .map { permission ->
                 permission.toPredicate(

@@ -25,15 +25,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Deprecated(since = "11.2.0", forRemoval = true)
 public enum Mapper {
     INSTANCE;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     Mapper() {
         // Perform any configuration on the ObjectMapper here.
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     public ObjectMapper get() {
-        return mapper;
+        return objectMapper;
     }
 
 }

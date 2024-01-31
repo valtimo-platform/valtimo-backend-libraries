@@ -26,6 +26,7 @@ import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF
 import com.ritense.valtimo.formflow.web.rest.result.CompleteStepResult
 import com.ritense.valtimo.formflow.web.rest.result.FormFlowStepResult
 import com.ritense.valtimo.formflow.web.rest.result.GetFormFlowStateResult
+import jakarta.transaction.Transactional
 import org.json.JSONObject
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -34,7 +35,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import jakarta.transaction.Transactional
 
 @RestController
 @SkipComponentScan

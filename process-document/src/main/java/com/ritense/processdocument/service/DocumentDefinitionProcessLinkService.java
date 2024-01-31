@@ -20,7 +20,6 @@ import com.ritense.processdocument.domain.impl.DocumentDefinitionProcess;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLink;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessLinkResponse;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
-
 import java.util.List;
 import java.util.Optional;
 

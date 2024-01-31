@@ -27,9 +27,9 @@ import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.SearchConfigurationDeploymentService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.web.rest.impl.SearchFieldResource;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.io.ResourceLoader;
 
 @AutoConfiguration

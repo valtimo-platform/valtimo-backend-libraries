@@ -16,12 +16,13 @@
 
 package com.ritense.document.domain.impl.relation;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.DocumentRelationRequest;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.domain.relation.DocumentRelationType;
 import java.util.Objects;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class JsonSchemaDocumentRelation implements DocumentRelation {
 
@@ -66,12 +67,11 @@ public class JsonSchemaDocumentRelation implements DocumentRelation {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof JsonSchemaDocumentRelation)) {
+        if (!(o instanceof JsonSchemaDocumentRelation that)) {
             return false;
         }
-        JsonSchemaDocumentRelation that = (JsonSchemaDocumentRelation) o;
-        return id.equals(that.id) &&
-            relationType == that.relationType;
+        return id.equals(that.id)
+            && relationType == that.relationType;
     }
 
     @Override

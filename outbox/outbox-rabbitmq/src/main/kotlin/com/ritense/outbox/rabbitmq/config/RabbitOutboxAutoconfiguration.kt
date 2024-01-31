@@ -20,10 +20,10 @@ import com.ritense.outbox.config.condition.ConditionalOnOutboxEnabled
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.rabbitmq.RabbitMessagePublisher
 import org.springframework.amqp.rabbit.core.RabbitTemplate
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
 
 @AutoConfiguration
