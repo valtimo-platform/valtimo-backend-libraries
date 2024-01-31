@@ -110,6 +110,26 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
+    void shouldReturnTemplate() throws Exception {
+        mockMvc.perform(get("/api/v1/document-definition-template"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().json(
+                """
+                {
+                    "$id": "document-definition-name.schema",
+                    "type": "object",
+                    "title": "Document definition title",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "properties": {},
+                    "additionalProperties":false
+                }
+                """
+            ));
+    }
+
+    @Test
     void shouldReturnPagedRecordPageWithOldSortByNameProperty() throws Exception {
         ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
         when(documentDefinitionService.findAll(pageCaptor.capture())).thenReturn(definitionPage);

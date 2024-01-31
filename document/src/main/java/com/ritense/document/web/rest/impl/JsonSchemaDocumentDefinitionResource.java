@@ -32,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,6 +60,22 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     @Override
     public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(Pageable pageable) {
         return ok(documentDefinitionService.findAll(fixPageable(pageable)));
+    }
+
+    @Override
+    public ResponseEntity<String> getDocumentDefinitionTemplate() {
+        return ok(
+            """
+                {
+                    "$id": "document-definition-name.schema",
+                    "type": "object",
+                    "title": "Document definition title",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "properties": {},
+                    "additionalProperties":false
+                }
+                """
+        );
     }
 
     @Override

@@ -50,6 +50,9 @@ public interface DocumentDefinitionResource {
         @PageableDefault(sort = {"id_name"}, direction = ASC) Pageable pageable
     );
 
+    @GetMapping("/v1/document-definition-template")
+    ResponseEntity<String> getDocumentDefinitionTemplate();
+
     @GetMapping("/management/v1/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(
         @PageableDefault(sort = {"id_name"}, direction = ASC) Pageable pageable
