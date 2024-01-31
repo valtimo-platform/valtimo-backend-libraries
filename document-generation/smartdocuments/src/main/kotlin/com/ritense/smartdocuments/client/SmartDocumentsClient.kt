@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,14 @@
 package com.ritense.smartdocuments.client
 
 import com.fasterxml.jackson.core.JsonFactory
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
+import com.ritense.smartdocuments.domain.DocumentFormatOption
+import com.ritense.smartdocuments.domain.FileStreamResponse
+import com.ritense.smartdocuments.domain.FilesResponse
+import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
 import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
@@ -40,12 +46,6 @@ import java.io.PipedOutputStream
 import java.util.Base64
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.ritense.smartdocuments.domain.DocumentFormatOption
-import com.ritense.smartdocuments.domain.FilesResponse
-import com.ritense.smartdocuments.domain.SmartDocumentsRequest
-import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
-import com.ritense.smartdocuments.domain.FileStreamResponse
 
 
 class SmartDocumentsClient(
