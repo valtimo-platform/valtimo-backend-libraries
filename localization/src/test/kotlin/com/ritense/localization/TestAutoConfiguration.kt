@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard
+package com.ritense.localization
 
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.context.annotation.Bean
 
 @TestConfiguration
 class TestAutoConfiguration {
-    @Bean
-    fun testDataSource() = TestDataSource()
+
 }

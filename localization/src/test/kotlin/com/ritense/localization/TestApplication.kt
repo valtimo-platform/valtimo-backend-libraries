@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard
+package com.ritense.localization
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

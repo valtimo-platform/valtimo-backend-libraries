@@ -16,6 +16,7 @@
 
 package com.ritense.localization.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.localization.repository.LocalizationRepository
 import com.ritense.localization.security.config.LocalizationHttpSecurityConfigurer
 import com.ritense.localization.service.LocalizationService
@@ -58,9 +59,11 @@ class LocalizationAutoConfiguration {
     @ConditionalOnMissingBean(LocalizationService::class)
     fun localizationService(
         localizationRepository: LocalizationRepository,
+        objectMapper: ObjectMapper
     ): LocalizationService {
         return LocalizationService(
-            localizationRepository
+            localizationRepository,
+            objectMapper
         )
     }
 
@@ -79,21 +82,4 @@ class LocalizationAutoConfiguration {
     ): AdminLocalizationResource {
         return AdminLocalizationResource(localizationService)
     }
-
-//
-//    @Bean
-//    @ConditionalOnMissingBean(DashboardDeployer::class)
-//    fun dashboardDeployer(
-//        objectMapper: ObjectMapper,
-//        dashboardRepository: DashboardRepository,
-//        changelogService: ChangelogService,
-//        @Value("\${valtimo.changelog.dashboard.clear-tables:false}") clearTables: Boolean
-//    ): DashboardDeployer {
-//        return DashboardDeployer(
-//            objectMapper,
-//            dashboardRepository,
-//            changelogService,
-//            clearTables
-//        )
-//    }
 }

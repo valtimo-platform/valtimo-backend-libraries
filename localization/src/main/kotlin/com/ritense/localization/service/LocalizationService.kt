@@ -16,9 +16,9 @@
 
 package com.ritense.localization.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.localization.domain.Localization
-import com.ritense.localization.exception.LocalizationNotFoundException
 import com.ritense.localization.repository.LocalizationRepository
 import com.ritense.localization.web.rest.dto.LocalizationUpdateRequestDto
 import mu.KLogger
@@ -28,7 +28,8 @@ import kotlin.jvm.optionals.getOrElse
 
 @Transactional
 class LocalizationService(
-    private val localizationRepository: LocalizationRepository
+    private val localizationRepository: LocalizationRepository,
+    private val objectMapper: ObjectMapper
 ) {
     @Transactional(readOnly = true)
     fun getLocalizations(): List<Localization> {
@@ -40,7 +41,7 @@ class LocalizationService(
         val localization = localizationRepository.findById(languageKey)
 
         if (localization.isEmpty) {
-            throw LocalizationNotFoundException(languageKey)
+            return objectMapper.createObjectNode()
         }
 
         return localization.get().content

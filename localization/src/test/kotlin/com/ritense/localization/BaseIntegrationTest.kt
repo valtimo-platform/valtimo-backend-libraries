@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.dashboard
+package com.ritense.localization
 
-import com.ritense.dashboard.deployment.DashboardDeployer
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
@@ -38,7 +36,4 @@ abstract class BaseIntegrationTest {
 
     @MockBean
     lateinit var mailSender: MailSender
-
-    @SpyBean
-    lateinit var dashboardDeployer: DashboardDeployer
 }
