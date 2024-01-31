@@ -19,6 +19,7 @@ package com.ritense.document.domain.impl.searchfield;
 import com.ritense.valtimo.contract.domain.AbstractId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.util.Objects;
 import java.util.UUID;
 
 @Embeddable
@@ -48,5 +49,21 @@ public class SearchFieldId extends AbstractId<SearchFieldId> {
 
     public UUID getId() {
         return this.id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof SearchFieldId that)) {
+            return false;
+        }
+        return Objects.equals(id, that.id) && Objects.equals(documentDefinitionName, that.documentDefinitionName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, documentDefinitionName);
     }
 }
