@@ -16,6 +16,7 @@
 
 package com.ritense.catalogiapi.web.rest
 
+import com.ritense.catalogiapi.domain.ZaakType
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.web.rest.result.BesluittypeDto
 import com.ritense.catalogiapi.web.rest.result.InformatieobjecttypeDto
@@ -99,5 +100,10 @@ class CatalogiResource(
             )
         }
         return ResponseEntity.ok(zaakBesluitTypes)
+    }
+
+    @GetMapping("/v1/catalogi/zaaktypen")
+    fun getZaakTypen(): ResponseEntity<List<ZaakType>> {
+        TODO()
     }
 }
