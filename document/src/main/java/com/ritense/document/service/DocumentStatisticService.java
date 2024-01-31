@@ -16,17 +16,18 @@
 
 package com.ritense.document.service;
 
+import static com.ritense.document.repository.impl.JsonSchemaDocumentSpecificationHelper.byDocumentDefinitionName;
+import static com.ritense.document.repository.impl.JsonSchemaDocumentSpecificationHelper.byUnassigned;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
+
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
 import com.ritense.document.repository.DocumentRepository;
+import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import java.util.List;
-import static com.ritense.document.repository.impl.JsonSchemaDocumentSpecificationHelper.byDocumentDefinitionName;
-import static com.ritense.document.repository.impl.JsonSchemaDocumentSpecificationHelper.byUnassigned;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
 
 public class DocumentStatisticService {
 

@@ -75,18 +75,17 @@ public class TestEvent extends AuditMetaData implements AuditEvent {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof TestEvent)) {
+        if (!(o instanceof TestEvent testEvent)) {
             return false;
         }
         if (!super.equals(o)) {
             return false;
         }
-        TestEvent testEvent = (TestEvent) o;
-        return getName().equals(testEvent.getName()) &&
-            getAge().equals(testEvent.getAge()) &&
-            getCountry().equals(testEvent.getCountry()) &&
-            getGender().equals(testEvent.getGender()) &&
-            getProcessInstanceId().equals(testEvent.getProcessInstanceId());
+        return getName().equals(testEvent.getName())
+            && getAge().equals(testEvent.getAge())
+            && getCountry().equals(testEvent.getCountry())
+            && getGender().equals(testEvent.getGender())
+            && getProcessInstanceId().equals(testEvent.getProcessInstanceId());
     }
 
     @Override

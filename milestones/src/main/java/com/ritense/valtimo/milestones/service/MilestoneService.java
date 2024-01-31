@@ -24,10 +24,10 @@ import com.ritense.valtimo.milestones.service.exception.MultipleProcessesWithinM
 import com.ritense.valtimo.milestones.service.mapper.MilestoneMapper;
 import com.ritense.valtimo.milestones.web.rest.dto.MilestoneDTO;
 import com.ritense.valtimo.milestones.web.rest.dto.MilestoneSaveDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MilestoneService {
 

@@ -18,14 +18,13 @@ package com.ritense.audit.repository;
 
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.domain.AuditRecordId;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 
 @NoRepositoryBean
 public interface AuditRecordRepository<T extends AuditRecord>

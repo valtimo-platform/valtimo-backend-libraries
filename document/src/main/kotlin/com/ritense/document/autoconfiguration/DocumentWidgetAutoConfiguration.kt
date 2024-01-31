@@ -19,9 +19,9 @@ package com.ritense.document.autoconfiguration
 import com.ritense.document.dashboard.DocumentWidgetDataSource
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
 @AutoConfiguration
 class DocumentWidgetAutoConfiguration {

@@ -24,6 +24,9 @@ import com.ritense.authorization.web.request.SaveRoleRequest
 import com.ritense.authorization.web.request.UpdateRolePermissionRequest
 import com.ritense.authorization.web.request.UpdateRoleRequest
 import com.ritense.valtimo.contract.utils.TestUtil
+import java.nio.charset.StandardCharsets
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -35,9 +38,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.nio.charset.StandardCharsets
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 
 class RoleManagementResourceIntTest : BaseIntegrationTest() {
     @Autowired

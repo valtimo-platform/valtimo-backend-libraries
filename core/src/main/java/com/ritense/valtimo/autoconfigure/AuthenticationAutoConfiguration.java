@@ -20,10 +20,10 @@ import com.ritense.valtimo.contract.security.jwt.TokenAuthenticator;
 import com.ritense.valtimo.contract.security.jwt.provider.SecretKeyProvider;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
 import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
+import java.util.List;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import java.util.List;
 
 @AutoConfiguration
 public class AuthenticationAutoConfiguration {

@@ -25,7 +25,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import java.util.*
+import java.util.Base64
 
 @TestPropertySource(properties = ["management.port=0"])
 class ActuatorSecurityIntTest : SecuritySpecificEndpointIntegrationTest() {

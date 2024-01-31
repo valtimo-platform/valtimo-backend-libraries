@@ -16,8 +16,6 @@
 
 package com.ritense.authorization.permission.condition
 
-import java.lang.NullPointerException
-
 abstract class ReflectingPermissionCondition(type: PermissionConditionType) : PermissionCondition(type) {
     protected fun findEntityFieldValue(entity: Any, field: String): Any? {
         var currentEntity: Any? = entity

@@ -16,12 +16,13 @@
 
 package com.ritense.valtimo.security.jwt.token;
 
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.NAME_KEY;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.impl.DefaultClaims;
 import java.util.HashMap;
 import java.util.Set;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.NAME_KEY;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
 
 public class ValtimoToken implements TokenClaims {
 

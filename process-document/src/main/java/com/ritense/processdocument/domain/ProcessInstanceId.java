@@ -16,10 +16,11 @@
 
 package com.ritense.processdocument.domain;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
-import java.lang.reflect.InvocationTargetException;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+import java.lang.reflect.InvocationTargetException;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public interface ProcessInstanceId {
 

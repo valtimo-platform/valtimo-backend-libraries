@@ -23,9 +23,6 @@ import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.service.CaseListDeploymentService.Companion.CASE_LIST_DEFINITIONS_PATH
 import com.ritense.case.service.CaseListDeploymentService.Companion.CASE_LIST_SCHEMA_PATH
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
@@ -35,6 +32,9 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.Resource
 import org.springframework.transaction.annotation.Transactional
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @Transactional
 class CaseListDeploymentServiceIntTest: BaseIntegrationTest() {

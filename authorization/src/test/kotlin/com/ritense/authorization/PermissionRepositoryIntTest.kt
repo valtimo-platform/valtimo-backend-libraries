@@ -17,11 +17,11 @@
 package com.ritense.authorization
 
 import com.ritense.authorization.permission.ConditionContainer
-import com.ritense.authorization.permission.condition.FieldPermissionCondition
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.PermissionRepository
+import com.ritense.authorization.permission.condition.FieldPermissionCondition
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.permission.condition.PermissionConditionType.FIELD
-import com.ritense.authorization.permission.PermissionRepository
 import com.ritense.authorization.role.Role
 import com.ritense.authorization.role.RoleRepository
 import com.ritense.authorization.testimpl.TestDocument

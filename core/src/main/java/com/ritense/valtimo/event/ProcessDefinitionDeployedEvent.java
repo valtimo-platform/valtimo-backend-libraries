@@ -16,13 +16,13 @@
 
 package com.ritense.valtimo.event;
 
+import jakarta.annotation.Nullable;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
-import jakarta.annotation.Nullable;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 public class ProcessDefinitionDeployedEvent {
     private final String previousProcessDefinitionId;

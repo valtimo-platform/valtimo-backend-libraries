@@ -90,8 +90,8 @@ open class ValidationUtils(
     internal fun existsColumnWithDefaultSort(
         caseListColumnDto: CaseListColumnDto, columns: List<CaseListColumn>
     ): Boolean {
-        return caseListColumnDto.defaultSort != null &&
-                columns.any { column -> column.defaultSort != null }
+        return caseListColumnDto.defaultSort != null
+            && columns.any { column -> column.defaultSort != null }
     }
 
     @Throws(InvalidListColumnException::class)

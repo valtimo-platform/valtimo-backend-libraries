@@ -16,8 +16,8 @@
 
 package com.ritense.authorization.specification
 
-import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.request.AuthorizationRequest
 
 interface AuthorizationSpecificationFactory<T : Any> {
 

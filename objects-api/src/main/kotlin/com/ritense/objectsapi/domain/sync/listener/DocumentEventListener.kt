@@ -27,11 +27,11 @@ import com.ritense.objectsapi.domain.request.Comparator
 import com.ritense.objectsapi.domain.request.ObjectSearchParameter
 import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objectsapi.service.ObjectsApiConnector
+import java.net.URI
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
-import java.net.URI
 
 open class DocumentEventListener(
     val objectSyncService: ObjectSyncService,

@@ -17,10 +17,10 @@
 package com.ritense.document.domain.impl;
 
 import com.ritense.document.domain.DocumentVersion;
+import java.util.Objects;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
-import java.util.Objects;
 
 public class JsonSchemaDocumentVersion implements DocumentVersion {
 

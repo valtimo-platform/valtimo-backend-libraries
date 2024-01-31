@@ -21,9 +21,9 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.export.DecisionDefinitionExporter
 import com.ritense.valtimo.export.ProcessDefinitionExporter
 import org.camunda.bpm.engine.RepositoryService
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
 @AutoConfiguration
 class ExportAutoConfiguration {

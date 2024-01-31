@@ -17,8 +17,8 @@
 package com.ritense.note.repository
 
 import com.ritense.note.domain.Note
-import java.util.UUID
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import java.util.UUID
 
 interface NoteRepository : JpaRepository<Note, UUID>, JpaSpecificationExecutor<Note>

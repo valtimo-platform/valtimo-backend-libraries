@@ -26,10 +26,9 @@ import com.ritense.valtimo.contract.mail.model.value.Recipient;
 import com.ritense.valtimo.contract.mail.model.value.RecipientCollection;
 import com.ritense.valtimo.contract.mail.model.value.Sender;
 import com.ritense.valtimo.contract.mail.model.value.Subject;
-import org.apache.commons.codec.binary.Base64;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.codec.binary.Base64;
 
 public class MailMessageConverter {
 

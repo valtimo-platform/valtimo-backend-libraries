@@ -16,23 +16,24 @@
 
 package com.ritense.valtimo.contract.hardening;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.ritense.valtimo.contract.hardening.config.HardeningProperties;
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
 import com.ritense.valtimo.contract.hardening.service.impl.HardeningServiceImpl;
 import com.ritense.valtimo.contract.hardening.throwable.UnsanitizedThrowable;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.Supplier;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class StacktraceHardeningServiceTest {
     private HardeningService hardeningService;
@@ -94,7 +95,12 @@ public class StacktraceHardeningServiceTest {
         String remoteAddress = "123.456.789.777";
         String forwardedForIps = "123.456.789,645.12.45.98,127.0.0.1";
 
-        UnsanitizedThrowable hardenedThrowable = (UnsanitizedThrowable) runTestFor(this::exceptionWithoutProperCause, whitelistedIps, remoteAddress, forwardedForIps);
+        UnsanitizedThrowable hardenedThrowable = (UnsanitizedThrowable) runTestFor(
+            this::exceptionWithoutProperCause,
+            whitelistedIps,
+            remoteAddress,
+            forwardedForIps
+        );
         assertNotEquals(0, hardenedThrowable.getStackTrace().length);
         assertEquals("IP address is whitelisted: 127.0.0.1", hardenedThrowable.getReasonNotSanitized());
     }
@@ -115,7 +121,12 @@ public class StacktraceHardeningServiceTest {
         String remoteAddress = "123.456.789.777";
         String forwardedForIps = "123.456.789,645.12.45.98,127.0.0.1";
 
-        UnsanitizedThrowable hardenedThrowable = (UnsanitizedThrowable) runTestFor(this::exceptionWithoutProperCause, whitelistedIps, remoteAddress, forwardedForIps);
+        UnsanitizedThrowable hardenedThrowable = (UnsanitizedThrowable) runTestFor(
+            this::exceptionWithoutProperCause,
+            whitelistedIps,
+            remoteAddress,
+            forwardedForIps
+        );
         assertNotEquals(0, hardenedThrowable.getStackTrace().length);
         assertEquals("IP address is whitelisted: *", hardenedThrowable.getReasonNotSanitized());
     }

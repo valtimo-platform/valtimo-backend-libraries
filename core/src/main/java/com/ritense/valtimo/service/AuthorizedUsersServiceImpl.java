@@ -19,8 +19,8 @@ package com.ritense.valtimo.service;
 import com.ritense.valtimo.contract.authentication.AuthorizedUserRepository;
 import com.ritense.valtimo.contract.authentication.AuthorizedUsersService;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import org.springframework.security.core.Authentication;
 import java.util.Collection;
+import org.springframework.security.core.Authentication;
 
 public class AuthorizedUsersServiceImpl implements AuthorizedUsersService {
 

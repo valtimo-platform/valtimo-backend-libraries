@@ -16,6 +16,10 @@
 
 package com.ritense.document.domain.impl;
 
+import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowArrayRemovalOperations;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.DocumentContent;
@@ -23,15 +27,12 @@ import com.ritense.document.domain.diff.JsonDifferenceService;
 import com.ritense.document.domain.patch.JsonPatchService;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.json.patch.JsonPatch;
-import java.util.Objects;
-import java.util.Optional;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.util.Objects;
+import java.util.Optional;
 import org.hibernate.annotations.Type;
-import static com.ritense.document.domain.patch.JsonPatchFilterFlag.allowArrayRemovalOperations;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 public class JsonDocumentContent implements DocumentContent {

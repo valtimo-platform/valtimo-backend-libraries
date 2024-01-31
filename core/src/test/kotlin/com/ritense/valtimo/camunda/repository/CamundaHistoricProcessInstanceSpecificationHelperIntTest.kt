@@ -2,7 +2,6 @@ package com.ritense.valtimo.camunda.repository
 
 import com.ritense.valtimo.BaseIntegrationTest
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
-import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.service.CamundaTaskService
 import org.assertj.core.api.Assertions
 import org.camunda.bpm.engine.IdentityService

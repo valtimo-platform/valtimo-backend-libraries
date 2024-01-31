@@ -40,9 +40,6 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.validation.Validation
-import java.util.Optional
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -55,6 +52,9 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Optional
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 internal class PluginServiceTest {
 

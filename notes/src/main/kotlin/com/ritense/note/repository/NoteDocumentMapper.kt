@@ -23,10 +23,10 @@ import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.note.domain.Note
-import java.util.UUID
 import jakarta.persistence.criteria.AbstractQuery
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Root
+import java.util.UUID
 
 class NoteDocumentMapper(
     private val documentService: DocumentService

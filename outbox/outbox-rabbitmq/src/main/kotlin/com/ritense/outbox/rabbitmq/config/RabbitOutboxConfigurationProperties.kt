@@ -16,9 +16,8 @@
 
 package com.ritense.outbox.rabbitmq.config
 
-import java.time.Duration
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.ConstructorBinding
+import java.time.Duration
 
 @ConfigurationProperties(prefix = "valtimo.outbox.publisher.rabbitmq")
 data class RabbitOutboxConfigurationProperties (

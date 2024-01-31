@@ -16,7 +16,6 @@
 
 package com.ritense.documentenapi
 
-import com.ritense.authorization.AuthorizationService
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService

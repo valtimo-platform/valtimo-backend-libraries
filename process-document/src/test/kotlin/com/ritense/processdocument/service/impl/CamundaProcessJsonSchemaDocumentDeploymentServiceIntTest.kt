@@ -17,7 +17,6 @@
 package com.ritense.processdocument.service.impl
 
 import com.ritense.authorization.AuthorizationContext
-import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
 import com.ritense.processdocument.service.ProcessDocumentAssociationService

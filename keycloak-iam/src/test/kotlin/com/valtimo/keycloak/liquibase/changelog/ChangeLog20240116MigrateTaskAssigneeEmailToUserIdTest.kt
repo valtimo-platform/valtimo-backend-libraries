@@ -16,6 +16,8 @@
 
 package com.valtimo.keycloak.liquibase.changelog
 
+import java.sql.PreparedStatement
+import java.sql.ResultSet
 import liquibase.database.Database
 import liquibase.database.jvm.JdbcConnection
 import okhttp3.mockwebserver.Dispatcher
@@ -30,8 +32,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.core.env.ConfigurableEnvironment
-import java.sql.PreparedStatement
-import java.sql.ResultSet
 
 internal class ChangeLog20240116MigrateTaskAssigneeEmailToUserIdTest {
 

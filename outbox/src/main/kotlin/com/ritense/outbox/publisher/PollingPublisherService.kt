@@ -17,10 +17,10 @@
 package com.ritense.outbox.publisher
 
 import com.ritense.outbox.ValtimoOutboxService
-import java.util.concurrent.atomic.AtomicBoolean
 import mu.KotlinLogging
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
+import java.util.concurrent.atomic.AtomicBoolean
 
 open class PollingPublisherService(
     private val outboxService: ValtimoOutboxService,

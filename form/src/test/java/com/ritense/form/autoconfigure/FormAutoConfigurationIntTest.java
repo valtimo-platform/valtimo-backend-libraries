@@ -16,12 +16,13 @@
 
 package com.ritense.form.autoconfigure;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.ritense.form.BaseIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@TestPropertySource( properties = {"valtimo.form.ignoreDisabledFields=true"})
+@TestPropertySource(properties = {"valtimo.form.ignoreDisabledFields=true"})
 class FormAutoConfigurationIntTest extends BaseIntegrationTest {
 
     @Test

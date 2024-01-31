@@ -19,6 +19,8 @@ package com.ritense.document.web.rest.error;
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
 import com.ritense.valtimo.contract.web.rest.error.ExceptionTranslator;
 import com.ritense.valtimo.web.rest.util.HeaderUtil;
+import jakarta.validation.ValidationException;
+import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -26,9 +28,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.spring.web.advice.ProblemHandling;
-
-import jakarta.validation.ValidationException;
-import java.util.Optional;
 
 @ControllerAdvice
 public class DocumentModuleExceptionTranslator extends ExceptionTranslator implements ProblemHandling {

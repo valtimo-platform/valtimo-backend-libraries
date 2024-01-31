@@ -17,11 +17,11 @@
 package com.ritense.objectsapi.domain
 
 import com.ritense.valtimo.contract.json.MapperSingleton
+import java.net.URI
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.contains
 import org.junit.jupiter.api.Test
-import java.net.URI
 
 class ProductAanvraagTest {
 

@@ -16,13 +16,12 @@
 
 package com.ritense.processdocument.domain.impl;
 
-import com.ritense.valtimo.contract.domain.AbstractId;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
+import com.ritense.valtimo.contract.domain.AbstractId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
-
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 public class DocumentDefinitionProcessLinkId

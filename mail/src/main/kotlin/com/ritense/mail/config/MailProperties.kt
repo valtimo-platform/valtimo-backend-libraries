@@ -17,7 +17,6 @@
 package com.ritense.mail.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.bind.ConstructorBinding
 
 @ConfigurationProperties(prefix = "mailing", ignoreUnknownFields = false)
 data class MailingProperties (

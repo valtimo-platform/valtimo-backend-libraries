@@ -18,9 +18,9 @@ package com.ritense.objecttypenapi
 
 import com.ritense.objecttypenapi.client.ObjecttypenApiClient
 import com.ritense.plugin.service.PluginService
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.web.reactive.function.client.WebClient
 
 @AutoConfiguration

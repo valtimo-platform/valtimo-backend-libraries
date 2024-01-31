@@ -16,13 +16,14 @@
 
 package com.ritense.processdocument.domain.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.processdocument.domain.ProcessDocumentDefinitionId;
 import com.ritense.valtimo.contract.domain.AbstractId;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import java.util.Objects;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 public class CamundaProcessJsonSchemaDocumentDefinitionId extends AbstractId<CamundaProcessJsonSchemaDocumentDefinitionId>

@@ -16,14 +16,13 @@
 
 package com.ritense.document.domain.impl;
 
-import com.ritense.document.TestHelper;
-import org.everit.json.schema.ValidationException;
-import org.junit.jupiter.api.Test;
-
-import java.net.URI;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import com.ritense.document.TestHelper;
+import java.net.URI;
+import org.everit.json.schema.ValidationException;
+import org.junit.jupiter.api.Test;
 
 public class JsonSchemaDocumentDefinitionTest extends TestHelper {
 
