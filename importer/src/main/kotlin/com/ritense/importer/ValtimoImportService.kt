@@ -89,8 +89,8 @@ open class ValtimoImportService(
         val orderedImporters = LinkedHashMap<String, Importer>()
         while (orderedImporters.size < importers.size) {
             importers.filter {
-                !orderedImporters.containsKey(it.type()) &&
-                    orderedImporters.keys.containsAll(it.dependsOn())
+                !orderedImporters.containsKey(it.type())
+                    && orderedImporters.keys.containsAll(it.dependsOn())
             }.apply {
                 if (this.isEmpty()) {
                     throw CyclicImporterDependencyException(orderedImporters.keys)

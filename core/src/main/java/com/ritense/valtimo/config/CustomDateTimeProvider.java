@@ -16,10 +16,10 @@
 
 package com.ritense.valtimo.config;
 
-import org.springframework.data.auditing.DateTimeProvider;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Optional;
+import org.springframework.data.auditing.DateTimeProvider;
 
 /**
  * Used by Jpa Auditing.

@@ -27,9 +27,9 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.valtimo.contract.validation.Url
-import java.net.URI
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import java.net.URI
 
 @Plugin(
     key = "objectenapi",

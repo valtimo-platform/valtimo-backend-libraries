@@ -18,12 +18,12 @@ package com.ritense.notificatiesapi.domain
 
 import com.fasterxml.jackson.annotation.JsonValue
 import com.ritense.valtimo.contract.domain.AbstractId
-import java.util.UUID
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
+import java.util.UUID
 
 @Embeddable
-class NotificatiesApiConfigurationId(
+data class NotificatiesApiConfigurationId(
     @Column(name = "notificaties_api_configuration_id")
     @JsonValue
     val id: UUID

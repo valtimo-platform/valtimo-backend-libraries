@@ -19,12 +19,12 @@ package com.ritense.valtimo.config;
 import com.ritense.valtimo.domain.formfields.ChoiceFieldFormFieldType;
 import com.ritense.valtimo.domain.formfields.FileUploadFormFieldType;
 import com.ritense.valtimo.domain.formfields.TextAreaFormFieldType;
+import java.util.ArrayList;
+import java.util.List;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
 import org.camunda.bpm.engine.impl.form.type.AbstractFormFieldType;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CustomFormTypesProcessEnginePlugin implements ProcessEnginePlugin {
 

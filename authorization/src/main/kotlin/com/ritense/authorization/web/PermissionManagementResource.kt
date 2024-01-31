@@ -16,8 +16,8 @@
 
 package com.ritense.authorization.web
 
-import com.ritense.authorization.permission.PermissionRepository
 import com.ritense.authorization.deployment.PermissionDto
+import com.ritense.authorization.permission.PermissionRepository
 import com.ritense.authorization.web.request.SearchPermissionsRequest
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType

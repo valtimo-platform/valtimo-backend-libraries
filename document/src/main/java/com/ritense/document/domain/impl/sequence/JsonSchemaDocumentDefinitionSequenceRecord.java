@@ -16,16 +16,17 @@
 
 package com.ritense.document.domain.impl.sequence;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.sequence.DocumentDefinitionSequenceRecord;
-import org.springframework.data.domain.Persistable;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Table(name = "json_schema_document_definition_sequence_record")

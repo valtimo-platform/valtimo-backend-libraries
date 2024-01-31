@@ -16,8 +16,8 @@
 
 package com.ritense.outbox.config.condition
 
-import com.ritense.outbox.ValtimoOutboxService
 import com.ritense.outbox.NoopOutboxService
+import com.ritense.outbox.ValtimoOutboxService
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag

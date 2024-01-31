@@ -30,6 +30,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.DOCUMENT_UPLOAD
 import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.RESOURCE_ID_PROCESS_VAR
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.history.HistoricProcessInstance
@@ -37,7 +38,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
-import jakarta.transaction.Transactional
 
 @Transactional
 class ResourceUploadedToDocumentEventListenerIT @Autowired constructor(

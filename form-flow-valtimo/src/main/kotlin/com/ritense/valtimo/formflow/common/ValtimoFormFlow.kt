@@ -33,9 +33,9 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
-import org.springframework.transaction.annotation.Transactional
 import java.util.Objects
 import java.util.UUID
+import org.springframework.transaction.annotation.Transactional
 
 @FormFlowBean
 open class ValtimoFormFlow(

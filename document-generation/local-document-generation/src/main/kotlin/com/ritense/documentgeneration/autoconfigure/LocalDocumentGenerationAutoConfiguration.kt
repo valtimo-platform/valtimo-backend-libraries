@@ -20,9 +20,9 @@ import com.ritense.documentgeneration.service.LocalCamundaProcessDocumentGenerat
 import com.ritense.documentgeneration.service.LocalPdfDocumentGenerator
 import com.ritense.documentgeneration.service.PdfDocumentGenerator
 import com.ritense.valtimo.contract.annotation.ProcessBean
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
 @AutoConfiguration
 class LocalDocumentGenerationAutoConfiguration {

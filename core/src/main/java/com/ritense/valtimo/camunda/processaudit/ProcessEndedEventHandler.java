@@ -18,13 +18,13 @@ package com.ritense.valtimo.camunda.processaudit;
 
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.utils.RequestHelper;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 import org.camunda.bpm.engine.impl.history.event.HistoricProcessInstanceEventEntity;
 import org.camunda.bpm.engine.impl.history.event.HistoryEvent;
 import org.camunda.bpm.engine.impl.history.handler.HistoryEventHandler;
 import org.springframework.context.ApplicationEventPublisher;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 
 public class ProcessEndedEventHandler implements HistoryEventHandler {
 

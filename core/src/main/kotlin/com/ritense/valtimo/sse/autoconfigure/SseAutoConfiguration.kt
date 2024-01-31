@@ -19,9 +19,9 @@ package com.ritense.valtimo.sse.autoconfigure
 import com.ritense.valtimo.sse.domain.listener.ProcessEndListener
 import com.ritense.valtimo.sse.domain.listener.TaskUpdateListener
 import com.ritense.valtimo.web.sse.service.SseSubscriptionService
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
 @AutoConfiguration
 class SseAutoConfiguration {

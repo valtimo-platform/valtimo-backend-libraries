@@ -16,6 +16,8 @@
 
 package com.ritense.objectsapi.service
 
+import java.net.URI
+import java.util.UUID
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -26,8 +28,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.util.UriComponents
 import org.springframework.web.util.UriComponentsBuilder
-import java.net.URI
-import java.util.UUID
 
 class ObjectsApiServiceTest {
 

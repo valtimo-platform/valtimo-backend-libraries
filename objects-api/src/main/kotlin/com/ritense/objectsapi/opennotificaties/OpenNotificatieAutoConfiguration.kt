@@ -24,10 +24,10 @@ import com.ritense.objectsapi.web.rest.impl.OpenNotificatieResourceImpl
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.resource.service.OpenZaakService
 import org.springframework.beans.factory.config.BeanDefinition
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Scope
 
 @AutoConfiguration

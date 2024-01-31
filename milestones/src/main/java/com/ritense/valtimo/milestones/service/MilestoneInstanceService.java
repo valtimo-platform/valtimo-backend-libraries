@@ -21,11 +21,11 @@ import com.ritense.valtimo.milestones.domain.MilestoneSet;
 import com.ritense.valtimo.milestones.repository.MilestoneInstanceRepository;
 import com.ritense.valtimo.milestones.service.mapper.MilestoneInstanceMapper;
 import com.ritense.valtimo.milestones.web.rest.dto.MilestoneInstanceDTO;
-import org.springframework.cache.annotation.Cacheable;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
+import org.springframework.cache.annotation.Cacheable;
 
 public class MilestoneInstanceService {
 

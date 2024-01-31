@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.plugin.service.EncryptionService
 import com.ritense.plugin.service.PluginConfigurationEntityListener
 import io.hypersistence.utils.hibernate.type.json.JsonType
-import org.hibernate.annotations.Type
 import jakarta.persistence.Column
 import jakarta.persistence.Embedded
 import jakarta.persistence.Entity
@@ -33,6 +32,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import org.hibernate.annotations.Type
 
 @Entity
 @EntityListeners(PluginConfigurationEntityListener::class)

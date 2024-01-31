@@ -18,13 +18,13 @@ package com.ritense.document.repository;
 
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
-import java.util.List;
-import java.util.Optional;
 
 @NoRepositoryBean
 public interface DocumentDefinitionRepository<T extends DocumentDefinition> extends

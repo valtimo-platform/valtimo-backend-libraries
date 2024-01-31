@@ -19,10 +19,10 @@ package com.ritense.form.domain
 import com.ritense.form.mapper.FormProcessLinkMapper.Companion.PROCESS_LINK_TYPE_FORM
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
-import java.util.UUID
 import jakarta.persistence.Column
 import jakarta.persistence.DiscriminatorValue
 import jakarta.persistence.Entity
+import java.util.UUID
 
 @Entity
 @DiscriminatorValue(PROCESS_LINK_TYPE_FORM)

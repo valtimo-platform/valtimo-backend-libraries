@@ -16,15 +16,16 @@
 
 package com.ritense.document.service.impl;
 
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
-import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
-import com.ritense.document.repository.impl.JsonSchemaDocumentDefinitionSequenceRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
+import com.ritense.document.domain.impl.sequence.JsonSchemaDocumentDefinitionSequenceRecord;
+import com.ritense.document.repository.impl.JsonSchemaDocumentDefinitionSequenceRepository;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class JsonSchemaDocumentDefinitionSequenceGeneratorServiceTest {
 

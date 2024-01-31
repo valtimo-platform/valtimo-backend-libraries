@@ -27,9 +27,6 @@ import com.ritense.valtimo.contract.mail.model.MailMessageStatus;
 import com.ritense.valtimo.contract.mail.model.RawMailMessage;
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
 import com.ritense.valtimo.contract.mail.model.value.Recipient;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -38,6 +35,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MandrillMailDispatcher implements MailDispatcher {
 

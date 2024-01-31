@@ -16,6 +16,8 @@
 
 package com.ritense.processdocument;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -26,7 +28,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.ritense.valtimo.contract.json.JsonPointerHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class JsonTest {
     private String json;

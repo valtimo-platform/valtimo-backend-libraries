@@ -16,18 +16,6 @@
 
 package com.ritense.mail;
 
-import com.ritense.mail.config.MandrillProperties;
-import com.ritense.mail.domain.webhook.MandrillMessageEvent;
-import com.ritense.mail.domain.webhook.MandrillMessageEventMessage;
-import com.ritense.mail.domain.webhook.MandrillWebhookRequest;
-import com.ritense.mail.service.BlacklistService;
-import com.ritense.mail.service.WebhookService;
-import com.ritense.valtimo.contract.json.MapperSingleton;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.HARD_BOUNCE;
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.SOFT_BOUNCE;
 import static com.microtripit.mandrillapp.lutung.view.MandrillWebhook.UNSUB;
@@ -37,6 +25,17 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import com.ritense.mail.config.MandrillProperties;
+import com.ritense.mail.domain.webhook.MandrillMessageEvent;
+import com.ritense.mail.domain.webhook.MandrillMessageEventMessage;
+import com.ritense.mail.domain.webhook.MandrillWebhookRequest;
+import com.ritense.mail.service.BlacklistService;
+import com.ritense.mail.service.WebhookService;
+import com.ritense.valtimo.contract.json.MapperSingleton;
+import java.io.IOException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class WebhookServiceTest {
 

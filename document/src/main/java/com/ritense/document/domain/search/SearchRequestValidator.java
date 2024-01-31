@@ -16,19 +16,6 @@
 
 package com.ritense.document.domain.search;
 
-import com.ritense.document.domain.impl.searchfield.SearchField;
-import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
-import com.ritense.document.exception.SearchConfigRequestException;
-import com.ritense.valtimo.contract.utils.SecurityUtils;
-
-import jakarta.validation.ValidationException;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.TemporalAccessor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.DATE;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.DATETIME;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TIME;
@@ -46,6 +33,18 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
+
+import com.ritense.document.domain.impl.searchfield.SearchField;
+import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
+import com.ritense.document.exception.SearchConfigRequestException;
+import com.ritense.valtimo.contract.utils.SecurityUtils;
+import jakarta.validation.ValidationException;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SearchRequestValidator {
 

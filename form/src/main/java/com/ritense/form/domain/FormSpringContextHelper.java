@@ -17,10 +17,10 @@
 package com.ritense.form.domain;
 
 import com.ritense.valtimo.contract.form.FormFieldDataResolver;
+import jakarta.annotation.Nonnull;
 import java.util.Map;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import jakarta.annotation.Nonnull;
 
 public class FormSpringContextHelper implements ApplicationContextAware {
 

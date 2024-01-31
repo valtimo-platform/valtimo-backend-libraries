@@ -18,12 +18,12 @@ package com.ritense.note.domain
 
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.valtimo.contract.authentication.ManageableUser
-import java.time.LocalDateTime
-import java.util.UUID
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.time.LocalDateTime
+import java.util.UUID
 
 @Entity
 @Table(name = "note")

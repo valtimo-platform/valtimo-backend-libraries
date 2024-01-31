@@ -17,11 +17,11 @@
 package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 public interface DocumentSnapshotResource {
 

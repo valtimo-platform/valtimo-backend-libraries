@@ -16,20 +16,20 @@
 
 package com.ritense.outbox
 
-import org.hibernate.cfg.AvailableSettings.JPA_LOCK_TIMEOUT
+import jakarta.persistence.LockModeType.PESSIMISTIC_WRITE
+import jakarta.persistence.QueryHint
+import org.hibernate.cfg.AvailableSettings.JAKARTA_LOCK_TIMEOUT
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Lock
 import org.springframework.data.jpa.repository.QueryHints
 import java.util.UUID
-import jakarta.persistence.LockModeType.PESSIMISTIC_WRITE
-import jakarta.persistence.QueryHint
 
 interface OutboxMessageRepository : JpaRepository<OutboxMessage, UUID> {
 
     /**
      * Use 'FOR UPDATE SKIP LOCKED' in sql query. But only if it's supported by the 'spring.jpa.database-platform'.
      */
-    @QueryHints(value = [QueryHint(name = JPA_LOCK_TIMEOUT, value = SKIP_LOCKED)])
+    @QueryHints(value = [QueryHint(name = JAKARTA_LOCK_TIMEOUT, value = SKIP_LOCKED)])
     @Lock(PESSIMISTIC_WRITE)
     fun findTopByOrderByCreatedOnAsc(): OutboxMessage?
 

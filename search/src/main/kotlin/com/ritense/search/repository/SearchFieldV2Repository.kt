@@ -17,8 +17,8 @@
 package com.ritense.search.repository
 
 import com.ritense.search.domain.SearchFieldV2
-import java.util.UUID
 import org.springframework.data.jpa.repository.JpaRepository
+import java.util.UUID
 
 interface SearchFieldV2Repository : JpaRepository<SearchFieldV2, UUID> {
 

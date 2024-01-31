@@ -30,9 +30,9 @@ import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.utils.RequestHelper
 import com.ritense.valtimo.contract.utils.SecurityUtils
-import org.springframework.context.ApplicationEventPublisher
 import java.time.LocalDateTime
 import java.util.UUID
+import org.springframework.context.ApplicationEventPublisher
 
 class SmartDocumentGenerator(
     private val connectorService: ConnectorService,

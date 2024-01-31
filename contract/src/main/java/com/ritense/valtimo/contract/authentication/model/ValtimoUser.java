@@ -16,10 +16,11 @@
 
 package com.ritense.valtimo.contract.authentication.model;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import java.util.List;
 import java.util.Objects;
-import static org.springframework.util.ObjectUtils.isEmpty;
 
 public class ValtimoUser implements ManageableUser {
 

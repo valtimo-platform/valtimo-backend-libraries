@@ -16,18 +16,19 @@
 
 package com.ritense.valtimo.camunda.command;
 
-import com.ritense.valtimo.contract.config.LiquibaseRunner;
-import liquibase.exception.DatabaseException;
-import org.camunda.bpm.engine.impl.db.PersistenceSession;
-import org.camunda.bpm.engine.impl.interceptor.CommandContext;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.ritense.valtimo.contract.config.LiquibaseRunner;
+import java.sql.SQLException;
+import liquibase.exception.DatabaseException;
+import org.camunda.bpm.engine.impl.db.PersistenceSession;
+import org.camunda.bpm.engine.impl.interceptor.CommandContext;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class ValtimoSchemaOperationsCommandTest {
 

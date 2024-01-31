@@ -22,7 +22,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
 @Embeddable
-class PluginPropertyId(
+data class PluginPropertyId(
     @Column(name = "plugin_property_key")
     val key: String,
     @JsonIgnore

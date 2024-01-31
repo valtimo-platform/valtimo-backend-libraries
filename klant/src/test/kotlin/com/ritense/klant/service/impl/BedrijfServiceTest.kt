@@ -8,10 +8,10 @@ import com.ritense.klant.domain.KlantSearchFilter
 import com.ritense.klant.domain.NietNatuurlijkPersoonSubjectIdentificatie
 import com.ritense.klant.domain.ResultPage
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.times

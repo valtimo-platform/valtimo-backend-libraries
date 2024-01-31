@@ -16,7 +16,6 @@
 
 package com.ritense.zakenapi
 
-import com.ritense.authorization.AuthorizationService
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.ResourceService

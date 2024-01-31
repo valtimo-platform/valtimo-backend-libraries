@@ -16,27 +16,26 @@
 
 package com.ritense.form.service.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.ritense.document.domain.impl.JsonDocumentContent;
-import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.service.DocumentSequenceGeneratorService;
-import com.ritense.document.service.impl.JsonSchemaDocumentService;
-import com.ritense.form.BaseTest;
-import com.ritense.form.domain.FormIoFormDefinition;
-import com.ritense.form.repository.FormDefinitionRepository;
-import com.ritense.form.service.FormLoaderService;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
-import com.ritense.form.service.PrefillFormService;
-import io.jsonwebtoken.lang.Maps;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.ritense.document.domain.impl.JsonDocumentContent;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.service.DocumentSequenceGeneratorService;
+import com.ritense.form.BaseTest;
+import com.ritense.form.domain.FormIoFormDefinition;
+import com.ritense.form.repository.FormDefinitionRepository;
+import com.ritense.form.service.FormLoaderService;
+import com.ritense.form.service.PrefillFormService;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FormIoFormLoaderServiceTest extends BaseTest {
     private FormLoaderService formLoaderService;

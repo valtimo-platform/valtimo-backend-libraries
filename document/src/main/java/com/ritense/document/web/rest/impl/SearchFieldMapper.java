@@ -18,7 +18,6 @@ package com.ritense.document.web.rest.impl;
 
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
-
 import java.util.ArrayList;
 import java.util.List;
 

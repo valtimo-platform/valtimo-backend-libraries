@@ -16,6 +16,14 @@
 
 package com.ritense.valtimo.camunda.task.service.impl;
 
+import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.mockTask;
+import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.user;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ritense.valtimo.camunda.task.service.NotificationService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
@@ -24,18 +32,10 @@ import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import java.util.List;
-import java.util.Optional;
 import org.camunda.community.mockito.delegate.DelegateTaskFake;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.mockTask;
-import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.user;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class NotificationServiceImplTest {
 

@@ -17,13 +17,13 @@
 package com.ritense.authorization.permission.condition
 
 import com.ritense.authorization.BaseIntegrationTest
-import com.ritense.authorization.permission.condition.PermissionConditionOperator.LIST_CONTAINS
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.EQUAL_TO
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.GREATER_THAN
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.GREATER_THAN_OR_EQUAL_TO
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.IN
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.LESS_THAN
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.LESS_THAN_OR_EQUAL_TO
+import com.ritense.authorization.permission.condition.PermissionConditionOperator.LIST_CONTAINS
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.NOT_EQUAL_TO
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityRepository

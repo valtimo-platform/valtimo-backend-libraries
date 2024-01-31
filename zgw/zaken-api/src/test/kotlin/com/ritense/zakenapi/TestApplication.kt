@@ -16,7 +16,6 @@
 
 package com.ritense.zakenapi
 
-import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.resource.service.ResourceService
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

@@ -16,15 +16,14 @@
 
 package com.ritense.valtimo.contract.utils;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.time.ZoneOffset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import java.time.ZoneOffset;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class RequestHelperTest {
     MockHttpServletRequest mockRequest;

@@ -18,9 +18,9 @@ package com.ritense.plugin.domain
 
 import com.fasterxml.jackson.annotation.JsonValue
 import com.ritense.valtimo.contract.domain.AbstractId
-import java.util.UUID
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
+import java.util.UUID
 
 @Embeddable
 data class PluginConfigurationId(

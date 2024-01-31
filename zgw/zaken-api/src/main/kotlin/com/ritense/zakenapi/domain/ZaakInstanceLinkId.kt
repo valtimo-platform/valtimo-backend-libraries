@@ -20,12 +20,12 @@ package com.ritense.zakenapi.domain
 
 import com.fasterxml.jackson.annotation.JsonValue
 import com.ritense.valtimo.contract.domain.AbstractId
-import java.util.UUID
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
+import java.util.UUID
 
 @Embeddable
-class ZaakInstanceLinkId(
+data class ZaakInstanceLinkId(
 
     @Column(name = "zaak_instance_link_id")
     @JsonValue

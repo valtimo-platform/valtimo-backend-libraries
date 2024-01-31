@@ -24,7 +24,6 @@ import com.ritense.audit.domain.MetaDataBuilder;
 import com.ritense.audit.domain.event.TestEvent;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
-
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;

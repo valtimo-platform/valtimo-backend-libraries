@@ -18,10 +18,10 @@ package com.ritense.valtimo.contract.annotation
 
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ClassInfo
+import java.lang.reflect.Method
 import mu.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.ApplicationContext
-import java.lang.reflect.Method
 
 /**
  *  The AnnotatedClassResolver can scan for classes and methods with a specific annotation.

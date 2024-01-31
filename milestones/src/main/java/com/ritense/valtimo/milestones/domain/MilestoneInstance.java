@@ -23,11 +23,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.Range;
-import org.jvnet.hk2.annotations.Optional;
-
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import org.hibernate.validator.constraints.Range;
+import org.jvnet.hk2.annotations.Optional;
 
 @Entity
 public class MilestoneInstance {

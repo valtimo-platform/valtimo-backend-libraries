@@ -17,7 +17,7 @@
 package com.ritense.valtimo.formflow.repository
 
 import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
-import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
+import org.springframework.data.jpa.repository.JpaRepository
 
 interface FormFlowProcessLinkRepository : JpaRepository<FormFlowProcessLink, UUID>

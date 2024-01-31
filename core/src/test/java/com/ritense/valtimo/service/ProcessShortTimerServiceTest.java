@@ -16,8 +16,18 @@
 
 package com.ritense.valtimo.service;
 
+import static com.ritense.valtimo.service.ProcessShortTimerService.NAMESPACE_URL_BPMN;
+import static com.ritense.valtimo.service.ProcessShortTimerService.NAMESPACE_URL_BPMNDI;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import org.camunda.bpm.engine.RepositoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,15 +35,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import static com.ritense.valtimo.service.ProcessShortTimerService.NAMESPACE_URL_BPMN;
-import static com.ritense.valtimo.service.ProcessShortTimerService.NAMESPACE_URL_BPMNDI;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ProcessShortTimerServiceTest {
 

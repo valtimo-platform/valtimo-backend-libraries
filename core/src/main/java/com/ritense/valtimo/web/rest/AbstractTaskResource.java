@@ -24,15 +24,14 @@ import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.service.util.FormUtils;
 import com.ritense.valtimo.web.rest.dto.CustomTaskDto;
-import org.apache.commons.lang3.StringUtils;
-import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.form.FormField;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
-
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
+import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.form.FormField;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 
 public abstract class AbstractTaskResource {
 

@@ -16,12 +16,12 @@
 
 package com.ritense.valtimo.config;
 
+import java.util.Optional;
+import java.util.TimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import java.util.Optional;
-import java.util.TimeZone;
 
 public class ValtimoApplicationReadyEventListener {
 

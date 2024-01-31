@@ -19,12 +19,12 @@ package com.ritense.authorization.deployment
 import com.ritense.authorization.BaseIntegrationTest
 import com.ritense.authorization.role.RoleRepository
 import com.ritense.valtimo.changelog.repository.ChangesetRepository
+import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import java.time.Instant
 
 internal class RoleDeployerIntTest : BaseIntegrationTest() {
 

@@ -26,10 +26,10 @@ import com.ritense.objectenapi.service.ZaakObjectConstants
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.plugin.service.PluginService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
+import org.springframework.context.event.EventListener
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
-import org.springframework.context.event.EventListener
 
 class ZaakObjectListener(
     private val pluginService: PluginService,

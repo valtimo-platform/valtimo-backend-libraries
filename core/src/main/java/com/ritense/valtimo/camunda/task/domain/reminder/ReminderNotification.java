@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.camunda.task.domain.reminder;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
+
 import com.ritense.valtimo.camunda.task.domain.TaskNotification;
 import com.ritense.valtimo.contract.basictype.EmailAddress;
 import com.ritense.valtimo.contract.basictype.SimpleName;
@@ -28,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
 public class ReminderNotification extends TaskNotification {
 
