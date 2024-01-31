@@ -23,7 +23,7 @@ import jakarta.persistence.Embeddable
 import java.util.UUID
 
 @Embeddable
-class NotificatiesApiConfigurationId(
+data class NotificatiesApiConfigurationId(
     @Column(name = "notificaties_api_configuration_id")
     @JsonValue
     val id: UUID
