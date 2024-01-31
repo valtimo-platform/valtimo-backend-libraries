@@ -26,6 +26,7 @@ class CamundaIncidentHealthIndicator (
 ) : AbstractHealthIndicator() {
     override fun doHealthCheck(builder: Health.Builder) {
         val incidentCount = runtimeService.createIncidentQuery().count()
-        builder.status(if (incidentCount == 0L) Status.UP else Status.UNKNOWN)
+        val restrictedStatus = Status("RESTRICTED");
+        builder.status(if (incidentCount == 0L) Status.UP else restrictedStatus)
     }
 }
