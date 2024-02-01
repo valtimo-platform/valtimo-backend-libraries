@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverService
+import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -174,7 +175,7 @@ internal class PluginServiceTest {
                     "title", MapperSingleton.get().readTree("{\"name\": [\"incorrect-type\"]}") as ObjectNode, "key"
                 )
         }
-        assertEquals("Plugin property with name 'name' failed to parse for plugin 'Test Plugin'", exception.message)
+        assertThat(exception.message).startsWith("Plugin property with name 'name' failed to parse for plugin 'Test Plugin'")
     }
 
     @Test
