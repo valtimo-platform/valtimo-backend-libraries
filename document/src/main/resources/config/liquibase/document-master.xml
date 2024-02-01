@@ -44,4 +44,5 @@
     <include file="changelog/20221021-add-search-field-table.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20221114-add-column-title-to-search-field-table.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20240104-update-version-column.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/20240201-add-internal-case-status-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

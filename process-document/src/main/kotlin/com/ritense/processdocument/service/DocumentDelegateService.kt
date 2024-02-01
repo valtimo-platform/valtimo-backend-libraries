@@ -24,6 +24,7 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
+import com.ritense.document.service.InternalCaseStatusService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.authentication.UserManagementService
@@ -36,6 +37,7 @@ import kotlin.jvm.optionals.getOrNull
 
 class DocumentDelegateService(
     private val processDocumentService: ProcessDocumentService,
+    private val internalCaseStatusService: InternalCaseStatusService,
     private val documentService: DocumentService,
     private val jsonSchemaDocumentService: JsonSchemaDocumentService,
     private val userManagementService: UserManagementService,
@@ -73,7 +75,8 @@ class DocumentDelegateService(
     }
 
     fun getDocument(execution: DelegateExecution): Document {
-        val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
+        val documentId =
+            processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
         return jsonSchemaDocumentService.getDocumentBy(documentId)
     }
 
@@ -106,6 +109,10 @@ class DocumentDelegateService(
             val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
             documentService.unassignUserFromDocument(documentId.id)
         }
+    }
+
+    fun setStatus(execution: DelegateExecution, statusKey: String) {
+        // TODO: Implement
     }
 
     private fun findOptionalValueByJsonPointer(jsonPointer: String?, execution: DelegateExecution): Optional<Any> {

@@ -1,0 +1,41 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Ritense" id="1">
+        <createTable tableName="internal_case_status">
+            <column name="status_key" type="varchar(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="document_definition_name" type="varchar(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="status_title" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="visible_in_case_list_by_default" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order" type="${intType}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="Ritense" id="2">
+        <addColumn tableName="json_schema_document">
+            <column name="internal_case_status_key" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="Ritense" id="3">
+        <addForeignKeyConstraint baseTableName="json_schema_document"
+                                 baseColumnNames="internal_case_status_key"
+                                 constraintName="fk_json_schema_document_internal_case_status_key"
+                                 referencedTableName="internal_case_status"
+                                 referencedColumnNames="status_key"/>
+    </changeSet>
+
+</databaseChangeLog>
