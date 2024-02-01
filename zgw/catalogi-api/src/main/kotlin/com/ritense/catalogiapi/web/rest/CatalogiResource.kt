@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class CatalogiResource(
-    val catalogiService: CatalogiService
+    private val catalogiService: CatalogiService
 ) {
     @GetMapping("/v1/documentdefinition/{documentDefinitionName}/zaaktype/documenttype")
     fun getZaakObjecttypes(
@@ -102,7 +102,7 @@ class CatalogiResource(
         return ResponseEntity.ok(zaakBesluitTypes)
     }
 
-    @GetMapping("/v1/catalogi/zaaktypen")
+    @GetMapping("/management/v1/zgw/zaaktype")
     fun getZaakTypen(): ResponseEntity<List<Zaaktype>> {
         val zaakTypen = catalogiService.getZaakTypen()
         return ResponseEntity.ok(zaakTypen)

@@ -23,4 +23,16 @@ data class Page<T>(
     val next: URI? = null,
     val previous: URI? = null,
     val results: List<T>
-)
+) {
+    companion object {
+        fun <T> getAll(getPage: (page: Int) -> Page<T>): List<T> {
+            var page = 1
+            return generateSequence(getPage(1)) { previousPage ->
+                previousPage.next?.let {
+                    page++
+                    getPage(page)
+                }
+            }.flatMap(Page<T>::results).toList()
+        }
+    }
+}

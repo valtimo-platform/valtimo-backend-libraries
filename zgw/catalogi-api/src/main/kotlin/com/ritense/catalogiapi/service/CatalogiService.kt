@@ -77,7 +77,7 @@ class CatalogiService(
             .createInstance(CatalogiApiPlugin::class.java, CatalogiApiPlugin.findConfigurationByUrl(zaakTypeUrl))
 
         if (catalogiApiPluginInstance == null) {
-            logger.error {"No catalogi plugin configuration was found for zaaktype with URL $zaakTypeUrl" }
+            logger.error { "No catalogi plugin configuration was found for zaaktype with URL $zaakTypeUrl" }
         }
 
         return catalogiApiPluginInstance
@@ -101,14 +101,12 @@ class CatalogiService(
         }
     }
 
-    fun getZaakTypen(): List<Zaaktype> {
+    fun getZaakTypen() =
         pluginService.findPluginConfigurations(CatalogiApiPlugin::class.java)
             .map { config ->
                 pluginService.createInstance(config) as CatalogiApiPlugin
             }
-            .map { plugin -> plugin.getZaaktypen() }
-        TODO("Not yet implemented")
-    }
+            .flatMap { plugin -> plugin.getZaaktypen() }
 
     companion object {
         val logger = KotlinLogging.logger {}

@@ -24,11 +24,13 @@ import com.ritense.catalogiapi.client.ResultaattypeRequest
 import com.ritense.catalogiapi.client.RoltypeRequest
 import com.ritense.catalogiapi.client.StatustypeRequest
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
+import com.ritense.catalogiapi.client.ZaaktypeRequest
 import com.ritense.catalogiapi.domain.Besluittype
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
+import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.catalogiapi.exception.StatustypeNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
@@ -153,7 +155,7 @@ class CatalogiApiPlugin(
                 )
                 results.add(informatieobjecttype)
             }
-        } while(currentResults?.next != null)
+        } while (currentResults?.next != null)
 
         return results
     }
@@ -174,7 +176,7 @@ class CatalogiApiPlugin(
                 )
             )
             results.addAll(currentResults.results)
-        } while(currentResults?.next != null)
+        } while (currentResults?.next != null)
 
         return results
     }
@@ -195,7 +197,7 @@ class CatalogiApiPlugin(
                 )
             )
             results.addAll(currentResults.results)
-        } while(currentResults?.next != null)
+        } while (currentResults?.next != null)
 
         return results
     }
@@ -226,7 +228,7 @@ class CatalogiApiPlugin(
                 )
             )
             results.addAll(currentResults.results)
-        } while(currentResults?.next != null)
+        } while (currentResults?.next != null)
 
         return results
     }
@@ -253,7 +255,7 @@ class CatalogiApiPlugin(
                 )
             )
             results.addAll(currentResults.results)
-        } while(currentResults?.next != null)
+        } while (currentResults?.next != null)
 
         return results
     }
@@ -264,8 +266,15 @@ class CatalogiApiPlugin(
             ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
     }
 
-    fun getZaaktypen() {
-        TODO("Not yet implemented")
+    fun getZaaktypen(): List<Zaaktype> {
+        return Page.getAll { page ->
+            logger.debug { "Getting page of zaaktypen, page $page" }
+            client.getZaaktypen(
+                authenticationPluginConfiguration,
+                url,
+                ZaaktypeRequest(page = page)
+            )
+        }
     }
 
     companion object {

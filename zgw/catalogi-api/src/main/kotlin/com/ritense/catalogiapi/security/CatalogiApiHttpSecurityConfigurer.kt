@@ -16,6 +16,8 @@
 
 package com.ritense.catalogiapi.security
 
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.GET
@@ -32,6 +34,7 @@ class CatalogiApiHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/statustype")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/zgw/zaaktype")).hasRole(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

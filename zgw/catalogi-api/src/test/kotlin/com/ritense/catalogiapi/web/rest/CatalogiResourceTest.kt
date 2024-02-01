@@ -21,6 +21,7 @@ import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
+import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.service.CatalogiService
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
@@ -29,6 +30,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
@@ -215,6 +217,35 @@ internal class CatalogiResourceTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.[1].url").value("http://example.com/2"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("name 1"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.[1].name").value("name 2"))
+    }
+
+    @Test
+    fun `should get zaaktypen`() {
+
+        val zaaktypen = IntRange(1, 2).map { n ->
+            Zaaktype(
+                URI("http://example.com/$n"),
+                "Zaaktype $n"
+            )
+        }
+
+        whenever(catalogiService.getZaakTypen()).thenReturn(zaaktypen)
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/api/management/v1/zgw/zaaktypecatalogus/zaaktypen")
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.*", Matchers.hasSize<Int>(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].url").value("http://example.com/1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].omschrijving").value("Zaaktype 1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[1].url").value("http://example.com/2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[1].omschrijving").value("Zaaktype 2"))
     }
 
 }
