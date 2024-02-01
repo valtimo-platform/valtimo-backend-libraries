@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.domain
+package com.ritense.localization.repository
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.ritense.valtimo.contract.domain.AbstractId
-import jakarta.persistence.Column
-import jakarta.persistence.Embeddable
+import com.ritense.localization.domain.Localization
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
-@Embeddable
-data class PluginPropertyId(
-    @Column(name = "plugin_property_key")
-    val key: String,
-    @JsonIgnore
-    @Column(name = "plugin_definition_key")
-    val pluginDefinitionId: String
-): AbstractId<PluginPropertyId>()
+@Repository
+interface LocalizationRepository : JpaRepository<Localization, String> {
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.domain
+package com.ritense.localization
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.ritense.valtimo.contract.domain.AbstractId
-import jakarta.persistence.Column
-import jakarta.persistence.Embeddable
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
-@Embeddable
-data class PluginPropertyId(
-    @Column(name = "plugin_property_key")
-    val key: String,
-    @JsonIgnore
-    @Column(name = "plugin_definition_key")
-    val pluginDefinitionId: String
-): AbstractId<PluginPropertyId>()
+@SpringBootApplication
+class TestApplication {
+
+    fun main(args: Array<String>) {
+        runApplication<TestApplication>(*args)
+    }
+}

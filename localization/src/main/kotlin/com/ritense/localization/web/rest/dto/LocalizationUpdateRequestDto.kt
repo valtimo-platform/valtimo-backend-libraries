@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.domain
+package com.ritense.localization.web.rest.dto
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.ritense.valtimo.contract.domain.AbstractId
-import jakarta.persistence.Column
-import jakarta.persistence.Embeddable
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.localization.domain.Localization
 
-@Embeddable
-data class PluginPropertyId(
-    @Column(name = "plugin_property_key")
-    val key: String,
-    @JsonIgnore
-    @Column(name = "plugin_definition_key")
-    val pluginDefinitionId: String
-): AbstractId<PluginPropertyId>()
+data class LocalizationUpdateRequestDto(
+    val languageKey: String,
+    val content: ObjectNode,
+) {
+    companion object {
+        fun of(localization: Localization) = LocalizationUpdateRequestDto(
+            languageKey = localization.languageKey,
+            content = localization.content
+        )
+    }
+}
