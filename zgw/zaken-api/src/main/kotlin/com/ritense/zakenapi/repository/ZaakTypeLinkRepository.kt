@@ -16,6 +16,7 @@
 
 package com.ritense.zakenapi.repository
 
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.domain.ZaakTypeLinkId
 import org.springframework.data.jpa.repository.JpaRepository
@@ -28,6 +29,8 @@ interface ZaakTypeLinkRepository : JpaRepository<ZaakTypeLink, ZaakTypeLinkId> {
     fun findByDocumentDefinitionName(documentDefinitionName: String): ZaakTypeLink?
 
     fun findByDocumentDefinitionNameIn(documentDefinitionNames: List<String>): List<ZaakTypeLink>
+
+    fun findByZakenApiPluginConfigurationId(id: PluginConfigurationId): List<ZaakTypeLink>
 
     @Modifying
     @Query("" +

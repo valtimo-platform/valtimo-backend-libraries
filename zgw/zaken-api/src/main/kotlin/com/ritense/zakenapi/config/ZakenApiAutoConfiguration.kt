@@ -19,6 +19,7 @@ package com.ritense.zakenapi.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.ZaakUrlProvider
@@ -26,10 +27,14 @@ import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
+import com.ritense.zakenapi.repository.ZaakTypeLinkRepository
 import com.ritense.zakenapi.resolver.ZaakStatusValueResolverFactory
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import com.ritense.zakenapi.security.ZakenApiHttpSecurityConfigurer
+import com.ritense.zakenapi.service.DefaultZaakTypeLinkService
 import com.ritense.zakenapi.service.ZaakDocumentService
+import com.ritense.zakenapi.service.ZaakTypeLinkService
+import com.ritense.zakenapi.service.ZakenApiEventListener
 import com.ritense.zakenapi.web.rest.ZaakDocumentResource
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -120,5 +125,21 @@ class ZakenApiAutoConfiguration {
     @Bean
     fun zakenApiHttpSecurityConfigurer(): ZakenApiHttpSecurityConfigurer {
         return ZakenApiHttpSecurityConfigurer()
+    }
+
+    @Bean
+    fun zakenApiZaakTypeLinkService(
+        zaakTypeLinkRepository: ZaakTypeLinkRepository,
+        processDocumentAssociationService: ProcessDocumentAssociationService
+    ): ZaakTypeLinkService {
+        return DefaultZaakTypeLinkService(zaakTypeLinkRepository, processDocumentAssociationService)
+    }
+
+    @Bean
+    fun zakenApiEventListener(
+        pluginService: PluginService,
+        zaakTypeLinkService: ZaakTypeLinkService
+    ): ZakenApiEventListener {
+        return ZakenApiEventListener(pluginService, zaakTypeLinkService)
     }
 }

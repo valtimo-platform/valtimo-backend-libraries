@@ -17,12 +17,16 @@
 package com.ritense.zakenapi.service
 
 import com.ritense.document.domain.event.DocumentCreatedEvent
+import com.ritense.plugin.events.PluginConfigurationDeletedEvent
+import com.ritense.plugin.events.PluginConfigurationIdUpdatedEvent
 import com.ritense.plugin.service.PluginService
 import com.ritense.zakenapi.ZakenApiPlugin
+import mu.KLogger
+import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.core.annotation.Order
 
-class DocumentCreatedListener(
+class ZakenApiEventListener(
     val pluginService: PluginService,
     val zaakTypeLinkService: ZaakTypeLinkService
 ) {
@@ -36,5 +40,28 @@ class DocumentCreatedListener(
                 zakenApiPlugin.createZaak(event.documentId().id, it.rsin!!, it.zaakTypeUrl)
             }
         }
+    }
+
+    @EventListener(PluginConfigurationDeletedEvent::class)
+    fun handle(event: PluginConfigurationDeletedEvent) {
+        val zaakTypeLink = zaakTypeLinkService.getByPluginConfigurationId(event.pluginConfiguration.id)
+        zaakTypeLink.forEach {
+            logger.warn { "Plugin configuration used by zaak type link configuration ${it.id.id} was deleted." }
+            it.zakenApiPluginConfigurationId = null
+            zaakTypeLinkService.modify(it)
+        }
+    }
+
+    @EventListener(PluginConfigurationIdUpdatedEvent::class)
+    fun handle(event: PluginConfigurationIdUpdatedEvent) {
+        val zaakTypeLink = zaakTypeLinkService.getByPluginConfigurationId(event.oldId)
+        zaakTypeLink.forEach {
+            it.zakenApiPluginConfigurationId = event.newId
+            zaakTypeLinkService.modify(it)
+        }
+    }
+
+    companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }

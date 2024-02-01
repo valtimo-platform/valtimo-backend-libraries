@@ -27,7 +27,7 @@ import java.net.URI
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
-internal class DocumentCreatedListenerTest {
+internal class ZakenApiEventListenerTest {
 
     val openZaakService = mock<OpenZaakService>()
     val documentCreatedListener = DocumentCreatedListener(openZaakService)

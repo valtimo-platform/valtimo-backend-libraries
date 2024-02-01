@@ -36,6 +36,8 @@ import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.domain.PluginProperty
+import com.ritense.plugin.events.PluginConfigurationDeletedEvent
+import com.ritense.plugin.events.PluginConfigurationIdUpdatedEvent
 import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
@@ -55,6 +57,7 @@ import jakarta.validation.Validator
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.Method
@@ -74,6 +77,7 @@ class PluginService(
     private val valueResolverService: ValueResolverService,
     private val pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
     private val validator: Validator,
+    private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
     fun getObjectMapper(): ObjectMapper {
@@ -229,10 +233,13 @@ class PluginService(
                 } catch (e: Exception) {
                     logger.warn { "Failed to run events on plugin ${it.title} with id ${it.id.id}" }
                 }
+
+                pluginConfigurationRepository.deleteById(pluginConfigurationId)
+
+                val event = PluginConfigurationDeletedEvent(it)
+                applicationEventPublisher.publishEvent(event)
             }
             ?: logger.warn { "Plugin configuration with Id: [$pluginConfigurationId] was not found." }
-
-        pluginConfigurationRepository.deleteById(pluginConfigurationId)
     }
 
     fun getPluginDefinitionActions(
@@ -366,18 +373,15 @@ class PluginService(
                 oldPluginConfiguration.pluginDefinition
             )
         )
-        val processLinks = pluginProcessLinkRepository.findByPluginConfigurationId(oldPluginConfigurationId)
-            .map { it.copy(pluginConfigurationId = newPluginConfigurationId) }
-        pluginProcessLinkRepository.saveAll(processLinks)
-        val configurations = pluginConfigurationRepository.findAll()
-        configurations.forEach { configuration ->
-            configuration.rawProperties?.fields()?.forEachRemaining { property ->
-                if (property.value.textValue() == oldPluginConfigurationId.id.toString()) {
-                    property.setValue(TextNode.valueOf(newPluginConfigurationId.id.toString()))
-                }
-            }
-        }
-        pluginConfigurationRepository.saveAll(configurations)
+
+        val event = PluginConfigurationIdUpdatedEvent(
+            newPluginConfigurationId,
+            oldPluginConfigurationId,
+            newPluginConfiguration
+        )
+
+        applicationEventPublisher.publishEvent(event)
+
         return newPluginConfiguration
     }
 

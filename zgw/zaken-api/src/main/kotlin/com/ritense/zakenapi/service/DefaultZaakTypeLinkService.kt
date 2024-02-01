@@ -17,6 +17,7 @@
 package com.ritense.zakenapi.service
 
 import com.ritense.authorization.AuthorizationContext
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.zakenapi.domain.ZaakTypeLink
@@ -34,6 +35,10 @@ class DefaultZaakTypeLinkService(
 
     override fun get(documentDefinitionName: String): ZaakTypeLink? {
         return zaakTypeLinkRepository.findByDocumentDefinitionName(documentDefinitionName)
+    }
+
+    override fun getByPluginConfigurationId(id: PluginConfigurationId): List<ZaakTypeLink> {
+        return zaakTypeLinkRepository.findByZakenApiPluginConfigurationId(id)
     }
 
     override fun getByProcess(processDefinitionKey: String): List<ZaakTypeLink> {

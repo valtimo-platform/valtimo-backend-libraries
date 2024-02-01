@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.service
+package com.ritense.plugin.events
 
+import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
-import com.ritense.zakenapi.domain.ZaakTypeLink
-import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 
-interface ZaakTypeLinkService {
-
-    fun get(documentDefinitionName: String): ZaakTypeLink?
-
-    fun getByPluginConfigurationId(id: PluginConfigurationId): List<ZaakTypeLink>
-
-    fun getByProcess(processDefinitionKey: String): List<ZaakTypeLink>
-
-    fun createZaakTypeLink(request: CreateZaakTypeLinkRequest): ZaakTypeLink
-
-    fun deleteZaakTypeLinkBy(documentDefinitionName: String)
-
-    fun modify(zaakTypeLink: ZaakTypeLink)
-}
+class PluginConfigurationIdUpdatedEvent(
+    val newId: PluginConfigurationId,
+    val oldId: PluginConfigurationId,
+    val pluginConfiguration: PluginConfiguration,
+)
