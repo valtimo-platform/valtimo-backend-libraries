@@ -20,14 +20,14 @@ import com.ritense.document.domain.InternalCaseStatus
 
 data class InternalCaseStatusResponseDto(
     val key: String,
-    val documentDefinitionName: String,
+    val caseDefinitionName: String,
     val title: String,
     val visibleInCaseListByDefault: Boolean,
     val order: Int
 ) {
     constructor(internalCaseStatus: InternalCaseStatus) : this(
-        internalCaseStatus.key,
-        internalCaseStatus.documentDefinitionName,
+        internalCaseStatus.id.key,
+        internalCaseStatus.id.caseDefinitionName,
         internalCaseStatus.title,
         internalCaseStatus.visibleInCaseListByDefault,
         internalCaseStatus.order
