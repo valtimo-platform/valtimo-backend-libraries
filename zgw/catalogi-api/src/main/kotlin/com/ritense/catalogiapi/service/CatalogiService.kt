@@ -22,6 +22,7 @@ import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
+import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
 import com.ritense.plugin.service.PluginService
 import mu.KotlinLogging
@@ -98,6 +99,15 @@ class CatalogiService(
             logger.error { e }
             null
         }
+    }
+
+    fun getZaakTypen(): List<Zaaktype> {
+        pluginService.findPluginConfigurations(CatalogiApiPlugin::class.java)
+            .map { config ->
+                pluginService.createInstance(config) as CatalogiApiPlugin
+            }
+            .map { plugin -> plugin.getZaaktypen() }
+        TODO("Not yet implemented")
     }
 
     companion object {

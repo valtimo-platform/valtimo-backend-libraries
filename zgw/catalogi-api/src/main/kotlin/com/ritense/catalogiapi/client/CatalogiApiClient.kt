@@ -22,6 +22,7 @@ import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
+import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
@@ -175,6 +176,27 @@ class CatalogiApiClient(
                     .build()
             }.retrieve()
             .toEntity(ClientTools.getTypedPage(Besluittype::class.java))
+            .block()
+
+        return result?.body!!
+    }
+
+    fun getZaaktypen(
+        authentication: CatalogiApiAuthentication,
+        baseUrl: URI,
+        request: ZaaktypeRequest
+    ) : Page<Zaaktype> {
+        val result = buildWebclient(authentication)
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .pathSegment("zaaktypen")
+                    .addOptionalQueryParamFromRequest("catalogus", request.catalogus)
+                    .addOptionalQueryParamFromRequest("status", request.status?.getSearchValue())
+                    .addOptionalQueryParamFromRequest("page", request.page)
+                    .build()
+            }.retrieve()
+            .toEntity(ClientTools.getTypedPage(Zaaktype::class.java))
             .block()
 
         return result?.body!!

@@ -264,6 +264,10 @@ class CatalogiApiPlugin(
             ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
     }
 
+    fun getZaaktypen() {
+        TODO("Not yet implemented")
+    }
+
     companion object {
         val logger = KotlinLogging.logger {}
         const val PLUGIN_KEY = "catalogiapi"
