@@ -226,11 +226,12 @@ class ZakenApiClient(
         return result?.body!!
     }
 
+    @Deprecated("Use createZaak instead")
     fun createZaak(
         authentication: ZakenApiAuthentication,
         baseUrl: URI,
         request: CreateZaakRequest,
-    ): CreateZaakResponse {
+    ): ZaakResponse {
         val result = webclientBuilder
             .clone()
             .filter(authentication)
@@ -245,7 +246,7 @@ class ZakenApiClient(
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
             .retrieve()
-            .toEntity(CreateZaakResponse::class.java)
+            .toEntity(ZaakResponse::class.java)
             .block()
 
         if (result.hasBody()) {

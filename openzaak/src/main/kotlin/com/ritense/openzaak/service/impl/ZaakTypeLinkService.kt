@@ -41,6 +41,7 @@ import java.util.UUID
 import jakarta.validation.ConstraintViolationException
 
 @Transactional
+@Deprecated("Use DefaultZaakTypeLinkService in zaken-api module instead")
 class ZaakTypeLinkService(
     private val zaakTypeLinkRepository: ZaakTypeLinkRepository,
     private val processDocumentAssociationService: ProcessDocumentAssociationService

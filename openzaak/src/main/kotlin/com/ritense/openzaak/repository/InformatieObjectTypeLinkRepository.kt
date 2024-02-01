@@ -23,6 +23,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
+@Deprecated("Use the DocumentenApiPlugin instead")
 interface InformatieObjectTypeLinkRepository: JpaRepository<InformatieObjectTypeLink, InformatieObjectTypeLinkId> {
 
     fun findByDocumentDefinitionName(documentDefinitionName: String): InformatieObjectTypeLink?

@@ -24,6 +24,7 @@ import com.ritense.openzaak.domain.event.StatusSetEvent
 import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.repository.converter.UriAttributeConverter
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.valtimo.contract.domain.AggregateRoot
 import com.ritense.valtimo.contract.domain.DomainEvent
 import com.ritense.valtimo.contract.validation.Validatable
@@ -44,6 +45,7 @@ import org.springframework.data.domain.Persistable
 
 @Entity
 @Table(name = "zaak_type_link")
+@Deprecated("Use ZaakTypeLink in zaken-api module instead")
 data class ZaakTypeLink(
 
     @EmbeddedId
@@ -64,7 +66,10 @@ data class ZaakTypeLink(
     var serviceTaskHandlers: ServiceTaskHandlers,
 
     @Column(name = "create_with_dossier", columnDefinition = "BOOLEAN", nullable = false)
-    var createWithDossier: Boolean = false
+    var createWithDossier: Boolean = false,
+
+    @Column(name = "zaken_api_plugin_configuration_id", nullable = true)
+    var zakenApiPluginConfigurationId: PluginConfigurationId? = null,
 ) : Persistable<ZaakTypeLinkId>, Validatable, AggregateRoot<DomainEvent>() {
 
     init {

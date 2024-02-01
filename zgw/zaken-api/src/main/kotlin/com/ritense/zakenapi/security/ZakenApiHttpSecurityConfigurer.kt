@@ -16,11 +16,24 @@
 
 package com.ritense.zakenapi.security
 
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import com.ritense.zakenapi.domain.ZaakTypeLink
+import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
+import jakarta.validation.Valid
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
+import org.springframework.http.HttpMethod.POST
+import org.springframework.http.ResponseEntity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 
 class ZakenApiHttpSecurityConfigurer : HttpSecurityConfigurer {
 
@@ -29,6 +42,10 @@ class ZakenApiHttpSecurityConfigurer : HttpSecurityConfigurer {
             http.authorizeHttpRequests { requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/zaken-api/document/{documentId}/files")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/zaken-api/document/{documentId}/zaak")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/zaak-type-link/{documentDefinitionName}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/zaak-type-link/process/{processDefinitionKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/management/v1/zaak-type-link")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/management/v1/zaak-type-link/{documentDefinitionName}")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

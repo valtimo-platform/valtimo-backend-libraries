@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.repository
+package com.ritense.zakenapi.repository
 
-import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
-import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLinkId
+import com.ritense.zakenapi.domain.ZaakTypeLink
+import com.ritense.zakenapi.domain.ZaakTypeLinkId
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
-@Deprecated("Use ZaakTypeLinkRepository in zaken-api module instead")
 interface ZaakTypeLinkRepository : JpaRepository<ZaakTypeLink, ZaakTypeLinkId> {
 
     fun findByDocumentDefinitionName(documentDefinitionName: String): ZaakTypeLink?
 
-    fun findByDocumentDefinitionNameIn(documentDefinitionNames: List<String>): List<ZaakTypeLink?>
+    fun findByDocumentDefinitionNameIn(documentDefinitionNames: List<String>): List<ZaakTypeLink>
 
     @Modifying
     @Query("" +

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2020 Dimpact.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.mapping.impl
+package com.ritense.zakenapi.domain
 
 import com.fasterxml.jackson.annotation.JsonValue
 import com.ritense.valtimo.contract.domain.AbstractId
@@ -23,23 +23,22 @@ import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
 @Embeddable
-@Deprecated("Use the DocumentenApiPlugin instead")
-data class InformatieObjectTypeLinkId(
+data class ZaakTypeLinkId(
 
-    @Column(name = "informatie_object_type_link_id")
+    @Column(name = "zaak_type_link_id")
     @JsonValue
     val id: UUID
 
-) : AbstractId<InformatieObjectTypeLinkId>() {
+) : AbstractId<ZaakTypeLinkId>() {
 
     companion object {
 
-        fun existingId(id: UUID): InformatieObjectTypeLinkId {
-            return InformatieObjectTypeLinkId(id)
+        fun existingId(id: UUID): ZaakTypeLinkId {
+            return ZaakTypeLinkId(id)
         }
 
-        fun newId(id: UUID): InformatieObjectTypeLinkId {
-            return InformatieObjectTypeLinkId(id).newIdentity()
+        fun newId(id: UUID): ZaakTypeLinkId {
+            return ZaakTypeLinkId(id).newIdentity()
         }
 
     }

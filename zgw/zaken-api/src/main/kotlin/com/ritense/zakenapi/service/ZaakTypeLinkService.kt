@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.mapping
+package com.ritense.zakenapi.service
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.ritense.zakenapi.domain.ZaakTypeLink
+import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
-@Deprecated("Will not be replaced. See zaken-api module for ZaakTypeLink functionality")
-interface ServiceTaskHandler
+interface ZaakTypeLinkService {
+
+    fun get(documentDefinitionName: String): ZaakTypeLink?
+
+    fun getByProcess(processDefinitionKey: String): List<ZaakTypeLink>
+
+    fun createZaakTypeLink(request: CreateZaakTypeLinkRequest): ZaakTypeLink
+
+    fun deleteZaakTypeLinkBy(documentDefinitionName: String)
+
+    fun modify(zaakTypeLink: ZaakTypeLink)
+}

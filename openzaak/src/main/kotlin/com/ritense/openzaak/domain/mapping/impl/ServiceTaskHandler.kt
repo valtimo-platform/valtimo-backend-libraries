@@ -20,6 +20,7 @@ import com.ritense.openzaak.domain.mapping.ServiceTaskHandler
 import java.io.Serializable
 import java.net.URI
 
+@Deprecated("Use ZakenApiPlugin instead")
 data class ServiceTaskHandler(
     val processDefinitionKey: String,
     val serviceTaskId: String,

@@ -27,6 +27,7 @@ import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.Opschorting
@@ -135,6 +136,14 @@ class ZakenApiPlugin(
     ) {
         val documentId = UUID.fromString(execution.businessKey)
 
+        createZaak(documentId, rsin, zaaktypeUrl)
+    }
+
+    fun createZaak(
+        documentId: UUID,
+        rsin: Rsin,
+        zaaktypeUrl: URI,
+    ) {
         val zaakInstanceLink = zaakInstanceLinkRepository.findByDocumentId(documentId)
         if (zaakInstanceLink != null) {
             logger.warn { "SKIPPING ZAAK CREATION. Reason: a zaak already exists for this case. Case id '$documentId'. Zaak URL '${zaakInstanceLink.zaakInstanceUrl}'." }

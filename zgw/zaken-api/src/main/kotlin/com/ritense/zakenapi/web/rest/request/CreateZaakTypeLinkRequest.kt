@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.mapping
+package com.ritense.zakenapi.web.rest.request
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.ritense.plugin.domain.PluginConfigurationId
+import java.net.URI
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
-@Deprecated("Will not be replaced. See zaken-api module for ZaakTypeLink functionality")
-interface ServiceTaskHandler
+data class CreateZaakTypeLinkRequest(
+    val documentDefinitionName: String,
+    val zaakTypeUrl: URI,
+    val zakenApiPluginConfigurationId: PluginConfigurationId? = null,
+    val createWithDossier: Boolean? = false,
+    val rsin: String? = null
+)
