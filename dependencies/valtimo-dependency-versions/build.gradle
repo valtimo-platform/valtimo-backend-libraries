@@ -46,6 +46,7 @@ dependencies {
         api(project(":document-generation:local-document-generation"))
         api(project(":mail:local-mail"))
         api(project(":resource:local-resource"))
+        api(project(":localization"))
         api(project(":mail"))
         api(project(":mail:mandrill"))
         api(project(":milestones"))

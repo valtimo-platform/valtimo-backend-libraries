@@ -31,6 +31,7 @@ dependencies {
     api(project(":form-flow-valtimo"))
     api(project(":importer"))
     api(project(":keycloak-iam"))
+    api(project(":localization"))
     api(project(":notes"))
     api(project(":plugin"))
     api(project(":plugin-valtimo"))
