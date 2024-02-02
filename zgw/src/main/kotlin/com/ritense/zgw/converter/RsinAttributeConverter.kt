@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.web.rest.request
+package com.ritense.zgw.converter
 
-import java.net.URI
-import java.util.UUID
+import com.ritense.zgw.Rsin
+import jakarta.persistence.AttributeConverter
 
-data class CreateZaakTypeLinkRequest(
-    val documentDefinitionName: String,
-    val zaakTypeUrl: URI,
-    val zakenApiPluginConfigurationId: UUID? = null,
-    val createWithDossier: Boolean? = false,
-    val rsin: String? = null
-)
+class RsinAttributeConverter : AttributeConverter<Rsin, String> {
+
+    override fun convertToDatabaseColumn(attribute: Rsin): String {
+        return attribute.toString()
+    }
+
+    override fun convertToEntityAttribute(dbData: String): Rsin {
+        return Rsin(dbData)
+    }
+}

@@ -36,14 +36,15 @@ import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotBlank
-import java.net.URI
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.annotations.Type
 import org.hibernate.validator.constraints.Length
 import org.springframework.data.domain.Persistable
+import java.net.URI
+import java.util.UUID
 
-@Entity
+@Entity(name = "DeprecatedZaakTypeLink")
 @Table(name = "zaak_type_link")
 @Deprecated("Use ZaakTypeLink in zaken-api module instead")
 data class ZaakTypeLink(
@@ -69,7 +70,7 @@ data class ZaakTypeLink(
     var createWithDossier: Boolean = false,
 
     @Column(name = "zaken_api_plugin_configuration_id", nullable = true)
-    var zakenApiPluginConfigurationId: PluginConfigurationId? = null,
+    var zakenApiPluginConfigurationId: UUID? = null,
 ) : Persistable<ZaakTypeLinkId>, Validatable, AggregateRoot<DomainEvent>() {
 
     init {

@@ -45,7 +45,7 @@ class ZakenApiEventListenerTest {
             "name",
             URI("http://some-url"),
             true,
-            pluginId,
+            pluginId.id,
             mock()
         )
 
@@ -94,7 +94,7 @@ class ZakenApiEventListenerTest {
             "name",
             URI("http://some-url"),
             false,
-            pluginId,
+            pluginId.id,
             mock()
         )
 
@@ -133,7 +133,7 @@ class ZakenApiEventListenerTest {
             "name",
             URI("http://some-url"),
             true,
-            pluginId,
+            pluginId.id,
             mock()
         )
 
@@ -152,7 +152,7 @@ class ZakenApiEventListenerTest {
         val oldPluginId = PluginConfigurationId.existingId(UUID.randomUUID())
         val newPluginId = PluginConfigurationId.existingId(UUID.randomUUID())
         val pluginConfiguration = PluginConfiguration(newPluginId, "name", mock(), mock())
-        val event = PluginConfigurationIdUpdatedEvent(newPluginId, oldPluginId, pluginConfiguration)
+        val event = PluginConfigurationIdUpdatedEvent(newPluginId.id, oldPluginId.id, pluginConfiguration)
         val zaakTypeLinkCaptor = argumentCaptor<ZaakTypeLink>()
 
         val zaakTypeLink = ZaakTypeLink(
@@ -160,7 +160,7 @@ class ZakenApiEventListenerTest {
             "name",
             URI("http://some-url"),
             true,
-            oldPluginId,
+            oldPluginId.id,
             mock()
         )
 

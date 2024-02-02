@@ -375,8 +375,8 @@ class PluginService(
         )
 
         val event = PluginConfigurationIdUpdatedEvent(
-            newPluginConfigurationId,
-            oldPluginConfigurationId,
+            newPluginConfigurationId.id,
+            oldPluginConfigurationId.id,
             newPluginConfiguration
         )
 

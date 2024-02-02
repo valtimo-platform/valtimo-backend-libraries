@@ -17,10 +17,10 @@
 package com.ritense.plugin.events
 
 import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
+import java.util.UUID
 
 class PluginConfigurationIdUpdatedEvent(
-    val newId: PluginConfigurationId,
-    val oldId: PluginConfigurationId,
+    val newId: UUID,
+    val oldId: UUID,
     val pluginConfiguration: PluginConfiguration,
 )

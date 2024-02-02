@@ -17,6 +17,8 @@
 package com.ritense.plugin.service
 
 import com.fasterxml.jackson.databind.node.TextNode
+import com.ritense.plugin.domain.PluginConfigurationId
+import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.events.PluginConfigurationIdUpdatedEvent
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
@@ -29,14 +31,14 @@ class PluginConfigurationListener(
 
     @EventListener(PluginConfigurationIdUpdatedEvent::class)
     fun handle(event: PluginConfigurationIdUpdatedEvent) {
-        val processLinks = pluginProcessLinkRepository.findByPluginConfigurationId(event.oldId)
-            .map { it.copy(pluginConfigurationId = event.newId) }
+        val processLinks = pluginProcessLinkRepository.findByPluginConfigurationId(PluginConfigurationId.existingId(event.oldId))
+            .map { (it as PluginProcessLink).copy(pluginConfigurationId = event.newId) }
         pluginProcessLinkRepository.saveAll(processLinks)
         val configurations = pluginConfigurationRepository.findAll()
         configurations.forEach { configuration ->
             configuration.rawProperties?.fields()?.forEachRemaining { property ->
-                if (property.value.textValue() == event.oldId.id.toString()) {
-                    property.setValue(TextNode.valueOf(event.newId.id.toString()))
+                if (property.value.textValue() == event.oldId.toString()) {
+                    property.setValue(TextNode.valueOf(event.newId.toString()))
                 }
             }
         }

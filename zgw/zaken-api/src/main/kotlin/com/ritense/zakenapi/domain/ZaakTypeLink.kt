@@ -25,6 +25,7 @@ import com.ritense.valtimo.contract.repository.UriAttributeConverter
 import com.ritense.valtimo.contract.validation.Validatable
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 import com.ritense.zgw.Rsin
+import com.ritense.zgw.converter.RsinAttributeConverter
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.EmbeddedId
@@ -34,6 +35,7 @@ import jakarta.validation.constraints.NotBlank
 import org.hibernate.validator.constraints.Length
 import org.springframework.data.domain.Persistable
 import java.net.URI
+import java.util.UUID
 
 @Entity
 @Table(name = "zaak_type_link")
@@ -56,8 +58,9 @@ data class ZaakTypeLink(
     var createWithDossier: Boolean = false,
 
     @Column(name = "zaken_api_plugin_configuration_id", nullable = true)
-    var zakenApiPluginConfigurationId: PluginConfigurationId? = null,
+    var zakenApiPluginConfigurationId: UUID? = null,
 
+    @Convert(converter = RsinAttributeConverter::class)
     @Column(name = "rsin", nullable = true)
     var rsin: Rsin? = null,
 ) : Persistable<ZaakTypeLinkId>, Validatable, AggregateRoot<DomainEvent>() {
