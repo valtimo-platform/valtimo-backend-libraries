@@ -29,10 +29,6 @@ import com.ritense.openzaak.listener.GlobalZaakEventListener
 import com.ritense.openzaak.listener.OpenZaakUndeployDocumentDefinitionEventListener
 import com.ritense.openzaak.listener.ServiceTaskListener
 import com.ritense.openzaak.plugin.OpenZaakUrlProvider
-import com.ritense.openzaak.provider.BsnProvider
-import com.ritense.openzaak.provider.KvkProvider
-import com.ritense.openzaak.provider.ZaakBsnProvider
-import com.ritense.openzaak.provider.ZaakKvkProvider
 import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
 import com.ritense.openzaak.service.DocumentenService
@@ -56,19 +52,17 @@ import com.ritense.openzaak.web.rest.impl.StatusResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeLinkResource
 import com.ritense.openzaak.web.rest.impl.ZaakTypeResource
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
-import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.RepositoryService
 import org.springframework.beans.factory.config.BeanDefinition
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.context.annotation.Scope
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.web.client.RestTemplate
-import kotlin.contracts.ExperimentalContracts
 import com.ritense.openzaak.service.impl.ZaakTypeLinkService as ZaakTypeLinkServiceImpl
 
 @AutoConfiguration
@@ -364,36 +358,6 @@ class OpenZaakAutoConfiguration {
     @ConditionalOnMissingBean(ZaakProcessService::class)
     fun zaakProcessService(zaakStatusService: com.ritense.openzaak.service.ZaakStatusService): ZaakProcessService {
         return ZaakProcessService(zaakStatusService)
-    }
-
-    @OptIn(ExperimentalContracts::class)
-    @Bean
-    @ConditionalOnMissingBean(BsnProvider::class)
-    fun bsnProvider(
-        processDocumentService: ProcessDocumentService,
-        zaakInstanceLinkService: ZaakInstanceLinkService,
-        zaakRolService: ZaakRolService
-    ): BsnProvider {
-        return ZaakBsnProvider(
-            processDocumentService,
-            zaakInstanceLinkService,
-            zaakRolService
-        )
-    }
-
-    @OptIn(ExperimentalContracts::class)
-    @Bean
-    @ConditionalOnMissingBean(KvkProvider::class)
-    fun kvkProvider(
-        processDocumentService: ProcessDocumentService,
-        zaakInstanceLinkService: ZaakInstanceLinkService,
-        zaakRolService: ZaakRolService
-    ) : KvkProvider {
-        return ZaakKvkProvider(
-            processDocumentService,
-            zaakInstanceLinkService,
-            zaakRolService
-        )
     }
 
     @Bean

@@ -335,21 +335,11 @@ class ZakenApiPlugin(
     }
 
     fun getZaakRollen(zaakUrl: URI, roleType: RolType? = null): List<Rol> {
-        return buildList {
-            var currentPage = 1
-            while (true) {
-                val result = client.getZaakRollen(
-                    authenticationPluginConfiguration,
-                    url, zaakUrl, currentPage, roleType
-                )
-                addAll(result.results)
-
-                if (result.next == null) break else currentPage++
-
-                if (currentPage == 50) logger.warn {
-                    "Retrieving over 50 zaakrol pages. Please consider using a paginated result!"
-                }
-            }
+        return Page.getAll(100) { page ->
+            client.getZaakRollen(
+                authenticationPluginConfiguration,
+                url, zaakUrl, page, roleType
+            )
         }
     }
 

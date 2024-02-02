@@ -20,8 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieService
-import com.ritense.openzaak.provider.BsnProvider
-import com.ritense.openzaak.provider.KvkProvider
+import com.ritense.zakenapi.provider.BsnProvider
+import com.ritense.zakenapi.provider.KvkProvider
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService

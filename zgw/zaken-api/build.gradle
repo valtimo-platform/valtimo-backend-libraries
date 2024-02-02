@@ -61,6 +61,7 @@ dependencies {
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
 
     testImplementation project(":test-utils-common")
     testImplementation("com.mysql:mysql-connector-j")

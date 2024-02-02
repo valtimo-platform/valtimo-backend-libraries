@@ -29,8 +29,8 @@ import com.ritense.objectsapi.domain.request.ModifyObjectRequest
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.taak.TaakObjectConnector.Companion.TAAK_CONNECTOR_NAME
-import com.ritense.openzaak.provider.BsnProvider
-import com.ritense.openzaak.provider.KvkProvider
+import com.ritense.zakenapi.provider.BsnProvider
+import com.ritense.zakenapi.provider.KvkProvider
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverService
 import java.net.URI

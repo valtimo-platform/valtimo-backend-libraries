@@ -20,8 +20,8 @@ import com.ritense.connector.service.ConnectorService
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.service.ObjectsApiProperties
-import com.ritense.openzaak.provider.BsnProvider
-import com.ritense.openzaak.provider.KvkProvider
+import com.ritense.zakenapi.provider.BsnProvider
+import com.ritense.zakenapi.provider.KvkProvider
 import com.ritense.valueresolver.ValueResolverService
 import java.util.UUID
 import kotlin.contracts.ExperimentalContracts

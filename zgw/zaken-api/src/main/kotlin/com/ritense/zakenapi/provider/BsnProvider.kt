@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.provider
+package com.ritense.zakenapi.provider
 
 import org.camunda.bpm.engine.delegate.DelegateTask
 import kotlin.contracts.ExperimentalContracts
 
 @ExperimentalContracts
-interface KvkProvider {
-    fun getKvkNummer(task: DelegateTask): String?
+interface BsnProvider {
+    fun getBurgerServiceNummer(task: DelegateTask): String?
 }
