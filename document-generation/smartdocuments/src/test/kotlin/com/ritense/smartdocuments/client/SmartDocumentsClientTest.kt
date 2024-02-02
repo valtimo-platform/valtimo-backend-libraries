@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -320,7 +320,11 @@ internal class SmartDocumentsClientTest : BaseTest() {
         )
 
         // when
-        val response = client.getSmartDocumentsTemplateData(pluginProperties())
+        val response = client.getSmartDocumentsTemplateData(SmartDocumentsPropertiesDto(
+            username = "username",
+            password = "password",
+            url = mockDocumentenApi.url("").toString()
+        ))
 
         // then
         assertThat(response).isNotNull
@@ -389,10 +393,4 @@ internal class SmartDocumentsClientTest : BaseTest() {
     </UsersStructure>
 </SmartDocuments>
         """.trimIndent()
-
-    private fun pluginProperties(): SmartDocumentsPropertiesDto = SmartDocumentsPropertiesDto(
-        username = "username",
-        password = "password",
-        url = mockDocumentenApi.url("/").toString()
-    )
 }
