@@ -16,7 +16,7 @@
 
 package com.ritense.openzaak.listener
 
-import com.ritense.openzaak.service.impl.ZaakTypeLinkService
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.valtimo.contract.event.UndeployDocumentDefinitionEvent
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional

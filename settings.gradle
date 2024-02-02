@@ -61,6 +61,7 @@ include(
     "plugin-valtimo",
     "plugin-authentication:notificaties-api-authentication",
     "plugin-authentication:objecten-api-authentication",
+    "plugin-authentication:openzaak-plugin-authentication",
     "process-document",
     "process-link",
     "resource",

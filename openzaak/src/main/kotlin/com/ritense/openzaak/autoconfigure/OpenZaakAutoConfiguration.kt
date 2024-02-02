@@ -28,6 +28,7 @@ import com.ritense.openzaak.listener.EigenschappenSubmittedListener
 import com.ritense.openzaak.listener.GlobalZaakEventListener
 import com.ritense.openzaak.listener.OpenZaakUndeployDocumentDefinitionEventListener
 import com.ritense.openzaak.listener.ServiceTaskListener
+import com.ritense.openzaak.plugin.OpenZaakUrlProvider
 import com.ritense.openzaak.provider.BsnProvider
 import com.ritense.openzaak.provider.KvkProvider
 import com.ritense.openzaak.provider.ZaakBsnProvider
@@ -36,6 +37,7 @@ import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
 import com.ritense.openzaak.service.DocumentenService
 import com.ritense.openzaak.service.ZaakRolService
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.EigenschapService
 import com.ritense.openzaak.service.impl.InformatieObjectTypeLinkService
 import com.ritense.openzaak.service.impl.OpenZaakConfigService
@@ -44,7 +46,6 @@ import com.ritense.openzaak.service.impl.ZaakProcessService
 import com.ritense.openzaak.service.impl.ZaakResultaatService
 import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.ZaakStatusService
-import com.ritense.openzaak.service.impl.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakTypeService
 import com.ritense.openzaak.web.rest.ZaakInstanceLinkResource
 import com.ritense.openzaak.web.rest.impl.InformatieObjectTypeLinkResource
@@ -68,6 +69,7 @@ import org.springframework.context.annotation.Scope
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.web.client.RestTemplate
 import kotlin.contracts.ExperimentalContracts
+import com.ritense.openzaak.service.impl.ZaakTypeLinkService as ZaakTypeLinkServiceImpl
 
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = ["com.ritense.openzaak.repository"])
@@ -164,7 +166,7 @@ class OpenZaakAutoConfiguration {
         zaakTypeLinkRepository: ZaakTypeLinkRepository,
         processDocumentAssociationService: ProcessDocumentAssociationService
     ): ZaakTypeLinkService {
-        return ZaakTypeLinkService(zaakTypeLinkRepository, processDocumentAssociationService)
+        return ZaakTypeLinkServiceImpl(zaakTypeLinkRepository, processDocumentAssociationService)
     }
 
     @Bean
@@ -392,6 +394,14 @@ class OpenZaakAutoConfiguration {
             zaakInstanceLinkService,
             zaakRolService
         )
+    }
+
+    @Bean
+    fun openZaakUrlProvider(
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        zaakTypeLinkService: com.ritense.openzaak.service.ZaakTypeLinkService
+    ): OpenZaakUrlProvider {
+        return OpenZaakUrlProvider(zaakInstanceLinkService, zaakTypeLinkService)
     }
 
 }

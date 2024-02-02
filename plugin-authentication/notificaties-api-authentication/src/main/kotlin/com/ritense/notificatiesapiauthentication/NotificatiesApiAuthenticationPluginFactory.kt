@@ -15,13 +15,13 @@
  */
 
 import com.ritense.notificatiesapiauthentication.NotificatiesApiAuthenticationPlugin
-import com.ritense.openzaak.service.TokenGeneratorService
+import com.ritense.notificatiesapiauthentication.token.NotificatiesApiPluginTokenGeneratorService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 
 class NotificatiesApiAuthenticationPluginFactory(
     pluginService: PluginService,
-    val tokenGeneratorService: TokenGeneratorService
+    private val tokenGeneratorService: NotificatiesApiPluginTokenGeneratorService
 ) : PluginFactory<NotificatiesApiAuthenticationPlugin>(pluginService) {
 
     override fun create(): NotificatiesApiAuthenticationPlugin {

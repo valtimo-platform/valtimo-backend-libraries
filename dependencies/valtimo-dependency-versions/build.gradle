@@ -73,6 +73,7 @@ dependencies {
         api(project(":klant"))
         api(project(":plugin-authentication:notificaties-api-authentication"))
         api(project(":plugin-authentication:objecten-api-authentication"))
+        api(project(":plugin-authentication:openzaak-plugin-authentication"))
         api(project(":objects-api"))
         api(project(":openzaak"))
         api(project(":resource:openzaak-resource"))

@@ -17,7 +17,8 @@
 package com.ritense.notificatiesapiauthentication
 
 import NotificatiesApiAuthenticationPluginFactory
-import com.ritense.openzaak.service.impl.OpenZaakTokenGeneratorService
+import com.ritense.notificatiesapiauthentication.token.NotificatiesApiPluginTokenGeneratorService
+import com.ritense.notificatiesapiauthentication.token.ValtimoNotificatiesApiPluginTokenGeneratorService
 import com.ritense.plugin.service.PluginService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -27,10 +28,14 @@ import org.springframework.context.annotation.Bean
 class NotificatiesApiAuthenticationPluginAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(NotificatiesApiPluginTokenGeneratorService::class)
+    fun notificatiesApiPluginTokenGeneratorService(): NotificatiesApiPluginTokenGeneratorService = ValtimoNotificatiesApiPluginTokenGeneratorService()
+
+    @Bean
     @ConditionalOnMissingBean(NotificatiesApiAuthenticationPluginFactory::class)
     fun notificatiesApiAuthenticationPluginFactory(
         pluginService: PluginService,
-        tokenGeneratorService: OpenZaakTokenGeneratorService
+        tokenGeneratorService: NotificatiesApiPluginTokenGeneratorService
     ): NotificatiesApiAuthenticationPluginFactory {
         return NotificatiesApiAuthenticationPluginFactory(pluginService, tokenGeneratorService)
     }

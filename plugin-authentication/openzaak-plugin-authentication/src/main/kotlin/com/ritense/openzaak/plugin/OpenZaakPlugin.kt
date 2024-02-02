@@ -19,7 +19,7 @@ package com.ritense.openzaak.plugin
 import com.ritense.besluitenapi.BesluitenApiAuthentication
 import com.ritense.catalogiapi.CatalogiApiAuthentication
 import com.ritense.documentenapi.DocumentenApiAuthentication
-import com.ritense.openzaak.service.TokenGeneratorService
+import com.ritense.openzaak.plugin.token.OpenZaakPluginTokenGeneratorService
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import com.ritense.zakenapi.ZakenApiAuthentication
@@ -34,7 +34,7 @@ import reactor.core.publisher.Mono
     description = "Plugin used to provide authentication for OpenZaak"
 )
 class OpenZaakPlugin(
-    val tokenGeneratorService: TokenGeneratorService
+    private val tokenGeneratorService: OpenZaakPluginTokenGeneratorService
 ) : DocumentenApiAuthentication, ZakenApiAuthentication, CatalogiApiAuthentication, BesluitenApiAuthentication {
 
     @PluginProperty(key = "clientId", secret = false, required = true)

@@ -16,7 +16,7 @@
 
 package com.ritense.openzaak.plugin
 
-import com.ritense.openzaak.service.TokenGeneratorService
+import com.ritense.openzaak.plugin.token.OpenZaakPluginTokenGeneratorService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
@@ -35,7 +35,7 @@ internal class OpenZaakPluginTest {
     @Test
     fun `should add header to request`() {
         val requestCaptor = argumentCaptor<ClientRequest>()
-        val tokenGeneratorService = mock<TokenGeneratorService>()
+        val tokenGeneratorService = mock<OpenZaakPluginTokenGeneratorService>()
         val plugin = OpenZaakPlugin(tokenGeneratorService)
         plugin.clientId = "test"
         plugin.clientSecret = "test"

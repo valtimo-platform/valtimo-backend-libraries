@@ -15,25 +15,18 @@
  */
 
 dockerCompose {
-    projectName = "notificaties-api-authentication"
-
-    integrationTestingPostgresql {
-        isRequiredBy(project.tasks.integrationTestingPostgresql)
-        isRequiredBy(project.tasks.securityTesting)
-        useComposeFiles.addAll("../../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
-    }
-
-    integrationTestingMysql {
-        isRequiredBy(project.tasks.integrationTestingMysql)
-        useComposeFiles.addAll("../../docker-resources/docker-compose-base-test-mysql.yml", "docker-compose-override-mysql.yml")
-    }
+    projectName = "openzaak-plugin-authentication"
 }
 
 dependencies {
     implementation project(':contract')
     implementation project(':core')
     implementation project(':plugin')
-    implementation project(':zgw:notificaties-api')
+    implementation project(':plugin-authentication')
+    implementation project(':zgw:besluiten-api')
+    implementation project(':zgw:catalogi-api')
+    implementation project(':zgw:documenten-api')
+    implementation project(':zgw:zaken-api')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
