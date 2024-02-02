@@ -514,7 +514,6 @@ class PluginService(
                         assert(propertyConfiguration.isPresent) { "Plugin configuration with id ${propertyConfigurationId.id} does not exist!" }
                     } else {
                         val propertyValue = objectMapper.treeToValue(propertyNode, propertyClass)
-                        assert(propertyValue != null)
                         val validationErrors =
                             validator.validateValue(pluginClass, pluginProperty.fieldName, propertyValue)
                         if (validationErrors.isNotEmpty()) {
