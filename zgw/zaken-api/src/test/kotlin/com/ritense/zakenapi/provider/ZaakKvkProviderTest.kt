@@ -25,19 +25,19 @@ import org.mockito.kotlin.whenever
 import java.net.URI
 import java.util.UUID
 
-class ZaakBsnProviderTest {
+class ZaakKvkProviderTest {
 
     lateinit var processDocumentService: ProcessDocumentService
     lateinit var zaakInstanceLinkService: ZaakInstanceLinkService
     lateinit var pluginService: PluginService
-    lateinit var zaakBsnProvider: ZaakBsnProvider
+    lateinit var zaakKvkProvider: ZaakKvkProvider
 
     @BeforeEach
     fun setUp() {
         processDocumentService = mock()
         zaakInstanceLinkService = mock()
         pluginService = mock()
-        zaakBsnProvider = ZaakBsnProvider(
+        zaakKvkProvider = ZaakKvkProvider(
                 processDocumentService,
                 zaakInstanceLinkService,
                 pluginService
@@ -60,9 +60,9 @@ class ZaakBsnProviderTest {
                 createRol(BetrokkeneType.NIET_NATUURLIJK_PERSOON, RolNietNatuurlijkPersoon(annIdentificatie = "1337"), zaakUrl)
         ))
 
-        val bsn = zaakBsnProvider.getBurgerServiceNummer(task)
+        val bsn = zaakKvkProvider.getKvkNummer(task)
 
-        assertThat(bsn).isEqualTo("12345")
+        assertThat(bsn).isEqualTo("1337")
     }
 
     @Test
@@ -74,7 +74,7 @@ class ZaakBsnProviderTest {
         prepareMocks(task, zaakUrl)
 
         val exception = assertThrows<IllegalStateException> {
-            zaakBsnProvider.getBurgerServiceNummer(task)
+            zaakKvkProvider.getKvkNummer(task)
         }
 
         assertThat(exception.message).isEqualTo("No plugin configuration was found for zaak with URL $zaakUrl")

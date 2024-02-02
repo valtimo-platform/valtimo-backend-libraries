@@ -37,7 +37,7 @@ class ZaakBsnProvider(
         val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(task.processInstanceId), task)
         val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId.id).zaakInstanceUrl
 
-        val zakenPlugin = requireNotNull(
+        val zakenPlugin = checkNotNull(
             pluginService.createInstance(ZakenApiPlugin::class.java, ZakenApiPlugin.findConfigurationByUrl(zaakUrl))
         ) { "No plugin configuration was found for zaak with URL $zaakUrl" }
 
