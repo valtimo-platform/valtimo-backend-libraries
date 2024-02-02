@@ -46,6 +46,7 @@ include(
     "importer",
     "keycloak-iam",
     "klant",
+    "localization",
     "mail",
     "mail:flowmailer",
     "mail:local-mail",
