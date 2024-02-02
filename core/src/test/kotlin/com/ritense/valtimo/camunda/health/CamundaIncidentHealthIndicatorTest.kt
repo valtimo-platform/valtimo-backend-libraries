@@ -44,6 +44,6 @@ class CamundaIncidentHealthIndicatorTest {
     @Test
     fun `should return unknown when incidents exist`(){
         whenever(runtimeService.createIncidentQuery().count()).thenReturn(2L)
-        assertEquals(Health.unknown().build(), indicator.health())
+        assertEquals(Health.status("RESTRICTED").build(), indicator.health())
     }
 }

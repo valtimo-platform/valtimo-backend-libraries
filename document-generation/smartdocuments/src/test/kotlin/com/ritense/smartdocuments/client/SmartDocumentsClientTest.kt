@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.BaseTest
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
-import com.ritense.smartdocuments.domain.DocumentsStructure
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
 import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
@@ -320,11 +320,15 @@ internal class SmartDocumentsClientTest : BaseTest() {
         )
 
         // when
-        val response = client.getSmartDocumentsTemplateData(pluginProperties())
+        val response = client.getSmartDocumentsTemplateData(SmartDocumentsPropertiesDto(
+            username = "username",
+            password = "password",
+            url = mockDocumentenApi.url("").toString()
+        ))
 
         // then
         assertThat(response).isNotNull
-        assertThat(response).isInstanceOf(DocumentsStructure::class.java)
+        assertThat(response).isInstanceOf(SmartDocumentsTemplateData::class.java)
     }
 
     private fun mockResponse(
@@ -384,14 +388,9 @@ internal class SmartDocumentsClientTest : BaseTest() {
                     </TemplateGroups>
                     <HeaderGroups/>
                 </GroupsAccess>
+            </UserGroup>
         </UserGroups>
     </UsersStructure>
 </SmartDocuments>
         """.trimIndent()
-
-    private fun pluginProperties(): SmartDocumentsPropertiesDto = SmartDocumentsPropertiesDto(
-        username = "username",
-        password = "password",
-        url = "www.test.com"
-    )
 }
