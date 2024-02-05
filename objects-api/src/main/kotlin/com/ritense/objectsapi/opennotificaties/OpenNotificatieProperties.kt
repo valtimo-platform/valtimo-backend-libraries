@@ -18,6 +18,7 @@ package com.ritense.objectsapi.opennotificaties
 
 import com.ritense.connector.domain.ConnectorProperties
 
+@Deprecated("Since 12.0.0")
 data class OpenNotificatieProperties(
     var baseUrl: String = "",
     var clientId: String = "",

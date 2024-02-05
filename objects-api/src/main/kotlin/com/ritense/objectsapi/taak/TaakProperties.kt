@@ -18,6 +18,7 @@ package com.ritense.objectsapi.taak
 
 import com.ritense.connector.domain.ConnectorProperties
 
+@Deprecated("Since 12.0.0")
 data class TaakProperties(
     var openNotificatieConnectionName: String = "",
     var objectsApiConnectionName: String = "",

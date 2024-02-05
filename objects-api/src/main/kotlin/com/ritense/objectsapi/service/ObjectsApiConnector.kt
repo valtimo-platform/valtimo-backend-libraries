@@ -36,6 +36,7 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 import org.springframework.core.ParameterizedTypeReference
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.objectenapi.ObjectenApiPlugin"))
 @ConnectorType(name = "ObjectsApi")
 class ObjectsApiConnector(
     objectsApiProperties: ObjectsApiProperties,

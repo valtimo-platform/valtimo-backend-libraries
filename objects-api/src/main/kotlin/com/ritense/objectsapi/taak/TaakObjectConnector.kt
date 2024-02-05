@@ -41,6 +41,7 @@ import kotlin.contracts.ExperimentalContracts
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.portaaltaak.PortaaltaakPlugin"))
 @OptIn(ExperimentalContracts::class)
 @ConnectorType(name = TAAK_CONNECTOR_NAME)
 class TaakObjectConnector(

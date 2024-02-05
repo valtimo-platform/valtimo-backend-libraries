@@ -35,6 +35,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.besluitenapi.BesluitenApiPlugin"))
 @ConnectorType(name = "Besluiten")
 class BesluitConnector(
     private var besluitProperties: BesluitProperties,
@@ -48,6 +49,7 @@ class BesluitConnector(
      * @param zaakUri - The URI of the zaak
      * @param besluitTypeUri - The URI of the besluittype
      */
+    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.besluitenapi.BesluitenApiPlugin.createBesluit(zaakUri, besluitTypeUri)"))
     fun createBesluit(zaakUri: URI, besluitTypeUri: URI, businessKey: String): Besluit {
         val request = CreateBesluitRequest(
             verantwoordelijkeOrganisatie = besluitProperties.rsin.toString(),
@@ -65,6 +67,7 @@ class BesluitConnector(
         }
     }
 
+    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.besluitenapi.BesluitenApiPlugin.linkDocumentToBesluit(informatieobject, besluit)"))
     fun createBesluitInformatieobjectRelatie(informatieobject: URI, besluit: URI): BesluitInformatieobjectRelatie {
         val request = BesluitInformatieobjectRelatieRequest(
             informatieobject = informatieobject,

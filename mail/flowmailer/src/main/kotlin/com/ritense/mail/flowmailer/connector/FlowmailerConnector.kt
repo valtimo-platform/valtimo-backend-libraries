@@ -57,6 +57,7 @@ import java.util.UUID
  *  .sendEmail()
  * }
  */
+@Deprecated("Since 12.0.0")
 @ConnectorType(name = "Flowmailer")
 class FlowmailerConnector(
     private var flowmailerConnectorProperties: FlowmailerConnectorProperties,

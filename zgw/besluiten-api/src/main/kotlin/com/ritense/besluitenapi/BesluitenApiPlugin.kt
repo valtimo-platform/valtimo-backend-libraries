@@ -16,6 +16,8 @@
 
 package com.ritense.besluitenapi
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.besluitenapi.client.Besluit
 import com.ritense.besluitenapi.client.BesluitenApiClient
 import com.ritense.besluitenapi.client.CreateBesluitInformatieObject
 import com.ritense.besluitenapi.client.CreateBesluitRequest
@@ -64,10 +66,17 @@ class BesluitenApiPlugin(
         @PluginActionProperty documentUrl: String,
         @PluginActionProperty besluitUrl: String
     ) {
+        linkDocumentToBesluit(URI(documentUrl), URI(besluitUrl))
+    }
+
+    fun linkDocumentToBesluit(
+        documentUrl: URI,
+        besluitUrl: URI
+    ) {
         besluitenApiClient.createBesluitInformatieObject(
             authenticationPluginConfiguration,
             url,
-            CreateBesluitInformatieObject(documentUrl, besluitUrl)
+            CreateBesluitInformatieObject(documentUrl.toString(), besluitUrl.toString())
         )
     }
 
@@ -96,12 +105,44 @@ class BesluitenApiPlugin(
 
         logger.debug { "Creating besluit for zaak $zaakUrl of type $besluittypeUrl" }
 
+        val besluit = createBesluit(
+            zaakUrl = zaakUrl,
+            besluittypeUrl = URI(besluittypeUrl),
+            ingangsdatum = ingangsdatum ?: LocalDate.now(),
+            toelichting = toelichting,
+            bestuursorgaan = bestuursorgaan,
+            vervaldatum = vervaldatum,
+            vervalreden = vervalreden,
+            publicatiedatum = publicatiedatum,
+            verzenddatum = verzenddatum,
+            uiterlijkeReactieDatum = uiterlijkeReactieDatum
+        )
+
+        createdBesluitUrl?.let {
+            logger.debug { "Settings resulting variable $it to ${besluit.url}" }
+            execution.setVariable(it, besluit.url)
+        }
+    }
+
+    fun createBesluit(
+        zaakUrl: URI,
+        besluittypeUrl: URI,
+        toelichting: String? = null,
+        bestuursorgaan: String? = null,
+        ingangsdatum: LocalDate? = null,
+        vervaldatum: LocalDate? = null,
+        vervalreden: Vervalreden? = null,
+        publicatiedatum: LocalDate? = null,
+        verzenddatum: LocalDate? = null,
+        uiterlijkeReactieDatum: LocalDate? = null,
+    ): Besluit {
+
         val besluit = besluitenApiClient.createBesluit(
             authentication = authenticationPluginConfiguration,
             baseUrl = url,
             request = CreateBesluitRequest(
                 zaak = zaakUrl,
-                besluittype = URI(besluittypeUrl),
+                besluittype = besluittypeUrl,
                 verantwoordelijkeOrganisatie = rsin.toString(),
                 datum = LocalDate.now(),
                 ingangsdatum = ingangsdatum ?: LocalDate.now(),
@@ -114,15 +155,16 @@ class BesluitenApiPlugin(
                 uiterlijkeReactiedatum = uiterlijkeReactieDatum
             )
         )
-
-        createdBesluitUrl?.let {
-            logger.debug { "Settings resulting variable $it to ${besluit.url}" }
-            execution.setVariable(it, besluit.url)
-        }
+        return besluit
     }
 
     companion object {
         private val logger: KLogger = KotlinLogging.logger {}
         const val PLUGIN_KEY = "besluitenapi"
+        const val URL_PROPERTY = "url"
+
+        fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
+            url.toString().startsWith(properties[URL_PROPERTY].textValue())
+        }
     }
 }

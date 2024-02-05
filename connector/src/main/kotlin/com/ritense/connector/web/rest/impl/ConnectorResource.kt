@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import java.util.UUID
 
+@Deprecated("Since 12.0.0")
 class ConnectorResource(
     private val connectorService: ConnectorService
 ) : IConnectorResource {

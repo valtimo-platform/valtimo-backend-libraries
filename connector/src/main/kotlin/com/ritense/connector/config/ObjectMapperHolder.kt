@@ -18,6 +18,8 @@ package com.ritense.connector.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.valtimo.contract.json.MapperSingleton
+
+@Deprecated("Since 12.0.0")
 class ObjectMapperHolder(springHandlerInstantiatorImpl: SpringHandlerInstantiatorImpl) {
 
     companion object {

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import mu.KotlinLogging
 import javax.crypto.IllegalBlockSizeException
 
+@Deprecated("Since 12.0.0")
 class Decryptor(private var aesEncryption: AesEncryption) : JsonDeserializer<String>() {
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext?): String {

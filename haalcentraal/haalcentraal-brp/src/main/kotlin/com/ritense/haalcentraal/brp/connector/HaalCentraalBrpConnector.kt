@@ -28,6 +28,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.runBlocking
 
+@Deprecated("Since 12.0.0")
 @ConnectorType(name = "HaalCentraalBrp")
 class HaalCentraalBrpConnector(
     private var haalCentraalBrpProperties: HaalCentraalBrpProperties,

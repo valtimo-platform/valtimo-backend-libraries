@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.valtimo.contract.result.OperationError
 
+@Deprecated("Since 12.0.0")
 interface CreateConnectorInstanceResult {
 
     @JsonProperty("connectorTypeInstance")

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 
+@Deprecated("Since 12.0.0")
 class Encryptor(private var aesEncryption: AesEncryption) : JsonSerializer<String>() {
 
     override fun serialize(value: String, gen: JsonGenerator, serializers: SerializerProvider) {

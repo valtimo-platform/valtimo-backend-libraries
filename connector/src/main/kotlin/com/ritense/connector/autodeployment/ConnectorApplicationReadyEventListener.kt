@@ -22,6 +22,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.annotation.Order
 
+@Deprecated("Since 12.0.0")
 class ConnectorApplicationReadyEventListener(
     private val connectorDeploymentService: ConnectorDeploymentService,
     private val connectors: List<Connector>

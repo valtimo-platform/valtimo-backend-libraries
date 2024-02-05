@@ -30,6 +30,7 @@ import java.util.Base64
 import java.util.UUID
 import mu.KotlinLogging
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.notificatiesapi.NotificatiesApiPlugin"))
 @ConnectorType(name = "OpenNotificatie")
 class OpenNotificatieConnector(
     private var openNotificatieProperties: OpenNotificatieProperties,

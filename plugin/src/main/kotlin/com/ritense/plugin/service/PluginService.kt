@@ -536,6 +536,14 @@ class PluginService(
         return pluginConfiguration?.let { createInstance(it) as T }
     }
 
+    fun <T> createInstances(clazz: Class<T>): List<T> {
+        val annotation = clazz.getAnnotation(Plugin::class.java)
+            ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")
+
+        return pluginConfigurationRepository.findByPluginDefinitionKey(annotation.key)
+            .map { createInstance(it) as T }
+    }
+
     fun <T> findPluginConfiguration(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): PluginConfiguration? {
         val annotation = clazz.getAnnotation(Plugin::class.java)
             ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")

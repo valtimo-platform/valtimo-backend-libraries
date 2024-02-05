@@ -22,6 +22,7 @@ import java.util.UUID
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
+@Deprecated("Since 12.0.0")
 @Embeddable
 data class ConnectorTypeId(
 

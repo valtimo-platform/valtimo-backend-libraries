@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
 import org.springframework.core.annotation.Order
 
+@Deprecated("Since 12.0.0")
 @AutoConfiguration
 class ConnectorSecurityAutoConfiguration {
 

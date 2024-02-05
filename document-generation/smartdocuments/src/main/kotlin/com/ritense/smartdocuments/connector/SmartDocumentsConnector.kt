@@ -27,6 +27,7 @@ import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import java.util.Base64
 import org.apache.commons.io.FilenameUtils
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.smartdocuments.plugin.SmartDocumentsPlugin"))
 @ConnectorType(name = "SmartDocuments")
 class SmartDocumentsConnector(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,

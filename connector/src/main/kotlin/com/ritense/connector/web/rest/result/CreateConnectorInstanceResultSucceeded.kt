@@ -19,6 +19,7 @@ package com.ritense.connector.web.rest.result
 import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.valtimo.contract.result.OperationError
 
+@Deprecated("Since 12.0.0")
 class CreateConnectorInstanceResultSucceeded(
     val connectorTypeInstance: ConnectorInstance?
 ) : CreateConnectorInstanceResult {

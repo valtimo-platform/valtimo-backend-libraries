@@ -31,6 +31,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.io.Resource
 import kotlin.streams.toList
 
+@Deprecated("Since 12.0.0")
 @ConnectorType(name = "WordpressMail")
 class WordpressMailConnector(
     private var wordpressMailConnectorProperties: WordpressMailConnectorProperties,

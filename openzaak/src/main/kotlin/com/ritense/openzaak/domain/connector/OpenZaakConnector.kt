@@ -20,6 +20,7 @@ import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.zakenapi.ZakenApiPlugin"))
 @ConnectorType(name = "OpenZaak", allowMultipleConnectors = false)
 class OpenZaakConnector(
     private var openZaakProperties: OpenZaakProperties

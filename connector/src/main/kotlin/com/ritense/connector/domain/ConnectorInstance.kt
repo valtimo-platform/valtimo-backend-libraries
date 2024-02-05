@@ -31,6 +31,7 @@ import jakarta.validation.constraints.NotBlank
 import org.hibernate.annotations.Type
 import org.hibernate.validator.constraints.Length
 
+@Deprecated("Since 12.0.0")
 @Entity
 @Table(name = "connector_instance", indexes = [Index(name = "ct_name_i", columnList = "name")])
 data class ConnectorInstance(

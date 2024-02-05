@@ -25,6 +25,7 @@ import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import javax.sql.DataSource
 
+@Deprecated("Since 12.0.0")
 @AutoConfiguration
 @ConditionalOnClass(DataSource::class)
 class ConnectorLiquibaseAutoConfiguration {

@@ -16,6 +16,7 @@
 
 package com.ritense.connector.domain
 
+@Deprecated("Since 12.0.0")
 interface Connector {
     fun getProperties(): ConnectorProperties
     fun setProperties(connectorProperties: ConnectorProperties)
