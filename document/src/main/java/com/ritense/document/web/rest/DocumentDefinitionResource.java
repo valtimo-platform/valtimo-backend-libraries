@@ -52,7 +52,7 @@ public interface DocumentDefinitionResource {
         @PageableDefault(sort = {"id_name"}, direction = ASC) Pageable pageable
     );
 
-    @PostMapping(value = "/v1/document-definition-template", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/management/v1/document-definition-template", consumes = APPLICATION_JSON_VALUE)
     ResponseEntity<String> getDocumentDefinitionTemplate(@RequestBody DocumentDefinitionTemplateRequestDto requestDto);
 
     @GetMapping("/management/v1/document-definition")
