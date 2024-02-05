@@ -53,7 +53,7 @@ public interface DocumentDefinitionResource {
     );
 
     @PostMapping(value = "/management/v1/document-definition-template", consumes = APPLICATION_JSON_VALUE)
-    ResponseEntity<String> getDocumentDefinitionTemplate(@RequestBody DocumentDefinitionTemplateRequestDto requestDto);
+    ResponseEntity<String> getDocumentDefinitionTemplate(@Valid @RequestBody DocumentDefinitionTemplateRequestDto requestDto);
 
     @GetMapping("/management/v1/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(

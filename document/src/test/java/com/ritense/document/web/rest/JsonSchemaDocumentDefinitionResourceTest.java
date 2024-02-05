@@ -138,6 +138,21 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
     }
 
     @Test
+    void shouldNotReturnTemplateWhenIdEndsOnPeriod() throws Exception {
+        var objectMapper = MapperSingleton.INSTANCE.get();
+        var requestDto = new DocumentDefinitionTemplateRequestDto("123.", "456");
+
+        mockMvc.perform(
+                post("/api/management/v1/document-definition-template")
+                    .content(objectMapper.writeValueAsString(requestDto))
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void shouldReturnPagedRecordPageWithOldSortByNameProperty() throws Exception {
         ArgumentCaptor<Pageable> pageCaptor = ArgumentCaptor.forClass(Pageable.class);
         when(documentDefinitionService.findAll(pageCaptor.capture())).thenReturn(definitionPage);
