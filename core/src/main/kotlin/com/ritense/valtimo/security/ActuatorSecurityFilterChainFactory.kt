@@ -84,6 +84,8 @@ class ActuatorSecurityFilterChainFactory {
         antMatcher(GET, "${actuatorPath}/configprops"),
         antMatcher(GET, "${actuatorPath}/env"),
         antMatcher(GET, "${actuatorPath}/health"),
+        antMatcher(GET, "${actuatorPath}/health/liveness"),
+        antMatcher(GET, "${actuatorPath}/health/readiness"),
         antMatcher(GET, "${actuatorPath}/mappings"),
         antMatcher(GET, "${actuatorPath}/logfile"),
         antMatcher(GET, "${actuatorPath}/loggers"),
