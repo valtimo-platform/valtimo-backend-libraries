@@ -599,7 +599,6 @@ class PluginService(
             .firstOrNull()
     }
 
-    //TODO: Should we deprecate this, since it is not used?
     fun findPluginConfiguration(
         pluginDefinitionKey: String,
         filter: (JsonNode) -> Boolean

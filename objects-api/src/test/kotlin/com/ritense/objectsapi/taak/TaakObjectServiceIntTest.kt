@@ -162,7 +162,6 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
                 val response = when (request.method + " " + request.path?.substringBefore('?')) {
                     "POST /api/v2/objects" -> mockResponseFromFile("/data/post-create-object.json")
                     "POST /zaken/api/v1/zaken" -> mockResponseFromFile("/data/post-create-zaak.json")
-//                    "GET /zaken/api/v1/rollen" -> mockResponseFromFile("/data/get-rol.json")
                     "GET /api/v1/kanaal" -> mockResponseFromFile("/data/get-kanalen.json")
                     "POST /api/v1/abonnement" -> mockResponseFromFile("/data/post-abonnement.json")
                     else -> MockResponse().setResponseCode(404)
