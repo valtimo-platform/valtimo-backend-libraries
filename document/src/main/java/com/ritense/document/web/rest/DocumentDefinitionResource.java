@@ -22,6 +22,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
+import com.ritense.document.domain.impl.template.DocumentDefinitionTemplateRequestDto;
 import com.ritense.document.service.request.DocumentDefinitionCreateRequest;
 import com.ritense.document.service.result.DeployDocumentDefinitionResult;
 import com.ritense.document.service.result.DocumentVersionsResult;
@@ -51,8 +52,8 @@ public interface DocumentDefinitionResource {
         @PageableDefault(sort = {"id_name"}, direction = ASC) Pageable pageable
     );
 
-    @GetMapping("/v1/document-definition-template")
-    ResponseEntity<String> getDocumentDefinitionTemplate();
+    @PostMapping(value = "/v1/document-definition-template", consumes = APPLICATION_JSON_VALUE)
+    ResponseEntity<String> getDocumentDefinitionTemplate(@RequestBody DocumentDefinitionTemplateRequestDto requestDto);
 
     @GetMapping("/management/v1/document-definition")
     ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitionsForManagement(

@@ -34,7 +34,7 @@ public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityCon
             http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/document-definition")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/document-definition")).authenticated()
-                .requestMatchers(antMatcher(GET, "/api/v1/document-definition-template")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/document-definition-template")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(GET, "/api/v1/document-definition/{name}")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/document-definition/open/count")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition")).hasAuthority(ADMIN)
