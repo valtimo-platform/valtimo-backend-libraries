@@ -38,6 +38,7 @@ import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper
 import com.ritense.valtimo.formflow.repository.FormFlowProcessLinkRepository
 import com.ritense.valtimo.formflow.security.ValtimoFormFlowHttpSecurityConfigurer
 import com.ritense.valtimo.formflow.service.FormFlowSupportedProcessLinksHandler
+import com.ritense.valtimo.formflow.web.rest.FormFlowManagementResource
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
 import com.ritense.valtimo.formflow.web.rest.ProcessLinkFormFlowDefinitionResource
 import com.ritense.valtimo.service.CamundaTaskService
@@ -84,6 +85,14 @@ class FormFlowValtimoAutoConfiguration {
         formFlowService: FormFlowService
     ): FormFlowResource {
         return FormFlowResource(formFlowService)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(FormFlowManagementResource::class)
+    fun formFlowManagementResource(
+        formFlowService: FormFlowService
+    ): FormFlowManagementResource {
+        return FormFlowManagementResource(formFlowService)
     }
 
     @Bean

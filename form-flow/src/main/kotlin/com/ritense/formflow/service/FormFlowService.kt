@@ -96,4 +96,8 @@ class FormFlowService(
     fun getTypeProperties(stepInstance: FormFlowStepInstance): TypeProperties {
         return getFormFlowStepTypeHandler(stepInstance.definition.type).getTypeProperties(stepInstance)
     }
+
+    fun isFormFlowDefinitionReadOnly(definitionKey: String) {
+
+    }
 }
