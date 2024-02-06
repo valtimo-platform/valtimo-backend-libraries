@@ -29,7 +29,7 @@ import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 
 @Transactional
-class ZaakTypeLinkServiceIntTest : BaseIntegrationTest() {
+class ZaaktypeLinkServiceIntTest : BaseIntegrationTest() {
 
     @Inject
     lateinit var zaakTypeLinkService: ZaakTypeLinkService

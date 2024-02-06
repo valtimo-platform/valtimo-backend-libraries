@@ -37,7 +37,7 @@ import java.net.URI
 import java.util.UUID
 import jakarta.validation.ConstraintViolationException
 
-class ZaakTypeLinkTest {
+class ZaaktypeLinkTest {
 
     private val id = ZaakTypeLinkId.newId(UUID.randomUUID())
 

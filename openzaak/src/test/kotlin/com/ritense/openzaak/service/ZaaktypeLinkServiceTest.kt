@@ -38,7 +38,7 @@ import java.net.URI
 import java.util.Optional
 import java.util.UUID
 
-class ZaakTypeLinkServiceTest {
+class ZaaktypeLinkServiceTest {
 
     val documentDefinitionName = "testDocumentDefinitionName"
     val invalidDocumentDefinitionName = "definitelywaymorecharactersthanallowedforadocumentdefinitionname"
