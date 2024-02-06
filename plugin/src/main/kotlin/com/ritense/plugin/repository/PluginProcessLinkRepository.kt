@@ -50,7 +50,7 @@ class PluginProcessLinkRepository(
     fun findByPluginConfigurationIdAndActivityIdAndActivityType(
         pluginConfigurationId: PluginConfigurationId,
         activityId: String,
-        activityType: com.ritense.processlink.domain.ActivityTypeWithEventName
+        activityType: ActivityTypeWithEventName
     ) =
         pluginProcessLinkRepositoryImpl.findByPluginConfigurationIdAndActivityIdAndActivityType(
             pluginConfigurationId,
@@ -69,7 +69,7 @@ interface PluginProcessLinkRepositoryImpl : BaseProcessLinkRepository<PluginProc
     fun findByPluginConfigurationIdAndActivityIdAndActivityType(
         pluginConfigurationId: PluginConfigurationId,
         activityId: String,
-        activityType: com.ritense.processlink.domain.ActivityTypeWithEventName
+        activityType: ActivityTypeWithEventName
     ): List<PluginProcessLink>
 
     fun findByPluginConfigurationId(pluginConfigurationId: PluginConfigurationId): List<PluginProcessLink>
