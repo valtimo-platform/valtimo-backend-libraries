@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package com.ritense.openzaak.plugin
 
-import com.ritense.openzaak.service.TokenGeneratorService
+import com.ritense.openzaak.plugin.token.OpenZaakPluginTokenGeneratorService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 
 class OpenZaakPluginFactory(
     pluginService: PluginService,
-    val tokenGeneratorService: TokenGeneratorService
+    private val tokenGeneratorService: OpenZaakPluginTokenGeneratorService
 ) : PluginFactory<OpenZaakPlugin>(pluginService) {
 
     override fun create(): OpenZaakPlugin {

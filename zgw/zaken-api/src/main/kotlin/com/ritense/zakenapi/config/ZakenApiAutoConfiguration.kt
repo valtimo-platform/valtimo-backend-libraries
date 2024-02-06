@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,10 @@ import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import com.ritense.zakenapi.provider.BsnProvider
+import com.ritense.zakenapi.provider.KvkProvider
+import com.ritense.zakenapi.provider.ZaakBsnProvider
+import com.ritense.zakenapi.provider.ZaakKvkProvider
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zakenapi.repository.ZaakTypeLinkRepository
 import com.ritense.zakenapi.resolver.ZaakStatusValueResolverFactory
@@ -45,6 +49,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.web.reactive.function.client.WebClient
+import kotlin.contracts.ExperimentalContracts
 
 @AutoConfiguration
 @EnableJpaRepositories(basePackages = ["com.ritense.zakenapi.repository"])
@@ -119,6 +124,36 @@ class ZakenApiAutoConfiguration {
         return ZaakStatusValueResolverFactory(
             processDocumentService,
             zaakUrlProvider,
+            pluginService
+        )
+    }
+
+    @OptIn(ExperimentalContracts::class)
+    @Bean
+    @ConditionalOnMissingBean(BsnProvider::class)
+    fun bsnProvider(
+        processDocumentService: ProcessDocumentService,
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        pluginService: PluginService
+    ): BsnProvider {
+        return ZaakBsnProvider(
+            processDocumentService,
+            zaakInstanceLinkService,
+            pluginService
+        )
+    }
+
+    @OptIn(ExperimentalContracts::class)
+    @Bean
+    @ConditionalOnMissingBean(KvkProvider::class)
+    fun kvkProvider(
+        processDocumentService: ProcessDocumentService,
+        zaakInstanceLinkService: ZaakInstanceLinkService,
+        pluginService: PluginService
+    ) : KvkProvider {
+        return ZaakKvkProvider(
+            processDocumentService,
+            zaakInstanceLinkService,
             pluginService
         )
     }

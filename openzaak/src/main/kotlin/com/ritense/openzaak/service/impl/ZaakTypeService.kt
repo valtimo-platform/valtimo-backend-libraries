@@ -27,6 +27,7 @@ class ZaakTypeService(
     private val openZaakTokenGeneratorService: OpenZaakTokenGeneratorService
 ) : ZaakTypeService {
 
+    @Deprecated("Since 12.0.0")
     override fun getZaakTypes(): ResultWrapper<ZaakType> {
         return OpenZaakRequestBuilder(restTemplate, openZaakConfigService, openZaakTokenGeneratorService)
             .path("catalogi/api/v1/zaaktypen")

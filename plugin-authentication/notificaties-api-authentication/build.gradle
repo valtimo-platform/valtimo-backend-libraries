@@ -30,9 +30,9 @@ dockerCompose {
 }
 
 dependencies {
+    implementation project(':contract')
     implementation project(':core')
     implementation project(':plugin')
-    implementation project(':openzaak')
     implementation project(':zgw:notificaties-api')
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"

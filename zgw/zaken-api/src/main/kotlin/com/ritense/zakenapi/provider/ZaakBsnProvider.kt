@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.provider
+package com.ritense.zakenapi.provider
 
-import com.ritense.openzaak.service.ZaakRolService
-import com.ritense.openzaak.service.impl.model.zaak.betrokkene.RolNatuurlijkPersoon
+import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.zakenapi.ZakenApiPlugin
+import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
+import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.camunda.bpm.engine.delegate.DelegateTask
 import kotlin.contracts.ExperimentalContracts
@@ -28,19 +30,22 @@ import kotlin.contracts.ExperimentalContracts
 class ZaakBsnProvider(
     private val processDocumentService: ProcessDocumentService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService,
-    private val zaakRolService: ZaakRolService
+    private val pluginService: PluginService
 ) : BsnProvider {
 
     override fun getBurgerServiceNummer(task: DelegateTask): String? {
-        val document = processDocumentService.getDocument(CamundaProcessInstanceId(task.processInstanceId), task)
-        val zaakLink = zaakInstanceLinkService.getByDocumentId(document.id().id)
-        return zaakRolService.getZaakInitator(zaakLink.zaakInstanceUrl)
-            .results.firstNotNullOfOrNull {
-                when(it.betrokkeneIdentificatie) {
-                    is RolNatuurlijkPersoon -> it.betrokkeneIdentificatie.inpBsn
-                    else -> null
-                }
-            }
-    }
+        val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(task.processInstanceId), task)
+        val zaakUrl = zaakInstanceLinkService.getByDocumentId(documentId.id).zaakInstanceUrl
 
+        val zakenPlugin = checkNotNull(
+            pluginService.createInstance(ZakenApiPlugin::class.java, ZakenApiPlugin.findConfigurationByUrl(zaakUrl))
+        ) { "No plugin configuration was found for zaak with URL $zaakUrl" }
+
+        return zakenPlugin.getZaakRollen(zaakUrl, RolType.INITIATOR).firstNotNullOfOrNull {
+            when (it.betrokkeneIdentificatie) {
+                is RolNatuurlijkPersoon -> it.betrokkeneIdentificatie.inpBsn
+                else -> null
+            }
+        }
+    }
 }
