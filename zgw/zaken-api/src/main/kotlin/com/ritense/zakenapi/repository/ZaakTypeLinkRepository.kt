@@ -16,13 +16,13 @@
 
 package com.ritense.zakenapi.repository
 
-import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.domain.ZaakTypeLinkId
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import java.util.UUID
 
 interface ZaakTypeLinkRepository : JpaRepository<ZaakTypeLink, ZaakTypeLinkId> {
 
@@ -30,7 +30,7 @@ interface ZaakTypeLinkRepository : JpaRepository<ZaakTypeLink, ZaakTypeLinkId> {
 
     fun findByDocumentDefinitionNameIn(documentDefinitionNames: List<String>): List<ZaakTypeLink>
 
-    fun findByZakenApiPluginConfigurationId(id: PluginConfigurationId): List<ZaakTypeLink>
+    fun findByZakenApiPluginConfigurationId(id: UUID): List<ZaakTypeLink>
 
     @Modifying
     @Query("" +

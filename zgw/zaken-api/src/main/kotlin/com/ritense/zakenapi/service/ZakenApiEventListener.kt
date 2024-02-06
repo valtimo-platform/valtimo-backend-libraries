@@ -44,7 +44,7 @@ class ZakenApiEventListener(
 
     @EventListener(PluginConfigurationDeletedEvent::class)
     fun handle(event: PluginConfigurationDeletedEvent) {
-        val zaakTypeLink = zaakTypeLinkService.getByPluginConfigurationId(event.pluginConfiguration.id)
+        val zaakTypeLink = zaakTypeLinkService.getByPluginConfigurationId(event.pluginConfiguration.id.id)
         zaakTypeLink.forEach {
             logger.warn { "Plugin configuration used by zaak type link configuration ${it.id.id} was deleted." }
             it.zakenApiPluginConfigurationId = null

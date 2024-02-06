@@ -21,11 +21,11 @@ import jakarta.persistence.AttributeConverter
 
 class RsinAttributeConverter : AttributeConverter<Rsin, String> {
 
-    override fun convertToDatabaseColumn(attribute: Rsin): String {
-        return attribute.toString()
+    override fun convertToDatabaseColumn(attribute: Rsin?): String? {
+        return attribute?.toString()
     }
 
-    override fun convertToEntityAttribute(dbData: String): Rsin {
-        return Rsin(dbData)
+    override fun convertToEntityAttribute(dbData: String?): Rsin? {
+        return dbData?.let { Rsin(it) }
     }
 }

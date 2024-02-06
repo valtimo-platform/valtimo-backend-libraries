@@ -21,7 +21,6 @@ import com.ritense.plugin.domain.PluginConfiguration
 import jakarta.persistence.PostLoad
 import jakarta.persistence.PostPersist
 import jakarta.persistence.PostUpdate
-import jakarta.persistence.PrePersist
 import jakarta.persistence.PreUpdate
 import mu.KotlinLogging
 
@@ -29,13 +28,6 @@ class PluginConfigurationEntityListener(
     val encryptionService: EncryptionService,
     val objectMapper: ObjectMapper
 ) {
-    @PrePersist
-    fun encryptPropertiesOnSave(pluginConfiguration: PluginConfiguration) {
-        logger.debug { "Encrypting secrets for PluginConfiguration ${pluginConfiguration.title} on initial save" }
-        setBeans(pluginConfiguration)
-        pluginConfiguration.encryptProperties()
-    }
-
     @PostLoad
     @PostPersist
     @PostUpdate

@@ -32,7 +32,7 @@ class PluginConfigurationListener(
     @EventListener(PluginConfigurationIdUpdatedEvent::class)
     fun handle(event: PluginConfigurationIdUpdatedEvent) {
         val processLinks = pluginProcessLinkRepository.findByPluginConfigurationId(PluginConfigurationId.existingId(event.oldId))
-            .map { (it as PluginProcessLink).copy(pluginConfigurationId = event.newId) }
+            .map { it.copy(pluginConfigurationId = PluginConfigurationId.existingId(event.newId)) }
         pluginProcessLinkRepository.saveAll(processLinks)
         val configurations = pluginConfigurationRepository.findAll()
         configurations.forEach { configuration ->

@@ -78,6 +78,7 @@ class PluginService(
     private val pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
     private val validator: Validator,
     private val applicationEventPublisher: ApplicationEventPublisher,
+    private val encryptionService: EncryptionService,
 ) {
 
     fun getObjectMapper(): ObjectMapper {
@@ -120,9 +121,16 @@ class PluginService(
             throw IllegalStateException("Failed to create plugin. Plugin ID '${id.id}' is already used by another plugin.")
         }
 
-        val pluginConfiguration = pluginConfigurationRepository.save(
-            PluginConfiguration(id, title, properties, pluginDefinition)
+        val pluginConfigurationToBeSaved = PluginConfiguration(
+            id,
+            title,
+            properties,
+            pluginDefinition,
+            encryptionService,
+            objectMapper
         )
+
+        val pluginConfiguration = pluginConfigurationRepository.save(pluginConfigurationToBeSaved)
 
         try {
             pluginConfiguration.runAllPluginEvents(EventType.CREATE)
@@ -136,30 +144,41 @@ class PluginService(
     }
 
     fun deployPluginConfigurations(deploymentDto: PluginAutoDeploymentDto) {
-        val plugin: PluginConfiguration
+        val pluginConfiguration: PluginConfiguration
+        var oldConfiguration: PluginConfiguration? = null
+        var action: EventType = EventType.CREATE
+
         val pluginDefinition = pluginDefinitionRepository.getReferenceById(deploymentDto.pluginDefinitionKey)
-        if (deploymentDto.id != null && pluginConfigurationRepository.existsById(
-                PluginConfigurationId.existingId(deploymentDto.id)
-            )
-        ) {
-            deletePluginConfiguration(PluginConfigurationId.existingId(deploymentDto.id))
-        }
         val resolvedProperties = resolveProperties(deploymentDto.properties)
         validateProperties(resolvedProperties, pluginDefinition)
-        val pluginId = pluginConfigurationRepository.saveAndFlush(
-            PluginConfiguration(
-                deploymentDto.id?.let { PluginConfigurationId.existingId(it) } ?: PluginConfigurationId.newId(),
-                deploymentDto.title,
-                resolvedProperties,
-                pluginDefinition
-            )
-        ).id
-        plugin = pluginConfigurationRepository.findById(pluginId).orElseThrow()
+
+        deploymentDto.id?.let {
+            oldConfiguration = pluginConfigurationRepository.findByIdOrNull(PluginConfigurationId.existingId(deploymentDto.id))
+            if (oldConfiguration != null) {
+                action = EventType.UPDATE
+            }
+        }
+
+        pluginConfiguration = PluginConfiguration(
+            deploymentDto.id?.let { PluginConfigurationId.existingId(it) } ?: PluginConfigurationId.newId(),
+            deploymentDto.title,
+            resolvedProperties,
+            pluginDefinition,
+            encryptionService,
+            objectMapper
+        )
+
+        pluginConfigurationRepository.saveAndFlush(pluginConfiguration)
         try {
-            plugin.runAllPluginEvents(EventType.CREATE)
+            pluginConfiguration.runAllPluginEvents(action)
         } catch (e: Exception) {
-            pluginConfigurationRepository.deleteById(plugin.id)
-            throw PluginEventInvocationException(plugin, e)
+            if (oldConfiguration != null) {
+                //restore old configuration
+                pluginConfigurationRepository.save(oldConfiguration)
+            } else {
+                pluginConfigurationRepository.deleteById(pluginConfiguration.id)
+            }
+            throw PluginEventInvocationException(pluginConfiguration, e)
         }
     }
 

@@ -16,15 +16,15 @@
 
 package com.ritense.zakenapi.service
 
-import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
+import java.util.UUID
 
 interface ZaakTypeLinkService {
 
     fun get(documentDefinitionName: String): ZaakTypeLink?
 
-    fun getByPluginConfigurationId(id: PluginConfigurationId): List<ZaakTypeLink>
+    fun getByPluginConfigurationId(id: UUID): List<ZaakTypeLink>
 
     fun getByProcess(processDefinitionKey: String): List<ZaakTypeLink>
 

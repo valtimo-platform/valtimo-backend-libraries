@@ -17,13 +17,13 @@
 package com.ritense.zakenapi.service
 
 import com.ritense.authorization.AuthorizationContext
-import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.zakenapi.domain.ZaakTypeLink
 import com.ritense.zakenapi.domain.ZaakTypeLinkId
 import com.ritense.zakenapi.repository.ZaakTypeLinkRepository
 import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
+import com.ritense.zgw.Rsin
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
@@ -37,7 +37,7 @@ class DefaultZaakTypeLinkService(
         return zaakTypeLinkRepository.findByDocumentDefinitionName(documentDefinitionName)
     }
 
-    override fun getByPluginConfigurationId(id: PluginConfigurationId): List<ZaakTypeLink> {
+    override fun getByPluginConfigurationId(id: UUID): List<ZaakTypeLink> {
         return zaakTypeLinkRepository.findByZakenApiPluginConfigurationId(id)
     }
 
@@ -62,7 +62,9 @@ class DefaultZaakTypeLinkService(
                 ZaakTypeLinkId.newId(UUID.randomUUID()),
                 request.documentDefinitionName,
                 request.zaakTypeUrl,
-                request.createWithDossier ?: false
+                request.createWithDossier ?: false,
+                request.zakenApiPluginConfigurationId,
+                request.rsin?.let { Rsin(it) }
             )
         } else {
             zaakTypeLink.processUpdateRequest(request)

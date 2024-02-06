@@ -43,27 +43,38 @@ class PluginConfiguration(
     val id: PluginConfigurationId,
     @Column(name = "title")
     var title: String,
-    @Type(value = JsonType::class)
-    @Column(name = "properties", columnDefinition = "JSON")
-    internal var rawProperties: ObjectNode? = null,
+    properties: ObjectNode? = null,
     @JoinColumn(name = "plugin_definition_key", updatable = false, nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
     val pluginDefinition: PluginDefinition,
+    @Transient
+    var encryptionService: EncryptionService? = null,
+    @Transient
+    var objectMapper: ObjectMapper? = null,
 ) {
     // used to store unencrypted properties without dirtying the managed entity
+    @Type(value = JsonType::class)
+    @Column(name = "properties", columnDefinition = "JSON")
+    internal var rawProperties: ObjectNode? = null
+
     @Transient
-    var properties: ObjectNode? = rawProperties?.deepCopy()
+    var properties = properties
         get() {
-            if (field == null && rawProperties != null) {
-                field = this.rawProperties?.deepCopy()
+            if (field == null && rawProperties != null)
+            {
                 decryptProperties()
             }
             return field
         }
-    @Transient
-    var encryptionService: EncryptionService? = null
-    @Transient
-    var objectMapper: ObjectMapper? = null
+        private set(value) {
+            field = value
+        }
+
+    init {
+        if (encryptionService != null && objectMapper != null) {
+            encryptProperties()
+        }
+    }
 
     fun updateProperties(propertiesForUpdate: ObjectNode) {
         pluginDefinition.properties.forEach {
@@ -72,17 +83,11 @@ class PluginConfiguration(
                 properties?.replace(it.fieldName, updateValue)
             }
         }
-        encryptProperties(properties)
+        encryptProperties()
     }
 
     internal fun encryptProperties() {
-        encryptProperties(this.rawProperties)
-    }
-
-    private fun encryptProperties(propertiesToEncrypt: ObjectNode?) {
-        if (propertiesToEncrypt !== this.rawProperties) {
-            this.rawProperties = propertiesToEncrypt?.deepCopy()
-        }
+        this.rawProperties = this.properties?.deepCopy()
         PluginConfigurationEntityListener.logger.debug { "Encrypting secrets for PluginConfiguration $title" }
         pluginDefinition.properties.filter {
             it.secret
@@ -99,6 +104,7 @@ class PluginConfiguration(
     }
 
     internal fun decryptProperties() {
+        this.properties = this.rawProperties?.deepCopy()
         PluginConfigurationEntityListener.logger.debug { "Decrypting secrets for PluginConfiguration $title" }
         pluginDefinition.properties.filter {
             it.secret

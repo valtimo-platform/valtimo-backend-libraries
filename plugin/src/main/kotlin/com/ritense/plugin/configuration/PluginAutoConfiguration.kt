@@ -122,6 +122,7 @@ class PluginAutoConfiguration {
         pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
         validator: Validator,
         applicationEventPublisher: ApplicationEventPublisher,
+        encryptionService: EncryptionService
     ): PluginService {
         return PluginService(
             pluginDefinitionRepository,
@@ -133,7 +134,8 @@ class PluginAutoConfiguration {
             valueResolverService,
             pluginConfigurationSearchRepository,
             validator,
-            applicationEventPublisher
+            applicationEventPublisher,
+            encryptionService
         )
     }
 

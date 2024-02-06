@@ -35,7 +35,9 @@ import com.ritense.zakenapi.service.DefaultZaakTypeLinkService
 import com.ritense.zakenapi.service.ZaakDocumentService
 import com.ritense.zakenapi.service.ZaakTypeLinkService
 import com.ritense.zakenapi.service.ZakenApiEventListener
+import com.ritense.zakenapi.web.rest.DefaultZaakTypeLinkResource
 import com.ritense.zakenapi.web.rest.ZaakDocumentResource
+import com.ritense.zakenapi.web.rest.ZaakTypeLinkResource
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -141,5 +143,12 @@ class ZakenApiAutoConfiguration {
         zaakTypeLinkService: ZaakTypeLinkService
     ): ZakenApiEventListener {
         return ZakenApiEventListener(pluginService, zaakTypeLinkService)
+    }
+
+    @Bean
+    fun zakenApiZaakTypeLinkResource(
+        zaakTypeLinkService: ZaakTypeLinkService
+    ): ZaakTypeLinkResource {
+        return DefaultZaakTypeLinkResource(zaakTypeLinkService)
     }
 }
