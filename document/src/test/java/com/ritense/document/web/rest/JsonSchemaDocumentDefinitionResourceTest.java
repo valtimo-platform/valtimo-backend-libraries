@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.BaseTest;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
+import com.ritense.document.domain.impl.template.DocumentDefinitionTemplateRequestDto;
 import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
@@ -106,6 +107,49 @@ class JsonSchemaDocumentDefinitionResourceTest extends BaseTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$").isNotEmpty());
+    }
+
+    @Test
+    void shouldReturnTemplate() throws Exception {
+        var objectMapper = MapperSingleton.INSTANCE.get();
+        var requestDto = new DocumentDefinitionTemplateRequestDto("123", "456");
+
+        mockMvc.perform(
+            post("/api/management/v1/document-definition-template")
+                .content(objectMapper.writeValueAsString(requestDto))
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().json(
+                """
+                {
+                    "$id": "123.schema",
+                    "type": "object",
+                    "title": "456",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "properties": {},
+                    "additionalProperties":false
+                }
+                """
+            ));
+    }
+
+    @Test
+    void shouldNotReturnTemplateWhenIdEndsOnPeriod() throws Exception {
+        var objectMapper = MapperSingleton.INSTANCE.get();
+        var requestDto = new DocumentDefinitionTemplateRequestDto("123.", "456");
+
+        mockMvc.perform(
+                post("/api/management/v1/document-definition-template")
+                    .content(objectMapper.writeValueAsString(requestDto))
+                    .characterEncoding(StandardCharsets.UTF_8.name())
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest());
     }
 
     @Test
