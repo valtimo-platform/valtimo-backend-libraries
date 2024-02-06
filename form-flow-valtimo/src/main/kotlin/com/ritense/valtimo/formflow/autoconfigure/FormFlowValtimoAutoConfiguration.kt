@@ -90,9 +90,11 @@ class FormFlowValtimoAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(FormFlowManagementResource::class)
     fun formFlowManagementResource(
-        formFlowService: FormFlowService
+        formFlowService: FormFlowService,
+        formFlowDeploymentService: FormFlowDeploymentService,
+        objectMapper: ObjectMapper
     ): FormFlowManagementResource {
-        return FormFlowManagementResource(formFlowService)
+        return FormFlowManagementResource(formFlowService, formFlowDeploymentService, objectMapper)
     }
 
     @Bean

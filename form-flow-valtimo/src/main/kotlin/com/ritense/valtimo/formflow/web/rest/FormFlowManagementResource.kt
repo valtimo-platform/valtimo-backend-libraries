@@ -16,40 +16,105 @@
 
 package com.ritense.valtimo.formflow.web.rest
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.exporter.ExportPrettyPrinter
+import com.ritense.formflow.domain.definition.FormFlowDefinitionId
+import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
+import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
-import com.ritense.valtimo.formflow.web.rest.result.FormFlowDefinitionResponse
-import jakarta.transaction.Transactional
+import com.ritense.valtimo.formflow.web.rest.result.FormFlowDefinitionDto
+import com.ritense.valtimo.formflow.web.rest.result.ListFormFlowDefinitionResponse
 import org.springframework.http.ResponseEntity
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @SkipComponentScan
-@RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
+@RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
 class FormFlowManagementResource(
-    private val formFlowService: FormFlowService
+    private val formFlowService: FormFlowService,
+    private val formFlowDeploymentService: FormFlowDeploymentService,
+    private val objectMapper: ObjectMapper
 ) {
-    @GetMapping("/management/v1/form-flow/definition")
+    @GetMapping("/v1/form-flow/definition")
     @Transactional
     fun getAllFormFlowDefinitions(
-    ): ResponseEntity<List<FormFlowDefinitionResponse>> {
+    ): ResponseEntity<List<ListFormFlowDefinitionResponse>> {
         val definitions = formFlowService.getFormFlowDefinitions()
             .groupBy { it.id.key }
-            .map { FormFlowDefinitionResponse.of(it.value) }
+            .map { it.value.maxBy { it.id.version } }
+            .map { ListFormFlowDefinitionResponse.of(it, formFlowDeploymentService.isAutoDeployed(it.id.key)) }
         return ResponseEntity.ok(definitions)
     }
 
-    @GetMapping("/management/v1/form-flow/definition/{definitionKey}")
+    @GetMapping("/v1/form-flow/definition/{definitionKey}")
     @Transactional
     fun getFormFlowDefinitionByKey(
         @PathVariable definitionKey: String,
-    ): ResponseEntity<FormFlowDefinitionResponse> {
-        val definition = formFlowService.findDefinition(definitionKey)
-        return ResponseEntity.ok(FormFlowDefinitionResponse.of(definition))
+    ): ResponseEntity<FormFlowDefinitionDto> {
+        val definition = formFlowService.findLatestDefinitionByKey(definitionKey)
+            ?: return ResponseEntity.notFound().build()
+        val readOnly = formFlowDeploymentService.isAutoDeployed(definition.id.key)
+        return ResponseEntity.ok(FormFlowDefinitionDto.of(definition, readOnly))
+    }
+
+    @DeleteMapping("/v1/form-flow/definition/{definitionKey}")
+    @Transactional
+    fun deleteFormFlowDefinition(
+        @PathVariable definitionKey: String,
+    ): ResponseEntity<Unit> {
+        formFlowService.deleteByKey(definitionKey)
+        return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/v1/form-flow/definition/{definitionKey}/{definitionVersion}/download")
+    @Transactional
+    fun downloadFormFlowDefinitionByKey(
+        @PathVariable definitionKey: String,
+        @PathVariable definitionVersion: Long,
+    ): ResponseEntity<ByteArray> {
+        val definition = formFlowService.findDefinition(FormFlowDefinitionId(definitionKey, definitionVersion))
+        val bytes = objectMapper.writer(ExportPrettyPrinter())
+            .writeValueAsBytes(FormFlowDefinition.fromEntity(definition))
+        return ResponseEntity.ok(bytes)
+    }
+
+    @PostMapping("/v1/form-flow/definition")
+    @Transactional
+    fun createFormFlowDefinition(
+        @RequestBody definitionDto: FormFlowDefinitionDto
+    ): ResponseEntity<FormFlowDefinitionDto> {
+        if (formFlowService.findLatestDefinitionByKey(definitionDto.key) != null) {
+            return ResponseEntity.badRequest().build()
+        }
+        val newDefinition = formFlowService.save(definitionDto.toEntity())
+        return ResponseEntity.ok(FormFlowDefinitionDto.of(newDefinition, false))
+    }
+
+    @PutMapping("/v1/form-flow/definition/{definitionKey}")
+    @Transactional
+    fun updateFormFlowDefinition(
+        @PathVariable definitionKey: String,
+        @RequestBody definitionDto: FormFlowDefinitionDto
+    ): ResponseEntity<FormFlowDefinitionDto> {
+        val readOnly = formFlowDeploymentService.isAutoDeployed(definitionKey)
+        if (readOnly) {
+            return ResponseEntity.badRequest().build()
+        }
+        val oldDefinition = formFlowService.findLatestDefinitionByKey(definitionDto.key)
+            ?: return ResponseEntity.notFound().build()
+
+        val newDefinition = formFlowService.save(definitionDto.copy(version = oldDefinition.id.version + 1).toEntity())
+        return ResponseEntity.ok(FormFlowDefinitionDto.of(newDefinition, false))
     }
 
 }

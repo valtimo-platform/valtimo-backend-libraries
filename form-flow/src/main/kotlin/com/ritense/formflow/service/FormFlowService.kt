@@ -64,12 +64,12 @@ class FormFlowService(
         return formFlowDefinitionRepository.findFirstByIdKeyOrderByIdVersionDesc(formFlowKey)
     }
 
-    fun save(formFlowDefinition: FormFlowDefinition) {
-        formFlowDefinitionRepository.findById(formFlowDefinition.id).ifPresentOrElse({
+    fun save(formFlowDefinition: FormFlowDefinition): FormFlowDefinition {
+        if (formFlowDefinitionRepository.existsById(formFlowDefinition.id)) {
             throw UnsupportedOperationException("Failed to save From Flow. Form Flow already exists: ${formFlowDefinition.id}")
-        }, {
-            formFlowDefinitionRepository.save(formFlowDefinition)
-        })
+        } else {
+            return formFlowDefinitionRepository.save(formFlowDefinition)
+        }
     }
 
     fun getInstanceById(formFlowInstanceId: FormFlowInstanceId): FormFlowInstance {
@@ -97,7 +97,9 @@ class FormFlowService(
         return getFormFlowStepTypeHandler(stepInstance.definition.type).getTypeProperties(stepInstance)
     }
 
-    fun isFormFlowDefinitionReadOnly(definitionKey: String) {
-
+    fun deleteByKey(definitionKey: String) {
+        val definition = findLatestDefinitionByKey(definitionKey)
+            ?: return
+        formFlowDefinitionRepository.deleteById(definition.id)
     }
 }

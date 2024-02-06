@@ -18,16 +18,17 @@ package com.ritense.valtimo.formflow.web.rest.result
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
 
-class FormFlowDefinitionResponse(
+data class ListFormFlowDefinitionResponse(
     val key: String,
-    val versions: List<Long>
+    val version: Long,
+    val readOnly: Boolean
 ) {
     companion object {
-        fun of(formFlowDefinitions: List<FormFlowDefinition>): FormFlowDefinitionResponse {
-            val key = formFlowDefinitions[0].id.key
-            assert(formFlowDefinitions.all { it.id.key == key })
-            val versions = formFlowDefinitions.map { it.id.version }.sorted()
-            return FormFlowDefinitionResponse(key = key, versions = versions)
-        }
+        fun of(formFlowDefinition: FormFlowDefinition, readOnly: Boolean): ListFormFlowDefinitionResponse =
+            ListFormFlowDefinitionResponse(
+                key = formFlowDefinition.id.key,
+                version = formFlowDefinition.id.version,
+                readOnly = readOnly
+            )
     }
 }

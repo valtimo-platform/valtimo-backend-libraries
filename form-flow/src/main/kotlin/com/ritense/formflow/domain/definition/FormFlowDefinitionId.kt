@@ -63,5 +63,9 @@ data class FormFlowDefinitionId(
         fun existingId(id: FormFlowDefinitionId): FormFlowDefinitionId {
             return FormFlowDefinitionId(id.key, id.version)
         }
+
+        fun existingId(id: String): FormFlowDefinitionId {
+            return FormFlowDefinitionId(id.substringBeforeLast(':'), id.substringAfterLast(':').toLong())
+        }
     }
 }
