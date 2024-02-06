@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package com.ritense.plugin.web.rest
 
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -44,7 +44,7 @@ class PluginDefinitionResource(
     @GetMapping("/v1/plugin/definition/{pluginDefinitionKey}/action")
     fun getPluginDefinitionActions(
         @PathVariable pluginDefinitionKey: String,
-        @RequestParam("activityType") activityType: ActivityType?
+        @RequestParam("activityType") activityType: ActivityTypeWithEventName?
     ): ResponseEntity<List<PluginActionDefinitionDto>> {
         return ResponseEntity.ok(
             pluginService.getPluginDefinitionActions(pluginDefinitionKey, activityType)

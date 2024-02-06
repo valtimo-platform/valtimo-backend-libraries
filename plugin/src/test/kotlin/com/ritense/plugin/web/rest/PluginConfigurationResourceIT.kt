@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,7 +130,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
 
     @Test
     fun `should filter plugin configurations based on activityType`() {
-        // Addding another plugin definition (without actions)
+        // Adding another plugin definition (without actions)
         val pluginDefinition = PluginDefinition("key", "title", "description", "class")
         pluginDefinitionRepository.save(pluginDefinition)
         pluginConfiguration = pluginConfigurationRepository.save(
@@ -143,7 +143,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
         )
 
         // assert that the new plugin configuration is not included in the result
-        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ServiceTask")
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ServiceTask:start")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
         )

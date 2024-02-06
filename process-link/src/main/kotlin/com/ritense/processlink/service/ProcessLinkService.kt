@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,11 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import java.util.UUID
-import kotlin.jvm.optionals.getOrElse
 import mu.KotlinLogging
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
+import kotlin.jvm.optionals.getOrElse
 
 @Transactional(readOnly = true)
 open class ProcessLinkService(
@@ -66,7 +66,10 @@ open class ProcessLinkService(
             .flatMap { processLinkRepository.findByProcessDefinitionId(it.id) }
     }
 
-    fun getProcessLinksByProcessDefinitionIdAndActivityType(processDefinitionId: String, activityType: ActivityTypeWithEventName): ProcessLink? {
+    fun getProcessLinksByProcessDefinitionIdAndActivityType(
+        processDefinitionId: String,
+        activityType: ActivityTypeWithEventName
+    ): ProcessLink? {
         return processLinkRepository.findByProcessDefinitionIdAndActivityType(processDefinitionId, activityType)
     }
 
@@ -113,13 +116,16 @@ open class ProcessLinkService(
             ?: throw IllegalStateException("No ProcessLinkMapper found for processLinkType $processLinkType")
     }
 
-    fun getImporterDependsOnTypes() : Set<String> {
+    fun getImporterDependsOnTypes(): Set<String> {
         return processLinkMappers.mapNotNull {
             it.getImporterType()
         }.toSet()
     }
 
     fun getSupportedProcessLinkTypes(activityType: String): List<ProcessLinkType> {
+        if (!ActivityTypeWithEventName.contains(activityType)) {
+            return emptyList()
+        }
         return processLinkTypes.mapNotNull {
             it.getProcessLinkType(activityType)
         }

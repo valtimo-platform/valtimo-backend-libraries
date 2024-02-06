@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.ritense.plugin.web.rest
 
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
@@ -25,6 +24,7 @@ import com.ritense.plugin.web.rest.request.CreatePluginConfigurationDto
 import com.ritense.plugin.web.rest.request.UpdatePluginConfigurationDto
 import com.ritense.plugin.web.rest.result.PluginConfigurationDto
 import com.ritense.plugin.web.rest.result.PluginConfigurationExportDto
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -52,7 +52,7 @@ class PluginConfigurationResource(
         @RequestParam("pluginDefinitionKey") pluginDefinitionKey: String?,
         @RequestParam("pluginConfigurationTitle") pluginConfigurationTitle: String?,
         @RequestParam("category") category: String?,
-        @RequestParam("activityType") activityType: ActivityType?
+        @RequestParam("activityType") activityType: ActivityTypeWithEventName?
     )
         : ResponseEntity<List<PluginConfigurationDto>> {
 
@@ -62,7 +62,7 @@ class PluginConfigurationResource(
                     pluginDefinitionKey = pluginDefinitionKey,
                     pluginConfigurationTitle = pluginConfigurationTitle,
                     category = category,
-                    activityType = activityType?.mapOldActivityTypeToCurrent()
+                    activityType = activityType
                 )
             )
                 .map { PluginConfigurationDto(it) })

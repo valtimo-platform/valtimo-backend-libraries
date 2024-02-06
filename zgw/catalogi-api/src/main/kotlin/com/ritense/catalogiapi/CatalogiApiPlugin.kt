@@ -39,7 +39,7 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.Page
 import mu.KotlinLogging
@@ -67,7 +67,7 @@ class CatalogiApiPlugin(
         key = "get-statustype",
         title = "Get Statustype",
         description = "Retrieve the statustype and save it in a process variable",
-        activityTypes = [ActivityType.SERVICE_TASK_START, ActivityType.CALL_ACTIVITY_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START, ActivityTypeWithEventName.CALL_ACTIVITY_START]
     )
     fun getStatustype(
         execution: DelegateExecution,
@@ -89,7 +89,7 @@ class CatalogiApiPlugin(
         key = "get-resultaattype",
         title = "Get Resultaattype",
         description = "Retrieve the resultaattype and save it in a process variable",
-        activityTypes = [ActivityType.SERVICE_TASK_START, ActivityType.CALL_ACTIVITY_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START, ActivityTypeWithEventName.CALL_ACTIVITY_START]
     )
     fun getResultaattype(
         execution: DelegateExecution,
@@ -111,7 +111,7 @@ class CatalogiApiPlugin(
         key = "get-besluittype",
         title = "Get Besluittype",
         description = "Retrieve the besluittype and save it in a process variable",
-        activityTypes = [ActivityType.SERVICE_TASK_START, ActivityType.CALL_ACTIVITY_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START, ActivityTypeWithEventName.CALL_ACTIVITY_START]
     )
     fun getBesluittype(
         execution: DelegateExecution,

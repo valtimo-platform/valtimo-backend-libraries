@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 
 package com.ritense.plugin.repository
 
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
-import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.repository.BaseProcessLinkRepository
 
 @Deprecated("Marked for removal since 10.6.0", ReplaceWith("ProcessLinkRepository"))
@@ -40,23 +38,23 @@ class PluginProcessLinkRepository(
     fun findByProcessDefinitionIdAndActivityIdAndActivityType(
         processDefinitionId: String,
         activityId: String,
-        activityType: ActivityType
+        activityType: com.ritense.processlink.domain.ActivityTypeWithEventName
     ) =
         pluginProcessLinkRepositoryImpl.findByProcessDefinitionIdAndActivityIdAndActivityType(
             processDefinitionId,
             activityId,
-            activityType.toActivityTypeWithEventName()
+            activityType
         )
 
     fun findByPluginConfigurationIdAndActivityIdAndActivityType(
         pluginConfigurationId: PluginConfigurationId,
         activityId: String,
-        activityType: ActivityType
+        activityType: com.ritense.processlink.domain.ActivityTypeWithEventName
     ) =
         pluginProcessLinkRepositoryImpl.findByPluginConfigurationIdAndActivityIdAndActivityType(
             pluginConfigurationId,
             activityId,
-            activityType.toActivityTypeWithEventName()
+            activityType
         )
 
     fun findByPluginConfigurationId(pluginConfigurationId: PluginConfigurationId) =
@@ -70,7 +68,7 @@ interface PluginProcessLinkRepositoryImpl : BaseProcessLinkRepository<PluginProc
     fun findByPluginConfigurationIdAndActivityIdAndActivityType(
         pluginConfigurationId: PluginConfigurationId,
         activityId: String,
-        activityType: ActivityTypeWithEventName
+        activityType: com.ritense.processlink.domain.ActivityTypeWithEventName
     ): List<PluginProcessLink>
 
     fun findByPluginConfigurationId(pluginConfigurationId: PluginConfigurationId): List<PluginProcessLink>

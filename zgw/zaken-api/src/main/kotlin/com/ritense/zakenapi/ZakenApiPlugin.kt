@@ -21,7 +21,7 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
@@ -76,7 +76,7 @@ class ZakenApiPlugin(
         key = "link-document-to-zaak",
         title = "Link Documenten API document to Zaak",
         description = "Stores a link to an existing document in the Documenten API with a Zaak",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun linkDocumentToZaak(
         execution: DelegateExecution,
@@ -101,7 +101,7 @@ class ZakenApiPlugin(
         key = "link-uploaded-document-to-zaak",
         title = "Link Uploaded Documenten API document to Zaak",
         description = "Stores a link to an uploaded document in the Documenten API with a Zaak",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun linkUploadedDocumentToZaak(
         execution: DelegateExecution
@@ -126,7 +126,7 @@ class ZakenApiPlugin(
         key = "create-zaak",
         title = "Create zaak",
         description = "Creates a zaak in the Zaken API",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun createZaak(
         execution: DelegateExecution,
@@ -167,7 +167,7 @@ class ZakenApiPlugin(
         key = "create-natuurlijk-persoon-zaak-rol",
         title = "Create natuurlijk persoon zaakrol",
         description = "Adds a zaakrol to the zaak in the Zaken API",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun createNatuurlijkPersoonZaakRol(
         execution: DelegateExecution,
@@ -202,7 +202,7 @@ class ZakenApiPlugin(
         key = "create-niet-natuurlijk-persoon-zaak-rol",
         title = "Create niet-natuurlijk persoon zaakrol",
         description = "Adds a zaakrol to the zaak in the Zaken API",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun createNietNatuurlijkPersoonZaakRol(
         execution: DelegateExecution,
@@ -234,7 +234,7 @@ class ZakenApiPlugin(
         key = "set-zaakstatus",
         title = "Set zaak status",
         description = "Sets the status of a zaak",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun setZaakStatus(
         execution: DelegateExecution,
@@ -260,7 +260,7 @@ class ZakenApiPlugin(
         key = "create-zaakresultaat",
         title = "Create zaak status",
         description = "Creates a resultaat for a zaak",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun createZaakResultaat(
         execution: DelegateExecution,
@@ -285,7 +285,7 @@ class ZakenApiPlugin(
         key = "set-zaakopschorting",
         title = "Set case suspension",
         description = "Suspends a case, sets the suspend status to true and adds a duration of time to the planned end date",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun setZaakOpschorting(
         execution: DelegateExecution,
