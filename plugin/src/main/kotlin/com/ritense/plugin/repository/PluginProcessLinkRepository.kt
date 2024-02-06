@@ -19,6 +19,7 @@ package com.ritense.plugin.repository
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.repository.BaseProcessLinkRepository
 
 @Deprecated("Marked for removal since 10.6.0", ReplaceWith("ProcessLinkRepository"))
@@ -38,7 +39,7 @@ class PluginProcessLinkRepository(
     fun findByProcessDefinitionIdAndActivityIdAndActivityType(
         processDefinitionId: String,
         activityId: String,
-        activityType: com.ritense.processlink.domain.ActivityTypeWithEventName
+        activityType: ActivityTypeWithEventName
     ) =
         pluginProcessLinkRepositoryImpl.findByProcessDefinitionIdAndActivityIdAndActivityType(
             processDefinitionId,
