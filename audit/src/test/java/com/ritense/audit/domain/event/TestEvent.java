@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class TestEvent extends AuditMetaData implements AuditEvent {
-    private String name;
-    private Integer age;
-    private String country;
-    private String gender;
-    private String processInstanceId;
+    private final String name;
+    private final Integer age;
+    private final String country;
+    private final String gender;
+    private final String processInstanceId;
 
     @JsonCreator
     public TestEvent(
@@ -75,18 +75,17 @@ public class TestEvent extends AuditMetaData implements AuditEvent {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof TestEvent)) {
+        if (!(o instanceof TestEvent testEvent)) {
             return false;
         }
         if (!super.equals(o)) {
             return false;
         }
-        TestEvent testEvent = (TestEvent) o;
-        return getName().equals(testEvent.getName()) &&
-            getAge().equals(testEvent.getAge()) &&
-            getCountry().equals(testEvent.getCountry()) &&
-            getGender().equals(testEvent.getGender()) &&
-            getProcessInstanceId().equals(testEvent.getProcessInstanceId());
+        return getName().equals(testEvent.getName())
+            && getAge().equals(testEvent.getAge())
+            && getCountry().equals(testEvent.getCountry())
+            && getGender().equals(testEvent.getGender())
+            && getProcessInstanceId().equals(testEvent.getProcessInstanceId());
     }
 
     @Override

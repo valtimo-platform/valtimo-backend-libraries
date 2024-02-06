@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package com.ritense.authorization.web
 
-import com.ritense.authorization.permission.PermissionRepository
 import com.ritense.authorization.deployment.PermissionDto
+import com.ritense.authorization.permission.PermissionRepository
 import com.ritense.authorization.web.request.SearchPermissionsRequest
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType

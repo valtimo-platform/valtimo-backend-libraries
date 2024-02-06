@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package com.ritense.valtimo.event;
 
+import jakarta.annotation.Nullable;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
-import jakarta.annotation.Nullable;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 public class ProcessDefinitionDeployedEvent {
     private final String previousProcessDefinitionId;

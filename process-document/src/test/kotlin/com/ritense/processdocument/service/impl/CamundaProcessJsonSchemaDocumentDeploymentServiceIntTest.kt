@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package com.ritense.processdocument.service.impl
 
 import com.ritense.authorization.AuthorizationContext
-import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.processdocument.BaseIntegrationTest
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey
 import com.ritense.processdocument.service.ProcessDocumentAssociationService

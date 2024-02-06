@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package com.ritense.form.web.rest.impl;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.web.rest.FormDefinitionResource;
 import com.ritense.form.web.rest.dto.FormOption;
-import org.springframework.http.ResponseEntity;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 public class FormIoFormDefinitionResource implements FormDefinitionResource {
 

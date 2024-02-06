@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ package com.ritense.authorization.deployment
 import com.ritense.authorization.BaseIntegrationTest
 import com.ritense.authorization.role.RoleRepository
 import com.ritense.valtimo.changelog.repository.ChangesetRepository
+import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import java.time.Instant
 
 internal class RoleDeployerIntTest : BaseIntegrationTest() {
 

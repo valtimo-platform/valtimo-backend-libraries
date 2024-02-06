@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package com.ritense.form
 
 import com.ritense.valueresolver.ValueResolverFactory
-import java.util.function.Function
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.context.ApplicationEventPublisher
+import java.util.function.Function
 
 /**
  * This resolver returns the requestedValue as the value.

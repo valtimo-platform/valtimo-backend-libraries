@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,10 @@ import com.ritense.objectsapi.repository.AbonnementLinkRepository
 import com.ritense.openzaak.service.ZaakService
 import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.service.OpenZaakService
-import mu.KotlinLogging
-import org.springframework.context.ApplicationEventPublisher
 import java.net.URI
 import java.util.UUID
+import mu.KotlinLogging
+import org.springframework.context.ApplicationEventPublisher
 
 class OpenNotificatieService(
     private val connectorService: ConnectorService,

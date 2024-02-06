@@ -34,10 +34,10 @@
     </bpmn:laneSet>
     <bpmn:startEvent id="StartEvent_1" name="Aanvraag ontvangen" camunda:formKey="form:evenementenvergunning-start-formulier">
       <bpmn:extensionElements>
-        <camunda:executionListener expression="${execution.setVariable(&#34;size&#34;,documentVariableDelegate.findValueByJsonPointer(&#34;/size&#34;,execution))}" event="start" />
-        <camunda:executionListener expression="${execution.setVariable(&#34;alcoholBeingServed&#34;,documentVariableDelegate.findValueByJsonPointer(&#34;/alcoholBeingServed&#34;,execution))}" event="start" />
-        <camunda:executionListener expression="${execution.setVariable(&#34;email&#34;,documentVariableDelegate.findValueByJsonPointer(&#34;/email&#34;,execution))}" event="start" />
-        <camunda:executionListener expression="${execution.setVariable(&#34;eventName&#34;,documentVariableDelegate.findValueByJsonPointer(&#34;/eventName&#34;,execution))}" event="start" />
+        <camunda:executionListener expression="${execution.setVariable(&#34;size&#34;,documentDelegateService.findValueByJsonPointer(&#34;/size&#34;,execution))}" event="start" />
+        <camunda:executionListener expression="${execution.setVariable(&#34;alcoholBeingServed&#34;,documentDelegateService.findValueByJsonPointer(&#34;/alcoholBeingServed&#34;,execution))}" event="start" />
+        <camunda:executionListener expression="${execution.setVariable(&#34;email&#34;,documentDelegateService.findValueByJsonPointer(&#34;/email&#34;,execution))}" event="start" />
+        <camunda:executionListener expression="${execution.setVariable(&#34;eventName&#34;,documentDelegateService.findValueByJsonPointer(&#34;/eventName&#34;,execution))}" event="start" />
       </bpmn:extensionElements>
       <bpmn:outgoing>SequenceFlow_0qwzino</bpmn:outgoing>
     </bpmn:startEvent>
@@ -74,7 +74,7 @@
     </bpmn:sendTask>
     <bpmn:userTask id="Task_04cardr" name="Aanvraag inhoudelijk beoordelen &#38; Besluit nemen" camunda:formKey="form:evenementenvergunning-aanvraag-behandelen" camunda:candidateGroups="ROLE_DEVELOPER">
       <bpmn:extensionElements>
-        <camunda:executionListener expression="${execution.setVariable(&#34;getPermit&#34;,documentVariableDelegate.findValueByJsonPointer(&#34;/getPermit&#34;,execution))}" event="end" />
+        <camunda:executionListener expression="${execution.setVariable(&#34;getPermit&#34;,documentDelegateService.findValueByJsonPointer(&#34;/getPermit&#34;,execution))}" event="end" />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1yvstvp</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0vldeah</bpmn:outgoing>
@@ -128,7 +128,7 @@
     </bpmn:inclusiveGateway>
     <bpmn:exclusiveGateway id="ExclusiveGateway_0oo0xj7">
       <bpmn:extensionElements>
-        <camunda:executionListener expression="${execution.setVariable(&#34;getBwPermit&#34;,documentVariableDelegate.findValueByJsonPointer(&#34;/getBwPermit&#34;,execution))}" event="start" />
+        <camunda:executionListener expression="${execution.setVariable(&#34;getBwPermit&#34;,documentDelegateService.findValueByJsonPointer(&#34;/getBwPermit&#34;,execution))}" event="start" />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0jn666m</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1g88ins</bpmn:outgoing>
@@ -136,7 +136,7 @@
     </bpmn:exclusiveGateway>
     <bpmn:inclusiveGateway id="ExclusiveGateway_0v5tocu" name="toegewezen?">
       <bpmn:extensionElements>
-        <camunda:executionListener expression="${execution.setVariable(&#34;lastName&#34;,documentVariableDelegate.findValueByJsonPointer(&#34;/lastName&#34;,execution))}" event="start" />
+        <camunda:executionListener expression="${execution.setVariable(&#34;lastName&#34;,documentDelegateService.findValueByJsonPointer(&#34;/lastName&#34;,execution))}" event="start" />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0vldeah</bpmn:incoming>
       <bpmn:incoming>SequenceFlow_01w99c8</bpmn:incoming>

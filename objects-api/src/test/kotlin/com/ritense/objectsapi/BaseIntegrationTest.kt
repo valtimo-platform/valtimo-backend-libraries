@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.ritense.objectsapi
 
-import com.ritense.authorization.AuthorizationService
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.connector.service.ConnectorService
@@ -28,6 +27,8 @@ import com.ritense.objectsapi.service.ServerAuthSpecification
 import com.ritense.testutilscommon.junit.extension.LiquibaseRunnerExtension
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
+import com.ritense.zakenapi.provider.BsnProvider
+import com.ritense.zakenapi.provider.KvkProvider
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
@@ -37,6 +38,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.UUID
+import kotlin.contracts.ExperimentalContracts
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class, LiquibaseRunnerExtension::class)
@@ -51,6 +53,14 @@ abstract class BaseIntegrationTest {
 
     @MockBean
     lateinit var mailSender: MailSender
+
+    @OptIn(ExperimentalContracts::class)
+    @MockBean
+    lateinit var bsnProvider: BsnProvider
+
+    @OptIn(ExperimentalContracts::class)
+    @MockBean
+    lateinit var kvkProvider: KvkProvider
 
     @Autowired
     lateinit var connectorService: ConnectorService

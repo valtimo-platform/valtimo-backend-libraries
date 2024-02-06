@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,6 @@
 
 package com.ritense.valtimo.emailnotificationconfiguration.service;
 
-import com.ritense.valtimo.emailnotificationconfiguration.helper.EmailNotificationSettingsHelper;
-import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettings;
-import com.ritense.valtimo.emailnotificationsettings.repository.EmailNotificationSettingsRepository;
-import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
-import com.ritense.valtimo.emailnotificationsettings.service.impl.EmailNotificationSettingsServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.util.Optional;
 import static com.ritense.valtimo.emailnotificationconfiguration.helper.EmailNotificationSettingsHelper.requestEnabled;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -31,6 +23,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.ritense.valtimo.emailnotificationconfiguration.helper.EmailNotificationSettingsHelper;
+import com.ritense.valtimo.emailnotificationsettings.domain.request.impl.EmailNotificationSettings;
+import com.ritense.valtimo.emailnotificationsettings.repository.EmailNotificationSettingsRepository;
+import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
+import com.ritense.valtimo.emailnotificationsettings.service.impl.EmailNotificationSettingsServiceImpl;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class EmailSettingsServiceImplTest {
 

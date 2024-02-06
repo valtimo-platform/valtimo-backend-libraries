@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2023 Ritense BV, the Netherlands.
+ *  Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package com.ritense.authorization.deployment
 
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.Action
-import com.ritense.authorization.role.RoleRepository
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
-import com.ritense.authorization.permission.condition.PermissionCondition
 import com.ritense.authorization.permission.PermissionView
+import com.ritense.authorization.permission.condition.PermissionCondition
+import com.ritense.authorization.role.RoleRepository
 
 data class PermissionDto(
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])

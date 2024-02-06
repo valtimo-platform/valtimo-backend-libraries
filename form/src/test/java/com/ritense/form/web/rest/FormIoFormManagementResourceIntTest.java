@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,7 @@
 
 package com.ritense.form.web.rest;
 
-import com.jayway.jsonpath.JsonPath;
-import com.ritense.form.BaseIntegrationTest;
-import com.ritense.form.domain.FormIoFormDefinition;
-import com.ritense.form.domain.request.CreateFormDefinitionRequest;
-import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
-import com.ritense.valtimo.contract.utils.TestUtil;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
@@ -50,6 +29,25 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.jayway.jsonpath.JsonPath;
+import com.ritense.form.BaseIntegrationTest;
+import com.ritense.form.domain.FormIoFormDefinition;
+import com.ritense.form.domain.request.CreateFormDefinitionRequest;
+import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
+import com.ritense.valtimo.contract.utils.TestUtil;
+import jakarta.inject.Inject;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
 
@@ -80,7 +78,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
             .andExpect(status().isOk())
             .andDo(print())
             .andExpect(jsonPath("$.content").isArray())
-            .andExpect(jsonPath("$.content[*].name", hasItems("form1","form2", "form3")));
+            .andExpect(jsonPath("$.content[*].name", hasItems("form1", "form2", "form3")));
     }
 
     @Test
@@ -181,7 +179,7 @@ class FormIoFormManagementResourceIntTest extends BaseIntegrationTest {
         var name = "abcd";
         formDefinitionRepository.save(formDefinition(UUID.randomUUID(), name));
 
-        mockMvc.perform(get("/api/v1/form-management/exists/"+name))
+        mockMvc.perform(get("/api/v1/form-management/exists/" + name))
             .andExpect(status().isOk())
             .andDo(print())
             .andExpect(jsonPath("$").isBoolean())

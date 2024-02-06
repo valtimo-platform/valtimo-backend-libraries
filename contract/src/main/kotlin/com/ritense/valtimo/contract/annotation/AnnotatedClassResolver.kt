@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package com.ritense.valtimo.contract.annotation
 
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ClassInfo
+import java.lang.reflect.Method
 import mu.KotlinLogging
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.ApplicationContext
-import java.lang.reflect.Method
 
 /**
  *  The AnnotatedClassResolver can scan for classes and methods with a specific annotation.

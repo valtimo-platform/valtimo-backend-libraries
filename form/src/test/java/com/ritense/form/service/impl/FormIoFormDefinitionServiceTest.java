@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,18 @@
 
 package com.ritense.form.service.impl;
 
-import com.ritense.form.BaseTest;
-import com.ritense.form.domain.FormIoFormDefinition;
-import com.ritense.form.domain.request.CreateFormDefinitionRequest;
-import com.ritense.form.repository.FormDefinitionRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.ritense.form.BaseTest;
+import com.ritense.form.domain.FormIoFormDefinition;
+import com.ritense.form.domain.request.CreateFormDefinitionRequest;
+import com.ritense.form.repository.FormDefinitionRepository;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FormIoFormDefinitionServiceTest extends BaseTest {
 
@@ -59,7 +60,7 @@ public class FormIoFormDefinitionServiceTest extends BaseTest {
     public void shouldNotCreateNewCaseWhenNameExists() {
         FormIoFormDefinition formIoFormDefinition = mock(FormIoFormDefinition.class);
         when(formDefinitionRepository.findByName("test")).thenReturn(Optional.of(formIoFormDefinition));
-        CreateFormDefinitionRequest request = new CreateFormDefinitionRequest("test", "" ,false);
+        CreateFormDefinitionRequest request = new CreateFormDefinitionRequest("test", "", false);
         assertThrows(IllegalArgumentException.class, () -> formIoFormDefinitionService.createFormDefinition(request));
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.ritense.processdocument;
 
+import static org.mockito.Mockito.mock;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.service.DocumentService;
 import com.ritense.processdocument.config.DeadlockService;
@@ -27,8 +29,6 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-
-import static org.mockito.Mockito.mock;
 
 @SpringBootConfiguration
 @EnableAutoConfiguration
@@ -44,7 +44,9 @@ public class ProcessDocumentTestConfiguration {
     }
 
     @Bean
-    public MailSender mailSender() { return mock(MailSender.class); }
+    public MailSender mailSender() {
+        return mock(MailSender.class);
+    }
 
     @TestConfiguration
     public static class TestConfig {

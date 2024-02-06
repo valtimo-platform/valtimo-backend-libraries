@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 
 package com.ritense.processdocument.service.impl;
 
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
+
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.service.AuditService;
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentCreatedEvent;
@@ -38,12 +40,10 @@ import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEve
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
 import com.ritense.valtimo.contract.event.TaskCompletedEvent;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.UUID;
-
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class CamundaProcessJsonSchemaDocumentAuditService implements ProcessDocumentAuditService {
 
@@ -52,9 +52,10 @@ public class CamundaProcessJsonSchemaDocumentAuditService implements ProcessDocu
 
     private final AuthorizationService authorizationService;
 
-    public CamundaProcessJsonSchemaDocumentAuditService(AuditService auditService,
-                                                        JsonSchemaDocumentService documentService,
-                                                        AuthorizationService authorizationService
+    public CamundaProcessJsonSchemaDocumentAuditService(
+        AuditService auditService,
+        JsonSchemaDocumentService documentService,
+        AuthorizationService authorizationService
     ) {
         this.auditService = auditService;
         this.documentService = documentService;
@@ -66,7 +67,7 @@ public class CamundaProcessJsonSchemaDocumentAuditService implements ProcessDocu
         final Document.Id id,
         final Pageable pageable
     ) {
-        final List<Class<? extends AuditEvent >> eventTypes = List.of(
+        final List<Class<? extends AuditEvent>> eventTypes = List.of(
             JsonSchemaDocumentCreatedEvent.class,
             JsonSchemaDocumentModifiedEvent.class,
             TaskAssignedEvent.class,

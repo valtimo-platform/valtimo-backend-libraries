@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package com.valtimo.keycloak.web.rest
 
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.valtimo.keycloak.service.ExternalRoleService
+import jakarta.ws.rs.NotFoundException
 import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import jakarta.ws.rs.NotFoundException
 
 @RestController
 @SkipComponentScan

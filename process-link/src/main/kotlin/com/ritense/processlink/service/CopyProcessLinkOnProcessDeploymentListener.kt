@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package com.ritense.processlink.service
 
 import com.ritense.processlink.repository.ProcessLinkRepository
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent
+import java.util.UUID
 import mu.KotlinLogging
 import org.camunda.bpm.model.bpmn.instance.FlowNode
 import org.springframework.context.event.EventListener
-import java.util.UUID
 
 class CopyProcessLinkOnProcessDeploymentListener(
     private val processLinkRepository: ProcessLinkRepository

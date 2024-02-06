@@ -8,6 +8,6 @@ class ValtimoHealthAggregator : StatusAggregator {
         if(statuses.stream().allMatch { s -> s.equals(Status.UP) }) return Status.UP
         if(statuses.stream().anyMatch { s -> s.equals(Status.DOWN) }) return Status.DOWN
         if(statuses.stream().anyMatch { s -> s.equals(Status.OUT_OF_SERVICE) }) return Status.OUT_OF_SERVICE
-        return Status.UNKNOWN
+        return Status("RESTRICTED");
     }
 }

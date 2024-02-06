@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,14 @@
 
 package com.ritense.valtimo.contract.utils;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.time.ZoneOffset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import java.time.ZoneOffset;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class RequestHelperTest {
     MockHttpServletRequest mockRequest;

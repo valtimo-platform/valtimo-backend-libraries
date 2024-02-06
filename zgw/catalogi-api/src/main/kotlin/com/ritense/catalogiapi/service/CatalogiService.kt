@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
 import com.ritense.plugin.service.PluginService
-import java.net.URI
 import mu.KotlinLogging
+import java.net.URI
 
 class CatalogiService(
     val zaaktypeUrlProvider: ZaaktypeUrlProvider,
@@ -76,7 +76,7 @@ class CatalogiService(
             .createInstance(CatalogiApiPlugin::class.java, CatalogiApiPlugin.findConfigurationByUrl(zaakTypeUrl))
 
         if (catalogiApiPluginInstance == null) {
-            logger.error {"No catalogi plugin configuration was found for zaaktype with URL $zaakTypeUrl" }
+            logger.error { "No catalogi plugin configuration was found for zaaktype with URL $zaakTypeUrl" }
         }
 
         return catalogiApiPluginInstance
@@ -99,6 +99,13 @@ class CatalogiService(
             null
         }
     }
+
+    fun getZaakTypen() =
+        pluginService.findPluginConfigurations(CatalogiApiPlugin::class.java)
+            .map { config ->
+                pluginService.createInstance(config) as CatalogiApiPlugin
+            }
+            .flatMap { plugin -> plugin.getZaaktypen() }
 
     companion object {
         val logger = KotlinLogging.logger {}

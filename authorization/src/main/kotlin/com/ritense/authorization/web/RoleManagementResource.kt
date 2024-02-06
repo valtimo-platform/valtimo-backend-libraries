@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package com.ritense.authorization.web
 
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.AuthorizationSupportedHelper
+import com.ritense.authorization.deployment.PermissionDto
 import com.ritense.authorization.permission.PermissionRepository
+import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.role.Role
 import com.ritense.authorization.role.RoleRepository
-import com.ritense.authorization.deployment.PermissionDto
-import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.web.request.DeleteRolesRequest
 import com.ritense.authorization.web.request.SaveRoleRequest
 import com.ritense.authorization.web.request.UpdateRolePermissionRequest

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package com.ritense.valtimo.camunda.task.service;
 
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
-import org.camunda.community.mockito.delegate.DelegateExecutionFake;
-import org.camunda.community.mockito.delegate.DelegateTaskFake;
 import java.util.List;
 import java.util.Map;
+import org.camunda.community.mockito.delegate.DelegateExecutionFake;
+import org.camunda.community.mockito.delegate.DelegateTaskFake;
 
 public class NotificationTestHelper {
 

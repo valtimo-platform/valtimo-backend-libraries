@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@ package com.ritense.valtimo.export
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.exporter.request.DecisionDefinitionExportRequest
 import com.ritense.valtimo.BaseIntegrationTest
-import java.io.ByteArrayInputStream
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.model.dmn.Dmn
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.io.ByteArrayInputStream
 
 @Transactional(readOnly = true)
 class DecisionDefinitionExporterIntTest @Autowired constructor(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package com.ritense.objectsapi.domain.sync
 
 import com.ritense.valtimo.contract.validation.Validatable
-import org.hibernate.validator.constraints.Length
-import java.util.UUID
 import jakarta.persistence.Column
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotBlank
+import java.util.UUID
+import org.hibernate.validator.constraints.Length
 
 @Entity
 @Table(name = "object_sync_config")

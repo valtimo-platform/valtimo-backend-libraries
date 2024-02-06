@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 package com.ritense.objectsapi.web.rest.impl
 
-import com.ritense.objectsapi.web.rest.ObjectSyncConfigResource as IObjectSyncConfigResource
 import com.ritense.objectsapi.domain.sync.ObjectSyncConfig
 import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objectsapi.web.rest.request.CreateObjectSyncConfigRequest
 import com.ritense.objectsapi.web.rest.request.ModifyObjectSyncConfigRequest
 import com.ritense.objectsapi.web.rest.result.CreateObjectSyncConfigResult
 import com.ritense.objectsapi.web.rest.result.ModifyObjectSyncConfigResult
-import org.springframework.http.ResponseEntity
 import java.util.UUID
+import org.springframework.http.ResponseEntity
+import com.ritense.objectsapi.web.rest.ObjectSyncConfigResource as IObjectSyncConfigResource
 
 class ObjectSyncConfigResource(
     private val objectSyncService: ObjectSyncService

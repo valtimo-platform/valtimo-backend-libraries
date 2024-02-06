@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package com.ritense.smartdocuments.io
 
-import org.apache.commons.lang3.math.NumberUtils.min
 import java.io.IOException
 import java.io.InputStream
+import org.apache.commons.lang3.math.NumberUtils.min
 
 /*
  * A limited input stream. Only reads a section of the given input stream.

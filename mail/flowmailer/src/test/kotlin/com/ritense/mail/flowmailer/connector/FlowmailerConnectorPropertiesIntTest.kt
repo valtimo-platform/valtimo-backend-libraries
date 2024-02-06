@@ -1,9 +1,9 @@
 package com.ritense.mail.flowmailer.connector
 
 import com.ritense.mail.flowmailer.BaseIntegrationTest
+import jakarta.inject.Inject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import jakarta.inject.Inject
 
 internal class FlowmailerConnectorPropertiesIntTest : BaseIntegrationTest() {
 

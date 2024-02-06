@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import com.ritense.document.security.config.DocumentDefinitionHttpSecurityConfig
 import com.ritense.document.security.config.DocumentHttpSecurityConfigurer;
 import com.ritense.document.security.config.DocumentSearchHttpSecurityConfigurer;
 import com.ritense.document.security.config.DocumentSnapshotHttpSecurityConfigurer;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.core.annotation.Order;
 
 @AutoConfiguration

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ import com.ritense.processdocument.domain.impl.request.StartProcessForDocumentRe
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import mu.KotlinLogging
 import java.net.URI
+import mu.KotlinLogging
 
 class ProductAanvraagService(
     private val processDocumentService: ProcessDocumentService,

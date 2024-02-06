@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package com.ritense.mail.wordpressmail.connector
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.connector.domain.meta.ConnectorType
+import com.ritense.mail.event.MailSendEvent
 import com.ritense.mail.wordpressmail.domain.EmailSendRequest
 import com.ritense.mail.wordpressmail.domain.NamedByteArrayResource
 import com.ritense.mail.wordpressmail.service.WordpressMailClient
-import com.ritense.mail.event.MailSendEvent
 import com.ritense.valtimo.contract.mail.model.MailMessageStatus
 import com.ritense.valtimo.contract.mail.model.RawMailMessage
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage

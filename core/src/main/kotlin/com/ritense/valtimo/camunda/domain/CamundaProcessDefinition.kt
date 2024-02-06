@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2023 Ritense BV, the Netherlands.
+ *  Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package com.ritense.valtimo.camunda.domain
 
-import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState
 
 @Entity
 @Table(name = "ACT_RE_PROCDEF")

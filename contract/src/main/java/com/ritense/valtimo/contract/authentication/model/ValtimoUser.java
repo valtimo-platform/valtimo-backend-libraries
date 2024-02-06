@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 package com.ritense.valtimo.contract.authentication.model;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import java.util.List;
 import java.util.Objects;
-import static org.springframework.util.ObjectUtils.isEmpty;
 
 public class ValtimoUser implements ManageableUser {
 

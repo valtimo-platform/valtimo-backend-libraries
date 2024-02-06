@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,9 @@ import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
 import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
 import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
 import com.ritense.valueresolver.ValueResolverService
+import jakarta.validation.ConstraintViolationException
+import jakarta.validation.ValidationException
+import jakarta.validation.Validator
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
@@ -57,9 +60,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 import java.util.UUID
-import jakarta.validation.ConstraintViolationException
-import jakarta.validation.ValidationException
-import jakarta.validation.Validator
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 
@@ -536,13 +536,6 @@ class PluginService(
         return pluginConfiguration?.let { createInstance(it) as T }
     }
 
-    fun <T> findPluginConfiguration(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): PluginConfiguration? {
-        val annotation = clazz.getAnnotation(Plugin::class.java)
-            ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")
-
-        return findPluginConfiguration(annotation.key, configurationFilter)
-    }
-
     private fun getActionMethod(
         instance: Any,
         processLink: PluginProcessLink
@@ -601,12 +594,32 @@ class PluginService(
         }
     }
 
+    fun <T> findPluginConfiguration(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): PluginConfiguration? {
+        return findPluginConfigurations(clazz, configurationFilter)
+            .firstOrNull()
+    }
+
     fun findPluginConfiguration(
         pluginDefinitionKey: String,
         filter: (JsonNode) -> Boolean
     ): PluginConfiguration? {
+        return findPluginConfigurations(pluginDefinitionKey, filter)
+            .firstOrNull()
+    }
+
+    fun <T> findPluginConfigurations(clazz: Class<T>, filter: (JsonNode) -> Boolean = { true }): List<PluginConfiguration> {
+        val annotation = clazz.getAnnotation(Plugin::class.java)
+            ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")
+
+        return findPluginConfigurations(annotation.key, filter)
+    }
+
+    private fun findPluginConfigurations(
+        pluginDefinitionKey: String,
+        filter: (JsonNode) -> Boolean
+    ): List<PluginConfiguration> {
         val configurations = pluginConfigurationRepository.findByPluginDefinitionKey(pluginDefinitionKey)
-        return configurations.firstOrNull { config ->
+        return configurations.filter { config ->
             val configProperties = config.properties
             configProperties != null && filter(configProperties)
         }

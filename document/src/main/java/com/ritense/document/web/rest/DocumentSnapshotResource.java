@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 package com.ritense.document.web.rest;
 
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 public interface DocumentSnapshotResource {
 

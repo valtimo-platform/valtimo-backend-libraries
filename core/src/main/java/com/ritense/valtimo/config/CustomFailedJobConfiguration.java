@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package com.ritense.valtimo.config;
 
+import java.util.ArrayList;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.spring.boot.starter.configuration.CamundaFailedJobConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-
-import java.util.ArrayList;
 
 @AutoConfiguration
 public class CustomFailedJobConfiguration implements CamundaFailedJobConfiguration {

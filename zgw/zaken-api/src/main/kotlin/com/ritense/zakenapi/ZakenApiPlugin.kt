@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,13 +46,13 @@ import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
+import mu.KLogger
+import mu.KotlinLogging
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
-import mu.KLogger
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
 
 @Plugin(
     key = ZakenApiPlugin.PLUGIN_KEY,
@@ -335,21 +335,11 @@ class ZakenApiPlugin(
     }
 
     fun getZaakRollen(zaakUrl: URI, roleType: RolType? = null): List<Rol> {
-        return buildList {
-            var currentPage = 1
-            while (true) {
-                val result = client.getZaakRollen(
-                    authenticationPluginConfiguration,
-                    url, zaakUrl, currentPage, roleType
-                )
-                addAll(result.results)
-
-                if (result.next == null) break else currentPage++
-
-                if (currentPage == 50) logger.warn {
-                    "Retrieving over 50 zaakrol pages. Please consider using a paginated result!"
-                }
-            }
+        return Page.getAll(100) { page ->
+            client.getZaakRollen(
+                authenticationPluginConfiguration,
+                url, zaakUrl, page, roleType
+            )
         }
     }
 

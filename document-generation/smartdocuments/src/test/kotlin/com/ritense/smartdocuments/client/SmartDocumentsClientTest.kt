@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
 import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
+import java.time.Instant
+import java.util.concurrent.TimeUnit.MILLISECONDS
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
@@ -46,8 +48,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.reactive.function.client.WebClient
-import java.time.Instant
-import java.util.concurrent.TimeUnit.MILLISECONDS
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class SmartDocumentsClientTest : BaseTest() {
@@ -320,7 +320,11 @@ internal class SmartDocumentsClientTest : BaseTest() {
         )
 
         // when
-        val response = client.getSmartDocumentsTemplateData(pluginProperties())
+        val response = client.getSmartDocumentsTemplateData(SmartDocumentsPropertiesDto(
+            username = "username",
+            password = "password",
+            url = mockDocumentenApi.url("").toString()
+        ))
 
         // then
         assertThat(response).isNotNull
@@ -389,10 +393,4 @@ internal class SmartDocumentsClientTest : BaseTest() {
     </UsersStructure>
 </SmartDocuments>
         """.trimIndent()
-
-    private fun pluginProperties(): SmartDocumentsPropertiesDto = SmartDocumentsPropertiesDto(
-        username = "username",
-        password = "password",
-        url = mockDocumentenApi.url("/").toString()
-    )
 }
