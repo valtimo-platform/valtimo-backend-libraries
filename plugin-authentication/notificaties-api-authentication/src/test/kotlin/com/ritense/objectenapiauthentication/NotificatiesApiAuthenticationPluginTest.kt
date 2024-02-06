@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 package com.ritense.objectenapiauthentication
 
 import com.ritense.notificatiesapiauthentication.NotificatiesApiAuthenticationPlugin
-import com.ritense.openzaak.service.TokenGeneratorService
-import java.net.URI
-import kotlin.test.assertEquals
+import com.ritense.notificatiesapiauthentication.token.NotificatiesApiPluginTokenGeneratorService
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
@@ -31,12 +29,14 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
+import java.net.URI
+import kotlin.test.assertEquals
 
 internal class NotificatiesApiAuthenticationPluginTest {
     @Test
     fun `should add header to request`() {
         val requestCaptor = argumentCaptor<ClientRequest>()
-        val tokenGeneratorService = mock<TokenGeneratorService>()
+        val tokenGeneratorService = mock<NotificatiesApiPluginTokenGeneratorService>()
         val plugin = NotificatiesApiAuthenticationPlugin(tokenGeneratorService)
         plugin.clientId = "test"
         plugin.clientSecret = "test"

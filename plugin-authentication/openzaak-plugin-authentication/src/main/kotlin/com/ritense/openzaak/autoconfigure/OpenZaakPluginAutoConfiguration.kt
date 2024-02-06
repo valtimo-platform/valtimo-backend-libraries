@@ -17,30 +17,25 @@
 package com.ritense.openzaak.autoconfigure
 
 import com.ritense.openzaak.plugin.OpenZaakPluginFactory
-import com.ritense.openzaak.plugin.OpenZaakUrlProvider
-import com.ritense.openzaak.service.TokenGeneratorService
-import com.ritense.openzaak.service.ZaakTypeLinkService
+import com.ritense.openzaak.plugin.token.OpenZaakPluginTokenGeneratorService
+import com.ritense.openzaak.plugin.token.ValtimoOpenZaakPluginTokenGeneratorService
 import com.ritense.plugin.service.PluginService
-import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import org.springframework.context.annotation.Bean
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.context.annotation.Bean
 
 @AutoConfiguration
 class OpenZaakPluginAutoConfiguration {
 
     @Bean
-    fun openZaakPluginFactory(
-        pluginService: PluginService,
-        tokenGeneratorService: TokenGeneratorService
-    ): OpenZaakPluginFactory {
-        return OpenZaakPluginFactory(pluginService, tokenGeneratorService)
-    }
+    @ConditionalOnMissingBean(OpenZaakPluginTokenGeneratorService::class)
+    fun openZaakPluginTokenGeneratorService(): OpenZaakPluginTokenGeneratorService = ValtimoOpenZaakPluginTokenGeneratorService()
 
     @Bean
-    fun openZaakUrlProvider(
-        zaakInstanceLinkService: ZaakInstanceLinkService,
-        zaakTypeLinkService: ZaakTypeLinkService
-    ): OpenZaakUrlProvider {
-        return OpenZaakUrlProvider(zaakInstanceLinkService, zaakTypeLinkService)
+    fun openZaakPluginFactory(
+        pluginService: PluginService,
+        tokenGeneratorService: OpenZaakPluginTokenGeneratorService
+    ): OpenZaakPluginFactory {
+        return OpenZaakPluginFactory(pluginService, tokenGeneratorService)
     }
 }

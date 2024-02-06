@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -536,14 +536,6 @@ class PluginService(
         return pluginConfiguration?.let { createInstance(it) as T }
     }
 
-    fun <T> createInstances(clazz: Class<T>): List<T> {
-        val annotation = clazz.getAnnotation(Plugin::class.java)
-            ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")
-
-        return pluginConfigurationRepository.findByPluginDefinitionKey(annotation.key)
-            .map { createInstance(it) as T }
-    }
-
     fun <T> findPluginConfiguration(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): PluginConfiguration? {
         val annotation = clazz.getAnnotation(Plugin::class.java)
             ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")
@@ -609,12 +601,32 @@ class PluginService(
         }
     }
 
+    fun <T> findPluginConfiguration(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): PluginConfiguration? {
+        return findPluginConfigurations(clazz, configurationFilter)
+            .firstOrNull()
+    }
+
     fun findPluginConfiguration(
         pluginDefinitionKey: String,
         filter: (JsonNode) -> Boolean
     ): PluginConfiguration? {
+        return findPluginConfigurations(pluginDefinitionKey, filter)
+            .firstOrNull()
+    }
+
+    fun <T> findPluginConfigurations(clazz: Class<T>, filter: (JsonNode) -> Boolean = { true }): List<PluginConfiguration> {
+        val annotation = clazz.getAnnotation(Plugin::class.java)
+            ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")
+
+        return findPluginConfigurations(annotation.key, filter)
+    }
+
+    private fun findPluginConfigurations(
+        pluginDefinitionKey: String,
+        filter: (JsonNode) -> Boolean
+    ): List<PluginConfiguration> {
         val configurations = pluginConfigurationRepository.findByPluginDefinitionKey(pluginDefinitionKey)
-        return configurations.firstOrNull { config ->
+        return configurations.filter { config ->
             val configProperties = config.properties
             configProperties != null && filter(configProperties)
         }
