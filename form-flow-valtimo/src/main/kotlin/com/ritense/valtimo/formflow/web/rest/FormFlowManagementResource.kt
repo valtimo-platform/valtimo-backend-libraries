@@ -17,9 +17,7 @@
 package com.ritense.valtimo.formflow.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.exporter.ExportPrettyPrinter
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
-import com.ritense.formflow.domain.definition.configuration.FormFlowDefinition
 import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -59,9 +57,9 @@ class FormFlowManagementResource(
     @Transactional
     fun getFormFlowDefinitionByKey(
         @PathVariable definitionKey: String,
+        @PathVariable definitionVersion: Long,
     ): ResponseEntity<FormFlowDefinitionDto> {
-        val definition = formFlowService.findLatestDefinitionByKey(definitionKey)
-            ?: return ResponseEntity.notFound().build()
+        val definition = formFlowService.findDefinition(FormFlowDefinitionId(definitionKey, definitionVersion))
         val readOnly = formFlowDeploymentService.isAutoDeployed(definition.id.key)
         return ResponseEntity.ok(FormFlowDefinitionDto.of(definition, readOnly))
     }
@@ -71,20 +69,11 @@ class FormFlowManagementResource(
     fun deleteFormFlowDefinition(
         @PathVariable definitionKey: String,
     ): ResponseEntity<Unit> {
+        if (formFlowDeploymentService.isAutoDeployed(definitionKey)) {
+            return ResponseEntity.badRequest().build()
+        }
         formFlowService.deleteByKey(definitionKey)
         return ResponseEntity.ok().build()
-    }
-
-    @GetMapping("/v1/form-flow/definition/{definitionKey}/{definitionVersion}/download")
-    @Transactional
-    fun downloadFormFlowDefinitionByKey(
-        @PathVariable definitionKey: String,
-        @PathVariable definitionVersion: Long,
-    ): ResponseEntity<ByteArray> {
-        val definition = formFlowService.findDefinition(FormFlowDefinitionId(definitionKey, definitionVersion))
-        val bytes = objectMapper.writer(ExportPrettyPrinter())
-            .writeValueAsBytes(FormFlowDefinition.fromEntity(definition))
-        return ResponseEntity.ok(bytes)
     }
 
     @PostMapping("/v1/form-flow/definition")

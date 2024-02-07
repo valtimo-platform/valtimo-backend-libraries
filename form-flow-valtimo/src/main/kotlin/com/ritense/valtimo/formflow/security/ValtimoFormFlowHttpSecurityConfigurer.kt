@@ -40,7 +40,6 @@ class ValtimoFormFlowHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(HttpMethod.GET, "/api/management/v1/form-flow/definition")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(HttpMethod.GET, "/api/management/v1/form-flow/definition/{key}/{version}")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/management/v1/form-flow/definition/{key}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/management/v1/form-flow/definition/{key}/{version}/download")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(HttpMethod.POST, "/api/management/v1/form-flow/definition")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(HttpMethod.PUT, "/api/management/v1/form-flow/definition/{key}")).hasAuthority(ADMIN)
             }
