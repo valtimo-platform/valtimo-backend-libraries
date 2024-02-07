@@ -27,7 +27,7 @@ class ValueResolverDelegateService(
         return valueResolverService.resolveValues(execution.processInstanceId, execution, listOf(key))[key]
     }
 
-    fun handleValue(execution: DelegateExecution, key: String, value: Any) {
+    fun handleValue(execution: DelegateExecution, key: String, value: Any?) {
         valueResolverService.handleValues(execution.processInstanceId, execution, mapOf(key to value))
     }
 

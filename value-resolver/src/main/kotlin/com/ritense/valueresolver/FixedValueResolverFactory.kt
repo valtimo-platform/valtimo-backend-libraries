@@ -49,7 +49,7 @@ class FixedValueResolverFactory(
     override fun handleValues(
         processInstanceId: String,
         variableScope: VariableScope?,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     ) {
         val firstValue = values.iterator().next()
         throw RuntimeException("Can't save fixed value (unknown destination): {${firstValue.key} to ${firstValue.value}}")
