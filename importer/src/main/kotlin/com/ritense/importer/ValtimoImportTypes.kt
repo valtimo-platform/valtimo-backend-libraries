@@ -21,6 +21,7 @@ class ValtimoImportTypes {
         const val CASE_DEFINITION_SETTINGS = "casesettings"
         const val CASE_LIST = "caselist"
         const val CASE_TAB = "casetab"
+        const val INTERNAL_CASE_STATUS = "internalcasestatus"
         const val DECISION_DEFINITION = "decisiondefinition"
         const val DOCUMENT_DEFINITION = "documentdefinition"
         const val FORM = "form"

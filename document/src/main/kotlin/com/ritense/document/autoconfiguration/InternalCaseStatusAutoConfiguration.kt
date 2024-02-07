@@ -20,11 +20,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.document.deployment.InternalCaseStatusDeployer
 import com.ritense.document.exporter.InternalCaseStatusExporter
+import com.ritense.document.importer.InternalCaseStatusImporter
 import com.ritense.document.repository.InternalCaseStatusRepository
 import com.ritense.document.security.InternalCaseHttpSecurityConfigurer
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.InternalCaseStatusService
 import com.ritense.document.web.rest.InternalCaseStatusResource
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -84,5 +86,14 @@ class InternalCaseStatusAutoConfiguration {
         service: InternalCaseStatusService,
     ): InternalCaseStatusExporter {
         return InternalCaseStatusExporter(objectMapper, service)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(InternalCaseStatusImporter::class)
+    fun internalCaseStatusImporter(
+        internalCaseStatusDeployer: InternalCaseStatusDeployer,
+        changelogDeployer: ChangelogDeployer,
+    ): InternalCaseStatusImporter {
+        return InternalCaseStatusImporter(internalCaseStatusDeployer, changelogDeployer)
     }
 }
