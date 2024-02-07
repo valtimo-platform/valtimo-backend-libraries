@@ -20,15 +20,18 @@ import com.ritense.formflow.domain.definition.FormFlowDefinition
 
 data class ListFormFlowDefinitionResponse(
     val key: String,
-    val version: Long,
+    val versions: List<Long>,
     val readOnly: Boolean
 ) {
     companion object {
-        fun of(formFlowDefinition: FormFlowDefinition, readOnly: Boolean): ListFormFlowDefinitionResponse =
-            ListFormFlowDefinitionResponse(
-                key = formFlowDefinition.id.key,
-                version = formFlowDefinition.id.version,
+        fun of(formFlowDefinitions: List<FormFlowDefinition>, readOnly: Boolean): ListFormFlowDefinitionResponse {
+            val key = formFlowDefinitions.first().id.key
+            assert(formFlowDefinitions.all { it.id.key == key })
+            return ListFormFlowDefinitionResponse(
+                key = key,
+                versions = formFlowDefinitions.map { it.id.version }.sortedDescending(),
                 readOnly = readOnly
             )
+        }
     }
 }

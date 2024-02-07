@@ -51,12 +51,11 @@ class FormFlowManagementResource(
     ): ResponseEntity<List<ListFormFlowDefinitionResponse>> {
         val definitions = formFlowService.getFormFlowDefinitions()
             .groupBy { it.id.key }
-            .map { it.value.maxBy { it.id.version } }
-            .map { ListFormFlowDefinitionResponse.of(it, formFlowDeploymentService.isAutoDeployed(it.id.key)) }
+            .map { ListFormFlowDefinitionResponse.of(it.value, formFlowDeploymentService.isAutoDeployed(it.value.first().id.key)) }
         return ResponseEntity.ok(definitions)
     }
 
-    @GetMapping("/v1/form-flow/definition/{definitionKey}")
+    @GetMapping("/v1/form-flow/definition/{definitionKey}/{definitionVersion}")
     @Transactional
     fun getFormFlowDefinitionByKey(
         @PathVariable definitionKey: String,
@@ -112,8 +111,11 @@ class FormFlowManagementResource(
         }
         val oldDefinition = formFlowService.findLatestDefinitionByKey(definitionDto.key)
             ?: return ResponseEntity.notFound().build()
+        if (definitionDto.version != oldDefinition.id.version + 1) {
+            return ResponseEntity.badRequest().build()
+        }
 
-        val newDefinition = formFlowService.save(definitionDto.copy(version = oldDefinition.id.version + 1).toEntity())
+        val newDefinition = formFlowService.save(definitionDto.toEntity())
         return ResponseEntity.ok(FormFlowDefinitionDto.of(newDefinition, false))
     }
 
