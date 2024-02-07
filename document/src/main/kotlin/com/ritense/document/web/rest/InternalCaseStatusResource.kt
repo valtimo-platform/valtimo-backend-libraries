@@ -70,7 +70,7 @@ class InternalCaseStatusResource(
     }
 
     @RunWithoutAuthorization
-    @PutMapping("management//v1/case-definition/{caseDefinitionName}/internal-status")
+    @PutMapping("management/v1/case-definition/{caseDefinitionName}/internal-status")
     fun editInternalCaseStatuses(
         @PathVariable caseDefinitionName: String,
         @RequestBody requestDtos: List<InternalCaseStatusUpdateOrderRequestDto>
@@ -80,7 +80,7 @@ class InternalCaseStatusResource(
     }
 
     @RunWithoutAuthorization
-    @PutMapping("management//v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}")
+    @PutMapping("management/v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}")
     fun updateInternalCaseStatus(
         @PathVariable caseDefinitionName: String,
         @PathVariable internalStatusKey: String,
@@ -91,7 +91,7 @@ class InternalCaseStatusResource(
     }
 
     @RunWithoutAuthorization
-    @DeleteMapping("management//v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}")
+    @DeleteMapping("management/v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}")
     fun deleteInternalCaseStatus(
         @PathVariable caseDefinitionName: String,
         @PathVariable internalStatusKey: String,
