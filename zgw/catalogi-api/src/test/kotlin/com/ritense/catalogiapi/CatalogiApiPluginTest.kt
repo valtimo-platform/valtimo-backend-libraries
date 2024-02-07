@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import com.ritense.catalogiapi.domain.Besluittype
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Statustype
+import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
 import com.ritense.catalogiapi.exception.StatustypeNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
@@ -29,6 +30,7 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.service.DocumentService
 import com.ritense.zgw.Page
+import org.assertj.core.api.Assertions.assertThat
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -366,6 +368,27 @@ internal class CatalogiApiPluginTest {
         plugin.getBesluittype(execution, besluittype, "myProcessVar")
 
         assertEquals(besluittype, execution.getVariable("myProcessVar"))
+    }
+
+    @Test
+    fun `should get zaaktypen`() {
+        whenever(client.getZaaktypen(any(), any(), any()))
+            .thenReturn(Page(1, URI(""), null, listOf(
+                Zaaktype(URI("zaak:1"), "Zaak 1", "zaak 1")
+            )))
+            .thenReturn(Page(1, null, URI(""), listOf(
+                Zaaktype(URI("zaak:2"), "Zaak 2", "zaak 2")
+            )))
+
+        val zaaktypen = plugin.getZaaktypen()
+
+        assertThat(zaaktypen).hasSize(2)
+        zaaktypen.forEachIndexed { i: Int, zaaktype: Zaaktype ->
+            val zaakNr = i + 1
+            assertThat(zaaktype.url.toString()).isEqualTo("zaak:$zaakNr")
+            assertThat(zaaktype.omschrijving).isEqualTo("Zaak $zaakNr")
+            assertThat(zaaktype.omschrijvingGeneriek).isEqualTo("zaak $zaakNr")
+        }
     }
 
 }
