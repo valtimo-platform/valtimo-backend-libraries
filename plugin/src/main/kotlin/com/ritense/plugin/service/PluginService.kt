@@ -388,8 +388,10 @@ class PluginService(
             PluginConfiguration(
                 newPluginConfigurationId,
                 oldPluginConfiguration.title,
-                oldPluginConfiguration.rawProperties,
-                oldPluginConfiguration.pluginDefinition
+                oldPluginConfiguration.properties,
+                oldPluginConfiguration.pluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
 

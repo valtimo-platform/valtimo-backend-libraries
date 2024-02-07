@@ -80,6 +80,10 @@ internal class PluginServiceIT : BaseIntegrationTest() {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
+    @Autowired
+    lateinit var encryptionService: EncryptionService
+
+
     lateinit var pluginConfiguration: PluginConfiguration
     lateinit var categoryPluginConfiguration: PluginConfiguration
     lateinit var pluginDefinition: PluginDefinition
@@ -92,7 +96,9 @@ internal class PluginServiceIT : BaseIntegrationTest() {
                 PluginConfigurationId.newId(),
                 "title",
                 objectMapper.createObjectNode(),
-                pluginDefinition
+                pluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
 
@@ -102,7 +108,9 @@ internal class PluginServiceIT : BaseIntegrationTest() {
                 PluginConfigurationId.newId(),
                 "title",
                 objectMapper.createObjectNode(),
-                categoryPluginDefinition
+                categoryPluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
     }
@@ -405,7 +413,9 @@ internal class PluginServiceIT : BaseIntegrationTest() {
                 PluginConfigurationId.newId(),
                 "title",
                 objectMapper.readTree(update) as ObjectNode,
-                pluginDefinition
+                pluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
 

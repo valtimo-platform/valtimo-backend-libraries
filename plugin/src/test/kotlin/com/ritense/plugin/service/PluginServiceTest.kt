@@ -70,6 +70,7 @@ internal class PluginServiceTest {
     lateinit var pluginService: PluginService
     lateinit var pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
     lateinit var applicationEventPublisher: ApplicationEventPublisher
+    lateinit var encryptionService: EncryptionService
 
     @BeforeEach
     fun init() {
@@ -81,6 +82,7 @@ internal class PluginServiceTest {
         valueResolverService = mock()
         pluginConfigurationSearchRepository = mock()
         applicationEventPublisher = mock()
+        encryptionService = mock()
         pluginService = spy(PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
@@ -91,7 +93,8 @@ internal class PluginServiceTest {
             valueResolverService,
             pluginConfigurationSearchRepository,
             Validation.buildDefaultValidatorFactory().validator,
-            applicationEventPublisher
+            applicationEventPublisher,
+            encryptionService
         ))
     }
 

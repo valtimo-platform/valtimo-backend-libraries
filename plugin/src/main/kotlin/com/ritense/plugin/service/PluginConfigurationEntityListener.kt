@@ -21,6 +21,7 @@ import com.ritense.plugin.domain.PluginConfiguration
 import jakarta.persistence.PostLoad
 import jakarta.persistence.PostPersist
 import jakarta.persistence.PostUpdate
+import jakarta.persistence.PrePersist
 import jakarta.persistence.PreUpdate
 import mu.KotlinLogging
 
@@ -32,6 +33,7 @@ class PluginConfigurationEntityListener(
     @PostPersist
     @PostUpdate
     @PreUpdate
+    @PrePersist
     fun setBeans(pluginConfiguration: PluginConfiguration) {
         pluginConfiguration.encryptionService = encryptionService
         pluginConfiguration.objectMapper = objectMapper
