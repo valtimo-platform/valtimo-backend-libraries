@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.document.domain
+package com.ritense.document.web.rest
 
-import com.ritense.valtimo.contract.domain.AbstractId
-import jakarta.persistence.Column
-import jakarta.persistence.Embeddable
-
-
-@Embeddable
-data class InternalCaseStatusId(
-    @Column(name = "case_definition_name", length = 50, columnDefinition = "VARCHAR(50)")
-    val caseDefinitionName: String,
-    @Column(name = "internal_case_status_key")
-    val key: String
-) : AbstractId<InternalCaseStatusId>() {
-    init {
-        require(caseDefinitionName.isNotBlank()) { "caseDefinitionName was blank!" }
-        require(key.isNotBlank()) { "key was blank!" }
-    }
+class InternalCaseStatusResourceTest {
 }

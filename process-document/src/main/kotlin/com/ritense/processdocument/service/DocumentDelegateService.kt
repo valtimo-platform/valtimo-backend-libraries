@@ -24,7 +24,6 @@ import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
-import com.ritense.document.service.InternalCaseStatusService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.authentication.UserManagementService
@@ -37,7 +36,6 @@ import kotlin.jvm.optionals.getOrNull
 
 class DocumentDelegateService(
     private val processDocumentService: ProcessDocumentService,
-    private val internalCaseStatusService: InternalCaseStatusService,
     private val documentService: DocumentService,
     private val jsonSchemaDocumentService: JsonSchemaDocumentService,
     private val userManagementService: UserManagementService,

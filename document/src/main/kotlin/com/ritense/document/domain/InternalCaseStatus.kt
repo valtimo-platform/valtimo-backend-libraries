@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ data class InternalCaseStatus(
     val title: String,
     @Column(name = "visible_in_case_list_by_default")
     val visibleInCaseListByDefault: Boolean,
-    @Column(name = "order")
+    @Column(name = "internal_case_status_order")
     val order: Int,
 ) {
     init {

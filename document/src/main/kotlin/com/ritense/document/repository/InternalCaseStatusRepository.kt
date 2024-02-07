@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package com.ritense.document.repository
 
 import com.ritense.document.domain.InternalCaseStatus
+import com.ritense.document.domain.InternalCaseStatusId
 import org.springframework.data.jpa.repository.JpaRepository
-import java.util.UUID
 
-interface InternalCaseStatusRepository : JpaRepository<InternalCaseStatus, UUID> {
+interface InternalCaseStatusRepository : JpaRepository<InternalCaseStatus, InternalCaseStatusId> {
     fun findById_CaseDefinitionNameOrderByOrder(caseDefinitionName: String): List<InternalCaseStatus>
     fun findDistinctById_CaseDefinitionNameAndId_Key(caseDefinitionName: String, key: String): InternalCaseStatus?
 }

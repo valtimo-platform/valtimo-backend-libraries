@@ -22,6 +22,7 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.InternalCaseStatus;
+import com.ritense.document.domain.InternalCaseStatusId;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentCreatedEvent;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent;
@@ -107,9 +108,8 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Column(name = "sequence", columnDefinition = "BIGINT")
     private Long sequence;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "internal_case_status_key", referencedColumnName = "status_key")
-    private InternalCaseStatus internalCaseStatus;
+    @Embedded
+    private InternalCaseStatusId internalCaseStatusId;
 
     @Column(name = "assignee_id", columnDefinition = "varchar(64)")
     private String assigneeId;

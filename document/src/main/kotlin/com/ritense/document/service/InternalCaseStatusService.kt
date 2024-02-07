@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,15 @@ import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.document.domain.InternalCaseStatus
 import com.ritense.document.domain.InternalCaseStatusId
 import com.ritense.document.exception.InternalCaseStatusAlreadyExistsException
+import com.ritense.document.exception.InternalCaseStatusNotFoundException
 import com.ritense.document.repository.InternalCaseStatusRepository
 import com.ritense.document.web.rest.dto.InternalCaseStatusCreateRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateOrderRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateRequestDto
+import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
 
+@Transactional
 class InternalCaseStatusService(
     private val internalCaseStatusRepository: InternalCaseStatusRepository,
     private val documentDefinitionService: DocumentDefinitionService,
@@ -56,8 +59,8 @@ class InternalCaseStatusService(
         return internalCaseStatusRepository.save(
             InternalCaseStatus(
                 InternalCaseStatusId(
-                    request.key,
-                    caseDefinitionName
+                    caseDefinitionName,
+                    request.key
                 ),
                 request.title,
                 request.visibleInCaseListByDefault,
@@ -69,47 +72,45 @@ class InternalCaseStatusService(
     fun update(
         caseDefinitionName: String,
         internalCaseStatusKey: String,
-        requestDto: InternalCaseStatusUpdateRequestDto,
+        request: InternalCaseStatusUpdateRequestDto,
     ) {
         denyManagementOperation()
 
-        internalCaseStatusRepository.findDistinctById_CaseDefinitionNameAndId_Key(
-            caseDefinitionName, internalCaseStatusKey
-        )?.let {
-            internalCaseStatusRepository.save(
-                it.copy(
-                    title = requestDto.title,
-                    visibleInCaseListByDefault = requestDto.visibleInCaseListByDefault
-                )
+        val oldInternalCaseStatus = internalCaseStatusRepository
+            .findDistinctById_CaseDefinitionNameAndId_Key(
+                caseDefinitionName, internalCaseStatusKey
+            ) ?: throw InternalCaseStatusNotFoundException(internalCaseStatusKey, caseDefinitionName)
+
+        internalCaseStatusRepository.save(
+            oldInternalCaseStatus.copy(
+                title = request.title,
+                visibleInCaseListByDefault = request.visibleInCaseListByDefault
             )
-        }
+        )
     }
 
     fun update(
         caseDefinitionName: String,
-        requestDtos: List<InternalCaseStatusUpdateOrderRequestDto>
+        requests: List<InternalCaseStatusUpdateOrderRequestDto>
     ): List<InternalCaseStatus> {
         denyManagementOperation()
 
         val existingInternalCaseStatuses = internalCaseStatusRepository
             .findById_CaseDefinitionNameOrderByOrder(caseDefinitionName)
-        check(existingInternalCaseStatuses.size == requestDtos.size) {
+        check(existingInternalCaseStatuses.size == requests.size) {
             throw IllegalStateException(
                 "Failed to update internal case statuses. Reason: the number of internal "
                     + "case statuses in the update request does not match the number of existing internal case statuses."
             )
         }
 
-        val updatedInternalCaseStatuses = requestDtos.mapIndexed { index, requestDto ->
-            val existingInternalCaseStatus = existingInternalCaseStatuses.find { it.id.key == requestDto.key }
-                ?: throw IllegalStateException(
-                    "Failed to update internal case statuses. Reason: internal case "
-                        + "status with key '${requestDto.key}' does not exist."
-                )
+        val updatedInternalCaseStatuses = requests.mapIndexed { index, request ->
+            val existingInternalCaseStatus = existingInternalCaseStatuses.find { it.id.key == request.key }
+                ?: throw InternalCaseStatusNotFoundException(request.key, caseDefinitionName)
             existingInternalCaseStatus.copy(
-                title = requestDto.title,
+                title = request.title,
                 order = index,
-                visibleInCaseListByDefault = requestDto.visibleInCaseListByDefault
+                visibleInCaseListByDefault = request.visibleInCaseListByDefault
             )
         }
 
@@ -119,12 +120,13 @@ class InternalCaseStatusService(
     fun delete(caseDefinitionName: String, internalCaseStatusKey: String) {
         denyManagementOperation()
 
-        internalCaseStatusRepository.findDistinctById_CaseDefinitionNameAndId_Key(
-            caseDefinitionName, internalCaseStatusKey
-        )?.let {
-            internalCaseStatusRepository.delete(it)
-            reorder(caseDefinitionName)
-        }
+        val internalCaseStatus =
+            internalCaseStatusRepository.findDistinctById_CaseDefinitionNameAndId_Key(
+                caseDefinitionName, internalCaseStatusKey
+            ) ?: throw InternalCaseStatusNotFoundException(internalCaseStatusKey, caseDefinitionName)
+
+        internalCaseStatusRepository.delete(internalCaseStatus)
+        reorder(caseDefinitionName)
     }
 
     private fun reorder(caseDefinitionName: String) {
