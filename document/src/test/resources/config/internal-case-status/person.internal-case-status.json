@@ -1,5 +1,5 @@
 {
-    "changesetId": "person-internal-case-status-v1",
+    "changesetId": "person.internal-case-status",
     "internalCaseStatuses": [
         {
             "key": "closed",

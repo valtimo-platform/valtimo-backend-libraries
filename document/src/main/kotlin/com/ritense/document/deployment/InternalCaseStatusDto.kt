@@ -16,9 +16,20 @@
 
 package com.ritense.document.deployment
 
+import com.ritense.document.domain.InternalCaseStatus
+
 data class InternalCaseStatusDto(
     val key: String,
     val caseDefinitionName: String,
     val title: String,
     val visibleInCaseListByDefault: Boolean
-)
+) {
+    companion object {
+        fun of(internalCaseStatus: InternalCaseStatus) = InternalCaseStatusDto(
+            internalCaseStatus.id.key,
+            internalCaseStatus.id.caseDefinitionName,
+            internalCaseStatus.title,
+            internalCaseStatus.visibleInCaseListByDefault
+        )
+    }
+}

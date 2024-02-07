@@ -19,6 +19,7 @@ package com.ritense.document.autoconfiguration
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.document.deployment.InternalCaseStatusDeployer
+import com.ritense.document.exporter.InternalCaseStatusExporter
 import com.ritense.document.repository.InternalCaseStatusRepository
 import com.ritense.document.security.InternalCaseHttpSecurityConfigurer
 import com.ritense.document.service.DocumentDefinitionService
@@ -74,5 +75,14 @@ class InternalCaseStatusAutoConfiguration {
             changelogService,
             clearTables
         )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(InternalCaseStatusExporter::class)
+    fun internalCaseStatusExporter(
+        objectMapper: ObjectMapper,
+        service: InternalCaseStatusService,
+    ): InternalCaseStatusExporter {
+        return InternalCaseStatusExporter(objectMapper, service)
     }
 }
