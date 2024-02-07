@@ -70,7 +70,7 @@ class ZakenApiEventListenerTest {
         val documentId = mock<Document.Id>()
 
         whenever(zaakTypeLinkService.get(any())).thenReturn(zaakTypeLink)
-        whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(zakenApiPlugin)
+        whenever(pluginService.createInstance<ZakenApiPlugin>(any<UUID>())).thenReturn(zakenApiPlugin)
         whenever(event.documentId()).thenReturn(documentId)
         whenever(documentId.id).thenReturn(UUID.randomUUID())
 
@@ -187,7 +187,7 @@ class ZakenApiEventListenerTest {
         verify(zaakTypeLinkService).modify(zaakTypeLinkCaptor.capture())
 
         val updatedLink = zaakTypeLinkCaptor.firstValue
-        assertEquals(newPluginId, updatedLink.zakenApiPluginConfigurationId)
+        assertEquals(newPluginId.id, updatedLink.zakenApiPluginConfigurationId)
     }
 
     private fun setupDocumentCreatedRequest(): DocumentCreatedEvent {
