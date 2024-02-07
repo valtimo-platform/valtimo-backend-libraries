@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -480,7 +480,11 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(processInstanceComments);
     }
 
+    /**
+     * @deprecated since 12.0.0, use v2 instead
+     */
     @PostMapping("/v1/process/{processDefinitionName}/search")
+    @Deprecated(since = "12.0.0", forRemoval = true)
     public ResponseEntity<List<ProcessInstance>> searchProcessInstancesV2(
             @PathVariable String processDefinitionName,
             @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO,
@@ -494,6 +498,20 @@ public class ProcessResource extends AbstractProcessResource {
         final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(
                 page, "/v1/process/{processDefinitionName}/search");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @PostMapping("/v2/process/{processDefinitionName}/search")
+    public ResponseEntity<Page<ProcessInstance>> searchProcessInstancesPaged(
+        @PathVariable String processDefinitionName,
+        @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO,
+        Pageable pageable
+    ) {
+        final Page<ProcessInstance> page = camundaSearchProcessInstanceRepository.searchInstances(
+            processDefinitionName,
+            processInstanceSearchDTO,
+            pageable
+        );
+        return ResponseEntity.ok(page);
     }
 
     @PostMapping("/v1/process/{processDefinitionName}/count")

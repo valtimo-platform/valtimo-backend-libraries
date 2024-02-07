@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,8 @@ public class ProcessHttpSecurityConfigurer implements HttpSecurityConfigurer {
                 .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/xml")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/activities")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/process/{processInstanceId}/comments")).authenticated()
-                .requestMatchers(antMatcher(GET, "/api/v1/process/{processDefinitionName}/search")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/process/{processDefinitionName}/search")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v2/process/{processDefinitionName}/search")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/process/{processDefinitionName}/count")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/process/{processInstanceId}/comment")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/process/{processInstanceId}/delete")).hasAuthority(ADMIN)
