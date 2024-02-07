@@ -21,6 +21,7 @@ import com.ritense.document.repository.InternalCaseStatusRepository
 import com.ritense.document.security.InternalCaseHttpSecurityConfigurer
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.document.service.InternalCaseStatusService
+import com.ritense.document.web.rest.InternalCaseStatusResource
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
@@ -36,6 +37,14 @@ class InternalCaseStatusAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(InternalCaseStatusResource::class)
+    fun internalCaseStatusResource(
+        internalCaseStatusService: InternalCaseStatusService,
+    ): InternalCaseStatusResource {
+        return InternalCaseStatusResource(internalCaseStatusService)
+    }
+
+    @Bean
     @ConditionalOnMissingBean(InternalCaseStatusService::class)
     fun internalCaseStatusService(
         repository: InternalCaseStatusRepository,
@@ -44,5 +53,4 @@ class InternalCaseStatusAutoConfiguration {
     ): InternalCaseStatusService {
         return InternalCaseStatusService(repository, documentDefinitionService, authorizationService)
     }
-
 }
