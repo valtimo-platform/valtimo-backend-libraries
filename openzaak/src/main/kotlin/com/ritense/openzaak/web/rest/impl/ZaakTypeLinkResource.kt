@@ -31,7 +31,7 @@ import org.springframework.http.ResponseEntity.noContent
 import org.springframework.http.ResponseEntity.ok
 import java.util.UUID
 
-@Deprecated("Use DefaultZaakTypeLinkResource in zaken-api module instead")
+@Deprecated("Since 12.0.0. Use DefaultZaakTypeLinkResource in zaken-api module instead")
 class ZaakTypeLinkResource(
     private val zaakTypeLinkService: ZaakTypeLinkService
 ) : ZaakTypeLinkResource {

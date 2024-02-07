@@ -23,7 +23,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
 @Embeddable
-@Deprecated("Use the DocumentenApiPlugin instead")
+@Deprecated("Since 12.0.0. Use the DocumentenApiPlugin instead")
 data class InformatieObjectTypeLinkId(
 
     @Column(name = "informatie_object_type_link_id")

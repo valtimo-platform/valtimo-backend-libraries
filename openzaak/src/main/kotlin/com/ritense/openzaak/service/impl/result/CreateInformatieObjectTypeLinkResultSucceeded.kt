@@ -20,7 +20,7 @@ import com.ritense.openzaak.domain.mapping.impl.InformatieObjectTypeLink
 import com.ritense.openzaak.service.result.CreateInformatieObjectTypeLinkResult
 import com.ritense.valtimo.contract.result.OperationError
 
-@Deprecated("Will not be replaced. See zaken-api module for ZaakTypeLink functionality")
+@Deprecated("Since 12.0.0. Will not be replaced. See zaken-api module for ZaakTypeLink functionality")
 class CreateInformatieObjectTypeLinkResultSucceeded(
     val informatieObjectTypeLink: InformatieObjectTypeLink
 ) : CreateInformatieObjectTypeLinkResult {

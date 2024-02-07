@@ -16,5 +16,5 @@
 
 package com.ritense.openzaak.service.result
 
-@Deprecated("Will not be replaced. See zaken-api module for ZaakTypeLink functionality")
+@Deprecated("Since 12.0.0. Will not be replaced. See zaken-api module for ZaakTypeLink functionality")
 interface CreateZaakTypeLinkResult : ZaakTypeLinkResult

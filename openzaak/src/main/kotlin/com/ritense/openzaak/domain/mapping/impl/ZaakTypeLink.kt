@@ -46,7 +46,7 @@ import java.util.UUID
 
 @Entity(name = "DeprecatedZaakTypeLink")
 @Table(name = "zaak_type_link")
-@Deprecated("Use ZaakTypeLink in zaken-api module instead")
+@Deprecated("Since 12.0.0. Use ZaakTypeLink in zaken-api module instead")
 data class ZaakTypeLink(
 
     @EmbeddedId

@@ -19,7 +19,7 @@ package com.ritense.openzaak.repository.converter
 import java.net.URI
 import jakarta.persistence.AttributeConverter
 
-@Deprecated("Use UriAttributeConverter in contract module instead")
+@Deprecated("Since 12.0.0. Use UriAttributeConverter in contract module instead")
 class UriAttributeConverter : AttributeConverter<URI, String> {
 
     override fun convertToDatabaseColumn(attribute: URI): String {

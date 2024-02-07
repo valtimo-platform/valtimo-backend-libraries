@@ -18,7 +18,7 @@ package com.ritense.openzaak.domain.request
 
 import java.net.URI
 
-@Deprecated("Use CreateZaakTypeLinkRequest in zaken-api module instead")
+@Deprecated("Since 12.0.0. Use CreateZaakTypeLinkRequest in zaken-api module instead")
 data class CreateZaakTypeLinkRequest(
     val documentDefinitionName: String,
     val zaakTypeUrl: URI,

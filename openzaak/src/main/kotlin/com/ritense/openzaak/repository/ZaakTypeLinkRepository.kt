@@ -24,7 +24,7 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
-@Deprecated("Use ZaakTypeLinkRepository in zaken-api module instead")
+@Deprecated("Since 12.0.0. Use ZaakTypeLinkRepository in zaken-api module instead")
 @Repository("deprecatedZaakTypeLinkRepository")
 interface ZaakTypeLinkRepository : JpaRepository<ZaakTypeLink, ZaakTypeLinkId> {
 

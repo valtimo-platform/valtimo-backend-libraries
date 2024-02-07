@@ -16,7 +16,7 @@
 
 package com.ritense.openzaak.domain.mapping.impl
 
-@Deprecated("Use ZakenApiPlugin instead")
+@Deprecated("Since 12.0.0. Use ZakenApiPlugin instead")
 enum class Operation {
     CREATE_ZAAK,
     SET_RESULTAAT,

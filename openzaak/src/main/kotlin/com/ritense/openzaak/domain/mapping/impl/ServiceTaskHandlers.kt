@@ -16,7 +16,7 @@
 
 package com.ritense.openzaak.domain.mapping.impl
 
-@Deprecated("Use ZakenApiPlugin instead")
+@Deprecated("Since 12.0.0. Use ZakenApiPlugin instead")
 class ServiceTaskHandlers : HashSet<ServiceTaskHandler> {
     constructor() : super()
     constructor(c: Collection<ServiceTaskHandler>) : super(c)
