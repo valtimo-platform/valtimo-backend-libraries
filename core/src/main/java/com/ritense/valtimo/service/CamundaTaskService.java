@@ -202,7 +202,7 @@ public class CamundaTaskService {
             } catch (AuthorizationException ex) {
                 throw new IllegalStateException("Cannot assign task: the user has no permission.", ex);
             } catch (ProcessEngineException ex) {
-                throw new IllegalStateException("Failed to assign task: " + ex.getLocalizedMessage(), ex);
+                throw new IllegalStateException("An error occurred while assigning the task", ex);
             }
         }
     }
@@ -218,7 +218,7 @@ public class CamundaTaskService {
         } catch (AuthorizationException ex) {
             throw new IllegalStateException("Cannot unassign task: the user has no permission.", ex);
         } catch (ProcessEngineException ex) {
-            throw new IllegalStateException("Failed to unassign task: " + ex.getLocalizedMessage(), ex);
+            throw new IllegalStateException("An error occurred while unassigning the task.", ex);
         }
     }
 
