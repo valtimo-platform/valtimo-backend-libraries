@@ -24,6 +24,7 @@ import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
+import com.ritense.catalogiapi.exception.ResultaattypeNotFoundException
 import com.ritense.catalogiapi.exception.StatustypeNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.domain.Document
@@ -280,6 +281,23 @@ internal class CatalogiApiPluginTest {
         )
 
         assertEquals(resultaattypeUrl, execution.getVariable("myProcessVar"))
+    }
+
+    @Test
+    fun `should throw ResultaattypeNotFoundException when get resultaat type doesn't exist`() {
+        val resultaattype = "Registered"
+        val zaaktypeUrl = "https://example.com/zaaktype/123"
+        whenever(client.getResultaattypen(any(), any(), any())).thenReturn(
+            Page(count = 0, results = listOf())
+        )
+
+        val exception = assertThrows<ResultaattypeNotFoundException> {
+            plugin.getResultaattypeByOmschrijving(
+                URI(zaaktypeUrl), resultaattype
+            )
+        }
+
+        assertEquals("No resultaattype was found. With 'omschrijving': '" + resultaattype + "'", exception.message)
     }
 
     @Test
