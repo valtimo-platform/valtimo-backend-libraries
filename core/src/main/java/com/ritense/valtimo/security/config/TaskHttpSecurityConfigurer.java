@@ -32,6 +32,7 @@ public class TaskHttpSecurityConfigurer implements HttpSecurityConfigurer {
         try {
             http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/task")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v2/task")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/task/assign/batch-assign")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/task/batch-complete")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/task/{taskId}")).authenticated()
