@@ -31,7 +31,7 @@ class DocumentCreatedListener(
     fun handle(event: DocumentCreatedEvent) {
         val zaakTypeLink = zaakTypeLinkService.get(event.definitionId().name())
         zaakTypeLink?.let {
-            if (it.createWithDossier) {
+            if (it.createWithDossier && it.zakenApiPluginConfigurationId == null) {
                 zaakService.createZaakWithLink(event.documentId())
             }
         }
