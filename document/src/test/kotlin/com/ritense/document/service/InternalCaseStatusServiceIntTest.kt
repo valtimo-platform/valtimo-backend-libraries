@@ -41,7 +41,20 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
     private val internalCaseStatusRepository: InternalCaseStatusRepository
 ) : BaseIntegrationTest() {
     @Test
-    fun shouldCreateStatusForExistingDefinition() {
+    fun `should have imported two person internal case statuses`() {
+        val internalCaseStatuses =
+            internalCaseStatusRepository.findById_CaseDefinitionNameOrderByOrder("person")
+
+        assertEquals(2, internalCaseStatuses.size)
+        assertEquals("closed", internalCaseStatuses[0].id.key)
+        assertEquals("Closed", internalCaseStatuses[0].title)
+        assertFalse(internalCaseStatuses[0].visibleInCaseListByDefault)
+        assertEquals("started", internalCaseStatuses[1].id.key)
+        assertEquals("Started", internalCaseStatuses[1].title)
+        assertTrue(internalCaseStatuses[1].visibleInCaseListByDefault)
+    }
+    @Test
+    fun `should create status for existing definition`() {
         AuthorizationContext.runWithoutAuthorization {
             internalCaseStatusService.create(
                 "house",
@@ -68,7 +81,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
     }
 
     @Test
-    fun shouldNotCreateStatusWithoutProperPermissions() {
+    fun `should not create status without proper permissions`() {
         assertThrows<AccessDeniedException> {
             internalCaseStatusService.create(
                 "house",
@@ -82,7 +95,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
     }
 
     @Test
-    fun shouldNotCreateStatusForMissingDefinition() {
+    fun `should not create status for missing definition`() {
         assertThrows<NoSuchElementException> {
             AuthorizationContext.runWithoutAuthorization {
                 internalCaseStatusService.create(
