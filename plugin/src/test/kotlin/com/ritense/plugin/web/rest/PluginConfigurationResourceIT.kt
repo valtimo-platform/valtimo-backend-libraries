@@ -24,6 +24,7 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.plugin.service.EncryptionService
 import jakarta.transaction.Transactional
 import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.hamcrest.Matchers.hasSize
@@ -54,6 +55,9 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
 
     @Autowired
+    lateinit var encryptionService: EncryptionService
+
+    @Autowired
     lateinit var objectMapper: ObjectMapper
 
     lateinit var categoryPluginConfiguration: PluginConfiguration
@@ -80,7 +84,9 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
                     }
                     """
                 ) as ObjectNode,
-                pluginDefinition
+                pluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
 
@@ -90,7 +96,9 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
                 PluginConfigurationId.newId(),
                 "title",
                 null,
-                categoryPluginDefinition
+                categoryPluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
     }
