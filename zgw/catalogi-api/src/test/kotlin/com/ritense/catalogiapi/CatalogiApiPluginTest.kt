@@ -297,7 +297,7 @@ internal class CatalogiApiPluginTest {
             )
         }
 
-        assertEquals("No resultaattype was found. With 'omschrijving': '" + resultaattype + "'", exception.message)
+        assertEquals("No resultaattype was found. With 'omschrijving': '$resultaattype'", exception.message)
     }
 
     @Test
