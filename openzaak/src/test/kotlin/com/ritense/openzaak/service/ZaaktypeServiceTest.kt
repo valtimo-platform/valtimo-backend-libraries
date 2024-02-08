@@ -33,7 +33,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.net.URI
 
-class ZaakTypeServiceTest : BaseTest() {
+class ZaaktypeServiceTest : BaseTest() {
 
     lateinit var zaakTypeService: ZaakTypeService
 

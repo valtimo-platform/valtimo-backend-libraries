@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityCon
             http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/document-definition")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/document-definition")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/management/v1/document-definition-template")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(GET, "/api/v1/document-definition/{name}")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/document-definition/open/count")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition")).hasAuthority(ADMIN)

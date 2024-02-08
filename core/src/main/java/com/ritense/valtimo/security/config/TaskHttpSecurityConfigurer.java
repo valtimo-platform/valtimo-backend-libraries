@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ public class TaskHttpSecurityConfigurer implements HttpSecurityConfigurer {
         try {
             http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(GET, "/api/v1/task")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v2/task")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/task/assign/batch-assign")).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/v1/task/batch-complete")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/v1/task/{taskId}")).authenticated()

@@ -45,7 +45,7 @@ import java.net.URI
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
-internal class ZaakTypeLinkResourceTest {
+internal class ZaaktypeLinkResourceTest {
 
     lateinit var mockMvc: MockMvc
     lateinit var zaakTypeLinkService: ZaakTypeLinkService

@@ -18,7 +18,7 @@ package com.ritense.openzaak.listener
 
 import com.ritense.document.domain.event.DocumentCreatedEvent
 import com.ritense.openzaak.service.impl.ZaakService
-import com.ritense.openzaak.service.impl.ZaakTypeLinkService
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import org.springframework.context.event.EventListener
 import org.springframework.core.annotation.Order
 

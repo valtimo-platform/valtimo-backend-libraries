@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 interface ZaakTypeResource {
 
+    @Deprecated("Since 12.0.0")
     @GetMapping("/v1/openzaak/zaaktype")
     fun getZaakTypes(): ResponseEntity<List<ZaakType>>
 
