@@ -32,6 +32,7 @@ import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.domain.ZaaktypeInformatieobjecttype
+import com.ritense.catalogiapi.exception.ResultaattypeNotFoundException
 import com.ritense.catalogiapi.exception.StatustypeNotFoundException
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.service.DocumentService
@@ -236,7 +237,7 @@ class CatalogiApiPlugin(
     fun getResultaattypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Resultaattype {
         return getResultaattypen(zaakTypeUrl)
             .singleOrNull { it.omschrijving.equals(omschrijving, ignoreCase = true) }
-            ?: throw StatustypeNotFoundException("With 'omschrijving': '$omschrijving'")
+            ?: throw ResultaattypeNotFoundException("With 'omschrijving': '$omschrijving'")
     }
 
     fun getBesluittypen(zaakTypeUrl: URI): List<Besluittype> {
