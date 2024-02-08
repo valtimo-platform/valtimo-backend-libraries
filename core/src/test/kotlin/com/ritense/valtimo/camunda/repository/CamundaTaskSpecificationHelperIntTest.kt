@@ -25,6 +25,7 @@ class CamundaTaskSpecificationHelperIntTest @Autowired constructor(
     @BeforeEach
     fun prepare() {
         createDate = LocalDateTime.now()
+        Thread.sleep(1000)
 
         oneTaskInstances = (1..3)
             .map {
@@ -176,6 +177,7 @@ class CamundaTaskSpecificationHelperIntTest @Autowired constructor(
     @Test
     @Transactional
     fun byCreateTimeBefore() {
+        Thread.sleep(1000)
         val camundaTaskIds = camundaTaskRepository.findAll(CamundaTaskSpecificationHelper.byCreateTimeBefore(LocalDateTime.now()))
             .map { it.id }
 
