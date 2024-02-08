@@ -33,6 +33,7 @@ import com.ritense.plugin.repository.PluginProcessLinkRepositoryImpl
 import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.EncryptionService
+import com.ritense.plugin.service.PluginConfigurationListener
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.PluginConfigurationResource
 import com.ritense.plugin.web.rest.PluginDefinitionResource
@@ -45,6 +46,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
@@ -118,7 +120,9 @@ class PluginAutoConfiguration {
         objectMapper: ObjectMapper,
         valueResolverService: ValueResolverService,
         pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
-        validator: Validator
+        validator: Validator,
+        applicationEventPublisher: ApplicationEventPublisher,
+        encryptionService: EncryptionService
     ): PluginService {
         return PluginService(
             pluginDefinitionRepository,
@@ -130,6 +134,8 @@ class PluginAutoConfiguration {
             valueResolverService,
             pluginConfigurationSearchRepository,
             validator,
+            applicationEventPublisher,
+            encryptionService
         )
     }
 
@@ -183,5 +189,13 @@ class PluginAutoConfiguration {
             objectMapper = objectMapper,
             resourceLoader = resourceLoader
         )
+    }
+
+    @Bean
+    fun pluginConfigurationListener(
+        pluginConfigurationRepository: PluginConfigurationRepository,
+        pluginProcessLinkRepository: PluginProcessLinkRepository,
+    ): PluginConfigurationListener {
+        return PluginConfigurationListener(pluginConfigurationRepository, pluginProcessLinkRepository)
     }
 }

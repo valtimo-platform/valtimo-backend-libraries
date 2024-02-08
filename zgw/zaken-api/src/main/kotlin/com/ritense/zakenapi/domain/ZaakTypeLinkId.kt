@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.mapping.impl
+package com.ritense.zakenapi.domain
 
 import com.fasterxml.jackson.annotation.JsonValue
 import com.ritense.valtimo.contract.domain.AbstractId
@@ -23,7 +23,6 @@ import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
 @Embeddable
-@Deprecated("Since 12.0.0. Use ZaakTypeLinkId in zaken-api module instead")
 data class ZaakTypeLinkId(
 
     @Column(name = "zaak_type_link_id")
