@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.mapping.impl
+package com.ritense.zgw.converter
 
-@Deprecated("Since 12.0.0. Use ZakenApiPlugin instead")
-enum class Operation {
-    CREATE_ZAAK,
-    SET_RESULTAAT,
-    SET_STATUS,
-    CREATE_BESLUIT,
+import com.ritense.zgw.Rsin
+import jakarta.persistence.AttributeConverter
+
+class RsinAttributeConverter : AttributeConverter<Rsin, String> {
+
+    override fun convertToDatabaseColumn(attribute: Rsin?): String? {
+        return attribute?.toString()
+    }
+
+    override fun convertToEntityAttribute(dbData: String?): Rsin? {
+        return dbData?.let { Rsin(it) }
+    }
 }
