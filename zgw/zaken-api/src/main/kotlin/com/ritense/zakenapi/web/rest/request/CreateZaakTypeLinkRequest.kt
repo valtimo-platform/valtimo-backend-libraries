@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.mapping.impl
+package com.ritense.zakenapi.web.rest.request
 
-@Deprecated("Since 12.0.0. Use ZakenApiPlugin instead")
-enum class Operation {
-    CREATE_ZAAK,
-    SET_RESULTAAT,
-    SET_STATUS,
-    CREATE_BESLUIT,
-}
+import java.net.URI
+import java.util.UUID
+
+data class CreateZaakTypeLinkRequest(
+    val documentDefinitionName: String,
+    val zaakTypeUrl: URI,
+    val zakenApiPluginConfigurationId: UUID? = null,
+    val createWithDossier: Boolean? = false,
+    val rsin: String? = null
+)

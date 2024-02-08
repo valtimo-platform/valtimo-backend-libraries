@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.repository.converter
+package com.ritense.zakenapi.service
 
-import java.net.URI
-import jakarta.persistence.AttributeConverter
+import com.ritense.zakenapi.domain.ZaakTypeLink
+import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
+import java.util.UUID
 
-@Deprecated("Since 12.0.0. Use UriAttributeConverter in contract module instead")
-class UriAttributeConverter : AttributeConverter<URI, String> {
+interface ZaakTypeLinkService {
 
-    override fun convertToDatabaseColumn(attribute: URI): String {
-        return attribute.toString()
-    }
+    fun get(documentDefinitionName: String): ZaakTypeLink?
 
-    override fun convertToEntityAttribute(dbData: String): URI {
-        return URI.create(dbData.trim())
-    }
+    fun getByPluginConfigurationId(id: UUID): List<ZaakTypeLink>
+
+    fun getByProcess(processDefinitionKey: String): List<ZaakTypeLink>
+
+    fun createZaakTypeLink(request: CreateZaakTypeLinkRequest): ZaakTypeLink
+
+    fun deleteZaakTypeLinkBy(documentDefinitionName: String)
+
+    fun modify(zaakTypeLink: ZaakTypeLink)
 }

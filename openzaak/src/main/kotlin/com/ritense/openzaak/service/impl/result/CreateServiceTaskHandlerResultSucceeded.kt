@@ -20,6 +20,7 @@ import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.openzaak.service.result.CreateServiceTaskHandlerResult
 import com.ritense.openzaak.service.result.error.ZaakTypeLinkOperationError
 
+@Deprecated("Since 12.0.0. Will not be replaced. See zaken-api module for ZaakTypeLink functionality")
 class CreateServiceTaskHandlerResultSucceeded (
     private val zaakTypeLink: ZaakTypeLink
 ) : CreateServiceTaskHandlerResult {

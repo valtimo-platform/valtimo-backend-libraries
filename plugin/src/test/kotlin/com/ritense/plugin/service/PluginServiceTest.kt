@@ -30,6 +30,7 @@ import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.domain.PluginProperty
+import com.ritense.plugin.events.PluginConfigurationDeletedEvent
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
@@ -53,6 +54,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.context.ApplicationEventPublisher
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -67,6 +69,8 @@ internal class PluginServiceTest {
     lateinit var valueResolverService: ValueResolverService
     lateinit var pluginService: PluginService
     lateinit var pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
+    lateinit var applicationEventPublisher: ApplicationEventPublisher
+    lateinit var encryptionService: EncryptionService
 
     @BeforeEach
     fun init() {
@@ -77,6 +81,8 @@ internal class PluginServiceTest {
         pluginFactory = mock()
         valueResolverService = mock()
         pluginConfigurationSearchRepository = mock()
+        applicationEventPublisher = mock()
+        encryptionService = mock()
         pluginService = spy(PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
@@ -86,7 +92,9 @@ internal class PluginServiceTest {
             MapperSingleton.get(),
             valueResolverService,
             pluginConfigurationSearchRepository,
-            Validation.buildDefaultValidatorFactory().validator
+            Validation.buildDefaultValidatorFactory().validator,
+            applicationEventPublisher,
+            encryptionService
         ))
     }
 
@@ -209,6 +217,7 @@ internal class PluginServiceTest {
     @Test
     fun `should delete plugin configuration`(){
         val pluginDefinition = newPluginDefinition()
+        val deleteEventCaptor = argumentCaptor<PluginConfigurationDeletedEvent>()
         addPluginProperty(pluginDefinition)
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
 
@@ -217,11 +226,15 @@ internal class PluginServiceTest {
         val plugin2 = TestPlugin2()
         plugin2.name = "whatever"
 
-        whenever(pluginConfigurationRepository.getReferenceById(pluginConfiguration.id)).thenReturn(pluginConfiguration)
+        // need to mock findById because findByIdOrNull can't be mocked because it's static
+        whenever(pluginConfigurationRepository.findById(any())).thenReturn(Optional.of(pluginConfiguration))
         doReturn(plugin2).whenever(pluginService).createInstance(any<PluginConfiguration>())
 
         pluginService.deletePluginConfiguration(pluginConfigurationId)
+
         verify(pluginConfigurationRepository).deleteById(pluginConfigurationId)
+        verify(applicationEventPublisher).publishEvent(deleteEventCaptor.capture())
+        assertEquals(pluginConfiguration, deleteEventCaptor.firstValue.pluginConfiguration)
     }
 
     @Test

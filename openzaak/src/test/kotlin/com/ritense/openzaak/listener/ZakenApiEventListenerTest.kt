@@ -33,7 +33,7 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 
-internal class DocumentCreatedListenerTest {
+internal class ZakenApiEventListenerTest {
 
     val zaakService = mock(ZaakService::class.java)
     val zaakTypeLinkService = mock(ZaakTypeLinkService::class.java)
