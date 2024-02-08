@@ -32,6 +32,7 @@ import jakarta.validation.constraints.NotBlank
 
 @Entity
 @Table(name = "informatie_object_type_link")
+@Deprecated("Since 12.0.0. Use the DocumentenApiPlugin instead")
 data class InformatieObjectTypeLink(
 
     @EmbeddedId

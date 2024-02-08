@@ -22,7 +22,10 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import org.springframework.stereotype.Repository
 
+@Deprecated("Since 12.0.0. Use ZaakTypeLinkRepository in zaken-api module instead")
+@Repository("deprecatedZaakTypeLinkRepository")
 interface ZaakTypeLinkRepository : JpaRepository<ZaakTypeLink, ZaakTypeLinkId> {
 
     fun findByDocumentDefinitionName(documentDefinitionName: String): ZaakTypeLink?

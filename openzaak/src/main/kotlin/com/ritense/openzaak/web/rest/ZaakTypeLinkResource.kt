@@ -40,6 +40,7 @@ import jakarta.validation.Valid
 @RestController
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
+@Deprecated("Since 12.0.0. Use ZaakTypeLinkResource in zaken-api module instead")
 interface ZaakTypeLinkResource {
 
     @GetMapping("/v1/openzaak/link/{documentDefinitionName}")

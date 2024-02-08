@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.openzaak.domain.mapping.impl.ZaakTypeLink
 import com.ritense.valtimo.contract.result.OperationError
 
+@Deprecated("Since 12.0.0. Will not be replaced. See zaken-api module for ZaakTypeLink functionality")
 interface ZaakTypeLinkResult {
 
     @JsonProperty("zaakTypeLink")

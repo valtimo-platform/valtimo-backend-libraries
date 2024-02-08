@@ -21,6 +21,7 @@ import com.ritense.openzaak.service.result.CreateZaakTypeLinkResult
 import com.ritense.openzaak.service.result.TransactionalResult
 import com.ritense.valtimo.contract.result.OperationError
 
+@Deprecated("Since 12.0.0. Will not be replaced. See zaken-api module for ZaakTypeLink functionality")
 data class CreateZaakTypeLinkResultFailed(
     private val errors: List<OperationError>
 ) : CreateZaakTypeLinkResult, TransactionalResult {

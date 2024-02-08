@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Transactional
+@Deprecated("Since 12.0.0. Use DefaultZaakTypeLinkService in zaken-api module instead")
 class ZaakTypeLinkService(
     private val zaakTypeLinkRepository: ZaakTypeLinkRepository,
     private val processDocumentAssociationService: ProcessDocumentAssociationService
