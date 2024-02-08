@@ -50,6 +50,7 @@ class FormFlowManagementResource(
         val definitions = formFlowService.getFormFlowDefinitions()
             .groupBy { it.id.key }
             .map { ListFormFlowDefinitionResponse.of(it.value, formFlowDeploymentService.isAutoDeployed(it.value.first().id.key)) }
+            .sortedBy { it.key }
         return ResponseEntity.ok(definitions)
     }
 
