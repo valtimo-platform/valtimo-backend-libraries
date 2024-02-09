@@ -65,11 +65,13 @@ public class TaskResource extends AbstractTaskResource {
     }
 
     /**
+     * Endpoint that return a list of tasks.
+     *
      * @deprecated since 12.0.0, use v2 instead
      */
     @GetMapping("/v1/task")
     @Deprecated(since = "12.0.0", forRemoval = true)
-    public ResponseEntity<List<? extends TaskExtended>> getTasks(
+    public ResponseEntity<List<TaskExtended>> getTasks(
         @RequestParam CamundaTaskService.TaskFilter filter,
         @PageableDefault(sort = {"created"}, direction = DESC) Pageable pageable
     ) throws Exception {
@@ -79,7 +81,7 @@ public class TaskResource extends AbstractTaskResource {
     }
 
     @GetMapping("/v2/task")
-    public ResponseEntity<Page<? extends TaskExtended>> getTasksPaged(
+    public ResponseEntity<Page<TaskExtended>> getTasksPaged(
         @RequestParam CamundaTaskService.TaskFilter filter,
         @PageableDefault(sort = {"created"}, direction = DESC) Pageable pageable
     ) {

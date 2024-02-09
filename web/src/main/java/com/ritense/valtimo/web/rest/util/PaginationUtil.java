@@ -28,7 +28,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * and follow <a href="http://tools.ietf.org/html/rfc5988">RFC 5988 (Link header)</a>.
  *
  * @deprecated since 12.0.0, functionality will be removed in future version use Spring
- * {@link org.springframework.data.domain.Page } instead.
+ *     {@link org.springframework.data.domain.Page } instead.
  */
 @Deprecated(since = "12.0.0", forRemoval = true)
 public final class PaginationUtil {
@@ -60,6 +60,9 @@ public final class PaginationUtil {
     }
 
     private static String generateUri(String baseUrl, int page, int size) {
-        return UriComponentsBuilder.fromUriString(baseUrl).queryParam("page", page).queryParam("size", size).toUriString();
+        return UriComponentsBuilder.fromUriString(baseUrl)
+            .queryParam("page", page)
+            .queryParam("size", size)
+            .toUriString();
     }
 }

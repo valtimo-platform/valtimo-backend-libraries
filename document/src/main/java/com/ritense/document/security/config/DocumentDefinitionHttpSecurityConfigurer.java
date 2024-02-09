@@ -28,22 +28,24 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 public class DocumentDefinitionHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
+    private static final String DEFINITION_URL = "/api/v1/document-definition";
+
     @Override
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests(requests ->
-                requests.requestMatchers(antMatcher(GET, "/api/v1/document-definition")).authenticated()
-                .requestMatchers(antMatcher(GET, "/api/v1/document-definition")).authenticated()
+                requests.requestMatchers(antMatcher(GET, DEFINITION_URL)).authenticated()
+                .requestMatchers(antMatcher(GET, DEFINITION_URL)).authenticated()
                 .requestMatchers(antMatcher(POST, "/api/management/v1/document-definition-template")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(GET, "/api/v1/document-definition/{name}")).authenticated()
-                .requestMatchers(antMatcher(GET, "/api/v1/document-definition/open/count")).authenticated()
+                .requestMatchers(antMatcher(GET, DEFINITION_URL + "/{name}")).authenticated()
+                .requestMatchers(antMatcher(GET, DEFINITION_URL + "/open/count")).authenticated()
                 .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition/{name}")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition/{name}/version/{version}")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(GET, "/api/management/v1/document-definition/{name}/version")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(POST, "/api/v1/document-definition")).hasAuthority(ADMIN) // Deprecated since v11
+                .requestMatchers(antMatcher(POST, DEFINITION_URL)).hasAuthority(ADMIN) // Deprecated since v11
                 .requestMatchers(antMatcher(POST, "/api/management/v1/document-definition")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(DELETE, "/api/v1/document-definition/{name}")).hasAuthority(ADMIN) // Deprecated since v11
+                .requestMatchers(antMatcher(DELETE, DEFINITION_URL + "/{name}")).hasAuthority(ADMIN) // Deprecated since v11
                 .requestMatchers(antMatcher(DELETE, "/api/management/v1/document-definition/{name}")).hasAuthority(ADMIN)
             );
         } catch (Exception e) {
