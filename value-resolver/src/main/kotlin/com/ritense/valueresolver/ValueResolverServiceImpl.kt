@@ -125,7 +125,7 @@ open class ValueResolverServiceImpl(
     override fun handleValues(
         processInstanceId: String,
         variableScope: VariableScope?,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     ) {
         toResolverFactoryMap(values.keys).forEach { (resolverFactory, propertyPaths) ->
 
@@ -139,7 +139,7 @@ open class ValueResolverServiceImpl(
 
     override fun handleValues(
         documentId: UUID,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     ) {
         toResolverFactoryMap(values.keys).forEach { (resolverFactory, propertyPaths) ->
 
@@ -151,7 +151,7 @@ open class ValueResolverServiceImpl(
     }
 
     override fun preProcessValuesForNewCase(
-        values: Map<String, Any>
+        values: Map<String, Any?>
     ): Map<String, Any> {
         return toResolverFactoryMap(values.keys).mapValues { (resolverFactory, propertyPaths) ->
             resolverFactory.preProcessValuesForNewCase(
@@ -164,8 +164,8 @@ open class ValueResolverServiceImpl(
 
     private fun mapPropertyPaths(
         propertyPaths: List<String>,
-        values: Map<String, Any>
-    ) = propertyPaths.associate { propertyPath -> trimPrefix(propertyPath) to values[propertyPath]!! }
+        values: Map<String, Any?>
+    ) = propertyPaths.associate { propertyPath -> trimPrefix(propertyPath) to values[propertyPath] }
 
     private fun toResolverFactoryMap(requestedValues: Collection<String>): Map<ValueResolverFactory, List<String>> {
         //Group by prefix

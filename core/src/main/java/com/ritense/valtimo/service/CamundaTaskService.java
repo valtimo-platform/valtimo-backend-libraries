@@ -200,9 +200,9 @@ public class CamundaTaskService {
                 publishTaskAssignedEvent(task, currentAssignee, assignee);
                 outboxService.send(() -> new TaskAssigned(task.getId(), objectMapper.valueToTree(task)));
             } catch (AuthorizationException ex) {
-                throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
+                throw new IllegalStateException("Cannot assign task: the user has no permission.", ex);
             } catch (ProcessEngineException ex) {
-                throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
+                throw new IllegalStateException("An error occurred while assigning the task", ex);
             }
         }
     }
@@ -216,9 +216,9 @@ public class CamundaTaskService {
             entityManager.refresh(task);
             outboxService.send(() -> new TaskUnassigned(task.getId(), objectMapper.valueToTree(task)));
         } catch (AuthorizationException ex) {
-            throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
+            throw new IllegalStateException("Cannot unassign task: the user has no permission.", ex);
         } catch (ProcessEngineException ex) {
-            throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
+            throw new IllegalStateException("An error occurred while unassigning the task.", ex);
         }
     }
 
