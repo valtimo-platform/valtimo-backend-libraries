@@ -22,6 +22,11 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+/**
+ * Service to search for audit records.
+ *
+ * @deprecated Since 12.0.0.
+ */
 @Deprecated(since = "Since 12.0.0", forRemoval = true)
 public interface AuditSearchService {
 

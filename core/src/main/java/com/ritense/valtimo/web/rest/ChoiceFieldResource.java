@@ -81,6 +81,8 @@ public class ChoiceFieldResource {
     }
 
     /**
+     * Endpoint that returns all choicefields.
+     *
      * @deprecated since 12.0.0, use v2 instead
      */
     @GetMapping("/v1/choice-fields")
