@@ -81,17 +81,17 @@ interface ValueResolverService {
     fun handleValues(
         processInstanceId: String,
         variableScope: VariableScope?,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     )
 
     fun handleValues(
         documentId: UUID,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     )
 
     fun preProcessValuesForNewCase(
-        values: Map<String, Any>
-    ): Map<String, Any>
+        values: Map<String, Any?>
+    ): Map<String, Any?>
 
     fun supportsValue(value: String): Boolean
 }
