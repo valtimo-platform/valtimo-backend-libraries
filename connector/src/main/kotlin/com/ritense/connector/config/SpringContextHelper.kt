@@ -19,6 +19,7 @@ package com.ritense.connector.config
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 
+@Deprecated("Since 12.0.0")
 class SpringContextHelper : ApplicationContextAware {
 
     override fun setApplicationContext(context: ApplicationContext) {

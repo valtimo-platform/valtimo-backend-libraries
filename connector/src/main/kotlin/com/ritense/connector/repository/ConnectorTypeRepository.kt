@@ -20,6 +20,7 @@ import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.domain.ConnectorTypeId
 import org.springframework.data.jpa.repository.JpaRepository
 
+@Deprecated("Since 12.0.0")
 interface ConnectorTypeRepository : JpaRepository<ConnectorType, ConnectorTypeId> {
     fun findByName(name: String): ConnectorType?
     fun findByClassName(className: String): List<ConnectorType>

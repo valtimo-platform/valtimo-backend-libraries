@@ -28,6 +28,7 @@ import com.ritense.connector.domain.Connector
  *    }
  *
  */
+@Deprecated("Since 12.0.0")
 class ConnectorFluentBuilder(
     private val connectorService: ConnectorService
 ) {

@@ -27,7 +27,6 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.autodeployment.PluginAutoDeploymentDto
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginConfiguration
@@ -50,6 +49,7 @@ import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
 import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
 import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
 import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.validation.ConstraintViolationException
 import jakarta.validation.ValidationException
@@ -263,7 +263,7 @@ class PluginService(
 
     fun getPluginDefinitionActions(
         pluginDefinitionKey: String,
-        activityType: ActivityType?
+        activityType: ActivityTypeWithEventName?
     ): List<PluginActionDefinitionDto> {
         val actions = if (activityType == null)
             pluginActionDefinitionRepository.findByIdPluginDefinitionKey(pluginDefinitionKey)
@@ -286,7 +286,7 @@ class PluginService(
     fun processLinkExists(
         pluginConfigurationId: PluginConfigurationId,
         activityId: String,
-        activityType: ActivityType
+        activityType: ActivityTypeWithEventName
     ): Boolean {
         return pluginProcessLinkRepository
             .findByPluginConfigurationIdAndActivityIdAndActivityType(
@@ -328,7 +328,7 @@ class PluginService(
             actionProperties = processLink.actionProperties,
             pluginConfigurationId = PluginConfigurationId.existingId(processLink.pluginConfigurationId),
             pluginActionDefinitionKey = processLink.pluginActionDefinitionKey,
-            activityType = ActivityType.fromValue(processLink.activityType.value).mapOldActivityTypeToCurrent()
+            activityType = processLink.activityType
         )
         pluginProcessLinkRepository.save(newProcessLink)
     }
@@ -671,7 +671,7 @@ class PluginService(
     }
 
     fun getPluginDefinitionActionsByActivityType(activityType: String): List<PluginActionDefinition> {
-        return pluginActionDefinitionRepository.findByActivityTypes(ActivityType.fromValue(activityType))
+        return pluginActionDefinitionRepository.findByActivityTypes(ActivityTypeWithEventName.fromValue(activityType))
     }
 
     companion object {

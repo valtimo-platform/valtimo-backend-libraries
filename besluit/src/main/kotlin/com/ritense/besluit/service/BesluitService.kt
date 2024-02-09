@@ -27,6 +27,7 @@ open class BesluitService(
     private val connectorService: ConnectorService,
 ) {
 
+    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.catalogiapi.CatalogiApiPlugin.getBesluittypen()"))
     fun getBesluittypen(): List<BesluitType> {
         val openZaakConnector = connectorService.loadByClassName(OpenZaakConnector::class.java)
         val catalogusUrl = URI(openZaakConnector.getProperties().openZaakConfig.catalogusUrl)

@@ -18,5 +18,6 @@ package com.ritense.connector.domain
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
+@Deprecated("Since 12.0.0")
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
 interface ConnectorProperties

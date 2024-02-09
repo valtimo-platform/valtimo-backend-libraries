@@ -29,6 +29,7 @@ import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.notificatiesapi.service.NotificatiesApiService"))
 class OpenNotificatieService(
     private val connectorService: ConnectorService,
     private val applicationEventPublisher: ApplicationEventPublisher,
