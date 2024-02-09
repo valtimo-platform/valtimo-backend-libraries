@@ -37,7 +37,7 @@ class OutboxMessageRepositoryIntTest : BaseIntegrationTest() {
 
         val outboxMessage1Ref = async(Dispatchers.IO) {
             TransactionTemplate(platformTransactionManager).execute {
-                val outboxMessage = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+                val outboxMessage = outboxMessageRepository.findOutboxMessage()
                 Thread.sleep(1000)
                 outboxMessage
             }
@@ -45,7 +45,7 @@ class OutboxMessageRepositoryIntTest : BaseIntegrationTest() {
 
         val outboxMessage2Ref = async(Dispatchers.IO) {
             TransactionTemplate(platformTransactionManager).execute {
-                val outboxMessage = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+                val outboxMessage = outboxMessageRepository.findOutboxMessage()
                 Thread.sleep(1000)
                 outboxMessage
             }

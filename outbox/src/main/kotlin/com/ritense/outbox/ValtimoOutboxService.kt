@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.outbox.domain.CloudEventData
 import com.ritense.outbox.exception.OutboxTransactionReadOnlyException
+import com.ritense.outbox.repository.OutboxMessageRepository
 import io.cloudevents.core.builder.CloudEventBuilder
 import io.cloudevents.core.provider.EventFormatProvider
 import io.cloudevents.jackson.JsonFormat
@@ -90,7 +91,7 @@ open class ValtimoOutboxService(
         outboxMessageRepository.save(outboxMessage)
     }
 
-    open fun getOldestMessage() = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+    open fun getOldestMessage() = outboxMessageRepository.findOutboxMessage()
 
     open fun deleteMessage(id: UUID) = outboxMessageRepository.deleteById(id)
 

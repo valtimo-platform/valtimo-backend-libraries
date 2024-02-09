@@ -16,6 +16,7 @@ spring:
                     use_query_cache: false
                     region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
                 format_sql: true
+                highlight_sql: true
                 jdbc:
                     time_zone: UTC
                 connection:
