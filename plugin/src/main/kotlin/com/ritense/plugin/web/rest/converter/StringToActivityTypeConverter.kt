@@ -16,13 +16,13 @@
 
 package com.ritense.plugin.web.rest.converter
 
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import org.springframework.core.convert.converter.Converter
 
 class StringToActivityTypeConverter
-    : Converter<String, ActivityType> {
+    : Converter<String, ActivityTypeWithEventName> {
 
-    override fun convert(source: String): ActivityType {
-        return ActivityType.fromValue(source)
+    override fun convert(source: String): ActivityTypeWithEventName {
+        return ActivityTypeWithEventName.fromValue(source)
     }
 }

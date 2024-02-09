@@ -22,6 +22,7 @@ import com.ritense.connector.config.Decryptor
 import com.ritense.connector.config.Encryptor
 import com.ritense.connector.domain.ConnectorProperties
 
+@Deprecated("Since 12.0.0")
 data class HaalCentraalBrpProperties(
     var url: String? = "",
     @set:JsonSerialize(using = Encryptor::class)

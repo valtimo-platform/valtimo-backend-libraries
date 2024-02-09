@@ -28,6 +28,7 @@ import java.util.Locale
 import org.hibernate.annotations.Type
 import org.hibernate.validator.constraints.Length
 
+@Deprecated("Since 12.0.0")
 @Entity
 @Table(name = "connector_type")
 data class ConnectorType(

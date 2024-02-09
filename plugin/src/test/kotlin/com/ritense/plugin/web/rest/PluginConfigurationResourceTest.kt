@@ -113,7 +113,7 @@ internal class PluginConfigurationResourceTest {
     fun `should filter on plugins for activityType`() {
         whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
 
-        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ServiceTask")
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ServiceTask:start")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -126,7 +126,7 @@ internal class PluginConfigurationResourceTest {
     fun `should not filter on plugins for rare activityType`() {
         whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
 
-        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:IntermediateLinkCatch")
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:IntermediateLinkCatch:start")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
@@ -139,7 +139,7 @@ internal class PluginConfigurationResourceTest {
     fun `should respond with 400 bad request when filtering on non existing activityType`() {
         whenever(pluginService.getPluginConfigurations(any())).thenReturn(listOf())
 
-        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ActivityTypeDoesntExist")
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ActivityTypeDoesntExist:start")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())

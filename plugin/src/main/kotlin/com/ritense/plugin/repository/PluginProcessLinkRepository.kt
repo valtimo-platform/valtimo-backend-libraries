@@ -16,7 +16,6 @@
 
 package com.ritense.plugin.repository
 
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
@@ -40,23 +39,23 @@ class PluginProcessLinkRepository(
     fun findByProcessDefinitionIdAndActivityIdAndActivityType(
         processDefinitionId: String,
         activityId: String,
-        activityType: ActivityType
+        activityType: ActivityTypeWithEventName
     ) =
         pluginProcessLinkRepositoryImpl.findByProcessDefinitionIdAndActivityIdAndActivityType(
             processDefinitionId,
             activityId,
-            activityType.toActivityTypeWithEventName()
+            activityType
         )
 
     fun findByPluginConfigurationIdAndActivityIdAndActivityType(
         pluginConfigurationId: PluginConfigurationId,
         activityId: String,
-        activityType: ActivityType
+        activityType: ActivityTypeWithEventName
     ) =
         pluginProcessLinkRepositoryImpl.findByPluginConfigurationIdAndActivityIdAndActivityType(
             pluginConfigurationId,
             activityId,
-            activityType.toActivityTypeWithEventName()
+            activityType
         )
 
     fun findByPluginConfigurationId(pluginConfigurationId: PluginConfigurationId) =

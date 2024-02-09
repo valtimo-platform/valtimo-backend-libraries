@@ -62,12 +62,12 @@ class PluginProcessLink(
         actionProperties: ObjectNode? = null,
         pluginConfigurationId: PluginConfigurationId,
         pluginActionDefinitionKey: String,
-        activityType: ActivityType
+        activityType: ActivityTypeWithEventName
     ) : this(
         id.id,
         processDefinitionId,
         activityId,
-        activityType.toActivityTypeWithEventName(),
+        activityType,
         actionProperties,
         pluginConfigurationId,
         pluginActionDefinitionKey,

@@ -18,6 +18,7 @@ package com.ritense.objectsapi.service
 
 import com.ritense.connector.domain.ConnectorProperties
 
+@Deprecated("Since 12.0.0")
 data class ObjectsApiProperties(
     var objectsApi: ServerAuthSpecification = ServerAuthSpecification(),
     var objectsTypeApi: ServerAuthSpecification = ServerAuthSpecification(),

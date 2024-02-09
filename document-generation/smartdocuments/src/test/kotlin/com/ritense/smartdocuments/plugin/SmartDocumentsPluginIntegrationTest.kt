@@ -19,7 +19,6 @@ package com.ritense.smartdocuments.plugin
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
@@ -27,13 +26,13 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.BaseSmartDocumentsIntegrationTest
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.BeforeEach
@@ -43,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.http.HttpMethod
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
 
 @Transactional
 @AutoConfigureWebTestClient(timeout = "36000")
@@ -235,7 +235,7 @@ class SmartDocumentsPluginIntegrationTest @Autowired constructor(
                 objectMapper.readTree(generateDocumentActionProperties) as ObjectNode,
                 pluginConfiguration.id,
                 "generate-document",
-                ActivityType.SERVICE_TASK_START
+                ActivityTypeWithEventName.SERVICE_TASK_START
             )
         )
     }

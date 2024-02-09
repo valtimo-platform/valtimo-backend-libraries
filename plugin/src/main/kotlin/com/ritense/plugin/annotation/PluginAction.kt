@@ -16,7 +16,7 @@
 
 package com.ritense.plugin.annotation
 
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
@@ -24,5 +24,5 @@ annotation class PluginAction(
     val key: String,
     val title: String,
     val description: String,
-    val activityTypes: Array<ActivityType>
+    val activityTypes: Array<ActivityTypeWithEventName>
 )

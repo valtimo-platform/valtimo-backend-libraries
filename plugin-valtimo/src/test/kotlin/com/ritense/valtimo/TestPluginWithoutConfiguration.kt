@@ -18,7 +18,7 @@ package com.ritense.valtimo
 
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
-import com.ritense.plugin.domain.ActivityType.USER_TASK_CREATE
+import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
 
 @Plugin(
     key = "test-plugin-without-configuration",

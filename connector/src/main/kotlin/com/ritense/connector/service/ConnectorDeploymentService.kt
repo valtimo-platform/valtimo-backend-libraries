@@ -23,6 +23,7 @@ import com.ritense.connector.repository.ConnectorTypeRepository
 import mu.KotlinLogging
 import java.util.UUID
 
+@Deprecated("Since 12.0.0")
 class ConnectorDeploymentService(
     private val connectorTypeRepository: ConnectorTypeRepository
 ) {

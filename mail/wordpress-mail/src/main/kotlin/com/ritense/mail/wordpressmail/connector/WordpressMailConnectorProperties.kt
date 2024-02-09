@@ -17,6 +17,7 @@ package com.ritense.mail.wordpressmail.connector
 
 import com.ritense.connector.domain.ConnectorProperties
 
+@Deprecated("Since 12.0.0")
 data class WordpressMailConnectorProperties(
     val url: String? = ""
 ) : ConnectorProperties
