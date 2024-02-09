@@ -52,7 +52,7 @@ open class TestValueResolverFactory(
     override fun handleValues(
         processInstanceId: String,
         variableScope: VariableScope?,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     ) {
         applicationEventPublisher.publishEvent(
             TestValueResolverHandleEvent(processInstanceId, variableScope, values)
@@ -75,7 +75,7 @@ open class TestValueResolverFactory(
     data class TestValueResolverHandleEvent(
         val processInstanceId: String,
         val variableScope: VariableScope?,
-        val values: Map<String, Any>
+        val values: Map<String, Any?>
     )
 
 }

@@ -60,7 +60,7 @@ class DocumentTableValueResolver(
         return AuthorizationContext.runWithoutAuthorization { createResolver(documentService.get(documentId)) }
     }
 
-    override fun handleValues(processInstanceId: String, variableScope: VariableScope?, values: Map<String, Any>) {
+    override fun handleValues(processInstanceId: String, variableScope: VariableScope?, values: Map<String, Any?>) {
         val firstValue = values.iterator().next()
         throw NotImplementedError("Unable to handle value: {${firstValue.key} to ${firstValue.value}}")
     }
