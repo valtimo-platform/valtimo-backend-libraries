@@ -73,10 +73,10 @@ public final class SecurityUtils {
     }
 
     /**
-     * Get the GrantedAuthorities from the current security context
+     * Get the GrantedAuthorities from the current security context.
      *
-     * @deprecated Please use <code>getCurrentUserRoles()</code> instead
      * @return GrantedAuthorities
+     * @deprecated Please use <code>getCurrentUserRoles()</code> instead
      */
     @Deprecated(since = "12.0.0", forRemoval = true)
     public static Collection<? extends GrantedAuthority> getCurrentUserRoles(String login) {
@@ -113,10 +113,10 @@ public final class SecurityUtils {
     }
 
     /**
-     * Get the GrantedAuthorities from the current security context
+     * Get the GrantedAuthorities from the current security context.
      *
-     * @deprecated Please use <code>getCurrentUserRoles()</code> instead
      * @return GrantedAuthorities
+     * @deprecated Please use <code>getCurrentUserRoles()</code> instead
      */
     @Deprecated(since = "12.0.0", forRemoval = true)
     public static Collection<? extends GrantedAuthority> getCurrentUserAuthorities() {

@@ -51,6 +51,11 @@ public interface AuditRecordRepository<T extends AuditRecord>
         Pageable pageable
     );
 
+    /**
+     * Find audit records by property.
+     *
+     * @deprecated Since 12.0.0.
+     */
     @Deprecated(since = "Since 12.0.0", forRemoval = true)
     Page<AuditRecord> findAuditRecordsByProperty(String key, Object value, Pageable pageable);
 
