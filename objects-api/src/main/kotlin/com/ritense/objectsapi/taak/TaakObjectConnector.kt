@@ -41,6 +41,7 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlin.contracts.ExperimentalContracts
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.portaaltaak.PortaaltaakPlugin"))
 @OptIn(ExperimentalContracts::class)
 @ConnectorType(name = TAAK_CONNECTOR_NAME)
 class TaakObjectConnector(

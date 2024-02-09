@@ -34,6 +34,7 @@ class CamundaSmartDocumentGenerator(
     private val objectMapper: ObjectMapper,
 ) {
 
+    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.smartdocuments.plugin.SmartDocumentsPlugin"))
     fun generate(execution: DelegateExecution, templateGroup: String, templateId: String, format: DocumentFormatOption) {
         val document = getDocument(execution)
         val templateData = getTemplateData(execution, document)

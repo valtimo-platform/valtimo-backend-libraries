@@ -30,6 +30,7 @@ import java.net.URI
 import java.util.UUID
 import mu.KotlinLogging
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.verzoek.VerzoekPlugin"))
 @ConnectorType(name = PRODUCT_AANVRAGEN_CONNECTOR_NAME)
 class ProductAanvraagConnector(
     private var connectorService: ConnectorService,

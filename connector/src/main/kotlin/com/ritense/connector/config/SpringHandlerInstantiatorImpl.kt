@@ -19,4 +19,5 @@ package com.ritense.connector.config
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.http.converter.json.SpringHandlerInstantiator
 
+@Deprecated("Since 12.0.0")
 class SpringHandlerInstantiatorImpl(beanFactory: AutowireCapableBeanFactory) : SpringHandlerInstantiator(beanFactory)

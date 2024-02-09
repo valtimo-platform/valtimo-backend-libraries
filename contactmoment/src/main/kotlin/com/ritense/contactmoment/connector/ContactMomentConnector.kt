@@ -30,6 +30,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.runBlocking
 
+@Deprecated("Since 12.0.0")
 @ConnectorType(name = "ContactMoment")
 class ContactMomentConnector(
     private var contactMomentProperties: ContactMomentProperties,

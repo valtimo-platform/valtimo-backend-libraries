@@ -19,6 +19,7 @@ package com.ritense.connector.config
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.hypersistence.utils.hibernate.type.util.ObjectMapperSupplier
 
+@Deprecated("Since 12.0.0")
 class ConnectorObjectMapperSupplier : ObjectMapperSupplier {
 
     override fun get(): ObjectMapper {
