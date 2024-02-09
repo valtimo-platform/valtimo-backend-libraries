@@ -25,7 +25,7 @@ data class FormFlowDefinitionDto(
     val version: Long,
     val startStep: String,
     val steps: List<FormFlowStep>,
-    val readOnly: Boolean
+    val readOnly: Boolean = false
 ) {
     fun toEntity(): FormFlowDefinition = FormFlowDefinition(
         id = FormFlowDefinitionId(key, version),

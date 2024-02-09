@@ -92,9 +92,8 @@ class FormFlowValtimoAutoConfiguration {
     fun formFlowManagementResource(
         formFlowService: FormFlowService,
         formFlowDeploymentService: FormFlowDeploymentService,
-        objectMapper: ObjectMapper
     ): FormFlowManagementResource {
-        return FormFlowManagementResource(formFlowService, formFlowDeploymentService, objectMapper)
+        return FormFlowManagementResource(formFlowService, formFlowDeploymentService)
     }
 
     @Bean

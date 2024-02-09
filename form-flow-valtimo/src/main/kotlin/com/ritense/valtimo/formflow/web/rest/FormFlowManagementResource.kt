@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.formflow.web.rest
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.formflow.domain.definition.FormFlowDefinitionId
 import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
@@ -24,6 +23,9 @@ import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import com.ritense.valtimo.formflow.web.rest.result.FormFlowDefinitionDto
 import com.ritense.valtimo.formflow.web.rest.result.ListFormFlowDefinitionResponse
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -40,23 +42,22 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/management", produces = [APPLICATION_JSON_UTF8_VALUE])
 class FormFlowManagementResource(
     private val formFlowService: FormFlowService,
-    private val formFlowDeploymentService: FormFlowDeploymentService,
-    private val objectMapper: ObjectMapper
+    private val formFlowDeploymentService: FormFlowDeploymentService
 ) {
     @GetMapping("/v1/form-flow/definition")
     @Transactional
     fun getAllFormFlowDefinitions(
-    ): ResponseEntity<List<ListFormFlowDefinitionResponse>> {
+    ): ResponseEntity<Page<ListFormFlowDefinitionResponse>> {
         val definitions = formFlowService.getFormFlowDefinitions()
             .groupBy { it.id.key }
             .map { ListFormFlowDefinitionResponse.of(it.value, formFlowDeploymentService.isAutoDeployed(it.value.first().id.key)) }
             .sortedBy { it.key }
-        return ResponseEntity.ok(definitions)
+        return ResponseEntity.ok(PageImpl(definitions))
     }
 
     @GetMapping("/v1/form-flow/definition/{definitionKey}/{definitionVersion}")
     @Transactional
-    fun getFormFlowDefinitionByKey(
+    fun getFormFlowDefinitionById(
         @PathVariable definitionKey: String,
         @PathVariable definitionVersion: Long,
     ): ResponseEntity<FormFlowDefinitionDto> {
@@ -71,7 +72,7 @@ class FormFlowManagementResource(
         @PathVariable definitionKey: String,
     ): ResponseEntity<Unit> {
         if (formFlowDeploymentService.isAutoDeployed(definitionKey)) {
-            return ResponseEntity.badRequest().build()
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
         formFlowService.deleteByKey(definitionKey)
         return ResponseEntity.ok().build()
@@ -97,7 +98,7 @@ class FormFlowManagementResource(
     ): ResponseEntity<FormFlowDefinitionDto> {
         val readOnly = formFlowDeploymentService.isAutoDeployed(definitionKey)
         if (readOnly) {
-            return ResponseEntity.badRequest().build()
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
         val oldDefinition = formFlowService.findLatestDefinitionByKey(definitionDto.key)
             ?: return ResponseEntity.notFound().build()
