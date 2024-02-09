@@ -139,7 +139,7 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.junit.jupiter:junit-jupiter-engine"
     testImplementation("com.mysql:mysql-connector-j")
-    testImplementation "org.apache.groovy:groovy-all:${groovyVersion}"
+    testImplementation "org.codehaus.groovy:groovy-all:${groovyVersion}"
 }
 
 apply from: "gradle/publishing.gradle"
