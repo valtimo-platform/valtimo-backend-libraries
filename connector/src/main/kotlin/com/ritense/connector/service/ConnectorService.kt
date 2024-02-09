@@ -41,6 +41,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport
 import java.util.UUID
 import jakarta.validation.ConstraintViolationException
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.plugin.service.PluginService"))
 open class ConnectorService(
     private val context: ApplicationContext,
     private val connectorTypeInstanceRepository: ConnectorTypeInstanceRepository,

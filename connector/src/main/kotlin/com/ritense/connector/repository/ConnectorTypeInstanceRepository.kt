@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
+@Deprecated("Since 12.0.0")
 interface ConnectorTypeInstanceRepository : JpaRepository<ConnectorInstance, ConnectorInstanceId> {
     fun existsConnectorTypeInstanceByName(name: String): Boolean
     fun existsConnectorTypeInstanceByType(type: ConnectorType): Boolean

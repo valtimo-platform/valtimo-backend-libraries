@@ -25,6 +25,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
+@Deprecated("Since 12.0.0")
 class AesEncryption(secret: String) {
     private val key = SecretKeySpec(secret.toByteArray(), "AES")
     private val secureRandom = SecureRandom()

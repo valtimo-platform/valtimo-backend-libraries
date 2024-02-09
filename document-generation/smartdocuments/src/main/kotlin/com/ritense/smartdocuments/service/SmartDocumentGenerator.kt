@@ -41,6 +41,7 @@ class SmartDocumentGenerator(
     private val applicationEventPublisher: ApplicationEventPublisher,
 ) {
 
+    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.smartdocuments.plugin.SmartDocumentsPlugin"))
     fun generateAndStoreDocument(
         documentId: Document.Id,
         templateGroup: String,

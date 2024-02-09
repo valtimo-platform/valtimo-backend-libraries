@@ -19,6 +19,7 @@ package com.ritense.connector.config
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 
+@Deprecated("Since 12.0.0")
 class ObjectMapperDependencyFixer : BeanFactoryPostProcessor {
 
     override fun postProcessBeanFactory(beanFactory: ConfigurableListableBeanFactory) {
