@@ -49,7 +49,10 @@ public class FormIoFormManagementResource implements FormManagementResource {
     }
 
     @Override
-    public ResponseEntity<Page<? extends FormDefinition>> queryFormDefinitions(@RequestParam String searchTerm, Pageable pageable) {
+    public ResponseEntity<Page<? extends FormDefinition>> queryFormDefinitions(
+        @RequestParam String searchTerm,
+        @PageableDefault(sort = {"name"}, direction = ASC) Pageable pageable
+    ) {
         return ResponseEntity.ok(formDefinitionService.queryFormDefinitions(searchTerm, pageable));
     }
 

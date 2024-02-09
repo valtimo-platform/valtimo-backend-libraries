@@ -91,6 +91,12 @@ class FormFlowDeploymentService(
         }
     }
 
+    fun isAutoDeployed(formFlowDefinitionKey: String): Boolean {
+        return ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
+            .getResource(FORM_FLOW_DEFINITIONS_PATH.replace("*", formFlowDefinitionKey))
+            .exists()
+    }
+
     private fun validate(formFlowJson: String) {
         val definitionJsonObject = JSONObject(JSONTokener(formFlowJson))
 
