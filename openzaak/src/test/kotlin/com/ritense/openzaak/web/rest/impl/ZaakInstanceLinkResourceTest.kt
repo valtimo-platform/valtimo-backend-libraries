@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package com.ritense.openzaak.web.rest.impl
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.openzaak.web.rest.ZaakInstanceLinkResource
 import com.ritense.openzaak.web.rest.response.ZaakInstanceLinkDTO
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
@@ -97,7 +97,7 @@ internal class ZaakInstanceLinkResourceTest {
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(
                 MockMvcResultMatchers.content().json(
-                    jacksonObjectMapper().writeValueAsString(expectedDto)
+                    MapperSingleton.get().writeValueAsString(expectedDto)
                 )
             )
     }
@@ -140,7 +140,7 @@ internal class ZaakInstanceLinkResourceTest {
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(
                 MockMvcResultMatchers.content().json(
-                    jacksonObjectMapper().writeValueAsString(expectedDto)
+                    MapperSingleton.get().writeValueAsString(expectedDto)
                 )
             )
 

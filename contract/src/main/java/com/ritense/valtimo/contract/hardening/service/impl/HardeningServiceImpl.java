@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,18 @@ import com.ritense.valtimo.contract.hardening.domain.SourceIpList;
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
 import com.ritense.valtimo.contract.hardening.throwable.SanitizedThrowable;
 import com.ritense.valtimo.contract.hardening.throwable.UnsanitizedThrowable;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Set;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zalando.problem.ProblemBuilder;
 import org.zalando.problem.ThrowableProblem;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Set;
-import java.util.UUID;
 
 public class HardeningServiceImpl implements HardeningService {
     private static final Logger logger = LoggerFactory.getLogger(HardeningServiceImpl.class);
     private final HardeningProperties hardeningProperties;
-    private static String WHITELIST_MESSSAGE = "IP address is whitelisted: ";
+    private static final String WHITELIST_MESSSAGE = "IP address is whitelisted: ";
 
     public HardeningServiceImpl(HardeningProperties hardeningProperties) {
         this.hardeningProperties = hardeningProperties;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,14 @@ import com.ritense.objectsapi.domain.Object
 import com.ritense.objectsapi.domain.Record
 import com.ritense.objectsapi.domain.request.CreateObjectRequest
 import com.ritense.objectsapi.domain.request.ModifyObjectRequest
-import com.ritense.valtimo.contract.json.Mapper
-import org.springframework.core.ParameterizedTypeReference
+import com.ritense.valtimo.contract.json.MapperSingleton
 import java.net.URI
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import org.springframework.core.ParameterizedTypeReference
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.objectenapi.ObjectenApiPlugin"))
 @ConnectorType(name = "ObjectsApi")
 class ObjectsApiConnector(
     objectsApiProperties: ObjectsApiProperties,
@@ -73,7 +74,7 @@ class ObjectsApiConnector(
     fun executeCreateObjectRequest(): Object {
         val typeVersion = this.typeVersion.ifBlank { objectsApiProperties.objectType.typeVersion }
         val payload = this.payload.ifEmpty {
-            Mapper.INSTANCE.get().convertValue(rawPayload, object : TypeReference<Map<String, Any>>() {})
+            MapperSingleton.get().convertValue(rawPayload, object : TypeReference<Map<String, Any>>() {})
         }
         return createObject(
             CreateObjectRequest(
@@ -90,7 +91,7 @@ class ObjectsApiConnector(
     fun executeModifyObjectRequest(uuid: UUID): Object {
         val typeVersion = this.typeVersion.ifBlank { objectsApiProperties.objectType.typeVersion }
         val payload = this.payload.ifEmpty {
-            Mapper.INSTANCE.get().convertValue(rawPayload, object : TypeReference<Map<String, Any>>() {})
+            MapperSingleton.get().convertValue(rawPayload, object : TypeReference<Map<String, Any>>() {})
         }
         return modifyObject(
             ModifyObjectRequest(

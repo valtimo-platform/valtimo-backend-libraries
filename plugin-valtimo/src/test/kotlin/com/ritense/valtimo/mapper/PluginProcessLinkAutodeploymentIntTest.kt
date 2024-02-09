@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.mapper
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.service.PluginService.Companion.PROCESS_LINK_TYPE_PLUGIN
@@ -34,6 +34,9 @@ internal class PluginProcessLinkAutodeploymentIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var processLinkService: ProcessLinkService
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     @Test
     fun `should deploy plugin process link on startup`() {
         val pluginProcessLink = runWithoutAuthorization {
@@ -47,6 +50,6 @@ internal class PluginProcessLinkAutodeploymentIntTest : BaseIntegrationTest() {
         assertEquals(PROCESS_LINK_TYPE_PLUGIN, pluginProcessLink.processLinkType)
         assertEquals("0a750334-a065-48fa-bb02-293d21df2213", pluginProcessLink.pluginConfigurationId.id.toString())
         assertEquals("test-action", pluginProcessLink.pluginActionDefinitionKey)
-        assertEquals("""{"testActionProperty":"test-value"}""", jacksonObjectMapper().writeValueAsString(pluginProcessLink.actionProperties))
+        assertEquals("""{"attachmentIds":"pv:attachmentIds"}""", objectMapper.writeValueAsString(pluginProcessLink.actionProperties))
     }
 }

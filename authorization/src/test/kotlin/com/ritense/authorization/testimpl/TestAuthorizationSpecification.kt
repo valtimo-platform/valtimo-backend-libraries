@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import javax.persistence.criteria.AbstractQuery
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.AbstractQuery
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 
 class TestAuthorizationSpecification(
         authContext: AuthorizationRequest<TestEntity>,
@@ -37,8 +37,8 @@ class TestAuthorizationSpecification(
     ): Predicate {
         val predicates = permissions.stream()
             .filter { permission: Permission ->
-                TestEntity::class.java == permission.resourceType &&
-                    authRequest.action == permission.action
+                TestEntity::class.java == permission.resourceType
+                    && authRequest.action == permission.action
             }
             .map { permission: Permission ->
                 permission.toPredicate(

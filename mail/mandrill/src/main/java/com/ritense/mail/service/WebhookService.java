@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.ritense.mail.service;
 
+import static com.ritense.mail.domain.webhook.SyncEventEnum.BLACKLIST;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.mail.config.MandrillProperties;
@@ -23,6 +25,12 @@ import com.ritense.mail.domain.webhook.MandrillMessageEvent;
 import com.ritense.mail.domain.webhook.MandrillSyncEvent;
 import com.ritense.mail.domain.webhook.MandrillWebhookRequest;
 import com.ritense.valtimo.contract.basictype.EmailAddress;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.slf4j.Logger;
@@ -30,24 +38,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.MultiValueMap;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
-import static com.ritense.mail.domain.webhook.SyncEventEnum.BLACKLIST;
-
 public class WebhookService {
 
     private static final Logger logger = LoggerFactory.getLogger(WebhookService.class);
     private final MandrillProperties mandrillProperties;
     private final BlacklistService blacklistService;
+    private final ObjectMapper objectMapper;
 
-    public WebhookService(MandrillProperties mandrillProperties, BlacklistService blacklistService) {
+    public WebhookService(
+        MandrillProperties mandrillProperties,
+        BlacklistService blacklistService,
+        ObjectMapper objectMapper
+    ) {
         this.mandrillProperties = mandrillProperties;
         this.blacklistService = blacklistService;
+        this.objectMapper = objectMapper;
     }
 
     public boolean isRequestValid(String authenticationKey, MultiValueMap<String, String> body) {
@@ -64,7 +69,6 @@ public class WebhookService {
     }
 
     public MandrillWebhookRequest getMandrillEventsFromJson(String json) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(json);
         MandrillWebhookRequest events = new MandrillWebhookRequest();
 

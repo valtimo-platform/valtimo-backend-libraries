@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,18 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.byDocumentDefinitionIdName;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGNABLE;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CLAIM;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.DELETE;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
+import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.Action;
@@ -31,7 +43,6 @@ import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile;
 import com.ritense.document.domain.impl.relation.JsonSchemaDocumentRelation;
 import com.ritense.document.domain.impl.request.DocumentRelationRequest;
@@ -40,9 +51,11 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.event.DocumentAssigned;
 import com.ritense.document.event.DocumentAssigneeChangedEvent;
+import com.ritense.document.event.DocumentCreated;
 import com.ritense.document.event.DocumentDeleted;
 import com.ritense.document.event.DocumentUnassigned;
 import com.ritense.document.event.DocumentUnassignedEvent;
+import com.ritense.document.event.DocumentUpdated;
 import com.ritense.document.event.DocumentViewed;
 import com.ritense.document.event.DocumentsListed;
 import com.ritense.document.exception.DocumentNotFoundException;
@@ -51,24 +64,13 @@ import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentService;
 import com.ritense.outbox.OutboxService;
-import com.ritense.document.event.DocumentCreated;
-import com.ritense.document.event.DocumentUpdated;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.json.Mapper;
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -76,18 +78,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.byDocumentDefinitionIdName;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGN;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.ASSIGNABLE;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CLAIM;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.CREATE;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.DELETE;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.MODIFY;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW;
-import static com.ritense.document.service.JsonSchemaDocumentActionProvider.VIEW_LIST;
-import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class JsonSchemaDocumentService implements DocumentService {
@@ -107,7 +104,7 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final OutboxService outboxService;
 
-    private final ObjectMapper objectMapper = Mapper.INSTANCE.get();
+    private final ObjectMapper objectMapper;
 
     public JsonSchemaDocumentService(
         JsonSchemaDocumentRepository documentRepository,
@@ -117,7 +114,8 @@ public class JsonSchemaDocumentService implements DocumentService {
         UserManagementService userManagementService,
         AuthorizationService authorizationService,
         ApplicationEventPublisher applicationEventPublisher,
-        OutboxService outboxService
+        OutboxService outboxService,
+        ObjectMapper objectMapper
     ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
@@ -127,6 +125,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         this.authorizationService = authorizationService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.outboxService = outboxService;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -298,7 +297,6 @@ public class JsonSchemaDocumentService implements DocumentService {
         ModifyDocumentRequest request
     ) {
         final var documentId = JsonSchemaDocumentId.existingId(UUID.fromString(request.documentId()));
-        final var version = JsonSchemaDocumentVersion.from(request.versionBasedOn());
         final var document = runWithoutAuthorization(
             () -> findBy(documentId)
                 .orElseThrow(
@@ -324,8 +322,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         );
         final var result = document.applyModifiedContent(
             modifiedContent,
-            documentDefinition,
-            version
+            documentDefinition
         );
 
         result.resultingDocument().ifPresent(modifiedDocument -> {
@@ -346,13 +343,12 @@ public class JsonSchemaDocumentService implements DocumentService {
         Document.Id documentId,
         DocumentRelation documentRelation
     ) {
-        authorizationService
-            .requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocument.class,
-                    Action.deny()
-                )
-            );
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                Action.deny()
+            )
+        );
 
         final JsonSchemaDocumentRelation jsonSchemaDocumentRelation = JsonSchemaDocumentRelation.from(
             new DocumentRelationRequest(
@@ -435,15 +431,13 @@ public class JsonSchemaDocumentService implements DocumentService {
     public JsonSchemaDocument getDocumentBy(Document.Id documentId) {
         Optional<JsonSchemaDocument> optionalDocument = findBy(documentId);
 
-        optionalDocument.ifPresent(document -> {
-            authorizationService.requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocument.class,
-                    VIEW,
-                    document
-                )
-            );
-        });
+        optionalDocument.ifPresent(document -> authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                VIEW,
+                document
+            )
+        ));
 
         return optionalDocument
             .orElseThrow(() -> new DocumentNotFoundException("Unable to find document with ID " + documentId));
@@ -486,31 +480,28 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         // TODO: Expand authorizationRequest to accept a list of actions, which is handled like OR
         try {
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocument.class,
-                        CLAIM,
-                        document
-                    )
-                );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    CLAIM,
+                    document
+                )
+            );
         } catch (Exception e) {
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocument.class,
-                        ASSIGN,
-                        document
-                    )
-                );
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocument.class,
-                        ASSIGNABLE,
-                        document
-                    )
-                );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    ASSIGN,
+                    document
+                )
+            );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    ASSIGNABLE,
+                    document
+                )
+            );
         }
         var assignee = userManagementService.getCurrentUser();
 
@@ -543,50 +534,45 @@ public class JsonSchemaDocumentService implements DocumentService {
         }
         if (assigneeId.equals(userManagementService.getCurrentUser().getId())) {
             try {
-                authorizationService
-                    .requirePermission(
-                        new EntityAuthorizationRequest<>(
-                            JsonSchemaDocument.class,
-                            CLAIM,
-                            document
-                        )
-                    );
+                authorizationService.requirePermission(
+                    new EntityAuthorizationRequest<>(
+                        JsonSchemaDocument.class,
+                        CLAIM,
+                        document
+                    )
+                );
             } catch (AccessDeniedException e) {
-                authorizationService
-                    .requirePermission(
-                        new EntityAuthorizationRequest<>(
-                            JsonSchemaDocument.class,
-                            ASSIGN,
-                            document
-                        )
-                    );
-                authorizationService
-                    .requirePermission(
-                        new EntityAuthorizationRequest<>(
-                            JsonSchemaDocument.class,
-                            ASSIGNABLE,
-                            document
-                        )
-                    );
-            }
-        } else {
-            authorizationService
-                .requirePermission(
+                authorizationService.requirePermission(
                     new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         ASSIGN,
                         document
                     )
                 );
-            authorizationService
-                .requirePermission(
-                    new DelegateUserEntityAuthorizationRequest<>(
+                authorizationService.requirePermission(
+                    new EntityAuthorizationRequest<>(
                         JsonSchemaDocument.class,
                         ASSIGNABLE,
-                        assignee.getEmail(),
                         document
                     )
                 );
+            }
+        } else {
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    ASSIGN,
+                    document
+                )
+            );
+            authorizationService.requirePermission(
+                new DelegateUserEntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    ASSIGNABLE,
+                    assignee.getEmail(),
+                    document
+                )
+            );
         }
 
         document.setAssignee(assigneeId, assignee.getFullName());
@@ -609,14 +595,13 @@ public class JsonSchemaDocumentService implements DocumentService {
             () -> getDocumentBy(JsonSchemaDocumentId.existingId(documentId))
         );
 
-        authorizationService
-            .requirePermission(
-                new EntityAuthorizationRequest<>(
-                    JsonSchemaDocument.class,
-                    ASSIGN,
-                    document
-                )
-            );
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                ASSIGN,
+                document
+            )
+        );
 
         document.unassign();
         documentRepository.save(document);
@@ -721,53 +706,48 @@ public class JsonSchemaDocumentService implements DocumentService {
         if (assigneeId.equals(userManagementService.getCurrentUser().getId())) {
             documents.forEach(document -> {
                 try {
-                    authorizationService
-                        .requirePermission(
-                            new EntityAuthorizationRequest<>(
-                                JsonSchemaDocument.class,
-                                CLAIM,
-                                document
-                            )
-                        );
+                    authorizationService.requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            CLAIM,
+                            document
+                        )
+                    );
                 } catch (AccessDeniedException e) {
-                    authorizationService
-                        .requirePermission(
-                            new EntityAuthorizationRequest<>(
-                                JsonSchemaDocument.class,
-                                ASSIGN,
-                                document
-                            )
-                        );
-                    authorizationService
-                        .requirePermission(
-                            new EntityAuthorizationRequest<>(
-                                JsonSchemaDocument.class,
-                                ASSIGNABLE,
-                                document
-                            )
-                        );
+                    authorizationService.requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            ASSIGN,
+                            document
+                        )
+                    );
+                    authorizationService.requirePermission(
+                        new EntityAuthorizationRequest<>(
+                            JsonSchemaDocument.class,
+                            ASSIGNABLE,
+                            document
+                        )
+                    );
                 }
 
                 document.setAssignee(assigneeId, assignee.getFullName());
             });
         } else {
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocument.class,
-                        ASSIGN,
-                        documents
-                    )
-                );
-            authorizationService
-                .requirePermission(
-                    new DelegateUserEntityAuthorizationRequest<>(
-                        JsonSchemaDocument.class,
-                        ASSIGNABLE,
-                        assignee.getEmail(),
-                        documents
-                    )
-                );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    ASSIGN,
+                    documents
+                )
+            );
+            authorizationService.requirePermission(
+                new DelegateUserEntityAuthorizationRequest<>(
+                    JsonSchemaDocument.class,
+                    ASSIGNABLE,
+                    assignee.getEmail(),
+                    documents
+                )
+            );
 
             documents.forEach(document -> document.setAssignee(assigneeId, assignee.getFullName()));
         }

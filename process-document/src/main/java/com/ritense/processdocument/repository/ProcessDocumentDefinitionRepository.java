@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package com.ritense.processdocument.repository;
 import com.ritense.processdocument.domain.ProcessDefinitionKey;
 import com.ritense.processdocument.domain.ProcessDocumentDefinitionId;
 import com.ritense.processdocument.domain.impl.CamundaProcessJsonSchemaDocumentDefinition;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,8 +28,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ProcessDocumentDefinitionRepository extends

@@ -7,18 +7,18 @@ import com.ritense.klant.domain.KlantCreationRequest
 import com.ritense.klant.domain.KlantSearchFilter
 import com.ritense.klant.domain.NatuurlijkPersoonSubjectIdentificatie
 import com.ritense.klant.domain.ResultPage
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.times
+import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
 
 internal class BurgerServiceTest {
 

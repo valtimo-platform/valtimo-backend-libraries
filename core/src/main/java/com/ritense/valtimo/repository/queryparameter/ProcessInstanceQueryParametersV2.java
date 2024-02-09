@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class ProcessInstanceQueryParametersV2 {
         if (Optional.ofNullable(processDefinitionId).isPresent()) {
             parameters.put("processDefinitionId", processDefinitionId);
         }
-        if (processVariables != null && processVariables.size() > 0) {
+        if (processVariables != null && !processVariables.isEmpty()) {
             List<ProcessVariableQueryParameterV2> processVariableQueryParameterV2s = new ArrayList<>();
             processVariables.forEach(processVariable -> createProcessVariableQueryParameter(processVariableQueryParameterV2s, processVariable));
             parameters.put("variables", processVariableQueryParameterV2s);

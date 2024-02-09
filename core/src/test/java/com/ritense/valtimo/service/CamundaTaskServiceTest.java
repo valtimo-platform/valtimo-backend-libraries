@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,24 @@
 
 package com.ritense.valtimo.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.specification.AuthorizationSpecification;
@@ -24,10 +42,17 @@ import com.ritense.outbox.domain.BaseEvent;
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.json.Mapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
+import jakarta.persistence.EntityManager;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
 import org.camunda.bpm.engine.AuthorizationException;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.ProcessEngineException;
@@ -43,39 +68,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.test.context.support.WithMockUser;
-
-import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Supplier;
-
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class CamundaTaskServiceTest {
     private static final String TASK_ID = "task";
-    private static final String ASSIGNEE = "theAssignee";
+    private static final String ASSIGNEE = "AAAA-1111";
     private CamundaTask task;
     private TaskService taskService;
     private FormService formService;
@@ -88,7 +84,7 @@ class CamundaTaskServiceTest {
     private EntityManager entityManager;
     private AuthorizationService authorizationService;
     private OutboxService outboxService;
-    private final ObjectMapper objectMapper = Mapper.INSTANCE.get();
+    private final ObjectMapper objectMapper = MapperSingleton.INSTANCE.get();
 
     @BeforeEach
     void setUp() {

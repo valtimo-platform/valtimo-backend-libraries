@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,16 @@
 
 package com.ritense.plugin.web.rest
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.plugin.service.EncryptionService
+import jakarta.transaction.Transactional
 import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.hamcrest.Matchers.hasSize
 import org.junit.jupiter.api.BeforeEach
@@ -39,7 +41,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.nio.charset.StandardCharsets
-import javax.transaction.Transactional
 
 @Transactional
 internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
@@ -53,6 +54,12 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
     @Autowired
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
 
+    @Autowired
+    lateinit var encryptionService: EncryptionService
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     lateinit var categoryPluginConfiguration: PluginConfiguration
     lateinit var pluginConfiguration: PluginConfiguration
     lateinit var mockMvc: MockMvc
@@ -63,13 +70,13 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
             .webAppContextSetup(this.webApplicationContext)
             .build()
 
-        val pluginDefinition = pluginDefinitionRepository.getById("test-plugin")
+        val pluginDefinition = pluginDefinitionRepository.getReferenceById("test-plugin")
 
         pluginConfiguration = pluginConfigurationRepository.save(
             PluginConfiguration(
                 PluginConfigurationId.newId(),
                 "some-config",
-                jacksonObjectMapper().readTree(
+                objectMapper.readTree(
                     """
                     {
                         "property1": "my-secret",
@@ -77,17 +84,21 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
                     }
                     """
                 ) as ObjectNode,
-                pluginDefinition
+                pluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
 
-        val categoryPluginDefinition = pluginDefinitionRepository.getById("test-category-plugin")
+        val categoryPluginDefinition = pluginDefinitionRepository.getReferenceById("test-category-plugin")
         categoryPluginConfiguration = pluginConfigurationRepository.save(
             PluginConfiguration(
                 PluginConfigurationId.newId(),
                 "title",
                 null,
-                categoryPluginDefinition
+                categoryPluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
     }
@@ -127,7 +138,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
 
     @Test
     fun `should filter plugin configurations based on activityType`() {
-        // Addding another plugin definition (without actions)
+        // Adding another plugin definition (without actions)
         val pluginDefinition = PluginDefinition("key", "title", "description", "class")
         pluginDefinitionRepository.save(pluginDefinition)
         pluginConfiguration = pluginConfigurationRepository.save(
@@ -140,7 +151,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
         )
 
         // assert that the new plugin configuration is not included in the result
-        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ServiceTask")
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ServiceTask:start")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
         )

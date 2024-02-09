@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 
 package com.ritense.zakenapi.resolver
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.jayway.jsonpath.JsonPath
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.repository.FormDefinitionRepository
 import com.ritense.form.service.PrefillFormService
-import com.ritense.plugin.domain.PluginConfiguration
-import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.ZakenApiAuthentication
 import okhttp3.mockwebserver.Dispatcher
@@ -35,20 +33,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.doCallRealMethod
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
-import java.net.URI
-import java.util.Optional
-import java.util.UUID
-import javax.transaction.Transactional
 
 @Transactional
 class ZaakValueResolverValueIT @Autowired constructor(
@@ -56,6 +46,9 @@ class ZaakValueResolverValueIT @Autowired constructor(
     private val formDefinitionRepository: FormDefinitionRepository,
     private val prefillFormService: PrefillFormService,
 ) : BaseIntegrationTest() {
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     lateinit var server: MockWebServer
 
@@ -75,7 +68,7 @@ class ZaakValueResolverValueIT @Autowired constructor(
     fun `should prefill form with data from the Zaken API`() {
         val documentId = runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest("profile", jacksonObjectMapper().createObjectNode())
+                NewDocumentRequest("profile", objectMapper.createObjectNode())
             ).resultingDocument().get().id.id
         }
         val formDefinition = formDefinitionRepository.findByName("form-with-zaak-fields").get()

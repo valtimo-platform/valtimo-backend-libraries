@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.ritense.audit.repository.impl;
 
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.repository.AuditRecordRepository;
-import com.ritense.valtimo.contract.audit.AuditEvent;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -54,7 +53,7 @@ public interface MySqlAuditRecordRepository extends AuditRecordRepository<AuditR
         "    AND     documentId = :documentId " +
         "    ORDER BY ar.metaData.occurredOn DESC")
     Page<AuditRecord> findByEventAndDocumentId(
-        List<Class<? extends AuditEvent>> eventTypes,
+        List<String> eventTypes,
         UUID documentId,
         Pageable pageable
     );

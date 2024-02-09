@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSnapshotSpecificationHelper.bySearch;
+import static com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider.VIEW;
+import static com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider.VIEW_LIST;
+
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
@@ -26,16 +30,12 @@ import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.exception.DocumentNotFoundException;
 import com.ritense.document.repository.DocumentSnapshotRepository;
 import com.ritense.document.service.DocumentSnapshotService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.transaction.annotation.Transactional;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import static com.ritense.document.repository.impl.specification.JsonSchemaDocumentSnapshotSpecificationHelper.bySearch;
-import static com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider.VIEW;
-import static com.ritense.document.service.JsonSchemaDocumentSnapshotActionProvider.VIEW_LIST;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotService {
 
@@ -44,7 +44,12 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     private final JsonSchemaDocumentDefinitionService documentDefinitionService;
     private final AuthorizationService authorizationService;
 
-    public JsonSchemaDocumentSnapshotService(DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository, JsonSchemaDocumentService documentService, JsonSchemaDocumentDefinitionService documentDefinitionService, AuthorizationService authorizationService) {
+    public JsonSchemaDocumentSnapshotService(
+        DocumentSnapshotRepository<JsonSchemaDocumentSnapshot> documentSnapshotRepository,
+        JsonSchemaDocumentService documentService,
+        JsonSchemaDocumentDefinitionService documentDefinitionService,
+        AuthorizationService authorizationService
+    ) {
         this.documentSnapshotRepository = documentSnapshotRepository;
         this.documentService = documentService;
         this.documentDefinitionService = documentDefinitionService;
@@ -55,14 +60,13 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
     public Optional<JsonSchemaDocumentSnapshot> findById(DocumentSnapshot.Id id) {
         final var snapshot = documentSnapshotRepository.findById(id).orElse(null);
         if (snapshot != null) {
-            authorizationService
-                .requirePermission(
-                    new EntityAuthorizationRequest<>(
-                        JsonSchemaDocumentSnapshot.class,
-                        VIEW,
-                        snapshot
-                    )
-                );
+            authorizationService.requirePermission(
+                new EntityAuthorizationRequest<>(
+                    JsonSchemaDocumentSnapshot.class,
+                    VIEW,
+                    snapshot
+                )
+            );
         }
 
         return Optional.ofNullable(snapshot);
@@ -107,7 +111,12 @@ public class JsonSchemaDocumentSnapshotService implements DocumentSnapshotServic
         var documentDefinition = documentDefinitionService.findBy(document.definitionId())
             .orElseThrow();
 
-        documentSnapshotRepository.saveAndFlush(new JsonSchemaDocumentSnapshot(document, createdOn, createdBy, documentDefinition));
+        documentSnapshotRepository.saveAndFlush(new JsonSchemaDocumentSnapshot(
+            document,
+            createdOn,
+            createdBy,
+            documentDefinition
+        ));
     }
 
     @Transactional

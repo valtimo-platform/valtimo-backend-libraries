@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byActive
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byId
 import com.ritense.valtimo.service.CamundaTaskService
-import mu.KotlinLogging
 import java.util.UUID
+import mu.KotlinLogging
 
 open class ProcessLinkActivityService(
     private val processLinkService: ProcessLinkService,

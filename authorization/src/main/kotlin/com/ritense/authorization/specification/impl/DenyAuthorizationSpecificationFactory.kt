@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package com.ritense.authorization.specification.impl
 
 import com.ritense.authorization.Action
-import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.request.AuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.AuthorizationSpecificationFactory
 

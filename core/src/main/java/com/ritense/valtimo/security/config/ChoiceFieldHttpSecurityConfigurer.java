@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,38 +16,43 @@
 
 package com.ritense.valtimo.security.config;
 
-import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
-import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
+import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException;
+import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 public class ChoiceFieldHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
     @Override
     public void configure(HttpSecurity http) {
         try {
-            http.authorizeRequests()
-                .antMatchers(
-                    GET,
-                    "/api/v1/choice-fields",
-                    "/api/v1/choice-fields/{id}",
-                    "/api/v1/choice-fields/name/{name}"
+            http.authorizeHttpRequests(requests ->
+                requests.requestMatchers(
+                    antMatcher(GET, "/api/v1/choice-fields"),
+                    antMatcher(GET, "/api/v1/choice-fields/{id}"),
+                    antMatcher(GET, "/api/v1/choice-fields/name/{name}"),
+                    antMatcher(GET, "/api/v2/choice-fields")
                 ).authenticated()
-                .antMatchers(POST, "/api/v1/choice-fields").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/choice-fields").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/choice-fields/{id}").hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(POST, "/api/v1/choice-fields")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(PUT, "/api/v1/choice-fields")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(DELETE, "/api/v1/choice-fields/{id}")).hasAuthority(ADMIN)
                 //choice-field-values
-                .antMatchers(GET, "/api/v1/choice-field-values").authenticated()
-                .antMatchers(POST, "/api/v1/choice-field-values").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/choice-field-values").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/choice-field-values/{id}").authenticated()
-                .antMatchers(DELETE, "/api/v1/choice-field-values/{id}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/choice-field-values/choice-field/{choicefield_name}/value/{value}").authenticated()
-                .antMatchers(GET, "/api/v1/choice-field-values/{choice_field_name}/values").authenticated();
+                .requestMatchers(antMatcher(GET, "/api/v1/choice-field-values")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v2/choice-field-values")).authenticated()
+                .requestMatchers(antMatcher(POST, "/api/v1/choice-field-values")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(PUT, "/api/v1/choice-field-values")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/v1/choice-field-values/{id}")).authenticated()
+                .requestMatchers(antMatcher(DELETE, "/api/v1/choice-field-values/{id}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, "/api/v1/choice-field-values/choice-field/{choicefield_name}/value/{value}")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/choice-field-values/{choice_field_name}/values")).authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v2/choice-field-values/{choice_field_name}/values")).authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

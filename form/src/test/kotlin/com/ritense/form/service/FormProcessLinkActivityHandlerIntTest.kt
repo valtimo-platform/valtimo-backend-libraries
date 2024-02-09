@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,11 +28,11 @@ import com.ritense.form.processlink.FormProcessLinkActivityHandler
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
-import java.util.UUID
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
+import kotlin.test.assertEquals
 
 @Transactional
 internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {

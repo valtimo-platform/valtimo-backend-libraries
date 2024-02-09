@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,21 @@ projectVersion = 1.0
 
 dockerCompose {
     projectName = "contactmoment"
-    isRequiredBy(integrationTesting)
-    isRequiredBy(securityTesting)
-    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+
+    securityTesting {
+        isRequiredBy(project.tasks.securityTesting)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingPostgresql {
+        isRequiredBy(project.tasks.integrationTestingPostgresql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingMysql {
+        isRequiredBy(project.tasks.integrationTestingMysql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-mysql.yml", "docker-compose-override-mysql.yml")
+    }
 }
 
 dependencies {
@@ -34,7 +46,7 @@ dependencies {
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
 
-    api "javax.inject:javax.inject:${javaxInjectVersion}"
+    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -76,6 +88,7 @@ dependencies {
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     testImplementation project(':test-utils-common')
     testImplementation project(":resource:local-resource")
+    testImplementation("com.mysql:mysql-connector-j")
 
 
     jar {

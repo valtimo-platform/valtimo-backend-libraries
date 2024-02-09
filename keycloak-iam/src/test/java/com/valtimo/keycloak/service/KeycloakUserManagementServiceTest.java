@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,6 @@
 
 package com.valtimo.keycloak.service;
 
-import com.ritense.valtimo.contract.authentication.ManageableUser;
-import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
-
-import javax.ws.rs.NotFoundException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
@@ -38,6 +25,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
+import jakarta.ws.rs.NotFoundException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 
 class KeycloakUserManagementServiceTest {
 
@@ -141,7 +140,7 @@ class KeycloakUserManagementServiceTest {
     }
 
     @Test
-    void findByRoleShouldReturnEmptyListWhenNotFoundExceptionIsThrown() {
+    void findByRoleShouldReturnEmptyListWhenExceptionIsThrown() {
         when(keycloakService.realmRolesResource(any()).get("some-role").getUserMembers(0, MAX_USERS))
             .thenThrow(new NotFoundException());
 

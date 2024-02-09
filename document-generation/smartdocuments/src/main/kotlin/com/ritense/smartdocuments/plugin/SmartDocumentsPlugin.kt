@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
-import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.processdocument.service.DocumentDelegateService
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
@@ -30,6 +30,8 @@ import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.FileStreamResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.domain.TemplateGroup
+import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.utils.RequestHelper
@@ -46,7 +48,7 @@ import java.util.UUID
     description = "Generate documents with smart templates."
 )
 class SmartDocumentsPlugin(
-    private val processDocumentService: ProcessDocumentService,
+    private val documentDelegateService: DocumentDelegateService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val smartDocumentsClient: SmartDocumentsClient,
     private val valueResolverService: ValueResolverService,
@@ -55,19 +57,19 @@ class SmartDocumentsPlugin(
 
     @URL
     @PluginProperty(key = "url", required = true, secret = false)
-    private lateinit var url: String
+    lateinit var url: String
 
     @PluginProperty(key = "username", required = true, secret = false)
-    private lateinit var username: String
+    lateinit var username: String
 
     @PluginProperty(key = "password", required = true, secret = true)
-    private lateinit var password: String
+    lateinit var password: String
 
     @PluginAction(
         key = "generate-document",
         title = "Generate document",
         description = "Generates a document of a given type based on a template with data from a case.",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun generate(
         execution: DelegateExecution,
@@ -78,15 +80,64 @@ class SmartDocumentsPlugin(
         @PluginActionProperty resultingDocumentProcessVariableName: String,
     ) {
         val document = runWithoutAuthorization {
-            processDocumentService.getDocument(execution)
+            documentDelegateService.getDocument(execution)
         }
         val resolvedTemplateData = resolveTemplateData(templateData, execution)
-        val generatedDocument = generateDocument(templateGroup, templateName, resolvedTemplateData, DocumentFormatOption.valueOf(format))
+        val generatedDocument =
+            generateDocument(templateGroup, templateName, resolvedTemplateData, DocumentFormatOption.valueOf(format))
         publishDossierDocumentGeneratedEvent(document.id(), templateName)
         val resourceId = generatedDocument.use {
             saveGeneratedDocumentToTempFile(generatedDocument)
         }
         execution.setVariable(resultingDocumentProcessVariableName, resourceId)
+    }
+
+    @PluginAction(
+        key = "get-template-names",
+        title = "Get Template Names",
+        description = "Fetch the template names of a template group.",
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
+    )
+    fun getTemplateNames(
+        execution: DelegateExecution,
+        @PluginActionProperty templateGroupName: String,
+        @PluginActionProperty resultingTemplateNameListProcessVariableName: String
+    ) {
+        val pluginProperties = SmartDocumentsPropertiesDto(
+            username = username,
+            password = password,
+            url = url
+        )
+
+        val smartDocumentsTemplateData = smartDocumentsClient.getSmartDocumentsTemplateData(pluginProperties)
+
+        val templateNameList = if (smartDocumentsTemplateData != null) {
+            val templateGroup = findTemplateGroupByName(
+                templateGroups = smartDocumentsTemplateData.documentsStructure.templatesStructure.templateGroups,
+                groupName = templateGroupName
+            )
+            templateGroup?.templates?.map { it.name } ?: emptyList()
+        } else {
+            emptyList()
+        }
+        execution.setVariable(resultingTemplateNameListProcessVariableName, templateNameList)
+    }
+
+    private fun findTemplateGroupByName(
+        templateGroups: List<TemplateGroup>,
+        groupName: String
+    ): TemplateGroup? {
+        for (group in templateGroups) {
+            if (group.name == groupName) {
+                return group
+            }
+
+            val foundInChildGroups = group.templateGroups?.let { findTemplateGroupByName(it, groupName) }
+            if (foundInChildGroups != null) {
+                return foundInChildGroups
+            }
+        }
+        return null
     }
 
     private fun saveGeneratedDocumentToTempFile(generatedDocument: FileStreamResponse): String {

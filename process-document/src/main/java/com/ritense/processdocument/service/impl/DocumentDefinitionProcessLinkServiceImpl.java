@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,9 @@ import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcess
 import com.ritense.processdocument.repository.DocumentDefinitionProcessLinkRepository;
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinitionProcessLinkService {
@@ -36,8 +35,10 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
     private final DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository;
     private final CamundaRepositoryService repositoryService;
 
-    public DocumentDefinitionProcessLinkServiceImpl(DocumentDefinitionProcessLinkRepository repo,
-                                                    CamundaRepositoryService repositoryService) {
+    public DocumentDefinitionProcessLinkServiceImpl(
+        DocumentDefinitionProcessLinkRepository repo,
+        CamundaRepositoryService repositoryService
+    ) {
         this.documentDefinitionProcessLinkRepository = repo;
         this.repositoryService = repositoryService;
     }
@@ -80,7 +81,8 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
     @Override
     public DocumentDefinitionProcessLinkResponse saveDocumentDefinitionProcess(
         String documentDefinitionName,
-        DocumentDefinitionProcessRequest request) {
+        DocumentDefinitionProcessRequest request
+    ) {
 
         var processDefinition = AuthorizationContext
             .runWithoutAuthorization(
@@ -102,7 +104,10 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
         if (currentLink.isPresent()) {
             // If there is already a link set for this document definition then delete the current link
             // before storing the new one
-            documentDefinitionProcessLinkRepository.deleteByIdDocumentDefinitionNameAndIdProcessDefinitionKey(documentDefinitionName, request.getProcessDefinitionKey());
+            documentDefinitionProcessLinkRepository.deleteByIdDocumentDefinitionNameAndIdProcessDefinitionKey(
+                documentDefinitionName,
+                request.getProcessDefinitionKey()
+            );
         }
 
         var link = new DocumentDefinitionProcessLink(

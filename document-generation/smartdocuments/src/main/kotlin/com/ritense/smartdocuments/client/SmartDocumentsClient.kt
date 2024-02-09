@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,15 @@
 package com.ritense.smartdocuments.client
 
 import com.fasterxml.jackson.core.JsonFactory
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.FileStreamResponse
 import com.ritense.smartdocuments.domain.FilesResponse
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
+import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
 import com.ritense.smartdocuments.io.SubInputStream
 import com.ritense.smartdocuments.io.UnicodeUnescapeInputStream
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8
@@ -44,12 +47,23 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 
+
 class SmartDocumentsClient(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,
     private val smartDocumentsWebClientBuilder: WebClient.Builder,
     private val maxFileSizeMb: Int,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
 ) {
+
+    fun getSmartDocumentsTemplateData(smartDocumentsPropertiesDto: SmartDocumentsPropertiesDto): SmartDocumentsTemplateData? {
+        return pluginWebClient(smartDocumentsPropertiesDto).get()
+            .uri(STRUCTURE_PATH)
+            .retrieve()
+            .bodyToMono(String::class.java)
+            .map { xmlData -> xmlMapper.readValue(xmlData, SmartDocumentsTemplateData::class.java) }
+            .doOnError { throw toHttpClientErrorException(it) }
+            .block()
+    }
 
     fun generateDocument(
         smartDocumentsRequest: SmartDocumentsRequest,
@@ -86,7 +100,7 @@ class SmartDocumentsClient(
 
         DataBufferUtils.write(body, responseOut).subscribe(DataBufferUtils.releaseConsumer())
 
-        assertHttp200Status(response.statusCode(), response, responseIn)
+        assertHttp200Status(HttpStatus.valueOf(response.statusCode().value()), response, responseIn)
 
         val responseResourceId = temporaryResourceStorageService.store(responseIn)
         val parsedResponse = temporaryResourceStorageService.getResourceContentAsInputStream(responseResourceId)
@@ -155,6 +169,19 @@ class SmartDocumentsClient(
 
     fun setProperties(smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties) {
         this.smartDocumentsConnectorProperties = smartDocumentsConnectorProperties
+    }
+
+    private fun pluginWebClient(pluginProperties: SmartDocumentsPropertiesDto): WebClient {
+        val basicAuthentication = ExchangeFilterFunctions.basicAuthentication(
+            pluginProperties.username,
+            pluginProperties.password
+        )
+
+        return smartDocumentsWebClientBuilder
+            .clone()
+            .baseUrl(pluginProperties.url)
+            .filter(basicAuthentication)
+            .build()
     }
 
     private fun webClient(): WebClient {
@@ -230,5 +257,11 @@ class SmartDocumentsClient(
         val documentDataStart: Long,
         val documentDataEnd: Long,
     )
+
+    companion object {
+        private val xmlMapper = XmlMapper()
+
+        private const val STRUCTURE_PATH = "/sdapi/structure"
+    }
 
 }

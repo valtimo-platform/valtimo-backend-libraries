@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -26,6 +29,8 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.repository.impl.PostgresJsonSchemaDocumentSnapshotRepository;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
+import jakarta.inject.Inject;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -33,10 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
-import javax.inject.Inject;
-import java.time.LocalDateTime;
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")
 @SpringBootTest(properties = {"valtimo.versioning.enabled=true"})
@@ -107,8 +108,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
     public void shouldCreateSnapshotWhenModifyingDocument() throws InterruptedException {
         final var request = new ModifyDocumentRequest(
             document.id().toString(),
-            new JsonDocumentContent("{\"street\": \"Kanaalkade\"}").asJson(),
-            document.version().toString()
+            new JsonDocumentContent("{\"street\": \"Kanaalkade\"}").asJson()
         );
 
         final var modifiedDocument = (JsonSchemaDocument) documentService.modifyDocument(request).resultingDocument().orElseThrow();

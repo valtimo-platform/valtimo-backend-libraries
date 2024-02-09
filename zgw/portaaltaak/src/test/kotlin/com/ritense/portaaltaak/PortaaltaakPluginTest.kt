@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package com.ritense.portaaltaak
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.objectenapi.ObjectenApiPlugin
 import com.ritense.objectenapi.client.ObjectRequest
@@ -28,6 +26,7 @@ import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.ZaakInstanceLink
@@ -80,7 +79,7 @@ internal class PortaaltaakPluginTest {
         processDocumentService = mock()
         zaakInstanceLinkService = mock()
         zakenApiPlugin = mock()
-        objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
+        objectMapper = MapperSingleton.get()
         whenever(pluginService.getObjectMapper()).thenReturn(objectMapper)
         portaaltaakPlugin = PortaaltaakPlugin(
             objectManagementService,
@@ -179,7 +178,7 @@ internal class PortaaltaakPluginTest {
         val objectManagement = getObjectManagement()
         val objectTypeUrl = URI("https://example.com/")
 
-        val objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
+        val objectMapper = MapperSingleton.get()
 
         whenever(objectManagementService.getById(any())).thenReturn(objectManagement)
         whenever(pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId))).thenReturn(objectenApiPlugin)
@@ -251,7 +250,7 @@ internal class PortaaltaakPluginTest {
         val objectManagement = getObjectManagement()
         val objectTypeUrl = URI("https://example.com/")
 
-        val objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
+        val objectMapper = MapperSingleton.get()
 
         whenever(objectManagementService.getById(any())).thenReturn(objectManagement)
         whenever(pluginService.createInstance(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId))).thenReturn(objectenApiPlugin)

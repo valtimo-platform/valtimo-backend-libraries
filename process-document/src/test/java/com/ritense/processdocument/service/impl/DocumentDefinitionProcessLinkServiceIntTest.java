@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,16 @@
 
 package com.ritense.processdocument.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ritense.processdocument.BaseIntegrationTest;
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest;
 import com.ritense.processdocument.repository.DocumentDefinitionProcessLinkRepository;
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.transaction.Transactional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
 class DocumentDefinitionProcessLinkServiceIntTest extends BaseIntegrationTest {

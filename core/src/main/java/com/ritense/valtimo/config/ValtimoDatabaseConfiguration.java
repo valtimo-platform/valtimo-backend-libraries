@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 
 package com.ritense.valtimo.config;
 
+import javax.sql.DataSource;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.camunda.bpm.spring.boot.starter.configuration.CamundaDatasourceConfiguration;
 import org.camunda.bpm.spring.boot.starter.configuration.impl.AbstractCamundaConfiguration;
 import org.camunda.bpm.spring.boot.starter.property.DatabaseProperty;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
-import javax.sql.DataSource;
 
-@Configuration
+@AutoConfiguration
 public class ValtimoDatabaseConfiguration extends AbstractCamundaConfiguration implements CamundaDatasourceConfiguration {
 
     protected final PlatformTransactionManager transactionManager;
@@ -43,7 +43,7 @@ public class ValtimoDatabaseConfiguration extends AbstractCamundaConfiguration i
         configuration.setDataSource(dataSource);
         configuration.setDatabaseType(database.getType());
         configuration.setDatabaseSchemaUpdate(database.getSchemaUpdate());
-        if (!StringUtils.isEmpty(database.getTablePrefix())) {
+        if (StringUtils.hasText(database.getTablePrefix())) {
             configuration.setDatabaseTablePrefix(database.getTablePrefix());
         }
     }

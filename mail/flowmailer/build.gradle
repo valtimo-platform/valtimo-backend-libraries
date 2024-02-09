@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,17 @@
 
 dockerCompose {
     projectName = "flowmailer"
-    isRequiredBy(integrationTesting)
-    isRequiredBy(securityTesting)
-    useComposeFiles.addAll("../../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+
+    integrationTestingPostgresql {
+        isRequiredBy(project.tasks.integrationTestingPostgresql)
+        isRequiredBy(project.tasks.securityTesting)
+        useComposeFiles.addAll("../../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingMysql {
+        isRequiredBy(project.tasks.integrationTestingMysql)
+        useComposeFiles.addAll("../../docker-resources/docker-compose-base-test-mysql.yml", "docker-compose-override-mysql.yml")
+    }
 }
 
 dependencies {
@@ -31,7 +39,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:${javaxInjectVersion}"
+    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -55,7 +63,7 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
-    implementation "com.vladmihalcea:hibernate-types-55:${hibernateTypesVersion}"
+    implementation "io.hypersistence:hypersistence-utils-hibernate-62:${hypersistenceUtilsVersion}"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "org.apache.tika:tika-core:${apacheTikaVersion}"
 
@@ -70,6 +78,7 @@ dependencies {
 
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true

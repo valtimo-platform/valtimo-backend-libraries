@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,16 @@
 
 package com.ritense.valtimo.service;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.permission.ConditionContainer;
 import com.ritense.authorization.permission.Permission;
@@ -29,17 +39,7 @@ import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.camunda.domain.ProcessInstanceWithDefinition;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.NamedUser;
-import com.ritense.valtimo.contract.json.Mapper;
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.task.Task;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,16 +48,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.task.Task;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 class CamundaTaskServiceIntTest extends BaseIntegrationTest {
@@ -228,8 +226,8 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = "user@ritense.com", authorities = ADMIN)
     void shouldSortTasksByAssignee() throws IllegalAccessException {
-        startProcessAndModifyTask(task1 -> task1.setAssignee("userA@ritense.com"));
-        startProcessAndModifyTask(task2 -> task2.setAssignee("userB@ritense.com"));
+        startProcessAndModifyTask(task1 -> task1.setAssignee("AAAA-1111"));
+        startProcessAndModifyTask(task2 -> task2.setAssignee("BBBB-2222"));
 
         var pagedTasks = camundaTaskService.findTasksFiltered(
             CamundaTaskService.TaskFilter.ALL,
@@ -237,8 +235,8 @@ class CamundaTaskServiceIntTest extends BaseIntegrationTest {
         );
 
         var tasks = pagedTasks.toList();
-        assertThat(tasks.get(0).getAssignee()).isEqualTo("userB@ritense.com");
-        assertThat(tasks.get(1).getAssignee()).isEqualTo("userA@ritense.com");
+        assertThat(tasks.get(0).getAssignee()).isEqualTo("BBBB-2222");
+        assertThat(tasks.get(1).getAssignee()).isEqualTo("AAAA-1111");
     }
 
     @Test

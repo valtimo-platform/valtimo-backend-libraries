@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.ritense.objectsapi.taak
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaRelatedFile
@@ -31,18 +32,17 @@ import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.valtimo.camunda.domain.CamundaTask
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.BpmnModelService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
+import jakarta.persistence.EntityNotFoundException
+import java.net.MalformedURLException
+import java.net.URI
 import mu.KotlinLogging
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import org.springframework.context.event.EventListener
-import java.net.MalformedURLException
-import java.net.URI
-import javax.persistence.EntityNotFoundException
 
 class TaakObjectListener(
     private val openNotificatieService: OpenNotificatieService,
@@ -54,6 +54,7 @@ class TaakObjectListener(
     private val processDocumentService: ProcessDocumentService,
     private val zaakService: ZaakService,
     private val openZaakService: OpenZaakService,
+    private val objectMapper: ObjectMapper,
 ) {
 
     @EventListener(OpenNotificationEvent::class)
@@ -93,7 +94,7 @@ class TaakObjectListener(
         if (!taakObject.verzondenData.isNullOrEmpty()) {
             val processInstanceId = CamundaProcessInstanceId(task.getProcessInstanceId())
             val variableScope = getVariableScope(task)
-            val taakObjectData = Mapper.INSTANCE.get().valueToTree<JsonNode>(taakObject.verzondenData)
+            val taakObjectData = objectMapper.valueToTree<JsonNode>(taakObject.verzondenData)
             val resolvedValues = getResolvedValues(task, taakObjectData)
             loadTaakObjectDocuments(processInstanceId, variableScope, taakObjectData)
             handleTaakObjectData(processInstanceId, variableScope, resolvedValues)
@@ -178,7 +179,7 @@ class TaakObjectListener(
         if (valueNode.isMissingNode) {
             throw RuntimeException("Failed to do '$camundaName' for task '${task.taskDefinitionKey}'. Missing data on path '$path'")
         }
-        return Mapper.INSTANCE.get().treeToValue(valueNode, Object::class.java)
+        return objectMapper.treeToValue(valueNode, Object::class.java)
     }
 
     private fun getVariableScope(task: CamundaTask): VariableScope {

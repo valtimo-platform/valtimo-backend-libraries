@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,26 @@
 
 package com.ritense.resource.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.BaseIntegrationTest
 import com.ritense.resource.domain.MetadataType
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.upload.MimeTypeDeniedException
-import kotlin.io.path.Path
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.ClassPathResource
+import kotlin.io.path.Path
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TemporaryResourceStorageServiceIntegrationTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @Test
     fun `should store and get resource as inputStream`() {
@@ -92,7 +95,7 @@ class TemporaryResourceStorageServiceIntegrationTest : BaseIntegrationTest() {
         val metadataFilePath = temporaryResourceStorageService.getMetaDataFileFromResourceId(resourceId)
 
         val newFile = Path(metadataFilePath.parent.parent.toString(), metadataFilePath.fileName.toString()).toFile()
-        newFile.writeBytes(Mapper.INSTANCE.get().writeValueAsBytes(mapOf("traversed" to true)))
+        newFile.writeBytes(objectMapper.writeValueAsBytes(mapOf("traversed" to true)))
 
         val traversedMetaData = temporaryResourceStorageService.getResourceMetadata("../$resourceId")
         assertThat(traversedMetaData).containsEntry(MetadataType.FILE_NAME.key, fileName)

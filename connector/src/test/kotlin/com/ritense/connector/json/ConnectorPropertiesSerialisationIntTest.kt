@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,25 @@
 
 package com.ritense.connector.json
 
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.connector.BaseIntegrationTest
 import com.ritense.connector.config.SpringHandlerInstantiatorImpl
 import com.ritense.connector.impl.ObjectApiProperties
-import com.ritense.valtimo.contract.json.Mapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import javax.inject.Inject
+import org.springframework.beans.factory.annotation.Autowired
 
 internal class ConnectorPropertiesSerialisationIntTest : BaseIntegrationTest() {
 
-    @Inject
+    @Autowired
     lateinit var springHandlerInstantiatorImpl: SpringHandlerInstantiatorImpl
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @Test
     fun `round trip test`() {
-        val objectMapper = Mapper.INSTANCE.get().registerModule(KotlinModule())
         objectMapper.setHandlerInstantiator(springHandlerInstantiatorImpl)
 
         val rawJson = "{" +

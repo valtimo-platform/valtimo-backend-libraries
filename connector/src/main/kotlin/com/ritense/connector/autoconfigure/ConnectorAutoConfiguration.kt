@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,15 @@ import com.ritense.connector.web.rest.impl.ConnectorResource
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
-@Configuration
+@Deprecated("Since 12.0.0")
+@AutoConfiguration
 @EnableJpaRepositories(basePackages = ["com.ritense.connector.repository"])
 @EntityScan("com.ritense.connector.domain")
 class ConnectorAutoConfiguration {

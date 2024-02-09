@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.ritense.dashboard.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.dashboard.BaseIntegrationTest
 import com.ritense.dashboard.TestDataSourceProperties
 import com.ritense.dashboard.domain.WidgetConfiguration
@@ -83,8 +82,8 @@ class DashboardResourceIT @Autowired constructor(
                 title = "Doorlooptijd",
                 dashboard = dashboard,
                 dataSourceKey = "doorlooptijd",
-                dataSourceProperties = jacksonObjectMapper().readTree("""{ "threshold": 50 }""") as ObjectNode,
-                displayTypeProperties = jacksonObjectMapper().readTree("""{ "useKpi": true }""") as ObjectNode,
+                dataSourceProperties = objectMapper.readTree("""{ "threshold": 50 }""") as ObjectNode,
+                displayTypeProperties = objectMapper.readTree("""{ "useKpi": true }""") as ObjectNode,
                 displayType = "number",
                 order = 1
             )
@@ -114,7 +113,7 @@ class DashboardResourceIT @Autowired constructor(
                 title = "Single",
                 dashboard = dashboard,
                 dataSourceKey = "number-data",
-                dataSourceProperties = jacksonObjectMapper().valueToTree(TestDataSourceProperties("x")),
+                dataSourceProperties = objectMapper.valueToTree(TestDataSourceProperties("x")),
                 displayType = "x",
                 order = 0,
                 displayTypeProperties = objectMapper.createObjectNode()
@@ -126,7 +125,7 @@ class DashboardResourceIT @Autowired constructor(
                 title = "Multi",
                 dashboard = dashboard,
                 dataSourceKey = "numbers-data",
-                dataSourceProperties = jacksonObjectMapper().valueToTree(TestDataSourceProperties("x")),
+                dataSourceProperties = objectMapper.valueToTree(TestDataSourceProperties("x")),
                 displayType = "x",
                 order = 1,
                 displayTypeProperties = objectMapper.createObjectNode()

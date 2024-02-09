@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,17 @@ package com.ritense.connector.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.ritense.valtimo.contract.validation.Validatable
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.Column
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
+import jakarta.validation.constraints.NotBlank
 import java.util.Locale
-import javax.persistence.Column
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
-import javax.validation.constraints.NotBlank
 import org.hibernate.annotations.Type
 import org.hibernate.validator.constraints.Length
 
+@Deprecated("Since 12.0.0")
 @Entity
 @Table(name = "connector_type")
 data class ConnectorType(
@@ -43,7 +45,7 @@ data class ConnectorType(
     @field:NotBlank
     var className: String,
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "connector_properties", columnDefinition = "json")
     @JsonProperty("properties")
     var connectorProperties: ConnectorProperties,

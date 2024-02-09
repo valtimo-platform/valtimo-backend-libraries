@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package com.ritense.outbox.rabbitmq
 import com.ritense.outbox.OutboxMessage
 import com.ritense.outbox.publisher.MessagePublishingFailed
 import com.ritense.outbox.rabbitmq.config.RabbitOutboxConfigurationProperties
-import java.util.UUID
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -28,6 +27,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
+import java.util.UUID
 
 class RabbitMessagePublisherIntTest {
     @Nested

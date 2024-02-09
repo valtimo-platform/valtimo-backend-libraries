@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,16 @@
 
 package com.ritense.document.domain.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ritense.document.domain.Document;
 import com.ritense.valtimo.contract.domain.AbstractId;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.util.Objects;
 import java.util.UUID;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 public class JsonSchemaDocumentId extends AbstractId<JsonSchemaDocumentId> implements Document.Id {
@@ -65,8 +66,12 @@ public class JsonSchemaDocumentId extends AbstractId<JsonSchemaDocumentId> imple
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         JsonSchemaDocumentId that = (JsonSchemaDocumentId) o;
         return Objects.equals(getId(), that.getId());
     }

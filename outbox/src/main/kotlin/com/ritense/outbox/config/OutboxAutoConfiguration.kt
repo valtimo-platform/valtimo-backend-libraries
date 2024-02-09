@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.OutboxLiquibaseRunner
 import com.ritense.outbox.OutboxMessageRepository
 import com.ritense.outbox.OutboxService
-import com.ritense.outbox.ValtimoOutboxService
 import com.ritense.outbox.UserProvider
+import com.ritense.outbox.ValtimoOutboxService
 import com.ritense.outbox.config.condition.ConditionalOnOutboxEnabled
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.PollingPublisherJob
 import com.ritense.outbox.publisher.PollingPublisherService
-import javax.sql.DataSource
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -36,11 +36,11 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
+import javax.sql.DataSource
 
-@Configuration
+@AutoConfiguration
 @ConditionalOnOutboxEnabled
 @EnableJpaRepositories(
     basePackageClasses = [

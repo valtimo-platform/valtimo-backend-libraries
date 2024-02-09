@@ -1,19 +1,11 @@
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:3320/form-flow-valtimo-test
-    username: valtimo
-    password: password
-    hikari:
-      auto-commit: false
   liquibase:
     enabled: true
     change-log: classpath:/config/liquibase/form-flow-valtimo-master.xml
     contexts: unit-test
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
-    database: postgresql
     show_sql: true
     open-in-view: false
     properties:
@@ -32,16 +24,18 @@ spring:
           provider_disables_autocommit: true
     hibernate:
       ddl-auto: none
-      naming:
-        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
-      use-new-id-generator-mappings: false
 
 spring-actuator:
   username: test
   password: test
 
 valtimo:
-  database: postgres
   plugin:
     encryption-secret: "abcdefghijklmnop"
+
+camunda:
+    bpm:
+        history-level: audit
+        generic-properties:
+            properties:
+                enforceHistoryTimeToLive: false

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ package com.ritense.objectenapi.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.IntNode
 import com.fasterxml.jackson.databind.node.TextNode
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath
@@ -33,6 +31,7 @@ import com.ritense.objectenapi.event.ObjectViewed
 import com.ritense.objectenapi.event.ObjectsListed
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
+import com.ritense.valtimo.contract.json.MapperSingleton
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions
@@ -75,8 +74,7 @@ internal class ObjectenApiClientTest {
     fun setUp() {
         mockApi = MockWebServer()
         mockApi.start()
-        objectMapper = jacksonObjectMapper()
-        objectMapper.registerModule(JavaTimeModule())
+        objectMapper = MapperSingleton.get()
         outboxService = Mockito.mock(OutboxService::class.java)
     }
 
@@ -549,7 +547,7 @@ internal class ObjectenApiClientTest {
                 ObjectRecord(
                     index = 1,
                     typeVersion = 2,
-                    data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                    data = MapperSingleton.get().readTree("{\"test\":\"some-value\"}"),
                     startAt = LocalDate.of(2000, 1, 2)
                 )
             )
@@ -588,7 +586,7 @@ internal class ObjectenApiClientTest {
                     ObjectRecord(
                         index = 1,
                         typeVersion = 2,
-                        data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                        data = MapperSingleton.get().readTree("{\"test\":\"some-value\"}"),
                         startAt = LocalDate.of(2000, 1, 2)
                     )
                 )
@@ -647,7 +645,7 @@ internal class ObjectenApiClientTest {
                 ObjectRecord(
                     index = 1,
                     typeVersion = 2,
-                    data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                    data = MapperSingleton.get().readTree("{\"test\":\"some-value\"}"),
                     startAt = LocalDate.of(2000, 1, 2)
                 )
             )
@@ -709,7 +707,7 @@ internal class ObjectenApiClientTest {
                 ObjectRecord(
                     index = 1,
                     typeVersion = 2,
-                    data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                    data = MapperSingleton.get().readTree("{\"test\":\"some-value\"}"),
                     startAt = LocalDate.of(2000, 1, 2)
                 )
             )
@@ -767,7 +765,7 @@ internal class ObjectenApiClientTest {
                 ObjectRecord(
                     index = 1,
                     typeVersion = 2,
-                    data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                    data = MapperSingleton.get().readTree("{\"test\":\"some-value\"}"),
                     startAt = LocalDate.of(2000, 1, 2)
                 )
             )
@@ -861,7 +859,7 @@ internal class ObjectenApiClientTest {
                 ObjectRecord(
                     index = 1,
                     typeVersion = 2,
-                    data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                    data = MapperSingleton.get().readTree("{\"test\":\"some-value\"}"),
                     startAt = LocalDate.of(2000, 1, 2)
                 )
             )
@@ -900,7 +898,7 @@ internal class ObjectenApiClientTest {
                     ObjectRecord(
                         index = 1,
                         typeVersion = 2,
-                        data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                        data = MapperSingleton.get().readTree("{\"test\":\"some-value\"}"),
                         startAt = LocalDate.of(2000, 1, 2)
                     )
                 )
@@ -961,7 +959,7 @@ internal class ObjectenApiClientTest {
                 ObjectRecord(
                     index = 1,
                     typeVersion = 2,
-                    data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                    data = MapperSingleton.get().readTree("{\"test\":\"some-value\"}"),
                     startAt = LocalDate.of(2000, 1, 2)
                 )
             )
@@ -1000,7 +998,7 @@ internal class ObjectenApiClientTest {
                     ObjectRecord(
                         index = 1,
                         typeVersion = 2,
-                        data = ObjectMapper().readTree("{\"test\":\"some-value\"}"),
+                        data = MapperSingleton.get().readTree("{\"test\":\"some-value\"}"),
                         startAt = LocalDate.of(2000, 1, 2)
                     )
                 )

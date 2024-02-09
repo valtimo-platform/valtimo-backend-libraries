@@ -1,0 +1,46 @@
+/*
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+dependencies {
+    api(project(":audit"))
+    api(project(":authorization"))
+    api(project(":case"))
+    api(project(":changelog"))
+    api(project(":connector"))
+    api(project(":contract"))
+    api(project(":core"))
+    api(project(":dashboard"))
+    api(project(":data-provider"))
+    api(project(":document"))
+    api(project(":exporter"))
+    api(project(":form"))
+    api(project(":form-flow"))
+    api(project(":form-flow-valtimo"))
+    api(project(":importer"))
+    api(project(":keycloak-iam"))
+    api(project(":localization"))
+    api(project(":notes"))
+    api(project(":plugin"))
+    api(project(":plugin-valtimo"))
+    api(project(":process-document"))
+    api(project(":process-link"))
+    api(project(":resource:temporary-resource-storage"))
+    api(project(":search"))
+    api(project(":value-resolver"))
+    api(project(":web"))
+}
+
+apply from: "gradle/publishing.gradle"

@@ -5,10 +5,10 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-import org.junit.jupiter.api.Test
 
 internal class PluginConfigurationDtoTest {
 
@@ -96,7 +96,7 @@ internal class PluginConfigurationDtoTest {
         val configuration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            Mapper.INSTANCE.get().readTree(input) as ObjectNode,
+            MapperSingleton.get().readTree(input) as ObjectNode,
             pluginDefinition
         )
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.ritense.valtimo.contract.audit.AuditEvent;
 import com.ritense.valtimo.contract.audit.AuditMetaData;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 public class DossierDocumentGeneratedEvent extends AuditMetaData implements AuditEvent {
@@ -54,4 +55,23 @@ public class DossierDocumentGeneratedEvent extends AuditMetaData implements Audi
         return UUID.fromString(dossierId);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        DossierDocumentGeneratedEvent that = (DossierDocumentGeneratedEvent) o;
+        return Objects.equals(templateIdentifier, that.templateIdentifier) && Objects.equals(dossierId, that.dossierId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), templateIdentifier, dossierId);
+    }
 }

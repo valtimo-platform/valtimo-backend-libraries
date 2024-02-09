@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package com.ritense.valtimo.contract.json.serializer;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import java.io.IOException;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
-import java.io.IOException;
 
 public class PageSerializer extends JsonSerializer<PageImpl<?>> {
 

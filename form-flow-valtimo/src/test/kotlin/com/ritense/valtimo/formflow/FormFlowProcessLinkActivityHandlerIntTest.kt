@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,13 @@ import com.ritense.valtimo.formflow.domain.FormFlowProcessLink
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
+import java.util.UUID
 import org.camunda.bpm.engine.RepositoryService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 
 @Transactional
 internal class FormFlowProcessLinkActivityHandlerIntTest: BaseIntegrationTest() {

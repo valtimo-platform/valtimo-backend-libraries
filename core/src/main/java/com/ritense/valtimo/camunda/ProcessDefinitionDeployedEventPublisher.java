@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
 package com.ritense.valtimo.camunda;
 
 import com.ritense.valtimo.event.ProcessDefinitionDeployedEvent;
+import java.util.ArrayList;
+import java.util.List;
 import org.camunda.bpm.engine.impl.persistence.deploy.Deployer;
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProcessDefinitionDeployedEventPublisher implements Deployer {
 
@@ -47,7 +47,7 @@ public class ProcessDefinitionDeployedEventPublisher implements Deployer {
     @Override
     public void deploy(DeploymentEntity deployment) {
         if (deployment.isNew() && deployment.getDeployedArtifacts() != null) {
-            final var processDefinitions = (List<ProcessDefinitionEntity>) deployment.getDeployedArtifacts(ProcessDefinitionEntity.class);
+            final var processDefinitions = deployment.getDeployedArtifacts(ProcessDefinitionEntity.class);
             if (processDefinitions != null) {
                 processDefinitions.forEach(definition -> publishEvent(deployment, definition));
             }

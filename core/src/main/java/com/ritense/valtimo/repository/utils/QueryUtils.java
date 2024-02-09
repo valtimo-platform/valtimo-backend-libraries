@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,23 @@
 
 package com.ritense.valtimo.repository.utils;
 
-import org.springframework.data.domain.Sort;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Sort;
 
 public class QueryUtils {
 
+    private QueryUtils() {
+    }
+
     public static String toOrders(Sort sort) {
         ArrayList<String> sqlOrders = new ArrayList<>();
-        Iterator<Sort.Order> sortOrder = sort.iterator();
-        while (sortOrder.hasNext()) {
-            Sort.Order order = sortOrder.next();
+        for (Sort.Order order : sort) {
             String property = order.getProperty();
             if (property != null && property.matches("^[0-9a-zA-Z$_]+$")) {
                 sqlOrders.add(property + " " + order.getDirection().name());
             }
         }
-        String sqlOrderStatement = sqlOrders.stream().collect(Collectors.joining(","));
-        return sqlOrderStatement;
+        return String.join(",", sqlOrders);
     }
 
 }

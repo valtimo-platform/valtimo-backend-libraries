@@ -17,22 +17,23 @@
 package com.ritense.openzaak.listener
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.openzaak.exception.UnmappableOpenZaakPropertyException
 import com.ritense.openzaak.service.impl.EigenschapService
 import com.ritense.openzaak.service.impl.ZaakService
-import com.ritense.openzaak.service.impl.ZaakTypeLinkService
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.valtimo.contract.event.ExternalDataSubmittedEvent
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import org.springframework.context.event.EventListener
 import java.net.URI
 
 class EigenschappenSubmittedListener(
-    val zaakTypeLinkService: ZaakTypeLinkService,
-    val eigenschapService: EigenschapService,
-    val zaakService: ZaakService,
-    val zaakInstanceLinkService: ZaakInstanceLinkService
+    private val zaakTypeLinkService: ZaakTypeLinkService,
+    private val eigenschapService: EigenschapService,
+    private val zaakService: ZaakService,
+    private val zaakInstanceLinkService: ZaakInstanceLinkService,
+    private val objectMapper: ObjectMapper,
 ) {
 
     @EventListener(ExternalDataSubmittedEvent::class)
@@ -63,7 +64,7 @@ class EigenschappenSubmittedListener(
 
     private fun getStringValue(value: Any): String {
         return if (value is JsonNode) {
-            Mapper.INSTANCE.get().treeToValue<String>(value)
+            objectMapper.treeToValue<String>(value)
         } else {
             value.toString()
         }

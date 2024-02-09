@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +24,16 @@ import com.ritense.notificatiesapi.service.NotificatiesApiService
 import com.ritense.notificatiesapi.web.rest.NotificatiesApiResource
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.web.reactive.function.client.WebClient
 
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(basePackages = ["com.ritense.notificatiesapi.repository"])
 @EntityScan("com.ritense.notificatiesapi.domain")
 class NotificatiesApiAutoConfiguration {
@@ -67,6 +67,7 @@ class NotificatiesApiAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(NotificatiesApiResource::class)
     fun notificatiesApiResource(notificatiesApiService: NotificatiesApiService): NotificatiesApiResource {
         return NotificatiesApiResource(notificatiesApiService)
     }

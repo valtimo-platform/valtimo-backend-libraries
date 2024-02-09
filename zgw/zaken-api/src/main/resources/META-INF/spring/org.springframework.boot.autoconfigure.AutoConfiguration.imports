@@ -1,0 +1,3 @@
+com.ritense.zakenapi.config.ZakenApiAutoConfiguration
+com.ritense.zakenapi.config.ZakenApiLiquibaseAutoConfiguration
+com.ritense.zakenapi.uploadprocess.UploadProcessAutoConfiguration

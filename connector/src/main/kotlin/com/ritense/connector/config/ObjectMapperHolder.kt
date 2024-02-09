@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 package com.ritense.connector.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 
+@Deprecated("Since 12.0.0")
 class ObjectMapperHolder(springHandlerInstantiatorImpl: SpringHandlerInstantiatorImpl) {
 
     companion object {
@@ -26,7 +27,7 @@ class ObjectMapperHolder(springHandlerInstantiatorImpl: SpringHandlerInstantiato
     }
 
     init {
-        objectMapper = Mapper.INSTANCE.get()
+        objectMapper = MapperSingleton.get()
         objectMapper.setHandlerInstantiator(springHandlerInstantiatorImpl)
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,25 +33,27 @@ import com.ritense.plugin.repository.PluginProcessLinkRepositoryImpl
 import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.plugin.security.config.PluginHttpSecurityConfigurer
 import com.ritense.plugin.service.EncryptionService
+import com.ritense.plugin.service.PluginConfigurationListener
 import com.ritense.plugin.service.PluginService
 import com.ritense.plugin.web.rest.PluginConfigurationResource
 import com.ritense.plugin.web.rest.PluginDefinitionResource
 import com.ritense.plugin.web.rest.converter.StringToActivityTypeConverter
 import com.ritense.valueresolver.ValueResolverService
+import jakarta.persistence.EntityManager
+import jakarta.validation.Validator
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import javax.persistence.EntityManager
-import javax.validation.Validator
 
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(
     basePackageClasses = [
         PluginActionDefinitionRepository::class,
@@ -118,7 +120,9 @@ class PluginAutoConfiguration {
         objectMapper: ObjectMapper,
         valueResolverService: ValueResolverService,
         pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
-        validator: Validator
+        validator: Validator,
+        applicationEventPublisher: ApplicationEventPublisher,
+        encryptionService: EncryptionService
     ): PluginService {
         return PluginService(
             pluginDefinitionRepository,
@@ -130,6 +134,8 @@ class PluginAutoConfiguration {
             valueResolverService,
             pluginConfigurationSearchRepository,
             validator,
+            applicationEventPublisher,
+            encryptionService
         )
     }
 
@@ -183,5 +189,13 @@ class PluginAutoConfiguration {
             objectMapper = objectMapper,
             resourceLoader = resourceLoader
         )
+    }
+
+    @Bean
+    fun pluginConfigurationListener(
+        pluginConfigurationRepository: PluginConfigurationRepository,
+        pluginProcessLinkRepository: PluginProcessLinkRepository,
+    ): PluginConfigurationListener {
+        return PluginConfigurationListener(pluginConfigurationRepository, pluginProcessLinkRepository)
     }
 }

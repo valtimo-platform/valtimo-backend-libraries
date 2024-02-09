@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,12 @@ package com.ritense.processdocument.resolver
 
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.Document
-import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.document.service.DocumentService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.valueresolver.exception.ValueResolverValidationException
 import org.camunda.bpm.engine.delegate.VariableScope
-import java.lang.IllegalArgumentException
 import java.util.function.Function
 
 /**
@@ -61,7 +60,7 @@ class DocumentTableValueResolver(
         return AuthorizationContext.runWithoutAuthorization { createResolver(documentService.get(documentId)) }
     }
 
-    override fun handleValues(processInstanceId: String, variableScope: VariableScope?, values: Map<String, Any>) {
+    override fun handleValues(processInstanceId: String, variableScope: VariableScope?, values: Map<String, Any?>) {
         val firstValue = values.iterator().next()
         throw NotImplementedError("Unable to handle value: {${firstValue.key} to ${firstValue.value}}")
     }

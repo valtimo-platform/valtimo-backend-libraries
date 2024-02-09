@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,10 @@ import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.GeneratedSmartDocument
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
-import org.apache.commons.io.FilenameUtils
 import java.util.Base64
+import org.apache.commons.io.FilenameUtils
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.smartdocuments.plugin.SmartDocumentsPlugin"))
 @ConnectorType(name = "SmartDocuments")
 class SmartDocumentsConnector(
     private var smartDocumentsConnectorProperties: SmartDocumentsConnectorProperties,

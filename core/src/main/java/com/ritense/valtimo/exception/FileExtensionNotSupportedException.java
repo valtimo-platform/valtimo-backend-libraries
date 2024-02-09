@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ public class FileExtensionNotSupportedException extends Exception {
      * @param fileExtension The name of the file extension that is not supported
      */
 
-    private static String BASE_MESSAGE = "The file extension '%s' is not supported for this operation.";
+    private static final String BASE_MESSAGE = "The file extension '%s' is not supported for this operation.";
 
     public FileExtensionNotSupportedException(String fileExtension) {
         super(String.format(BASE_MESSAGE, fileExtension));

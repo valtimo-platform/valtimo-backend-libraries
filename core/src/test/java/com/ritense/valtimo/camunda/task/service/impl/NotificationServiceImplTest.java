@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,14 @@
 
 package com.ritense.valtimo.camunda.task.service.impl;
 
+import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.mockTask;
+import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.user;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ritense.valtimo.camunda.task.service.NotificationService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
@@ -24,18 +32,10 @@ import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
 import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
 import com.ritense.valtimo.helper.DelegateTaskHelper;
 import java.util.List;
-import java.util.Optional;
 import org.camunda.community.mockito.delegate.DelegateTaskFake;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
-import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.mockTask;
-import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.user;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class NotificationServiceImplTest {
 
@@ -66,8 +66,8 @@ class NotificationServiceImplTest {
     @Test
     void shouldSendNotification() {
         when(delegateTaskHelper.isTaskBeingAssigned(ArgumentMatchers.any())).thenReturn(true);
-        when(userManagementService.findByEmail(null))
-            .thenReturn(Optional.of(user("test1@test.com", List.of("dev"))));
+        when(userManagementService.findById("AAAA-1111"))
+            .thenReturn(user("test1@test.com", List.of("dev")));
         when(emailNotificationService.existsByEmailAddressAndTaskNotificationsEnabled(anyString())).thenReturn(true);
         when(valtimoProperties.getApp().getBaselUrl()).thenReturn("http://baseUrl");
 

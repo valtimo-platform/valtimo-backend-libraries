@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import com.ritense.valtimo.camunda.domain.CamundaIdentityLink
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.Companion.ID
 import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkSpecificationHelper.Companion.TASK
-import javax.persistence.criteria.AbstractQuery
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.AbstractQuery
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Root
 
 class CamundaTaskIdentityLinkMapper : AuthorizationEntityMapper<CamundaTask, CamundaIdentityLink> {
     override fun mapRelated(entity: CamundaTask): List<CamundaIdentityLink> {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,28 @@
 
 package com.ritense.document.web.rest.searchfields;
 
+import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.NUMBER;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.EXACT;
+import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.LIKE;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.document.BaseIntegrationTest;
-import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldDto;
@@ -41,23 +59,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.NUMBER;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldDataType.TEXT;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.SINGLE;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.EXACT;
-import static com.ritense.document.domain.impl.searchfield.SearchFieldMatchType.LIKE;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
 class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
@@ -70,6 +71,9 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private AuthorizationService authorizationService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
     private SearchFieldResource searchFieldResource;
@@ -101,12 +105,14 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldStoreSearchField() throws Exception {
+        searchFieldRepository.deleteAllInBatch();
+
         var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
 
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
-                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                                .content(objectMapper.writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -134,7 +140,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
-                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                                .content(objectMapper.writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -149,7 +155,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
-                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                                .content(objectMapper.writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -164,7 +170,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(
                 post("/api/v1/document-search/{documentDefinitionName}/fields",
                     DOCUMENT_DEFINITION_NAME)
-                    .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                    .content(objectMapper.writeValueAsString(searchFieldDto))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isBadRequest())
@@ -179,7 +185,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
-                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                                .content(objectMapper.writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -189,11 +195,13 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void shouldRetrieveSearchFieldsByDocumentDefinitionName() throws Exception {
+        searchFieldRepository.deleteAllInBatch();
+
         var searchFieldDto = SearchFieldMapper.toDto(SEARCH_FIELD);
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
-                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                                .content(objectMapper.writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -217,7 +225,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(
                 post("/api/v1/document-search/{documentDefinitionName}/fields",
                     DOCUMENT_DEFINITION_NAME)
-                    .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                    .content(objectMapper.writeValueAsString(searchFieldDto))
                     .contentType(MediaType.APPLICATION_JSON_VALUE))
             .andDo(print())
             .andExpect(status().isOk());
@@ -231,6 +239,8 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldUpdateSearchField() throws Exception {
+        searchFieldRepository.deleteAllInBatch();
+
         AuthorizationContext.runWithoutAuthorization(() -> {
                 searchFieldService.addSearchField(DOCUMENT_DEFINITION_NAME, SEARCH_FIELD);
                 return null;
@@ -249,7 +259,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(
                         put("/api/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
-                                .content(Mapper.INSTANCE.get().writeValueAsString(List.of(searchFieldToUpdate)))
+                                .content(objectMapper.writeValueAsString(List.of(searchFieldToUpdate)))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -274,7 +284,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(
                         put("/api/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
-                                .content(Mapper.INSTANCE.get().writeValueAsString(List.of(searchFieldDto)))
+                                .content(objectMapper.writeValueAsString(List.of(searchFieldDto)))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -289,7 +299,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(
                         put("/api/v1/document-search/{documentDefinitionName}/fields",
                                 "person")
-                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFields))
+                                .content(objectMapper.writeValueAsString(searchFields))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -307,7 +317,7 @@ class SearchFieldResourceIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(
                         post("/api/v1/document-search/{documentDefinitionName}/fields",
                                 DOCUMENT_DEFINITION_NAME)
-                                .content(Mapper.INSTANCE.get().writeValueAsString(searchFieldDto))
+                                .content(objectMapper.writeValueAsString(searchFieldDto))
                                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk());

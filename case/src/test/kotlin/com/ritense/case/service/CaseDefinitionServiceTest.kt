@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.ritense.case.service
 
-import com.ritense.authorization.AuthorizationService
 import com.ritense.case.domain.CaseDefinitionSettings
 import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
@@ -33,9 +32,6 @@ import com.ritense.document.exception.UnknownDocumentDefinitionException
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.exception.ValueResolverValidationException
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -46,6 +42,9 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Optional
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class CaseDefinitionServiceTest {
     lateinit var caseDefinitionSettingsRepository: CaseDefinitionSettingsRepository

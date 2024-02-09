@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,31 @@
 
 package com.ritense.valtimo.web.rest;
 
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byEndTimeAfter;
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byEndTimeBefore;
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byFinished;
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byProcessDefinitionKey;
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byUnfinished;
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.repository.CamundaReportingRepository;
 import com.ritense.valtimo.repository.camunda.dto.ChartInstance;
 import com.ritense.valtimo.repository.camunda.dto.ChartInstanceSeries;
 import com.ritense.valtimo.repository.camunda.dto.InstanceCountChart;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceStatisticsDTO;
+import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.apache.ibatis.session.SqlSession;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.history.HistoricActivityInstance;
@@ -38,24 +55,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.Date;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byEndTimeAfter;
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byEndTimeBefore;
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byFinished;
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byProcessDefinitionKey;
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byUnfinished;
-import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
-
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 @Transactional
 public class ReportingResource {
@@ -66,7 +67,12 @@ public class ReportingResource {
     private final CamundaHistoryService camundaHistoryService;
     private final CamundaReportingRepository camundaReportingRepository;
 
-    public ReportingResource(SqlSession session, HistoryService historyService, CamundaHistoryService camundaHistoryService, CamundaReportingRepository camundaReportingRepository) {
+    public ReportingResource(
+        SqlSession session,
+        HistoryService historyService,
+        CamundaHistoryService camundaHistoryService,
+        CamundaReportingRepository camundaReportingRepository
+    ) {
         this.session = session;
         this.historyService = historyService;
         this.camundaHistoryService = camundaHistoryService;
@@ -306,7 +312,7 @@ public class ReportingResource {
         return query.orderByActivityName().asc().list();
     }
 
-    private List<HistoricActivityInstance> getUnfinishedHistoricTaskInstances(LocalDate fromDate, LocalDate toDate){
+    private List<HistoricActivityInstance> getUnfinishedHistoricTaskInstances(LocalDate fromDate, LocalDate toDate) {
         HistoricActivityInstanceQuery historicActivityInstanceQuery = historyService.createHistoricActivityInstanceQuery()
             .unfinished()
             .activityType(ACTIVITY_USER_TASK);

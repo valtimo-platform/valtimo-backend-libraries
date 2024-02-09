@@ -1,10 +1,26 @@
+/*
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ritense.zakenapi
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
@@ -13,9 +29,9 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultSucceeded
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.resource.Resource
-import java.net.URI
+import jakarta.transaction.Transactional
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -36,10 +52,10 @@ import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
+import java.net.URI
 import java.time.LocalDateTime
 import java.util.Optional
 import java.util.UUID
-import javax.transaction.Transactional
 import kotlin.test.assertEquals
 
 @Transactional
@@ -56,6 +72,9 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var documentService: DocumentService
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     lateinit var server: MockWebServer
 
@@ -83,7 +102,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
         val configuration = pluginService.createPluginConfiguration(
             "Zaken API plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 pluginPropertiesJson
             ) as ObjectNode,
             "zakenapi"
@@ -108,10 +127,10 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
                 PluginProcessLinkId(UUID.randomUUID()),
                 processDefinitionId,
                 "LinkDocument",
-                Mapper.INSTANCE.get().readTree(actionPropertiesJson) as ObjectNode,
+                objectMapper.readTree(actionPropertiesJson) as ObjectNode,
                 configuration.id,
                 "link-document-to-zaak",
-                ActivityType.SERVICE_TASK_START
+                ActivityTypeWithEventName.SERVICE_TASK_START
             )
         )
     }
@@ -123,7 +142,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
     @Test
     fun `should link document to zaak`() {
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // Make a record in the database about a document that is matched to the open zaak
@@ -144,7 +163,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         // Check the request that was sent to the open zaak api
         val recordedRequest = server.takeRequest()
         val requestString = recordedRequest.body.readUtf8()
-        val parsedOutput = Mapper.INSTANCE.get().readValue(requestString, Map::class.java)
+        val parsedOutput = objectMapper.readValue(requestString, Map::class.java)
 
         assertEquals(4, parsedOutput.size)
         assertEquals(INFORMATIE_OBJECT_URL, parsedOutput["informatieobject"])
@@ -161,7 +180,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
 
     @Test
     fun `should link uploaded document to zaak`() {
-        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())
+        val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.createObjectNode())
         val request = NewDocumentAndStartProcessRequest(PROCESS_DEFINITION_KEY, newDocumentRequest)
 
         // Make a record in1 the database about a document that is matched to the open zaak
@@ -182,7 +201,7 @@ class ZakenApiPluginIT : BaseIntegrationTest() {
         // Check the request that was sent to the open zaak api
         val recordedRequest = server.takeRequest()
         val requestString = recordedRequest.body.readUtf8()
-        val parsedOutput = Mapper.INSTANCE.get().readValue(requestString, Map::class.java)
+        val parsedOutput = objectMapper.readValue(requestString, Map::class.java)
 
         assertEquals(4, parsedOutput.size)
         assertEquals(INFORMATIE_OBJECT_URL, parsedOutput["informatieobject"])

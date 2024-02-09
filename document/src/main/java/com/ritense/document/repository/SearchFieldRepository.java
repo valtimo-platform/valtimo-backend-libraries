@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ package com.ritense.document.repository;
 
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -38,7 +38,7 @@ public interface SearchFieldRepository extends JpaRepository<SearchField, Search
 
     void deleteAllByIdDocumentDefinitionName(String documentDefinitionName);
 
-    static Specification<SearchField> byIdDocumentDefinitionName(String documentDefinitionName){
+    static Specification<SearchField> byIdDocumentDefinitionName(String documentDefinitionName) {
         return new Specification<SearchField>() {
             @Override
             public Predicate toPredicate(Root<SearchField> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {

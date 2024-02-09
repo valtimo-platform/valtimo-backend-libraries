@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,23 +20,22 @@ import com.ritense.openzaak.service.DocumentenService
 import com.ritense.resource.domain.OpenZaakResource
 import com.ritense.resource.domain.ResourceId
 import com.ritense.resource.repository.OpenZaakResourceRepository
-import java.io.InputStream
-import java.net.URI
-import java.net.URL
-import java.time.LocalDateTime
-import java.util.Arrays
-import java.util.UUID
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.springframework.web.multipart.MultipartFile
+import java.io.InputStream
+import java.net.URI
+import java.net.URL
+import java.time.LocalDateTime
+import java.util.UUID
 
 internal class OpenZaakServiceTest {
 
@@ -87,7 +86,7 @@ internal class OpenZaakServiceTest {
             LocalDateTime.of(2000, 1, 1, 0, 0, 0)
         )
 
-        `when`(repository.getById(MockitoHelper.anyObject())).thenReturn(resource)
+        `when`(repository.getReferenceById(MockitoHelper.anyObject())).thenReturn(resource)
         `when`(request.requestURL).thenReturn(StringBuffer().append("http://some.base.url/with/some/path"))
 
         val objectUrlDTO = service.getResourceUrl(resourceId)
@@ -114,7 +113,7 @@ internal class OpenZaakServiceTest {
             LocalDateTime.of(2000, 1, 1, 0, 0, 0)
         )
 
-        `when`(repository.getById(MockitoHelper.anyObject())).thenReturn(resource)
+        `when`(repository.getReferenceById(MockitoHelper.anyObject())).thenReturn(resource)
         `when`(request.requestURL).thenReturn(StringBuffer().append("http://some.base.url/with/some/path"))
         `when`(documentenService.getObjectInformatieObject(URI("http://documentapi.url")))
             .thenReturn("bytes".toByteArray())

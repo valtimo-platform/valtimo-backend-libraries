@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,24 +19,24 @@ package com.ritense.audit.service;
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.domain.AuditRecordId;
 import com.ritense.valtimo.contract.audit.AuditEvent;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import java.time.LocalDateTime;
-import java.util.List;
 
 public interface AuditService {
     AuditRecord findById(AuditRecordId auditRecordId);
 
     Page<AuditRecord> findByEventAndDocumentId(List<Class<? extends AuditEvent>> eventTypes, UUID documentId, Pageable pageable);
 
-    //TODO: unused? @Marijn
+    @Deprecated(since = "Since 12.0.0", forRemoval = true)
     List<AuditRecord> findByEventAndOccurredBetween(Class<? extends AuditEvent> event, LocalDateTime from, LocalDateTime until, Pageable pageable);
 
-    //TODO: unused? @Marijn
+    @Deprecated(since = "Since 12.0.0", forRemoval = true)
     Page<AuditRecord> findByProperty(String key, Object value, Pageable pageable);
 
-    //TODO: unused? @Marijn
+    @Deprecated(since = "Since 12.0.0", forRemoval = true)
     List<AuditRecord> findByEventTypeAndProperty(Class<? extends AuditEvent> event, String key, Object value);
 
     void deleteAllBefore(LocalDateTime date);

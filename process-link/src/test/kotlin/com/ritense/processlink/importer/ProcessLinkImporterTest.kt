@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package com.ritense.processlink.importer
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.importer.ValtimoImportTypes.Companion.PROCESS_DEFINITION
 import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -42,7 +42,7 @@ class ProcessLinkImporterTest(
         importer = ProcessLinkImporter(
             processLinkService,
             repositoryService,
-            jacksonObjectMapper()
+            MapperSingleton.get()
         )
     }
 

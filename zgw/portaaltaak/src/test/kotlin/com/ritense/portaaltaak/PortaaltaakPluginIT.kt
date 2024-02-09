@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
 package com.ritense.portaaltaak
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath
 import com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath
 import com.ritense.BaseIntegrationTest
@@ -33,7 +32,6 @@ import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
@@ -42,11 +40,11 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byActive
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byId
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
@@ -110,6 +108,9 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     @Autowired
     lateinit var taskService: CamundaTaskService
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     lateinit var server: MockWebServer
 
     lateinit var processDefinitionId: String
@@ -125,8 +126,6 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     lateinit var objectManagement: ObjectManagement
 
     protected var executedRequests: MutableList<RecordedRequest> = mutableListOf()
-
-    private val objectMapper = jacksonObjectMapper().registerModule(JavaTimeModule())
 
     @BeforeEach
     internal fun setUp() {
@@ -409,7 +408,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
     private fun startPortaalTaakProcess(content: String, processDefinitionKey: String = PROCESS_DEFINITION_KEY): CamundaTask {
         return runWithoutAuthorization {
             val newDocumentRequest =
-                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().readTree(content))
+                NewDocumentRequest(DOCUMENT_DEFINITION_KEY, objectMapper.readTree(content))
             val request = NewDocumentAndStartProcessRequest(processDefinitionKey, newDocumentRequest)
             val processResult = procesDocumentService.newDocumentAndStartProcess(request)
             taskService.findTask(
@@ -446,7 +445,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
 
         val configuration = pluginService.createPluginConfiguration(
             "Notificaties API plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 pluginPropertiesJson
             ) as ObjectNode,
             "notificatiesapi"
@@ -469,7 +468,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
 
         val configuration = pluginService.createPluginConfiguration(
             "Portaaltaak plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 pluginPropertiesJson
             ) as ObjectNode,
             "portaaltaak"
@@ -487,7 +486,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
 
         val configuration = pluginService.createPluginConfiguration(
             "Objecten plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 pluginPropertiesJson
             ) as ObjectNode,
             "objecttypenapi"
@@ -505,7 +504,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
 
         val configuration = pluginService.createPluginConfiguration(
             "Objecttype plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 pluginPropertiesJson
             ) as ObjectNode,
             "objectenapi"
@@ -525,10 +524,10 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
                 PluginProcessLinkId(UUID.randomUUID()),
                 processDefinitionId,
                 "user_task",
-                Mapper.INSTANCE.get().readTree(propertiesConfig) as ObjectNode,
+                objectMapper.readTree(propertiesConfig) as ObjectNode,
                 portaalTaakPluginDefinition.id,
                 "create-portaaltaak",
-                activityType = ActivityType.USER_TASK_CREATE
+                activityType = ActivityTypeWithEventName.USER_TASK_CREATE
             )
         )
     }

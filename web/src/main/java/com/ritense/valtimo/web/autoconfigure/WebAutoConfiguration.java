@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,21 +21,21 @@ import com.ritense.valtimo.contract.hardening.service.HardeningService;
 import com.ritense.valtimo.contract.hardening.service.impl.HardeningServiceImpl;
 import com.ritense.valtimo.web.config.WebProperties;
 import com.ritense.valtimo.web.rest.error.WebModuleExceptionTranslator;
+import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.zalando.problem.jackson.ProblemModule;
 import org.zalando.problem.violations.ConstraintViolationProblemModule;
-import java.util.List;
-import java.util.Optional;
 
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(WebProperties.class)
 public class WebAutoConfiguration {
 

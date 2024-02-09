@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package com.ritense.processdocument.resolver
 
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.jayway.jsonpath.InvalidPathException
 import com.jayway.jsonpath.JsonPath
 import com.jayway.jsonpath.PathNotFoundException
@@ -34,13 +34,12 @@ import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valueresolver.ValueResolverFactory
 import com.ritense.valueresolver.exception.ValueResolverValidationException
+import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.UUID
 import java.util.function.Function
-import org.camunda.bpm.engine.delegate.VariableScope
 
 /**
  * This resolver can resolve requestedValues against the Document JSON content
@@ -51,6 +50,7 @@ class DocumentJsonValueResolverFactory(
     private val processDocumentService: ProcessDocumentService,
     private val documentService: DocumentService,
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
+    private val objectMapper: ObjectMapper,
 ) : ValueResolverFactory {
 
     override fun supportedPrefix(): String {
@@ -87,7 +87,7 @@ class DocumentJsonValueResolverFactory(
     override fun handleValues(
         processInstanceId: String,
         variableScope: VariableScope?,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     ) {
         val document = AuthorizationContext.runWithoutAuthorization {
             processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)
@@ -108,7 +108,7 @@ class DocumentJsonValueResolverFactory(
         }
     }
 
-    override fun handleValues(documentId: UUID, values: Map<String, Any>) {
+    override fun handleValues(documentId: UUID, values: Map<String, Any?>) {
         val document = AuthorizationContext.runWithoutAuthorization { documentService.get(documentId.toString()) }
         val documentContent = document.content().asJson()
         buildJsonPatch(documentContent, values)
@@ -123,13 +123,13 @@ class DocumentJsonValueResolverFactory(
         }
     }
 
-    override fun preProcessValuesForNewCase(values: Map<String, Any>): ObjectNode {
-        val emptyDocumentContent = jacksonObjectMapper().createObjectNode()
+    override fun preProcessValuesForNewCase(values: Map<String, Any?>): ObjectNode {
+        val emptyDocumentContent = objectMapper.createObjectNode()
         buildJsonPatch(emptyDocumentContent, values)
         return emptyDocumentContent
     }
 
-    private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any>) {
+    private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any?>) {
         val jsonPatchBuilder = JsonPatchBuilder()
 
         values.forEach {
@@ -183,7 +183,7 @@ class DocumentJsonValueResolverFactory(
         return if (node == null || node.isMissingNode || node.isNull) {
             null
         } else if (node.isValueNode || node.isArray || node.isObject) {
-            Mapper.INSTANCE.get().treeToValue(node, Object::class.java)
+            objectMapper.treeToValue(node, Object::class.java)
         } else {
             node.asText()
         }
@@ -197,8 +197,8 @@ class DocumentJsonValueResolverFactory(
         }
     }
 
-    private fun toValueNode(value: Any): JsonNode {
-        return Mapper.INSTANCE.get().valueToTree(value)
+    private fun toValueNode(value: Any?): JsonNode {
+        return objectMapper.valueToTree(value)
     }
 
     companion object {

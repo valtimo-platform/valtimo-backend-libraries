@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,13 @@
  */
 
 package com.ritense.valtimo.service;
+
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byStartUserId;
+import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byUnfinished;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.NAME;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
 
 import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
@@ -35,6 +42,19 @@ import com.ritense.valtimo.exception.NoFileExtensionFoundException;
 import com.ritense.valtimo.exception.ProcessDefinitionNotFoundException;
 import com.ritense.valtimo.exception.ProcessNotDeployableException;
 import com.ritense.valtimo.service.util.FormUtils;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
+import java.io.ByteArrayInputStream;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -50,28 +70,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
-import java.io.ByteArrayInputStream;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byStartUserId;
-import static com.ritense.valtimo.camunda.repository.CamundaHistoricProcessInstanceSpecificationHelper.byUnfinished;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.NAME;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
-import static org.camunda.bpm.engine.impl.util.EnsureUtil.ensureNotNull;
 
 public class CamundaProcessService {
 
@@ -286,8 +284,11 @@ public class CamundaProcessService {
     }
 
     @Transactional
-    public void deploy(String fileName, ByteArrayInputStream fileInput)
-        throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
+    public void deploy(
+        String fileName,
+        ByteArrayInputStream fileInput
+    ) throws ProcessNotDeployableException, FileExtensionNotSupportedException, NoFileExtensionFoundException {
+
         denyAuthorization();
 
         if (fileName.endsWith(".bpmn")) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import com.ritense.valtimo.camunda.domain.CamundaVariableInstance;
 import com.ritense.valtimo.camunda.repository.CustomRepositoryServiceImpl;
 import com.ritense.valtimo.validator.MaxDateValidator;
 import com.ritense.valtimo.validator.MinDateValidator;
+import java.util.ArrayList;
+import java.util.HashMap;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.impl.RepositoryServiceImpl;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
@@ -29,8 +31,6 @@ import org.camunda.bpm.engine.impl.form.validator.FormFieldValidator;
 import org.camunda.bpm.engine.impl.persistence.StrongUuidGenerator;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.spring.boot.starter.configuration.CamundaProcessEngineConfiguration;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class CamundaConfiguration implements CamundaProcessEngineConfiguration {
 

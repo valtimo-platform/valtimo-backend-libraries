@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,6 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.domain.search.SearchWithConfigRequest
 import com.ritense.document.service.DocumentSearchService
 import com.ritense.valueresolver.ValueResolverService
-import java.util.UUID
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
@@ -39,6 +37,8 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import java.util.UUID
+import kotlin.test.assertEquals
 
 class CaseInstanceServiceTest {
 

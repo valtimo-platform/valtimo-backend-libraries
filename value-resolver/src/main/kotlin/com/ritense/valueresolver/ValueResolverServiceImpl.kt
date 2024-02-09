@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,13 +56,12 @@ open class ValueResolverServiceImpl(
         processInstanceId: String,
         variableScope: VariableScope,
         requestedValues: Collection<String>
-    ): Map<String, Any> {
+    ): Map<String, Any?> {
         return toResolverFactoryMap(requestedValues).map { (resolverFactory, requestedValues) ->
             val resolver = resolverFactory.createResolver(processInstanceId, variableScope)
             //Create a list of resolved Map entries
-            requestedValues.mapNotNull { requestedValue ->
-                resolver.apply(trimPrefix(requestedValue))
-                    ?.let { requestedValue to it }
+            requestedValues.map { requestedValue ->
+                requestedValue to resolver.apply(trimPrefix(requestedValue))
             }
         }.flatten().toMap()
     }
@@ -106,13 +105,12 @@ open class ValueResolverServiceImpl(
     override fun resolveValues(
         documentInstanceId: String,
         requestedValues: Collection<String>
-    ): Map<String, Any> {
+    ): Map<String, Any?> {
         return toResolverFactoryMap(requestedValues).map { (resolverFactory, requestedValues) ->
             val resolver = resolverFactory.createResolver(documentInstanceId)
             //Create a list of resolved Map entries
-            requestedValues.mapNotNull { requestedValue ->
-                resolver.apply(trimPrefix(requestedValue))
-                    ?.let { requestedValue to it }
+            requestedValues.map { requestedValue ->
+                requestedValue to resolver.apply(trimPrefix(requestedValue))
             }
         }.flatten().toMap()
     }
@@ -127,7 +125,7 @@ open class ValueResolverServiceImpl(
     override fun handleValues(
         processInstanceId: String,
         variableScope: VariableScope?,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     ) {
         toResolverFactoryMap(values.keys).forEach { (resolverFactory, propertyPaths) ->
 
@@ -141,7 +139,7 @@ open class ValueResolverServiceImpl(
 
     override fun handleValues(
         documentId: UUID,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     ) {
         toResolverFactoryMap(values.keys).forEach { (resolverFactory, propertyPaths) ->
 
@@ -153,7 +151,7 @@ open class ValueResolverServiceImpl(
     }
 
     override fun preProcessValuesForNewCase(
-        values: Map<String, Any>
+        values: Map<String, Any?>
     ): Map<String, Any> {
         return toResolverFactoryMap(values.keys).mapValues { (resolverFactory, propertyPaths) ->
             resolverFactory.preProcessValuesForNewCase(
@@ -166,8 +164,8 @@ open class ValueResolverServiceImpl(
 
     private fun mapPropertyPaths(
         propertyPaths: List<String>,
-        values: Map<String, Any>
-    ) = propertyPaths.associate { propertyPath -> trimPrefix(propertyPath) to values[propertyPath]!! }
+        values: Map<String, Any?>
+    ) = propertyPaths.associate { propertyPath -> trimPrefix(propertyPath) to values[propertyPath] }
 
     private fun toResolverFactoryMap(requestedValues: Collection<String>): Map<ValueResolverFactory, List<String>> {
         //Group by prefix

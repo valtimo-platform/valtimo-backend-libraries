@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package com.ritense.valtimo.contract.security.jwt;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.Authentication;
 
-public abstract class TokenAuthenticator {
+public interface TokenAuthenticator {
 
-    public abstract boolean supports(Claims claims);
+    boolean supports(Claims claims);
 
-    public abstract Authentication authenticate(String jwt, Claims claims);
+    Authentication authenticate(String jwt, Claims claims);
 
 }

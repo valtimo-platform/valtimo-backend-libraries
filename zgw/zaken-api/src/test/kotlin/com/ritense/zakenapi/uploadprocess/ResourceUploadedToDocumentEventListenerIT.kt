@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package com.ritense.zakenapi.uploadprocess
 
-import com.ritense.authorization.AuthorizationContext
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
-import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
@@ -31,6 +30,7 @@ import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.BaseIntegrationTest
 import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.DOCUMENT_UPLOAD
 import com.ritense.zakenapi.uploadprocess.UploadProcessService.Companion.RESOURCE_ID_PROCESS_VAR
+import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.history.HistoricProcessInstance
@@ -38,7 +38,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
-import javax.transaction.Transactional
 
 @Transactional
 class ResourceUploadedToDocumentEventListenerIT @Autowired constructor(
@@ -47,7 +46,8 @@ class ResourceUploadedToDocumentEventListenerIT @Autowired constructor(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val historyService: HistoryService,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,
-    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
+    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+    private val objectMapper: ObjectMapper,
 ): BaseIntegrationTest() {
 
     @BeforeEach
@@ -76,7 +76,7 @@ class ResourceUploadedToDocumentEventListenerIT @Autowired constructor(
             documentService.createDocument(
                 NewDocumentRequest(
                     DOCUMENT_DEFINITION_KEY,
-                    Mapper.INSTANCE.get().createObjectNode()
+                    objectMapper.createObjectNode()
                 )
             ).resultingDocument().get().id!!.id.toString()
         }
@@ -96,7 +96,7 @@ class ResourceUploadedToDocumentEventListenerIT @Autowired constructor(
             documentService.createDocument(
                 NewDocumentRequest(
                     DOCUMENT_DEFINITION_KEY,
-                    Mapper.INSTANCE.get().createObjectNode()
+                    objectMapper.createObjectNode()
                 )
             ).resultingDocument().get().id!!.id.toString()
         }

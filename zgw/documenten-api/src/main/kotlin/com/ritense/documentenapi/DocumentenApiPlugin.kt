@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
@@ -70,7 +70,7 @@ class DocumentenApiPlugin(
         key = "store-temp-document",
         title = "Store temporary document",
         description = "Store a temporary document in the Documenten API",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun storeTemporaryDocument(
         execution: DelegateExecution,
@@ -109,7 +109,7 @@ class DocumentenApiPlugin(
         key = "store-uploaded-document",
         title = "Store uploaded document",
         description = "Store an uploaded document in the Documenten API",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun storeUploadedDocument(
         execution: DelegateExecution
@@ -138,7 +138,7 @@ class DocumentenApiPlugin(
         key = "download-document",
         title = "Download document",
         description = "Download a document from the Documenten API and store it as a temporary document",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun downloadInformatieObject(
         execution: DelegateExecution,

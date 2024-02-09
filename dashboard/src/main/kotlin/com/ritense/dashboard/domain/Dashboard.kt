@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,14 @@ package com.ritense.dashboard.domain
 
 import com.ritense.valtimo.contract.utils.SecurityUtils
 import java.time.ZonedDateTime
-import javax.persistence.CascadeType.ALL
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.FetchType.EAGER
-import javax.persistence.Id
-import javax.persistence.OneToMany
-import javax.persistence.OrderBy
-import javax.persistence.Table
+import jakarta.persistence.CascadeType.ALL
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType.EAGER
+import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
+import jakarta.persistence.OrderBy
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "dashboard")

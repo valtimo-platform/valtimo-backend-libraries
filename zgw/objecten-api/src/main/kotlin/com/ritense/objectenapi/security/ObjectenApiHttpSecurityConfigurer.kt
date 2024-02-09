@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,21 +24,23 @@ import org.springframework.http.HttpMethod.PATCH
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class ObjectenApiHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/objecttype").authenticated()
-                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/object").authenticated()
-                .antMatchers(GET, "/api/v1/document/{documentId}/zaak/object/form").authenticated()
-                .antMatchers(POST, "/api/v1/object").authenticated()
-                .antMatchers(PUT, "/api/v1/object").authenticated()
-                .antMatchers(DELETE, "/api/v1/object").authenticated()
-                .antMatchers(GET, "/api/v1/object/form").authenticated()
-                .antMatchers(PATCH, "/api/v1/object").authenticated()
-                .antMatchers(GET, "/api/v1/object").authenticated()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/document/{documentId}/zaak/objecttype")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/document/{documentId}/zaak/object")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/document/{documentId}/zaak/object/form")).authenticated()
+                    .requestMatchers(antMatcher(POST, "/api/v1/object")).authenticated()
+                    .requestMatchers(antMatcher(PUT, "/api/v1/object")).authenticated()
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/object")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/object/form")).authenticated()
+                    .requestMatchers(antMatcher(PATCH, "/api/v1/object")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/object")).authenticated()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

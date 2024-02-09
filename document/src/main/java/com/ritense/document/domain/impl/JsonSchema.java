@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,22 @@
 
 package com.ritense.document.domain.impl;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.config.validator.UuidValidator;
 import com.ritense.document.domain.DocumentContent;
 import com.ritense.document.domain.impl.meta.MetaJsonSchemaV7Draft;
+import com.ritense.valtimo.contract.json.MapperSingleton;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import org.everit.json.schema.ReadWriteContext;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.Validator;
@@ -32,14 +43,6 @@ import org.json.JSONTokener;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.annotation.Transient;
 import org.springframework.util.StreamUtils;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 @Embeddable
 public final class JsonSchema {
@@ -52,7 +55,7 @@ public final class JsonSchema {
         .readWriteContext(ReadWriteContext.WRITE)
         .build();
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType.class)
     @Column(name = "json_schema", columnDefinition = "json")
     private String schema;
 
@@ -94,7 +97,7 @@ public final class JsonSchema {
 
     public JsonNode asJson() {
         try {
-            return Mapper.INSTANCE.get().readTree(schema);
+            return MapperSingleton.INSTANCE.get().readTree(schema);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

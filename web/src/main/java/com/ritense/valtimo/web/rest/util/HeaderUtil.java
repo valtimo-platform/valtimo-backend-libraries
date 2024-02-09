@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ public final class HeaderUtil {
     private static final String APPLICATION_NAME = "valtimoConsoleApp";
     private static final Logger logger = LoggerFactory.getLogger(HeaderUtil.class);
 
-    public HeaderUtil() {
-        //Default constructor
+    private HeaderUtil() {
     }
 
     public static HttpHeaders createAlert(String message, String param) {

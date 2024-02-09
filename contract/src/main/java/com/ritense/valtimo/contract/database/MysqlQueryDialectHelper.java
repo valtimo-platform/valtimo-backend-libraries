@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 package com.ritense.valtimo.contract.database;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
 import java.time.temporal.TemporalAccessor;
+import java.util.UUID;
 
 public class MysqlQueryDialectHelper implements QueryDialectHelper {
 
@@ -83,5 +84,10 @@ public class MysqlQueryDialectHelper implements QueryDialectHelper {
             cb.function("JSON_QUOTE", Object.class, cb.literal(value)),
             cb.literal(path)
         ));
+    }
+
+    @Override
+    public Expression<String> uuidToString(CriteriaBuilder cb, Path<UUID> column) {
+        return cb.function("BIN_TO_UUID", String.class, column);
     }
 }

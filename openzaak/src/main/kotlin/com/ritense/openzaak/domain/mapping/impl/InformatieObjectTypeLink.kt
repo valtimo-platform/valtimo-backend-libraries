@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,16 @@ import com.ritense.valtimo.contract.validation.Validatable
 import org.hibernate.validator.constraints.Length
 import org.springframework.data.domain.Persistable
 import java.net.URI
-import javax.persistence.Column
-import javax.persistence.Convert
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
-import javax.validation.constraints.NotBlank
+import jakarta.persistence.Column
+import jakarta.persistence.Convert
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
+import jakarta.validation.constraints.NotBlank
 
 @Entity
 @Table(name = "informatie_object_type_link")
+@Deprecated("Since 12.0.0. Use the DocumentenApiPlugin instead")
 data class InformatieObjectTypeLink(
 
     @EmbeddedId

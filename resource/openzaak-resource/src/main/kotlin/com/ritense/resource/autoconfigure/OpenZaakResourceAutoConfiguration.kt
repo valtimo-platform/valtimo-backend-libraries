@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import com.ritense.resource.web.rest.ResourceResource
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(basePackages = ["com.ritense.resource.repository"])
 @EntityScan("com.ritense.resource.domain")
 class OpenZaakResourceAutoConfiguration {

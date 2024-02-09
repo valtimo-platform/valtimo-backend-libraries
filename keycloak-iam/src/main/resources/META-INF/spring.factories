@@ -1,3 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.valtimo.keycloak.autoconfigure.KeycloakAutoConfiguration, \
-  com.valtimo.keycloak.autoconfigure.ExternalRoleAutoConfiguration
+org.springframework.boot.env.EnvironmentPostProcessor=\
+  com.valtimo.keycloak.liquibase.changelog.ChangeLog20240116MigrateTaskAssigneeEmailToUserId

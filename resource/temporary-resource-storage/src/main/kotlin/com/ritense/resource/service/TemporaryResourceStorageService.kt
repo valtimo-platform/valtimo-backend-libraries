@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 package com.ritense.resource.service
 
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.resource.domain.MetadataType
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.contract.upload.MimeTypeDeniedException
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
+import org.apache.tika.Tika
 import java.io.BufferedInputStream
 import java.io.InputStream
 import java.nio.file.Files
@@ -33,12 +34,12 @@ import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.notExists
 import kotlin.io.path.pathString
 import kotlin.io.path.readText
-import org.apache.tika.Tika
 
 class TemporaryResourceStorageService(
     private val random: SecureRandom = SecureRandom(),
     valtimoResourceTempDirectory: String = "",
-    private val uploadProperties: ValtimoUploadProperties
+    private val uploadProperties: ValtimoUploadProperties,
+    private val objectMapper: ObjectMapper,
 ) {
     val tempDir: Path = if (valtimoResourceTempDirectory.isNotBlank()) {
         Path.of(valtimoResourceTempDirectory)
@@ -65,7 +66,7 @@ class TemporaryResourceStorageService(
             MetadataType.FILE_PATH.key to dataFile.absolutePathString()
         )
         val metaDataFile = Files.createTempFile(tempDir, "${random.nextLong().toULong()}-", ".json")
-        metaDataFile.toFile().writeText(Mapper.INSTANCE.get().writeValueAsString(metaDataContent))
+        metaDataFile.toFile().writeText(objectMapper.writeValueAsString(metaDataContent))
 
         return metaDataFile.nameWithoutExtension
     }
@@ -76,7 +77,7 @@ class TemporaryResourceStorageService(
             return false
         }
         val typeRef = object : TypeReference<Map<String, Any>>() {}
-        val metadata = Mapper.INSTANCE.get().readValue(metaDataFile.readText(), typeRef)
+        val metadata = objectMapper.readValue(metaDataFile.readText(), typeRef)
         val dataFile = Path(metadata[MetadataType.FILE_PATH.key] as String)
         val deleted = Files.deleteIfExists(dataFile)
         Files.deleteIfExists(metaDataFile)
@@ -99,7 +100,7 @@ class TemporaryResourceStorageService(
             throw IllegalArgumentException("No resource found with id '$id'")
         }
         val typeRef = object : TypeReference<Map<String, Any>>() {}
-        return Mapper.INSTANCE.get().readValue(metaDataFile.readText(), typeRef)
+        return objectMapper.readValue(metaDataFile.readText(), typeRef)
             .filter {
                 !filterPath || it.key != MetadataType.FILE_PATH.key
             }

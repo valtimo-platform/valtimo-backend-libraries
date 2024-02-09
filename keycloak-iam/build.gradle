@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:${javaxInjectVersion}"
+    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -39,6 +39,8 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
 
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
@@ -50,7 +52,10 @@ dependencies {
 
     testImplementation project(":core")
     testImplementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
+
+    testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
+    testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
 }
 
 apply from: "gradle/publishing.gradle"

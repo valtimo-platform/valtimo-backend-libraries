@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,15 @@
 
 package com.valtimo.keycloak.security.jwt.authentication;
 
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
+import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
+import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.REALM_ACCESS;
+import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.RESOURCE_ACCESS;
+import static org.apache.commons.codec.binary.Base64.encodeBase64String;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
-import com.ritense.valtimo.security.jwt.exception.TokenAuthenticatorNotFoundException;
 import com.ritense.valtimo.security.jwt.provider.SecretKeyResolver;
 import com.valtimo.keycloak.security.jwt.provider.KeycloakSecretKeyProvider;
 import io.jsonwebtoken.Claims;
@@ -31,20 +38,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.EMAIL_KEY;
-import static com.ritense.valtimo.contract.security.jwt.JwtConstants.ROLES_SCOPE;
-import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.REALM_ACCESS;
-import static com.valtimo.keycloak.security.jwt.authentication.KeycloakTokenAuthenticator.RESOURCE_ACCESS;
-import static org.apache.commons.codec.binary.Base64.encodeBase64String;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class KeycloakTokenAuthenticatorTest {
 
@@ -95,7 +93,7 @@ public class KeycloakTokenAuthenticatorTest {
     @Test
     public void shouldReturnAuthenticationForResourceRoleUser() {
         String jwt = Jwts.builder()
-                .setClaims(claimsWithRealmAndResourceAccessRoles())
+                .setClaims(keycloakClaimWithRealmAndResourceRoles())
                 .signWith(keyPair.getPrivate())
                 .compact();
 
@@ -109,42 +107,43 @@ public class KeycloakTokenAuthenticatorTest {
         assertThat(userAuthorities.size()).isEqualTo(1);
     }
 
+
     private Claims claimsWithRealmAccessRoles() {
-        final Claims roles = new DefaultClaims();
-        roles.put(ROLES_SCOPE, List.of(USER));
+        final Claims roles = new DefaultClaims(Map.of(
+            ROLES_SCOPE, List.of(USER)
+        ));
         return defaultKeycloakClaimWith(roles);
     }
 
-    private Claims claimsWithRealmAndResourceAccessRoles() {
-        final Claims roles = new DefaultClaims();
-        roles.put(ROLES_SCOPE, List.of(USER));
-        return keycloakClaimWithRealmAndResourceRoles(roles);
-    }
 
-    private Claims claimsWithUnknownRealmAccessRoles() {
-        final Claims roles = new DefaultClaims();
-        roles.put(ROLES_SCOPE, List.of("unknown-role"));
-        return defaultKeycloakClaimWith(roles);
-    }
+    private Claims keycloakClaimWithRealmAndResourceRoles() {
+        Claims realmClaims = claimsWithUnknownRealmAccessRoles();
 
-    private Claims keycloakClaimWithRealmAndResourceRoles(Claims role) {
-        Claims claims = claimsWithUnknownRealmAccessRoles();
-        Map<String, Map<String, List<String>>> resourceclient = new HashMap<>();
+        HashMap<String, Object> claims = new HashMap<>(realmClaims);
+        Map<String, Map<String, List<String>>> resourceClient = new HashMap<>();
         Map<String, List<String>> resourceClientRoles = new HashMap<>();
 
         resourceClientRoles.put("roles", List.of(USER));
-        resourceclient.put("test-client-resource", resourceClientRoles);
+        resourceClient.put("test-client-resource", resourceClientRoles);
 
-        claims.put(RESOURCE_ACCESS, resourceclient);
+        claims.put(RESOURCE_ACCESS, resourceClient);
 
-        return claims;
+        return new DefaultClaims(claims);
     }
 
-    private Claims defaultKeycloakClaimWith(Claims role) {
-        final Claims claims = new DefaultClaims();
-        claims.put(REALM_ACCESS, role);
-        claims.put(EMAIL_KEY, "test@test.com");
-        return claims;
+    private Claims claimsWithUnknownRealmAccessRoles() {
+        final Claims roles = new DefaultClaims(Map.of(
+            ROLES_SCOPE, List.of("unknown-role")
+        ));
+        return defaultKeycloakClaimWith(roles);
+    }
+
+
+    private Claims defaultKeycloakClaimWith(Claims realmRoles) {
+        return new DefaultClaims(Map.of(
+            REALM_ACCESS, realmRoles,
+            EMAIL_KEY, "test@test.com"
+        ));
     }
 
 }

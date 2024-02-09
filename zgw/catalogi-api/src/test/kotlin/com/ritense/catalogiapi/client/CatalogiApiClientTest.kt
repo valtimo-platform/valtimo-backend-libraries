@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class CatalogiApiClientTes {
+internal class CatalogiApiClientTest {
     lateinit var mockApi: MockWebServer
     val cacheManager = mock<CacheManager>()
 
@@ -454,6 +454,42 @@ internal class CatalogiApiClientTes {
         assertEquals("http://example.com/status", resultZaaktypeInformatieobjecttype.statustype.toString())
 
         return recordedRequest
+    }
+
+    @Test
+    fun `should get zaaktypen request and parse response`() {
+        val webclientBuilder = WebClient.builder()
+        val client = CatalogiApiClient(webclientBuilder)
+        val baseUrl = mockApi.url("api").toString()
+        val responseBody = """
+            {
+                "count": 1,
+                "next": null,
+                "previous": null,
+                "results": [
+                    {
+                        "url": "http://example.com/id",
+                        "omschrijving": "Zaak type",
+                        "omschrijvingGeneriek": "Zaaktype"
+                    }
+                ]
+            }
+        """.trimIndent()
+        mockApi.enqueue(mockResponse(responseBody))
+
+        val response = client.getZaaktypen(
+            authentication = TestAuthentication(),
+            baseUrl = URI(baseUrl),
+            request = ZaaktypeRequest(page = 1)
+        )
+
+        // to make sure the request is cleaned up to prevent issues with other tests
+        mockApi.takeRequest()
+        assertEquals(1, response.results.size)
+        val zaaktype = response.results.single()
+        assertEquals("http://example.com/id", zaaktype.url.toString())
+        assertEquals("Zaak type", zaaktype.omschrijving)
+        assertEquals("Zaaktype", zaaktype.omschrijvingGeneriek)
     }
 
     private fun mockResponse(body: String): MockResponse {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package com.ritense.processlink.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.CustomProcessLink
 import com.ritense.processlink.domain.CustomProcessLinkCreateRequestDto
@@ -25,7 +24,9 @@ import com.ritense.processlink.domain.CustomProcessLinkMapper
 import com.ritense.processlink.domain.CustomProcessLinkUpdateRequestDto
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.service.ProcessLinkService
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
+import java.nio.charset.StandardCharsets
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -43,8 +44,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.nio.charset.StandardCharsets
-import java.util.UUID
 
 internal class ProcessLinkResourceTest {
 
@@ -56,7 +55,7 @@ internal class ProcessLinkResourceTest {
 
     @BeforeEach
     fun init() {
-        objectMapper = jacksonObjectMapper()
+        objectMapper = MapperSingleton.get()
         processLinkService = mock()
         processLinkMappers = listOf(CustomProcessLinkMapper(objectMapper))
         processLinkResource = ProcessLinkResource(processLinkService, processLinkMappers)
@@ -128,7 +127,7 @@ internal class ProcessLinkResourceTest {
             post("/api/v1/process-link")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(Mapper.INSTANCE.get().writeValueAsString(processLinkDto))
+                .content(MapperSingleton.get().writeValueAsString(processLinkDto))
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())
@@ -147,7 +146,7 @@ internal class ProcessLinkResourceTest {
             put("/api/v1/process-link")
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(Mapper.INSTANCE.get().writeValueAsString(processLinkDto))
+                .content(MapperSingleton.get().writeValueAsString(processLinkDto))
                 .accept(MediaType.APPLICATION_JSON_VALUE)
         )
             .andDo(print())

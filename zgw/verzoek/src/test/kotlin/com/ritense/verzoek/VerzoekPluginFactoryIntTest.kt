@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.ritense.verzoek
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.BaseIntegrationTest
 import com.ritense.notificatiesapiauthentication.NotificatiesApiAuthenticationPlugin
 import com.ritense.plugin.domain.PluginConfiguration
@@ -37,6 +37,9 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var verzoekPluginFactory: VerzoekPluginFactory
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     lateinit var notificatiesApiPluginConfiguration: PluginConfiguration
 
@@ -168,7 +171,7 @@ internal class VerzoekPluginFactoryIntTest : BaseIntegrationTest() {
     private fun createPluginConfiguration(pluginDefinitionKey: String, pluginProperties: String): PluginConfiguration {
         return pluginService.createPluginConfiguration(
             "my-configuration-$pluginDefinitionKey-${pluginProperties.hashCode()}",
-            jacksonObjectMapper().readTree(pluginProperties).deepCopy(),
+            objectMapper.readTree(pluginProperties).deepCopy(),
             pluginDefinitionKey
         )
     }

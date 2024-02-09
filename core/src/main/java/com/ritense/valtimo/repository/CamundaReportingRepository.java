@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package com.ritense.valtimo.repository;
 
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
+
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper;
@@ -25,8 +28,6 @@ import com.ritense.valtimo.repository.camunda.dto.ChartInstanceSeries;
 import com.ritense.valtimo.repository.camunda.dto.InstanceCount;
 import com.ritense.valtimo.repository.camunda.dto.InstanceCountChart;
 import com.ritense.valtimo.repository.camunda.dto.Serie;
-import org.apache.ibatis.session.SqlSession;
-
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -36,9 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
+import org.apache.ibatis.session.SqlSession;
 
 public class CamundaReportingRepository {
 

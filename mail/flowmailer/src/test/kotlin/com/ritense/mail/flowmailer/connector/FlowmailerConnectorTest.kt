@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package com.ritense.mail.flowmailer.connector
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.document.service.DocumentService
 import com.ritense.mail.flowmailer.BaseTest
 import com.ritense.mail.flowmailer.config.FlowmailerProperties
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
 import com.ritense.resource.service.ResourceService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
@@ -90,9 +90,9 @@ class FlowmailerConnectorTest : BaseTest() {
     @Test
     fun `should build TemplatedMailMessage and call the send method in the FlowmailerDispatcher`() {
         //Given
-        val rootNode = ObjectMapper().createObjectNode()
-        val recipient = ObjectMapper().createObjectNode().put("email", "recipient@example.com")
-        val arrayNode = ObjectMapper().createArrayNode().add(recipient)
+        val rootNode = MapperSingleton.get().createObjectNode()
+        val recipient = MapperSingleton.get().createObjectNode().put("email", "recipient@example.com")
+        val arrayNode = MapperSingleton.get().createArrayNode().add(recipient)
         rootNode.replace("members", arrayNode)
 
         val documentOptional = documentOptional(rootNode.toPrettyString())

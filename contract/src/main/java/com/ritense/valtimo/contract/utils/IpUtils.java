@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,16 @@
 
 package com.ritense.valtimo.contract.utils;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class IpUtils {
-
     static final String X_FORWARDED_FOR = "X-Forwarded-For";
+
+    private IpUtils() {
+    }
 
     public static Set<String> extractSourceIpsFrom(HttpServletRequest request) {
         final String header = request.getHeader(X_FORWARDED_FOR);
@@ -38,5 +40,4 @@ public class IpUtils {
         }
         return ipList;
     }
-
 }

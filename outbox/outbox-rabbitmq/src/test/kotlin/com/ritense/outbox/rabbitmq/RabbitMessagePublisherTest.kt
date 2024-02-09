@@ -56,7 +56,7 @@ class RabbitMessagePublisherTest {
         val ex = assertThrows<MessagePublishingFailed> {
             whenever(rabbitTemplate.convertAndSend(eq("test"), any<Message>(), any<CorrelationData>())).thenAnswer { answer ->
                 val correlationData = answer.getArgument(2, CorrelationData::class.java)
-                correlationData.future.set(CorrelationData.Confirm(false, "reasons"))
+                correlationData.future.complete(CorrelationData.Confirm(false, "reasons"))
             }
 
             publisher.publish(OutboxMessage(message = "test"))
@@ -78,7 +78,7 @@ class RabbitMessagePublisherTest {
                 val correlationData = answer.getArgument(2, CorrelationData::class.java)
                 correlationData.returned = ReturnedMessage(
                     message, 0, "returned_message_not_null", "", "")
-                correlationData.future.set(CorrelationData.Confirm(true, "reasons"))
+                correlationData.future.complete(CorrelationData.Confirm(true, "reasons"))
             }
 
             publisher.publish(OutboxMessage(message = "test"))

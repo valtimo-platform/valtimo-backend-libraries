@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ package com.ritense.outbox.config
 import com.ritense.outbox.NoopOutboxService
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.config.condition.ConditionalOnOutboxEnabled
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
 
-@Configuration
+@AutoConfiguration
 @ConditionalOnOutboxEnabled(false)
 class DisabledOutboxAutoConfiguration {
     @Bean

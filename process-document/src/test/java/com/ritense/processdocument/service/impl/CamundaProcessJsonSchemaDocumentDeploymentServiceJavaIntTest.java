@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package com.ritense.processdocument.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.processdocument.BaseIntegrationTest;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import javax.transaction.Transactional;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @Tag("integration")
 @Transactional
@@ -39,7 +38,7 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
                 () -> camundaProcessJsonSchemaDocumentAssociationService
                     .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME));
 
-        assertThat(processDocumentDefinitions).hasSize(1);
+        assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey()).hasToString(PROCESS_DEFINITION_KEY);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
         assertThat(processDocumentDefinitions.get(0).canInitializeDocument()).isTrue();

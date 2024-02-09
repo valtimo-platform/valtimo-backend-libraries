@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,18 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class NoteHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(POST, "/api/v1/document/{document-id}/note").authenticated()
-                .antMatchers(GET, "/api/v1/document/{document-id}/note").authenticated()
-                .antMatchers(PUT, "/api/v1/note/{note-id}").authenticated()
-                .antMatchers(DELETE, "/api/v1/note/{note-id}").authenticated()
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(antMatcher(POST, "/api/v1/document/{document-id}/note")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/document/{document-id}/note")).authenticated()
+                    .requestMatchers(antMatcher(PUT, "/api/v1/note/{note-id}")).authenticated()
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/note/{note-id}")).authenticated()
+            }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

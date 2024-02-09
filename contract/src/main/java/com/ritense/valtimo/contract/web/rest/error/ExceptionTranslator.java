@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 package com.ritense.valtimo.contract.web.rest.error;
 
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
+import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -26,13 +29,10 @@ import org.zalando.problem.ProblemBuilder;
 import org.zalando.problem.ThrowableProblem;
 import org.zalando.problem.spring.web.advice.ProblemHandling;
 import org.zalando.problem.violations.ConstraintViolationProblem;
-import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
 
 /**
  * Controller advice to translate the server side exceptions to client-friendly json structures.
- * The error response follows RFC7807 - Problem Details for HTTP APIs (https://tools.ietf.org/html/rfc7807)
+ * The error response follows RFC7807 - Problem Details for HTTP APIs (<a href="https://tools.ietf.org/html/rfc7807">...</a>)
  */
 @ControllerAdvice
 public class ExceptionTranslator implements ProblemHandling {
@@ -56,31 +56,35 @@ public class ExceptionTranslator implements ProblemHandling {
             return entity;
         }
         ProblemBuilder builder = Problem.builder()
-                .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
-                .withStatus(problem.getStatus())
-                .withTitle(problem.getTitle());
+            .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
+            .withStatus(problem.getStatus())
+            .withTitle(problem.getTitle());
         final HttpServletRequest httpServletRequest;
         if ((httpServletRequest = request.getNativeRequest(HttpServletRequest.class)) != null) {
             builder.with("path", httpServletRequest.getRequestURI());
         }
 
-        String MESSAGE = "message";
+        final String msg = "message";
         if (problem instanceof ConstraintViolationProblem) {
             builder
                 .with("violations", ((ConstraintViolationProblem) problem).getViolations())
-                .with(MESSAGE, ErrorConstants.ERR_VALIDATION);
+                .with(msg, ErrorConstants.ERR_VALIDATION);
         } else {
             builder
                 .withInstance(problem.getInstance());
 
             problem.getParameters().forEach(builder::with);
-            if (!problem.getParameters().containsKey(MESSAGE) && problem.getStatus() != null) {
-                builder.with(MESSAGE, "error.http." + problem.getStatus().getStatusCode());
+            if (!problem.getParameters().containsKey(msg) && problem.getStatus() != null) {
+                builder.with(msg, "error.http." + problem.getStatus().getStatusCode());
             }
         }
 
         builder.withCause(((DefaultProblem) problem).getCause());
-        hardeningServiceOptional.ifPresent((hardeningService) -> hardeningService.harden((ThrowableProblem) problem, builder, (HttpServletRequest) request.getNativeRequest()));
+        hardeningServiceOptional.ifPresent((hardeningService) -> hardeningService.harden(
+            (ThrowableProblem) problem,
+            builder,
+            (HttpServletRequest) request.getNativeRequest()
+        ));
 
         return new ResponseEntity<>(builder.build(), entity.getHeaders(), entity.getStatusCode());
     }

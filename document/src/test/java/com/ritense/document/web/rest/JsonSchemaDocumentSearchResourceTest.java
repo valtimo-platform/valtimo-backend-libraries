@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,32 +16,6 @@
 
 package com.ritense.document.web.rest;
 
-import com.ritense.document.BaseTest;
-import com.ritense.document.domain.Document;
-import com.ritense.document.domain.impl.JsonDocumentContent;
-import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.domain.impl.Mapper;
-import com.ritense.document.domain.search.SearchWithConfigRequest;
-import com.ritense.document.service.DocumentSearchService;
-import com.ritense.document.service.DocumentSequenceGeneratorService;
-import com.ritense.document.service.impl.JsonSchemaDocumentSearchService;
-import com.ritense.document.service.impl.SearchCriteria;
-import com.ritense.document.service.impl.SearchRequest;
-import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
-import com.ritense.valtimo.contract.utils.TestUtil;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.Arrays;
-import java.util.List;
-
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,6 +28,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.ritense.document.BaseTest;
+import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonDocumentContent;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.search.SearchWithConfigRequest;
+import com.ritense.document.service.DocumentSearchService;
+import com.ritense.document.service.DocumentSequenceGeneratorService;
+import com.ritense.document.service.impl.JsonSchemaDocumentSearchService;
+import com.ritense.document.service.impl.SearchCriteria;
+import com.ritense.document.service.impl.SearchRequest;
+import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
+import com.ritense.valtimo.contract.json.MapperSingleton;
+import com.ritense.valtimo.contract.utils.TestUtil;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 class JsonSchemaDocumentSearchResourceTest extends BaseTest {
 
@@ -144,7 +143,7 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
 
         doReturn(documentPage).when(documentSearchService).search(any(), any(SearchWithConfigRequest.class), any());
 
-        var jsonRequest = Mapper.INSTANCE.get().writeValueAsString(request);
+        var jsonRequest = MapperSingleton.INSTANCE.get().writeValueAsString(request);
 
         mockMvc.perform(
             post("/api/v1/document-definition/name/search")

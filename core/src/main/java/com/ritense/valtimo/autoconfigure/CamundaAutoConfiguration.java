@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,14 @@ import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valtimo.web.rest.error.CamundaExceptionTranslator;
 import org.camunda.bpm.application.impl.event.ProcessApplicationEventListenerPlugin;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@AutoConfiguration
 @AutoConfigureAfter(CamundaBpmAutoConfiguration.class)
 public class CamundaAutoConfiguration {
 

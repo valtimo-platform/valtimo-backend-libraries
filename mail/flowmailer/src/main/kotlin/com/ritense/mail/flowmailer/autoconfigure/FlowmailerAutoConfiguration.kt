@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,17 +26,16 @@ import com.ritense.mail.flowmailer.connector.FlowmailerConnectorProperties
 import com.ritense.mail.flowmailer.service.FlowmailerMailDispatcher
 import com.ritense.mail.flowmailer.service.FlowmailerTokenService
 import com.ritense.resource.service.ResourceService
-import com.ritense.valtimo.contract.json.Mapper
 import org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
 import org.springframework.web.client.RestTemplate
 
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(FlowmailerProperties::class)
 class FlowmailerAutoConfiguration {
 
@@ -52,7 +51,7 @@ class FlowmailerAutoConfiguration {
         flowmailerProperties: FlowmailerProperties,
         flowmailerTokenService: FlowmailerTokenService,
         restTemplate: RestTemplate,
-        objectMapper: ObjectMapper = Mapper.INSTANCE.get()
+        objectMapper: ObjectMapper
     ): MailDispatcher {
         return FlowmailerMailDispatcher(flowmailerProperties, flowmailerTokenService, restTemplate, objectMapper)
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.ritense.form.service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.form.BaseIntegrationTest
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.repository.FormDefinitionRepository
@@ -28,7 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired
 class FormDefinitionImporterIntTest @Autowired constructor(
     private val formDefinitionImporter: FormDefinitionImporter,
     private val formDefinitionService: FormDefinitionService,
-    private val formDefinitionRepository: FormDefinitionRepository
+    private val formDefinitionRepository: FormDefinitionRepository,
+    private val objectMapper: ObjectMapper,
 ): BaseIntegrationTest() {
     private val formDefinition = """
         {
@@ -70,6 +71,6 @@ class FormDefinitionImporterIntTest @Autowired constructor(
         assertThat(storedFormDefinition).isPresent
         assertThat(
             (storedFormDefinition.get() as FormIoFormDefinition).asJson()
-        ).isEqualTo(jacksonObjectMapper().readTree(formDefinition))
+        ).isEqualTo(objectMapper.readTree(formDefinition))
     }
 }

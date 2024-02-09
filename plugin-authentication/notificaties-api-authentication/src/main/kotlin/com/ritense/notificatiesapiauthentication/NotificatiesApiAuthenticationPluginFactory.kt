@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 
 import com.ritense.notificatiesapiauthentication.NotificatiesApiAuthenticationPlugin
-import com.ritense.openzaak.service.TokenGeneratorService
+import com.ritense.notificatiesapiauthentication.token.NotificatiesApiPluginTokenGeneratorService
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 
 class NotificatiesApiAuthenticationPluginFactory(
     pluginService: PluginService,
-    val tokenGeneratorService: TokenGeneratorService
+    private val tokenGeneratorService: NotificatiesApiPluginTokenGeneratorService
 ) : PluginFactory<NotificatiesApiAuthenticationPlugin>(pluginService) {
 
     override fun create(): NotificatiesApiAuthenticationPlugin {

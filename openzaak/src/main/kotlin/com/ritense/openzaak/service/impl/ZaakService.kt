@@ -21,6 +21,7 @@ import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.service.DocumentService
 import com.ritense.openzaak.service.ZaakService
+import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.service.impl.ZaakService.Constants.Companion.DATE_PATTERN
 import com.ritense.openzaak.service.impl.ZaakService.Constants.Companion.DATE_TIME_FORMAT
 import com.ritense.openzaak.service.impl.model.ResultWrapper

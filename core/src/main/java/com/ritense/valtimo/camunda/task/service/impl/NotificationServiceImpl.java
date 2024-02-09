@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,10 +60,11 @@ public class NotificationServiceImpl implements NotificationService {
         logger.info("send notification for task: {} using template: {}", task.getName(), template);
 
         if (delegateTaskHelper.isTaskBeingAssigned(task)) {
-            final String emailAddress = task.getAssignee();
-            userManagementService.findByEmail(emailAddress).ifPresent(
-                user -> notifyUserAboutTaskAssignment(user, task, template, "nl")
-            );
+            final String userId = task.getAssignee();
+            if (userId != null) {
+                var user = userManagementService.findById(userId);
+                notifyUserAboutTaskAssignment(user, task, template, "nl");
+            }
         } else if (delegateTaskHelper.isTaskBeingCreated(task)) {
             notifyCandidateGroupAboutTaskAssignment(task, template);
         }

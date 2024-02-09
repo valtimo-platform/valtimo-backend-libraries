@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,19 +24,21 @@ import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
 class PluginHttpSecurityConfigurer: HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
-            http.authorizeRequests()
-                .antMatchers(GET, "/api/v1/plugin/definition").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/plugin/configuration").hasAuthority(ADMIN)
-                .antMatchers(POST, "/api/v1/plugin/configuration").hasAuthority(ADMIN)
-                .antMatchers(PUT, "/api/v1/plugin/configuration/{pluginConfigurationId}").hasAuthority(ADMIN)
-                .antMatchers(DELETE, "/api/v1/plugin/configuration/{pluginConfigurationId}").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/plugin/definition/{pluginDefinitionKey}/action").hasAuthority(ADMIN)
-                .antMatchers(GET, "/api/v1/plugin/configuration/export").hasAuthority(ADMIN)
+            http.authorizeHttpRequests { requests ->
+                requests.requestMatchers(antMatcher(GET, "/api/v1/plugin/definition")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/plugin/configuration")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, "/api/v1/plugin/configuration")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/v1/plugin/configuration/{pluginConfigurationId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/plugin/configuration/{pluginConfigurationId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/plugin/definition/{pluginDefinitionKey}/action")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/v1/plugin/configuration/export")).hasAuthority(ADMIN)
+            }
         } catch(e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,16 @@ package com.ritense.outbox.rabbitmq
 import com.ritense.outbox.OutboxMessage
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.publisher.MessagePublishingFailed
-import java.time.Duration
-import java.util.UUID
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 import mu.KLogger
 import mu.KotlinLogging
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.core.MessageBuilder
 import org.springframework.amqp.rabbit.connection.CorrelationData
 import org.springframework.amqp.rabbit.core.RabbitTemplate
+import java.time.Duration
+import java.util.UUID
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 
 class RabbitMessagePublisher(

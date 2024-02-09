@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,17 @@
 
 package com.ritense.testutilscommon.junit.extension;
 
+import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.GLOBAL;
+
 import com.ritense.valtimo.contract.config.LiquibaseRunner;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.GLOBAL;
 
 public class LiquibaseRunnerExtension
     implements BeforeAllCallback, ExtensionContext.Store.CloseableResource {

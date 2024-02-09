@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,23 @@
 
 package com.ritense.authorization.web.rest
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.BaseIntegrationTest
-import com.ritense.authorization.permission.PermissionRepository
-import com.ritense.authorization.role.Role
-import com.ritense.authorization.role.RoleRepository
 import com.ritense.authorization.permission.ConditionContainer
+import com.ritense.authorization.permission.Permission
+import com.ritense.authorization.permission.PermissionRepository
 import com.ritense.authorization.permission.condition.ContainerPermissionCondition
 import com.ritense.authorization.permission.condition.FieldPermissionCondition
-import com.ritense.authorization.permission.Permission
 import com.ritense.authorization.permission.condition.PermissionConditionOperator
+import com.ritense.authorization.role.Role
+import com.ritense.authorization.role.RoleRepository
 import com.ritense.authorization.testimpl.RelatedTestEntity
 import com.ritense.authorization.testimpl.TestEntity
 import com.ritense.authorization.testimpl.TestEntityActionProvider
 import com.ritense.authorization.web.request.PermissionAvailableRequest
 import com.ritense.authorization.web.request.PermissionContext
+import jakarta.transaction.Transactional
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,8 +45,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.util.UUID
-import javax.transaction.Transactional
 
 @Transactional
 class PermissionResourceIT: BaseIntegrationTest() {
@@ -57,6 +57,9 @@ class PermissionResourceIT: BaseIntegrationTest() {
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     lateinit var mockMvc: MockMvc
 
@@ -102,7 +105,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             MockMvcRequestBuilders
                 .post("/api/v1/permissions")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(permissionRequests))
+                .content(objectMapper.writeValueAsString(permissionRequests))
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -131,7 +134,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             MockMvcRequestBuilders
                 .post("/api/v1/permissions")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(permissionRequests))
+                .content(objectMapper.writeValueAsString(permissionRequests))
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -179,7 +182,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             MockMvcRequestBuilders
                 .post("/api/v1/permissions")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(permissionRequests))
+                .content(objectMapper.writeValueAsString(permissionRequests))
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -226,7 +229,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             MockMvcRequestBuilders
                 .post("/api/v1/permissions")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(permissionRequests))
+                .content(objectMapper.writeValueAsString(permissionRequests))
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -278,7 +281,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             MockMvcRequestBuilders
                 .post("/api/v1/permissions")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(permissionRequests))
+                .content(objectMapper.writeValueAsString(permissionRequests))
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -330,7 +333,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             MockMvcRequestBuilders
                 .post("/api/v1/permissions")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(permissionRequests))
+                .content(objectMapper.writeValueAsString(permissionRequests))
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -357,7 +360,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             MockMvcRequestBuilders
                 .post("/api/v1/permissions")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(permissionRequests))
+                .content(objectMapper.writeValueAsString(permissionRequests))
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -381,7 +384,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             MockMvcRequestBuilders
                 .post("/api/v1/permissions")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(permissionRequests))
+                .content(objectMapper.writeValueAsString(permissionRequests))
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().isForbidden)
@@ -405,7 +408,7 @@ class PermissionResourceIT: BaseIntegrationTest() {
             MockMvcRequestBuilders
                 .post("/api/v1/permissions")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(permissionRequests))
+                .content(objectMapper.writeValueAsString(permissionRequests))
         )
             .andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().isForbidden)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,9 @@
 package com.ritense.mail.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
 
-@ConstructorBinding
 @ConfigurationProperties(prefix = "mailing", ignoreUnknownFields = false)
-data class MailingProperties(
+data class MailingProperties (
     var onlyAllowWhitelistedRecipients: Boolean = false,
     /**
      * The priority determines the order in which filters will get executed.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,21 @@
 
 dockerCompose {
     projectName = "core"
-    isRequiredBy(integrationTesting)
-    isRequiredBy(securityTesting)
-    useComposeFiles.addAll("../docker-resources/docker-compose-base-test.yml", "docker-compose-override.yml")
+
+    securityTesting {
+        isRequiredBy(project.tasks.securityTesting)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingPostgresql {
+        isRequiredBy(project.tasks.integrationTestingPostgresql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-postgresql.yml", "docker-compose-override-postgresql.yml")
+    }
+
+    integrationTestingMysql {
+        isRequiredBy(project.tasks.integrationTestingMysql)
+        useComposeFiles.addAll("../docker-resources/docker-compose-base-test-mysql.yml", "docker-compose-override-mysql.yml")
+    }
 }
 
 dependencies {
@@ -36,7 +48,7 @@ dependencies {
     api "org.springframework.security:spring-security-core"
     api "org.springframework.boot:spring-boot"
     api "org.springframework.data:spring-data-commons"
-    api "javax.inject:javax.inject:${javaxInjectVersion}"
+    api "jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}"
 
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -63,11 +75,12 @@ dependencies {
     testImplementation "org.springframework.boot:spring-boot-starter-test"
 
     // Camunda
-    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter:${camundaVersion}"
-    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${camundaVersion}"
-
-    // Cockpit
-    api "org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:${camundaVersion}"
+    api ("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:${camundaVersion}") {
+        exclude group: "com.sun.xml.bind"
+    }
+    api ("org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:${camundaVersion}") {
+        exclude group: "com.sun.xml.bind"
+    }
 
     // Camunda plugins
     implementation "org.camunda.bpm:camunda-engine-plugin-spin:${camundaVersion}"
@@ -88,33 +101,32 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-json-org"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-hppc"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate6"
     implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml"
     implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
 
     // MyBatis (for camunda and our custom queries)
-    implementation "org.mybatis:mybatis:${mybatisVersion}"
     implementation "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisSpringBootStarterVersion}"
 
     implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 
     // Removed since JDK 9, explicitly need it to go through XML
-    implementation "javax.xml.bind:jaxb-api:${jaxbApiVersion}"
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api:${jaxbApiVersion}"
 
     // Hibernate
-    implementation "org.hibernate:hibernate-core"
-    implementation "org.hibernate:hibernate-envers"
+    implementation "org.hibernate.orm:hibernate-core:${hibernateCoreVersion}"
+    implementation "org.hibernate.orm:hibernate-envers:${hibernateCoreVersion}"
 
     // Shedlock
-    implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}"
+    api "net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}"
     implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:${shedlockVersion}"
 
     implementation('com.zaxxer:HikariCP') {
         exclude(module: 'tools')
     }
 
-    implementation "org.liquibase:liquibase-core"
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
 
     implementation "io.dropwizard.metrics:metrics-core"
     implementation "io.dropwizard.metrics:metrics-annotation"
@@ -126,6 +138,7 @@ dependencies {
     testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.junit.jupiter:junit-jupiter-engine"
+    testImplementation("com.mysql:mysql-connector-j")
 }
 
 apply from: "gradle/publishing.gradle"

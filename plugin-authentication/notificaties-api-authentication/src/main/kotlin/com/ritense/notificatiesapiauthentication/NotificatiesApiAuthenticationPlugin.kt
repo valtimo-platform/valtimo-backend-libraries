@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package com.ritense.notificatiesapiauthentication
 
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
-import com.ritense.openzaak.service.TokenGeneratorService
+import com.ritense.notificatiesapiauthentication.token.NotificatiesApiPluginTokenGeneratorService
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginProperty
 import org.springframework.web.reactive.function.client.ClientRequest
@@ -31,9 +31,8 @@ import reactor.core.publisher.Mono
     description = "Plugin used to provide authentication to Notificaties API based on a JSON Web Token"
 )
 class NotificatiesApiAuthenticationPlugin(
-    val tokenGeneratorService: TokenGeneratorService
-)
-    : NotificatiesApiAuthentication {
+    private val tokenGeneratorService: NotificatiesApiPluginTokenGeneratorService
+) : NotificatiesApiAuthentication {
 
     @PluginProperty(key = "clientId", secret = false, required = true)
     lateinit var clientId: String

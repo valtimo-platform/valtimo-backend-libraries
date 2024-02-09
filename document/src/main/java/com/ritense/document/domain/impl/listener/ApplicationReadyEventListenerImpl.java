@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.ritense.document.domain.impl.listener;
 
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.service.DocumentDefinitionService;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;

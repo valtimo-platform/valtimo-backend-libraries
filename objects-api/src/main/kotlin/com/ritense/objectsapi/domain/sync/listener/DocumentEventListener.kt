@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@ import com.ritense.objectsapi.domain.request.Comparator
 import com.ritense.objectsapi.domain.request.ObjectSearchParameter
 import com.ritense.objectsapi.service.ObjectSyncService
 import com.ritense.objectsapi.service.ObjectsApiConnector
+import java.net.URI
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
-import java.net.URI
 
 open class DocumentEventListener(
     val objectSyncService: ObjectSyncService,

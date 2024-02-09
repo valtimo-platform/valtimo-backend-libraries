@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,10 @@ import com.ritense.valtimo.milestones.service.exception.MultipleProcessesWithinM
 import com.ritense.valtimo.milestones.service.mapper.MilestoneMapper;
 import com.ritense.valtimo.milestones.web.rest.dto.MilestoneDTO;
 import com.ritense.valtimo.milestones.web.rest.dto.MilestoneSaveDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MilestoneService {
 
@@ -36,7 +36,11 @@ public class MilestoneService {
     private final MilestoneRepository milestoneRepository;
     private final MilestoneMapper milestoneMapper;
 
-    public MilestoneService(MilestoneSetRepository milestoneSetRepository, MilestoneRepository milestoneRepository, MilestoneMapper milestoneMapper) {
+    public MilestoneService(
+        MilestoneSetRepository milestoneSetRepository,
+        MilestoneRepository milestoneRepository,
+        MilestoneMapper milestoneMapper
+    ) {
         this.milestoneSetRepository = milestoneSetRepository;
         this.milestoneRepository = milestoneRepository;
         this.milestoneMapper = milestoneMapper;
@@ -53,7 +57,7 @@ public class MilestoneService {
      * @throws IllegalArgumentException                     When the milestone set cannot be found
      */
     public MilestoneDTO saveMilestone(MilestoneSaveDTO milestoneSaveDTO)
-        throws MultipleProcessesWithinMilestoneSetException, IllegalStateException, IllegalArgumentException {
+            throws MultipleProcessesWithinMilestoneSetException, IllegalStateException, IllegalArgumentException {
         logger.debug("Service request to update milestone {}", milestoneSaveDTO);
 
         final MilestoneSet targetMilestoneSet = getMilestoneSet(milestoneSaveDTO);
@@ -81,7 +85,8 @@ public class MilestoneService {
                 String.format(
                     "Unable to get the milestone set with id %s while saving milestone %s",
                     milestoneSaveDTO.getMilestoneSet(),
-                    milestoneSaveDTO.getTitle()));
+                    milestoneSaveDTO.getTitle()
+                ));
         }
 
         return targetMilestoneSet;
@@ -110,7 +115,8 @@ public class MilestoneService {
                 "Milestones within a set must all have the same process. " +
                     "Selected process differs from existing milestones in this Set.",
                 "incorrectProcessSelected",
-                "Milestone");
+                "Milestone"
+            );
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import com.ritense.formflow.domain.definition.configuration.step.FormStepTypePro
 import com.ritense.formflow.event.ApplicationEventPublisherHolder
 import com.ritense.formflow.handler.ApplicationReadyEventHandler
 import com.ritense.formflow.handler.FormFlowStepTypeHandler
+import com.ritense.formflow.json.MapperSingleton
 import com.ritense.formflow.repository.FormFlowAdditionalPropertiesSearchRepository
 import com.ritense.formflow.repository.FormFlowDefinitionRepository
 import com.ritense.formflow.repository.FormFlowInstanceRepository
@@ -39,12 +40,12 @@ import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import javax.persistence.EntityManager
+import jakarta.persistence.EntityManager
 
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(
     basePackageClasses = [
         FormFlowDefinitionRepository::class,
@@ -136,5 +137,12 @@ class FormFlowAutoConfiguration {
         return ApplicationEventPublisherHolder(
             applicationEventPublisher
         )
+    }
+
+    @ConditionalOnMissingBean(name = ["mapperSingleton"])
+    @Bean
+    fun mapperSingleton(objectMapper: ObjectMapper): MapperSingleton {
+        MapperSingleton.set(objectMapper)
+        return MapperSingleton
     }
 }

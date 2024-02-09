@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@ package com.ritense.smartdocuments.plugin
 
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
-import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.processdocument.service.DocumentDelegateService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.valueresolver.ValueResolverService
 import org.springframework.context.ApplicationEventPublisher
 
 class SmartDocumentsPluginFactory(
-    private val processDocumentService: ProcessDocumentService,
+    private val documentDelegateService: DocumentDelegateService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val smartDocumentsClient: SmartDocumentsClient,
     private val valueResolverService: ValueResolverService,
@@ -33,7 +33,7 @@ class SmartDocumentsPluginFactory(
 ) : PluginFactory<SmartDocumentsPlugin>(pluginService) {
     override fun create(): SmartDocumentsPlugin {
         return SmartDocumentsPlugin(
-            processDocumentService,
+            documentDelegateService,
             applicationEventPublisher,
             smartDocumentsClient,
             valueResolverService,

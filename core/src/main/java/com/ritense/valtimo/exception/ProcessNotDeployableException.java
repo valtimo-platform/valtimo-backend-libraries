@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ public class ProcessNotDeployableException extends Exception {
      * @param fileName The name of the bpmn file that was to be deployed
      */
 
-    private static String BASE_MESSAGE = "Process with file name '%s' is not eligible to be deployed.";
+    private static final String BASE_MESSAGE = "Process with file name '%s' is not eligible to be deployed.";
 
     public ProcessNotDeployableException(String fileName) {
         super(String.format(BASE_MESSAGE, fileName));

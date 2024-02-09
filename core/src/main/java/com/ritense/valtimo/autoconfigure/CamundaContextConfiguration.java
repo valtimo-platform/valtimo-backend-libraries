@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,16 @@ package com.ritense.valtimo.autoconfigure;
 
 import com.ritense.valtimo.CamundaBeansPlugin;
 import com.ritense.valtimo.contract.annotation.ProcessBean;
+import java.util.Map;
 import org.camunda.bpm.spring.boot.starter.configuration.Ordering;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 
-import java.util.Map;
-
-@Configuration
+@AutoConfiguration
 @ConditionalOnProperty(prefix = "valtimo.camunda", name = "bean-whitelisting", havingValue = "true", matchIfMissing = true)
 public class CamundaContextConfiguration {
 

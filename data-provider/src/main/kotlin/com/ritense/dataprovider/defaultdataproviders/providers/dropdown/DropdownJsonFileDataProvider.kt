@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.dataprovider.domain.DataProvider
 import com.ritense.dataprovider.domain.DataProviderConstants
 import com.ritense.dataprovider.domain.DataProviderConstants.Companion.DROPDOWN_CATEGORY
+import java.io.FileNotFoundException
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
-import java.io.FileNotFoundException
 
 class DropdownJsonFileDataProvider(
     private val resourceLoader: ResourceLoader,

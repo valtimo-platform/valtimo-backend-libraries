@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,10 +96,17 @@ public class MandrillMessageEventMessage {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         MandrillMessageEventMessage that = (MandrillMessageEventMessage) o;
-        return Objects.equals(getSubject(), that.getSubject()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(getSender(), that.getSender()) && Objects.equals(getState(), that.getState()) && Objects.equals(getBounceDescription(), that.getBounceDescription());
+        return Objects.equals(getSubject(), that.getSubject()) && Objects.equals(getEmail(), that.getEmail()) && Objects.equals(
+            getSender(),
+            that.getSender()
+        ) && Objects.equals(getState(), that.getState()) && Objects.equals(getBounceDescription(), that.getBounceDescription());
     }
 
     @Override

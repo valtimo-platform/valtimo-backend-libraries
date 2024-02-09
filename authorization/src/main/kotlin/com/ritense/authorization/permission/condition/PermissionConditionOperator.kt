@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package com.ritense.authorization.permission.condition
 
 import com.fasterxml.jackson.annotation.JsonValue
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.Expression
-import javax.persistence.criteria.Predicate
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Expression
+import jakarta.persistence.criteria.Predicate
 import kotlin.reflect.full.isSubclassOf
 
 enum class PermissionConditionOperator(@JsonValue val asText: String) {

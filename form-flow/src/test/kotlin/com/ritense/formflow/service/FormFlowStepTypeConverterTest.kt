@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,16 @@
 package com.ritense.formflow.service
 
 import com.fasterxml.jackson.databind.jsontype.NamedType
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
 import com.ritense.formflow.domain.definition.configuration.step.FormStepTypeProperties
 import com.ritense.formflow.domain.definition.configuration.step.StepTypeProperties
+import com.ritense.formflow.json.MapperSingleton
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class ObjectMapperConfigurerTest {
 
-    private val mapper = jacksonObjectMapper()
+    private val mapper = MapperSingleton.get().copy()
     private val objectMapperConfigurer = ObjectMapperConfigurer(
         mapper,
         listOf(

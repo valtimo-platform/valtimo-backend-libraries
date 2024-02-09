@@ -1,0 +1,26 @@
+{
+    "changesetId": "task-v1",
+    "permissions": [
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "view",
+            "roleKey": "ROLE_USER",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+                    "conditions": [
+                        {
+                            "type": "expression",
+                            "field": "content.content",
+                            "path": "$.city",
+                            "operator": "==",
+                            "value": "Amsterdam",
+                            "clazz": "java.lang.String"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,20 @@
 package com.ritense.authorization
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.hibernate.cfg.AvailableSettings
+import org.hibernate.type.format.jackson.JacksonJsonFormatMapper
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
-@Configuration
+
+@AutoConfiguration
 class HibernateJsonMapperConfiguration {
 
     @Bean
-    fun hibernatePropertiesCustomizer(
-        objectMapper: ObjectMapper
-    ): HibernatePropertiesCustomizer =
-        HibernatePropertiesCustomizer { hibernateProperties ->
-            HibernateObjectMapperSupplier(objectMapper)
-            hibernateProperties[com.vladmihalcea.hibernate.type.util.Configuration.PropertyKey.JACKSON_OBJECT_MAPPER.key] = HibernateObjectMapperSupplier::class.qualifiedName
+    fun jsonFormatMapperCustomizer(objectMapper: ObjectMapper): HibernatePropertiesCustomizer {
+        return HibernatePropertiesCustomizer { properties: MutableMap<String?, Any?> ->
+            properties[AvailableSettings.JSON_FORMAT_MAPPER] = JacksonJsonFormatMapper(objectMapper)
         }
+    }
 }

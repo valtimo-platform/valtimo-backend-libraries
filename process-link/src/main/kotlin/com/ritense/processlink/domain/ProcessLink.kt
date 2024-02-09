@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 
 package com.ritense.processlink.domain
 
+import jakarta.persistence.Column
+import jakarta.persistence.DiscriminatorColumn
+import jakarta.persistence.DiscriminatorType.STRING
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.Id
+import jakarta.persistence.Inheritance
+import jakarta.persistence.InheritanceType.SINGLE_TABLE
+import jakarta.persistence.Table
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.DiscriminatorColumn
-import javax.persistence.DiscriminatorType.STRING
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.Id
-import javax.persistence.Inheritance
-import javax.persistence.InheritanceType.SINGLE_TABLE
-import javax.persistence.Table
 
 @Entity
 @Table(name = "process_link")
@@ -55,4 +55,28 @@ abstract class ProcessLink(
         id: UUID = this.id,
         processDefinitionId: String = this.processDefinitionId,
     ) : ProcessLink
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ProcessLink
+
+        if (id != other.id) return false
+        if (processDefinitionId != other.processDefinitionId) return false
+        if (activityId != other.activityId) return false
+        if (activityType != other.activityType) return false
+        if (processLinkType != other.processLinkType) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + processDefinitionId.hashCode()
+        result = 31 * result + activityId.hashCode()
+        result = 31 * result + activityType.hashCode()
+        result = 31 * result + processLinkType.hashCode()
+        return result
+    }
 }

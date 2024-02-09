@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,23 @@
 package com.ritense.authorization.permission
 
 import com.ritense.authorization.Action
+import com.ritense.authorization.criteriabuilder.AbstractQueryWrapper
 import com.ritense.authorization.role.Role
 import com.ritense.valtimo.contract.database.QueryDialectHelper
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.Column
+import jakarta.persistence.Embedded
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
+import jakarta.persistence.criteria.AbstractQuery
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Embedded
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
-import javax.persistence.Table
-import javax.persistence.criteria.AbstractQuery
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
 import org.hibernate.annotations.Type
 
 @Entity
@@ -48,7 +50,7 @@ data class Permission(
     @Embedded
     val action: Action<*>,
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "conditions", columnDefinition = "json")
     val conditionContainer: ConditionContainer,
 
@@ -76,12 +78,13 @@ data class Permission(
         resourceType: Class<T>,
         queryDialectHelper: QueryDialectHelper
     ): Predicate {
+        val customQuery = AbstractQueryWrapper(query)
         return criteriaBuilder
             .and(
                 *conditionContainer.conditions.map {
                     it.toPredicate(
                         root,
-                        query,
+                        customQuery,
                         criteriaBuilder,
                         resourceType,
                         queryDialectHelper

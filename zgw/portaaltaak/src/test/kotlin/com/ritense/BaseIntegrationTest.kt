@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,12 @@
 
 package com.ritense
 
-import com.ritense.authorization.AuthorizationService
-import com.ritense.authorization.permission.Permission
-import com.ritense.authorization.request.AuthorizationRequest
-import com.ritense.authorization.request.EntityAuthorizationRequest
-import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.specification.impl.NoopAuthorizationSpecificationFactory
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.ResourceService
-import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.mail.MailSender
@@ -36,12 +30,8 @@ import com.ritense.valueresolver.ValueResolverService
 import com.ritense.zakenapi.ResourceProvider
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean

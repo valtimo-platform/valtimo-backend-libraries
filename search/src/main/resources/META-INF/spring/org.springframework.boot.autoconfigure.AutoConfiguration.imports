@@ -1,0 +1,2 @@
+com.ritense.search.autoconfigure.SearchAutoConfiguration
+com.ritense.search.autoconfigure.SearchLiquibaseAutoConfiguration

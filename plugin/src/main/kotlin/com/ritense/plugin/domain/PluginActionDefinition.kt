@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,16 @@
 
 package com.ritense.plugin.domain
 
-import javax.persistence.CollectionTable
-import javax.persistence.Column
-import javax.persistence.ElementCollection
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.JoinColumn
-import javax.persistence.Table
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import jakarta.persistence.CollectionTable
+import jakarta.persistence.Column
+import jakarta.persistence.ElementCollection
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "plugin_action_definition")
@@ -45,5 +46,5 @@ class PluginActionDefinition(
     ])
     @Column(name = "activity_type")
     @Enumerated(EnumType.STRING)
-    val activityTypes: Collection<ActivityType>
+    val activityTypes: Collection<ActivityTypeWithEventName>
 )

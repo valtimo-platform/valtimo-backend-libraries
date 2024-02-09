@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,19 +24,18 @@ import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.document.domain.impl.JsonSchemaDocumentVersion;
 import com.ritense.document.domain.relation.DocumentRelation;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.Transient;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import org.hibernate.annotations.Type;
 
 @Embeddable
 public class HistoricDocument implements Document {
@@ -54,7 +53,7 @@ public class HistoricDocument implements Document {
     private DocumentDefinition documentDefinition;
 
     @Transient
-    private JsonSchemaDocumentVersion version;
+    private int version;
 
     @Column(name = "document_created_on", columnDefinition = "DATETIME", nullable = false)
     private LocalDateTime createdOn;
@@ -74,11 +73,11 @@ public class HistoricDocument implements Document {
     @Column(name = "document_assignee_full_name", columnDefinition = "VARCHAR(255)")
     private String assigneeFullName;
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType.class)
     @Column(name = "document_relations", columnDefinition = "json")
     private Set<? extends DocumentRelation> documentRelations = new HashSet<>();
 
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType.class)
     @Column(name = "document_related_files", columnDefinition = "json")
     private Set<? extends RelatedFile> relatedFiles = new HashSet<>();
 
@@ -125,7 +124,7 @@ public class HistoricDocument implements Document {
     }
 
     @Override
-    public JsonSchemaDocumentVersion version() {
+    public Integer version() {
         return version;
     }
 
@@ -166,14 +165,39 @@ public class HistoricDocument implements Document {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         HistoricDocument that = (HistoricDocument) o;
-        return Objects.equals(id, that.id) && Objects.equals(content, that.content) && Objects.equals(documentDefinitionId, that.documentDefinitionId) && Objects.equals(documentDefinition, that.documentDefinition) && Objects.equals(version, that.version) && Objects.equals(createdOn, that.createdOn) && Objects.equals(modifiedOn, that.modifiedOn) && Objects.equals(createdBy, that.createdBy) && Objects.equals(sequence, that.sequence) && Objects.equals(documentRelations, that.documentRelations) && Objects.equals(relatedFiles, that.relatedFiles);
+        return Objects.equals(id, that.id) && Objects.equals(content, that.content) && Objects.equals(
+            documentDefinitionId,
+            that.documentDefinitionId
+        ) && Objects.equals(documentDefinition, that.documentDefinition) && Objects.equals(version, that.version) && Objects.equals(
+            createdOn,
+            that.createdOn
+        ) && Objects.equals(modifiedOn, that.modifiedOn) && Objects.equals(createdBy, that.createdBy) && Objects.equals(
+            sequence,
+            that.sequence
+        ) && Objects.equals(documentRelations, that.documentRelations) && Objects.equals(relatedFiles, that.relatedFiles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, content, documentDefinitionId, documentDefinition, version, createdOn, modifiedOn, createdBy, sequence, documentRelations, relatedFiles);
+        return Objects.hash(
+            id,
+            content,
+            documentDefinitionId,
+            documentDefinition,
+            version,
+            createdOn,
+            modifiedOn,
+            createdBy,
+            sequence,
+            documentRelations,
+            relatedFiles
+        );
     }
 }

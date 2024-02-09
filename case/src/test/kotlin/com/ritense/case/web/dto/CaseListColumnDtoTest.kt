@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 package com.ritense.case.web.dto
 
 import com.fasterxml.jackson.databind.jsontype.NamedType
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.web.rest.dto.CaseListColumnDto
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
@@ -65,7 +65,7 @@ class CaseListColumnDtoTest {
     }
 
     companion object {
-        private val MAPPER = jacksonObjectMapper().apply {
+        private val MAPPER = MapperSingleton.get().copy().apply {
             registerSubtypes(NamedType(DateFormatDisplayTypeParameter::class.java, "date"))
         }
         private const val JSON_WITH_EMPTY_FIELDS = """

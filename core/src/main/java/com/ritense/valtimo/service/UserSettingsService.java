@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package com.ritense.valtimo.service;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.domain.user.UserSettings;
 import com.ritense.valtimo.repository.UserSettingsRepository;
-
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,7 +26,7 @@ public class UserSettingsService {
 
     private final UserSettingsRepository userSettingsRepository;
 
-    public UserSettingsService(UserSettingsRepository userSettingsRepository){
+    public UserSettingsService(UserSettingsRepository userSettingsRepository) {
         this.userSettingsRepository = userSettingsRepository;
     }
 

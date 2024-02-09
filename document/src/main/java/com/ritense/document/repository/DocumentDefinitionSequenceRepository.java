@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package com.ritense.document.repository;
 
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.sequence.DocumentDefinitionSequenceRecord;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-import java.util.Optional;
 
 @NoRepositoryBean
 public interface DocumentDefinitionSequenceRepository<T extends DocumentDefinitionSequenceRecord>

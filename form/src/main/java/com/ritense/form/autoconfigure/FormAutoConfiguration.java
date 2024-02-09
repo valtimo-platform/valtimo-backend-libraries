@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,18 +41,17 @@ import com.ritense.valtimo.contract.form.FormFieldDataResolver;
 import com.ritense.valtimo.service.CamundaProcessService;
 import com.ritense.valtimo.service.CamundaTaskService;
 import com.ritense.valueresolver.ValueResolverService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import java.util.List;
-
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(basePackages = "com.ritense.form.repository")
 @EntityScan("com.ritense.form.domain")
 public class FormAutoConfiguration {
@@ -87,9 +86,16 @@ public class FormAutoConfiguration {
         ResourceLoader resourceLoader,
         FormDefinitionService formDefinitionService,
         FormDefinitionRepository formDefinitionRepository,
-        ApplicationEventPublisher applicationEventPublisher
+        ApplicationEventPublisher applicationEventPublisher,
+        ObjectMapper objectMapper
     ) {
-        return new FormDefinitionDeploymentService(resourceLoader, formDefinitionService, formDefinitionRepository, applicationEventPublisher);
+        return new FormDefinitionDeploymentService(
+            resourceLoader,
+            formDefinitionService,
+            formDefinitionRepository,
+            applicationEventPublisher,
+            objectMapper
+        );
     }
 
     @Bean
@@ -140,7 +146,8 @@ public class FormAutoConfiguration {
         CamundaTaskService taskService,
         List<FormFieldDataResolver> formFieldDataResolvers,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        ValueResolverService valueResolverService
+        ValueResolverService valueResolverService,
+        ObjectMapper objectMapper
     ) {
         return new PrefillFormService(
             documentService,
@@ -149,7 +156,8 @@ public class FormAutoConfiguration {
             taskService,
             formFieldDataResolvers,
             processDocumentAssociationService,
-            valueResolverService
+            valueResolverService,
+            objectMapper
         );
     }
 

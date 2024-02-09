@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import com.ritense.form.security.config.FormFileJwtHttpSecurityConfigurer;
 import com.ritense.form.security.config.FormHttpSecurityConfigurer;
 import com.ritense.form.security.config.FormManagementHttpSecurityConfigurer;
 import com.ritense.valtimo.security.jwt.authentication.TokenAuthenticationService;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
-@Configuration
+@AutoConfiguration
 public class FormSecurityAutoConfiguration {
 
     @Order(270)

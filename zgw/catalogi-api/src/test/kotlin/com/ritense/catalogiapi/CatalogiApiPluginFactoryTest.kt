@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 
 package com.ritense.catalogiapi
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.catalogiapi.client.CatalogiApiClient
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.service.DocumentService
@@ -27,6 +25,7 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -44,7 +43,7 @@ internal class CatalogiApiPluginFactoryTest {
         val documentService = mock<DocumentService>()
         val authenticationMock = mock<CatalogiApiAuthentication>()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(authenticationMock)
-        whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
+        whenever(pluginService.getObjectMapper()).thenReturn(MapperSingleton.get())
 
         val factory = CatalogiApiPluginFactory(
             pluginService,
@@ -64,7 +63,7 @@ internal class CatalogiApiPluginFactoryTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            ObjectMapper().readTree(catalogiApiPluginProperties) as ObjectNode,
+            MapperSingleton.get().readTree(catalogiApiPluginProperties) as ObjectNode,
             pluginDefinition
         )
         val plugin = factory.create(pluginConfiguration)

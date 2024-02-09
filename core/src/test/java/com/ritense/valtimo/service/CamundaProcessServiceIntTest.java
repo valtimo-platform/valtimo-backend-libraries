@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,10 @@ import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.exception.FileExtensionNotSupportedException;
 import com.ritense.valtimo.exception.NoFileExtensionFoundException;
 import com.ritense.valtimo.exception.ProcessNotDeployableException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.DecisionDefinition;
 import org.camunda.bpm.model.bpmn.Bpmn;
@@ -32,11 +36,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
 
 @Transactional
 class CamundaProcessServiceIntTest extends BaseIntegrationTest {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,9 @@ package com.ritense.document.domain.impl.snapshot;
 
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.valtimo.contract.domain.AbstractId;
-
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -53,8 +52,12 @@ public class JsonSchemaDocumentSnapshotId extends AbstractId<JsonSchemaDocumentS
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         JsonSchemaDocumentSnapshotId that = (JsonSchemaDocumentSnapshotId) o;
         return id.equals(that.id);
     }

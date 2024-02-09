@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.contract.domain;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 
 public abstract class AbstractId<SELF> implements Identity, Serializable {

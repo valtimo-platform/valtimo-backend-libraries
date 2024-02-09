@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package com.ritense.formflow.domain.definition
 
 import com.ritense.formflow.domain.instance.FormFlowInstance
-import javax.persistence.CascadeType
-import javax.persistence.Column
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.OneToMany
-import javax.persistence.Table
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.OneToMany
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "form_flow_definition")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,81 +15,6 @@
  */
 
 package com.ritense.valtimo.service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.authorization.Action;
-import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.AuthorizationService;
-import com.ritense.authorization.request.DelegateUserEntityAuthorizationRequest;
-import com.ritense.authorization.request.EntityAuthorizationRequest;
-import com.ritense.authorization.role.Role;
-import com.ritense.authorization.specification.AuthorizationSpecification;
-import com.ritense.outbox.OutboxService;
-import com.ritense.valtimo.event.TaskAssigned;
-import com.ritense.valtimo.event.TaskCompleted;
-import com.ritense.resource.service.ResourceService;
-import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
-import com.ritense.valtimo.camunda.domain.CamundaTask;
-import com.ritense.valtimo.camunda.dto.CamundaIdentityLinkDto;
-import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
-import com.ritense.valtimo.camunda.dto.TaskExtended;
-import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
-import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
-import com.ritense.valtimo.contract.authentication.ManageableUser;
-import com.ritense.valtimo.contract.authentication.NamedUser;
-import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
-import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
-import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
-import com.ritense.valtimo.contract.event.TaskAssignedEvent;
-import com.ritense.valtimo.contract.utils.RequestHelper;
-import com.ritense.valtimo.contract.utils.SecurityUtils;
-import com.ritense.valtimo.event.TaskUnassigned;
-import com.ritense.valtimo.helper.DelegateTaskHelper;
-import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
-import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
-import com.ritense.valtimo.service.util.FormUtils;
-import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import org.camunda.bpm.engine.AuthorizationException;
-import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.ProcessEngineException;
-import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.form.TaskFormData;
-import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
-import org.camunda.bpm.engine.task.Comment;
-import org.hibernate.Hibernate;
-import org.hibernate.query.criteria.internal.OrderImpl;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Nullable;
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider.ASSIGN;
@@ -109,7 +34,6 @@ import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHel
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.PROCESS_INSTANCE;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.all;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byAssignee;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byCandidateGroups;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byId;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceId;
 import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byUnassigned;
@@ -118,6 +42,72 @@ import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.nullsLast;
 import static java.util.stream.Collectors.toSet;
 import static org.springframework.data.domain.Sort.Direction.DESC;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.authorization.Action;
+import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.authorization.request.DelegateUserEntityAuthorizationRequest;
+import com.ritense.authorization.request.EntityAuthorizationRequest;
+import com.ritense.authorization.role.Role;
+import com.ritense.authorization.specification.AuthorizationSpecification;
+import com.ritense.outbox.OutboxService;
+import com.ritense.resource.service.ResourceService;
+import com.ritense.valtimo.camunda.domain.CamundaIdentityLink;
+import com.ritense.valtimo.camunda.domain.CamundaTask;
+import com.ritense.valtimo.camunda.dto.CamundaIdentityLinkDto;
+import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
+import com.ritense.valtimo.camunda.dto.TaskExtended;
+import com.ritense.valtimo.camunda.repository.CamundaIdentityLinkRepository;
+import com.ritense.valtimo.camunda.repository.CamundaTaskRepository;
+import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.authentication.NamedUser;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
+import com.ritense.valtimo.contract.event.TaskAssignedEvent;
+import com.ritense.valtimo.contract.utils.RequestHelper;
+import com.ritense.valtimo.contract.utils.SecurityUtils;
+import com.ritense.valtimo.event.TaskAssigned;
+import com.ritense.valtimo.event.TaskCompleted;
+import com.ritense.valtimo.event.TaskUnassigned;
+import com.ritense.valtimo.helper.DelegateTaskHelper;
+import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
+import com.ritense.valtimo.security.exceptions.TaskNotFoundException;
+import com.ritense.valtimo.service.util.FormUtils;
+import com.ritense.valtimo.web.rest.dto.TaskCompletionDTO;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Root;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import org.apache.commons.validator.routines.EmailValidator;
+import org.camunda.bpm.engine.AuthorizationException;
+import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.ProcessEngineException;
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.form.TaskFormData;
+import org.camunda.bpm.engine.impl.form.validator.FormFieldValidationException;
+import org.camunda.bpm.engine.task.Comment;
+import org.hibernate.Hibernate;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
 
 public class CamundaTaskService {
 
@@ -150,7 +140,8 @@ public class CamundaTaskService {
         UserManagementService userManagementService,
         EntityManager entityManager,
         AuthorizationService authorizationService,
-        OutboxService outboxService, ObjectMapper objectMapper) {
+        OutboxService outboxService, ObjectMapper objectMapper
+    ) {
         this.taskService = taskService;
         this.formService = formService;
         this.delegateTaskHelper = delegateTaskHelper;
@@ -170,16 +161,25 @@ public class CamundaTaskService {
     public CamundaTask findTaskById(String taskId) {
         var spec = getAuthorizationSpecification(VIEW);
         return Optional.ofNullable(findTask(spec.and(byId(taskId))))
-            .orElseThrow(() -> new TaskNotFoundException(String.format("Cannot find task %s", taskId)));
+            .orElseThrow(() -> new TaskNotFoundException(taskId));
+    }
+
+    @Transactional
+    public void assignByEmail(String taskId, String assigneeEmail) throws IllegalStateException {
+        var assignee = userManagementService.findNamedUserByEmail(assigneeEmail)
+            .orElseThrow(() -> new IllegalStateException("Error. No registered user found with email: " + assigneeEmail));
+        assign(taskId, assignee.getId());
     }
 
     @Transactional
     public void assign(String taskId, String assignee) throws IllegalStateException {
         if (assignee == null) {
             unassign(taskId);
+        } else if (EmailValidator.getInstance().isValid(assignee)) {
+            throw new IllegalStateException("Task assignee must be an ID. Not an email: '" + assignee + "'");
         } else {
             final CamundaTask task = runWithoutAuthorization(() -> findTaskById(taskId));
-            final String currentUser = SecurityUtils.getCurrentUserLogin();
+            final String currentUser = userManagementService.getCurrentUserId();
             if (assignee.equals(currentUser)) {
                 try {
                     requirePermission(task, CLAIM);
@@ -200,9 +200,9 @@ public class CamundaTaskService {
                 publishTaskAssignedEvent(task, currentAssignee, assignee);
                 outboxService.send(() -> new TaskAssigned(task.getId(), objectMapper.valueToTree(task)));
             } catch (AuthorizationException ex) {
-                throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
+                throw new IllegalStateException("Cannot assign task: the user has no permission.", ex);
             } catch (ProcessEngineException ex) {
-                throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
+                throw new IllegalStateException("An error occurred while assigning the task", ex);
             }
         }
     }
@@ -216,9 +216,9 @@ public class CamundaTaskService {
             entityManager.refresh(task);
             outboxService.send(() -> new TaskUnassigned(task.getId(), objectMapper.valueToTree(task)));
         } catch (AuthorizationException ex) {
-            throw new IllegalStateException("Cannot claim task: the user has no permission.", ex);
+            throw new IllegalStateException("Cannot unassign task: the user has no permission.", ex);
         } catch (ProcessEngineException ex) {
-            throw new IllegalStateException("Cannot claim task: reason is the task doesn't exist.", ex);
+            throw new IllegalStateException("An error occurred while unassigning the task.", ex);
         }
     }
 
@@ -346,7 +346,7 @@ public class CamundaTaskService {
         query.distinct(true);
         query.where(specification.toPredicate(taskRoot, query, cb));
         query.groupBy(taskRoot, executionIdPath, businessKeyPath, processDefinitionIdPath, processDefinitionKeyPath);
-        query.orderBy(getOrderBy(taskRoot, pageable.getSort()));
+        query.orderBy(getOrderBy(cb, taskRoot, pageable.getSort()));
 
         var typedQuery = entityManager.createQuery(query);
         if (pageable.isPaged()) {
@@ -435,6 +435,7 @@ public class CamundaTaskService {
 
     /**
      * Retrieve a list of comments that are associated to the task.
+     *
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
@@ -447,6 +448,7 @@ public class CamundaTaskService {
 
     /**
      * Retrieve a list of comments that are associated to a process instance.
+     *
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
@@ -464,6 +466,7 @@ public class CamundaTaskService {
 
     /**
      * Create a comment and associate that comment to either a task or a process instance.
+     *
      * @deprecated Task comments will be removed in the future.
      */
     @Deprecated(since = "11.1.0", forRemoval = true)
@@ -513,14 +516,11 @@ public class CamundaTaskService {
     }
 
     private Specification<CamundaTask> buildTaskFilterSpecification(TaskFilter taskFilter) {
-        String currentUserLogin = SecurityUtils.getCurrentUserLogin();
         var filterSpec = all();
 
         if (taskFilter == TaskFilter.MINE) {
-            if (currentUserLogin == null) {
-                throw new IllegalStateException("Cannot find currentUserLogin");
-            }
-            return filterSpec.and(byAssignee(currentUserLogin));
+            String currentUserId = userManagementService.getCurrentUserId();
+            return filterSpec.and(byAssignee(currentUserId));
         } else if (taskFilter == TaskFilter.ALL) {
             return filterSpec;
         } else if (taskFilter == TaskFilter.OPEN) {
@@ -530,8 +530,8 @@ public class CamundaTaskService {
         return filterSpec;
     }
 
-    private ValtimoUser getValtimoUser(String assigneeEmail) {
-        return userManagementService.findByEmail(assigneeEmail).map(user ->
+    private ValtimoUser getValtimoUser(String assigneeId) {
+        return Optional.ofNullable(userManagementService.findById(assigneeId)).map(user ->
                 new ValtimoUserBuilder()
                     .id(user.getId())
                     .firstName(user.getFirstName())
@@ -540,7 +540,7 @@ public class CamundaTaskService {
             .orElse(null);
     }
 
-    private List<Order> getOrderBy(Root<CamundaTask> root, Sort sort) {
+    private List<Order> getOrderBy(CriteriaBuilder cb, Root<CamundaTask> root, Sort sort) {
         return sort.stream()
             .map(order -> {
                 String sortProperty;
@@ -551,7 +551,9 @@ public class CamundaTaskService {
                 } else {
                     sortProperty = order.getProperty();
                 }
-                return new OrderImpl(root.get(sortProperty), order.getDirection().isAscending());
+                Path<Object> expression = root.get(sortProperty);
+
+                return order.isAscending() ? cb.asc(expression) : cb.desc(expression);
             })
             .map(Order.class::cast)
             .toList();

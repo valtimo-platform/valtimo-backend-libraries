@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,16 @@
 
 package com.ritense.valtimo.web.rest;
 
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.VERSION;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
+import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byActive;
+import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceId;
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+import static java.time.ZoneId.systemDefault;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
@@ -25,6 +35,7 @@ import com.ritense.valtimo.camunda.dto.CamundaProcessDefinitionDto;
 import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
 import com.ritense.valtimo.camunda.service.CamundaHistoryService;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
@@ -43,6 +54,18 @@ import com.ritense.valtimo.web.rest.dto.ProcessDefinitionWithPropertiesDto;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceDiagramDto;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
 import com.ritense.valtimo.web.rest.util.PaginationUtil;
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.ProcessEngines;
@@ -82,29 +105,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.VERSION;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
-import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byActive;
-import static com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.byProcessInstanceId;
-import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
-import static java.time.ZoneId.systemDefault;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class ProcessResource extends AbstractProcessResource {
 
@@ -477,7 +480,11 @@ public class ProcessResource extends AbstractProcessResource {
         return ResponseEntity.ok(processInstanceComments);
     }
 
+    /**
+     * @deprecated since 12.0.0, use v2 instead
+     */
     @PostMapping("/v1/process/{processDefinitionName}/search")
+    @Deprecated(since = "12.0.0", forRemoval = true)
     public ResponseEntity<List<ProcessInstance>> searchProcessInstancesV2(
             @PathVariable String processDefinitionName,
             @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO,
@@ -491,6 +498,20 @@ public class ProcessResource extends AbstractProcessResource {
         final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(
                 page, "/v1/process/{processDefinitionName}/search");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @PostMapping("/v2/process/{processDefinitionName}/search")
+    public ResponseEntity<Page<ProcessInstance>> searchProcessInstancesPaged(
+        @PathVariable String processDefinitionName,
+        @RequestBody ProcessInstanceSearchDTO processInstanceSearchDTO,
+        Pageable pageable
+    ) {
+        final Page<ProcessInstance> page = camundaSearchProcessInstanceRepository.searchInstances(
+            processDefinitionName,
+            processInstanceSearchDTO,
+            pageable
+        );
+        return ResponseEntity.ok(page);
     }
 
     @PostMapping("/v1/process/{processDefinitionName}/count")

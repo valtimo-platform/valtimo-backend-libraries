@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.ritense.valtimo.formflow.web.rest
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.domain.definition.FormFlowStepId
 import com.ritense.formflow.domain.definition.configuration.FormFlowStepType
@@ -26,8 +25,10 @@ import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.domain.instance.FormFlowStepInstance
 import com.ritense.formflow.domain.instance.FormFlowStepInstanceId
 import com.ritense.formflow.service.FormFlowService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.formflow.BaseTest
 import com.ritense.valtimo.formflow.handler.FormTypeProperties
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -42,7 +43,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.util.UUID
 
 class FormFlowResourceTest : BaseTest() {
     lateinit var mockMvc: MockMvc
@@ -58,7 +58,7 @@ class FormFlowResourceTest : BaseTest() {
         formFlowService = mock()
         whenever(formFlowService.getTypeProperties(any())).thenReturn(
             FormTypeProperties(
-                jacksonObjectMapper().readTree(
+                MapperSingleton.get().readTree(
                     readFileAsString("/config/form/user-task-lening-aanvragen.json")
                 )
             )

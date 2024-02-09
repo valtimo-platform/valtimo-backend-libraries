@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,17 @@
 
 package com.ritense.document.web.rest.impl;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.snapshot.JsonSchemaDocumentSnapshotId;
 import com.ritense.document.domain.snapshot.DocumentSnapshot;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentSnapshotService;
 import com.ritense.document.web.rest.DocumentSnapshotResource;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
+import java.time.LocalDateTime;
+import java.util.UUID;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,12 +38,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
-
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 @ConditionalOnBean(DocumentSnapshotService.class)
 public class JsonSchemaDocumentSnapshotResource implements DocumentSnapshotResource {

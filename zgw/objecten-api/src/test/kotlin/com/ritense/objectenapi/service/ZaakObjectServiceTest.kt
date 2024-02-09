@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.ritense.objectenapi.management.ObjectManagementInfoProvider
 import com.ritense.objecttypenapi.ObjecttypenApiPlugin
 import com.ritense.objecttypenapi.client.Objecttype
 import com.ritense.plugin.service.PluginService
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPlugin
 import com.ritense.zakenapi.domain.ZaakObject
@@ -303,7 +303,7 @@ internal class ZaakObjectServiceTest {
 
         val objectRecord = mock<ObjectRecord>()
         whenever(theObject.record).thenReturn(objectRecord)
-        val objectData = Mapper.INSTANCE.get().readTree("""
+        val objectData = MapperSingleton.get().readTree("""
             {
               "test": "test-value"
             }
@@ -364,7 +364,7 @@ internal class ZaakObjectServiceTest {
 
         val objectRecord = mock<ObjectRecord>()
         whenever(theObject.record).thenReturn(objectRecord)
-        val objectData = Mapper.INSTANCE.get().readTree("""
+        val objectData = MapperSingleton.get().readTree("""
             {
               "test": "test-value"
             }
@@ -392,7 +392,7 @@ internal class ZaakObjectServiceTest {
 
         val objectRecord = mock<ObjectRecord>()
         whenever(theObject.record).thenReturn(objectRecord)
-        val objectData = Mapper.INSTANCE.get().readTree("""
+        val objectData = MapperSingleton.get().readTree("""
             {
               "test": "test-value"
             }

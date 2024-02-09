@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,22 @@
 
 package com.ritense.processdocument.service.impl;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.annotation.RunWithoutAuthorization;
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent;
-import com.ritense.document.domain.impl.Mapper;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.domain.config.ProcessDocumentLinkConfigItem;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService;
+import java.io.IOException;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,24 +40,24 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
-import java.io.IOException;
-import java.util.List;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class CamundaProcessJsonSchemaDocumentDeploymentService implements ProcessDocumentDeploymentService {
     private static final Logger logger = LoggerFactory.getLogger(CamundaProcessJsonSchemaDocumentDeploymentService.class);
     private final ResourceLoader resourceLoader;
     private final ProcessDocumentAssociationService processDocumentAssociationService;
     private final DocumentDefinitionService documentDefinitionService;
+    private final ObjectMapper objectMapper;
 
     public CamundaProcessJsonSchemaDocumentDeploymentService(
         ResourceLoader resourceLoader,
         ProcessDocumentAssociationService processDocumentAssociationService,
-        DocumentDefinitionService documentDefinitionService
+        DocumentDefinitionService documentDefinitionService,
+        ObjectMapper objectMapper
     ) {
         this.resourceLoader = resourceLoader;
         this.processDocumentAssociationService = processDocumentAssociationService;
         this.documentDefinitionService = documentDefinitionService;
+        this.objectMapper = objectMapper;
     }
 
     @EventListener(DocumentDefinitionDeployedEvent.class)
@@ -137,7 +141,7 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
     private List<ProcessDocumentLinkConfigItem> getJson(String rawJson) throws JsonProcessingException {
         TypeReference<List<ProcessDocumentLinkConfigItem>> typeRef = new TypeReference<>() {
         };
-        return Mapper.INSTANCE.get().readValue(rawJson, typeRef);
+        return objectMapper.readValue(rawJson, typeRef);
     }
 
     private Resource loadResource(String locationPattern) throws IOException {

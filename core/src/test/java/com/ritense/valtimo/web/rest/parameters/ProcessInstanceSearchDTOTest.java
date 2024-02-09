@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,26 +17,21 @@
 package com.ritense.valtimo.web.rest.parameters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.ritense.valtimo.domain.util.Jsr310DateTimeSerializer;
-import com.ritense.valtimo.domain.util.Jsr310LocalDateDeserializer;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.web.rest.dto.ProcessInstanceSearchDTO;
 import com.ritense.valtimo.web.rest.dto.processvariable.ProcessVariableDTOV2;
 import com.ritense.valtimo.web.rest.dto.processvariable.type.DateProcessVariableDTOV2;
 import com.ritense.valtimo.web.rest.dto.processvariable.type.LongProcessVariableDTOV2;
 import com.ritense.valtimo.web.rest.dto.processvariable.type.StringProcessVariableDTOV2;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import java.io.IOException;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class ProcessInstanceSearchDTOTest {
 
@@ -57,14 +52,7 @@ class ProcessInstanceSearchDTOTest {
 
     @BeforeEach
     void setup() {
-        mapper = new ObjectMapper();
-        JavaTimeModule module = new JavaTimeModule();
-        module.addSerializer(OffsetDateTime.class, Jsr310DateTimeSerializer.INSTANCE);
-        module.addSerializer(ZonedDateTime.class, Jsr310DateTimeSerializer.INSTANCE);
-        module.addSerializer(LocalDateTime.class, Jsr310DateTimeSerializer.INSTANCE);
-        module.addSerializer(Instant.class, Jsr310DateTimeSerializer.INSTANCE);
-        module.addDeserializer(LocalDate.class, Jsr310LocalDateDeserializer.INSTANCE);
-        mapper.registerModule(module);
+        mapper = MapperSingleton.INSTANCE.get();
     }
 
     @Test

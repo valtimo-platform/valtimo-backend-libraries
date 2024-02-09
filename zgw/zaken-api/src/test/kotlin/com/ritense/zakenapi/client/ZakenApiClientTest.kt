@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,10 @@
 package com.ritense.zakenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.ZakenApiAuthentication
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResponse
@@ -96,8 +94,7 @@ internal class ZakenApiClientTest {
     fun setUp() {
         mockApi = MockWebServer()
         mockApi.start()
-        objectMapper = jacksonObjectMapper()
-        objectMapper.registerModule(JavaTimeModule())
+        objectMapper = MapperSingleton.get()
         outboxService = Mockito.mock(OutboxService::class.java)
     }
 
@@ -144,7 +141,7 @@ internal class ZakenApiClientTest {
 
         val recordedRequest = mockApi.takeRequest()
         val requestString = recordedRequest.body.readUtf8()
-        val parsedOutput = Mapper.INSTANCE.get().readValue(requestString, Map::class.java)
+        val parsedOutput = MapperSingleton.get().readValue(requestString, Map::class.java)
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
 

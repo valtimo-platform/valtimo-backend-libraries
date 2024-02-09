@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,27 @@
 
 package com.ritense.processdocument.web.rest;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
-import com.ritense.valtimo.contract.json.Mapper;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
 import com.ritense.document.service.result.CreateDocumentResult;
@@ -45,7 +60,13 @@ import com.ritense.processdocument.service.impl.CamundaProcessJsonSchemaDocument
 import com.ritense.processdocument.service.impl.result.ModifyDocumentAndCompleteTaskResultSucceeded;
 import com.ritense.processdocument.service.impl.result.ModifyDocumentAndStartProcessResultSucceeded;
 import com.ritense.processdocument.service.impl.result.NewDocumentAndStartProcessResultSucceeded;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.utils.TestUtil;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,28 +80,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @WebAppConfiguration
@@ -106,7 +105,7 @@ class ProcessDocumentResourceTest extends BaseTest {
 
     @BeforeEach
     void setUp() {
-        objectMapper = new ObjectMapper().findAndRegisterModules();
+        objectMapper = MapperSingleton.INSTANCE.get();
         processDocumentService = mock(CamundaProcessJsonSchemaDocumentService.class);
         processDocumentAssociationService = mock(CamundaProcessJsonSchemaDocumentAssociationService.class);
         documentDefinitionProcessLinkService = mock(DocumentDefinitionProcessLinkService.class);
@@ -118,7 +117,7 @@ class ProcessDocumentResourceTest extends BaseTest {
 
         mockMvc = MockMvcBuilders.standaloneSetup(processDocumentResource)
             .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-            .setMessageConverters(new MappingJackson2HttpMessageConverter(Mapper.INSTANCE.get()))
+            .setMessageConverters(new MappingJackson2HttpMessageConverter(MapperSingleton.INSTANCE.get()))
             .build();
 
         documentDefinitionId = JsonSchemaDocumentDefinitionId.newId(DOCUMENT_DEFINITION_NAME);
@@ -221,7 +220,7 @@ class ProcessDocumentResourceTest extends BaseTest {
             .andExpect(jsonPath("$.[0].version").value(1))
             .andExpect(jsonPath("$.[0].latestVersion").value(2))
             .andExpect(jsonPath("$.[0].startedBy").value("John Doe"))
-            .andExpect(jsonPath("$.[0].startedOn").value("2024-01-01T12:10:00"));
+            .andExpect(jsonPath("$.[0].startedOn").value("2024-01-01T12:10:00.000Z"));
     }
 
     @Test
@@ -269,8 +268,7 @@ class ProcessDocumentResourceTest extends BaseTest {
         final JsonNode jsonDataUpdate = objectMapper.readTree("{\"street\": \"Funenparks\"}");
         var modifyRequest = new ModifyDocumentRequest(
             UUID.randomUUID().toString(),
-            jsonDataUpdate,
-            "1"
+            jsonDataUpdate
         );
         var request = new ModifyDocumentAndCompleteTaskRequest(modifyRequest, "task-id");
 
@@ -345,8 +343,7 @@ class ProcessDocumentResourceTest extends BaseTest {
         final JsonNode jsonDataUpdate = objectMapper.readTree("{\"street\": \"Funenparks\"}");
         var modifyRequest = new ModifyDocumentRequest(
             UUID.randomUUID().toString(),
-            jsonDataUpdate,
-            "1"
+            jsonDataUpdate
         );
         var request = new ModifyDocumentAndStartProcessRequest("some-key", modifyRequest);
 

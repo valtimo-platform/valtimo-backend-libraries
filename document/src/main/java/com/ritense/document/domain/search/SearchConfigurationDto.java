@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@ import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldFieldType;
 import com.ritense.document.domain.impl.searchfield.SearchFieldId;
 import com.ritense.document.domain.impl.searchfield.SearchFieldMatchType;
-
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class SearchConfigurationDto {

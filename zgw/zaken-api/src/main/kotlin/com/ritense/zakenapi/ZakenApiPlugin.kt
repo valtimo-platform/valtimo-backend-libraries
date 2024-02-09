@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,13 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.CreateZaakRequest
+import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.Opschorting
@@ -46,13 +47,13 @@ import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
+import mu.KLogger
+import mu.KotlinLogging
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
-import mu.KLogger
-import mu.KotlinLogging
-import org.camunda.bpm.engine.delegate.DelegateExecution
 
 @Plugin(
     key = ZakenApiPlugin.PLUGIN_KEY,
@@ -76,7 +77,7 @@ class ZakenApiPlugin(
         key = "link-document-to-zaak",
         title = "Link Documenten API document to Zaak",
         description = "Stores a link to an existing document in the Documenten API with a Zaak",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun linkDocumentToZaak(
         execution: DelegateExecution,
@@ -101,7 +102,7 @@ class ZakenApiPlugin(
         key = "link-uploaded-document-to-zaak",
         title = "Link Uploaded Documenten API document to Zaak",
         description = "Stores a link to an uploaded document in the Documenten API with a Zaak",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun linkUploadedDocumentToZaak(
         execution: DelegateExecution
@@ -126,7 +127,7 @@ class ZakenApiPlugin(
         key = "create-zaak",
         title = "Create zaak",
         description = "Creates a zaak in the Zaken API",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun createZaak(
         execution: DelegateExecution,
@@ -135,6 +136,14 @@ class ZakenApiPlugin(
     ) {
         val documentId = UUID.fromString(execution.businessKey)
 
+        createZaak(documentId, rsin, zaaktypeUrl)
+    }
+
+    fun createZaak(
+        documentId: UUID,
+        rsin: Rsin,
+        zaaktypeUrl: URI,
+    ) {
         val zaakInstanceLink = zaakInstanceLinkRepository.findByDocumentId(documentId)
         if (zaakInstanceLink != null) {
             logger.warn { "SKIPPING ZAAK CREATION. Reason: a zaak already exists for this case. Case id '$documentId'. Zaak URL '${zaakInstanceLink.zaakInstanceUrl}'." }
@@ -167,7 +176,7 @@ class ZakenApiPlugin(
         key = "create-natuurlijk-persoon-zaak-rol",
         title = "Create natuurlijk persoon zaakrol",
         description = "Adds a zaakrol to the zaak in the Zaken API",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun createNatuurlijkPersoonZaakRol(
         execution: DelegateExecution,
@@ -202,7 +211,7 @@ class ZakenApiPlugin(
         key = "create-niet-natuurlijk-persoon-zaak-rol",
         title = "Create niet-natuurlijk persoon zaakrol",
         description = "Adds a zaakrol to the zaak in the Zaken API",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun createNietNatuurlijkPersoonZaakRol(
         execution: DelegateExecution,
@@ -234,7 +243,7 @@ class ZakenApiPlugin(
         key = "set-zaakstatus",
         title = "Set zaak status",
         description = "Sets the status of a zaak",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun setZaakStatus(
         execution: DelegateExecution,
@@ -260,7 +269,7 @@ class ZakenApiPlugin(
         key = "create-zaakresultaat",
         title = "Create zaak status",
         description = "Creates a resultaat for a zaak",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun createZaakResultaat(
         execution: DelegateExecution,
@@ -285,7 +294,7 @@ class ZakenApiPlugin(
         key = "set-zaakopschorting",
         title = "Set case suspension",
         description = "Suspends a case, sets the suspend status to true and adds a duration of time to the planned end date",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun setZaakOpschorting(
         execution: DelegateExecution,
@@ -355,21 +364,11 @@ class ZakenApiPlugin(
     }
 
     fun getZaakRollen(zaakUrl: URI, roleType: RolType? = null): List<Rol> {
-        return buildList {
-            var currentPage = 1
-            while (true) {
-                val result = client.getZaakRollen(
-                    authenticationPluginConfiguration,
-                    url, zaakUrl, currentPage, roleType
-                )
-                addAll(result.results)
-
-                if (result.next == null) break else currentPage++
-
-                if (currentPage == 50) logger.warn {
-                    "Retrieving over 50 zaakrol pages. Please consider using a paginated result!"
-                }
-            }
+        return Page.getAll(100) { page ->
+            client.getZaakRollen(
+                authenticationPluginConfiguration,
+                url, zaakUrl, page, roleType
+            )
         }
     }
 

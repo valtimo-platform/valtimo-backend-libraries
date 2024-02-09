@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import com.ritense.form.domain.request.ModifyFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
 import com.ritense.form.web.rest.dto.FormOption;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import javax.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -74,8 +74,8 @@ public class FormIoFormDefinitionService implements FormDefinitionService {
     @Override
     @Transactional
     public FormIoFormDefinition createFormDefinition(CreateFormDefinitionRequest request) {
-        if(formDefinitionRepository.findByName(request.getName()).isPresent()) {
-            throw new IllegalArgumentException("Duplicate name for new form: "+request.getName());
+        if (formDefinitionRepository.findByName(request.getName()).isPresent()) {
+            throw new IllegalArgumentException("Duplicate name for new form: " + request.getName());
         }
         return formDefinitionRepository.save(
             new FormIoFormDefinition(

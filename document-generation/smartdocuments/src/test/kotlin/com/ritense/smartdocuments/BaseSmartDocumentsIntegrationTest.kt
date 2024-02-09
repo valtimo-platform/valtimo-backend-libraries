@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.smartdocuments
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.domain.ConnectorInstance
 import com.ritense.connector.domain.ConnectorInstanceId
@@ -26,7 +27,7 @@ import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginPropertyRepository
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
-import com.ritense.valtimo.contract.json.Mapper
+import java.util.UUID
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -35,7 +36,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
-import java.util.UUID
 
 class BaseSmartDocumentsIntegrationTest : BaseIntegrationTest() {
 
@@ -62,6 +62,9 @@ class BaseSmartDocumentsIntegrationTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var pluginActionDefinitionRepository: PluginActionDefinitionRepository
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     lateinit var server: MockWebServer
     lateinit var executedRequests: MutableList<RecordedRequest>
@@ -105,7 +108,7 @@ class BaseSmartDocumentsIntegrationTest : BaseIntegrationTest() {
     }
 
     fun <T> findRequestBody(method: HttpMethod, path: String, clazz: Class<T>): T {
-        return Mapper.INSTANCE.get().readValue(findRequest(method, path)!!.body.readUtf8(), clazz)
+        return objectMapper.readValue(findRequest(method, path)!!.body.readUtf8(), clazz)
     }
 
     private fun mockResponseFromFile(fileName: String): MockResponse {

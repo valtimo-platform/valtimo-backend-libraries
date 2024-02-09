@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.ritense.valtimo.formflow.common
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
@@ -24,11 +24,6 @@ import com.ritense.formflow.domain.instance.FormFlowInstance
 import com.ritense.formflow.domain.instance.FormFlowInstanceId
 import com.ritense.formflow.service.FormFlowDeploymentService
 import com.ritense.formflow.service.FormFlowService
-import com.ritense.formlink.domain.impl.formassociation.FormAssociationType
-import com.ritense.formlink.domain.request.CreateFormAssociationRequest
-import com.ritense.formlink.domain.request.FormLinkRequest
-import com.ritense.formlink.service.FormAssociationService
-import com.ritense.formlink.service.ProcessLinkService
 import com.ritense.processdocument.domain.ProcessInstanceId
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -37,14 +32,16 @@ import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResu
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.service.ProcessLinkActivityHandler
+import com.ritense.processlink.service.ProcessLinkActivityService
+import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byProcessInstanceId
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valtimo.formflow.BaseIntegrationTest
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.web.rest.FormFlowResource
 import com.ritense.valtimo.formflow.web.rest.dto.FormFlowProcessLinkCreateRequestDto
 import com.ritense.valtimo.service.CamundaTaskService
+import java.util.UUID
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RepositoryService
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -53,7 +50,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
 
 @Transactional
 class ValtimoFormFlowIntTest : BaseIntegrationTest() {
@@ -62,19 +58,13 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     lateinit var processDocumentService: ProcessDocumentService
 
     @Autowired
-    lateinit var formAssociationService: FormAssociationService
-
-    @Autowired
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
-
-    @Autowired
-    lateinit var processLinkService: ProcessLinkService
 
     @Autowired
     lateinit var documentService: DocumentService
 
     @Autowired
-    lateinit var newProcessLinkService: com.ritense.processlink.service.ProcessLinkService
+    lateinit var processLinkService: ProcessLinkService
 
     @Autowired
     lateinit var taskService: CamundaTaskService
@@ -96,6 +86,12 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var processLinkActivityHandler: ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties>
+
+    @Autowired
+    lateinit var processLinkActivityService: ProcessLinkActivityService
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     @Test
     @WithMockUser(username = TEST_USER, authorities = [AuthoritiesConstants.USER])
@@ -180,7 +176,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         }
         val latestDocument = allDocuments.content.sortedByDescending { it.createdOn() }.first()
 
-        assertEquals(allDocuments.totalElements, totalDocumentsBefore+1)
+        assertEquals(allDocuments.totalElements, totalDocumentsBefore + 1)
         assertEquals(
             """{"address":{"streetName":"Koningin Wilhelminaplein"}}""",
             latestDocument.content().asJson().toString()
@@ -210,7 +206,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
             documentService.createDocument(
                 NewDocumentRequest(
                     "profile",
-                    Mapper.INSTANCE.get().readTree("{}")
+                    objectMapper.readTree("{}")
                 )
             ).resultingDocument().get()
         }
@@ -254,7 +250,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
         formFlowResource.completeStep(
             formFlowInstance.id.id.toString(),
             formFlowInstance.currentFormFlowStepInstanceId!!.id.toString(),
-            if (submission == null) null else jacksonObjectMapper().readTree(submission)
+            if (submission == null) null else objectMapper.readTree(submission)
         )
     }
 
@@ -265,23 +261,18 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     }
 
     private fun linkFormFlowToUserTask() {
-        formAssociationService.createFormAssociation(
-            CreateFormAssociationRequest(
-                "formflow-one-task-process",
-                FormLinkRequest(
-                    "do-something",
-                    FormAssociationType.USER_TASK,
-                    null,
-                    "single_step_flow:latest",
-                    null,
-                    null
-                )
+        processLinkService.createProcessLink(
+            FormFlowProcessLinkCreateRequestDto(
+                getProcessDefinitionId(),
+                "do-something",
+                ActivityTypeWithEventName.USER_TASK_CREATE,
+                "single_step_flow:latest"
             )
         )
     }
 
     private fun linkFormFlowToStartEvent(): ProcessLink {
-        newProcessLinkService.createProcessLink(
+        processLinkService.createProcessLink(
             FormFlowProcessLinkCreateRequestDto(
                 getProcessDefinitionId(),
                 "start-event",
@@ -289,7 +280,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
                 "single_step_flow:latest"
             )
         )
-        return newProcessLinkService.getProcessLinks(
+        return processLinkService.getProcessLinks(
             getProcessDefinitionId(),
             "start-event"
         )[0]
@@ -310,7 +301,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
                     "formflow-one-task-process",
                     NewDocumentRequest(
                         "profile",
-                        Mapper.INSTANCE.get().readTree("{}")
+                        objectMapper.readTree("{}")
                     )
                 )
             )
@@ -320,7 +311,7 @@ class ValtimoFormFlowIntTest : BaseIntegrationTest() {
     private fun openTasks(processInstanceId: ProcessInstanceId): List<FormFlowInstance> {
         return taskService.findTasks(byProcessInstanceId(processInstanceId.toString()))
             .asSequence()
-            .map { processLinkService.openTask(UUID.fromString(it.id)) }
+            .map { processLinkActivityService.openTask(UUID.fromString(it.id)) }
             .filter { it.properties is FormFlowTaskOpenResultProperties }
             .map { (it.properties as FormFlowTaskOpenResultProperties).formFlowInstanceId }
             .map { formFlowService.getInstanceById(FormFlowInstanceId(it)) }

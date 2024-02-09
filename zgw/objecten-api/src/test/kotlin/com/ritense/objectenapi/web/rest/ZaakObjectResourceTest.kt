@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,12 @@
 package com.ritense.objectenapi.web.rest
 
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.objectenapi.client.ObjectRecord
 import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectenapi.service.ZaakObjectService
 import com.ritense.objecttypenapi.client.Objecttype
-import com.ritense.plugin.service.PluginService
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -35,10 +33,10 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -54,13 +52,11 @@ internal class ZaakObjectResourceTest {
     lateinit var mockMvc: MockMvc
     lateinit var zaakObjectService: ZaakObjectService
     lateinit var zaakObjectResource: ZaakObjectResource
-    lateinit var pluginService: PluginService
 
     @BeforeEach
     fun init() {
         zaakObjectService = mock()
-        pluginService = mock()
-        zaakObjectResource = ZaakObjectResource(zaakObjectService, pluginService)
+        zaakObjectResource = ZaakObjectResource(zaakObjectService)
 
         mockMvc = MockMvcBuilders
             .standaloneSetup(zaakObjectResource)
@@ -110,7 +106,7 @@ internal class ZaakObjectResourceTest {
         whenever(object1.record).thenReturn(objectRecord1)
         whenever(objectRecord1.index).thenReturn(1)
         whenever(objectRecord1.registrationAt).thenReturn(LocalDate.of(2020, 2, 3))
-        whenever(objectRecord1.data).thenReturn(Mapper.INSTANCE.get().valueToTree(mapOf("title" to "some object")))
+        whenever(objectRecord1.data).thenReturn(MapperSingleton.get().valueToTree(mapOf("title" to "some object")))
 
         val object2 = mock<ObjectWrapper>()
         whenever(object2.url).thenReturn(URI("http://example.com/2"))
@@ -118,7 +114,7 @@ internal class ZaakObjectResourceTest {
         whenever(object2.record).thenReturn(objectRecord2)
         whenever(objectRecord2.index).thenReturn(null)
         whenever(objectRecord2.registrationAt).thenReturn(null)
-        whenever(objectRecord2.data).thenReturn(Mapper.INSTANCE.get().valueToTree(""))
+        whenever(objectRecord2.data).thenReturn(MapperSingleton.get().valueToTree(""))
 
         whenever(zaakObjectService.getZaakObjectenOfType(documentId, URI("http://example.com/objecttype")))
             .thenReturn(listOf(object1, object2))
@@ -197,7 +193,7 @@ internal class ZaakObjectResourceTest {
         val objectManagementId = UUID.randomUUID()
         val data = """{"key": 1, "value":1}"""
 
-        val actualObj: JsonNode = jacksonObjectMapper().readTree(data)
+        val actualObj: JsonNode = MapperSingleton.get().readTree(data)
 
         val url = URI("http://example.com/object/123")
 
@@ -240,7 +236,7 @@ internal class ZaakObjectResourceTest {
         val data = """{"key": 1, "value":1}"""
         val objectUrl = URI("http://example.com/object/123")
 
-        val actualObj: JsonNode = jacksonObjectMapper().readTree(data)
+        val actualObj: JsonNode = MapperSingleton.get().readTree(data)
 
         val updatedObjectUrl = URI("http://example.com/object/456")
 
@@ -294,7 +290,7 @@ internal class ZaakObjectResourceTest {
 
     private fun jacksonMessageConverter(): MappingJackson2HttpMessageConverter {
         val converter = MappingJackson2HttpMessageConverter()
-        converter.objectMapper = Mapper.INSTANCE.get()
+        converter.objectMapper = MapperSingleton.get()
         return converter
     }
 

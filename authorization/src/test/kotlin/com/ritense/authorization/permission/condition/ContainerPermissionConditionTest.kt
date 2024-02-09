@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,18 @@
 package com.ritense.authorization.permission.condition
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.AuthorizationServiceHolder
-import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.LESS_THAN_OR_EQUAL_TO
 import com.ritense.authorization.permission.condition.PermissionConditionOperator.NOT_EQUAL_TO
+import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.authorization.testimpl.RelatedTestEntity
 import com.ritense.authorization.testimpl.TestChildEntity
 import com.ritense.authorization.testimpl.TestEntity
+import com.ritense.valtimo.contract.json.MapperSingleton
+import kotlin.test.assertEquals
 import org.hamcrest.MatcherAssert
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
@@ -40,7 +41,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
-import kotlin.test.assertEquals
 
 class ContainerPermissionConditionTest {
 
@@ -51,7 +51,7 @@ class ContainerPermissionConditionTest {
 
     @BeforeEach
     fun setup() {
-        mapper = jacksonObjectMapper().apply {
+        mapper = MapperSingleton.get().copy().apply {
             this.registerSubtypes(ContainerPermissionCondition::class.java)
             this.registerSubtypes(FieldPermissionCondition::class.java)
             this.registerSubtypes(ExpressionPermissionCondition::class.java)

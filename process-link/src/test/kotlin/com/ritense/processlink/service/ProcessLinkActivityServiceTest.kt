@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.web.rest.dto.ProcessLinkActivityResult
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.service.CamundaTaskService
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
@@ -28,7 +29,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.UUID
 
 
 class ProcessLinkActivityServiceTest {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,10 @@
 
 package com.ritense.document.web.rest;
 
-import com.ritense.document.BaseIntegrationTest;
-import com.ritense.document.domain.Document;
-import com.ritense.document.domain.impl.JsonDocumentContent;
-import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
-import com.ritense.document.repository.DocumentRepository;
-import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
-import com.ritense.outbox.domain.BaseEvent;
-import com.ritense.valtimo.contract.json.Mapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.function.Supplier;
-
 import static com.ritense.valtimo.contract.utils.TestUtil.convertObjectToJsonBytes;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -52,6 +31,27 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.document.BaseIntegrationTest;
+import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonDocumentContent;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
+import com.ritense.document.repository.DocumentRepository;
+import com.ritense.document.web.rest.impl.JsonSchemaDocumentResource;
+import com.ritense.outbox.domain.BaseEvent;
+import java.util.List;
+import java.util.function.Supplier;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
+
 @Transactional
 class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
     private static final String USER_EMAIL = "user@valtimo.nl";
@@ -62,6 +62,9 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private DocumentRepository documentRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
@@ -76,7 +79,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         document = result.resultingDocument().orElseThrow();
         documentRepository.save(document);
 
-        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService, outboxService);
+        jsonSchemaDocumentResource = new JsonSchemaDocumentResource(documentService);
         mockMvc = MockMvcBuilders
             .standaloneSetup(jsonSchemaDocumentResource)
             .build();
@@ -103,7 +106,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var result = documentRepository.findById(document.id());
 
         assertTrue(result.isPresent());
-        assertTrue(result.get() instanceof JsonSchemaDocument);
+        assertInstanceOf(JsonSchemaDocument.class, result.get());
 
         var savedDocument = (JsonSchemaDocument) result.get();
         assertNotNull(savedDocument.assigneeId());
@@ -146,9 +149,9 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var result2 = documentRepository.findById(document2.id());
 
         assertTrue(result1.isPresent());
-        assertTrue(result1.get() instanceof JsonSchemaDocument);
+        assertInstanceOf(JsonSchemaDocument.class, result1.get());
         assertTrue(result2.isPresent());
-        assertTrue(result2.get() instanceof JsonSchemaDocument);
+        assertInstanceOf(JsonSchemaDocument.class, result2.get());
 
         var savedDocument = (JsonSchemaDocument) result1.get();
         assertNotNull(savedDocument.assigneeId());
@@ -197,9 +200,9 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var result2 = documentRepository.findById(document2.id());
 
         assertTrue(result1.isPresent());
-        assertTrue(result1.get() instanceof JsonSchemaDocument);
+        assertInstanceOf(JsonSchemaDocument.class, result1.get());
         assertTrue(result2.isPresent());
-        assertTrue(result2.get() instanceof JsonSchemaDocument);
+        assertInstanceOf(JsonSchemaDocument.class, result2.get());
 
         var savedDocument = (JsonSchemaDocument) result1.get();
         assertNotNull(savedDocument.assigneeId());
@@ -244,7 +247,7 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         var result = documentRepository.findById(document.id());
 
         assertTrue(result.isPresent());
-        assertTrue(result.get() instanceof JsonSchemaDocument);
+        assertInstanceOf(JsonSchemaDocument.class, result.get());
 
         var savedDocument = (JsonSchemaDocument) result.get();
         assertNull(savedDocument.assigneeId());
@@ -264,6 +267,6 @@ class JsonSchemaDocumentResourceIntegrationTest extends BaseIntegrationTest {
         assertEquals("com.ritense.valtimo.document.viewed", event.getType());
         assertEquals("com.ritense.document.domain.impl.JsonSchemaDocument", event.getResultType());
         assertEquals(document.id().toString(), event.getResultId());
-        assertEquals(Mapper.INSTANCE.get().valueToTree(document), event.getResult());
+        assertEquals(objectMapper.valueToTree(document), event.getResult());
     }
 }

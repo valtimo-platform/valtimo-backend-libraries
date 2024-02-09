@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,6 @@
 
 package com.ritense.valtimo.service;
 
-import com.ritense.authorization.AuthorizationContext;
-import com.ritense.authorization.AuthorizationService;
-import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
-import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository;
-import com.ritense.valtimo.camunda.service.CamundaHistoryService;
-import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
-import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
-import com.ritense.valtimo.contract.config.ValtimoProperties;
-import org.camunda.bpm.engine.FormService;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.RuntimeService;
-import org.hamcrest.Matcher;
-import org.hamcrest.core.IsEqual;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.contains;
@@ -51,6 +27,31 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.ritense.authorization.AuthorizationContext;
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
+import com.ritense.valtimo.camunda.repository.CamundaExecutionRepository;
+import com.ritense.valtimo.camunda.service.CamundaHistoryService;
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
+import com.ritense.valtimo.camunda.service.CamundaRuntimeService;
+import com.ritense.valtimo.contract.config.ValtimoProperties;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import org.camunda.bpm.engine.FormService;
+import org.camunda.bpm.engine.RepositoryService;
+import org.camunda.bpm.engine.RuntimeService;
+import org.hamcrest.Matcher;
+import org.hamcrest.core.IsEqual;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 class CamundaProcessServiceTest {
 

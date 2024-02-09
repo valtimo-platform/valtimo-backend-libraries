@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.ritense.objectsapi.domain
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import java.net.URI
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -29,7 +29,7 @@ class ProductAanvraagTest {
     fun `should return all files`() {
         val productAanvraag = ProductAanvraag(
             "type",
-            ObjectMapper().createObjectNode(),
+            MapperSingleton.get().createObjectNode(),
             listOf(URI("http://test.com")),
             URI("http://example.com"),
             "123",

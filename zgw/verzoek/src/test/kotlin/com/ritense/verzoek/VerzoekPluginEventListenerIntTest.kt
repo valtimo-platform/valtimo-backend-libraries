@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package com.ritense.verzoek
 
 import com.fasterxml.jackson.core.JsonPointer
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.BaseIntegrationTest
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.DocumentDefinition
@@ -31,6 +31,7 @@ import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
+import jakarta.transaction.Transactional
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.camunda.bpm.engine.RuntimeService
@@ -49,7 +50,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
-import javax.transaction.Transactional
 
 @Transactional
 internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
@@ -79,6 +79,9 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
 
     @Autowired
     lateinit var processService: RuntimeService
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     lateinit var mockNotificatiesApi: MockWebServer
 
@@ -335,7 +338,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     private fun createRecord(withMetaData: Boolean, withType: String, withObjectData: Boolean): ObjectRecord {
         return ObjectRecord(
             typeVersion = 1,
-            data = if (withMetaData) jacksonObjectMapper().readTree(
+            data = if (withMetaData) objectMapper.readTree(
                 """
                 {
                     "type": "$withType",
@@ -363,7 +366,7 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     private fun createPluginConfiguration(pluginDefinitionKey: String, pluginProperties: String): PluginConfiguration {
         return pluginService.createPluginConfiguration(
             "my-configuration-$pluginDefinitionKey-${pluginProperties.hashCode()}",
-            jacksonObjectMapper().readTree(pluginProperties).deepCopy(),
+            objectMapper.readTree(pluginProperties).deepCopy(),
             pluginDefinitionKey
         )
     }

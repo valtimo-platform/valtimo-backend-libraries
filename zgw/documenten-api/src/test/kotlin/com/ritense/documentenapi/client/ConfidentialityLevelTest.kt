@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.ritense.documentenapi.client
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -25,13 +25,13 @@ class ConfidentialityLevelTest {
 
     @Test
     fun `should serialize enum to key`() {
-        val jsonValue = jacksonObjectMapper().writeValueAsString(Vertrouwelijkheid.VERTROUWELIJK)
+        val jsonValue = MapperSingleton.get().writeValueAsString(Vertrouwelijkheid.VERTROUWELIJK)
         assertEquals(""" "vertrouwelijk" """.trim(), jsonValue)
     }
 
     @Test
     fun `should deserialize key to enum`() {
-        val enumValue = jacksonObjectMapper().readValue(""" "vertrouwelijk" """.trim(), Vertrouwelijkheid::class.java)
+        val enumValue = MapperSingleton.get().readValue(""" "vertrouwelijk" """.trim(), Vertrouwelijkheid::class.java)
         assertEquals(Vertrouwelijkheid.VERTROUWELIJK, enumValue)
     }
 }

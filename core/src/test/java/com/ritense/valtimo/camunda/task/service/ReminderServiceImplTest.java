@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,6 @@
 
 package com.ritense.valtimo.camunda.task.service;
 
-import com.ritense.valtimo.camunda.domain.CamundaTask;
-import com.ritense.valtimo.camunda.task.service.impl.ReminderServiceImpl;
-import com.ritense.valtimo.contract.authentication.UserManagementService;
-import com.ritense.valtimo.contract.mail.MailSender;
-import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
-import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
-import com.ritense.valtimo.service.CamundaTaskService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import static com.ritense.valtimo.camunda.task.service.NotificationTestHelper.user;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,6 +23,21 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.ritense.valtimo.camunda.domain.CamundaTask;
+import com.ritense.valtimo.camunda.task.service.impl.ReminderServiceImpl;
+import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.mail.MailSender;
+import com.ritense.valtimo.contract.mail.model.TemplatedMailMessage;
+import com.ritense.valtimo.emailnotificationsettings.service.EmailNotificationSettingsService;
+import com.ritense.valtimo.service.CamundaTaskService;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class ReminderServiceImplTest {
 
@@ -142,8 +143,8 @@ class ReminderServiceImplTest {
     }
 
     private List<CamundaTask> assignedTasks() {
-        CamundaTask taskId0 = assignedTaskEntity("id1", "test1@test.com", "task1");
-        CamundaTask taskId2 = assignedTaskEntity("id3", "test2@test.com", "task3");
+        CamundaTask taskId0 = assignedTaskEntity("id1", "AAAA-1111", "task1");
+        CamundaTask taskId2 = assignedTaskEntity("id3", "BBBB-2222", "task3");
         return List.of(taskId0, taskId2);
     }
 

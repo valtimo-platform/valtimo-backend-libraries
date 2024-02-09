@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
 package com.ritense.valtimo.contract.authentication;
 
 import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
-import org.apache.commons.lang3.NotImplementedException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserManagementService {
 
@@ -46,6 +46,8 @@ public interface UserManagementService {
 
     Optional<ManageableUser> findByEmail(String email);
 
+    Optional<NamedUser> findNamedUserByEmail(String email);
+
     ManageableUser findById(String userId);
 
     List<ManageableUser> findByRole(String authority);
@@ -56,5 +58,9 @@ public interface UserManagementService {
 
     default ManageableUser getCurrentUser() {
         throw new NotImplementedException("Failed to get current user because method is not implemented.");
+    }
+
+    default String getCurrentUserId() {
+        throw new NotImplementedException("Failed to get current user ID because method is not implemented.");
     }
 }

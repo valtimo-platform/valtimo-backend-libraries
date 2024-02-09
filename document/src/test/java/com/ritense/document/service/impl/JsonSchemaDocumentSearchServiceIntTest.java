@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,40 +16,6 @@
 
 package com.ritense.document.service.impl;
 
-import com.fasterxml.jackson.core.JsonPointer;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ritense.authorization.AuthorizationContext;
-import com.ritense.document.BaseIntegrationTest;
-import com.ritense.document.domain.Document;
-import com.ritense.document.domain.impl.JsonDocumentContent;
-import com.ritense.document.domain.impl.JsonSchemaDocument;
-import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
-import com.ritense.document.domain.impl.Mapper;
-import com.ritense.document.domain.impl.request.NewDocumentRequest;
-import com.ritense.document.domain.search.AdvancedSearchRequest;
-import com.ritense.document.domain.search.AssigneeFilter;
-import com.ritense.document.domain.search.SearchOperator;
-import com.ritense.document.event.DocumentsListed;
-import com.ritense.document.service.result.CreateDocumentResult;
-import com.ritense.outbox.domain.BaseEvent;
-import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.security.test.context.support.WithMockUser;
-import javax.transaction.Transactional;
-import javax.validation.ValidationException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 import static com.ritense.document.domain.search.DatabaseSearchType.BETWEEN;
 import static com.ritense.document.domain.search.DatabaseSearchType.EQUAL;
 import static com.ritense.document.domain.search.DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO;
@@ -65,12 +31,57 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonPointer;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.authorization.AuthorizationContext;
+import com.ritense.document.BaseIntegrationTest;
+import com.ritense.document.domain.Document;
+import com.ritense.document.domain.impl.JsonDocumentContent;
+import com.ritense.document.domain.impl.JsonSchemaDocument;
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
+import com.ritense.document.domain.impl.request.NewDocumentRequest;
+import com.ritense.document.domain.search.AdvancedSearchRequest;
+import com.ritense.document.domain.search.AssigneeFilter;
+import com.ritense.document.domain.search.SearchOperator;
+import com.ritense.document.domain.search.SearchWithConfigRequest;
+import com.ritense.document.event.DocumentsListed;
+import com.ritense.document.service.result.CreateDocumentResult;
+import com.ritense.outbox.domain.BaseEvent;
+import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
+import com.ritense.valtimo.contract.utils.RequestHelper;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.test.context.support.WithMockUser;
+
 @Tag("integration")
 @Transactional
 class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
     private static final String USER_ID = "a28994a3-31f9-4327-92a4-210c479d3055";
     private static final String USERNAME = "john@ritense.com";
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private JsonSchemaDocumentDefinition definition;
     private CreateDocumentResult originalDocument;
 
@@ -1115,10 +1126,99 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         assertThat(documentsListedEvents).hasSize(1);
         DocumentsListed documentsListed = (DocumentsListed) documentsListedEvents.stream().findFirst().orElseThrow();
-        String resultJson = Mapper.INSTANCE.get().writeValueAsString(documentsListed.getResult());
+        String resultJson = objectMapper.writeValueAsString(documentsListed.getResult());
         documents.forEach(document -> {
             assertThat(resultJson).contains("\"" + document.id() + "\"");
         });
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
+    void shouldSearchWithSearchRequestAndFromDateValueWithZoneOffset() {
+        try (MockedStatic<RequestHelper> mocked = Mockito.mockStatic(RequestHelper.class, Mockito.CALLS_REAL_METHODS)) {
+            // set UTC offset of request to +02:00
+            mocked.when(() -> RequestHelper.getZoneOffset()).thenReturn(ZoneOffset.of("+02:00"));
+
+            documentRepository.deleteAllInBatch();
+
+            // document's build date is 1st of January 22:30 UTC+0
+            createDocument("{\"buildDate\": \"2024-01-01T22:30:00\"}").resultingDocument().get();
+
+            var request = new SearchWithConfigRequest();
+
+            var filter = new SearchWithConfigRequest.SearchWithConfigFilter();
+            filter.setKey("buildDate");
+            /*
+            searching for document's build date on 2nd of January 00:00 UTC+2,
+            which will correspond to time range 1st of January 22:00 UTC+0 <-> 2nd of January 22:00 UTC+0
+             */
+            filter.setValues(List.of("2024-01-02"));
+
+            request.setOtherFilters(List.of(filter));
+
+            var result = documentSearchService.search(
+                    definition.id().name(),
+                    request,
+                    PageRequest.of(0, 10));
+
+            assertThat(result).isNotNull();
+            /*
+            should still return the single document with buildDate on 1st of January 2024 22:30,
+            because 2nd of January 00:00 UTC+2 is mapped to 1st of January 22:00 UTC+0 <-> 2nd of January 22:00 UTC+0,
+            and the singe document's buildDate falls within this range
+            */
+            assertThat(result.getTotalElements()).isEqualTo(1);
+        }
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
+    void shouldSearchWithSearchRequestAndFromDateRangeWithZoneOffset() {
+        try (MockedStatic<RequestHelper> mocked = Mockito.mockStatic(RequestHelper.class, Mockito.CALLS_REAL_METHODS)) {
+            // set UTC offset of request to +02:00
+            mocked.when(() -> RequestHelper.getZoneOffset()).thenReturn(ZoneOffset.of("+02:00"));
+
+            documentRepository.deleteAllInBatch();
+
+            /*
+            documents build dates are:
+            - 1st of January 22:30 UTC+0
+            - 2nd January 14:30 UTC+0
+            - 2nd January 23:30 UTC+0
+            - 4th January 01:30 UTC+0
+            - 4th  January 22:30 UTC+0
+             */
+            createDocument("{\"buildDate\": \"2024-01-01T22:30:00\"}").resultingDocument().get();
+            createDocument("{\"buildDate\": \"2024-01-02T14:30:00\"}").resultingDocument().get();
+            createDocument("{\"buildDate\": \"2024-01-02T23:30:00\"}").resultingDocument().get();
+            createDocument("{\"buildDate\": \"2024-01-04T01:30:00\"}").resultingDocument().get();
+            createDocument("{\"buildDate\": \"2024-01-04T22:30:00\"}").resultingDocument().get();
+
+            var request = new SearchWithConfigRequest();
+
+            var filter = new SearchWithConfigRequest.SearchWithConfigFilter();
+            filter.setKey("buildDates");
+            /*
+            Searching for documents with build date between 2nd of January 00:00 UTC+2 and 4th of January 00:00 UTC+2,
+            which will correspond to time range 1st of January 22:00 UTC+0 <-> 4th of January 22:00 UTC+0.
+            To the tail end of the range, 1 day is added, because the user is looking for a range up to and including the latter date.
+             */
+            filter.setRangeFrom("2024-01-02");
+            filter.setRangeTo("2024-01-04");
+
+            request.setOtherFilters(List.of(filter));
+
+            var result = documentSearchService.search(
+                    definition.id().name(),
+                    request,
+                    PageRequest.of(0, 10));
+
+            assertThat(result).isNotNull();
+            /*
+            should return 4 of out of 5 mocked documents.
+            */
+            assertThat(result.getTotalElements()).isEqualTo(4);
+        }
     }
 
 

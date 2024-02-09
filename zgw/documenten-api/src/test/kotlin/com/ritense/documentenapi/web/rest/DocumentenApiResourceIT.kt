@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package com.ritense.documentenapi.web.rest
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.documentenapi.BaseIntegrationTest
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
-import com.ritense.valtimo.contract.json.Mapper
+import jakarta.transaction.Transactional
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -49,13 +50,15 @@ import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
 import java.util.Optional
 import java.util.UUID
-import javax.transaction.Transactional
 
 @Transactional
 internal class DocumentenApiResourceIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var webApplicationContext: WebApplicationContext
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     lateinit var mockMvc: MockMvc
 
@@ -80,7 +83,7 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
 
         pluginConfiguration = pluginService.createPluginConfiguration(
             "Documenten API plugin configuration",
-            Mapper.INSTANCE.get().readTree(
+            objectMapper.readTree(
                 """
                     {
                         "url": "${server.url("/")}",

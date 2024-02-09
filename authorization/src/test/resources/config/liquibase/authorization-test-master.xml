@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <!--
-  ~ Copyright 2015-2023 Ritense BV, the Netherlands.
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
   ~
   ~ Licensed under EUPL, Version 1.2 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -20,18 +20,27 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
+    <property name="uuidType" value="BINARY(16)" dbms="mysql"/>
+    <property name="uuidType" value="uuid" dbms="h2,postgresql"/>
+
+    <property name="jsonType" value="JSON" dbms="mysql"/>
+    <property name="jsonType" value="JSONB" dbms="postgresql"/>
+
+    <property name="intType" value="int" dbms="mysql"/>
+    <property name="intType" value="integer" dbms="postgresql"/>
+
     <changeSet author="Ritense" id="1">
         <createTable tableName="test_entity">
-            <column name="id" type="uuid">
+            <column name="id" type="${uuidType}">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="child" type="jsonb">
+            <column name="child" type="${jsonType}">
                 <constraints nullable="true"/>
             </column>
             <column name="name" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="some_number" type="int">
+            <column name="some_number" type="${intType}">
                 <constraints nullable="true"/>
             </column>
         </createTable>
@@ -39,7 +48,7 @@
 
     <changeSet author="Ritense" id="2">
         <createTable tableName="fruit">
-            <column name="test_entity_id" type="uuid">
+            <column name="test_entity_id" type="${uuidType}">
                 <constraints nullable="false"/>
             </column>
             <column name="name" type="VARCHAR(100)">

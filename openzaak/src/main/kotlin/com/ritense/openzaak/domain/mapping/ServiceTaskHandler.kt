@@ -19,4 +19,5 @@ package com.ritense.openzaak.domain.mapping
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "className")
+@Deprecated("Since 12.0.0. Will not be replaced. See zaken-api module for ZaakTypeLink functionality")
 interface ServiceTaskHandler

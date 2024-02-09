@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.ritense.valtimo.contract.json.patch;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.json.patch.operation.AddOperation;
 import com.ritense.valtimo.contract.json.patch.operation.CopyOperation;
 import com.ritense.valtimo.contract.json.patch.operation.JsonPatchOperation;
@@ -25,13 +26,12 @@ import com.ritense.valtimo.contract.json.patch.operation.MoveOperation;
 import com.ritense.valtimo.contract.json.patch.operation.RemoveOperation;
 import com.ritense.valtimo.contract.json.patch.operation.ReplaceOperation;
 import java.util.LinkedHashSet;
-import static com.fasterxml.jackson.module.kotlin.ExtensionsKt.jacksonObjectMapper;
 
 /**
  * A builder for constructing a JSON Patch by adding
  * JSON Patch operations incrementally.
- * <p>
- * The following illustrates the approach.
+ *
+ * <p>The following illustrates the approach.</p>
  * <pre>
  *   JsonPatchBuilder builder = new JsonPatchBuilder();
  *   JsonPatch patch = builder.add("/John/phones/office", "1234-567")
@@ -82,7 +82,9 @@ public final class JsonPatchBuilder {
         return this;
     }
 
-    /** Adds a JsonNode value to a json at the specified location. */
+    /**
+     * Adds a JsonNode value to a json at the specified location.
+     */
     public JsonPatchBuilder addJsonNodeValue(JsonNode destination, JsonPointer path, JsonNode value) {
         JsonPointer workPath = determineUnindexedPath(destination, path);
         addJsonNodeValueInternal(destination, workPath, value);
@@ -94,8 +96,8 @@ public final class JsonPatchBuilder {
      * This will adjust the first unindexed array position ('/-') to a new index depending on previous operations or destination object.
      * Any subsequent occurrences of '/-' will be replaced by 0, as the first one will create a new node already.
      *
-     * Example (where x in destination has a length of 1):
-     *  /x/-/y/-/z -> /x/1/y/0/z
+     * <p>Example (where x in destination has a length of 1):
+     * /x/-/y/-/z -> /x/1/y/0/z</p>
      */
     private JsonPointer determineUnindexedPath(JsonNode destination, JsonPointer path) {
         String stringPath = path.toString();
@@ -122,9 +124,9 @@ public final class JsonPatchBuilder {
             var propertyName = path.last().getMatchingProperty();
             JsonNode newValue;
             if (propertyName.matches("\\d+")) {
-                newValue = jacksonObjectMapper().createArrayNode();
+                newValue = MapperSingleton.INSTANCE.get().createArrayNode();
             } else {
-                newValue = jacksonObjectMapper().createObjectNode();
+                newValue = MapperSingleton.INSTANCE.get().createObjectNode();
             }
 
             addJsonNodeValueInternal(destination, path.head(), newValue);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,18 +39,19 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.annotation.ProcessBean
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 
-@Configuration
+@AutoConfiguration
 class ProcessDocumentsAutoConfiguration {
 
     @ProcessBean
@@ -86,13 +87,15 @@ class ProcessDocumentsAutoConfiguration {
         processDocumentService: ProcessDocumentService,
         documentService: DocumentService,
         jsonSchemaDocumentService: JsonSchemaDocumentService,
-        userManagementService: UserManagementService
+        userManagementService: UserManagementService,
+        objectMapper: ObjectMapper,
     ): DocumentDelegateService {
         return DocumentDelegateService(
             processDocumentService,
             documentService,
             jsonSchemaDocumentService,
-            userManagementService
+            userManagementService,
+            objectMapper,
         )
     }
     @ProcessBean
@@ -159,9 +162,10 @@ class ProcessDocumentsAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(CamundaTaskDocumentMapper::class)
     fun camundaTaskDocumentMapper(
-        @Lazy processDocumentService: CamundaProcessJsonSchemaDocumentService
+        @Lazy processDocumentService: CamundaProcessJsonSchemaDocumentService,
+        queryDialectHelper: QueryDialectHelper
     ): CamundaTaskDocumentMapper {
-        return CamundaTaskDocumentMapper(processDocumentService)
+        return CamundaTaskDocumentMapper(processDocumentService, queryDialectHelper)
     }
 
     @Bean

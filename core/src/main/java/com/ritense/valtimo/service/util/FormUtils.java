@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,25 @@
 
 package com.ritense.valtimo.service.util;
 
+import static java.lang.String.format;
+
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import org.camunda.bpm.engine.variable.VariableMap;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.engine.variable.value.ObjectValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import static java.lang.String.format;
 
 public class FormUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(FormUtils.class);
     private static final String FORM_KEY_DELIMETER = ":";
+
+    private FormUtils() {
+    }
 
     public static String getFormLocation(String formkey, HttpServletRequest request) {
         final String[] formKeyArray = formkey.split(FORM_KEY_DELIMETER);

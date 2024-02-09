@@ -18,19 +18,16 @@ package com.ritense.openzaak.service.impl
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
 
+@Deprecated("Since 11.2.0", ReplaceWith("com.ritense.valtimo.contract.json.MapperSingleton"))
 object Mapper {
 
-    private val mapper = ObjectMapper()
+    private val mapper = jacksonMapperBuilder()
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .build()
 
     fun get(): ObjectMapper {
         return mapper
     }
-
-    init {
-        mapper.registerModule(KotlinModule())
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@
 
 package com.ritense.form.autoconfigure;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.ritense.form.BaseIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@TestPropertySource( properties = {"valtimo.form.ignoreDisabledFields=true"})
+@TestPropertySource(properties = {"valtimo.form.ignoreDisabledFields=true"})
 class FormAutoConfigurationIntTest extends BaseIntegrationTest {
 
     @Test

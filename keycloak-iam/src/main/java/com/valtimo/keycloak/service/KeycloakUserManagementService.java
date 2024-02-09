@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package com.valtimo.keycloak.service;
 
+import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsLast;
+
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
@@ -24,6 +29,14 @@ import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCrite
 import com.ritense.valtimo.contract.authentication.model.ValtimoUser;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import jakarta.ws.rs.NotFoundException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import org.apache.commons.lang3.NotImplementedException;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RoleResource;
@@ -34,20 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import javax.ws.rs.NotFoundException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
-import static java.util.Comparator.comparing;
-import static java.util.Comparator.naturalOrder;
-import static java.util.Comparator.nullsLast;
 
 public class KeycloakUserManagementService implements UserManagementService {
     private static final Logger logger = LoggerFactory.getLogger(KeycloakUserManagementService.class);
@@ -92,11 +91,6 @@ public class KeycloakUserManagementService implements UserManagementService {
         throw new NotImplementedException();
     }
 
-    @Override
-    public Page<ManageableUser> getAllUsers(Pageable pageable) {
-        throw new NotImplementedException();
-    }
-
     public Integer countUsers() {
         try (Keycloak keycloak = keycloakService.keycloak()) {
             return keycloakService.usersResource(keycloak).count();
@@ -121,19 +115,23 @@ public class KeycloakUserManagementService implements UserManagementService {
     }
 
     @Override
+    public Page<ManageableUser> getAllUsers(Pageable pageable) {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public Page<ManageableUser> queryUsers(String searchTerm, Pageable pageable) {
         throw new NotImplementedException();
     }
 
     @Override
     public Optional<ManageableUser> findByEmail(String email) {
-        List<UserRepresentation> userList;
-        try (Keycloak keycloak = keycloakService.keycloak()) {
-            userList = keycloakService
-                .usersResource(keycloak)
-                .search(null, null, null, email, 0, 1, true, true);
-        }
-        return userList.isEmpty() ? Optional.empty() : Optional.of(toManageableUserByRetrievingRoles(userList.get(0)));
+        return findUserRepresentationByEmail(email).map(this::toManageableUserByRetrievingRoles);
+    }
+
+    @Override
+    public Optional<NamedUser> findNamedUserByEmail(String email) {
+        return findUserRepresentationByEmail(email).map(this::toNamedUser);
     }
 
     @Override
@@ -194,6 +192,34 @@ public class KeycloakUserManagementService implements UserManagementService {
         }
     }
 
+    @Override
+    public String getCurrentUserId() {
+        if (SecurityUtils.getCurrentUserAuthentication() != null) {
+            return findUserRepresentationByEmail(SecurityUtils.getCurrentUserLogin()).orElseThrow(() ->
+                new IllegalStateException("No user found for email: " + SecurityUtils.getCurrentUserLogin())
+            ).getId();
+        } else {
+            return SYSTEM_ACCOUNT;
+        }
+    }
+
+    private Optional<UserRepresentation> findUserRepresentationByEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            return Optional.empty();
+        }
+        List<UserRepresentation> userList;
+        try (Keycloak keycloak = keycloakService.keycloak()) {
+            userList = keycloakService
+                .usersResource(keycloak)
+                .search(null, null, null, email, 0, 1, true, true);
+        }
+        if (userList.isEmpty() || !Objects.equals(userList.get(0).getEmail(), email)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(userList.get(0));
+        }
+    }
+
     private List<UserRepresentation> findUserRepresentationByRole(String authority) {
 
         List<List<UserRepresentation>> usersList = new ArrayList<>();
@@ -230,7 +256,7 @@ public class KeycloakUserManagementService implements UserManagementService {
             }
         });
 
-        var users  = usersList.stream()
+        var users = usersList.stream()
             .flatMap(Collection::stream)
             .filter(UserRepresentation::isEnabled)
             .map(UserRepresentationWrapper::new)
@@ -310,8 +336,12 @@ public class KeycloakUserManagementService implements UserManagementService {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             UserRepresentationWrapper that = (UserRepresentationWrapper) o;
             return Objects.equals(getId(), that.getId())
                 && Objects.equals(getUsername(), that.getUsername())

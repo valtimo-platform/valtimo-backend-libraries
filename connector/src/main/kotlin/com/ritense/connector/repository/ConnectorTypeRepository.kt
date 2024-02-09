@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.ritense.connector.domain.ConnectorType
 import com.ritense.connector.domain.ConnectorTypeId
 import org.springframework.data.jpa.repository.JpaRepository
 
+@Deprecated("Since 12.0.0")
 interface ConnectorTypeRepository : JpaRepository<ConnectorType, ConnectorTypeId> {
     fun findByName(name: String): ConnectorType?
     fun findByClassName(className: String): List<ConnectorType>

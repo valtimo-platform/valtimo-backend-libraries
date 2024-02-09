@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,23 @@
 package com.ritense.formflow.domain.instance
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
+import io.hypersistence.utils.hibernate.type.json.JsonType
+import jakarta.persistence.AttributeOverride
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
+import jakarta.persistence.Embedded
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.JoinColumns
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
+import jakarta.persistence.OrderBy
+import jakarta.persistence.Table
+import java.util.Objects
 import org.hibernate.annotations.Type
 import org.json.JSONObject
-import java.util.Objects
-import javax.persistence.AttributeOverride
-import javax.persistence.CascadeType
-import javax.persistence.Column
-import javax.persistence.Embedded
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.JoinColumn
-import javax.persistence.JoinColumns
-import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
-import javax.persistence.OrderBy
-import javax.persistence.Table
 
 
 @Entity
@@ -52,7 +53,7 @@ class FormFlowInstance(
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "instance")
     @OrderBy("order ASC")
     private val history: MutableList<FormFlowStepInstance> = mutableListOf(),
-    @Type(type = "com.vladmihalcea.hibernate.type.json.JsonType")
+    @Type(value = JsonType::class)
     @Column(name = "additional_properties", columnDefinition = "json", nullable = false)
     private val additionalProperties: MutableMap<String, Any> = mutableMapOf()
 ) {

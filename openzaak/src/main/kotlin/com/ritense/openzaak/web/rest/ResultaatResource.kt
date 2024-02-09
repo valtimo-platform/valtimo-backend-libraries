@@ -18,6 +18,7 @@ package com.ritense.openzaak.web.rest
 
 import com.ritense.openzaak.service.impl.model.catalogi.ResultaatType
 import com.ritense.openzaak.web.rest.request.ZaakTypeRequest
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
+@SkipComponentScan
 @RequestMapping("/api",
     produces = [APPLICATION_JSON_UTF8_VALUE],
     consumes = [APPLICATION_JSON_UTF8_VALUE]

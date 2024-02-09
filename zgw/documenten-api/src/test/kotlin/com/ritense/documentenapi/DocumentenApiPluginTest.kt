@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.ritense.documentenapi
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.DOCUMENT_URL_PROCESS_VAR
 import com.ritense.documentenapi.DocumentenApiPlugin.Companion.RESOURCE_ID_PROCESS_VAR
 import com.ritense.documentenapi.client.CreateDocumentRequest
@@ -25,6 +24,7 @@ import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Test
@@ -66,7 +66,7 @@ internal class DocumentenApiPluginTest {
             .thenReturn(fileStream)
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
-        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, jacksonObjectMapper(), listOf())
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, MapperSingleton.get(), listOf())
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -145,7 +145,7 @@ internal class DocumentenApiPluginTest {
                 "informatieobjecttype" to "type"))
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
-        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, jacksonObjectMapper(), listOf())
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, MapperSingleton.get(), listOf())
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -201,7 +201,7 @@ internal class DocumentenApiPluginTest {
                 "informatieobjecttype" to "type"))
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
-        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, jacksonObjectMapper(), listOf())
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, MapperSingleton.get(), listOf())
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock
@@ -236,7 +236,7 @@ internal class DocumentenApiPluginTest {
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
 
-        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, jacksonObjectMapper(), listOf())
+        val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, MapperSingleton.get(), listOf())
         plugin.url = URI("http://some-url")
         plugin.bronorganisatie = "123456789"
         plugin.authenticationPluginConfiguration = authenticationMock

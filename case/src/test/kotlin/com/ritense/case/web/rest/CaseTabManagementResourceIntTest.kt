@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.ritense.case.web.rest
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.case.BaseIntegrationTest
 import com.ritense.case.domain.CaseTab
@@ -29,7 +29,6 @@ import com.ritense.case.web.rest.dto.CaseTabUpdateDto
 import com.ritense.case.web.rest.dto.CaseTabUpdateOrderDto
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
-import kotlin.jvm.optionals.getOrNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -47,12 +46,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import kotlin.jvm.optionals.getOrNull
 
 class CaseTabManagementResourceIntTest @Autowired constructor(
     private val webApplicationContext: WebApplicationContext,
     private val caseTabRepository: CaseTabRepository,
     private val documentDefinitionService: DocumentDefinitionService
 ) : BaseIntegrationTest() {
+
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
 
     lateinit var mockMvc: MockMvc
 
@@ -95,7 +98,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
         mockMvc.perform(
             post("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(dto))
+                .content(objectMapper.writeValueAsString(dto))
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$").isNotEmpty)
             .andExpect(jsonPath("$.key").value(dto.key))
@@ -135,13 +138,13 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
         mockMvc.perform(
             post("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(dto))
+                .content(objectMapper.writeValueAsString(dto))
         ).andExpect(status().isOk)
 
         mockMvc.perform(
             post("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(dto))
+                .content(objectMapper.writeValueAsString(dto))
         ).andExpect(status().isConflict)
 
         val createdTab = caseTabRepository.findOne(
@@ -193,7 +196,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
         mockMvc.perform(
             put("/api/management/v1/case-definition/{caseDefinitionName}/tab", caseDefinitionName)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(updateDto))
+                .content(objectMapper.writeValueAsString(updateDto))
         )
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].key").value("tab-2"))
@@ -226,7 +229,7 @@ class CaseTabManagementResourceIntTest @Autowired constructor(
         mockMvc.perform(
             put("/api/management/v1/case-definition/{caseDefinitionName}/tab/{tabKey}", caseDefinitionName, key)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(jacksonObjectMapper().writeValueAsString(updateDto))
+                .content(objectMapper.writeValueAsString(updateDto))
         ).andExpect(status().isNoContent)
 
         val updatedTab = caseTabRepository.findOne(

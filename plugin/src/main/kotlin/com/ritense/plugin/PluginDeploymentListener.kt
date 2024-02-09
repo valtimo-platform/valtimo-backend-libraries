@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.ritense.plugin
 
-import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -38,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
+import com.ritense.plugin.annotation.PluginProperty as PluginPropertyAnnotation
 
 open class PluginDeploymentListener(
     private val pluginDefinitionResolver: PluginDefinitionResolver,

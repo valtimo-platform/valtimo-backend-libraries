@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.ritense.audit.repository;
 
 import com.ritense.audit.domain.AuditRecord;
 import com.ritense.audit.domain.AuditRecordId;
-import com.ritense.valtimo.contract.audit.AuditEvent;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -40,7 +39,7 @@ public interface AuditRecordRepository<T extends AuditRecord>
     );
 
     Page<AuditRecord> findByEventAndDocumentId(
-        List<Class<? extends AuditEvent>> eventTypes,
+        List<String> eventTypes,
         UUID documentId,
         Pageable pageable
     );
@@ -52,7 +51,7 @@ public interface AuditRecordRepository<T extends AuditRecord>
         Pageable pageable
     );
 
-    //TODO: unused? @Marijn
+    @Deprecated(since = "Since 12.0.0", forRemoval = true)
     Page<AuditRecord> findAuditRecordsByProperty(String key, Object value, Pageable pageable);
 
     void deleteAllBefore(LocalDateTime date);

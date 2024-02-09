@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.smartdocuments.autoconfigure
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.connector.domain.Connector
 import com.ritense.connector.service.ConnectorService
 import com.ritense.document.service.DocumentService
@@ -29,14 +30,14 @@ import com.ritense.smartdocuments.service.CamundaSmartDocumentGenerator
 import com.ritense.smartdocuments.service.SmartDocumentGenerator
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Scope
 import org.springframework.web.reactive.function.client.WebClient
 
-@Configuration
+@AutoConfiguration
 class SmartDocumentsAutoConfiguration {
 
     @Bean
@@ -45,11 +46,13 @@ class SmartDocumentsAutoConfiguration {
         smartDocumentGenerator: SmartDocumentGenerator,
         processDocumentAssociationService: ProcessDocumentAssociationService,
         documentService: DocumentService,
+        objectMapper: ObjectMapper,
     ): CamundaSmartDocumentGenerator {
         return CamundaSmartDocumentGenerator(
             smartDocumentGenerator,
             processDocumentAssociationService,
             documentService,
+            objectMapper,
         )
     }
 
@@ -81,7 +84,7 @@ class SmartDocumentsAutoConfiguration {
             smartDocumentsConnectorProperties,
             smartDocumentsWebClientBuilder,
             maxFileSize,
-            temporaryResourceStorageService
+            temporaryResourceStorageService,
         )
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 package com.ritense.valtimo.contract.result;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertStateTrue;
 
 /**
  * Object representing the result of a function. The result can either be the expected output data (resultingValue)
@@ -104,7 +105,7 @@ public interface FunctionResult<T, E extends OperationError> {
 
         Erroneous(List<OperationError> errors) {
             assertArgumentNotNull(errors, "errors may not be null");
-            assertStateTrue(errors.size() > 0, "errors may not be empty");
+            assertStateTrue(!errors.isEmpty(), "errors may not be empty");
             this.errors = errors;
         }
 

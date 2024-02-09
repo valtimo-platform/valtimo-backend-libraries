@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,12 @@ public class MandrillSyncEventReject {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         MandrillSyncEventReject that = (MandrillSyncEventReject) o;
         return Objects.equals(getReason(), that.getReason()) && Objects.equals(getDetail(), that.getDetail()) && Objects.equals(getEmail(), that.getEmail());
     }

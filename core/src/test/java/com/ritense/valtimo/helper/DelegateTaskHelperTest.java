@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,17 @@
 
 package com.ritense.valtimo.helper;
 
+import static com.ritense.valtimo.helper.DelegateTaskHelper.PUBLIC_TASK_PROPERTY_NAME;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.service.BpmnModelService;
+import java.util.Collections;
+import java.util.List;
 import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
 import org.camunda.bpm.engine.rest.dto.history.HistoricTaskInstanceDto;
@@ -26,15 +34,6 @@ import org.camunda.bpm.model.bpmn.instance.Task;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
-import java.util.List;
-
-import static com.ritense.valtimo.helper.DelegateTaskHelper.PUBLIC_TASK_PROPERTY_NAME;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class DelegateTaskHelperTest {
 

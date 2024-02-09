@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,12 @@ import java.util.Objects;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = StringProcessVariableDTOV2.class, name = "string"),
-        @JsonSubTypes.Type(value = DateProcessVariableDTOV2.class, name = "date"),
-        @JsonSubTypes.Type(value = BooleanProcessVariableDTOV2.class, name = "boolean"),
-        @JsonSubTypes.Type(value = EnumProcessVariableDTOV2.class, name = "enum"),
-        @JsonSubTypes.Type(value = LongProcessVariableDTOV2.class, name = "long"),
-        @JsonSubTypes.Type(value = FileUploadProcessVariableDTOV2.class, name = "fileUpload")
+    @JsonSubTypes.Type(value = StringProcessVariableDTOV2.class, name = "string"),
+    @JsonSubTypes.Type(value = DateProcessVariableDTOV2.class, name = "date"),
+    @JsonSubTypes.Type(value = BooleanProcessVariableDTOV2.class, name = "boolean"),
+    @JsonSubTypes.Type(value = EnumProcessVariableDTOV2.class, name = "enum"),
+    @JsonSubTypes.Type(value = LongProcessVariableDTOV2.class, name = "long"),
+    @JsonSubTypes.Type(value = FileUploadProcessVariableDTOV2.class, name = "fileUpload")
 })
 public abstract class ProcessVariableDTOV2 {
     private String name;

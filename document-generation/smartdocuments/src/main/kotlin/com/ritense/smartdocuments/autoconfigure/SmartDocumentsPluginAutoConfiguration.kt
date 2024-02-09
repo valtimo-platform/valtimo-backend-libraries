@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,26 +18,26 @@ package com.ritense.smartdocuments.autoconfigure
 
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
-import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.processdocument.service.DocumentDelegateService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
 import com.ritense.smartdocuments.plugin.SmartDocumentsPlugin
 import com.ritense.smartdocuments.plugin.SmartDocumentsPluginFactory
 import com.ritense.valueresolver.ValueResolverService
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
-@Configuration
+@AutoConfiguration
 @ConditionalOnClass(PluginFactory::class)
 class SmartDocumentsPluginAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(SmartDocumentsPluginFactory::class)
     fun smartDocumentsPluginFactory(
-        processDocumentService: ProcessDocumentService,
+        documentDelegateService: DocumentDelegateService,
         applicationEventPublisher: ApplicationEventPublisher,
         smartDocumentsClient: SmartDocumentsClient,
         valueResolverService: ValueResolverService,
@@ -45,7 +45,7 @@ class SmartDocumentsPluginAutoConfiguration {
         pluginService: PluginService
     ): PluginFactory<SmartDocumentsPlugin> {
         return SmartDocumentsPluginFactory(
-            processDocumentService,
+            documentDelegateService,
             applicationEventPublisher,
             smartDocumentsClient,
             valueResolverService,

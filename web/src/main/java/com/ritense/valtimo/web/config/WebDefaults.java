@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,19 @@
 
 package com.ritense.valtimo.web.config;
 
-import java.util.Set;
 import static java.util.Set.of;
+
+import java.util.Set;
 
 public class WebDefaults {
 
+    private WebDefaults() {
+    }
+
     public static final class Cors {
+        private Cors() {
+        }
+
         public static final Set<String> paths = of("/api/**", "management/**", "/v3/api-docs");
     }
 }

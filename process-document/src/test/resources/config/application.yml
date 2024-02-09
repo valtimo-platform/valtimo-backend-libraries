@@ -3,17 +3,9 @@ spring:
         allow-bean-definition-overriding: false
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:3310/process-document-test
-        username: valtimo
-        password: password
-        hikari:
-            auto-commit: false
     liquibase:
         enabled: false
     jpa:
-        database-platform: org.hibernate.dialect.PostgreSQL10Dialect
-        database: postgresql
         show_sql: true
         open-in-view: false
         properties:
@@ -32,10 +24,6 @@ spring:
                     provider_disables_autocommit: true
         hibernate:
             ddl-auto: none
-            naming:
-                physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-                implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
-            use-new-id-generator-mappings: false
 
 audit:
     record:
@@ -59,7 +47,6 @@ aws:
         bucketRegion: eu-central-1
 
 valtimo:
-    database: postgres
     mandrill:
         apiKey: n/a
         dateFormat: dd-MM-yyyy
@@ -68,3 +55,10 @@ valtimo:
         reminderTemplate: bpc-task-reminder
     plugin:
         encryption-secret: "abcdefghijklmnop"
+
+camunda:
+    bpm:
+        history-level: audit
+        generic-properties:
+            properties:
+                enforceHistoryTimeToLive: false

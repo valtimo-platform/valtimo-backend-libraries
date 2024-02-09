@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.ritense.valtimo.camunda.processaudit;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
@@ -23,8 +25,6 @@ import org.camunda.bpm.engine.impl.history.handler.CompositeHistoryEventHandler;
 import org.camunda.bpm.engine.impl.history.handler.DbHistoryEventHandler;
 import org.camunda.bpm.engine.impl.history.handler.HistoryEventHandler;
 import org.springframework.context.ApplicationEventPublisher;
-import java.util.ArrayList;
-import java.util.List;
 
 public class HistoryEventAuditProcessEnginePlugin implements ProcessEnginePlugin {
 

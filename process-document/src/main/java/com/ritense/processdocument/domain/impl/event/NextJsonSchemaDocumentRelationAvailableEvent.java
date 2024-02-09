@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package com.ritense.processdocument.domain.impl.event;
 
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
+
 import com.ritense.document.domain.relation.DocumentRelationType;
 import com.ritense.valtimo.contract.processdocument.event.NextDocumentRelationAvailableEvent;
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 
 public class NextJsonSchemaDocumentRelationAvailableEvent implements NextDocumentRelationAvailableEvent {
 

@@ -1,7 +1,6 @@
 package com.ritense.exact.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.IntNode
 import com.fasterxml.jackson.databind.node.ObjectNode
@@ -12,6 +11,7 @@ import com.ritense.exact.service.request.ExactExchangeRequest
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import java.time.Duration
 import java.time.LocalDateTime
 import okhttp3.mockwebserver.MockResponse
@@ -44,7 +44,7 @@ internal class ExactServiceTest {
     fun setUp() {
         exactClient = ExactPluginAutoConfiguration().exactClient("http://localhost:${mockWebServer.port}")
         pluginService = mock()
-        objectMapper = JsonMapper.builder().findAndAddModules().build()
+        objectMapper = MapperSingleton.get()
         exactService = ExactService("", exactClient, pluginService, objectMapper)
 
     }

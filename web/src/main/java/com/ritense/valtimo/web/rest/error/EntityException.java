@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package com.ritense.valtimo.web.rest.error;
 import org.zalando.problem.AbstractThrowableProblem;
 
 public class EntityException extends AbstractThrowableProblem {
-    private String translationKey;
-    private String entityName;
+    private final String translationKey;
+    private final String entityName;
 
     public EntityException(String message, String translationKey, String entityName) {
         this.translationKey = translationKey;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,12 @@ import com.ritense.haalcentraal.brp.client.HaalCentraalBrpClient
 import com.ritense.haalcentraal.brp.domain.Person
 import com.ritense.haalcentraal.brp.domain.Personen
 import com.ritense.haalcentraal.brp.web.rest.request.GetPeopleRequest
-import kotlinx.coroutines.runBlocking
 import java.security.InvalidParameterException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.runBlocking
 
+@Deprecated("Since 12.0.0")
 @ConnectorType(name = "HaalCentraalBrp")
 class HaalCentraalBrpConnector(
     private var haalCentraalBrpProperties: HaalCentraalBrpProperties,

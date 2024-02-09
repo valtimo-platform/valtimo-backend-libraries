@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package com.ritense.valtimo.config;
 
-import org.springframework.boot.SpringApplication;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.boot.SpringApplication;
 
 /**
  * Utility class to load a Spring profile to be used as default

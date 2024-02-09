@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,10 @@ package com.ritense.connector.domain
 import com.fasterxml.jackson.annotation.JsonValue
 import com.ritense.valtimo.contract.domain.AbstractId
 import java.util.UUID
-import javax.persistence.Column
-import javax.persistence.Embeddable
+import jakarta.persistence.Column
+import jakarta.persistence.Embeddable
 
+@Deprecated("Since 12.0.0")
 @Embeddable
 data class ConnectorTypeId(
 

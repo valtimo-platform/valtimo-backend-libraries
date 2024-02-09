@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,22 @@
 
 package com.ritense.authorization
 
+import com.ritense.authorization.testimpl.TestAuthorizationAutoConfiguration
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import com.ritense.valtimo.contract.config.LiquibaseRunnerAutoConfiguration
+import javax.sql.DataSource
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
-import javax.sql.DataSource
 
 @SpringBootApplication
+@Import(LiquibaseRunnerAutoConfiguration::class, TestAuthorizationAutoConfiguration::class, HibernateJsonMapperConfiguration::class)
 @EntityScan("com.ritense.authorization.testimpl")
 class TestApplication {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.ritense.processdocument.BaseTest
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -37,8 +38,8 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.time.LocalDateTime
-import java.util.UUID
 import java.util.Optional
+import java.util.UUID
 
 
 internal class DocumentDelegateServiceTest : BaseTest() {
@@ -78,7 +79,8 @@ internal class DocumentDelegateServiceTest : BaseTest() {
             processDocumentService,
             documentService,
             jsonSchemaDocumentService,
-            userManagementService
+            userManagementService,
+            MapperSingleton.get()
         )
         delegateExecutionFake =
             DelegateExecutionFake("id").withProcessBusinessKey("56f29315-c581-4c26-9b70-8bc818e8c86e")

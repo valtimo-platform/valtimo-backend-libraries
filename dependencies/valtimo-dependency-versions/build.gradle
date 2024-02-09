@@ -1,0 +1,116 @@
+/*
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
+ *
+ * Licensed under EUPL, Version 1.2 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+javaPlatform {
+    allowDependencies()
+}
+
+dependencies {
+    api(platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}"))
+    api(platform("com.fasterxml.jackson:jackson-bom:${jacksonVersion}"))
+    api(platform("org.junit:junit-bom:${junitVersion}"))
+    api(platform("software.amazon.awssdk:bom:${awssdkVersion}"))
+    constraints {
+        api(project(":audit"))
+        api(project(":authorization"))
+        api(project(":case"))
+        api(project(":changelog"))
+        api(project(":connector"))
+        api(project(":contract"))
+        api(project(":core"))
+        api(project(":dashboard"))
+        api(project(":data-provider"))
+        api(project(":document"))
+        api(project(":document-generation"))
+        api(project(":external-event"))
+        api(project(":exporter"))
+        api(project(":mail:flowmailer"))
+        api(project(":form"))
+        api(project(":form-flow"))
+        api(project(":form-flow-valtimo"))
+        api(project(":importer"))
+        api(project(":keycloak-iam"))
+        api(project(":document-generation:local-document-generation"))
+        api(project(":mail:local-mail"))
+        api(project(":resource:local-resource"))
+        api(project(":localization"))
+        api(project(":mail"))
+        api(project(":mail:mandrill"))
+        api(project(":milestones"))
+        api(project(":notes"))
+        api(project(":outbox"))
+        api(project(":outbox:outbox-rabbitmq"))
+        api(project(":plugin"))
+        api(project(":plugin-valtimo"))
+        api(project(":process-document"))
+        api(project(":process-link"))
+        api(project(":resource"))
+        api(project(":search"))
+        api(project(":document-generation::smartdocuments"))
+        api(project(":resource:temporary-resource-storage"))
+        api(project(":test-utils-common"))
+        api(project(":value-resolver"))
+        api(project(":dependencies:valtimo-dependencies"))
+        api(project(":web"))
+        api(project(":mail:wordpress-mail"))
+
+        //GZAC
+        api(project(":besluit"))
+        api(project(":contactmoment"))
+        api(project(":haalcentraal:haalcentraal-brp"))
+        api(project(":klant"))
+        api(project(":plugin-authentication:notificaties-api-authentication"))
+        api(project(":plugin-authentication:objecten-api-authentication"))
+        api(project(":plugin-authentication:openzaak-plugin-authentication"))
+        api(project(":objects-api"))
+        api(project(":openzaak"))
+        api(project(":resource:openzaak-resource"))
+
+        api(project(":zgw:portaaltaak"))
+        api(project(":zgw:besluiten-api"))
+        api(project(":zgw:catalogi-api"))
+        api(project(":zgw:documenten-api"))
+        api(project(":zgw:notificaties-api"))
+        api(project(":zgw:object-management"))
+        api(project(":zgw:objecten-api"))
+        api(project(":zgw:objecttypen-api"))
+        api(project(":zgw:verzoek"))
+        api(project(":zgw:zaken-api"))
+        api(project(":dependencies:valtimo-gzac-dependencies"))
+
+        //!GZAC
+
+        api("org.liquibase:liquibase-core:${liquibaseVersion}")
+
+        api("org.liquibase.ext:liquibase-hibernate6:${liquibaseVersion}")
+        api("org.hibernate.orm:hibernate-core:${hibernateCoreVersion}")
+
+        //ShedLock
+        api("net.javacrumbs.shedlock:shedlock-spring:${shedlockVersion}")
+        api("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:${shedlockVersion}")
+
+        api("de.codecentric:spring-boot-admin-starter-client:${springBootAdminStarterClientVersion}")
+        api "org.json:json:${orgJsonJsonVersion}"
+        api("org.yaml:snakeyaml:${snakeYamlVersionOverride}")
+        api("io.netty:netty-codec:${nettyCodecVersionOverride}")
+
+        api("com.rabbitmq:amqp-client:${amqpCLientVersion}")
+        api("jakarta.inject:jakarta.inject-api:${jakartaInjectVersion}")
+        api("io.github.microutils:kotlin-logging:${kotlinLoggingVersion}")
+    }
+}
+
+apply from: "gradle/publishing.gradle"

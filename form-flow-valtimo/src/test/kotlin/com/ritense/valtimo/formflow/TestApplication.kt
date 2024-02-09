@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
 package com.ritense.valtimo.formflow
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.resource.service.ResourceService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.runApplication
@@ -43,7 +42,7 @@ class TestApplication {
         @Bean
         @ConditionalOnMissingBean(ObjectMapper::class)
         fun objectMapper(): ObjectMapper {
-            return jacksonObjectMapper().registerModule(JavaTimeModule())
+            return MapperSingleton.get()
         }
     }
 }

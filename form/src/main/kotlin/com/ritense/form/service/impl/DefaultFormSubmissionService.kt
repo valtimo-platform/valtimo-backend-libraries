@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package com.ritense.form.service.impl
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
@@ -31,7 +31,6 @@ import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.domain.FormProcessLink
-import com.ritense.form.domain.Mapper
 import com.ritense.form.domain.submission.formfield.FormField
 import com.ritense.form.service.FormSubmissionService
 import com.ritense.form.service.PrefillFormService
@@ -63,11 +62,11 @@ import com.ritense.valtimo.contract.result.OperationError.FromException
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
 import com.ritense.valueresolver.ValueResolverServiceImpl
-import java.util.UUID
-import kotlin.jvm.optionals.getOrNull
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.transaction.annotation.Transactional
+import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
 import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 
@@ -82,7 +81,8 @@ open class DefaultFormSubmissionService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val prefillFormService: PrefillFormService,
     private val authorizationService: AuthorizationService,
-    private val valueResolverService: ValueResolverService
+    private val valueResolverService: ValueResolverService,
+    private val objectMapper: ObjectMapper,
 ) : FormSubmissionService {
 
     @Transactional
@@ -191,7 +191,7 @@ open class DefaultFormSubmissionService(
         // Preprocess the document paths & values. The result is an ObjectNode.
         val documentValues = categorizedMap[DOC_PREFIX]
             ?.let { valueResolverService.preProcessValuesForNewCase(it)[DOC_PREFIX] as? ObjectNode }
-            ?: Mapper.INSTANCE.get().createObjectNode()
+            ?: objectMapper.createObjectNode()
 
         // After pre-processing process-variables we have a key-value map where the prefix is stripped from the keys.
         val processVariables = categorizedMap[PV_PREFIX]
@@ -231,7 +231,7 @@ open class DefaultFormSubmissionService(
             return null
         }
 
-        return Mapper.INSTANCE.get().treeToValue<Any>(node)
+        return objectMapper.treeToValue<Any>(node)
     }
 
     private fun getProcessDefinition(
@@ -261,7 +261,7 @@ open class DefaultFormSubmissionService(
 
     private fun getProcessVariables(taskInstanceId: String?): JsonNode? {
         return if (!taskInstanceId.isNullOrEmpty()) {
-            Mapper.INSTANCE.get().valueToTree(camundaTaskService.getVariables(taskInstanceId))
+            objectMapper.valueToTree(camundaTaskService.getVariables(taskInstanceId))
         } else {
             null
         }
@@ -296,8 +296,8 @@ open class DefaultFormSubmissionService(
         val preJsonPatch = prefillFormService.preSubmissionTransform(
             formDefinition,
             submittedDocumentContent,
-            processVariables ?: jacksonObjectMapper().createObjectNode(),
-            document?.content()?.asJson() ?: jacksonObjectMapper().createObjectNode()
+            processVariables ?: objectMapper.createObjectNode(),
+            document?.content()?.asJson() ?: objectMapper.createObjectNode()
         )
         logger.debug { "getContent:$submittedDocumentContent" }
         return preJsonPatch
@@ -384,8 +384,7 @@ open class DefaultFormSubmissionService(
             processDefinitionKey,
             ModifyDocumentRequest(
                 document.id().toString(),
-                submittedDocumentContent,
-                document.version().toString()
+                submittedDocumentContent
             ).withJsonPatch(preJsonPatch)
         ).withProcessVars(formDefinedProcessVariables)
     }
@@ -400,8 +399,7 @@ open class DefaultFormSubmissionService(
         return ModifyDocumentAndCompleteTaskRequest(
             ModifyDocumentRequest(
                 document.id().toString(),
-                submittedDocumentContent,
-                document.version().toString()
+                submittedDocumentContent
             ).withJsonPatch(preJsonPatch),
             taskInstanceId
         ).withProcessVars(formDefinedProcessVariables)

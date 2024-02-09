@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
-import com.ritense.valtimo.contract.json.Mapper
 import com.ritense.valueresolver.ValueResolverFactory
 import org.camunda.bpm.engine.delegate.VariableScope
 import java.util.UUID
@@ -55,7 +54,7 @@ class ZaakObjectValueResolverFactory(
     override fun handleValues(
         processInstanceId: String,
         variableScope: VariableScope?,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     ) {
         TODO()
     }
@@ -68,7 +67,7 @@ class ZaakObjectValueResolverFactory(
         return if (node == null || node.isMissingNode || node.isNull) {
             null
         } else if (node.isValueNode || node.isArray || node.isObject) {
-            Mapper.INSTANCE.get().treeToValue(node, Object::class.java)
+            objectMapper.treeToValue(node, Object::class.java)
         } else {
             node.asText()
         }

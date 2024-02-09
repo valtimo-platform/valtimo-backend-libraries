@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2023 Ritense BV, the Netherlands.
+ *  Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package com.ritense.valtimo.camunda.domain
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
-import javax.persistence.Table
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "ACT_RU_IDENTITYLINK")

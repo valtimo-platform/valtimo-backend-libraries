@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,29 @@
 
 package com.ritense.document.domain.impl;
 
-import com.ritense.document.BaseTest;
-import com.ritense.document.domain.DocumentVersion;
-import org.junit.jupiter.api.Test;
-import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class JsonSchemaDocumentTest extends BaseTest {
+import com.ritense.document.BaseTest;
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
+
+class JsonSchemaDocumentTest extends BaseTest {
 
     @Test
-    public void shouldNotCreateDocumentWithEmptyContent() {
+    void shouldNotCreateDocumentWithEmptyContent() {
         assertThrows(IllegalArgumentException.class, () -> new JsonDocumentContent(""));
     }
 
     @Test
-    public void shouldBeEqualObjects() {
+    void shouldBeEqualObjects() {
         final var contentOne = new JsonDocumentContent("{\"firstName\": \"Jan\"}");
         final var contentTwo = new JsonDocumentContent(contentOne);
         assertThat(contentOne).isEqualTo(contentTwo);
     }
 
     @Test
-    public void shouldCreateDocumentWithEmptyJsonContent() {
+    void shouldCreateDocumentWithEmptyJsonContent() {
         final var content = new JsonDocumentContent("{}");
         final var createResult = createDocument(definitionOf("person"), content);
 
@@ -47,7 +47,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnNoAdditionalPropertyAllowedValidationError() {
+    void shouldReturnNoAdditionalPropertyAllowedValidationError() {
         final var content = new JsonDocumentContent("{\"id\": \"123-123\"}");
         final var createResult = createDocument(definitionOf("additional-property-example"), content);
 
@@ -57,7 +57,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldCreateDocumentWithMatchingPropertyOnly() {
+    void shouldCreateDocumentWithMatchingPropertyOnly() {
         final var content = new JsonDocumentContent("{\"firstname\": \"aName\"}");
         final var createResult = createDocument(definitionOf("additional-property-example"), content);
 
@@ -66,7 +66,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnNoAdditionalPropertyAllowedValidationErrorWithCombinedSchema() {
+    void shouldReturnNoAdditionalPropertyAllowedValidationErrorWithCombinedSchema() {
         final var content = new JsonDocumentContent("" +
             "{\"address\": " +
             "{ \"additionalProp\": \"somevalue\", " +
@@ -83,7 +83,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldCreateDocumentWithMatchingPropertiesOnlyWithCombinedSchema() {
+    void shouldCreateDocumentWithMatchingPropertiesOnlyWithCombinedSchema() {
         final var content = new JsonDocumentContent("{\"address\": {\"streetName\": \"Straatnaam\", \"number\": \"1F\", \"city\": \"Amsterdam\", \"province\": \"Noord-holland\"} }");
         final var createResult = createDocument(definitionOf("combined-schema-additional-property-example"), content);
 
@@ -92,7 +92,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnReadOnlyValidationError() {
+    void shouldReturnReadOnlyValidationError() {
         final var content = new JsonDocumentContent("{\"firstName\": \"changed\"}");
         final var createResult = createDocument(definitionOf("readonly-example"), content);
 
@@ -102,7 +102,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnUuidValidationError() {
+    void shouldReturnUuidValidationError() {
         final var content = new JsonDocumentContent("{\"id\": \"123-123\"}");
         final var createResult = createDocument(definitionOf("uuid-example"), content);
 
@@ -112,7 +112,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnValidUuidDocument() {
+    void shouldReturnValidUuidDocument() {
         final var content = new JsonDocumentContent("{\"id\": \"" + UUID.randomUUID() + "\"}");
         final var createResult = createDocument(definitionOf("uuid-example"), content);
 
@@ -121,7 +121,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnDocumentWithDefaultValue() {
+    void shouldReturnDocumentWithDefaultValue() {
         final var content = new JsonDocumentContent("{\"firstName\": \"Jan\"}");
 
         final var createResult = createDocument(definitionOf("defaults-example"), content);
@@ -134,7 +134,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnMaxLengthValidationError() {
+    void shouldReturnMaxLengthValidationError() {
         final var content = new JsonDocumentContent("{\"firstName\": \"Joeasdasdsadsadasdasdasdasdasdasdasd\"}");
         final var createResult = createDocument(definitionOf("person"), content);
 
@@ -143,7 +143,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnDocumentWithIntegerValue() {
+    void shouldReturnDocumentWithIntegerValue() {
         final var content = new JsonDocumentContent("{\"age\": 40 }");
         final var createResult = createDocument(definitionOf("person"), content);
 
@@ -155,7 +155,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnDocumentWithDateValue() {
+    void shouldReturnDocumentWithDateValue() {
         final var content = new JsonDocumentContent("{\"birthday\": \"1982-01-01\" }");
         final var createResult = createDocument(definitionOf("person"), content);
 
@@ -167,7 +167,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnDocumentWithBooleanValue() {
+    void shouldReturnDocumentWithBooleanValue() {
         final var content = new JsonDocumentContent("{\"is-cool\": true }");
         final var createResult = createDocument(definitionOf("person"), content);
 
@@ -179,7 +179,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldCreateDocument() {
+    void shouldCreateDocument() {
         final var content = new JsonDocumentContent("{\"firstName\": \"John\"}");
         final var createResult = createDocument(definitionOf("person"), content);
 
@@ -188,7 +188,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldModifyDocument() {
+    void shouldModifyDocument() {
         var definition = definitionOf("person");
 
         final var content = new JsonDocumentContent("{\"firstName\": \"John\"}");
@@ -197,7 +197,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
         final var document = createResult.resultingDocument().orElseThrow();
 
         final var contentModified = new JsonDocumentContent("{\"firstName\": \"Johnny\"}");
-        final var result = document.applyModifiedContent(contentModified, definition, document.version());
+        final var result = document.applyModifiedContent(contentModified, definition);
 
         final var modifiedDocument = result.resultingDocument().orElseThrow();
 
@@ -206,7 +206,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldModifyDocumentPartial() {
+    void shouldModifyDocumentPartial() {
         var definition = definitionOf("person");
 
         final var content = new JsonDocumentContent("{\"firstName\": \"John\", \"lastName\": \"Doe\"}");
@@ -216,7 +216,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
 
         final var partialContentChange = new JsonDocumentContent("{\"firstName\": \"Johnny\"}");
         final var contentModified = JsonDocumentContent.build(content.asJson(), partialContentChange.asJson(), null);
-        final var result = document.applyModifiedContent(contentModified, definition, document.version());
+        final var result = document.applyModifiedContent(contentModified, definition);
 
         final var modifiedDocument = result.resultingDocument().orElseThrow();
 
@@ -226,27 +226,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotModifyDocumentWhenVersionDiverged() {
-        var definition = definitionOf("person");
-
-        final var content = new JsonDocumentContent("{\"firstName\": \"John\"}");
-        final var createResult = createDocument(definitionOf("person"), content);
-
-        final var document = createResult.resultingDocument().orElseThrow();
-
-        var contentModified = new JsonDocumentContent("{\"firstName\": \"Johnny\"}");
-        DocumentVersion version = document.version();
-        JsonSchemaDocument.ModifyDocumentResultImpl result = document.applyModifiedContent(contentModified, definition, version);
-
-        contentModified = new JsonDocumentContent("{\"firstName\": \"Henk\"}");
-        result = result.resultingDocument().orElseThrow().applyModifiedContent(contentModified, definition, version);
-
-        assertThat(result.errors()).hasSize(1);
-        assertThat(result.resultingDocument()).isEmpty();
-    }
-
-    @Test
-    public void shouldAddArrayItem() {
+    void shouldAddArrayItem() {
         var definition = definitionOf("person");
         final var content = new JsonDocumentContent("{\"files\": [{\"id\" : \"1\"}]}");
         final var createResult = createDocument(definitionOf("array-example"), content);
@@ -260,7 +240,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
             null
         );
 
-        final var result = document.applyModifiedContent(jsonDocumentContent, definition, document.version());
+        final var result = document.applyModifiedContent(jsonDocumentContent, definition);
 
         final var modifiedDocument = result.resultingDocument().orElseThrow();
 
@@ -270,7 +250,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldEmptyArrayItems() {
+    void shouldEmptyArrayItems() {
         var definition = definitionOf("array-example");
         final var content = new JsonDocumentContent("{\"files\": [{\"id\" : \"1\"}, {\"id\" : \"2\"}, {\"id\" : \"3\"}]}");
         final var createResult = createDocument(definition, content);
@@ -278,7 +258,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
         final var document = createResult.resultingDocument().orElseThrow();
 
         final var contentModified = new JsonDocumentContent("{\"files\": [{\"id\" : \"1\"}, {\"id\" : \"\"}, {\"id\" : \"\"}]}");
-        final var result = document.applyModifiedContent(contentModified, definition, document.version());
+        final var result = document.applyModifiedContent(contentModified, definition);
 
         final var modifiedDocument = result.resultingDocument().orElseThrow();
 
@@ -289,7 +269,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldEmptyAllArrayRefItems() {
+    void shouldEmptyAllArrayRefItems() {
         var definition = definitionOf("array-example");
         final var content = new JsonDocumentContent("{\"files\" : [{\"id\" : \"1\"}, {\"id\" : \"2\"}, {\"id\" : \"3\"}]}");
         final var createResult = createDocument(definition, content);
@@ -297,7 +277,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
         final var document = createResult.resultingDocument().orElseThrow();
 
         final var contentModified = new JsonDocumentContent("{\"files\" : [{\"id\" : \"\"}, {\"id\" : \"\"}, {\"id\" : \"\"}]}");
-        final var result = document.applyModifiedContent(contentModified, definition, document.version());
+        final var result = document.applyModifiedContent(contentModified, definition);
 
         final var modifiedDocument = result.resultingDocument().orElseThrow();
 
@@ -308,7 +288,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotAllowAdditionalItemInArray() {
+    void shouldNotAllowAdditionalItemInArray() {
         var definition = definitionOf("array-example");
         final var content = new JsonDocumentContent("{\"files\" : [{\"id\" : \"1\"}, {\"id\" : \"2\"}, {\"id\" : \"3\"}]}");
         final var createResult = createDocument(definition, content);
@@ -316,13 +296,13 @@ public class JsonSchemaDocumentTest extends BaseTest {
         final var document = createResult.resultingDocument().orElseThrow();
 
         final var contentModified = new JsonDocumentContent("{\"files\" : [{\"id\" : \"1\"}, {\"id\" : \"2\"}, {\"id\" : \"3\"}, \"aRandom\"]}");
-        final var result = document.applyModifiedContent(contentModified, definition, document.version());
+        final var result = document.applyModifiedContent(contentModified, definition);
 
         assertThat(result.errors()).hasSize(1);
     }
 
     @Test
-    public void shouldReturnNextEnumValueConditionally() {
+    void shouldReturnNextEnumValueConditionally() {
         final var content = new JsonDocumentContent("{\"status\": \"1\"}");
         final var createResult = createDocument(definitionOf("conditional-example"), content);
 
@@ -332,7 +312,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
     }
 
     @Test
-    public void shouldNotAllowAdditionalItemInReferencedArray() {
+    void shouldNotAllowAdditionalItemInReferencedArray() {
         var definition = definitionOf("referenced-array");
         final var content = new JsonDocumentContent("{\"addresses\" : [{\"streetName\" : \"Funenpark\"}]}");
         final var createResult = createDocument(definition, content);
@@ -340,7 +320,7 @@ public class JsonSchemaDocumentTest extends BaseTest {
         final var document = createResult.resultingDocument().orElseThrow();
 
         final var contentModified = new JsonDocumentContent("{\"addresses\" : [{\"streetName2\" : \"Funenpark 1F\"}]}");
-        final var result = document.applyModifiedContent(contentModified, definition, document.version());
+        final var result = document.applyModifiedContent(contentModified, definition);
 
         assertThat(result.errors()).hasSize(1);
     }

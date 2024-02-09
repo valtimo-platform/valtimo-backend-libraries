@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package com.ritense.valtimo.web.rest.dto;
 
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.dto.CamundaTaskDto;
-import org.camunda.bpm.engine.form.FormField;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
 import java.util.List;
 import java.util.Map;
+import org.camunda.bpm.engine.form.FormField;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 
 public class CustomTaskDto {
 

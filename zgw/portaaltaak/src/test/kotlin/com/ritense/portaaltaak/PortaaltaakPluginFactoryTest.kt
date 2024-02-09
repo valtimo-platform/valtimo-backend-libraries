@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package com.ritense.portaaltaak
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.notificatiesapi.NotificatiesApiPlugin
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.json.MapperSingleton
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -35,7 +35,7 @@ internal class PortaaltaakPluginFactoryTest {
     @Test
     fun `should create PortaaltaakPlugin`() {
         val pluginService = mock<PluginService>()
-        whenever(pluginService.getObjectMapper()).thenReturn(jacksonObjectMapper())
+        whenever(pluginService.getObjectMapper()).thenReturn(MapperSingleton.get())
 
         val notificatiesApiPluginMock = mock<NotificatiesApiPlugin>()
         whenever(pluginService.createInstance(any<PluginConfigurationId>())).thenReturn(notificatiesApiPluginMock)
@@ -52,7 +52,7 @@ internal class PortaaltaakPluginFactoryTest {
         val pluginConfiguration = PluginConfiguration(
             PluginConfigurationId.newId(),
             "title",
-            jacksonObjectMapper()
+            MapperSingleton.get()
                 .readTree(portaaltaakPluginProperties)
                 .deepCopy(),
             pluginDefinition

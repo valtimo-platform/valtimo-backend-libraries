@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.ritense.documentenapi.web.rest
 import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.core.io.InputStreamResource
 import org.springframework.http.HttpHeaders
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.net.URLConnection
 
 @RestController
+@SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class DocumentenApiResource(
     val documentenApiService: DocumentenApiService

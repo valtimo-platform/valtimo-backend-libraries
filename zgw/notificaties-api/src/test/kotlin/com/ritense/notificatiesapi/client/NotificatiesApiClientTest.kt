@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,11 @@
 
 package com.ritense.notificatiesapi.client
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
 import com.ritense.notificatiesapi.domain.Abonnement
 import com.ritense.notificatiesapi.domain.Kanaal
-import java.util.UUID
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
+import com.ritense.valtimo.contract.json.MapperSingleton
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -36,6 +33,9 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import java.util.UUID
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class NotificatiesApiClientTest {
@@ -83,7 +83,7 @@ class NotificatiesApiClientTest {
             )
         }
         val recordedRequest = mockNotificatiesApi.takeRequest()
-        val requestBody = jacksonObjectMapper().readValue<Map<String, Any>>(
+        val requestBody = MapperSingleton.get().readValue<Map<String, Any>>(
             recordedRequest.body.readUtf8()
         )
 
@@ -198,7 +198,7 @@ class NotificatiesApiClientTest {
             )
         }
         val recordedRequest = mockNotificatiesApi.takeRequest()
-        val requestBody = jacksonObjectMapper().readValue<Map<String, Any>>(
+        val requestBody = MapperSingleton.get().readValue<Map<String, Any>>(
             recordedRequest.body.readUtf8()
         )
 

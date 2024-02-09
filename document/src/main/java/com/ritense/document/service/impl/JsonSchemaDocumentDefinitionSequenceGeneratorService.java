@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,9 @@ public class JsonSchemaDocumentDefinitionSequenceGeneratorService implements Doc
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentDefinitionSequenceGeneratorService.class);
     private final DocumentDefinitionSequenceRepository<JsonSchemaDocumentDefinitionSequenceRecord> documentDefinitionSequenceRepository;
 
-    public JsonSchemaDocumentDefinitionSequenceGeneratorService(DocumentDefinitionSequenceRepository<JsonSchemaDocumentDefinitionSequenceRecord> documentDefinitionSequenceRepository) {
+    public JsonSchemaDocumentDefinitionSequenceGeneratorService(
+        DocumentDefinitionSequenceRepository<JsonSchemaDocumentDefinitionSequenceRecord> documentDefinitionSequenceRepository
+    ) {
         this.documentDefinitionSequenceRepository = documentDefinitionSequenceRepository;
     }
 

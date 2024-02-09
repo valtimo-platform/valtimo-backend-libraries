@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,18 +29,19 @@ import com.ritense.objectsapi.domain.request.ModifyObjectRequest
 import com.ritense.objectsapi.opennotificaties.OpenNotificatieConnector
 import com.ritense.objectsapi.service.ObjectsApiConnector
 import com.ritense.objectsapi.taak.TaakObjectConnector.Companion.TAAK_CONNECTOR_NAME
-import com.ritense.openzaak.provider.BsnProvider
-import com.ritense.openzaak.provider.KvkProvider
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverService
+import com.ritense.zakenapi.provider.BsnProvider
+import com.ritense.zakenapi.provider.KvkProvider
+import org.camunda.bpm.engine.delegate.DelegateTask
+import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 import java.net.URI
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlin.contracts.ExperimentalContracts
-import org.camunda.bpm.engine.delegate.DelegateTask
-import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.portaaltaak.PortaaltaakPlugin"))
 @OptIn(ExperimentalContracts::class)
 @ConnectorType(name = TAAK_CONNECTOR_NAME)
 class TaakObjectConnector(
@@ -77,7 +78,7 @@ class TaakObjectConnector(
     }
 
     fun modifyTaakObjectStatusVerwerkt(taakObject: GenericObject<TaakObjectDto>) {
-        val data = Mapper.INSTANCE.get().convertValue(taakObject.record.data, jacksonTypeRef<MutableMap<String, Any>>())
+        val data = MapperSingleton.get().convertValue(taakObject.record.data, jacksonTypeRef<MutableMap<String, Any>>())
         data["status"] = TaakObjectStatus.verwerkt.toString()
         val request = ModifyObjectRequest(
             taakObject.uuid,
@@ -92,7 +93,7 @@ class TaakObjectConnector(
     }
 
     fun updateTaakObjectStatus(taakObject: GenericObject<TaakObjectDto>) {
-        val data = Mapper.INSTANCE.get().convertValue(taakObject.record.data, jacksonTypeRef<MutableMap<String, Any>>())
+        val data = MapperSingleton.get().convertValue(taakObject.record.data, jacksonTypeRef<MutableMap<String, Any>>())
         data["status"] = taakObject.record.data.status
 
         val request = ModifyObjectRequest(
@@ -116,7 +117,7 @@ class TaakObjectConnector(
                 Record(
                     typeVersion = objectType.typeVersion,
                     startAt = DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now()),
-                    data = Mapper.INSTANCE.get().convertValue(taakObject, jacksonTypeRef<Map<String, Any>>())
+                    data = MapperSingleton.get().convertValue(taakObject, jacksonTypeRef<Map<String, Any>>())
                 )
             )
         )

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,16 @@
 
 package com.ritense.document.web.rest.impl;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.search.SearchRequestValidator;
 import com.ritense.document.domain.search.SearchWithConfigRequest;
 import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.impl.SearchRequest;
 import com.ritense.document.web.rest.DocumentSearchResource;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -32,10 +36,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.data.domain.Sort.Direction.DESC;
-
 @RestController
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class JsonSchemaDocumentSearchResource implements DocumentSearchResource {
 

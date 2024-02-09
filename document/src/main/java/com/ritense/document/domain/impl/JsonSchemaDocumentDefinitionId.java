@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,18 @@
 
 package com.ritense.document.domain.impl;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.ritense.document.domain.DocumentDefinition;
-import com.ritense.valtimo.contract.domain.AbstractId;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Transient;
-import java.util.Objects;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentLength;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentRange;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentTrue;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.valtimo.contract.domain.AbstractId;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Transient;
+import java.util.Objects;
 
 @Embeddable
 public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumentDefinitionId>
@@ -100,8 +101,12 @@ public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumen
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         JsonSchemaDocumentDefinitionId that = (JsonSchemaDocumentDefinitionId) o;
         return version == that.version && Objects.equals(name, that.name);
     }

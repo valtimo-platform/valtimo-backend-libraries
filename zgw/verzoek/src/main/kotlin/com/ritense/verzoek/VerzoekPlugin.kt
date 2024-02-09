@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import com.ritense.plugin.domain.EventType
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import com.ritense.zgw.Rsin
-import javax.validation.Valid
-import javax.validation.ValidationException
+import jakarta.validation.Valid
+import jakarta.validation.ValidationException
 
 @Plugin(
     key = "verzoek",

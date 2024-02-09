@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -62,8 +62,7 @@ public class AuditSearchServiceImpl implements AuditSearchService {
 
         final List<Predicate> predicateList = criteriaList
             .stream()
-            .map((searchCriteria) ->
-                cb.and(
+            .map(searchCriteria -> cb.and(
                     isNotNull(cb, root, searchCriteria.getPath(), searchCriteria.getValue()),
                     isNotNull(cb, root, "$.className", searchCriteria.getAuditEvent().getName())
                 )

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
-import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.service.DocumentService
 import com.ritense.note.BaseIntegrationTest
@@ -53,7 +52,7 @@ class NoteServiceIntTest() : BaseIntegrationTest() {
     fun beforeEach() {
         documentId = AuthorizationContext.runWithoutAuthorization {
             documentService.createDocument(
-                NewDocumentRequest(PROFILE_DOCUMENT_DEFINITION_NAME, Mapper.INSTANCE.get().createObjectNode())
+                NewDocumentRequest(PROFILE_DOCUMENT_DEFINITION_NAME, objectMapper.createObjectNode())
             ).resultingDocument().get().id()!!.id
         }
 

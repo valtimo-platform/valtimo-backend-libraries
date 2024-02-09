@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@ import com.ritense.smartdocuments.BaseTest
 import com.ritense.smartdocuments.connector.SmartDocumentsConnectorProperties
 import com.ritense.smartdocuments.domain.DocumentFormatOption
 import com.ritense.smartdocuments.domain.SmartDocumentsRequest
+import com.ritense.smartdocuments.domain.SmartDocumentsTemplateData
+import com.ritense.smartdocuments.dto.SmartDocumentsPropertiesDto
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.upload.ValtimoUploadProperties
 import java.time.Instant
 import java.util.concurrent.TimeUnit.MILLISECONDS
@@ -49,9 +52,9 @@ import org.springframework.web.reactive.function.client.WebClient
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class SmartDocumentsClientTest : BaseTest() {
 
-    lateinit var mockDocumentenApi: MockWebServer
-    lateinit var client: SmartDocumentsClient
-    lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
+    private lateinit var mockDocumentenApi: MockWebServer
+    private lateinit var client: SmartDocumentsClient
+    private lateinit var temporaryResourceStorageService: TemporaryResourceStorageService
 
     @BeforeAll
     fun setUp() {
@@ -63,14 +66,15 @@ internal class SmartDocumentsClientTest : BaseTest() {
         )
 
         temporaryResourceStorageService = spy( TemporaryResourceStorageService(
-            uploadProperties = ValtimoUploadProperties()
+            uploadProperties = ValtimoUploadProperties(),
+            objectMapper = MapperSingleton.get(),
         ))
 
         client = spy( SmartDocumentsClient(
             properties,
             WebClient.builder(),
             5,
-            temporaryResourceStorageService
+            temporaryResourceStorageService,
         ))
     }
 
@@ -215,8 +219,8 @@ internal class SmartDocumentsClientTest : BaseTest() {
         assertEquals(
             "400 The server cannot or will not process the request due to something that is perceived to be a client " +
                     "error (e.g., no valid template specified, user has no privileges for the template, malformed request syntax, " +
-                    "invalid request message framing, or deceptive request routing). Response received from server:\n" + responseBody,
-            exception.message
+                    "invalid request message framing, or deceptive request routing). Response received from server:\n$responseBody",
+            exception.message?.trimIndent()
         )
     }
 
@@ -305,6 +309,28 @@ internal class SmartDocumentsClientTest : BaseTest() {
         verify(temporaryResourceStorageService, never()).store(any(), any())
     }
 
+    @Test
+    fun `200 ok response should return DocumentStructure`() {
+        // given
+        mockDocumentenApi.enqueue(
+            mockResponse(
+                body = smartDocumentsTemplateXml(),
+                contentType = "application/xml"
+            )
+        )
+
+        // when
+        val response = client.getSmartDocumentsTemplateData(SmartDocumentsPropertiesDto(
+            username = "username",
+            password = "password",
+            url = mockDocumentenApi.url("").toString()
+        ))
+
+        // then
+        assertThat(response).isNotNull
+        assertThat(response).isInstanceOf(SmartDocumentsTemplateData::class.java)
+    }
+
     private fun mockResponse(
         body: String,
         contentType: String = "application/json",
@@ -315,4 +341,56 @@ internal class SmartDocumentsClientTest : BaseTest() {
             .addHeader("Content-Type", contentType)
             .setBody(body)
     }
+
+    private fun smartDocumentsTemplateXml() =
+        """
+<SmartDocuments>
+    <DocumentsStructure>
+        <TemplatesStructure IsAccessible="true">
+            <TemplateGroups>
+                <TemplateGroup IsAccessible="true" ID="34" Name="Werkzaamheden">
+                    <TemplateGroups>
+                        <TemplateGroup IsAccessible="true" ID="34" Name="AI">
+                            <TemplateGroups/>
+                            <Templates>
+                                <Template ID="3523" Name="Bla"/>
+                                <Template ID="223" Name="Plan intakegesprek"/>
+                                <!-- More templates here... -->
+                            </Templates>
+                        </TemplateGroup>
+                        <TemplateGroup IsAccessible="true" ID="F6F9A5AE24834A2AA9612894506AC681" Name="ANW">
+                            <TemplateGroups/>
+                            <Templates>
+                                <Template ID="234" Name="Plan intakegesprek"/>
+                                <Template ID="43" Name="Plan intakegesprek"/>
+                            </Templates>
+                        </TemplateGroup>
+                    </TemplateGroups>
+                    <Templates>
+                        <Template ID="343" Name="Voorbeeld sjabloon"/>
+                        <Template ID="43" Name="Voorbeeld sjabloon 2"/>
+                    </Templates>
+                </TemplateGroup>
+            </TemplateGroups>
+        </TemplatesStructure>
+    </DocumentsStructure>
+    <UsersStructure IsAccessible="true">
+        <GroupsAccess>
+            <TemplateGroups/>
+            <HeaderGroups/>
+        </GroupsAccess>
+        <UserGroups>
+            <UserGroup IsAccessible="true" ID="342" Name="Test">
+                <GroupsAccess>
+                    <TemplateGroups>
+                        <TemplateGroup ID="343" Name="Test" AllDescendants="true"/>
+                        <TemplateGroup ID="324" Name="Werkzaamheden" AllDescendants="true"/>
+                    </TemplateGroups>
+                    <HeaderGroups/>
+                </GroupsAccess>
+            </UserGroup>
+        </UserGroups>
+    </UsersStructure>
+</SmartDocuments>
+        """.trimIndent()
 }

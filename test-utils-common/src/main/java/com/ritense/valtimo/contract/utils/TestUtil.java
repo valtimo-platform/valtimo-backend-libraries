@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package com.ritense.valtimo.contract.utils;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ritense.valtimo.contract.json.MapperSingleton;
 import java.io.IOException;
 
 public class TestUtil {
+
+    private TestUtil() {
+    }
 
     /**
      * Convert an object to JSON byte array.
@@ -30,9 +33,7 @@ public class TestUtil {
      * @throws IOException
      */
     public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        mapper.findAndRegisterModules();
+        ObjectMapper mapper = MapperSingleton.INSTANCE.get();
         return mapper.writeValueAsBytes(object);
     }
 

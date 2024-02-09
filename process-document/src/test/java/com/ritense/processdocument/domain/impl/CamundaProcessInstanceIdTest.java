@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,16 @@
 
 package com.ritense.processdocument.domain.impl;
 
-import com.ritense.processdocument.domain.ProcessInstanceId;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.ritense.processdocument.domain.ProcessInstanceId;
+import java.util.UUID;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CamundaProcessInstanceIdTest {
 

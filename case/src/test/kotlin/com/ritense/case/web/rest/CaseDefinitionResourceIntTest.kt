@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,6 @@ import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -48,6 +41,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @Transactional
 class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
@@ -146,7 +146,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-        val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -176,7 +176,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
-        val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -209,7 +209,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(true))
-        val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -242,7 +242,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(caseDefinitionName))
             .andExpect(MockMvcResultMatchers.jsonPath("$.canHaveAssignee").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$.autoAssignTasks").value(true))
-        val settingsInDatabase = caseDefinitionSettingsRepository.getById(caseDefinitionName)
+        val settingsInDatabase = caseDefinitionSettingsRepository.getReferenceById(caseDefinitionName)
         assertEquals(true, settingsInDatabase.canHaveAssignee)
         assertEquals(caseDefinitionName, settingsInDatabase.name)
     }
@@ -1221,7 +1221,7 @@ class CaseDefinitionResourceIntTest : BaseIntegrationTest() {
             zipStream.closeEntry()
         }
 
-        return outputStream.toByteArray();
+        return outputStream.toByteArray()
     }
 
     private fun createListColumn(caseDefinitionName: String, json: String, expectedStatus: ResultMatcher) {

@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.ritense.verzoek.config.VerzoekAutoConfiguration, \
-  com.ritense.verzoek.config.VerzoekLiquibaseAutoConfiguration

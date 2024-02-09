@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,6 @@
 
 package com.ritense.document.domain.search;
 
-import com.ritense.document.domain.impl.searchfield.SearchField;
-import com.ritense.document.exception.SearchConfigRequestException;
-import org.springframework.data.util.Pair;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalQuery;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTIPLE;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.MULTI_SELECT_DROPDOWN;
 import static com.ritense.document.domain.impl.searchfield.SearchFieldFieldType.RANGE;
@@ -46,6 +28,28 @@ import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE;
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
+
+import com.ritense.document.domain.impl.searchfield.SearchField;
+import com.ritense.document.domain.impl.searchfield.SearchFieldDataType;
+import com.ritense.document.domain.impl.searchfield.SearchFieldFieldType;
+import com.ritense.document.exception.SearchConfigRequestException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalQuery;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.data.util.Pair;
 
 public class SearchRequestMapper {
 
@@ -70,26 +74,49 @@ public class SearchRequestMapper {
         return advancedSearchRequest;
     }
 
-    public static AdvancedSearchRequest.OtherFilter toOtherFilter(SearchWithConfigRequest.SearchWithConfigFilter searchFilter, SearchField searchField) {
+    public static AdvancedSearchRequest.OtherFilter toOtherFilter(
+        SearchWithConfigRequest.SearchWithConfigFilter searchFilter,
+        SearchField searchField,
+        ZoneOffset zoneOffset
+    ) {
         SearchRequestValidator.validate(searchFilter, searchField);
 
         var rangeFrom = mapWhenTemporalField(searchFilter.getRangeFromSearchRequestValue());
         var rangeTo = mapWhenTemporalField(searchFilter.getRangeToSearchRequestValue());
+        LocalDate singleDateField;
 
-        List<SearchRequestValue> searchRequestValues = null;
+        List<SearchRequestValue> searchRequestValues;
+
         if (searchFilter.getSearchRequestValues() != null) {
             searchRequestValues = searchFilter.getSearchRequestValues().stream()
                 .map(SearchRequestMapper::mapWhenTemporalField)
                 .collect(Collectors.toList());
+
+            singleDateField = findSingleDateSearchFieldLocalDate(searchField, searchRequestValues);
+        } else {
+            searchRequestValues = null;
+            singleDateField = null;
         }
 
-        var otherFilter = new AdvancedSearchRequest.OtherFilter();
-        otherFilter.setPath(searchField.getPath());
-        otherFilter.setSearchType(findDatabaseSearchType(searchFilter, searchField));
-        otherFilter.setRangeFrom(rangeFrom.getComparableValue());
-        otherFilter.setRangeTo(rangeTo.getComparableValue());
-        otherFilter.setSearchRequestValues(searchRequestValues);
+        var isRangeDateField = isRangeDateSearchField(searchField, rangeFrom, rangeTo);
+
+        AdvancedSearchRequest.OtherFilter otherFilter;
+
+        if (searchRequestValues != null && singleDateField != null) {
+            otherFilter = singleDateToDateTimeRangeFilter(searchField, singleDateField, zoneOffset);
+        } else if (isRangeDateField) {
+            otherFilter = rangeDateToDateTimeRangeFilter(searchField, rangeFrom, rangeTo, zoneOffset);
+        } else {
+            otherFilter = new AdvancedSearchRequest.OtherFilter();
+            otherFilter.setPath(searchField.getPath());
+            otherFilter.setSearchType(findDatabaseSearchType(searchFilter, searchField));
+            otherFilter.setRangeFrom(rangeFrom.getComparableValue());
+            otherFilter.setRangeTo(rangeTo.getComparableValue());
+            otherFilter.setSearchRequestValues(searchRequestValues);
+        }
+
         SearchRequestValidator.validate(otherFilter);
+
         return otherFilter;
     }
 
@@ -139,4 +166,61 @@ public class SearchRequestMapper {
         }
     }
 
+    private static LocalDate findSingleDateSearchFieldLocalDate(SearchField searchField, List<SearchRequestValue> searchRequestValues) {
+        Optional<SearchRequestValue> firstEntry = searchRequestValues.stream().findFirst();
+
+        if (firstEntry.isPresent()
+            && firstEntry.get().getComparableValue() instanceof LocalDate
+            && searchField.getDataType() == SearchFieldDataType.DATE
+            && searchField.getFieldType() == SearchFieldFieldType.SINGLE) {
+
+            return firstEntry.get().getComparableValue();
+        }
+
+        return null;
+    }
+
+    private static Boolean isRangeDateSearchField(SearchField searchField, SearchRequestValue rangeFrom, SearchRequestValue rangeTo) {
+        return rangeFrom.getComparableValue() instanceof LocalDate
+            && rangeTo.getComparableValue() instanceof LocalDate
+            && searchField.getDataType() == SearchFieldDataType.DATE
+            && searchField.getFieldType() == SearchFieldFieldType.RANGE;
+    }
+
+    private static AdvancedSearchRequest.OtherFilter singleDateToDateTimeRangeFilter(SearchField searchField, LocalDate localDateValue, ZoneOffset zoneOffset) {
+        AdvancedSearchRequest.OtherFilter otherFilter = new AdvancedSearchRequest.OtherFilter();
+        Instant rangeFrom = localDateValue.atStartOfDay().toInstant(zoneOffset);
+        Instant rangeTo = rangeFrom.plus(1, ChronoUnit.DAYS);
+        List<SearchRequestValue> emptySearchRequestValues = Collections.emptyList();
+
+        otherFilter.setPath(searchField.getPath());
+        otherFilter.setSearchType(DatabaseSearchType.BETWEEN);
+        otherFilter.setRangeFrom(rangeFrom);
+        otherFilter.setRangeTo(rangeTo);
+        otherFilter.setSearchRequestValues(emptySearchRequestValues);
+
+        return otherFilter;
+    }
+
+    private static AdvancedSearchRequest.OtherFilter rangeDateToDateTimeRangeFilter(
+        SearchField searchField,
+        SearchRequestValue rangeFrom,
+        SearchRequestValue rangeTo,
+        ZoneOffset zoneOffset
+    ) {
+        AdvancedSearchRequest.OtherFilter otherFilter = new AdvancedSearchRequest.OtherFilter();
+        LocalDate rangeFromValue = rangeFrom.getComparableValue();
+        LocalDate rangeToValue = rangeTo.getComparableValue();
+        Instant rangeFromDateTime = rangeFromValue.atStartOfDay().toInstant(zoneOffset);
+        Instant rangeToDateTime = rangeToValue.atStartOfDay().plus(1, ChronoUnit.DAYS).toInstant(zoneOffset);
+        List<SearchRequestValue> emptySearchRequestValues = Collections.emptyList();
+
+        otherFilter.setPath(searchField.getPath());
+        otherFilter.setSearchType(DatabaseSearchType.BETWEEN);
+        otherFilter.setRangeFrom(rangeFromDateTime);
+        otherFilter.setRangeTo(rangeToDateTime);
+        otherFilter.setSearchRequestValues(emptySearchRequestValues);
+
+        return otherFilter;
+    }
 }

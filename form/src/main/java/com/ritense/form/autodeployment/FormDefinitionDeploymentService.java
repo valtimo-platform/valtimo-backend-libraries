@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,20 @@
 
 package com.ritense.form.autodeployment;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.form.domain.FormDefinition;
-import com.ritense.form.domain.Mapper;
 import com.ritense.form.domain.event.FormsAutoDeploymentFinishedEvent;
 import com.ritense.form.domain.request.CreateFormDefinitionRequest;
 import com.ritense.form.repository.FormDefinitionRepository;
 import com.ritense.form.service.FormDefinitionService;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +37,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternUtils;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class FormDefinitionDeploymentService {
 
@@ -46,13 +46,18 @@ public class FormDefinitionDeploymentService {
     private final FormDefinitionService formDefinitionService;
     private final FormDefinitionRepository formDefinitionRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final ObjectMapper objectMapper;
 
-    public FormDefinitionDeploymentService(ResourceLoader resourceLoader, FormDefinitionService formDefinitionService,
-        FormDefinitionRepository formDefinitionRepository, ApplicationEventPublisher applicationEventPublisher) {
+    public FormDefinitionDeploymentService(
+        ResourceLoader resourceLoader, FormDefinitionService formDefinitionService,
+        FormDefinitionRepository formDefinitionRepository, ApplicationEventPublisher applicationEventPublisher,
+        ObjectMapper objectMapper
+    ) {
         this.resourceLoader = resourceLoader;
         this.formDefinitionService = formDefinitionService;
         this.formDefinitionRepository = formDefinitionRepository;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.objectMapper = objectMapper;
     }
 
     void deployAllFromResourceFiles() {
@@ -113,7 +118,7 @@ public class FormDefinitionDeploymentService {
     }
 
     private JsonNode getJson(String rawJson) throws JsonProcessingException {
-        return Mapper.INSTANCE.get().readTree(rawJson);
+        return objectMapper.readTree(rawJson);
     }
 
     private String getFormName(Resource resource) {

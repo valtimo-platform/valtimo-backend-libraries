@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,18 +53,17 @@ import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.database.QueryDialectHelper;
 import com.ritense.valtimo.contract.hardening.service.HardeningService;
+import jakarta.persistence.EntityManager;
+import java.util.Optional;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import javax.persistence.EntityManager;
-import java.util.Optional;
-
-@Configuration
+@AutoConfiguration
 @EnableJpaRepositories(basePackages = "com.ritense.document.repository")
 @EntityScan("com.ritense.document.domain")
 public class DocumentAutoConfiguration {
@@ -79,7 +78,8 @@ public class DocumentAutoConfiguration {
         final UserManagementService userManagementService,
         final AuthorizationService authorizationService,
         final ApplicationEventPublisher applicationEventPublisher,
-        final OutboxService outboxService
+        final OutboxService outboxService,
+        final ObjectMapper objectMapper
     ) {
         return new JsonSchemaDocumentService(
             documentRepository,
@@ -89,7 +89,8 @@ public class DocumentAutoConfiguration {
             userManagementService,
             authorizationService,
             applicationEventPublisher,
-            outboxService
+            outboxService,
+            objectMapper
         );
     }
 
@@ -218,10 +219,9 @@ public class DocumentAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(DocumentResource.class)
     public JsonSchemaDocumentResource documentResource(
-        DocumentService documentService,
-        OutboxService outboxService
+        DocumentService documentService
     ) {
-        return new JsonSchemaDocumentResource(documentService, outboxService);
+        return new JsonSchemaDocumentResource(documentService);
     }
 
     @Bean

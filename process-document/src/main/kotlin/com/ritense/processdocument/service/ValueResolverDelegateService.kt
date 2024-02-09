@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ class ValueResolverDelegateService(
         return valueResolverService.resolveValues(execution.processInstanceId, execution, listOf(key))[key]
     }
 
-    fun handleValue(execution: DelegateExecution, key: String, value: Any) {
+    fun handleValue(execution: DelegateExecution, key: String, value: Any?) {
         valueResolverService.handleValues(execution.processInstanceId, execution, mapOf(key to value))
     }
 

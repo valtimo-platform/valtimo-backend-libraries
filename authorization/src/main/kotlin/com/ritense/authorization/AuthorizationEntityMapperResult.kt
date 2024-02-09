@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package com.ritense.authorization
 
-import javax.persistence.criteria.AbstractQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import jakarta.persistence.criteria.AbstractQuery
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 
 class AuthorizationEntityMapperResult<T>(
     val root: Root<T>,

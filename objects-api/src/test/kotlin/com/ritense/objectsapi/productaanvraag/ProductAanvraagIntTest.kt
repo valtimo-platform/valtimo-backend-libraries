@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,9 @@ import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.ServiceTaskHandlerRequest
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
+import jakarta.transaction.Transactional
 import java.net.URI
 import java.util.UUID
-import javax.transaction.Transactional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.fail

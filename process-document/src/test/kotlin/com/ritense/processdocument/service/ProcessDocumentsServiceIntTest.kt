@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,7 +137,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
             )
         }
         assertEquals(
-            "java.lang.IllegalStateException: No process definition found with key: 'non-existing-key'",
+            "No process definition found with key: 'non-existing-key'",
             exception.cause?.message
         )
     }
@@ -153,7 +153,7 @@ class ProcessDocumentsServiceIntTest : BaseIntegrationTest() {
             )
         }
         assertEquals(
-            "com.ritense.document.exception.DocumentNotFoundException: No Document found with id $uuid",
+            "No Document found with id $uuid",
             exception.cause?.message
         )
     }

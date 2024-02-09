@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public class SearchFieldActionProvider implements ResourceActionProvider<SearchField> {
-    public static Action<SearchField> VIEW_LIST = new Action<>(Action.VIEW_LIST);
+    public static final Action<SearchField> VIEW_LIST = new Action<>(Action.VIEW_LIST);
 
     @NotNull
     @Override

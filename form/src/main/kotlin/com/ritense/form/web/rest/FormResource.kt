@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import com.ritense.form.service.FormDefinitionService
 import com.ritense.form.service.FormSubmissionService
 import com.ritense.form.service.PrefillFormService
 import com.ritense.form.web.rest.dto.FormSubmissionResult
+import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
+@SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
 class FormResource(
     private val formSubmissionService: FormSubmissionService,

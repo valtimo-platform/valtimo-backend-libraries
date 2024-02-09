@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,15 +32,15 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService;
 import com.ritense.document.service.impl.JsonSchemaDocumentSnapshotService;
 import com.ritense.document.web.rest.DocumentSnapshotResource;
 import com.ritense.document.web.rest.impl.JsonSchemaDocumentSnapshotResource;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 
-@Configuration
+@AutoConfiguration
 @ConditionalOnProperty(prefix = "valtimo.versioning", name = "enabled", havingValue = "true", matchIfMissing = true)
 @AutoConfigureAfter(DocumentAutoConfiguration.class)
 public class DocumentSnapshotAutoConfiguration {
@@ -53,7 +53,12 @@ public class DocumentSnapshotAutoConfiguration {
         final JsonSchemaDocumentDefinitionService documentDefinitionService,
         final AuthorizationService authorizationService
     ) {
-        return new JsonSchemaDocumentSnapshotService(documentSnapshotRepository, documentService, documentDefinitionService, authorizationService);
+        return new JsonSchemaDocumentSnapshotService(
+            documentSnapshotRepository,
+            documentService,
+            documentDefinitionService,
+            authorizationService
+        );
     }
 
     @Bean
@@ -95,7 +100,7 @@ public class DocumentSnapshotAutoConfiguration {
         DocumentSnapshotRepository<JsonSchemaDocumentSnapshot>,
         JsonSchemaDocumentSnapshot,
         DocumentSnapshot.Id
-    > postgresJsonSchemaDocumentSnapshotRepository() {
+        > postgresJsonSchemaDocumentSnapshotRepository() {
         return new JpaRepositoryFactoryBean<>(PostgresJsonSchemaDocumentSnapshotRepository.class);
     }
 
@@ -105,7 +110,7 @@ public class DocumentSnapshotAutoConfiguration {
         DocumentSnapshotRepository<JsonSchemaDocumentSnapshot>,
         JsonSchemaDocumentSnapshot,
         DocumentSnapshot.Id
-    > mysqlJsonSchemaDocumentSnapshotRepository() {
+        > mysqlJsonSchemaDocumentSnapshotRepository() {
         return new JpaRepositoryFactoryBean<>(MysqlJsonSchemaDocumentSnapshotRepository.class);
     }
 }

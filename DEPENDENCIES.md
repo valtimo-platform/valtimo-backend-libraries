@@ -1182,7 +1182,7 @@
 
 * * *
 
-**127.** **Group:** javax.persistence **Name:** javax.persistence-api **Version:** 2.2
+**127.** **Group:** jakarta.persistence **Name:** jakarta.persistence-api **Version:** 2.2
 
 **POM Project URL:** `[https://github.com/javaee/jpa-spec](https://github.com/javaee/jpa-spec)`
 
@@ -1204,7 +1204,7 @@
 
 * * *
 
-**129.** **Group:** javax.validation **Name:** validation-api **Version:** 2.0.1.Final
+**129.** **Group:** jakarta.validation **Name:** validation-api **Version:** 2.0.1.Final
 
 **POM Project URL:** `[http://beanvalidation.org](http://beanvalidation.org)`
 
@@ -2866,7 +2866,7 @@
 
 * * *
 
-**274.** **Group:** org.liquibase.ext **Name:** liquibase-hibernate5 **Version:** 4.3.3
+**274.** **Group:** org.liquibase.ext **Name:** liquibase-hibernate6 **Version:** 4.3.3
 
 **POM Project URL:** `[https://github.com/liquibase/liquibase-hibernate/wiki](https://github.com/liquibase/liquibase-hibernate/wiki)`
 

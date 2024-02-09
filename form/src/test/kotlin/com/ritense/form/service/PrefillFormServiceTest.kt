@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import com.ritense.document.domain.impl.JsonSchema
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
-import com.ritense.document.domain.impl.Mapper
 import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.service.DocumentSequenceGeneratorService
 import com.ritense.document.service.impl.JsonSchemaDocumentService
@@ -34,13 +33,13 @@ import com.ritense.form.domain.FormIoFormDefinition
 import com.ritense.form.service.impl.FormIoFormDefinitionService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
 import com.ritense.valtimo.contract.form.FormFieldDataResolver
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.json.patch.operation.AddOperation
 import com.ritense.valtimo.contract.json.patch.operation.Operation
 import com.ritense.valtimo.contract.json.patch.operation.ReplaceOperation
 import com.ritense.valtimo.service.CamundaProcessService
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
-import java.util.Optional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -50,6 +49,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.util.Optional
 
 class PrefillFormServiceTest : BaseTest() {
 
@@ -78,7 +78,8 @@ class PrefillFormServiceTest : BaseTest() {
             taskService,
             listOf(formFieldDataResolver),
             processDocumentAssociationService,
-            valueResolverService
+            valueResolverService,
+            MapperSingleton.get()
         )
     }
 
@@ -342,7 +343,7 @@ class PrefillFormServiceTest : BaseTest() {
                     "additionalProperties": true
                 }
             """.trimIndent()))
-        val content = JsonDocumentContent.build(Mapper.INSTANCE.get().createObjectNode())
+        val content = JsonDocumentContent.build(MapperSingleton.get().createObjectNode())
 
         return JsonSchemaDocument.create(
             schema,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,11 @@
 
 package com.ritense.document.domain.search;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
 public class SearchWithConfigRequest {
     private SearchOperator searchOperator = SearchOperator.AND;

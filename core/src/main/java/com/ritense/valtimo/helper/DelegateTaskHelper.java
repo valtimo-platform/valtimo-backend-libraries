@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,10 @@ import com.ritense.valtimo.camunda.domain.CamundaTask;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.service.BpmnModelService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.camunda.bpm.engine.delegate.DelegateTask;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
 import org.camunda.bpm.engine.rest.dto.history.HistoricTaskInstanceDto;
@@ -27,11 +31,6 @@ import org.camunda.bpm.engine.task.IdentityLink;
 import org.camunda.bpm.engine.task.IdentityLinkType;
 import org.camunda.bpm.model.bpmn.instance.Task;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperty;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 public class DelegateTaskHelper {
     private static final String TASK_ASSIGNMENT_EVENT = "assignment";
@@ -52,7 +51,7 @@ public class DelegateTaskHelper {
     public Optional<ManageableUser> determineAssignedUserOf(DelegateTask delegateTask) {
         String assignee = delegateTask.getAssignee();
         if (assignee != null) {
-            return userManagementService.findByEmail(assignee);
+            return Optional.ofNullable(userManagementService.findById(assignee));
         } else {
             return Optional.empty();
         }

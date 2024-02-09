@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.ritense.document.web.rest.impl;
 
+import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
+
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocumentId;
 import com.ritense.document.domain.impl.request.AssignToDocumentsRequest;
@@ -28,13 +30,18 @@ import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.web.rest.DocumentResource;
-import com.ritense.outbox.OutboxService;
+import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.authentication.NamedUser;
+import jakarta.validation.Valid;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,26 +50,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import javax.validation.Valid;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
 
+@Controller
+@SkipComponentScan
 @RequestMapping(value = "/api", produces = APPLICATION_JSON_UTF8_VALUE)
 public class JsonSchemaDocumentResource implements DocumentResource {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSchemaDocumentResource.class);
 
     private final DocumentService documentService;
-    private final OutboxService outboxService;
 
-    public JsonSchemaDocumentResource(
-        final DocumentService documentService,
-        final OutboxService outboxService
-    ) {
+    public JsonSchemaDocumentResource(final DocumentService documentService) {
         this.documentService = documentService;
-        this.outboxService = outboxService;
     }
 
     @Transactional
@@ -117,8 +116,9 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     @PostMapping("/v1/document/{documentId}/assign")
     public ResponseEntity<Void> assignHandlerToDocument(
         @PathVariable(name = "documentId") UUID documentId,
-        @RequestBody @Valid UpdateAssigneeRequest request) {
-        logger.debug(String.format("REST call /api/v1/document/%s/assign", documentId));
+        @RequestBody @Valid UpdateAssigneeRequest request
+    ) {
+        logger.debug("REST call /api/v1/document/{}/assign", documentId);
         documentService.assignUserToDocument(documentId, request.getAssigneeId());
         return ResponseEntity.ok().build();
     }
@@ -133,7 +133,7 @@ public class JsonSchemaDocumentResource implements DocumentResource {
     @Override
     @PostMapping("/v1/document/{documentId}/unassign")
     public ResponseEntity<Void> unassignHandlerFromDocument(@PathVariable(name = "documentId") UUID documentId) {
-        logger.debug(String.format("REST call /api/v1/document/%s/unassign", documentId));
+        logger.debug("REST call /api/v1/document/{}/unassign", documentId);
 
         try {
             documentService.unassignUserFromDocument(documentId);

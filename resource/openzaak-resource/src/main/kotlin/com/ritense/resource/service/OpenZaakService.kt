@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import java.net.URI
 import java.net.URL
 import java.time.LocalDateTime
 import java.util.UUID
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 
 class OpenZaakService(
     val documentenService: DocumentenService,
@@ -101,7 +101,7 @@ class OpenZaakService(
     }
 
     override fun getResourceUrl(id: UUID): ObjectUrlDTO {
-        val resource = openZaakResourceRepository.getById(ResourceId.existingId(id))
+        val resource = openZaakResourceRepository.getReferenceById(ResourceId.existingId(id))
 
         return ObjectUrlDTO(
             getDownloadUrl(resource),
@@ -121,7 +121,7 @@ class OpenZaakService(
     }
 
     override fun getResourceContent(id: UUID): ObjectContentDTO {
-        val resource = openZaakResourceRepository.getById(ResourceId.existingId(id))
+        val resource = openZaakResourceRepository.getReferenceById(ResourceId.existingId(id))
         return ObjectContentDTO(
             getDownloadUrl(resource),
             ResourceDTO(

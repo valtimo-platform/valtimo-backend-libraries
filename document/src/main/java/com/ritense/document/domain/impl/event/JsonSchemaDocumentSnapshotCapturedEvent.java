@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,12 @@ public class JsonSchemaDocumentSnapshotCapturedEvent implements DocumentSnapshot
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         JsonSchemaDocumentSnapshotCapturedEvent that = (JsonSchemaDocumentSnapshotCapturedEvent) o;
         return Objects.equals(documentId, that.documentId) && Objects.equals(createdOn, that.createdOn) && Objects.equals(createdBy, that.createdBy);
     }

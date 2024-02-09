@@ -1,5 +1,5 @@
 /*
-* Copyright 2015-2023 Ritense BV, the Netherlands.
+* Copyright 2015-2024 Ritense BV, the Netherlands.
 *
 * Licensed under EUPL, Version 1.2 (the "License");
 * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.verzoek.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.document.service.DocumentService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
@@ -24,11 +25,11 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.verzoek.VerzoekPluginEventListener
 import com.ritense.verzoek.VerzoekPluginFactory
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
-@Configuration
+@AutoConfiguration
 class VerzoekAutoConfiguration {
 
     @Bean
@@ -47,14 +48,16 @@ class VerzoekAutoConfiguration {
         objectManagementService: ObjectManagementService,
         documentService: DocumentService,
         zaaktypeUrlProvider: ZaaktypeUrlProvider,
-        processDocumentService: ProcessDocumentService
+        processDocumentService: ProcessDocumentService,
+        objectMapper: ObjectMapper,
     ): VerzoekPluginEventListener {
         return VerzoekPluginEventListener(
             pluginService,
             objectManagementService,
             documentService,
             zaaktypeUrlProvider,
-            processDocumentService
+            processDocumentService,
+            objectMapper,
         )
     }
 }
