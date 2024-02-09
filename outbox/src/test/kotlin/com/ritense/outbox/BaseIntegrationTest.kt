@@ -18,6 +18,7 @@ package com.ritense.outbox
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.publisher.MessagePublisher
+import com.ritense.outbox.repository.OutboxMessageRepository
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.extension.ExtendWith
