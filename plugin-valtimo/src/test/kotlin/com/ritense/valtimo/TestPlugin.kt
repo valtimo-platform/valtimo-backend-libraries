@@ -19,7 +19,7 @@ package com.ritense.valtimo
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
+import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 
 @Plugin(
     key = "test-plugin",

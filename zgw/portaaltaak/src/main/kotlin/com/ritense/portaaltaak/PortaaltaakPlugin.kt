@@ -32,12 +32,12 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
 import com.ritense.processdocument.domain.impl.CamundaProcessInstanceId
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valueresolver.ValueResolverService
@@ -83,7 +83,7 @@ class PortaaltaakPlugin(
         key = "create-portaaltaak",
         title = "Create portal task",
         description = "Create a task for a portal by storing it in the Objecten-API",
-        activityTypes = [ActivityType.USER_TASK_CREATE]
+        activityTypes = [ActivityTypeWithEventName.USER_TASK_CREATE]
     )
     fun createPortaalTaak(
         delegateTask: DelegateTask,
@@ -148,7 +148,7 @@ class PortaaltaakPlugin(
         key = "complete-portaaltaak",
         title = "Complete Portaaltaak",
         description = "Complete portal task and update status on Objects Api",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun completePortaalTaak(delegateExecution: DelegateExecution) {
         val verwerkerTaakId = (delegateExecution.getVariable("verwerkerTaakId")

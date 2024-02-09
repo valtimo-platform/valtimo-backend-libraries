@@ -19,7 +19,7 @@ package com.ritense.plugin.autodeployment
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.validation.Url
 import java.net.URI
 
@@ -46,7 +46,7 @@ class AutoDeploymentTestPlugin {
         key = "test-action-task",
         title = "Test action task",
         description = "This is an action used to verify plugin framework functionality",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun testActionTask() {
         //do nothing

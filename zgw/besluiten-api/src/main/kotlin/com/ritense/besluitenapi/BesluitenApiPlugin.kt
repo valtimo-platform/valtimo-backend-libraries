@@ -26,7 +26,7 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zgw.Rsin
@@ -60,7 +60,7 @@ class BesluitenApiPlugin(
         key = "link-document-to-besluit",
         title = "Link Document to besluit",
         description = "Links a document to a besluit",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun linkDocumentToBesluit(
         @PluginActionProperty documentUrl: String,
@@ -84,7 +84,7 @@ class BesluitenApiPlugin(
         key = "create-besluit",
         title = "Create besluit",
         description = "Creates a besluit in the Besluiten API",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun createBesluit(
         execution: DelegateExecution,

@@ -17,9 +17,9 @@
 
 package com.ritense.valtimo.processlink.service
 
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLinkType
 import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
 
@@ -37,7 +37,7 @@ class PluginSupportedProcessLinksHandler(
     private fun isEnabled(activityType: String): Boolean {
         return pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
-                activityType = ActivityType.fromValue(activityType)
+                activityType = ActivityTypeWithEventName.fromValue(activityType)
             )
         ).isNotEmpty()
     }
