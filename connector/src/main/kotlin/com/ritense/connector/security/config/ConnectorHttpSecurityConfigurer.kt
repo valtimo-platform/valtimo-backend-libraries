@@ -32,16 +32,20 @@ class ConnectorHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(antMatcher(GET, "/api/v1/connector/instance")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(POST, "/api/v1/connector/instance")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(PUT, "/api/v1/connector/instance")).hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(GET, INSTANCE_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, INSTANCE_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, INSTANCE_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/v1/connector/type")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/v1/connector/instance/{typeId}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/v1/connector/instance/{instanceId}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(DELETE, "/api/v1/connector/instance/{instanceId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "$INSTANCE_URL/{typeId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "$INSTANCE_URL/{instanceId}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "$INSTANCE_URL/{instanceId}")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
+    }
+
+    companion object {
+        private const val INSTANCE_URL = "/api/v1/connector/instance"
     }
 }

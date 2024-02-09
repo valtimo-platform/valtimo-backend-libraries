@@ -481,6 +481,8 @@ public class ProcessResource extends AbstractProcessResource {
     }
 
     /**
+     * Endpoint to search for process instances.
+     *
      * @deprecated since 12.0.0, use v2 instead
      */
     @PostMapping("/v1/process/{processDefinitionName}/search")
