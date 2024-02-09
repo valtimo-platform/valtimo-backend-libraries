@@ -137,6 +137,9 @@ subprojects { subproject ->
         apply plugin: "org.owasp.dependencycheck"
 
         tasks.register("allDeps", DependencyReportTask) {}
+        tasks.register("allDepInsight", DependencyInsightReportTask) {
+            showingAllVariants.set(false)
+        }
 
         java {
             withSourcesJar()
