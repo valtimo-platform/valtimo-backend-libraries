@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.TestPlugin
 import com.ritense.plugin.autodeployment.AutoDeploymentTestPlugin
 import com.ritense.plugin.autodeployment.PluginAutoDeploymentDto
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
@@ -33,6 +32,7 @@ import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.community.mockito.delegate.DelegateExecutionFake
 import org.camunda.community.mockito.delegate.DelegateTaskFake
@@ -80,6 +80,10 @@ internal class PluginServiceIT : BaseIntegrationTest() {
     @Autowired
     lateinit var objectMapper: ObjectMapper
 
+    @Autowired
+    lateinit var encryptionService: EncryptionService
+
+
     lateinit var pluginConfiguration: PluginConfiguration
     lateinit var categoryPluginConfiguration: PluginConfiguration
     lateinit var pluginDefinition: PluginDefinition
@@ -92,7 +96,9 @@ internal class PluginServiceIT : BaseIntegrationTest() {
                 PluginConfigurationId.newId(),
                 "title",
                 objectMapper.createObjectNode(),
-                pluginDefinition
+                pluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
 
@@ -102,7 +108,9 @@ internal class PluginServiceIT : BaseIntegrationTest() {
                 PluginConfigurationId.newId(),
                 "title",
                 objectMapper.createObjectNode(),
-                categoryPluginDefinition
+                categoryPluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
     }
@@ -169,7 +177,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "test-action",
             actionProperties = objectMapper.readTree("{}") as ObjectNode,
-            activityType = ActivityType.SERVICE_TASK_START
+            activityType = ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         val execution = DelegateExecutionFake.of()
@@ -188,7 +196,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "test-action-task",
             actionProperties = objectMapper.readTree("{}") as ObjectNode,
-            activityType = ActivityType.USER_TASK_CREATE
+            activityType = ActivityTypeWithEventName.USER_TASK_CREATE
         )
 
         val execution = DelegateExecutionFake.of()
@@ -209,7 +217,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
             actionProperties = objectMapper.readTree("""{"someString": "test123"}""") as ObjectNode,
-            activityType = ActivityType.SERVICE_TASK_START
+            activityType = ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         val execution = DelegateExecutionFake.of()
@@ -230,7 +238,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
             actionProperties = objectMapper.readTree("""{"someString": "pv:placeholder"}""") as ObjectNode,
-            activityType = ActivityType.SERVICE_TASK_START
+            activityType = ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         val testPlugin = spy(TestPlugin("someString"))
@@ -257,7 +265,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             activityId = "test",
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "other-test-action",
-            activityType = ActivityType.SERVICE_TASK_START
+            activityType = ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         assertFailsWith<InvocationTargetException>(
@@ -277,7 +285,7 @@ internal class PluginServiceIT : BaseIntegrationTest() {
             pluginConfigurationId = pluginConfiguration.id,
             pluginActionDefinitionKey = "test-action-with-uri-parameter",
             actionProperties = objectMapper.readTree("""{"uriParam": "pv:exampleUrl"}""") as ObjectNode,
-            activityType = ActivityType.SERVICE_TASK_START
+            activityType = ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         val execution = DelegateExecutionFake.of()
@@ -405,7 +413,9 @@ internal class PluginServiceIT : BaseIntegrationTest() {
                 PluginConfigurationId.newId(),
                 "title",
                 objectMapper.readTree(update) as ObjectNode,
-                pluginDefinition
+                pluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.autodeployment.PluginAutoDeploymentDto
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginConfiguration
@@ -36,6 +35,8 @@ import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.domain.PluginProperty
+import com.ritense.plugin.events.PluginConfigurationDeletedEvent
+import com.ritense.plugin.events.PluginConfigurationIdUpdatedEvent
 import com.ritense.plugin.exception.PluginEventInvocationException
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
@@ -48,6 +49,7 @@ import com.ritense.plugin.web.rest.request.PluginProcessLinkCreateDto
 import com.ritense.plugin.web.rest.request.PluginProcessLinkUpdateDto
 import com.ritense.plugin.web.rest.result.PluginActionDefinitionDto
 import com.ritense.plugin.web.rest.result.PluginProcessLinkResultDto
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.validation.ConstraintViolationException
 import jakarta.validation.ValidationException
@@ -55,6 +57,7 @@ import jakarta.validation.Validator
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.Method
@@ -74,6 +77,8 @@ class PluginService(
     private val valueResolverService: ValueResolverService,
     private val pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
     private val validator: Validator,
+    private val applicationEventPublisher: ApplicationEventPublisher,
+    private val encryptionService: EncryptionService,
 ) {
 
     fun getObjectMapper(): ObjectMapper {
@@ -116,9 +121,16 @@ class PluginService(
             throw IllegalStateException("Failed to create plugin. Plugin ID '${id.id}' is already used by another plugin.")
         }
 
-        val pluginConfiguration = pluginConfigurationRepository.save(
-            PluginConfiguration(id, title, properties, pluginDefinition)
+        val pluginConfigurationToBeSaved = PluginConfiguration(
+            id,
+            title,
+            properties,
+            pluginDefinition,
+            encryptionService,
+            objectMapper
         )
+
+        val pluginConfiguration = pluginConfigurationRepository.save(pluginConfigurationToBeSaved)
 
         try {
             pluginConfiguration.runAllPluginEvents(EventType.CREATE)
@@ -132,30 +144,41 @@ class PluginService(
     }
 
     fun deployPluginConfigurations(deploymentDto: PluginAutoDeploymentDto) {
-        val plugin: PluginConfiguration
+        val pluginConfiguration: PluginConfiguration
+        var oldConfiguration: PluginConfiguration? = null
+        var action: EventType = EventType.CREATE
+
         val pluginDefinition = pluginDefinitionRepository.getReferenceById(deploymentDto.pluginDefinitionKey)
-        if (deploymentDto.id != null && pluginConfigurationRepository.existsById(
-                PluginConfigurationId.existingId(deploymentDto.id)
-            )
-        ) {
-            deletePluginConfiguration(PluginConfigurationId.existingId(deploymentDto.id))
-        }
         val resolvedProperties = resolveProperties(deploymentDto.properties)
         validateProperties(resolvedProperties, pluginDefinition)
-        val pluginId = pluginConfigurationRepository.saveAndFlush(
-            PluginConfiguration(
-                deploymentDto.id?.let { PluginConfigurationId.existingId(it) } ?: PluginConfigurationId.newId(),
-                deploymentDto.title,
-                resolvedProperties,
-                pluginDefinition
-            )
-        ).id
-        plugin = pluginConfigurationRepository.findById(pluginId).orElseThrow()
+
+        deploymentDto.id?.let {
+            oldConfiguration = pluginConfigurationRepository.findByIdOrNull(PluginConfigurationId.existingId(deploymentDto.id))
+            if (oldConfiguration != null) {
+                action = EventType.UPDATE
+            }
+        }
+
+        pluginConfiguration = PluginConfiguration(
+            deploymentDto.id?.let { PluginConfigurationId.existingId(it) } ?: PluginConfigurationId.newId(),
+            deploymentDto.title,
+            resolvedProperties,
+            pluginDefinition,
+            encryptionService,
+            objectMapper
+        )
+
+        pluginConfigurationRepository.saveAndFlush(pluginConfiguration)
         try {
-            plugin.runAllPluginEvents(EventType.CREATE)
+            pluginConfiguration.runAllPluginEvents(action)
         } catch (e: Exception) {
-            pluginConfigurationRepository.deleteById(plugin.id)
-            throw PluginEventInvocationException(plugin, e)
+            if (oldConfiguration != null) {
+                //restore old configuration
+                pluginConfigurationRepository.save(oldConfiguration)
+            } else {
+                pluginConfigurationRepository.deleteById(pluginConfiguration.id)
+            }
+            throw PluginEventInvocationException(pluginConfiguration, e)
         }
     }
 
@@ -229,15 +252,18 @@ class PluginService(
                 } catch (e: Exception) {
                     logger.warn { "Failed to run events on plugin ${it.title} with id ${it.id.id}" }
                 }
+
+                pluginConfigurationRepository.deleteById(pluginConfigurationId)
+
+                val event = PluginConfigurationDeletedEvent(it)
+                applicationEventPublisher.publishEvent(event)
             }
             ?: logger.warn { "Plugin configuration with Id: [$pluginConfigurationId] was not found." }
-
-        pluginConfigurationRepository.deleteById(pluginConfigurationId)
     }
 
     fun getPluginDefinitionActions(
         pluginDefinitionKey: String,
-        activityType: ActivityType?
+        activityType: ActivityTypeWithEventName?
     ): List<PluginActionDefinitionDto> {
         val actions = if (activityType == null)
             pluginActionDefinitionRepository.findByIdPluginDefinitionKey(pluginDefinitionKey)
@@ -260,7 +286,7 @@ class PluginService(
     fun processLinkExists(
         pluginConfigurationId: PluginConfigurationId,
         activityId: String,
-        activityType: ActivityType
+        activityType: ActivityTypeWithEventName
     ): Boolean {
         return pluginProcessLinkRepository
             .findByPluginConfigurationIdAndActivityIdAndActivityType(
@@ -302,7 +328,7 @@ class PluginService(
             actionProperties = processLink.actionProperties,
             pluginConfigurationId = PluginConfigurationId.existingId(processLink.pluginConfigurationId),
             pluginActionDefinitionKey = processLink.pluginActionDefinitionKey,
-            activityType = ActivityType.fromValue(processLink.activityType.value).mapOldActivityTypeToCurrent()
+            activityType = processLink.activityType
         )
         pluginProcessLinkRepository.save(newProcessLink)
     }
@@ -362,22 +388,21 @@ class PluginService(
             PluginConfiguration(
                 newPluginConfigurationId,
                 oldPluginConfiguration.title,
-                oldPluginConfiguration.rawProperties,
-                oldPluginConfiguration.pluginDefinition
+                oldPluginConfiguration.properties,
+                oldPluginConfiguration.pluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
-        val processLinks = pluginProcessLinkRepository.findByPluginConfigurationId(oldPluginConfigurationId)
-            .map { it.copy(pluginConfigurationId = newPluginConfigurationId) }
-        pluginProcessLinkRepository.saveAll(processLinks)
-        val configurations = pluginConfigurationRepository.findAll()
-        configurations.forEach { configuration ->
-            configuration.rawProperties?.fields()?.forEachRemaining { property ->
-                if (property.value.textValue() == oldPluginConfigurationId.id.toString()) {
-                    property.setValue(TextNode.valueOf(newPluginConfigurationId.id.toString()))
-                }
-            }
-        }
-        pluginConfigurationRepository.saveAll(configurations)
+
+        val event = PluginConfigurationIdUpdatedEvent(
+            newPluginConfigurationId.id,
+            oldPluginConfigurationId.id,
+            newPluginConfiguration
+        )
+
+        applicationEventPublisher.publishEvent(event)
+
         return newPluginConfiguration
     }
 
@@ -536,13 +561,6 @@ class PluginService(
         return pluginConfiguration?.let { createInstance(it) as T }
     }
 
-    fun <T> findPluginConfiguration(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): PluginConfiguration? {
-        val annotation = clazz.getAnnotation(Plugin::class.java)
-            ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")
-
-        return findPluginConfiguration(annotation.key, configurationFilter)
-    }
-
     private fun getActionMethod(
         instance: Any,
         processLink: PluginProcessLink
@@ -601,12 +619,32 @@ class PluginService(
         }
     }
 
+    fun <T> findPluginConfiguration(clazz: Class<T>, configurationFilter: (JsonNode) -> Boolean): PluginConfiguration? {
+        return findPluginConfigurations(clazz, configurationFilter)
+            .firstOrNull()
+    }
+
     fun findPluginConfiguration(
         pluginDefinitionKey: String,
         filter: (JsonNode) -> Boolean
     ): PluginConfiguration? {
+        return findPluginConfigurations(pluginDefinitionKey, filter)
+            .firstOrNull()
+    }
+
+    fun <T> findPluginConfigurations(clazz: Class<T>, filter: (JsonNode) -> Boolean = { true }): List<PluginConfiguration> {
+        val annotation = clazz.getAnnotation(Plugin::class.java)
+            ?: throw IllegalArgumentException("Requested plugin for class ${clazz.name}, but class is not annotated as plugin")
+
+        return findPluginConfigurations(annotation.key, filter)
+    }
+
+    private fun findPluginConfigurations(
+        pluginDefinitionKey: String,
+        filter: (JsonNode) -> Boolean
+    ): List<PluginConfiguration> {
         val configurations = pluginConfigurationRepository.findByPluginDefinitionKey(pluginDefinitionKey)
-        return configurations.firstOrNull { config ->
+        return configurations.filter { config ->
             val configProperties = config.properties
             configProperties != null && filter(configProperties)
         }
@@ -633,7 +671,7 @@ class PluginService(
     }
 
     fun getPluginDefinitionActionsByActivityType(activityType: String): List<PluginActionDefinition> {
-        return pluginActionDefinitionRepository.findByActivityTypes(ActivityType.fromValue(activityType))
+        return pluginActionDefinitionRepository.findByActivityTypes(ActivityTypeWithEventName.fromValue(activityType))
     }
 
     companion object {

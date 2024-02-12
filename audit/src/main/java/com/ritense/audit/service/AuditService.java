@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,27 @@ public interface AuditService {
 
     Page<AuditRecord> findByEventAndDocumentId(List<Class<? extends AuditEvent>> eventTypes, UUID documentId, Pageable pageable);
 
+    /**
+     * Find audit record.
+     *
+     * @deprecated Since 12.0.0.
+     */
     @Deprecated(since = "Since 12.0.0", forRemoval = true)
     List<AuditRecord> findByEventAndOccurredBetween(Class<? extends AuditEvent> event, LocalDateTime from, LocalDateTime until, Pageable pageable);
 
+    /**
+     * Find audit record.
+     *
+     * @deprecated Since 12.0.0.
+     */
     @Deprecated(since = "Since 12.0.0", forRemoval = true)
     Page<AuditRecord> findByProperty(String key, Object value, Pageable pageable);
 
+    /**
+     * Find audit record.
+     *
+     * @deprecated Since 12.0.0.
+     */
     @Deprecated(since = "Since 12.0.0", forRemoval = true)
     List<AuditRecord> findByEventTypeAndProperty(Class<? extends AuditEvent> event, String key, Object value);
 

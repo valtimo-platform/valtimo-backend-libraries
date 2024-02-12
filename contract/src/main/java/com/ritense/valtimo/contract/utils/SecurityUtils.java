@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,10 +73,10 @@ public final class SecurityUtils {
     }
 
     /**
-     * Get the GrantedAuthorities from the current security context
+     * Get the GrantedAuthorities from the current security context.
      *
-     * @deprecated Please use <code>getCurrentUserRoles()</code> instead
      * @return GrantedAuthorities
+     * @deprecated Please use <code>getCurrentUserRoles()</code> instead
      */
     @Deprecated(since = "12.0.0", forRemoval = true)
     public static Collection<? extends GrantedAuthority> getCurrentUserRoles(String login) {
@@ -113,10 +113,10 @@ public final class SecurityUtils {
     }
 
     /**
-     * Get the GrantedAuthorities from the current security context
+     * Get the GrantedAuthorities from the current security context.
      *
-     * @deprecated Please use <code>getCurrentUserRoles()</code> instead
      * @return GrantedAuthorities
+     * @deprecated Please use <code>getCurrentUserRoles()</code> instead
      */
     @Deprecated(since = "12.0.0", forRemoval = true)
     public static Collection<? extends GrantedAuthority> getCurrentUserAuthorities() {

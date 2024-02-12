@@ -26,6 +26,7 @@ class ZaakTypeResource(
     private val zaakTypeService: ZaakTypeService
 ) : ZaakTypeResource {
 
+    @Deprecated("Since 12.0.0")
     override fun getZaakTypes(): ResponseEntity<List<ZaakType>> {
         return ok(zaakTypeService.getZaakTypes().results.toList())
     }

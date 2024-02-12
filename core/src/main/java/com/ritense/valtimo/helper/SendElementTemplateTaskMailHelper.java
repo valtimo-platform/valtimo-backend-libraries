@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class SendElementTemplateTaskMailHelper {
     }
 
     public static void validateExpectedKeys(Map<String, Object> camundaProperties)
-        throws ExpectedElementTemplatePropertyNotFoundException, IllegalElementTemplatePropertyValueException {
+            throws ExpectedElementTemplatePropertyNotFoundException, IllegalElementTemplatePropertyValueException {
         validateExpectedKey(RECEIVER_KEY, camundaProperties);
         validateExpectedKey(SENDER_KEY, camundaProperties);
         validateExpectedKey(SUBJECT_KEY, camundaProperties);
@@ -71,7 +71,7 @@ public class SendElementTemplateTaskMailHelper {
     }
 
     private static void validateExpectedKey(String keyName, Map<String, Object> camundaProperties)
-        throws ExpectedElementTemplatePropertyNotFoundException, IllegalElementTemplatePropertyValueException {
+            throws ExpectedElementTemplatePropertyNotFoundException, IllegalElementTemplatePropertyValueException {
         if (!camundaProperties.containsKey(keyName)) {
             throw new ExpectedElementTemplatePropertyNotFoundException("Expected property key '" + keyName + "' not found!");
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,12 +84,25 @@ public class ChoiceFieldValueResource {
             .body(result);
     }
 
+    /**
+     * Endpoint that returns all choicefield values.
+     *
+     * @deprecated since 12.0.0, use v2 instead
+     */
     @GetMapping("/v1/choice-field-values")
+    @Deprecated(since = "12.0.0", forRemoval = true)
     public ResponseEntity<List<ChoiceFieldValue>> getAllChoiceFieldValues(Pageable pageable) {
         logger.debug("REST request to get a page of ChoiceFieldValues");
         final Page<ChoiceFieldValue> page = choiceFieldValueService.findAll(pageable);
         final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/choice-field-values");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/v2/choice-field-values")
+    public ResponseEntity<Page<ChoiceFieldValue>> getAllChoiceFieldValuesPaged(Pageable pageable) {
+        logger.debug("REST request to get a page of ChoiceFieldValues");
+        final Page<ChoiceFieldValue> page = choiceFieldValueService.findAll(pageable);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/v1/choice-field-values/{id}")
@@ -117,7 +130,13 @@ public class ChoiceFieldValueResource {
         return ResponseEntity.ok(choiceFieldValue);
     }
 
+    /**
+     * Endpoint that returns all choicefield values.
+     *
+     * @deprecated since 12.0.0, use v2 instead
+     */
     @GetMapping("/v1/choice-field-values/{choice_field_name}/values")
+    @Deprecated(since = "12.0.0", forRemoval = true)
     public ResponseEntity<List<ChoiceFieldValue>> getChoiceFieldValuesByChoiceField(
         Pageable pageable,
         @PathVariable(name = "choice_field_name") String choiceFieldName
@@ -126,6 +145,16 @@ public class ChoiceFieldValueResource {
         final Page<ChoiceFieldValue> page = choiceFieldValueService.findAllByChoiceFieldKeyName(pageable, choiceFieldName);
         final HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/choice-field-values");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/v2/choice-field-values/{choice_field_name}/values")
+    public ResponseEntity<Page<ChoiceFieldValue>> getChoiceFieldValuesByChoiceFieldPaged(
+        Pageable pageable,
+        @PathVariable(name = "choice_field_name") String choiceFieldName
+    ) {
+        logger.debug("REST request to get ChoiceField : {}", choiceFieldName);
+        final Page<ChoiceFieldValue> page = choiceFieldValueService.findAllByChoiceFieldKeyName(pageable, choiceFieldName);
+        return ResponseEntity.ok(page);
     }
 
 }

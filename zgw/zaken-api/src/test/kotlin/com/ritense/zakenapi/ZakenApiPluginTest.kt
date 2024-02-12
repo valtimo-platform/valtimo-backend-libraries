@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.ZaakObject
+import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
@@ -398,7 +399,7 @@ internal class ZakenApiPluginTest {
                 any()
             )
         ).thenReturn(
-            CreateZaakResponse(
+            ZaakResponse(
                 url = URI("https://zaken.plugin.url/1234"),
                 uuid = UUID.randomUUID(),
                 zaaktype = zaaktypeUrl,

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2023 Ritense BV, the Netherlands.
+ *  Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,6 +37,11 @@ class ValtimoFormFlowHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/back")).authenticated()
                     .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/form-flow/instance/{formFlowId}/save")).authenticated()
                     .requestMatchers(antMatcher(HttpMethod.GET, "/api/v1/form-flow/definition")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/management/v1/form-flow/definition")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.GET, "/api/management/v1/form-flow/definition/{key}/{version}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/management/v1/form-flow/definition/{key}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.POST, "/api/management/v1/form-flow/definition")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(HttpMethod.PUT, "/api/management/v1/form-flow/definition/{key}")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

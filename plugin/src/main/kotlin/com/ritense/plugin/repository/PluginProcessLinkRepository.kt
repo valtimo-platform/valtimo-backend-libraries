@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.ritense.plugin.repository
 
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
@@ -40,23 +39,23 @@ class PluginProcessLinkRepository(
     fun findByProcessDefinitionIdAndActivityIdAndActivityType(
         processDefinitionId: String,
         activityId: String,
-        activityType: ActivityType
+        activityType: ActivityTypeWithEventName
     ) =
         pluginProcessLinkRepositoryImpl.findByProcessDefinitionIdAndActivityIdAndActivityType(
             processDefinitionId,
             activityId,
-            activityType.toActivityTypeWithEventName()
+            activityType
         )
 
     fun findByPluginConfigurationIdAndActivityIdAndActivityType(
         pluginConfigurationId: PluginConfigurationId,
         activityId: String,
-        activityType: ActivityType
+        activityType: ActivityTypeWithEventName
     ) =
         pluginProcessLinkRepositoryImpl.findByPluginConfigurationIdAndActivityIdAndActivityType(
             pluginConfigurationId,
             activityId,
-            activityType.toActivityTypeWithEventName()
+            activityType
         )
 
     fun findByPluginConfigurationId(pluginConfigurationId: PluginConfigurationId) =

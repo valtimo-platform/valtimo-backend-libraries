@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.assignee.UnassignedDocumentCountDto;
+import com.ritense.document.domain.impl.template.DocumentDefinitionTemplateRequestDto;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.document.service.DocumentStatisticService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
@@ -59,6 +60,22 @@ public class JsonSchemaDocumentDefinitionResource implements DocumentDefinitionR
     @Override
     public ResponseEntity<Page<? extends DocumentDefinition>> getDocumentDefinitions(Pageable pageable) {
         return ok(documentDefinitionService.findAll(fixPageable(pageable)));
+    }
+
+    @Override
+    public ResponseEntity<String> getDocumentDefinitionTemplate(DocumentDefinitionTemplateRequestDto requestDto) {
+        return ok(
+            """
+                {
+                    "$id": "%s.schema",
+                    "type": "object",
+                    "title": "%s",
+                    "$schema": "http://json-schema.org/draft-07/schema#",
+                    "properties": {},
+                    "additionalProperties":false
+                }
+                """.formatted(requestDto.documentDefinitionId(), requestDto.documentDefinitionTitle())
+        );
     }
 
     @Override

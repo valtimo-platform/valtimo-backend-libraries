@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,10 @@ public class FormIoFormManagementResource implements FormManagementResource {
     }
 
     @Override
-    public ResponseEntity<Page<? extends FormDefinition>> queryFormDefinitions(@RequestParam String searchTerm, Pageable pageable) {
+    public ResponseEntity<Page<? extends FormDefinition>> queryFormDefinitions(
+        @RequestParam String searchTerm,
+        @PageableDefault(sort = {"name"}, direction = ASC) Pageable pageable
+    ) {
         return ResponseEntity.ok(formDefinitionService.queryFormDefinitions(searchTerm, pageable));
     }
 

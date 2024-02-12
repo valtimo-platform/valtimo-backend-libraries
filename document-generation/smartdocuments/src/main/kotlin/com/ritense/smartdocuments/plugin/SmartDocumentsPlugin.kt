@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.processdocument.service.DocumentDelegateService
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.smartdocuments.client.SmartDocumentsClient
@@ -36,11 +36,11 @@ import com.ritense.valtimo.contract.audit.utils.AuditHelper
 import com.ritense.valtimo.contract.documentgeneration.event.DossierDocumentGeneratedEvent
 import com.ritense.valtimo.contract.utils.RequestHelper
 import com.ritense.valueresolver.ValueResolverService
-import java.time.LocalDateTime
-import java.util.UUID
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.URL
 import org.springframework.context.ApplicationEventPublisher
+import java.time.LocalDateTime
+import java.util.UUID
 
 @Plugin(
     key = "smartdocuments",
@@ -69,7 +69,7 @@ class SmartDocumentsPlugin(
         key = "generate-document",
         title = "Generate document",
         description = "Generates a document of a given type based on a template with data from a case.",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun generate(
         execution: DelegateExecution,
@@ -96,7 +96,7 @@ class SmartDocumentsPlugin(
         key = "get-template-names",
         title = "Get Template Names",
         description = "Fetch the template names of a template group.",
-        activityTypes = [ActivityType.SERVICE_TASK_START]
+        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
     )
     fun getTemplateNames(
         execution: DelegateExecution,

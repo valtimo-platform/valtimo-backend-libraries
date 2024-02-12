@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import jakarta.validation.constraints.NotBlank
 import org.hibernate.annotations.Type
 import org.hibernate.validator.constraints.Length
 
+@Deprecated("Since 12.0.0")
 @Entity
 @Table(name = "connector_instance", indexes = [Index(name = "ct_name_i", columnList = "name")])
 data class ConnectorInstance(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,18 +29,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 public class DocumentSearchHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
+    private static final String FIELDS_URL = "/api/v1/document-search/{documentDefinitionName}/fields";
+
     @Override
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(antMatcher(POST, "/api/v1/document-search")).authenticated()
                     .requestMatchers(antMatcher(POST, "/api/v1/document-definition/{name}/search")).authenticated()
-                    .requestMatchers(antMatcher(POST, "/api/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(
-                        ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/v1/document-search/{documentDefinitionName}/fields")).authenticated()
-                    .requestMatchers(antMatcher(PUT, "/api/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(DELETE, "/api/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(
-                        ADMIN)
+                    .requestMatchers(antMatcher(POST, FIELDS_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, FIELDS_URL)).authenticated()
+                    .requestMatchers(antMatcher(PUT, FIELDS_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, FIELDS_URL)).hasAuthority( ADMIN)
                     .requestMatchers(antMatcher(
                         GET, "/api/management/v1/document-search/{documentDefinitionName}/fields")).hasAuthority(ADMIN));
         } catch (Exception e) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,11 @@ public interface AuditRecordRepository<T extends AuditRecord>
         Pageable pageable
     );
 
+    /**
+     * Find audit records by property.
+     *
+     * @deprecated Since 12.0.0.
+     */
     @Deprecated(since = "Since 12.0.0", forRemoval = true)
     Page<AuditRecord> findAuditRecordsByProperty(String key, Object value, Pageable pageable);
 

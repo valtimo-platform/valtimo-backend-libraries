@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,6 +62,10 @@ data class FormFlowDefinitionId(
 
         fun existingId(id: FormFlowDefinitionId): FormFlowDefinitionId {
             return FormFlowDefinitionId(id.key, id.version)
+        }
+
+        fun existingId(id: String): FormFlowDefinitionId {
+            return FormFlowDefinitionId(id.substringBeforeLast(':'), id.substringAfterLast(':').toLong())
         }
     }
 }

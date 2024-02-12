@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  *  Licensed under EUPL, Version 1.2 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 
 package com.ritense.valtimo.processlink.service
 
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.processlink.domain.ProcessLinkType
 import com.ritense.processlink.domain.SupportedProcessLinkTypeHandler
 
@@ -37,7 +37,7 @@ class PluginSupportedProcessLinksHandler(
     private fun isEnabled(activityType: String): Boolean {
         return pluginService.getPluginConfigurations(
             PluginConfigurationSearchParameters(
-                activityType = ActivityType.fromValue(activityType)
+                activityType = ActivityTypeWithEventName.fromValue(activityType)
             )
         ).isNotEmpty()
     }

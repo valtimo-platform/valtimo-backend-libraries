@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import java.beans.PropertyEditorSupport;
 import java.util.List;
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.task.Comment;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -63,14 +64,29 @@ public class TaskResource extends AbstractTaskResource {
         super(formService, camundaTaskService, camundaProcessService);
     }
 
+    /**
+     * Endpoint that return a list of tasks.
+     *
+     * @deprecated since 12.0.0, use v2 instead
+     */
     @GetMapping("/v1/task")
-    public ResponseEntity<List<? extends TaskExtended>> getTasks(
+    @Deprecated(since = "12.0.0", forRemoval = true)
+    public ResponseEntity<List<TaskExtended>> getTasks(
         @RequestParam CamundaTaskService.TaskFilter filter,
         @PageableDefault(sort = {"created"}, direction = DESC) Pageable pageable
     ) throws Exception {
         var page = camundaTaskService.findTasksFiltered(filter, pageable);
         var headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/v1/task");
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
+    @GetMapping("/v2/task")
+    public ResponseEntity<Page<TaskExtended>> getTasksPaged(
+        @RequestParam CamundaTaskService.TaskFilter filter,
+        @PageableDefault(sort = {"created"}, direction = DESC) Pageable pageable
+    ) {
+        var page = camundaTaskService.findTasksFiltered(filter, pageable);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/v1/task/{taskId}")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.UUID
 import mu.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 
+@Deprecated("Since 12.0.0", ReplaceWith("com.ritense.notificatiesapi.service.NotificatiesApiService"))
 class OpenNotificatieService(
     private val connectorService: ConnectorService,
     private val applicationEventPublisher: ApplicationEventPublisher,

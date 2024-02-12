@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 
+@Deprecated("Since 12.0.0")
 class Encryptor(private var aesEncryption: AesEncryption) : JsonSerializer<String>() {
 
     override fun serialize(value: String, gen: JsonGenerator, serializers: SerializerProvider) {

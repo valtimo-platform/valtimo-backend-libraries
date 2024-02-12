@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ interface ValueResolverFactory {
      * @param variableScope An implementation of VariableScope.
      * @param values The values to handle. i.e. mapOf(doc:add:/firstname to John)
      */
-    fun handleValues(processInstanceId: String, variableScope: VariableScope?, values: Map<String, Any>)
+    fun handleValues(processInstanceId: String, variableScope: VariableScope?, values: Map<String, Any?>)
 
     /**
      * Handle values for a case where a process is not relevant or present in the current context.
@@ -98,7 +98,7 @@ interface ValueResolverFactory {
      * @param documentId The id of the document these values belong to
      * @param values The values to handle. i.e. mapOf(doc:add:/firstname to John)
      */
-    fun handleValues(documentId: UUID, values: Map<String, Any>) {
+    fun handleValues(documentId: UUID, values: Map<String, Any?>) {
         //empty default method for backwards compatibility
     }
 
@@ -108,7 +108,7 @@ interface ValueResolverFactory {
      *
      * @param values The values to handle. i.e. mapOf(doc:add:/firstname to John)
      */
-    fun preProcessValuesForNewCase(values: Map<String, Any>): Any {
+    fun preProcessValuesForNewCase(values: Map<String, Any?>): Any {
         return values
     }
 }

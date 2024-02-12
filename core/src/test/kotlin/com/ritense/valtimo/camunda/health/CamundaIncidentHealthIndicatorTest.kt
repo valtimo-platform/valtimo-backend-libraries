@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,6 @@ class CamundaIncidentHealthIndicatorTest {
     @Test
     fun `should return unknown when incidents exist`(){
         whenever(runtimeService.createIncidentQuery().count()).thenReturn(2L)
-        assertEquals(Health.unknown().build(), indicator.health())
+        assertEquals(Health.status("RESTRICTED").build(), indicator.health())
     }
 }

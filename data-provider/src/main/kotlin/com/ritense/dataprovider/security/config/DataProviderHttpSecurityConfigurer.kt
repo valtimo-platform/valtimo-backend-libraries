@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,14 +30,18 @@ class DataProviderHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(antMatcher(GET, "/api/v1/data/{category}/provider")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/v1/data/{category}/all")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/data/{category}")).authenticated()
-                    .requestMatchers(antMatcher(POST, "/api/v1/data/{category}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(DELETE, "/api/v1/data/{category}")).hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(GET, "$DATA_URL/provider")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "$DATA_URL/all")).authenticated()
+                    .requestMatchers(antMatcher(GET, DATA_URL)).authenticated()
+                    .requestMatchers(antMatcher(POST, DATA_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, DATA_URL)).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
+    }
+
+    companion object {
+        private const val DATA_URL = "/api/v1/data/{category}"
     }
 }

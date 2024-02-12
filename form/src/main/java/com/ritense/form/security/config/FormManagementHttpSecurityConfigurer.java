@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 public class FormManagementHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
+    private static final String MANAGEMENT_URL = "/api/v1/form-management";
+
     public FormManagementHttpSecurityConfigurer() {
         //Default constructor
     }
@@ -38,12 +40,12 @@ public class FormManagementHttpSecurityConfigurer implements HttpSecurityConfigu
         try {
             http.authorizeHttpRequests(requests -> requests
                 .requestMatchers(antMatcher(GET, "/api/v1/form-definition")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(GET, "/api/v1/form-management")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(GET, "/api/v1/form-management/{formDefinitionId}")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(GET, "/api/v1/form-management/exists/{name}")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(DELETE, "/api/v1/form-management/{formDefinitionId}")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(PUT, "/api/v1/form-management")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(POST, "/api/v1/form-management")).hasAuthority(ADMIN));
+                .requestMatchers(antMatcher(GET, MANAGEMENT_URL)).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, MANAGEMENT_URL + "/{formDefinitionId}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, MANAGEMENT_URL + "/exists/{name}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(DELETE, MANAGEMENT_URL + "/{formDefinitionId}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(PUT, MANAGEMENT_URL)).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(POST, MANAGEMENT_URL)).hasAuthority(ADMIN));
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }

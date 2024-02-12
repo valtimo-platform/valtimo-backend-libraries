@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.plugin.domain.ActivityType
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
 import com.ritense.plugin.domain.EventType
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import java.net.URI
 
 @Plugin(
@@ -60,7 +60,7 @@ class TestPlugin(
         key = "test-action-task",
         title = "Test action task",
         description = "This is an action used to verify plugin framework functionality",
-        activityTypes = [ActivityType.USER_TASK_CREATE]
+        activityTypes = [ActivityTypeWithEventName.USER_TASK_CREATE]
     )
     fun testActionTask() {
         //do nothing

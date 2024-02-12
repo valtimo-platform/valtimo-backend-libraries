@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.ritense.plugin.domain
 
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
 import jakarta.persistence.ElementCollection
@@ -45,5 +46,5 @@ class PluginActionDefinition(
     ])
     @Column(name = "activity_type")
     @Enumerated(EnumType.STRING)
-    val activityTypes: Collection<ActivityType>
+    val activityTypes: Collection<ActivityTypeWithEventName>
 )

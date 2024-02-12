@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,17 +31,22 @@ class ProcessLinkHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(antMatcher(GET, "/api/v1/process-link")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/v1/process-link/types")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(POST, "/api/v1/process-link")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(PUT, "/api/v1/process-link")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "/api/v1/process-link/export")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(DELETE, "/api/v1/process-link/{processLinkId}")).hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(GET, PROCESS_LINK_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "$PROCESS_LINK_URL/types")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, PROCESS_LINK_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, PROCESS_LINK_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "$PROCESS_LINK_URL/export")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, "$PROCESS_LINK_URL/{processLinkId}")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "/api/v2/process-link/task/{taskId}")).authenticated()
-                    .requestMatchers(antMatcher(GET, "/api/v1/process-definition/{processDefinitionId}/start-form")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/process-definition/{processDefinitionId}/start-form"))
+                    .authenticated()
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
         }
+    }
+
+    companion object {
+        private const val PROCESS_LINK_URL = "/api/v1/process-link"
     }
 }

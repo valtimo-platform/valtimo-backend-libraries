@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class TestResolverFactory(
     override fun handleValues(
         processInstanceId: String,
         variableScope: VariableScope?,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     ) {
         val firstValue = values.iterator().next()
         throw RuntimeException("Can't save fixed value (unknown destination): {${firstValue.key} to ${firstValue.value}}")
