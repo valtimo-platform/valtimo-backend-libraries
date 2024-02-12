@@ -16,13 +16,13 @@
 
 package com.ritense.plugin.repository
 
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface PluginActionDefinitionRepository: JpaRepository<PluginActionDefinition, PluginActionDefinitionId> {
     fun findByIdPluginDefinitionKey(pluginDefinitionKey: String): List<PluginActionDefinition>
-    fun findByIdPluginDefinitionKeyAndActivityTypes(pluginDefinitionKey: String, activityType: ActivityType?): List<PluginActionDefinition>
-    fun findByActivityTypes(activityType: ActivityType): List<PluginActionDefinition>
+    fun findByIdPluginDefinitionKeyAndActivityTypes(pluginDefinitionKey: String, activityType: ActivityTypeWithEventName?): List<PluginActionDefinition>
+    fun findByActivityTypes(activityType: ActivityTypeWithEventName): List<PluginActionDefinition>
 }

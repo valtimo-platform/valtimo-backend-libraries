@@ -32,7 +32,6 @@ import com.ritense.objectenapi.client.ObjectWrapper
 import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objecttypenapi.ObjecttypenApiAuthentication
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginProcessLink
@@ -41,6 +40,7 @@ import com.ritense.plugin.repository.PluginProcessLinkRepository
 import com.ritense.portaaltaak.exception.CompleteTaakProcessVariableNotFoundException
 import com.ritense.processdocument.domain.impl.request.NewDocumentAndStartProcessRequest
 import com.ritense.processdocument.service.ProcessDocumentService
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byActive
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper.Companion.byId
@@ -527,7 +527,7 @@ class PortaaltaakPluginIT : BaseIntegrationTest() {
                 objectMapper.readTree(propertiesConfig) as ObjectNode,
                 portaalTaakPluginDefinition.id,
                 "create-portaaltaak",
-                activityType = ActivityType.USER_TASK_CREATE
+                activityType = ActivityTypeWithEventName.USER_TASK_CREATE
             )
         )
     }

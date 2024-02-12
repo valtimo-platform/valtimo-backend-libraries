@@ -16,8 +16,6 @@
 
 package com.ritense.plugin
 
-import com.ritense.plugin.domain.ActivityType
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginCategory
 import com.ritense.plugin.domain.PluginDefinition
@@ -25,6 +23,8 @@ import com.ritense.plugin.domain.PluginProperty
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
 import com.ritense.plugin.repository.PluginActionPropertyDefinitionRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 import jakarta.transaction.Transactional
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.allOf
@@ -197,7 +197,7 @@ internal class PluginDeploymentListenerIT: BaseIntegrationTest() {
         title: String,
         description: String,
         methodName: String,
-        activityTypes: Array<ActivityType>
+        activityTypes: Array<ActivityTypeWithEventName>
     ) {
         assertThat(
             deployedActions,

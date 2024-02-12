@@ -17,7 +17,7 @@
 package com.ritense.plugin
 
 import com.ritense.plugin.annotation.PluginAction
-import com.ritense.plugin.domain.ActivityType.SERVICE_TASK_START
+import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
 
 open class TestPluginParent {
     @PluginAction(

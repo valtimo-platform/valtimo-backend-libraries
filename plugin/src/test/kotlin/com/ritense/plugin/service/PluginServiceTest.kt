@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
-import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
 import com.ritense.plugin.domain.PluginConfiguration
@@ -30,6 +29,7 @@ import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.domain.PluginProcessLink
 import com.ritense.plugin.domain.PluginProcessLinkId
 import com.ritense.plugin.domain.PluginProperty
+import com.ritense.plugin.events.PluginConfigurationDeletedEvent
 import com.ritense.plugin.exception.PluginPropertyParseException
 import com.ritense.plugin.exception.PluginPropertyRequiredException
 import com.ritense.plugin.repository.PluginActionDefinitionRepository
@@ -37,10 +37,10 @@ import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginConfigurationSearchRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
 import com.ritense.plugin.repository.PluginProcessLinkRepository
+import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.validation.Validation
-import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -53,6 +53,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.context.ApplicationEventPublisher
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -67,6 +68,8 @@ internal class PluginServiceTest {
     lateinit var valueResolverService: ValueResolverService
     lateinit var pluginService: PluginService
     lateinit var pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
+    lateinit var applicationEventPublisher: ApplicationEventPublisher
+    lateinit var encryptionService: EncryptionService
 
     @BeforeEach
     fun init() {
@@ -77,6 +80,8 @@ internal class PluginServiceTest {
         pluginFactory = mock()
         valueResolverService = mock()
         pluginConfigurationSearchRepository = mock()
+        applicationEventPublisher = mock()
+        encryptionService = mock()
         pluginService = spy(PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
@@ -86,7 +91,9 @@ internal class PluginServiceTest {
             MapperSingleton.get(),
             valueResolverService,
             pluginConfigurationSearchRepository,
-            Validation.buildDefaultValidatorFactory().validator
+            Validation.buildDefaultValidatorFactory().validator,
+            applicationEventPublisher,
+            encryptionService
         ))
     }
 
@@ -209,6 +216,7 @@ internal class PluginServiceTest {
     @Test
     fun `should delete plugin configuration`(){
         val pluginDefinition = newPluginDefinition()
+        val deleteEventCaptor = argumentCaptor<PluginConfigurationDeletedEvent>()
         addPluginProperty(pluginDefinition)
         val pluginConfiguration = newPluginConfiguration(pluginDefinition)
 
@@ -217,11 +225,15 @@ internal class PluginServiceTest {
         val plugin2 = TestPlugin2()
         plugin2.name = "whatever"
 
-        whenever(pluginConfigurationRepository.getReferenceById(pluginConfiguration.id)).thenReturn(pluginConfiguration)
+        // need to mock findById because findByIdOrNull can't be mocked because it's static
+        whenever(pluginConfigurationRepository.findById(any())).thenReturn(Optional.of(pluginConfiguration))
         doReturn(plugin2).whenever(pluginService).createInstance(any<PluginConfiguration>())
 
         pluginService.deletePluginConfiguration(pluginConfigurationId)
+
         verify(pluginConfigurationRepository).deleteById(pluginConfigurationId)
+        verify(applicationEventPublisher).publishEvent(deleteEventCaptor.capture())
+        assertEquals(pluginConfiguration, deleteEventCaptor.firstValue.pluginConfiguration)
     }
 
     @Test
@@ -236,7 +248,7 @@ internal class PluginServiceTest {
                     "title",
                     "description",
                     "method",
-                    listOf(ActivityType.SERVICE_TASK_START)
+                    listOf(ActivityTypeWithEventName.SERVICE_TASK_START)
                 )
             )
         )
@@ -253,7 +265,7 @@ internal class PluginServiceTest {
 
     @Test
     fun `should get plugin action definitions from repository by key and activityType`(){
-        whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes("test", ActivityType.SERVICE_TASK_START)).thenReturn(
+        whenever(pluginActionDefinitionRepository.findByIdPluginDefinitionKeyAndActivityTypes("test", ActivityTypeWithEventName.SERVICE_TASK_START)).thenReturn(
             listOf(
                 PluginActionDefinition(
                     PluginActionDefinitionId(
@@ -263,15 +275,15 @@ internal class PluginServiceTest {
                     "title",
                     "description",
                     "method",
-                    listOf(ActivityType.SERVICE_TASK_START)
+                    listOf(ActivityTypeWithEventName.SERVICE_TASK_START)
                 )
             )
         )
 
-        val actions = pluginService.getPluginDefinitionActions("test", ActivityType.SERVICE_TASK_START)
+        val actions = pluginService.getPluginDefinitionActions("test", ActivityTypeWithEventName.SERVICE_TASK_START)
 
         verify(pluginActionDefinitionRepository).findByIdPluginDefinitionKeyAndActivityTypes("test",
-            ActivityType.SERVICE_TASK_START)
+            ActivityTypeWithEventName.SERVICE_TASK_START)
 
         assertEquals(1, actions.size)
         assertEquals("some-key", actions[0].key)
@@ -289,7 +301,7 @@ internal class PluginServiceTest {
             MapperSingleton.get().readTree("{\"test\":123}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action",
-            ActivityType.SERVICE_TASK_START
+            ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition()
@@ -317,7 +329,7 @@ internal class PluginServiceTest {
             MapperSingleton.get().readTree("{}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action-optional",
-            ActivityType.SERVICE_TASK_START
+            ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition()
@@ -345,7 +357,7 @@ internal class PluginServiceTest {
             MapperSingleton.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action",
-            ActivityType.SERVICE_TASK_START
+            ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition()
@@ -373,7 +385,7 @@ internal class PluginServiceTest {
             MapperSingleton.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action",
-            ActivityType.SERVICE_TASK_START
+            ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition()
@@ -401,7 +413,7 @@ internal class PluginServiceTest {
             MapperSingleton.get().readTree("{\"test\":123}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action-task",
-            ActivityType.SERVICE_TASK_START
+            ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition()
@@ -432,7 +444,7 @@ internal class PluginServiceTest {
             MapperSingleton.get().readTree("{\"test\":\"test:some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action-task",
-            ActivityType.SERVICE_TASK_START
+            ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition()
@@ -463,7 +475,7 @@ internal class PluginServiceTest {
             MapperSingleton.get().readTree("{\"test\":\"some-value\"}") as ObjectNode,
             PluginConfigurationId.newId(),
             "test-action-task",
-            ActivityType.SERVICE_TASK_START
+            ActivityTypeWithEventName.SERVICE_TASK_START
         )
 
         val pluginDefinition = newPluginDefinition()
@@ -526,7 +538,7 @@ internal class PluginServiceTest {
             key = "test-action",
             title = "Test action",
             description = "This is an action used to verify plugin framework functionality",
-            activityTypes = [ActivityType.SERVICE_TASK_START]
+            activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
         )
         fun doThing(@PluginActionProperty test: Int) {
             testDependency.processInt(test)
@@ -536,7 +548,7 @@ internal class PluginServiceTest {
             key = "test-action-task",
             title = "Test action task",
             description = "This is an action used to verify plugin framework functionality",
-            activityTypes = [ActivityType.USER_TASK_CREATE]
+            activityTypes = [ActivityTypeWithEventName.USER_TASK_CREATE]
         )
         fun doThing2(@PluginActionProperty test: Int) {
             testDependency.processInt(test)
@@ -546,7 +558,7 @@ internal class PluginServiceTest {
             key = "test-action-optional",
             title = "Test action optional",
             description = "This is an action used to verify plugin framework functionality",
-            activityTypes = [ActivityType.SERVICE_TASK_START]
+            activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
         )
         fun doThing2(@PluginActionProperty test: Int?) {
             testDependency.processInt(test)

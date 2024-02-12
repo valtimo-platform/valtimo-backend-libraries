@@ -24,6 +24,7 @@ import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.domain.PluginDefinition
 import com.ritense.plugin.repository.PluginConfigurationRepository
 import com.ritense.plugin.repository.PluginDefinitionRepository
+import com.ritense.plugin.service.EncryptionService
 import jakarta.transaction.Transactional
 import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.hamcrest.Matchers.hasSize
@@ -54,6 +55,9 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
     lateinit var pluginDefinitionRepository: PluginDefinitionRepository
 
     @Autowired
+    lateinit var encryptionService: EncryptionService
+
+    @Autowired
     lateinit var objectMapper: ObjectMapper
 
     lateinit var categoryPluginConfiguration: PluginConfiguration
@@ -80,7 +84,9 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
                     }
                     """
                 ) as ObjectNode,
-                pluginDefinition
+                pluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
 
@@ -90,7 +96,9 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
                 PluginConfigurationId.newId(),
                 "title",
                 null,
-                categoryPluginDefinition
+                categoryPluginDefinition,
+                encryptionService,
+                objectMapper
             )
         )
     }
@@ -130,7 +138,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
 
     @Test
     fun `should filter plugin configurations based on activityType`() {
-        // Addding another plugin definition (without actions)
+        // Adding another plugin definition (without actions)
         val pluginDefinition = PluginDefinition("key", "title", "description", "class")
         pluginDefinitionRepository.save(pluginDefinition)
         pluginConfiguration = pluginConfigurationRepository.save(
@@ -143,7 +151,7 @@ internal class PluginConfigurationResourceIT: BaseIntegrationTest() {
         )
 
         // assert that the new plugin configuration is not included in the result
-        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ServiceTask")
+        mockMvc.perform(get("/api/v1/plugin/configuration?activityType=bpmn:ServiceTask:start")
             .characterEncoding(StandardCharsets.UTF_8.name())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
         )

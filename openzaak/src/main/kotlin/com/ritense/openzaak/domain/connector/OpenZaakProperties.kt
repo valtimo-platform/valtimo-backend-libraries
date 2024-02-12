@@ -18,6 +18,7 @@ package com.ritense.openzaak.domain.connector
 
 import com.ritense.connector.domain.ConnectorProperties
 
+@Deprecated("Since 12.0.0")
 data class OpenZaakProperties(
     var openZaakConfig: OpenZaakConfig = OpenZaakConfig()
 ) : ConnectorProperties

@@ -87,7 +87,7 @@ class DocumentJsonValueResolverFactory(
     override fun handleValues(
         processInstanceId: String,
         variableScope: VariableScope?,
-        values: Map<String, Any>
+        values: Map<String, Any?>
     ) {
         val document = AuthorizationContext.runWithoutAuthorization {
             processDocumentService.getDocument(CamundaProcessInstanceId(processInstanceId), variableScope)
@@ -108,7 +108,7 @@ class DocumentJsonValueResolverFactory(
         }
     }
 
-    override fun handleValues(documentId: UUID, values: Map<String, Any>) {
+    override fun handleValues(documentId: UUID, values: Map<String, Any?>) {
         val document = AuthorizationContext.runWithoutAuthorization { documentService.get(documentId.toString()) }
         val documentContent = document.content().asJson()
         buildJsonPatch(documentContent, values)
@@ -123,13 +123,13 @@ class DocumentJsonValueResolverFactory(
         }
     }
 
-    override fun preProcessValuesForNewCase(values: Map<String, Any>): ObjectNode {
+    override fun preProcessValuesForNewCase(values: Map<String, Any?>): ObjectNode {
         val emptyDocumentContent = objectMapper.createObjectNode()
         buildJsonPatch(emptyDocumentContent, values)
         return emptyDocumentContent
     }
 
-    private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any>) {
+    private fun buildJsonPatch(jsonNode: JsonNode, values: Map<String, Any?>) {
         val jsonPatchBuilder = JsonPatchBuilder()
 
         values.forEach {
@@ -197,7 +197,7 @@ class DocumentJsonValueResolverFactory(
         }
     }
 
-    private fun toValueNode(value: Any): JsonNode {
+    private fun toValueNode(value: Any?): JsonNode {
         return objectMapper.valueToTree(value)
     }
 

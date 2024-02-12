@@ -29,17 +29,11 @@ class PluginConfigurationEntityListener(
     val encryptionService: EncryptionService,
     val objectMapper: ObjectMapper
 ) {
-    @PrePersist
-    fun encryptPropertiesOnSave(pluginConfiguration: PluginConfiguration) {
-        logger.debug { "Encrypting secrets for PluginConfiguration ${pluginConfiguration.title} on initial save" }
-        setBeans(pluginConfiguration)
-        pluginConfiguration.encryptProperties()
-    }
-
     @PostLoad
     @PostPersist
     @PostUpdate
     @PreUpdate
+    @PrePersist
     fun setBeans(pluginConfiguration: PluginConfiguration) {
         pluginConfiguration.encryptionService = encryptionService
         pluginConfiguration.objectMapper = objectMapper

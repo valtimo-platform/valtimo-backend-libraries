@@ -29,20 +29,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 public class UserHttpSecurityConfigurer implements HttpSecurityConfigurer {
 
+    private static final String USER_URL = "/api/v1/users";
+
     @Override
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests(requests ->
-                requests.requestMatchers(antMatcher(GET, "/api/v1/users")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(POST, "/api/v1/users")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(PUT, "/api/v1/users")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(PUT, "/api/v1/users/{userId}/activate")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(PUT, "/api/v1/users/{userId}/deactivate")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(GET, "/api/v1/users/email/{email}/")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(GET, "/api/v1/users/{userId}")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(GET, "/api/v1/users/authority/{authority}")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(DELETE, "/api/v1/users/{userId}")).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(POST, "/api/v1/users/send-verification-email/{userId}")).hasAuthority(ADMIN)
+                requests.requestMatchers(antMatcher(GET, USER_URL)).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(POST, USER_URL)).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(PUT, USER_URL)).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(PUT, USER_URL + "/{userId}/activate")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(PUT, USER_URL + "/{userId}/deactivate")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, USER_URL + "/email/{email}/")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, USER_URL + "/{userId}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, USER_URL + "/authority/{authority}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(DELETE, USER_URL + "/{userId}")).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(POST, USER_URL + "/send-verification-email/{userId}")).hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(GET, "/api/v1/user/settings")).authenticated()
                 .requestMatchers(antMatcher(PUT, "/api/v1/user/settings")).authenticated()
             );

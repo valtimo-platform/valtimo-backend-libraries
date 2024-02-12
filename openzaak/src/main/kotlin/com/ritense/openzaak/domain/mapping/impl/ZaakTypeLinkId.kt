@@ -23,6 +23,7 @@ import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
 
 @Embeddable
+@Deprecated("Since 12.0.0. Use ZaakTypeLinkId in zaken-api module instead")
 data class ZaakTypeLinkId(
 
     @Column(name = "zaak_type_link_id")
