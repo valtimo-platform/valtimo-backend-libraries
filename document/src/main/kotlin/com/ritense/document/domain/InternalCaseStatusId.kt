@@ -23,7 +23,7 @@ import jakarta.persistence.Embeddable
 
 @Embeddable
 data class InternalCaseStatusId(
-    @Column(name = "case_definition_name", length = 50, columnDefinition = "VARCHAR(50)")
+    @Column(name = "case_definition_name", length = 255, columnDefinition = "VARCHAR(255)")
     val caseDefinitionName: String,
     @Column(name = "internal_case_status_key")
     val key: String
