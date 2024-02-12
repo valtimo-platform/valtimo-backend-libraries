@@ -20,8 +20,10 @@ import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.ResultaatType
 import java.net.URI
 
+@Deprecated("Since 12.0.0. Replace with the Catalogi API plugin")
 interface ZaakResultaatService {
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.catalogiapi.client.CatalogiClient.getResultaattypen"))
     fun getResultaatTypes(zaaktype: URI): ResultWrapper<ResultaatType>
 
 }

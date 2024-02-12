@@ -20,6 +20,8 @@ import com.ritense.openzaak.domain.mapping.impl.InformatieObjectTypeLink
 import com.ritense.openzaak.service.result.CreateInformatieObjectTypeLinkResult
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
 
+//TODO: @theo do you know a better message?
+@Deprecated("Since 12.0.0. The link between a InformatieObjectType and a document definition is not used any more.")
 interface InformatieObjectTypeLinkService {
 
     fun get(documentDefinitionName: String): InformatieObjectTypeLink?

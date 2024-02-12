@@ -18,6 +18,8 @@ package com.ritense.openzaak.service
 
 import org.camunda.bpm.engine.delegate.DelegateExecution
 
+@Deprecated("Since 12.0.0. Replace with the Zaken API plugin")
 interface ZaakProcessService {
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.zakenapi.ZakenApiClient.setZaakStatus"))
     fun setStatus(execution: DelegateExecution, status: String)
 }
