@@ -29,6 +29,7 @@ import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zgw.Rsin
 import com.ritense.zgw.domain.Vertrouwelijkheid
+import com.ritense.zgw.exceptions.RequestFailedException
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
@@ -507,16 +509,15 @@ internal class DocumentenApiClientTest {
         val webclientBuilder = WebClient.builder()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
 
-        mockDocumentenApi.enqueue(mockResponse("").setResponseCode(400))
+        mockDocumentenApi.enqueue(mockResponse("{}").setResponseCode(400))
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        try {
+        assertThrows<RequestFailedException> {
             client.deleteInformatieObject(
                 TestAuthentication(),
                 mockDocumentenApi.url("/zaakobjects").toUri(),
             )
-        } catch (_: WebClientResponseException) {
         }
 
         mockDocumentenApi.takeRequest()
@@ -621,11 +622,11 @@ internal class DocumentenApiClientTest {
         val webclientBuilder = WebClient.builder()
         val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
 
-        mockDocumentenApi.enqueue(mockResponse("").setResponseCode(400))
+        mockDocumentenApi.enqueue(mockResponse("{}").setResponseCode(400))
 
         val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
 
-        try {
+        assertThrows<RequestFailedException> {
             client.modifyInformatieObject(
                 TestAuthentication(),
                 mockDocumentenApi.url("/zaakobjects").toUri(),
@@ -642,7 +643,6 @@ internal class DocumentenApiClientTest {
                     indicatieGebruiksrecht = true
                 )
             )
-        } catch (_: WebClientResponseException) {
         }
 
         mockDocumentenApi.takeRequest()

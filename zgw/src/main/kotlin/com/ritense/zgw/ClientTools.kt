@@ -16,7 +16,7 @@
 
 package com.ritense.zgw
 
-import com.ritense.valtimo.contract.json.Mapper
+import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zgw.domain.ZgwErrorResponse
 import com.ritense.zgw.exceptions.ClientErrorException
 import com.ritense.zgw.exceptions.RequestFailedException
@@ -48,7 +48,7 @@ class ClientTools {
                     clientResponse.bodyToMono(String::class.java)
                         .flatMap { errorBody: String ->
                             try {
-                                val zgwError = Mapper.INSTANCE.get().readValue(errorBody, ZgwErrorResponse::class.java)
+                                val zgwError = MapperSingleton.get().readValue(errorBody, ZgwErrorResponse::class.java)
                                 Mono.error(ClientErrorException(zgwError, clientResponse.statusCode()))
                             } catch (e: Exception) {
                                 Mono.error(RequestFailedException(errorBody, clientResponse.statusCode()))

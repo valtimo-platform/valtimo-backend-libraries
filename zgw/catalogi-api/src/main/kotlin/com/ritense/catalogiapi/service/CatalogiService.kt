@@ -29,7 +29,6 @@ import java.net.URI
 import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
-import java.net.URI
 
 class CatalogiService(
     val zaaktypeUrlProvider: ZaaktypeUrlProvider,

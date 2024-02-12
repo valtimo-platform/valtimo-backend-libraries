@@ -17,9 +17,9 @@
 package com.ritense.zgw.exceptions
 
 import com.ritense.zgw.domain.ZgwErrorResponse
-import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
 
 class ClientErrorException(
     val response: ZgwErrorResponse,
-    val statusCode: HttpStatus,
+    val statusCode: HttpStatusCode,
 ) : RuntimeException("Request resulted in ${statusCode.value()} response, with body: $response")
