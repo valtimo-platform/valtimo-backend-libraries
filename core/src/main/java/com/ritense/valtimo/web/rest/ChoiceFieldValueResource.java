@@ -85,6 +85,8 @@ public class ChoiceFieldValueResource {
     }
 
     /**
+     * Endpoint that returns all choicefield values.
+     *
      * @deprecated since 12.0.0, use v2 instead
      */
     @GetMapping("/v1/choice-field-values")
@@ -129,6 +131,8 @@ public class ChoiceFieldValueResource {
     }
 
     /**
+     * Endpoint that returns all choicefield values.
+     *
      * @deprecated since 12.0.0, use v2 instead
      */
     @GetMapping("/v1/choice-field-values/{choice_field_name}/values")
