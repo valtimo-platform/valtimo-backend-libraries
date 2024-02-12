@@ -22,6 +22,7 @@ import com.ritense.openzaak.service.ZaakTypeLinkService
 import org.springframework.context.event.EventListener
 import org.springframework.core.annotation.Order
 
+@Deprecated("Since 12.0.0")
 class DocumentCreatedListener(
     val zaakService: ZaakService,
     val zaakTypeLinkService: ZaakTypeLinkService

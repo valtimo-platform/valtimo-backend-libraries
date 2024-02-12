@@ -19,6 +19,7 @@ package com.ritense.openzaak.domain.event
 import com.ritense.valtimo.contract.domain.DomainEvent
 import java.net.URI
 
+@Deprecated("Since 12.0.0")
 data class StatusSetEvent(
     val zaak: URI,
     val statusType: URI

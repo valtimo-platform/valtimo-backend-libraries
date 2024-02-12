@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 
+@Deprecated("Since 12.0.0")
 open class OpenZaakUndeployDocumentDefinitionEventListener(
     val zaakTypeLinkService: ZaakTypeLinkService
 ) {
