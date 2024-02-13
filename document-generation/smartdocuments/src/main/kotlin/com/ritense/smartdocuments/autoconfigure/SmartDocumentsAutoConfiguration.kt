@@ -31,6 +31,7 @@ import com.ritense.smartdocuments.service.SmartDocumentGenerator
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
@@ -41,6 +42,7 @@ import org.springframework.web.reactive.function.client.WebClient
 class SmartDocumentsAutoConfiguration {
 
     @Bean
+    @ConditionalOnBean(SmartDocumentGenerator::class)
     @ConditionalOnMissingBean(CamundaSmartDocumentGenerator::class)
     fun camundaSmartDocumentGenerator(
         smartDocumentGenerator: SmartDocumentGenerator,
@@ -57,6 +59,7 @@ class SmartDocumentsAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnBean(ResourceService::class)
     @ConditionalOnMissingBean(SmartDocumentGenerator::class)
     fun smartDocumentGenerator(
         connectorService: ConnectorService,

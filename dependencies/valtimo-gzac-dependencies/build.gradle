@@ -18,7 +18,6 @@ dependencies {
     api(project(":contactmoment"))
     api(project(":dependencies:valtimo-dependencies"))
     api(project(":haalcentraal:haalcentraal-brp"))
-    api(project(":objects-api"))//TODO: deprecated
     api(project(":plugin-authentication:notificaties-api-authentication"))
     api(project(":plugin-authentication:objecten-api-authentication"))
     api(project(":plugin-authentication:openzaak-plugin-authentication"))

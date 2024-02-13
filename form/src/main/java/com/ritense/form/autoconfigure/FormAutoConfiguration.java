@@ -44,6 +44,7 @@ import com.ritense.valueresolver.ValueResolverService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ApplicationEventPublisher;
@@ -105,6 +106,7 @@ public class FormAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnBean(ResourceService.class)
     @ConditionalOnMissingBean(FormFileResource.class)
     public FormIoFormFileResource formFileResource(ResourceService resourceService) {
         return new FormIoFormFileResource(resourceService);
