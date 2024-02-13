@@ -15,17 +15,13 @@
  */
 
 dependencies {
-    api(project(":besluit"))
     api(project(":contactmoment"))
     api(project(":dependencies:valtimo-dependencies"))
     api(project(":haalcentraal:haalcentraal-brp"))
-    api(project(":klant"))
-    api(project(":objects-api"))
-    api(project(":openzaak"))//TODO: deprecated
+    api(project(":objects-api"))//TODO: deprecated
     api(project(":plugin-authentication:notificaties-api-authentication"))
     api(project(":plugin-authentication:objecten-api-authentication"))
     api(project(":plugin-authentication:openzaak-plugin-authentication"))
-    api(project(":resource:openzaak-resource"))
     api(project(":zgw:besluiten-api"))
     api(project(":zgw:catalogi-api"))
     api(project(":zgw:documenten-api"))
