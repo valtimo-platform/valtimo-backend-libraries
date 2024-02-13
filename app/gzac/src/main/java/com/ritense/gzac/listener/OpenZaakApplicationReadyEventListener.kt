@@ -51,6 +51,7 @@ import java.util.UUID
 @ConditionalOnClass(
     name = [
         "com.ritense.besluit.domain.Besluit",
+        "com.ritense.contactmoment.connector.ContactMomentProperties",
         "com.ritense.openzaak.domain.connector.OpenZaakConfig"
     ]
 )
