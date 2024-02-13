@@ -24,6 +24,7 @@ import com.ritense.openzaak.service.impl.model.catalogi.BesluitType
 import org.springframework.web.client.RestTemplate
 import java.net.URI
 
+@Deprecated("Since 12.0.0. Please use the catalogi-api module.")
 class CatalogiClient(
     private val restTemplate: RestTemplate,
     private val openZaakConfigService: OpenZaakConfigService,

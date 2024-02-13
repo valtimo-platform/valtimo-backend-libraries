@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Dimpact.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.domain.event
+package com.ritense.zakenapi.provider
 
-import com.ritense.valtimo.contract.domain.DomainEvent
+import com.ritense.zakenapi.ZaakUrlProvider
+import com.ritense.zakenapi.link.ZaakInstanceLinkNotFoundException
+import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import java.net.URI
 import java.util.UUID
 
-@Deprecated("Since 12.0.0")
-data class EigenschappenSetEvent(
-    val zaakUrl: URI,
-    val zaakId: UUID,
-    val eigenschappen: Map<URI, String>
-): DomainEvent
+class DefaultZaakUrlProvider(
+    private val zaakInstanceLinkService: ZaakInstanceLinkService
+): ZaakUrlProvider {
+
+    @Throws(ZaakInstanceLinkNotFoundException::class)
+    override fun getZaakUrl(documentId: UUID): URI {
+        return zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl
+    }
+}
