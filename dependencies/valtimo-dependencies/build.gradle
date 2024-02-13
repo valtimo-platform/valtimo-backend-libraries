@@ -37,6 +37,7 @@ dependencies {
     api(project(":plugin-valtimo"))
     api(project(":process-document"))
     api(project(":process-link"))
+    api(project(":resource"))
     api(project(":resource:temporary-resource-storage"))
     api(project(":search"))
     api(project(":value-resolver"))
