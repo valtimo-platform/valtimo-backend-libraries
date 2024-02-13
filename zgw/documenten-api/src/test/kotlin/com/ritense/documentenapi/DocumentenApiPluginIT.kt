@@ -122,7 +122,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
             }
         """.trimIndent())
         val documentId = temporaryResourceStorageService.store(
-            "test".byteInputStream()
+            "test".byteInputStream(), mutableMapOf(MetadataType.FILE_SIZE.key to 4L)
         )
 
         val newDocumentRequest = NewDocumentRequest(DOCUMENT_DEFINITION_KEY, Mapper.INSTANCE.get().createObjectNode())

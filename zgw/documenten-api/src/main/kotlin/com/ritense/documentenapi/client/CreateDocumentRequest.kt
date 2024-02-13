@@ -44,6 +44,4 @@ class CreateDocumentRequest(
     val verzenddatum: LocalDate? = null,
     val indicatieGebruiksrecht: Boolean? = false,
     val informatieobjecttype: String,
-) {
-
-}
+)

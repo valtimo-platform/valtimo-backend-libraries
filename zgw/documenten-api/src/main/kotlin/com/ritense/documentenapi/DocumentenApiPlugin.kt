@@ -33,7 +33,6 @@ import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.domain.Vertrouwelijkheid
-import org.apache.commons.io.IOUtils
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
@@ -189,13 +188,6 @@ class DocumentenApiPlugin(
         informationObjectType: String,
         storedDocumentUrl: String
     ) {
-        //determine size of InputStream if not null
-        val contentInBytes = contentAsInputStream.readAllBytes()
-        IOUtils.closeQuietly(contentAsInputStream)
-        val bestandsOmvang = contentInBytes.size.toLong()
-        val copyInputStream = contentInBytes.inputStream()
-
-
         val request = CreateDocumentRequest(
             bronorganisatie = bronorganisatie,
             creatiedatum = getLocalDateFromMetaData(metadata, "creationDate", LocalDate.now())!!,
@@ -205,15 +197,13 @@ class DocumentenApiPlugin(
             status = status,
             taal = language ?: DEFAULT_LANGUAGE,
             bestandsnaam = filename,
-            bestandsomvang = bestandsOmvang,
-            inhoud = copyInputStream,
+            bestandsomvang = (metadata[MetadataType.FILE_SIZE.key] as String?)?.toLong(),
+            inhoud = contentAsInputStream,
             beschrijving = description,
             ontvangstdatum = getLocalDateFromMetaData(metadata, "receiptDate"),
             verzenddatum = getLocalDateFromMetaData(metadata, "sendDate"),
             informatieobjecttype = informationObjectType,
         )
-
-
 
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
 
