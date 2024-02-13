@@ -17,17 +17,18 @@
 package com.ritense.zakenapi
 
 import com.fasterxml.jackson.databind.JsonNode
+import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.service.PluginService
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.CreateZaakRequest
-import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.Opschorting
@@ -65,6 +66,7 @@ class ZakenApiPlugin(
     private val zaakUrlProvider: ZaakUrlProvider,
     private val storageService: TemporaryResourceStorageService,
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
+    private val pluginService: PluginService,
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -150,6 +152,13 @@ class ZakenApiPlugin(
             return
         }
 
+        val startdatum = LocalDate.now()
+        val uiterlijkeEinddatumAfdoening = getCatalogiApiPlugin(zaaktypeUrl)
+            ?.getZaaktype(zaaktypeUrl)
+            ?.doorlooptijd
+            ?.let { doorlooptijd -> startdatum.atStartOfDay() + doorlooptijd }
+            ?.toLocalDate()
+
         val zaak = client.createZaak(
             authenticationPluginConfiguration,
             url,
@@ -157,7 +166,8 @@ class ZakenApiPlugin(
                 bronorganisatie = rsin,
                 zaaktype = zaaktypeUrl,
                 verantwoordelijkeOrganisatie = rsin,
-                startdatum = LocalDate.now()
+                startdatum = startdatum,
+                uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening,
             )
         )
 
@@ -311,7 +321,7 @@ class ZakenApiPlugin(
             ZaakopschortingRequest(
                 verlenging = Verlenging(
                     reden = toelichtingVerlenging,
-                    duur = "P$verlengingsduur"+"D"
+                    duur = "P$verlengingsduur" + "D"
                 ),
                 opschorting = Opschorting(
                     indicatie = true.toString(),
@@ -363,6 +373,13 @@ class ZakenApiPlugin(
 
     fun getZaak(zaakUrl: URI): ZaakResponse {
         return client.getZaak(authenticationPluginConfiguration, zaakUrl)
+    }
+
+    private fun getCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin? {
+        return pluginService.createInstance(
+            CatalogiApiPlugin::class.java,
+            CatalogiApiPlugin.findConfigurationByUrl(zaakTypeUrl)
+        )
     }
 
     companion object {

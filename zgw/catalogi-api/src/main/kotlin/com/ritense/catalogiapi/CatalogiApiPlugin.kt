@@ -278,6 +278,10 @@ class CatalogiApiPlugin(
         }
     }
 
+    fun getZaaktype(zaaktypeUrl: URI): Zaaktype {
+        return client.getZaaktype(authenticationPluginConfiguration, url, zaaktypeUrl)
+    }
+
     companion object {
         val logger = KotlinLogging.logger {}
         const val PLUGIN_KEY = "catalogiapi"
