@@ -26,13 +26,6 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.security.SecureRandom
-import kotlin.io.path.Path
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.inputStream
-import kotlin.io.path.nameWithoutExtension
-import kotlin.io.path.notExists
-import kotlin.io.path.pathString
-import kotlin.io.path.readText
 import org.apache.tika.Tika
 import kotlin.io.path.*
 
