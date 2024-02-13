@@ -20,13 +20,18 @@ import org.springframework.web.multipart.MultipartFile
 import java.net.URI
 import java.util.UUID
 
+@Deprecated("Since 12.0.0. Replace with the Documenten API and Zaken API plugins")
 interface DocumentenService {
 
+    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.documentenapi.client.DocumentenApiClient.storeDocument"))
     fun createEnkelvoudigInformatieObject(documentDefinitionName: String, multipartFile: MultipartFile): URI
 
+    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.zakenapi.client.ZakenApiClient.linkDocument"))
     fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, documentId: UUID)
 
+    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.zakenapi.client.ZakenApiClient.linkDocument"))
     fun createObjectInformatieObject(enkelvoudigInformatieObject: URI, zaak: URI)
 
+    @Deprecated("Since 12.0.0", ReplaceWith("com.ritense.zakenapi.client.ZakenApiClient.getZaakInformatieObjecten"))
     fun getObjectInformatieObject(enkelvoudigInformatieObject: URI): ByteArray
 }

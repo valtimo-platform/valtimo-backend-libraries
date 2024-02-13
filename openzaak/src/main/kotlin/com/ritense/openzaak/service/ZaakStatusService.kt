@@ -21,11 +21,14 @@ import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.StatusType
 import java.net.URI
 
+@Deprecated("Since 12.0.0. Replace with the Zaken API and Catalogi API plugins")
 interface ZaakStatusService {
-
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.catalogiapi.client.CatalogiApiClient.getStatustypen"))
     fun getStatusTypes(zaaktype: URI): ResultWrapper<StatusType>
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.catalogiapi.client.CatalogiApiClient.getStatustype"))
     fun getStatusType(statusType: URI): StatusType?
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.zakenapi.client.ZakenApiClient.createZaakStatus"))
     fun setStatus(documentId: Document.Id, status: String)
 }
