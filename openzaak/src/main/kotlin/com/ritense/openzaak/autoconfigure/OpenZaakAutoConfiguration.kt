@@ -28,7 +28,6 @@ import com.ritense.openzaak.listener.EigenschappenSubmittedListener
 import com.ritense.openzaak.listener.GlobalZaakEventListener
 import com.ritense.openzaak.listener.OpenZaakUndeployDocumentDefinitionEventListener
 import com.ritense.openzaak.listener.ServiceTaskListener
-import com.ritense.openzaak.plugin.OpenZaakUrlProvider
 import com.ritense.openzaak.repository.InformatieObjectTypeLinkRepository
 import com.ritense.openzaak.repository.ZaakTypeLinkRepository
 import com.ritense.openzaak.service.DocumentenService
@@ -276,7 +275,7 @@ class OpenZaakAutoConfiguration {
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     fun openZaakProperties(
-    ) : OpenZaakProperties {
+    ): OpenZaakProperties {
         return OpenZaakProperties()
     }
 
@@ -285,7 +284,7 @@ class OpenZaakAutoConfiguration {
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     fun openZaakConnector(
         openZaakProperties: OpenZaakProperties
-    ) : OpenZaakConnector {
+    ): OpenZaakConnector {
         return OpenZaakConnector(openZaakProperties)
     }
 
@@ -359,13 +358,4 @@ class OpenZaakAutoConfiguration {
     fun zaakProcessService(zaakStatusService: com.ritense.openzaak.service.ZaakStatusService): ZaakProcessService {
         return ZaakProcessService(zaakStatusService)
     }
-
-    @Bean
-    fun openZaakUrlProvider(
-        zaakInstanceLinkService: ZaakInstanceLinkService,
-        zaakTypeLinkService: com.ritense.openzaak.service.ZaakTypeLinkService
-    ): OpenZaakUrlProvider {
-        return OpenZaakUrlProvider(zaakInstanceLinkService, zaakTypeLinkService)
-    }
-
 }

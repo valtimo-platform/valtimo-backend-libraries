@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import org.springframework.core.annotation.Order
 
+@Deprecated("Since 12.0.0")
 @Transactional
 class GlobalZaakEventListener(
     val zaakService: ZaakService

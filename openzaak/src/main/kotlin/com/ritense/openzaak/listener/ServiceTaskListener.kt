@@ -27,6 +27,7 @@ import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.springframework.transaction.annotation.Transactional
 
+@Deprecated("Since 12.0.0")
 open class ServiceTaskListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
     documentService: DocumentService,

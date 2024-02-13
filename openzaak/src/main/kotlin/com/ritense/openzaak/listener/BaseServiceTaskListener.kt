@@ -30,6 +30,7 @@ import org.camunda.bpm.extension.reactor.spring.listener.ReactorExecutionListene
 import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
+@Deprecated("Since 12.0.0")
 @CamundaSelector(type = "serviceTask", event = ExecutionListener.EVENTNAME_START)
 open class BaseServiceTaskListener(
     private val zaakTypeLinkService: ZaakTypeLinkService,
