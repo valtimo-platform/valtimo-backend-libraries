@@ -71,6 +71,7 @@ public class SearchRequestMapper {
         advancedSearchRequest.setSearchOperator(searchRequest.getSearchOperator());
         advancedSearchRequest.setAssigneeFilter(searchRequest.getAssigneeFilter());
         advancedSearchRequest.setOtherFilters(otherFilters);
+        advancedSearchRequest.setStatusFilter(searchRequest.getStatusFilter());
         return advancedSearchRequest;
     }
 

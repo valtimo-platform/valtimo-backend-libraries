@@ -41,9 +41,19 @@ import org.springframework.web.bind.annotation.RestController
 class InternalCaseStatusResource(
     private val internalCaseStatusService: InternalCaseStatusService
 ) {
+
+    @RunWithoutAuthorization
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/internal-status")
+    fun getInternalCaseStatuses(
+        @PathVariable caseDefinitionName: String
+    ): ResponseEntity<List<InternalCaseStatusResponseDto>> {
+        val internalCaseStatuses = internalCaseStatusService.getInternalCaseStatuses(caseDefinitionName)
+        return ResponseEntity.ok(internalCaseStatuses.map { InternalCaseStatusResponseDto(it) })
+    }
+
     @RunWithoutAuthorization
     @GetMapping("/management/v1/case-definition/{caseDefinitionName}/internal-status")
-    fun getInternalCaseStatuses(
+    fun getInternalCaseStatusesForManagement(
         @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<InternalCaseStatusResponseDto>> {
         val internalCaseStatuses = internalCaseStatusService.getInternalCaseStatuses(caseDefinitionName)

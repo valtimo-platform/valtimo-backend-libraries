@@ -44,6 +44,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
@@ -59,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.NotImplementedException;
@@ -77,6 +79,8 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private static final String SEQUENCE = "sequence";
     private static final String CONTENT = "content";
     private static final String ASSIGNEE_ID = "assigneeId";
+    private static final String INTERNAL_STATUS_ID = "internalCaseStatusId";
+    private static final String INTERNAL_STATUS_KEY = "key";
     private static final String DOC_PREFIX = "doc:";
     private static final String CASE_PREFIX = "case:";
 
@@ -216,7 +220,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                     null
                 ).toPredicate(documentRoot, query, cb));
 
-        query.where(predicates.toArray(new Predicate[0]));
+        query.where(predicates.toArray(Predicate[]::new));
     }
 
     private void buildQueryWhere(
@@ -249,7 +253,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         if (searchRequest.getOtherFilters() != null && !searchRequest.getOtherFilters().isEmpty()) {
             predicates.add(getOtherFilersPredicate(cb, documentRoot, searchRequest));
         }
-        query.where(predicates.toArray(new Predicate[0]));
+
+        if(searchRequest.getStatusFilter() != null && !searchRequest.getStatusFilter().isEmpty()) {
+            predicates.add(getStatusFilterPredicate(cb, documentRoot, searchRequest.getStatusFilter()));
+        }
+        query.where(predicates.toArray(Predicate[]::new));
     }
 
     private void addNonJsonFieldPredicates(
@@ -344,6 +352,20 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         } else {
             return cb.or(jsonPredicates);
         }
+    }
+
+    private Predicate getStatusFilterPredicate(CriteriaBuilder cb, Root<JsonSchemaDocument> documentRoot, Set<String> statusFilter) {
+        Path<String> statusField = documentRoot.get(INTERNAL_STATUS_ID).get(INTERNAL_STATUS_KEY);
+        Predicate[] predicates = statusFilter.stream().map(status -> {
+                if(status == null || status.isEmpty()) {
+                    return cb.isNull(statusField);
+                } else {
+                    return cb.equal(statusField, status);
+                }
+            }
+        ).toArray(Predicate[]::new);
+
+        return cb.or(predicates);
     }
 
     private Predicate findJsonPathValue(CriteriaBuilder cb, Root<JsonSchemaDocument> root, String path, String value) {

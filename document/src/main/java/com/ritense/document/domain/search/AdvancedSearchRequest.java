@@ -18,12 +18,15 @@ package com.ritense.document.domain.search;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AdvancedSearchRequest {
     private SearchOperator searchOperator = SearchOperator.AND;
     private AssigneeFilter assigneeFilter = AssigneeFilter.ALL;
     private List<OtherFilter> otherFilters = List.of();
+
+    private Set<String> statusFilter = Set.of();
 
     public AdvancedSearchRequest() {
         // Jackson needs the empty constructor
@@ -67,6 +70,14 @@ public class AdvancedSearchRequest {
         this.otherFilters = new ArrayList<>(otherFilters);
         otherFilters.add(otherFilter);
         return this;
+    }
+
+    public Set<String> getStatusFilter() {
+        return statusFilter;
+    }
+
+    public void setStatusFilter(Set<String> statusFilter) {
+        this.statusFilter = statusFilter;
     }
 
     public static class OtherFilter {
