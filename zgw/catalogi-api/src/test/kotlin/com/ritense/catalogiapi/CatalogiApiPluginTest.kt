@@ -44,7 +44,7 @@ import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertEquals
 
-internal class CatalogiApiPluginTest {
+internal class CatalogiApiPluginTest : BaseTest() {
 
     val client = mock<CatalogiApiClient>()
     val zaaktypeUrlProvider = mock<ZaaktypeUrlProvider>()
@@ -392,10 +392,10 @@ internal class CatalogiApiPluginTest {
     fun `should get zaaktypen`() {
         whenever(client.getZaaktypen(any(), any(), any()))
             .thenReturn(Page(1, URI(""), null, listOf(
-                Zaaktype(URI("zaak:1"), "Zaak 1", "zaak 1")
+                newZaaktype(URI("zaak:1"), "Zaak 1", "zaak 1")
             )))
             .thenReturn(Page(1, null, URI(""), listOf(
-                Zaaktype(URI("zaak:2"), "Zaak 2", "zaak 2")
+                newZaaktype(URI("zaak:2"), "Zaak 2", "zaak 2")
             )))
 
         val zaaktypen = plugin.getZaaktypen()

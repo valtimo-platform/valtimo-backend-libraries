@@ -288,6 +288,10 @@ class CatalogiApiPlugin(
         }
     }
 
+    fun getZaaktype(zaaktypeUrl: URI): Zaaktype {
+        return client.getZaaktype(authenticationPluginConfiguration, url, zaaktypeUrl)
+    }
+
     fun prefillCache() {
         client.prefillCache(authenticationPluginConfiguration, url)
     }

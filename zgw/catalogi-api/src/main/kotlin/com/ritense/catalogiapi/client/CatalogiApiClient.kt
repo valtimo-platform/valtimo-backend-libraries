@@ -227,6 +227,22 @@ open class CatalogiApiClient(
         return result?.body!!
     }
 
+    open fun getZaaktype(
+        authentication: CatalogiApiAuthentication,
+        baseUrl: URI,
+        zaaktypeUrl: URI
+    ): Zaaktype {
+        validateUrlHost(baseUrl, zaaktypeUrl)
+        val result = buildWebclient(authentication)
+            .get()
+            .uri(zaaktypeUrl)
+            .retrieve()
+            .toEntity(Zaaktype::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
     open fun prefillCache(authenticationPluginConfiguration: CatalogiApiAuthentication, url: URI) {
         prefillInformatieobjecttypeCache(authenticationPluginConfiguration, url)
     }
