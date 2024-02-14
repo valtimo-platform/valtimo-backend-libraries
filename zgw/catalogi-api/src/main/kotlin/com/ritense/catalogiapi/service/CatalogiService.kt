@@ -83,7 +83,7 @@ class CatalogiService(
 
     @EventListener(ApplicationReadyEvent::class)
     fun prefillCache() {
-        logger.debug { "Prefilling cache" }
+        logger.debug { "Prefilling catalogi api cache" }
         try {
             pluginService.getPluginConfigurations(
                 PluginConfigurationSearchParameters(
@@ -95,7 +95,7 @@ class CatalogiService(
             }
         } catch (e: Exception) {
             // We don't want to crash the application if the cache prefilling fails
-            logger.warn(e) { "Error while prefilling cache" }
+            logger.warn(e) { "Error while prefilling catalogi api cache" }
         }
     }
 
