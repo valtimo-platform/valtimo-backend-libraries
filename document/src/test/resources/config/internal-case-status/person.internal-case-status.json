@@ -1,0 +1,17 @@
+{
+    "changesetId": "person.internal-case-status",
+    "internalCaseStatuses": [
+        {
+            "key": "closed",
+            "caseDefinitionName": "person",
+            "title": "Closed",
+            "visibleInCaseListByDefault": false
+        },
+        {
+            "key": "started",
+            "caseDefinitionName": "person",
+            "title": "Started",
+            "visibleInCaseListByDefault": true
+        }
+    ]
+}

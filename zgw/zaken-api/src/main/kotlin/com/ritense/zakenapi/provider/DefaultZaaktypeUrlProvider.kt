@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.openzaak.plugin
+package com.ritense.zakenapi.provider
 
-import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.catalogiapi.exception.ZaakTypeLinkNotFoundException
-import com.ritense.openzaak.service.ZaakTypeLinkService
-import com.ritense.zakenapi.ZaakUrlProvider
-import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
+import com.ritense.zakenapi.service.ZaakTypeLinkService
 import java.net.URI
-import java.util.UUID
 
-class OpenZaakUrlProvider(
-    val zaakInstanceLinkService: ZaakInstanceLinkService,
-    val zaakTypeLinkService: ZaakTypeLinkService
-): ZaakUrlProvider, ZaaktypeUrlProvider {
-    @Deprecated("Marked for removal since 10.5.0")
-    override fun getZaak(documentId: UUID): String {
-        return zaakInstanceLinkService.getByDocumentId(documentId).zaakInstanceUrl.toString()
-    }
+class DefaultZaaktypeUrlProvider(
+    private val zaakTypeLinkService: ZaakTypeLinkService
+) : ZaaktypeUrlProvider {
 
     override fun getZaaktypeUrl(documentDefinitionName: String): URI {
         val zaakTypeLink = zaakTypeLinkService.get(documentDefinitionName)

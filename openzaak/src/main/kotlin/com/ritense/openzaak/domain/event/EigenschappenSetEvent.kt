@@ -20,6 +20,7 @@ import com.ritense.valtimo.contract.domain.DomainEvent
 import java.net.URI
 import java.util.UUID
 
+@Deprecated("Since 12.0.0")
 data class EigenschappenSetEvent(
     val zaakUrl: URI,
     val zaakId: UUID,

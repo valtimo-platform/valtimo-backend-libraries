@@ -34,6 +34,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 import org.springframework.context.ApplicationEventPublisher
 
+@Deprecated("Since 12.0.0")
 class SmartDocumentGenerator(
     private val connectorService: ConnectorService,
     private val documentService: DocumentService,
