@@ -10,6 +10,7 @@ dependencies {
 
     compileOnly(project(":besluit"))
     compileOnly(project(":openzaak"))
+    compileOnly(project(":contactmoment"))
     compileOnly(project(":objects-api"))
 
     // Database

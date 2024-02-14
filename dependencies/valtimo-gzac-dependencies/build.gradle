@@ -15,7 +15,6 @@
  */
 
 dependencies {
-    api(project(":contactmoment"))
     api(project(":dependencies:valtimo-dependencies"))
     api(project(":haalcentraal:haalcentraal-brp"))
     api(project(":plugin-authentication:notificaties-api-authentication"))
