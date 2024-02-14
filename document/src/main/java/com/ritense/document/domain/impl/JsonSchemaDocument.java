@@ -21,6 +21,8 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.InternalCaseStatus;
+import com.ritense.document.domain.InternalCaseStatusId;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentCreatedEvent;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentModifiedEvent;
@@ -42,7 +44,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.time.LocalDateTime;
@@ -101,6 +107,9 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
 
     @Column(name = "sequence", columnDefinition = "BIGINT")
     private Long sequence;
+
+    @Embedded
+    private InternalCaseStatusId internalCaseStatusId;
 
     @Column(name = "assignee_id", columnDefinition = "varchar(64)")
     private String assigneeId;
@@ -216,7 +225,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
             final List<JsonSchemaDocumentFieldChangedEvent> changes = StreamSupport
                 .stream(diff.spliterator(), false)
                 .map(JsonSchemaDocumentFieldChangedEvent::fromJsonNode)
-                .collect(Collectors.toList());
+                .toList();
 
             registerEvent(
                 new JsonSchemaDocumentModifiedEvent(
