@@ -19,7 +19,6 @@ package com.ritense.document.deployment
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.authorization.AuthorizationContext
-import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.document.repository.InternalCaseStatusRepository
 import com.ritense.document.service.InternalCaseStatusService
 import com.ritense.document.web.rest.dto.InternalCaseStatusCreateRequestDto
@@ -63,7 +62,8 @@ class InternalCaseStatusDeployer(
                     InternalCaseStatusCreateRequestDto(
                         it.key,
                         it.title,
-                        it.visibleInCaseListByDefault
+                        it.visibleInCaseListByDefault,
+                        it.color
                     )
                 )
             }

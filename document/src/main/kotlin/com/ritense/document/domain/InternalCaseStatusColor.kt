@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.document.web.rest.dto
+package com.ritense.document.domain
 
-data class InternalCaseStatusCreateRequestDto(
-    val key: String,
-    val title: String,
-    val visibleInCaseListByDefault: Boolean,
-    val color: String
-)
+enum class InternalCaseStatusColor {
+    WARMGRAY,
+    RED,
+    MAGENTA,
+    PURPLE,
+    BLUE,
+    CYAN,
+    TEAL,
+    GREEN,
+    GRAY,
+    COOLGRAY,
+    HIGHCONTRAST,
+    OUTLINE
+}
+
