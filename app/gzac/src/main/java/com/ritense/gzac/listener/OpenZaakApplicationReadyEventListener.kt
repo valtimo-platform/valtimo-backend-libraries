@@ -34,12 +34,12 @@ import com.ritense.objectsapi.web.rest.request.CreateObjectSyncConfigRequest
 import com.ritense.openzaak.domain.configuration.Rsin
 import com.ritense.openzaak.domain.connector.OpenZaakConfig
 import com.ritense.openzaak.domain.connector.OpenZaakProperties
-import com.ritense.openzaak.domain.request.CreateZaakTypeLinkRequest
 import com.ritense.openzaak.service.InformatieObjectTypeLinkService
-import com.ritense.openzaak.service.ZaakTypeLinkService
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.zakenapi.service.ZaakTypeLinkService
+import com.ritense.zakenapi.web.rest.request.CreateZaakTypeLinkRequest
 import mu.KotlinLogging
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -286,8 +286,9 @@ class OpenZaakApplicationReadyEventListener(
                 CreateZaakTypeLinkRequest(
                     "bezwaar",
                     URI(ZAAKTYPE_URL),
-                    true
-                )
+                    UUID.fromString(ZAKEN_API_PLUGIN_ID),
+                    true,
+                    )
             )
             informatieObjectTypeLinkService.create(
                 CreateInformatieObjectTypeLinkRequest(
@@ -302,7 +303,9 @@ class OpenZaakApplicationReadyEventListener(
                 CreateZaakTypeLinkRequest(
                     PORTAL_PERSON,
                     URI(ZAAKTYPE_URL),
-                    true
+                    UUID.fromString(ZAKEN_API_PLUGIN_ID),
+                    true,
+                    RSIN
                 )
             )
         }
@@ -326,5 +329,7 @@ class OpenZaakApplicationReadyEventListener(
         private const val OBJECTTYPEN_API_URL = "http://localhost:8011"
         private const val ZAAKTYPE_URL = "http://localhost:8001/catalogi/api/v1/zaaktypen/744ca059-f412-49d4-8963-5800e4afd486"
         private const val PORTAL_PERSON = "portal-person"
+        private const val ZAKEN_API_PLUGIN_ID = "3079d6fe-42e3-4f8f-a9db-52ce2507b7ee"
+        private const val RSIN = "438605688"
     }
 }

@@ -38,6 +38,7 @@ class ZakenApiPluginFactory(
             zaakUrlProvider,
             storageService,
             zaakInstanceLinkRepository,
+            pluginService,
             zaakHersteltermijnRepository,
         )
     }
