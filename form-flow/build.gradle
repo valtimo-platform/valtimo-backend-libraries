@@ -50,6 +50,7 @@ dependencies {
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
     implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
     implementation "org.springframework:spring-expression"
+    implementation "com.flipkart.zjsonpatch:zjsonpatch:${zjsonpatchVersion}"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion

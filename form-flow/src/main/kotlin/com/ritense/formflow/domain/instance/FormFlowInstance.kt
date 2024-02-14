@@ -31,9 +31,9 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OrderBy
 import jakarta.persistence.Table
-import java.util.Objects
 import org.hibernate.annotations.Type
 import org.json.JSONObject
+import java.util.Objects
 
 
 @Entity
@@ -117,63 +117,19 @@ class FormFlowInstance(
         }
     }
 
-    fun getHistory() : List<FormFlowStepInstance> {
+    fun getHistory(): List<FormFlowStepInstance> {
         return history
     }
 
-    fun getAdditionalProperties() : Map<String, Any> {
+    fun getAdditionalProperties(): Map<String, Any> {
         return additionalProperties
     }
 
     fun getSubmissionDataContext(): String {
-        val formFlowStepInstancesSubmissionData = getSubmissionData()
-
-        if (formFlowStepInstancesSubmissionData.isEmpty()) {
-            return JSONObject().toString()
-        }
-
-        val mergedSubmissionData = formFlowStepInstancesSubmissionData.first()
-
-        if (formFlowStepInstancesSubmissionData.size == 1) {
-            return mergedSubmissionData.toString()
-        }
-
-        formFlowStepInstancesSubmissionData.subList(1, formFlowStepInstancesSubmissionData.size).forEach {
-            mergeSubmissionData(it, mergedSubmissionData)
-        }
-
-        return mergedSubmissionData.toString()
+        return getCurrentStep().getCurrentSubmissionData() ?: JSONObject().toString()
     }
 
-    private fun getSubmissionData() : List<JSONObject> {
-        val currentStepOrder = getCurrentStep().order
-        val submissionData = history.filter {
-            it.order < currentStepOrder && it.submissionData != null
-        }.map {
-            JSONObject(it.submissionData)
-        }.toMutableList()
-
-        getCurrentStep().getCurrentSubmissionData()?.let {
-            submissionData.add(JSONObject(it))
-        }
-
-        return submissionData
-    }
-
-    private fun mergeSubmissionData(source: JSONObject, target: JSONObject) {
-        val keys = JSONObject.getNames(source) ?: arrayOf()
-        for (key in keys) {
-            val value = source[key]
-            if (target.has(key) && value is JSONObject) {
-                mergeSubmissionData(value, target.getJSONObject(key))
-            } else {
-                // Assumption: Anything that isn't a JSONObject can be overwritten
-                target.put(key, value)
-            }
-        }
-    }
-
-    private fun navigateToNextStep() : FormFlowStepInstance? {
+    private fun navigateToNextStep(): FormFlowStepInstance? {
         val nextStep = determineNextStep()
         if (nextStep == null) {
             this.currentFormFlowStepInstanceId = null
@@ -185,7 +141,7 @@ class FormFlowInstance(
         }
 
         if (formFlowStepInstance == null) {
-            history.removeIf { (it.order >= nextStep.order)}
+            history.removeIf { (it.order >= nextStep.order) }
             history.add(nextStep.order, nextStep)
         }
 
@@ -193,25 +149,33 @@ class FormFlowInstance(
         return nextStep
     }
 
-    private fun determineNextStep() : FormFlowStepInstance? {
+    private fun determineNextStep(): FormFlowStepInstance? {
         if (currentFormFlowStepInstanceId == null && history.isNotEmpty()) {
             return null
         }
 
         val stepKey: String
         val stepOrder: Int
+        val submissionData: String?
         if (currentFormFlowStepInstanceId == null) {
             stepKey = formFlowDefinition.startStep
             stepOrder = 0
-        } else  {
+            submissionData = null
+        } else {
             val currentStepInstance = getCurrentStep()
             val nextStep = currentStepInstance.determineNextStep() ?: return null
 
             stepKey = nextStep.step
             stepOrder = currentStepInstance.order + 1
+            submissionData = currentStepInstance.submissionData
         }
         return history.singleOrNull { it.stepKey == stepKey && it.order == stepOrder }
-            ?: FormFlowStepInstance(instance = this, stepKey = stepKey, order = stepOrder)
+            ?: FormFlowStepInstance(
+                instance = this,
+                stepKey = stepKey,
+                order = stepOrder,
+                submissionData = submissionData
+            )
     }
 
     override fun equals(other: Any?): Boolean {

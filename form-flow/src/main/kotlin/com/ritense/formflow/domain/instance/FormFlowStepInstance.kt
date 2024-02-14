@@ -18,6 +18,8 @@ package com.ritense.formflow.domain.instance
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.flipkart.zjsonpatch.JsonDiff
+import com.flipkart.zjsonpatch.JsonPatch
 import com.ritense.formflow.domain.definition.FormFlowNextStep
 import com.ritense.formflow.domain.definition.FormFlowStep
 import com.ritense.formflow.event.ApplicationEventPublisherHolder
@@ -32,8 +34,8 @@ import jakarta.persistence.FetchType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import java.util.Objects
 import org.hibernate.annotations.Type
+import java.util.Objects
 
 @Entity
 @Table(name = "form_flow_step_instance")
@@ -65,7 +67,14 @@ data class FormFlowStepInstance(
     }
 
     fun saveTemporary(incompleteSubmissionData: String) {
-        this.temporarySubmissionData = incompleteSubmissionData
+        val mapper = MapperSingleton.get()
+        val jsonPatch = JsonDiff.asJson(
+            mapper.readTree(submissionData ?: "{}"),
+            mapper.readTree(incompleteSubmissionData)
+        )
+        this.temporarySubmissionData = mapper.writeValueAsString(
+            JsonPatch.apply(jsonPatch, mapper.readTree(this.submissionData ?: "{}"))
+        )
     }
 
     fun open() {
@@ -73,7 +82,21 @@ data class FormFlowStepInstance(
     }
 
     fun complete(submissionData: String) {
-        this.submissionData = submissionData
+        val mapper = MapperSingleton.get()
+        val jsonPatch = JsonDiff.asJson(mapper.readTree(this.submissionData ?: "{}"), mapper.readTree(submissionData))
+        instance.getHistory()
+            .filter { it.order >= order }
+            .forEach {
+                it.submissionData = mapper.writeValueAsString(
+                    JsonPatch.apply(jsonPatch, mapper.readTree(it.submissionData ?: "{}"))
+                )
+                if (it.temporarySubmissionData != null) {
+                    it.temporarySubmissionData = mapper.writeValueAsString(
+                        JsonPatch.apply(jsonPatch, mapper.readTree(it.temporarySubmissionData))
+                    )
+                }
+            }
+
         this.temporarySubmissionData = null
 
         processExpressions<Any>(definition.onComplete)
