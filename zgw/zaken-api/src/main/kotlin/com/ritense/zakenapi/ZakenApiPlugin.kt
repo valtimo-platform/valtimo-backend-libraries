@@ -159,11 +159,7 @@ open class ZakenApiPlugin(
         }
 
         val startdatum = LocalDate.now()
-        val uiterlijkeEinddatumAfdoening = getCatalogiApiPlugin(zaaktypeUrl)
-            ?.getZaaktype(zaaktypeUrl)
-            ?.doorlooptijd
-            ?.let { doorlooptijd -> startdatum.atStartOfDay() + doorlooptijd }
-            ?.toLocalDate()
+        val uiterlijkeEinddatumAfdoening = calculateUiterlijkeEinddatumAfdoening(zaaktypeUrl, startdatum)
 
         val zaak = client.createZaak(
             authenticationPluginConfiguration,
@@ -361,9 +357,11 @@ open class ZakenApiPlugin(
         check(existingHerseltermijn == null || existingHerseltermijn != hersteltermijn) { "Hersteltermijn already exists for zaak '$zaakUrl'. " }
 
         if (existingHerseltermijn == null) {
-            val uiterlijkeEinddatumAfdoening =
-                client.getZaak(authenticationPluginConfiguration, zaakUrl).uiterlijkeEinddatumAfdoening
+            val zaak = client.getZaak(authenticationPluginConfiguration, zaakUrl)
+            val uiterlijkeEinddatumAfdoening = zaak.uiterlijkeEinddatumAfdoening
+                ?: calculateUiterlijkeEinddatumAfdoening(zaak.zaaktype, zaak.startdatum)
             require(uiterlijkeEinddatumAfdoening != null) { "No 'uiterlijkeEinddatumAfdoening' available for zaak '$zaakUrl' " }
+
             client.patchZaak(
                 authenticationPluginConfiguration, url, PatchZaakRequest(
                     uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.plusDays(maxDurationInDays.toLong())
@@ -415,6 +413,14 @@ open class ZakenApiPlugin(
 
     fun getZaak(zaakUrl: URI): ZaakResponse {
         return client.getZaak(authenticationPluginConfiguration, zaakUrl)
+    }
+
+    private fun calculateUiterlijkeEinddatumAfdoening(zaaktypeUrl: URI, startdatum: LocalDate): LocalDate? {
+        return getCatalogiApiPlugin(zaaktypeUrl)
+            ?.getZaaktype(zaaktypeUrl)
+            ?.doorlooptijd
+            ?.let { doorlooptijd -> startdatum.atStartOfDay() + doorlooptijd }
+            ?.toLocalDate()
     }
 
     private fun getCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin? {
