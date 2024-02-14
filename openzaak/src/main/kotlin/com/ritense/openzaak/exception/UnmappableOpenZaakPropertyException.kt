@@ -16,4 +16,5 @@
 
 package com.ritense.openzaak.exception
 
+@Deprecated("Since 12.0.0")
 class UnmappableOpenZaakPropertyException(message: String) : RuntimeException(message)

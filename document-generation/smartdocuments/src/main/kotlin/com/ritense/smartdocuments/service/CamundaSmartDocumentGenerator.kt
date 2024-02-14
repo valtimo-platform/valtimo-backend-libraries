@@ -27,6 +27,7 @@ import com.ritense.smartdocuments.domain.DocumentFormatOption
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties
 
+@Deprecated("Since 12.0.0")
 class CamundaSmartDocumentGenerator(
     private val smartDocumentGenerator: SmartDocumentGenerator,
     private val processDocumentAssociationService: ProcessDocumentAssociationService,

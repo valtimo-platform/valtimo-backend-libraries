@@ -20,12 +20,16 @@ import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.zaak.Rol
 import java.net.URI
 
+@Deprecated("Since 12.0.0. Replace with the Zaken API plugin")
 interface ZaakRolService {
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.zakenapi.ZakenApiClient.createZaakRol"))
     fun addNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, bsn: String, betrokkene: URI?)
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.zakenapi.ZakenApiClient.createZaakRol"))
     fun addNietNatuurlijkPersoon(zaakUrl: URI, roltoelichting: String, roltype: URI, kvk: String, betrokkene: URI?)
 
+    @Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.zakenapi.ZakenApiClient.getZaakRollen"))
     fun getZaakInitator(zaakUrl: URI): ResultWrapper<Rol>
 
 }

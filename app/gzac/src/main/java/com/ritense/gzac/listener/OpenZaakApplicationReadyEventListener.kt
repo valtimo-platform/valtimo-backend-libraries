@@ -41,18 +41,32 @@ import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkReque
 import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import mu.KotlinLogging
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
+import org.springframework.stereotype.Component
 import java.net.URI
 import java.util.UUID
 
-class ApplicationReadyEventListener(
+@ConditionalOnClass(
+    name = [
+        "com.ritense.besluit.domain.Besluit",
+        "com.ritense.contactmoment.connector.ContactMomentProperties",
+        "com.ritense.openzaak.domain.connector.OpenZaakConfig"
+    ]
+)
+@Component
+class OpenZaakApplicationReadyEventListener(
     private val connectorService: ConnectorService,
     private val objectSyncService: ObjectSyncService,
     private val zaakTypeLinkService: ZaakTypeLinkService,
     private val informatieObjectTypeLinkService: InformatieObjectTypeLinkService,
     private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
 ) {
+    init {
+        logger.info("OpenZaakApplicationReadyEventListener created")
+    }
+
     @EventListener(ApplicationReadyEvent::class)
     fun handleApplicationReady() {
         createConnectors()

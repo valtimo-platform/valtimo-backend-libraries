@@ -18,6 +18,7 @@ package com.ritense.zakenapi.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
@@ -29,6 +30,8 @@ import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zakenapi.provider.BsnProvider
+import com.ritense.zakenapi.provider.DefaultZaakUrlProvider
+import com.ritense.zakenapi.provider.DefaultZaaktypeUrlProvider
 import com.ritense.zakenapi.provider.KvkProvider
 import com.ritense.zakenapi.provider.ZaakBsnProvider
 import com.ritense.zakenapi.provider.ZaakKvkProvider
@@ -39,9 +42,9 @@ import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
 import com.ritense.zakenapi.security.ZakenApiHttpSecurityConfigurer
 import com.ritense.zakenapi.service.DefaultZaakTypeLinkService
 import com.ritense.zakenapi.service.ZaakDocumentService
-import com.ritense.zakenapi.service.ZakenDocumentDeleteHandler
 import com.ritense.zakenapi.service.ZaakTypeLinkService
 import com.ritense.zakenapi.service.ZakenApiEventListener
+import com.ritense.zakenapi.service.ZakenDocumentDeleteHandler
 import com.ritense.zakenapi.web.rest.DefaultZaakTypeLinkResource
 import com.ritense.zakenapi.web.rest.ZaakDocumentResource
 import com.ritense.zakenapi.web.rest.ZaakTypeLinkResource
@@ -49,6 +52,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Primary
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.web.reactive.function.client.WebClient
@@ -199,5 +203,19 @@ class ZakenApiAutoConfiguration {
         pluginService: PluginService
     ): DocumentDeleteHandler {
         return ZakenDocumentDeleteHandler(pluginService)
+    }
+
+    @Bean
+    @Primary
+    @ConditionalOnMissingBean(ZaakUrlProvider::class)
+    fun zaakUrlProvider(zaakInstanceLinkService: ZaakInstanceLinkService): ZaakUrlProvider {
+        return DefaultZaakUrlProvider(zaakInstanceLinkService)
+    }
+
+    @Bean
+    @Primary
+    @ConditionalOnMissingBean(ZaaktypeUrlProvider::class)
+    fun zaaktypeUrlProvider(zaakTypeLinkService: ZaakTypeLinkService): ZaaktypeUrlProvider {
+        return DefaultZaaktypeUrlProvider(zaakTypeLinkService)
     }
 }

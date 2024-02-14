@@ -19,6 +19,7 @@ package com.ritense.openzaak.domain.event
 import com.ritense.valtimo.contract.domain.DomainEvent
 import org.camunda.bpm.engine.delegate.DelegateExecution
 
+@Deprecated("Since 12.0.0")
 data class ZaakCreatedEvent(
     val delegateExecution: DelegateExecution
 ): DomainEvent
