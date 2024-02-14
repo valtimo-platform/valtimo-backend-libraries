@@ -459,7 +459,7 @@ internal class CatalogiApiClientTest {
     @Test
     fun `should get zaaktypen request and parse response`() {
         val webclientBuilder = WebClient.builder()
-        val client = CatalogiApiClient(webclientBuilder)
+        val client = CatalogiApiClient(webclientBuilder, cacheManager)
         val baseUrl = mockApi.url("api").toString()
         val responseBody = """
             {
