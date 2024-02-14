@@ -116,7 +116,7 @@ class ValtimoAuthorizationService(
         val userRoles = if (context.user == null || context.user == SecurityUtils.getCurrentUserLogin()) {
             SecurityUtils.getCurrentUserRoles()
         } else {
-            userManagementService.findByEmail(context.user).orElse(null)
+            userManagementService.findById(context.user)
                 ?.roles
                 ?: return emptyList()
         }

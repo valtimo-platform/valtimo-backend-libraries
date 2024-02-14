@@ -21,8 +21,5 @@ import java.util.UUID
 
 interface ZaakUrlProvider {
 
-    @Deprecated("Marked for removal since 10.5.0")
-    fun getZaak(documentId: UUID): String
-
-    fun getZaakUrl(documentId: UUID): URI = URI(getZaak(documentId))
+    fun getZaakUrl(documentId: UUID): URI
 }

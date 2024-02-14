@@ -3,11 +3,15 @@ dependencies {
 
     implementation(project(":dependencies:valtimo-gzac-dependencies"))
     implementation(project(":mail:local-mail"))
-    implementation(project(":resource:openzaak-resource"))
     implementation(project(":document-generation:smartdocuments"))
     implementation(project(":zgw:portaaltaak"))
 
     implementation("io.github.microutils:kotlin-logging")
+
+    compileOnly(project(":besluit"))
+    compileOnly(project(":openzaak"))
+    compileOnly(project(":contactmoment"))
+    compileOnly(project(":objects-api"))
 
     // Database
     implementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion

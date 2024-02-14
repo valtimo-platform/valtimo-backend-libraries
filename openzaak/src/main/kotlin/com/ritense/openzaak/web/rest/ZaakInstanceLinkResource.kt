@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 import java.util.UUID
 
+@Deprecated("Since 12.0.0")
 @RestController
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])

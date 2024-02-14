@@ -20,6 +20,7 @@ import com.ritense.openzaak.domain.mapping.impl.InformatieObjectTypeLink
 import com.ritense.openzaak.service.result.CreateInformatieObjectTypeLinkResult
 import com.ritense.openzaak.web.rest.request.CreateInformatieObjectTypeLinkRequest
 
+@Deprecated("Since 12.0.0. This link is not used anymore.")
 interface InformatieObjectTypeLinkService {
 
     fun get(documentDefinitionName: String): InformatieObjectTypeLink?

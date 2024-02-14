@@ -73,7 +73,8 @@ class DocumentDelegateService(
     }
 
     fun getDocument(execution: DelegateExecution): Document {
-        val documentId = processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
+        val documentId =
+            processDocumentService.getDocumentId(CamundaProcessInstanceId(execution.processInstanceId), execution)
         return jsonSchemaDocumentService.getDocumentBy(documentId)
     }
 
@@ -106,6 +107,10 @@ class DocumentDelegateService(
             val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
             documentService.unassignUserFromDocument(documentId.id)
         }
+    }
+
+    fun setStatus(execution: DelegateExecution, statusKey: String) {
+        // TODO: Implement
     }
 
     private fun findOptionalValueByJsonPointer(jsonPointer: String?, execution: DelegateExecution): Optional<Any> {
