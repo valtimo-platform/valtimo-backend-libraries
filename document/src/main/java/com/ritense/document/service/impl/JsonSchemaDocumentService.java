@@ -78,6 +78,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -110,7 +111,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         JsonSchemaDocumentRepository documentRepository,
         JsonSchemaDocumentDefinitionService documentDefinitionService,
         JsonSchemaDocumentDefinitionSequenceGeneratorService documentSequenceGeneratorService,
-        ResourceService resourceService,
+        @Nullable ResourceService resourceService,
         UserManagementService userManagementService,
         AuthorizationService authorizationService,
         ApplicationEventPublisher applicationEventPublisher,
@@ -405,6 +406,10 @@ public class JsonSchemaDocumentService implements DocumentService {
                 document
             )
         );
+
+        if( resourceService == null) {
+            throw new RuntimeException("No ResourceService implementation was provided. Resource assignment is unavailable.");
+        }
 
         final Resource resource = resourceService.getResource(resourceId);
         document.addRelatedFile(

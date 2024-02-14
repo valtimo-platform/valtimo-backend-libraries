@@ -226,7 +226,6 @@ class ZakenApiClient(
         return result?.body!!
     }
 
-    @Deprecated("Use createZaak instead")
     fun createZaak(
         authentication: ZakenApiAuthentication,
         baseUrl: URI,

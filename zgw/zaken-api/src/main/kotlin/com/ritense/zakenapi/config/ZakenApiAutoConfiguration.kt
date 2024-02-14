@@ -17,6 +17,7 @@
 package com.ritense.zakenapi.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.catalogiapi.service.ZaaktypeUrlProvider
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.ProcessDocumentAssociationService
@@ -28,6 +29,8 @@ import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import com.ritense.zakenapi.provider.BsnProvider
 import com.ritense.zakenapi.provider.KvkProvider
+import com.ritense.zakenapi.provider.DefaultZaakUrlProvider
+import com.ritense.zakenapi.provider.DefaultZaaktypeUrlProvider
 import com.ritense.zakenapi.provider.ZaakBsnProvider
 import com.ritense.zakenapi.provider.ZaakKvkProvider
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
@@ -46,6 +49,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Primary
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.web.reactive.function.client.WebClient
@@ -185,5 +189,19 @@ class ZakenApiAutoConfiguration {
         zaakTypeLinkService: ZaakTypeLinkService
     ): ZaakTypeLinkResource {
         return DefaultZaakTypeLinkResource(zaakTypeLinkService)
+    }
+
+    @Bean
+    @Primary
+    @ConditionalOnMissingBean(ZaakUrlProvider::class)
+    fun zaakUrlProvider(zaakInstanceLinkService: ZaakInstanceLinkService): ZaakUrlProvider {
+        return DefaultZaakUrlProvider(zaakInstanceLinkService)
+    }
+
+    @Bean
+    @Primary
+    @ConditionalOnMissingBean(ZaaktypeUrlProvider::class)
+    fun zaaktypeUrlProvider(zaakTypeLinkService: ZaakTypeLinkService): ZaaktypeUrlProvider {
+        return DefaultZaaktypeUrlProvider(zaakTypeLinkService)
     }
 }

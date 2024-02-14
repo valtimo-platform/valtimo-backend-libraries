@@ -16,6 +16,7 @@
 
 package com.ritense.openzaak.service
 
+@Deprecated("Since 12.0.0.", ReplaceWith("com.ritense.openzaak.plugin.token.OpenZaakPluginTokenGeneratorService"))
 interface TokenGeneratorService {
 
     fun generateToken(secretKey: String, clientId: String): String
