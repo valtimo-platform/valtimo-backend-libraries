@@ -38,6 +38,7 @@ import com.ritense.zakenapi.event.ZaakCreated
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
 import com.ritense.zakenapi.event.ZaakObjectenListed
 import com.ritense.zakenapi.event.ZaakOpschortingUpdated
+import com.ritense.zakenapi.event.ZaakPatched
 import com.ritense.zakenapi.event.ZaakResultaatCreated
 import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
@@ -269,7 +270,7 @@ class ZakenApiClient(
             .clone()
             .filter(authentication)
             .build()
-            .post()
+            .patch()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
                     .path("zaken")
@@ -284,7 +285,7 @@ class ZakenApiClient(
 
         if (result.hasBody()) {
             outboxService.send {
-                ZaakCreated(
+                ZaakPatched(
                     result.body.url.toString(),
                     objectMapper.valueToTree(result.body)
                 )
