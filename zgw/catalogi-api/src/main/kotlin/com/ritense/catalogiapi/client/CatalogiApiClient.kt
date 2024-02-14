@@ -248,23 +248,18 @@ open class CatalogiApiClient(
     }
 
     private fun prefillInformatieobjecttypeCache(authenticationPluginConfiguration: CatalogiApiAuthentication, url: URI) {
-        var currentPage = 1
-        var currentResults: Page<Informatieobjecttype>?
-
-        do {
-            logger.debug { "Getting page of informatieobjecttypes, page $currentPage for catalogi api $url" }
-            currentResults = getInformatieobjecttypes(
+        Page.getAll { page ->
+            getInformatieobjecttypes(
                 authenticationPluginConfiguration,
                 url,
                 InformatieobjecttypeRequest(
                     status = InformatieobjecttypePublishedStatus.DEFINITIEF,
-                    page = currentPage++
+                    page = page
                 )
             )
-            currentResults.results.forEach {
-                cacheManager.getCache(INFORMATIEOBJECTTYPECACHE_KEY)?.put(it.url, it)
-            }
-        } while(currentResults?.next != null)
+        }.forEach {
+            cacheManager.getCache(INFORMATIEOBJECTTYPECACHE_KEY)?.put(it.url, it)
+        }
     }
 
     private fun validateUrlHost(baseUrl: URI, url: URI?) {

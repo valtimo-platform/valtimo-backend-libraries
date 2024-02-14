@@ -95,13 +95,6 @@ class PluginService(
         return pluginConfigurationSearchRepository.search(pluginConfigurationSearchParameters)
     }
 
-    fun getPluginConfigurationsForClass(
-        clazz: Class<*>
-    ): List<PluginConfiguration> {
-        return pluginConfigurationRepository.findByPluginDefinitionFullyQualifiedClassName(clazz.name)
-    }
-
-
     fun createPluginConfiguration(
         title: String,
         properties: ObjectNode,

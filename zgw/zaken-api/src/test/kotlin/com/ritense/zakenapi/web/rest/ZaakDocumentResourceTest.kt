@@ -110,7 +110,8 @@ class ZaakDocumentResourceTest : BaseIntegrationTest() {
         doReturn(zaak).whenever(zaakDocumentService).getZaakByDocumentId(documentId)
 
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/v1/zaken-api/document/{documentId}/zaak", documentId)
+            MockMvcRequestBuilders.get("/api/v1/zaken-api/document/" +
+                "{documentId}/zaak", documentId)
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
