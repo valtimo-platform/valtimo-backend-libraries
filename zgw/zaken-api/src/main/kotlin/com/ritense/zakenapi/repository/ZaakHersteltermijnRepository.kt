@@ -18,12 +18,12 @@ package com.ritense.zakenapi.repository
 
 import com.ritense.zakenapi.domain.ZaakHersteltermijn
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 
 interface ZaakHersteltermijnRepository : JpaRepository<ZaakHersteltermijn, UUID> {
 
-    fun findByZaakUrlAndEndDateAfter(zaakUrl: URI, date: LocalDate): ZaakHersteltermijn?
-    fun findAllByZaakUrl(zaakUrl: URI): List<ZaakHersteltermijn>
+    fun findByZaakUrlAndEndDateIsNull(zaakUrl: URI): ZaakHersteltermijn?
 }

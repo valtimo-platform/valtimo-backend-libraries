@@ -42,7 +42,7 @@ data class ZaakHersteltermijn(
     var startDate: LocalDate,
 
     @Column(name = "end_date")
-    var endDate: LocalDate,
+    var endDate: LocalDate? = null,
 
     @Column(name = "max_duration_in_days", nullable = true)
     var maxDurationInDays: Int? = null

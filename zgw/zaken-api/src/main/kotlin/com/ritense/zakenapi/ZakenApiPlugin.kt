@@ -316,7 +316,7 @@ open class ZakenApiPlugin(
             ZaakopschortingRequest(
                 verlenging = Verlenging(
                     reden = toelichtingVerlenging,
-                    duur = "P$verlengingsduur"+"D"
+                    duur = "P$verlengingsduur" + "D"
                 ),
                 opschorting = Opschorting(
                     indicatie = true.toString(),
@@ -343,21 +343,22 @@ open class ZakenApiPlugin(
         val hersteltermijn = ZaakHersteltermijn(
             zaakUrl = zaakUrl,
             startDate = startDate,
-            endDate = startDate.plusDays(maxDurationInDays.toLong()),
             maxDurationInDays = maxDurationInDays
         )
 
-        val existingHerseltermijn = zaakHersteltermijnRepository.findByZaakUrlAndEndDateAfter(zaakUrl, startDate)
-        check(existingHerseltermijn == null || existingHerseltermijn != hersteltermijn) { "Hersteltermijn already exists for case '$documentId'" }
+        val existingHerseltermijn = zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl)
+        check(existingHerseltermijn == null || existingHerseltermijn != hersteltermijn) { "Hersteltermijn already exists for zaak '$zaakUrl'. " }
 
         if (existingHerseltermijn == null) {
-            zaakHersteltermijnRepository.save(hersteltermijn)
-            val maxEndDate = zaakHersteltermijnRepository.findAllByZaakUrl(zaakUrl).maxOf { it.endDate }
+            val uiterlijkeEinddatumAfdoening =
+                client.getZaak(authenticationPluginConfiguration, zaakUrl).uiterlijkeEinddatumAfdoening
+            require(uiterlijkeEinddatumAfdoening != null) { "No 'uiterlijkeEinddatumAfdoening' available for zaak '$zaakUrl' " }
             client.patchZaak(
                 authenticationPluginConfiguration, url, PatchZaakRequest(
-                    uiterlijkeEinddatumAfdoening = maxEndDate
+                    uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.plusDays(maxDurationInDays.toLong())
                 )
             )
+            zaakHersteltermijnRepository.save(hersteltermijn)
         }
     }
 

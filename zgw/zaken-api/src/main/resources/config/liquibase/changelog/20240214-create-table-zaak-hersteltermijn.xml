@@ -30,9 +30,7 @@
             <column name="start_date" type="DATETIME(0)">
                 <constraints nullable="false"/>
             </column>
-            <column name="end_date" type="DATETIME(0)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="end_date" type="DATETIME(0)"/>
             <column name="max_duration_in_days" type="INT">
                 <constraints nullable="false"/>
             </column>

@@ -20,6 +20,7 @@ import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 
 class ZakenApiPluginFactory(
@@ -28,6 +29,7 @@ class ZakenApiPluginFactory(
     private val zaakUrlProvider: ZaakUrlProvider,
     private val storageService: TemporaryResourceStorageService,
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
+    private val zaakHersteltermijnRepository: ZaakHersteltermijnRepository,
 ) : PluginFactory<ZakenApiPlugin>(pluginService) {
 
     override fun create(): ZakenApiPlugin {
@@ -35,7 +37,8 @@ class ZakenApiPluginFactory(
             client,
             zaakUrlProvider,
             storageService,
-            zaakInstanceLinkRepository
+            zaakInstanceLinkRepository,
+            zaakHersteltermijnRepository,
         )
     }
 }

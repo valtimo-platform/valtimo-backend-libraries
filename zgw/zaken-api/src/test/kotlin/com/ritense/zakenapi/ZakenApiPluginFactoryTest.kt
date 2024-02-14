@@ -25,6 +25,7 @@ import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zakenapi.client.ZakenApiClient
+import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -45,6 +46,7 @@ internal class ZakenApiPluginFactoryTest {
         val zaakUrlProvider: ZaakUrlProvider = mock()
         val storageService: TemporaryResourceStorageService = mock()
         val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
+        val zaakHersteltermijnRepository: ZaakHersteltermijnRepository = mock()
 
         val factory = ZakenApiPluginFactory(
             pluginService,
@@ -52,6 +54,7 @@ internal class ZakenApiPluginFactoryTest {
             zaakUrlProvider,
             storageService,
             zaakInstanceLinkRepository,
+            zaakHersteltermijnRepository,
         )
         val zakenApiPluginProperties: String = """
             {

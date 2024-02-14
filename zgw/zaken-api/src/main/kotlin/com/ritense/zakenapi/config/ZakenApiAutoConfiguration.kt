@@ -33,6 +33,7 @@ import com.ritense.zakenapi.provider.DefaultZaakUrlProvider
 import com.ritense.zakenapi.provider.DefaultZaaktypeUrlProvider
 import com.ritense.zakenapi.provider.ZaakBsnProvider
 import com.ritense.zakenapi.provider.ZaakKvkProvider
+import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zakenapi.repository.ZaakTypeLinkRepository
 import com.ritense.zakenapi.resolver.ZaakStatusValueResolverFactory
@@ -76,6 +77,7 @@ class ZakenApiAutoConfiguration {
         urlProvider: ZaakUrlProvider,
         storageService: TemporaryResourceStorageService,
         zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
+        zaakHersteltermijnRepository: ZaakHersteltermijnRepository,
     ): ZakenApiPluginFactory {
         return ZakenApiPluginFactory(
             pluginService,
@@ -83,6 +85,7 @@ class ZakenApiAutoConfiguration {
             urlProvider,
             storageService,
             zaakInstanceLinkRepository,
+            zaakHersteltermijnRepository,
         )
     }
 
