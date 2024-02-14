@@ -16,12 +16,12 @@
 
 package com.ritense.catalogiapi.web.rest
 
+import com.ritense.catalogiapi.BaseTest
 import com.ritense.catalogiapi.domain.Besluittype
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
 import com.ritense.catalogiapi.domain.Statustype
-import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.catalogiapi.service.CatalogiService
 import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
@@ -37,7 +37,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.net.URI
 import java.nio.charset.StandardCharsets
 
-internal class CatalogiResourceTest {
+internal class CatalogiResourceTest : BaseTest() {
 
     lateinit var mockMvc: MockMvc
     lateinit var catalogiService: CatalogiService
@@ -222,7 +222,7 @@ internal class CatalogiResourceTest {
     fun `should get zaaktypen`() {
 
         val zaaktypen = IntRange(1, 2).map { n ->
-            Zaaktype(
+            newZaaktype(
                 URI("http://example.com/$n"),
                 "Zaaktype $n"
             )

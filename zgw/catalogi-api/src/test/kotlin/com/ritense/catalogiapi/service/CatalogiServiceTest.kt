@@ -16,9 +16,9 @@
 
 package com.ritense.catalogiapi.service
 
+import com.ritense.catalogiapi.BaseTest
 import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.catalogiapi.domain.Informatieobjecttype
-import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.service.PluginService
 import org.assertj.core.api.Assertions.assertThat
@@ -30,7 +30,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.net.URI
 
-internal class CatalogiServiceTest {
+internal class CatalogiServiceTest : BaseTest() {
 
     val zaaktypeUrlProvider = mock<ZaaktypeUrlProvider>()
     val pluginService = mock<PluginService>()
@@ -80,7 +80,7 @@ internal class CatalogiServiceTest {
         val plugins = pluginConfigurations.mapIndexed { index, pluginConfiguration ->
             val plugin: CatalogiApiPlugin = mock()
             whenever(pluginService.createInstance(pluginConfiguration)).thenReturn(plugin)
-            whenever(plugin.getZaaktypen()).thenReturn(listOf(Zaaktype(
+            whenever(plugin.getZaaktypen()).thenReturn(listOf(newZaaktype(
                 URI("example.com/$index"),
                 "Zaak $index"
             )))
