@@ -21,17 +21,19 @@ import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginProperty
-import com.ritense.processlink.domain.ActivityTypeWithEventName
+import com.ritense.processlink.domain.ActivityTypeWithEventName.SERVICE_TASK_START
+import com.ritense.processlink.domain.ActivityTypeWithEventName.USER_TASK_CREATE
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zakenapi.client.LinkDocumentRequest
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.CreateZaakRequest
-import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.Opschorting
+import com.ritense.zakenapi.domain.PatchZaakRequest
 import com.ritense.zakenapi.domain.Verlenging
+import com.ritense.zakenapi.domain.ZaakHersteltermijn
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
@@ -44,12 +46,14 @@ import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
 import mu.KLogger
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -60,11 +64,12 @@ import java.util.UUID
     title = "Zaken API",
     description = "Connects to the Zaken API"
 )
-class ZakenApiPlugin(
+open class ZakenApiPlugin(
     private val client: ZakenApiClient,
     private val zaakUrlProvider: ZaakUrlProvider,
     private val storageService: TemporaryResourceStorageService,
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
+    private val zaakHersteltermijnRepository: ZaakHersteltermijnRepository,
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -77,7 +82,7 @@ class ZakenApiPlugin(
         key = "link-document-to-zaak",
         title = "Link Documenten API document to Zaak",
         description = "Stores a link to an existing document in the Documenten API with a Zaak",
-        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun linkDocumentToZaak(
         execution: DelegateExecution,
@@ -102,7 +107,7 @@ class ZakenApiPlugin(
         key = "link-uploaded-document-to-zaak",
         title = "Link Uploaded Documenten API document to Zaak",
         description = "Stores a link to an uploaded document in the Documenten API with a Zaak",
-        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun linkUploadedDocumentToZaak(
         execution: DelegateExecution
@@ -127,7 +132,7 @@ class ZakenApiPlugin(
         key = "create-zaak",
         title = "Create zaak",
         description = "Creates a zaak in the Zaken API",
-        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun createZaak(
         execution: DelegateExecution,
@@ -176,7 +181,7 @@ class ZakenApiPlugin(
         key = "create-natuurlijk-persoon-zaak-rol",
         title = "Create natuurlijk persoon zaakrol",
         description = "Adds a zaakrol to the zaak in the Zaken API",
-        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun createNatuurlijkPersoonZaakRol(
         execution: DelegateExecution,
@@ -211,7 +216,7 @@ class ZakenApiPlugin(
         key = "create-niet-natuurlijk-persoon-zaak-rol",
         title = "Create niet-natuurlijk persoon zaakrol",
         description = "Adds a zaakrol to the zaak in the Zaken API",
-        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun createNietNatuurlijkPersoonZaakRol(
         execution: DelegateExecution,
@@ -243,7 +248,7 @@ class ZakenApiPlugin(
         key = "set-zaakstatus",
         title = "Set zaak status",
         description = "Sets the status of a zaak",
-        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun setZaakStatus(
         execution: DelegateExecution,
@@ -269,7 +274,7 @@ class ZakenApiPlugin(
         key = "create-zaakresultaat",
         title = "Create zaak status",
         description = "Creates a resultaat for a zaak",
-        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun createZaakResultaat(
         execution: DelegateExecution,
@@ -294,7 +299,7 @@ class ZakenApiPlugin(
         key = "set-zaakopschorting",
         title = "Set case suspension",
         description = "Suspends a case, sets the suspend status to true and adds a duration of time to the planned end date",
-        activityTypes = [ActivityTypeWithEventName.SERVICE_TASK_START]
+        activityTypes = [SERVICE_TASK_START]
     )
     fun setZaakOpschorting(
         execution: DelegateExecution,
@@ -319,6 +324,41 @@ class ZakenApiPlugin(
                 )
             )
         )
+    }
+
+    @PluginAction(
+        key = "start-hersteltermijn",
+        title = "Start hersteltermijn",
+        description = "Start the recovery period for a case",
+        activityTypes = [SERVICE_TASK_START, USER_TASK_CREATE]
+    )
+    @Transactional
+    open fun startHersteltermijn(
+        execution: DelegateExecution,
+        @PluginActionProperty maxDurationInDays: Int,
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+        val startDate = LocalDate.now()
+        val hersteltermijn = ZaakHersteltermijn(
+            zaakUrl = zaakUrl,
+            startDate = startDate,
+            endDate = startDate.plusDays(maxDurationInDays.toLong()),
+            maxDurationInDays = maxDurationInDays
+        )
+
+        val existingHerseltermijn = zaakHersteltermijnRepository.findByZaakUrlAndEndDateAfter(zaakUrl, startDate)
+        check(existingHerseltermijn == null || existingHerseltermijn != hersteltermijn) { "Hersteltermijn already exists for case '$documentId'" }
+
+        if (existingHerseltermijn == null) {
+            zaakHersteltermijnRepository.save(hersteltermijn)
+            val maxEndDate = zaakHersteltermijnRepository.findAllByZaakUrl(zaakUrl).maxOf { it.endDate }
+            client.patchZaak(
+                authenticationPluginConfiguration, url, PatchZaakRequest(
+                    uiterlijkeEinddatumAfdoening = maxEndDate
+                )
+            )
+        }
     }
 
     fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {
