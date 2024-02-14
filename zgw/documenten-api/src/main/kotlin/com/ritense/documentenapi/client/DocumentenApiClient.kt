@@ -51,10 +51,7 @@ class DocumentenApiClient(
         baseUrl: URI,
         request: CreateDocumentRequest
     ): CreateDocumentResult {
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
+        val result = buildFilteredClient(authentication)
             .post()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -92,10 +89,7 @@ class DocumentenApiClient(
         objectUrl: URI
     ): DocumentInformatieObject {
         val result = checkNotNull(
-            webclientBuilder
-                .clone()
-                .filter(authentication)
-                .build()
+            buildFilteredClient(authentication)
                 .get()
                 .uri(objectUrl)
                 .retrieve()
@@ -127,10 +121,7 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): InputStream {
-        return webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
+        return buildFilteredClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, objectUrl)
@@ -156,11 +147,7 @@ class DocumentenApiClient(
         objectUrl: URI
     ): DocumentLock {
         val result = checkNotNull(
-            webclientBuilder
-                .clone()
-                .filter(authentication)
-                .filter(ClientTools.zgwErrorHandler())
-                .build()
+            buildFilteredClient(authentication)
                 .post()
                 .uri(objectUrl.toString() + "/lock")
                 .retrieve()
@@ -178,11 +165,7 @@ class DocumentenApiClient(
         objectUrl: URI,
         documentLock: DocumentLock,
     ) {
-        webclientBuilder
-            .clone()
-            .filter(authentication)
-            .filter(ClientTools.zgwErrorHandler())
-            .build()
+        buildFilteredClient(authentication)
             .post()
             .uri(objectUrl.toString() + "/unlock")
             .contentType(MediaType.APPLICATION_JSON)
@@ -192,12 +175,8 @@ class DocumentenApiClient(
             .block()
     }
 
-    fun deleteInformatieObject(authenticationPluginConfiguration: DocumentenApiAuthentication, url: URI) {
-        webclientBuilder
-            .clone()
-            .filter(authenticationPluginConfiguration)
-            .filter(ClientTools.zgwErrorHandler())
-            .build()
+    fun deleteInformatieObject(authentication: DocumentenApiAuthentication, url: URI) {
+        buildFilteredClient(authentication)
             .delete()
             .uri(url)
             .retrieve()
@@ -208,16 +187,12 @@ class DocumentenApiClient(
     }
 
     fun modifyInformatieObject(
-        authenticationPluginConfiguration: DocumentenApiAuthentication,
+        authentication: DocumentenApiAuthentication,
         documentUrl: URI,
         patchDocumentRequest: PatchDocumentRequest
     ): DocumentInformatieObject {
         val result = checkNotNull(
-            webclientBuilder
-                .clone()
-                .filter(authenticationPluginConfiguration)
-                .filter(ClientTools.zgwErrorHandler())
-                .build()
+            buildFilteredClient(authentication)
                 .patch()
                 .uri(documentUrl)
                 .body(BodyInserters.fromValue(patchDocumentRequest))
@@ -246,6 +221,14 @@ class DocumentenApiClient(
             .pathSegment("enkelvoudiginformatieobjecten", objectId)
             .build()
             .toUri()
+    }
+
+    private fun buildFilteredClient(authentication: DocumentenApiAuthentication): WebClient {
+        return webclientBuilder
+            .clone()
+            .filter(authentication)
+            .filter(ClientTools.zgwErrorHandler())
+            .build()
     }
 
     private fun Flux<DataBuffer>.toInputStream(doOnComplete: Runnable): InputStream {

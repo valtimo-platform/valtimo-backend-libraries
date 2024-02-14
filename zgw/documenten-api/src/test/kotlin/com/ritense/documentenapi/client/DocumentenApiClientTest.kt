@@ -258,7 +258,7 @@ internal class DocumentenApiClientTest {
                 mockDocumentenApi.url("/").toUri(),
                 request
             )
-        } catch (_: WebClientResponseException) {
+        } catch (_: RequestFailedException) {
         }
 
         mockDocumentenApi.takeRequest()
@@ -413,7 +413,7 @@ internal class DocumentenApiClientTest {
                 TestAuthentication(),
                 mockDocumentenApi.url("/zaakobjects").toUri(),
             )
-        } catch (_: WebClientResponseException) {
+        } catch (_: RequestFailedException) {
         }
 
         mockDocumentenApi.takeRequest()

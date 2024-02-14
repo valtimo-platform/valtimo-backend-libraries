@@ -46,6 +46,7 @@ class ClientTools {
                     )
                 } else if (clientResponse.statusCode().is4xxClientError) {
                     clientResponse.bodyToMono(String::class.java)
+                        .switchIfEmpty(Mono.just(""))
                         .flatMap { errorBody: String ->
                             try {
                                 val zgwError = MapperSingleton.get().readValue(errorBody, ZgwErrorResponse::class.java)
