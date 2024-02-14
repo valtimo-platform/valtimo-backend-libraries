@@ -197,6 +197,7 @@ class DocumentenApiPlugin(
             status = status,
             taal = language ?: DEFAULT_LANGUAGE,
             bestandsnaam = filename,
+            bestandsomvang = (metadata[MetadataType.FILE_SIZE.key] as String?)?.toLong(),
             inhoud = contentAsInputStream,
             beschrijving = description,
             ontvangstdatum = getLocalDateFromMetaData(metadata, "receiptDate"),

@@ -26,14 +26,15 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.security.SecureRandom
+import org.apache.tika.Tika
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.fileSize
 import kotlin.io.path.inputStream
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.notExists
 import kotlin.io.path.pathString
 import kotlin.io.path.readText
-import org.apache.tika.Tika
 
 class TemporaryResourceStorageService(
     private val random: SecureRandom = SecureRandom(),
@@ -62,7 +63,8 @@ class TemporaryResourceStorageService(
         }
 
         val metaDataContent = metadata + mapOf(
-            MetadataType.FILE_PATH.key to dataFile.absolutePathString()
+            MetadataType.FILE_PATH.key to dataFile.absolutePathString(),
+            MetadataType.FILE_SIZE.key to dataFile.fileSize().toString()
         )
         val metaDataFile = Files.createTempFile(tempDir, "${random.nextLong().toULong()}-", ".json")
         metaDataFile.toFile().writeText(Mapper.INSTANCE.get().writeValueAsString(metaDataContent))

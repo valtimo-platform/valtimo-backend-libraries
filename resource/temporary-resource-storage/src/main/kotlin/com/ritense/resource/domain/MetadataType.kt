@@ -21,5 +21,6 @@ enum class MetadataType(val key: String) {
     DOCUMENT_ID("documentId"),
     FILE_NAME("filename"),
     FILE_PATH("filePath"),
+    FILE_SIZE("fileSize"),
     USER("user"),
 }
