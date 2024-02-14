@@ -88,50 +88,6 @@ data class OpenZaakResource(
         return createdOn
     }
 
-    override fun title(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun status(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun language(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun identification(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun description(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun informatieobjecttype(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun keywords(): List<String> {
-        TODO("Not yet implemented")
-    }
-
-    override fun format(): String {
-        TODO("Not yet implemented")
-    }
-
-    override fun sendDate(): LocalDate {
-        TODO("Not yet implemented")
-    }
-
-    override fun receiptDate(): LocalDate {
-        TODO("Not yet implemented")
-    }
-
-    override fun confidentialityLevel(): String {
-        TODO("Not yet implemented")
-    }
-
     @JsonIgnore
     override fun getId(): ResourceId {
         return resourceId

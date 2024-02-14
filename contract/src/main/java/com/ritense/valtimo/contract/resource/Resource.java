@@ -16,12 +16,8 @@
 
 package com.ritense.valtimo.contract.resource;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
-
-
 
 public interface Resource {
 
@@ -34,27 +30,5 @@ public interface Resource {
     Long sizeInBytes();
 
     LocalDateTime createdOn();
-
-    String title();
-
-    String status();
-
-    String language();
-
-    String identification();
-
-    String description();
-
-    String informatieobjecttype();
-
-    List<String> keywords();
-
-    String format();
-
-    LocalDate sendDate();
-
-    LocalDate receiptDate();
-
-    String confidentialityLevel();
 
 }
