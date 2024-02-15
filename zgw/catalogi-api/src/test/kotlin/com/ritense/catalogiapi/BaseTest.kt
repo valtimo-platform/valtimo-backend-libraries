@@ -21,8 +21,8 @@ import com.ritense.catalogiapi.domain.Referentieproces
 import com.ritense.catalogiapi.domain.Zaaktype
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import java.net.URI
-import java.time.Duration
 import java.time.LocalDate
+import java.time.Period
 
 abstract class BaseTest {
 
@@ -42,7 +42,7 @@ abstract class BaseTest {
         handelingInitiator = "handelingInitiator",
         onderwerp = "onderwerp",
         handelingBehandelaar = "handelingBehandelaar",
-        doorlooptijd = Duration.ofDays(84),
+        doorlooptijd = Period.ofDays(84),
         opschortingEnAanhoudingMogelijk = false,
         verlengingMogelijk = false,
         trefwoorden = listOf("trefwoorden"),

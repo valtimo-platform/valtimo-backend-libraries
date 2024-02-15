@@ -433,7 +433,7 @@ internal class CatalogiApiClientTest {
                         "handelingInitiator": "Indienen",
                         "onderwerp": "Example",
                         "handelingBehandelaar": "Case",
-                        "doorlooptijd": "P84D",
+                        "doorlooptijd": "P1YT",
                         "servicenorm": null,
                         "opschortingEnAanhoudingMogelijk": false,
                         "verlengingMogelijk": true,
