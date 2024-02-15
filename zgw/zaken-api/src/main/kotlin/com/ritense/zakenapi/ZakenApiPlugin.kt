@@ -366,7 +366,7 @@ class ZakenApiPlugin(
                 require(uiterlijkeEinddatumAfdoening != null) { "No 'uiterlijkeEinddatumAfdoening' available for zaak '$zaakUrl' " }
 
                 client.patchZaak(
-                    authenticationPluginConfiguration, url, PatchZaakRequest(
+                    authenticationPluginConfiguration, url, zaakUrl, PatchZaakRequest(
                         uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.plusDays(maxDurationInDays.toLong())
                     )
                 )
@@ -402,7 +402,7 @@ class ZakenApiPlugin(
                     )
                 )
                 client.patchZaak(
-                    authenticationPluginConfiguration, url, PatchZaakRequest(
+                    authenticationPluginConfiguration, url, zaakUrl, PatchZaakRequest(
                         uiterlijkeEinddatumAfdoening = newUiterlijkeEinddatumAfdoening
                     )
                 )

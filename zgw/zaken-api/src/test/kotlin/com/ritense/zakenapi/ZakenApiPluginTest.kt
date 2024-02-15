@@ -671,7 +671,7 @@ internal class ZakenApiPluginTest {
 
         // then
         val captor = argumentCaptor<PatchZaakRequest>()
-        verify(zakenApiClient).patchZaak(any(), any(), captor.capture())
+        verify(zakenApiClient).patchZaak(any(), any(), any(), captor.capture())
 
         val request = captor.firstValue
         assertEquals(LocalDate.parse("2050-01-15"), request.uiterlijkeEinddatumAfdoening)
@@ -734,7 +734,7 @@ internal class ZakenApiPluginTest {
 
         // then
         val captor = argumentCaptor<PatchZaakRequest>()
-        verify(zakenApiClient).patchZaak(any(), any(), captor.capture())
+        verify(zakenApiClient).patchZaak(any(), any(), any(), captor.capture())
 
         val request = captor.firstValue
         assertEquals(LocalDate.now().plusDays(50 - 17 + 8), request.uiterlijkeEinddatumAfdoening)
