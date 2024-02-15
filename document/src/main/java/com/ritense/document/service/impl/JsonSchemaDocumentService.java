@@ -38,6 +38,7 @@ import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.role.Role;
 import com.ritense.authorization.specification.AuthorizationSpecification;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.InternalCaseStatusId;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -53,6 +54,7 @@ import com.ritense.document.event.DocumentAssigned;
 import com.ritense.document.event.DocumentAssigneeChangedEvent;
 import com.ritense.document.event.DocumentCreated;
 import com.ritense.document.event.DocumentDeleted;
+import com.ritense.document.event.DocumentStatusChanged;
 import com.ritense.document.event.DocumentUnassigned;
 import com.ritense.document.event.DocumentUnassignedEvent;
 import com.ritense.document.event.DocumentUpdated;
@@ -71,6 +73,7 @@ import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.resource.Resource;
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
+import jakarta.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +81,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -407,7 +409,7 @@ public class JsonSchemaDocumentService implements DocumentService {
             )
         );
 
-        if( resourceService == null) {
+        if (resourceService == null) {
             throw new RuntimeException("No ResourceService implementation was provided. Resource assignment is unavailable.");
         }
 
@@ -622,6 +624,32 @@ public class JsonSchemaDocumentService implements DocumentService {
 
         outboxService.send(() ->
             new DocumentUnassigned(
+                document.id().toString(),
+                objectMapper.valueToTree(document)
+            )
+        );
+    }
+
+    @Override
+    public void setInternalStatus(Document.Id documentId, @Nullable String internalStatusKey) {
+        JsonSchemaDocument document = runWithoutAuthorization(
+            () -> getDocumentBy(documentId)
+        );
+
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocument.class,
+                MODIFY,
+                document
+            )
+        );
+
+        document.setInternalStatus(internalStatusKey);
+
+        documentRepository.save(document);
+
+        outboxService.send(() ->
+            new DocumentStatusChanged(
                 document.id().toString(),
                 objectMapper.valueToTree(document)
             )

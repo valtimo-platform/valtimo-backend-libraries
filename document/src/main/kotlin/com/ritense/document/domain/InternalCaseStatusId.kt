@@ -32,4 +32,15 @@ data class InternalCaseStatusId(
         require(caseDefinitionName.isNotBlank()) { "caseDefinitionName was blank!" }
         require(key.isNotBlank()) { "key was blank!" }
     }
+
+    companion object {
+        @JvmStatic
+        fun of(caseDefinitionName: String, key: String?): InternalCaseStatusId? {
+            return if (key == null) {
+                null
+            } else {
+                InternalCaseStatusId(caseDefinitionName, key)
+            }
+        }
+    }
 }

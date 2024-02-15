@@ -208,6 +208,8 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
     @Test
     fun shouldReorderStatusesForExistingStatuses() {
         AuthorizationContext.runWithoutAuthorization {
+            internalCaseStatusRepository.deleteAll()
+
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(
@@ -288,6 +290,8 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
     @Test
     fun shouldNotReorderStatusesForIncorrectNumberOfStatuses() {
         AuthorizationContext.runWithoutAuthorization {
+            internalCaseStatusRepository.deleteAll()
+
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(

@@ -18,6 +18,8 @@ package com.ritense.document.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.InternalCaseStatus;
+import com.ritense.document.domain.InternalCaseStatusId;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
@@ -25,6 +27,7 @@ import com.ritense.document.domain.relation.DocumentRelation;
 import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.valtimo.contract.authentication.NamedUser;
+import jakarta.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,6 +70,8 @@ public interface DocumentService {
     void assignUserToDocuments(List<UUID> documentIds, String assigneeId);
 
     void unassignUserFromDocument(UUID documentId);
+
+    void setInternalStatus(Document.Id documentId, @Nullable String internalStatusKey);
 
     List<NamedUser> getCandidateUsers(Document.Id documentId);
 

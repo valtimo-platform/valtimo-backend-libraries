@@ -20,6 +20,7 @@ import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthor
 import com.ritense.authorization.permission.ConditionContainer
 import com.ritense.authorization.permission.Permission
 import com.ritense.document.BaseIntegrationTest
+import com.ritense.document.domain.Document
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
@@ -28,6 +29,7 @@ import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.document.event.DocumentAssigned
 import com.ritense.document.event.DocumentCreated
 import com.ritense.document.event.DocumentDeleted
+import com.ritense.document.event.DocumentStatusChanged
 import com.ritense.document.event.DocumentUnassigned
 import com.ritense.document.event.DocumentUpdated
 import com.ritense.document.event.DocumentViewed
@@ -132,6 +134,56 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
 
         assertThat(candidateUsers).contains(jamesVance)
         assertThat(candidateUsers).contains(ashaMiller)
+    }
+    @Test
+    @WithMockUser(username = USERNAME, authorities = [ADMIN])
+    fun `should set document status and send outbox event`() {
+        val document = createDocument("""{"street": "Admin street"}""")
+        assertThat(document.internalStatus()).isNull()
+
+        reset(outboxService)
+
+        val newStatusKey = "started"
+        documentService.setInternalStatus(document.id, newStatusKey)
+
+        //Assert change
+        val modifiedDocument = documentService.findBy(document.id).get()
+        assertThat(modifiedDocument.internalStatus()).isEqualTo(newStatusKey)
+
+        //Assert outbox event
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+        verify(outboxService, atLeastOnce()).send(eventCapture.capture())
+        val event = eventCapture.allValues.map { it.get() }
+            .single { it is DocumentStatusChanged }
+        assertThat(event.resultId).isEqualTo(document.id!!.toString())
+        assertThat(event.result).isEqualTo(objectMapper.valueToTree(document))
+        assertThat(event.result?.get("internalStatus")?.asText()).isEqualTo(newStatusKey)
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = [ADMIN])
+    fun `should set document status to null and send outbox event`() {
+        var document: Document = createDocument("""{"street": "Admin street"}""")
+        documentService.setInternalStatus(document.id(), "started")
+        document = documentService.findBy(document.id()).get()
+        assertThat(document.internalStatus()).isNotNull()
+
+        reset(outboxService)
+
+        val newStatusKey: String? = null
+        documentService.setInternalStatus(document.id(), newStatusKey)
+
+        //Assert change
+        val modifiedDocument = documentService.findBy(document.id()).get()
+        assertThat(modifiedDocument.internalStatus()).isEqualTo(newStatusKey)
+
+        //Assert outbox event
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+        verify(outboxService, atLeastOnce()).send(eventCapture.capture())
+        val event = eventCapture.allValues.map { it.get() }
+            .single { it is DocumentStatusChanged }
+        assertThat(event.resultId).isEqualTo(document.id()!!.toString())
+        assertThat(event.result?.get("internalStatus")?.isNull).isEqualTo(newStatusKey)
     }
 
     @Test

@@ -21,7 +21,6 @@ import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgument
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ritense.document.domain.Document;
-import com.ritense.document.domain.InternalCaseStatus;
 import com.ritense.document.domain.InternalCaseStatusId;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.event.JsonSchemaDocumentCreatedEvent;
@@ -40,15 +39,12 @@ import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEve
 import com.ritense.valtimo.contract.utils.RequestHelper;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.time.LocalDateTime;
@@ -60,7 +56,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
@@ -109,7 +104,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     private Long sequence;
 
     @Embedded
-    private InternalCaseStatusId internalCaseStatusId;
+    private InternalCaseStatusId internalStatusId;
 
     @Column(name = "assignee_id", columnDefinition = "varchar(64)")
     private String assigneeId;
@@ -311,6 +306,10 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         this.assigneeFullName = null;
     }
 
+    public void setInternalStatus(@Nullable String internalStatusKey) {
+        this.internalStatusId = InternalCaseStatusId.of(definitionId().name(), internalStatusKey);
+    }
+
     @Override
     public JsonSchemaDocumentId id() {
         return id;
@@ -334,6 +333,16 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Override
     public JsonSchemaDocumentDefinitionId definitionId() {
         return documentDefinitionId;
+    }
+
+    @Override
+    @Nullable
+    public String internalStatus() {
+        if (internalStatusId == null) {
+            return null;
+        } else {
+            return internalStatusId.getKey();
+        }
     }
 
     @Override

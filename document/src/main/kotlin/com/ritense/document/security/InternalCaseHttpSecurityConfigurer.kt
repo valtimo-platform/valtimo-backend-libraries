@@ -17,41 +17,23 @@
 package com.ritense.document.security
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
-import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
-import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
-import org.springframework.http.HttpMethod
+import com.ritense.valtimo.contract.security.config.AuthorizeRequestsHttpSecurityConfigurer
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
 import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer
 
-class InternalCaseHttpSecurityConfigurer : HttpSecurityConfigurer {
-    override fun configure(http: HttpSecurity) {
-        try {
-            http.authorizeHttpRequests { requests ->
-                requests
-                    .requestMatchers(
-                        antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/internal-status")
-                    ).authenticated()
-                    .requestMatchers(
-                        antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/internal-status")
-                    ).hasAuthority(ADMIN)
-                    .requestMatchers(
-                        antMatcher(POST, "/api/management/v1/case-definition/{caseDefinitionName}/internal-status")
-                    ).hasAuthority(ADMIN)
-                    .requestMatchers(
-                        antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/internal-status")
-                    ).hasAuthority(ADMIN)
-                    .requestMatchers(
-                        antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}")
-                    ).hasAuthority(ADMIN)
-                    .requestMatchers(
-                        antMatcher(HttpMethod.DELETE, "/api/management/v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}")
-                    ).hasAuthority(ADMIN)
-            }
-        } catch (e: Exception) {
-            throw HttpConfigurerConfigurationException(e)
-        }
+class InternalCaseHttpSecurityConfigurer : AuthorizeRequestsHttpSecurityConfigurer() {
+
+    override fun authorizeHttpRequests(requests: AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry) {
+        requests
+            .antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/internal-status").authenticated()
+            .antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/internal-status").hasAuthority(ADMIN)
+            .antMatcher(POST, "/api/management/v1/case-definition/{caseDefinitionName}/internal-status").hasAuthority(ADMIN)
+            .antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/internal-status").hasAuthority(ADMIN)
+            .antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}").hasAuthority(ADMIN)
+            .antMatcher(DELETE, "/api/management/v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}").hasAuthority(ADMIN)
     }
 }
