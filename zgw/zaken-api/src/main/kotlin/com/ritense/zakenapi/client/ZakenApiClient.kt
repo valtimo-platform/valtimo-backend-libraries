@@ -20,11 +20,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.outbox.OutboxService
 import com.ritense.zakenapi.ZakenApiAuthentication
 import com.ritense.zakenapi.domain.CreateZaakRequest
-import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakResultaatResponse
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusResponse
+import com.ritense.zakenapi.domain.PatchZaakRequest
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.ZaakResponse
@@ -38,6 +38,7 @@ import com.ritense.zakenapi.event.ZaakCreated
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
 import com.ritense.zakenapi.event.ZaakObjectenListed
 import com.ritense.zakenapi.event.ZaakOpschortingUpdated
+import com.ritense.zakenapi.event.ZaakPatched
 import com.ritense.zakenapi.event.ZaakResultaatCreated
 import com.ritense.zakenapi.event.ZaakRolCreated
 import com.ritense.zakenapi.event.ZaakRollenListed
@@ -251,6 +252,40 @@ class ZakenApiClient(
         if (result.hasBody()) {
             outboxService.send {
                 ZaakCreated(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
+        return result?.body!!
+    }
+
+    fun patchZaak(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        request: PatchZaakRequest,
+    ): ZaakResponse {
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .patch()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .path("zaken")
+                    .build()
+            }
+            .headers(this::defaultHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(request))
+            .retrieve()
+            .toEntity(ZaakResponse::class.java)
+            .block()
+
+        if (result.hasBody()) {
+            outboxService.send {
+                ZaakPatched(
                     result.body.url.toString(),
                     objectMapper.valueToTree(result.body)
                 )
