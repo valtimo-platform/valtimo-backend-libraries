@@ -202,6 +202,22 @@ class CatalogiApiClient(
         return result?.body!!
     }
 
+    fun getZaaktype(
+        authentication: CatalogiApiAuthentication,
+        baseUrl: URI,
+        zaaktypeUrl: URI
+    ): Zaaktype {
+        validateUrlHost(baseUrl, zaaktypeUrl)
+        val result = buildWebclient(authentication)
+            .get()
+            .uri(zaaktypeUrl)
+            .retrieve()
+            .toEntity(Zaaktype::class.java)
+            .block()
+
+        return result?.body!!
+    }
+
     private fun validateUrlHost(baseUrl: URI, url: URI?) {
         if (url != null && baseUrl.host != url.host) {
             throw IllegalArgumentException(

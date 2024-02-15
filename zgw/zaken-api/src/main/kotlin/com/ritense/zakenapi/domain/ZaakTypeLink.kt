@@ -66,10 +66,12 @@ data class ZaakTypeLink(
 ) : Persistable<ZaakTypeLinkId>, Validatable, AggregateRoot<DomainEvent>() {
 
     init {
+        require(zakenApiPluginConfigurationId == null || rsin != null) { "RSIN is required" }
         validate()
     }
 
     fun processUpdateRequest(request: CreateZaakTypeLinkRequest) {
+        require(request.zakenApiPluginConfigurationId == null || request.rsin != null) { "RSIN is required" }
         this.zaakTypeUrl = request.zaakTypeUrl
         this.zakenApiPluginConfigurationId = request.zakenApiPluginConfigurationId
         this.rsin = request.rsin?.let { Rsin(it) }

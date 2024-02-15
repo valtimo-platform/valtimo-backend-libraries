@@ -64,7 +64,7 @@ data class ZaakTypeLink(
 
     @Type(value = JsonType::class)
     @Column(name = "service_task_handlers", columnDefinition = "json")
-    var serviceTaskHandlers: ServiceTaskHandlers,
+    var serviceTaskHandlers: ServiceTaskHandlers?,
 
     @Column(name = "create_with_dossier", columnDefinition = "BOOLEAN", nullable = false)
     var createWithDossier: Boolean = false,
@@ -83,8 +83,11 @@ data class ZaakTypeLink(
     }
 
     fun assignZaakServiceHandler(request: ServiceTaskHandlerRequest) {
-        serviceTaskHandlers.removeIf { handler -> handler.processDefinitionKey == request.processDefinitionKey && handler.serviceTaskId == request.serviceTaskId }
-        serviceTaskHandlers.plusAssign(
+        if (serviceTaskHandlers == null) {
+            serviceTaskHandlers = ServiceTaskHandlers()
+        }
+        serviceTaskHandlers?.removeIf { handler -> handler.processDefinitionKey == request.processDefinitionKey && handler.serviceTaskId == request.serviceTaskId }
+        serviceTaskHandlers?.plusAssign(
             ServiceTaskHandler(
                 request.processDefinitionKey,
                 request.serviceTaskId,
@@ -95,7 +98,7 @@ data class ZaakTypeLink(
     }
 
     fun removeZaakServiceHandler(processDefinitionKey: String, serviceTaskId: String) {
-        serviceTaskHandlers.removeIf { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
+        serviceTaskHandlers?.removeIf { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
     }
 
     @JsonIgnore
@@ -131,7 +134,7 @@ data class ZaakTypeLink(
 
     @JsonIgnore
     fun getServiceTaskHandlerBy(processDefinitionKey: String, serviceTaskId: String): ServiceTaskHandler? {
-        return serviceTaskHandlers.find { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
+        return serviceTaskHandlers?.find { handler -> handler.processDefinitionKey == processDefinitionKey && handler.serviceTaskId == serviceTaskId }
     }
 
     @JsonIgnore
