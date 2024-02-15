@@ -55,7 +55,9 @@ import com.ritense.zgw.Rsin
 import mu.KLogger
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionTemplate
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -66,13 +68,14 @@ import java.util.UUID
     title = "Zaken API",
     description = "Connects to the Zaken API"
 )
-open class ZakenApiPlugin(
+class ZakenApiPlugin(
     private val client: ZakenApiClient,
     private val zaakUrlProvider: ZaakUrlProvider,
     private val storageService: TemporaryResourceStorageService,
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
     private val pluginService: PluginService,
     private val zaakHersteltermijnRepository: ZaakHersteltermijnRepository,
+    private val platformTransactionManager: PlatformTransactionManager
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -339,35 +342,36 @@ open class ZakenApiPlugin(
         description = "Start the recovery period for a case",
         activityTypes = [SERVICE_TASK_START, USER_TASK_CREATE]
     )
-    @Transactional
-    open fun startHersteltermijn(
+    fun startHersteltermijn(
         execution: DelegateExecution,
         @PluginActionProperty maxDurationInDays: Int,
     ) {
-        val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
-        val startDate = LocalDate.now()
-        val hersteltermijn = ZaakHersteltermijn(
-            zaakUrl = zaakUrl,
-            startDate = startDate,
-            maxDurationInDays = maxDurationInDays
-        )
-
-        val existingHerseltermijn = zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl)
-        check(existingHerseltermijn == null || existingHerseltermijn != hersteltermijn) { "Hersteltermijn already exists for zaak '$zaakUrl'. " }
-
-        if (existingHerseltermijn == null) {
-            val zaak = client.getZaak(authenticationPluginConfiguration, zaakUrl)
-            val uiterlijkeEinddatumAfdoening = zaak.uiterlijkeEinddatumAfdoening
-                ?: calculateUiterlijkeEinddatumAfdoening(zaak.zaaktype, zaak.startdatum)
-            require(uiterlijkeEinddatumAfdoening != null) { "No 'uiterlijkeEinddatumAfdoening' available for zaak '$zaakUrl' " }
-
-            client.patchZaak(
-                authenticationPluginConfiguration, url, PatchZaakRequest(
-                    uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.plusDays(maxDurationInDays.toLong())
-                )
+        TransactionTemplate(platformTransactionManager).executeWithoutResult {
+            val documentId = UUID.fromString(execution.businessKey)
+            val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+            val startDate = LocalDate.now()
+            val hersteltermijn = ZaakHersteltermijn(
+                zaakUrl = zaakUrl,
+                startDate = startDate,
+                maxDurationInDays = maxDurationInDays
             )
-            zaakHersteltermijnRepository.save(hersteltermijn)
+
+            val existingHerseltermijn = zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl)
+            check(existingHerseltermijn == null || existingHerseltermijn != hersteltermijn) { "Hersteltermijn already exists for zaak '$zaakUrl'. " }
+
+            if (existingHerseltermijn == null) {
+                val zaak = client.getZaak(authenticationPluginConfiguration, zaakUrl)
+                val uiterlijkeEinddatumAfdoening = zaak.uiterlijkeEinddatumAfdoening
+                    ?: calculateUiterlijkeEinddatumAfdoening(zaak.zaaktype, zaak.startdatum)
+                require(uiterlijkeEinddatumAfdoening != null) { "No 'uiterlijkeEinddatumAfdoening' available for zaak '$zaakUrl' " }
+
+                client.patchZaak(
+                    authenticationPluginConfiguration, url, PatchZaakRequest(
+                        uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.plusDays(maxDurationInDays.toLong())
+                    )
+                )
+                zaakHersteltermijnRepository.save(hersteltermijn)
+            }
         }
     }
 
