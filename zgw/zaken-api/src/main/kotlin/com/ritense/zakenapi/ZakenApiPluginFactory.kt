@@ -35,7 +35,8 @@ class ZakenApiPluginFactory(
             client,
             zaakUrlProvider,
             storageService,
-            zaakInstanceLinkRepository
+            zaakInstanceLinkRepository,
+            pluginService
         )
     }
 }
