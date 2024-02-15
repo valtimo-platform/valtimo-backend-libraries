@@ -23,13 +23,15 @@ data class InternalCaseStatusResponseDto(
     val caseDefinitionName: String,
     val title: String,
     val visibleInCaseListByDefault: Boolean,
-    val order: Int
+    val order: Int,
+    val color: String
 ) {
     constructor(internalCaseStatus: InternalCaseStatus) : this(
         internalCaseStatus.id.key,
         internalCaseStatus.id.caseDefinitionName,
         internalCaseStatus.title,
         internalCaseStatus.visibleInCaseListByDefault,
-        internalCaseStatus.order
+        internalCaseStatus.order,
+        internalCaseStatus.color
     )
 }

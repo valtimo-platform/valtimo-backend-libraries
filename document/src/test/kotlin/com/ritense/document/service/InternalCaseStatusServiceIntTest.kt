@@ -62,6 +62,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "123",
                     "456",
                     true,
+                    "GRAY"
                 )
             )
         }
@@ -89,6 +90,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "123",
                     "456",
                     true,
+                    "GRAY"
                 )
             )
         }
@@ -104,6 +106,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                         "123",
                         "456",
                         true,
+                        "GRAY"
                     )
                 )
             }
@@ -119,6 +122,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "123",
                     "456",
                     true,
+                    "GRAY"
                 )
             )
 
@@ -129,6 +133,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                         "123",
                         "456",
                         true,
+                        "GRAY"
                     )
                 )
             }
@@ -144,6 +149,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "123",
                     "456",
                     true,
+                    "GRAY"
                 )
             )
 
@@ -154,6 +160,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "123",
                     "789",
                     false,
+                    "GRAY"
                 )
             )
         }
@@ -184,6 +191,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                         "123",
                         "789",
                         false,
+                        "GRAY"
                     )
                 )
             }
@@ -200,6 +208,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "123",
                     "789",
                     true,
+                    "GRAY"
                 )
             )
         }
@@ -214,6 +223,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "123",
                     "456",
                     true,
+                    "GRAY"
                 )
             )
 
@@ -223,6 +233,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "124",
                     "457",
                     true,
+                    "GRAY"
                 )
             )
 
@@ -232,6 +243,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "125",
                     "458",
                     false,
+                    "GRAY"
                 )
             )
         }
@@ -254,17 +266,20 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     InternalCaseStatusUpdateOrderRequestDto(
                         "123",
                         "456",
-                        true
+                        true,
+                        "GRAY"
                     ),
                     InternalCaseStatusUpdateOrderRequestDto(
                         "125",
                         "458",
-                        true
+                        true,
+                        "GRAY"
                     ),
                     InternalCaseStatusUpdateOrderRequestDto(
                         "124",
                         "457",
-                        true
+                        true,
+                        "GRAY"
                     )
                 )
             )
@@ -294,6 +309,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "123",
                     "456",
                     true,
+                    "GRAY"
                 )
             )
 
@@ -303,6 +319,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "124",
                     "457",
                     true,
+                    "GRAY"
                 )
             )
 
@@ -312,6 +329,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "125",
                     "458",
                     false,
+                    "GRAY"
                 )
             )
         }
@@ -335,7 +353,8 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                         InternalCaseStatusUpdateOrderRequestDto(
                             "123",
                             "456",
-                            true
+                            true,
+                            "GRAY"
                         )
                     )
                 )
@@ -353,6 +372,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                         "123",
                         "789",
                         true,
+                        "GRAY"
                     )
                 )
             )
@@ -368,6 +388,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "123",
                     "456",
                     true,
+                    "GRAY"
                 )
             )
         }
@@ -402,6 +423,23 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
     fun shouldNotDeleteStatusWithoutProperPermissions() {
         assertThrows<AccessDeniedException> {
             internalCaseStatusService.delete("house", "123")
+        }
+    }
+
+    @Test
+    fun shouldNotCreateStatusWithInvalidColor() {
+        assertThrows<IllegalArgumentException> {
+            AuthorizationContext.runWithoutAuthorization {
+                internalCaseStatusService.create(
+                    "house",
+                    InternalCaseStatusCreateRequestDto(
+                        "123",
+                        "456",
+                        true,
+                        "INVALIDCOLOR"
+                    )
+                )
+            }
         }
     }
 }
