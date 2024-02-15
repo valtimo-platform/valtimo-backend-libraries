@@ -206,7 +206,7 @@ open class CatalogiApiClient(
         return result?.body!!
     }
 
-    fun getZaaktypen(
+    open fun getZaaktypen(
         authentication: CatalogiApiAuthentication,
         baseUrl: URI,
         request: ZaaktypeRequest
