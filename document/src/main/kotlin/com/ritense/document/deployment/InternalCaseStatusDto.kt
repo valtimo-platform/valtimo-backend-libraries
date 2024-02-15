@@ -22,14 +22,16 @@ data class InternalCaseStatusDto(
     val key: String,
     val caseDefinitionName: String,
     val title: String,
-    val visibleInCaseListByDefault: Boolean
+    val visibleInCaseListByDefault: Boolean,
+    val color: String
 ) {
     companion object {
         fun of(internalCaseStatus: InternalCaseStatus) = InternalCaseStatusDto(
             internalCaseStatus.id.key,
             internalCaseStatus.id.caseDefinitionName,
             internalCaseStatus.title,
-            internalCaseStatus.visibleInCaseListByDefault
+            internalCaseStatus.visibleInCaseListByDefault,
+            internalCaseStatus.color
         )
     }
 }

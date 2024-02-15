@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package com.ritense.document.web.rest.dto
+package com.ritense.zakenapi.repository
 
-data class InternalCaseStatusCreateRequestDto(
-    val key: String,
-    val title: String,
-    val visibleInCaseListByDefault: Boolean,
-    val color: String
-)
+import com.ritense.zakenapi.domain.ZaakHersteltermijn
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import java.net.URI
+import java.time.LocalDate
+import java.util.UUID
+
+interface ZaakHersteltermijnRepository : JpaRepository<ZaakHersteltermijn, UUID> {
+
+    fun findByZaakUrlAndEndDateIsNull(zaakUrl: URI): ZaakHersteltermijn?
+}

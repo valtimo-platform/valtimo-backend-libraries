@@ -14,30 +14,37 @@
  * limitations under the License.
  */
 
-package com.ritense.document.domain
+package com.ritense.zakenapi.domain
 
+import com.ritense.valtimo.contract.repository.UriAttributeConverter
 import jakarta.persistence.Column
-import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Convert
 import jakarta.persistence.Entity
+import jakarta.persistence.Id
 import jakarta.persistence.Table
+import java.net.URI
+import java.time.LocalDate
+import java.util.UUID
 
 @Entity
-@Table(name = "internal_case_status")
-data class InternalCaseStatus(
-    @EmbeddedId
-    val id: InternalCaseStatusId,
-    @Column(name = "status_title")
-    val title: String,
-    @Column(name = "visible_in_case_list_by_default")
-    val visibleInCaseListByDefault: Boolean,
-    @Column(name = "internal_case_status_order")
-    val order: Int,
-    @Column(name = "internal_case_status_color")
-    val color: String,
-) {
-    init {
-        require(title.isNotBlank()) { "title was blank!" }
-        require(order >= 0) { "order was < 0" }
-        require(InternalCaseStatusColor.values().map { it.name }.contains(color)) { "color is invalid" }
-    }
-}
+@Table(name = "zaak_hersteltermijn")
+data class ZaakHersteltermijn(
+
+    @Id
+    @Column(name = "id")
+    val id: UUID = UUID.randomUUID(),
+
+    @Convert(converter = UriAttributeConverter::class)
+    @Column(name = "zaak_url")
+    val zaakUrl: URI,
+
+    @Column(name = "start_date")
+    var startDate: LocalDate,
+
+    @Column(name = "end_date")
+    var endDate: LocalDate? = null,
+
+    @Column(name = "max_duration_in_days")
+    var maxDurationInDays: Int
+
+)

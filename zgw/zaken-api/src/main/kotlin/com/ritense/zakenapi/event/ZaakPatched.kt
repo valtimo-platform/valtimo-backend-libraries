@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.document.web.rest.dto
+package com.ritense.zakenapi.event
 
-data class InternalCaseStatusCreateRequestDto(
-    val key: String,
-    val title: String,
-    val visibleInCaseListByDefault: Boolean,
-    val color: String
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.outbox.domain.BaseEvent
+
+class ZaakPatched (zaakUrl: String, zaak: ObjectNode) : BaseEvent(
+    type = "com.ritense.gzac.zrc.zaak.patched",
+    resultType = "com.ritense.zakenapi.domain.PatchZaakResponse",
+    resultId = zaakUrl,
+    result = zaak
 )
