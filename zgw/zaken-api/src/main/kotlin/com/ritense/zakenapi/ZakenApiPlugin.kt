@@ -381,28 +381,35 @@ class ZakenApiPlugin(
         description = "End the recovery period for a case",
         activityTypes = [SERVICE_TASK_START]
     )
-    @Transactional
-    open fun endHersteltermijn(
+    fun endHersteltermijn(
         execution: DelegateExecution,
     ) {
-        val documentId = UUID.fromString(execution.businessKey)
-        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
-        val endDate = LocalDate.now()
-        val herseltermijn = zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl)
-            ?: throw IllegalStateException( "Hersteltermijn doesn't exists for zaak '$zaakUrl'. " )
-        val updatedHersteltermijn = herseltermijn.copy(endDate = endDate)
+        TransactionTemplate(platformTransactionManager).executeWithoutResult {
+            val documentId = UUID.fromString(execution.businessKey)
+            val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+            val endDate = LocalDate.now()
+            val herseltermijn = zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl)
+                ?: throw IllegalStateException("Hersteltermijn doesn't exists for zaak '$zaakUrl'. ")
+            val updatedHersteltermijn = herseltermijn.copy(endDate = endDate)
 
-        val uiterlijkeEinddatumAfdoening = client.getZaak(authenticationPluginConfiguration, zaakUrl).uiterlijkeEinddatumAfdoening
-        if (uiterlijkeEinddatumAfdoening != null) {
-            val newUiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.minusDays(herseltermijn.maxDurationInDays.toLong() - herseltermijn.startDate.until(endDate, DAYS))
-            client.patchZaak(
-                authenticationPluginConfiguration, url, PatchZaakRequest(
-                    uiterlijkeEinddatumAfdoening = newUiterlijkeEinddatumAfdoening
+            val uiterlijkeEinddatumAfdoening =
+                client.getZaak(authenticationPluginConfiguration, zaakUrl).uiterlijkeEinddatumAfdoening
+            if (uiterlijkeEinddatumAfdoening != null) {
+                val newUiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.minusDays(
+                    herseltermijn.maxDurationInDays.toLong() - herseltermijn.startDate.until(
+                        endDate,
+                        DAYS
+                    )
                 )
-            )
-        }
+                client.patchZaak(
+                    authenticationPluginConfiguration, url, PatchZaakRequest(
+                        uiterlijkeEinddatumAfdoening = newUiterlijkeEinddatumAfdoening
+                    )
+                )
+            }
 
-        zaakHersteltermijnRepository.save(updatedHersteltermijn)
+            zaakHersteltermijnRepository.save(updatedHersteltermijn)
+        }
     }
 
     fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {
