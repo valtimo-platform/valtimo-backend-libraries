@@ -54,7 +54,15 @@ class CaseInstanceService(
     private fun mutatePageable(caseListColumns: Collection<CaseListColumn>, pageable: Pageable): PageRequest {
         val newSortOrders = pageable.sort.map { sortOrder ->
             val caseListColumn = caseListColumns.find { caseListColumn -> caseListColumn.id.key == sortOrder.property }
-            val sortingProperty = caseListColumn?.path ?: sortOrder.property
+            val sortingProperty = (caseListColumn?.path ?: sortOrder.property).let {
+                //TODO: Workaround to make sorting on internalStatus work
+                if (it == "internalStatus") {
+                    "internalStatusId.key"
+                } else {
+                    it
+                }
+            }
+
             Sort.Order(sortOrder.direction, sortingProperty, sortOrder.nullHandling)
         }
         val newSort = Sort.by(newSortOrders.toMutableList())
