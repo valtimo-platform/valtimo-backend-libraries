@@ -236,7 +236,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
                     "/enkelvoudiginformatieobjecten"
                     -> handleDocumentRequest()
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID"
-                    -> handleDocumentRequest()
+                    -> handleDocumentRequest("+02:00")
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID/download"
                     -> handleDocumentDownloadRequest()
 
@@ -248,7 +248,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
         server.dispatcher = dispatcher
     }
 
-    private fun handleDocumentRequest(): MockResponse {
+    private fun handleDocumentRequest(zone: String = "Z"): MockResponse {
         val body = """
             {
               "url": "http://example.com",
@@ -262,7 +262,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
               "formaat": "string",
               "taal": "str",
               "versie": 0,
-              "beginRegistratie": "2019-08-24T14:15:22Z",
+              "beginRegistratie": "2019-08-24T14:15:22$zone",
               "bestandsnaam": "passport.jpg",
               "inhoud": "string",
               "bestandsomvang": 0,
