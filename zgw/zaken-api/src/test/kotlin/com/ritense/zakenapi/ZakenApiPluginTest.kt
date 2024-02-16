@@ -26,6 +26,7 @@ import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.PatchZaakRequest
+import com.ritense.zakenapi.domain.ZaakHersteltermijn
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
@@ -670,9 +671,72 @@ internal class ZakenApiPluginTest {
 
         // then
         val captor = argumentCaptor<PatchZaakRequest>()
-        verify(zakenApiClient).patchZaak(any(), any(), captor.capture())
+        verify(zakenApiClient).patchZaak(any(), any(), any(), captor.capture())
 
         val request = captor.firstValue
         assertEquals(LocalDate.parse("2050-01-15"), request.uiterlijkeEinddatumAfdoening)
+    }
+
+    @Test
+    fun `should end hersteltermijn`() {
+
+        // given
+        val zakenApiClient: ZakenApiClient = mock()
+        val zaakUrlProvider: ZaakUrlProvider = mock()
+        val storageService: TemporaryResourceStorageService = mock()
+        val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
+        val pluginService: PluginService = mock()
+        val zaakHersteltermijnRepository: ZaakHersteltermijnRepository = mock()
+        val platformTransactionManager: PlatformTransactionManager = mock()
+        val executionMock = mock<DelegateExecution>()
+        val authenticationMock = mock<ZakenApiAuthentication>()
+
+        val documentId = UUID.randomUUID()
+        val zaakUrl = URI("https://example.com/zaken/1234")
+
+        whenever(executionMock.businessKey).thenReturn(documentId.toString())
+        whenever(zaakUrlProvider.getZaakUrl(documentId)).thenReturn(zaakUrl)
+        whenever(zakenApiClient.getZaak(authenticationMock, zaakUrl))
+            .thenReturn(
+                ZaakResponse(
+                    uuid = UUID.randomUUID(),
+                    url = zaakUrl,
+                    bronorganisatie = Rsin("051845623"),
+                    startdatum = LocalDate.now().minusDays(50),
+                    verantwoordelijkeOrganisatie = Rsin("051845623"),
+                    zaaktype = URI("www.ritense.com"),
+                    uiterlijkeEinddatumAfdoening = LocalDate.now().plusDays(50)
+                )
+            )
+        whenever(zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl)).thenReturn(ZaakHersteltermijn(
+            zaakUrl = zaakUrl,
+            startDate = LocalDate.now().minusDays(8),
+            endDate =  null,
+            maxDurationInDays = 17
+        ))
+
+        val plugin = ZakenApiPlugin(
+            zakenApiClient,
+            zaakUrlProvider,
+            storageService,
+            zaakInstanceLinkRepository,
+            pluginService,
+            zaakHersteltermijnRepository,
+            platformTransactionManager
+        )
+        plugin.url = URI("https://zaken.plugin.url")
+        plugin.authenticationPluginConfiguration = authenticationMock
+
+        // when
+        plugin.endHersteltermijn(
+            execution = executionMock
+        )
+
+        // then
+        val captor = argumentCaptor<PatchZaakRequest>()
+        verify(zakenApiClient).patchZaak(any(), any(), any(), captor.capture())
+
+        val request = captor.firstValue
+        assertEquals(LocalDate.now().plusDays(50 - 17 + 8), request.uiterlijkeEinddatumAfdoening)
     }
 }
