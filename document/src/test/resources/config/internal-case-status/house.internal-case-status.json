@@ -5,13 +5,15 @@
             "key": "closed",
             "caseDefinitionName": "house",
             "title": "Closed",
-            "visibleInCaseListByDefault": false
+            "visibleInCaseListByDefault": false,
+            "color": "GRAY"
         },
         {
             "key": "started",
             "caseDefinitionName": "house",
             "title": "Started",
-            "visibleInCaseListByDefault": true
+            "visibleInCaseListByDefault": true,
+            "color": "GRAY"
         }
     ]
 }

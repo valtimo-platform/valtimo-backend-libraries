@@ -183,7 +183,7 @@ internal class JsonSchemaDocumentServiceIntTest : BaseIntegrationTest() {
         val event = eventCapture.allValues.map { it.get() }
             .single { it is DocumentStatusChanged }
         assertThat(event.resultId).isEqualTo(document.id()!!.toString())
-        assertThat(event.result?.get("internalStatus")?.isNull).isEqualTo(newStatusKey)
+        assertThat(event.result?.get("internalStatus")?.isNull).isTrue()
     }
 
     @Test

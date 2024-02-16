@@ -21,6 +21,6 @@ import com.ritense.document.domain.InternalCaseStatusId
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface InternalCaseStatusRepository : JpaRepository<InternalCaseStatus, InternalCaseStatusId> {
-    fun findById_CaseDefinitionNameOrderByOrder(caseDefinitionName: String): List<InternalCaseStatus>
-    fun findDistinctById_CaseDefinitionNameAndId_Key(caseDefinitionName: String, key: String): InternalCaseStatus?
+    fun findByIdCaseDefinitionNameOrderByOrder(caseDefinitionName: String): List<InternalCaseStatus>
+    fun findDistinctByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): InternalCaseStatus?
 }

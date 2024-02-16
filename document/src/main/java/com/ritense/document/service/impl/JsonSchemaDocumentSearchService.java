@@ -79,7 +79,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private static final String SEQUENCE = "sequence";
     private static final String CONTENT = "content";
     private static final String ASSIGNEE_ID = "assigneeId";
-    private static final String INTERNAL_STATUS_ID = "internalCaseStatusId";
+    private static final String INTERNAL_STATUS_ID = "internalStatusId";
     private static final String INTERNAL_STATUS_KEY = "key";
     private static final String DOC_PREFIX = "doc:";
     private static final String CASE_PREFIX = "case:";

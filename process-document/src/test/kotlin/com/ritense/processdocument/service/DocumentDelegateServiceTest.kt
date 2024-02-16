@@ -247,6 +247,23 @@ internal class DocumentDelegateServiceTest : BaseTest() {
     }
 
     @Test
+    fun `should set status to document`() {
+        val documentId = JsonSchemaDocumentId.existingId(UUID.fromString("11111111-1111-1111-1111-111111111111"))
+        val processInstanceId = "00000000-0000-0000-0000-000000000000"
+        val delegateExecutionFake = DelegateExecutionFake("id")
+            .withProcessInstanceId(processInstanceId)
+            .withProcessBusinessKey(documentId.toString())
+        whenever(
+            processDocumentService.getDocumentId(CamundaProcessInstanceId(processInstanceId), delegateExecutionFake)
+        ).thenReturn(documentId)
+
+        val newStatus = "test"
+        documentDelegateService.setInternalStatus(delegateExecutionFake, newStatus)
+
+        verify(documentService).setInternalStatus(documentId, newStatus)
+    }
+
+    @Test
     fun `should unassign user from document`() {
         val documentId = "11111111-1111-1111-1111-111111111111"
         val processInstanceId = "00000000-0000-0000-0000-000000000000"

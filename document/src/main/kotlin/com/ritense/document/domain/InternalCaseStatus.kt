@@ -19,6 +19,8 @@ package com.ritense.document.domain
 import jakarta.persistence.Column
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.Table
 
 @Entity
@@ -33,11 +35,11 @@ data class InternalCaseStatus(
     @Column(name = "internal_case_status_order")
     val order: Int,
     @Column(name = "internal_case_status_color")
-    val color: String,
+    @Enumerated(EnumType.STRING)
+    val color: InternalCaseStatusColor,
 ) {
     init {
         require(title.isNotBlank()) { "title was blank!" }
         require(order >= 0) { "order was < 0" }
-        require(InternalCaseStatusColor.values().map { it.name }.contains(color)) { "color is invalid" }
     }
 }

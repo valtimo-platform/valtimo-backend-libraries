@@ -17,6 +17,7 @@
 package com.ritense.document.web.rest.dto
 
 import com.ritense.document.domain.InternalCaseStatus
+import com.ritense.document.domain.InternalCaseStatusColor
 
 data class InternalCaseStatusResponseDto(
     val key: String,
@@ -24,7 +25,7 @@ data class InternalCaseStatusResponseDto(
     val title: String,
     val visibleInCaseListByDefault: Boolean,
     val order: Int,
-    val color: String
+    val color: InternalCaseStatusColor
 ) {
     constructor(internalCaseStatus: InternalCaseStatus) : this(
         internalCaseStatus.id.key,

@@ -43,7 +43,9 @@ import com.ritense.document.web.rest.impl.JsonSchemaDocumentSearchResource;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.utils.TestUtil;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -140,6 +142,9 @@ class JsonSchemaDocumentSearchResourceTest extends BaseTest {
         filter.setValues(List.of("value1", "value2"));
         var request = new SearchWithConfigRequest();
         request.setOtherFilters(List.of(filter));
+        HashSet<String> statusFilter = new HashSet<>();
+        statusFilter.add(null);
+        request.setStatusFilter(statusFilter);
 
         doReturn(documentPage).when(documentSearchService).search(any(), any(SearchWithConfigRequest.class), any());
 

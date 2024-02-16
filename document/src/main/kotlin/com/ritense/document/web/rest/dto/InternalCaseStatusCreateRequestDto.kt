@@ -16,9 +16,11 @@
 
 package com.ritense.document.web.rest.dto
 
+import com.ritense.document.domain.InternalCaseStatusColor
+
 data class InternalCaseStatusCreateRequestDto(
     val key: String,
     val title: String,
     val visibleInCaseListByDefault: Boolean,
-    val color: String
+    val color: InternalCaseStatusColor
 )

@@ -100,9 +100,9 @@ class DocumentDelegateService(
 
     fun setInternalStatus(execution: DelegateExecution, statusKey: String?) {
         val processInstanceId = CamundaProcessInstanceId(execution.processInstanceId)
-        val document = processDocumentService.getDocument(processInstanceId, execution)
+        val documentId = processDocumentService.getDocumentId(processInstanceId, execution)
 
-        documentService.setInternalStatus(document.id(), statusKey)
+        documentService.setInternalStatus(documentId, statusKey)
     }
 
     fun unassign(execution: DelegateExecution) {
