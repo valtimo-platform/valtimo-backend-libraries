@@ -34,6 +34,7 @@ class CreateDocumentRequest(
     val status: DocumentStatusType? = null,
     val taal: String,
     val bestandsnaam: String? = null,
+    val bestandsomvang: Long? = null,
     @JsonSerialize(using = Base64StreamSerializer::class)
     val inhoud: InputStream,
     val beschrijving: String? = null,
