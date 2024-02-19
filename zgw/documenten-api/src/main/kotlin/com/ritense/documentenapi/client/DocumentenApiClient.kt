@@ -18,9 +18,11 @@ package com.ritense.documentenapi.client
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.documentenapi.event.DocumentDeleted
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
 import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
 import com.ritense.documentenapi.event.DocumentStored
+import com.ritense.documentenapi.event.DocumentUpdated
 import com.ritense.outbox.OutboxService
 import com.ritense.zgw.ClientTools
 import org.springframework.core.io.buffer.DataBuffer
@@ -49,10 +51,7 @@ class DocumentenApiClient(
         baseUrl: URI,
         request: CreateDocumentRequest
     ): CreateDocumentResult {
-        val result = webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
+        val result = buildFilteredClient(authentication)
             .post()
             .uri {
                 ClientTools.baseUrlToBuilder(it, baseUrl)
@@ -90,10 +89,7 @@ class DocumentenApiClient(
         objectUrl: URI
     ): DocumentInformatieObject {
         val result = checkNotNull(
-            webclientBuilder
-                .clone()
-                .filter(authentication)
-                .build()
+            buildFilteredClient(authentication)
                 .get()
                 .uri(objectUrl)
                 .retrieve()
@@ -125,10 +121,7 @@ class DocumentenApiClient(
         authentication: DocumentenApiAuthentication,
         objectUrl: URI
     ): InputStream {
-        return webclientBuilder
-            .clone()
-            .filter(authentication)
-            .build()
+        return buildFilteredClient(authentication)
             .get()
             .uri {
                 ClientTools.baseUrlToBuilder(it, objectUrl)
@@ -149,12 +142,93 @@ class DocumentenApiClient(
             }
     }
 
+    fun lockInformatieObject(
+        authentication: DocumentenApiAuthentication,
+        objectUrl: URI
+    ): DocumentLock {
+        val result = checkNotNull(
+            buildFilteredClient(authentication)
+                .post()
+                .uri(objectUrl.toString() + "/lock")
+                .retrieve()
+                .toEntity(DocumentLock::class.java)
+                .block()?.body
+        ) {
+            "Could not lock document at $objectUrl"
+        }
+
+        return result
+    }
+
+    fun unlockInformatieObject(
+        authentication: DocumentenApiAuthentication,
+        objectUrl: URI,
+        documentLock: DocumentLock,
+    ) {
+        buildFilteredClient(authentication)
+            .post()
+            .uri(objectUrl.toString() + "/unlock")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(BodyInserters.fromValue(documentLock))
+            .retrieve()
+            .toBodilessEntity()
+            .block()
+    }
+
+    fun deleteInformatieObject(authentication: DocumentenApiAuthentication, url: URI) {
+        buildFilteredClient(authentication)
+            .delete()
+            .uri(url)
+            .retrieve()
+            .toBodilessEntity()
+            .block()
+
+        outboxService.send { DocumentDeleted(url.toASCIIString()) }
+    }
+
+    fun modifyInformatieObject(
+        authentication: DocumentenApiAuthentication,
+        documentUrl: URI,
+        patchDocumentRequest: PatchDocumentRequest
+    ): DocumentInformatieObject {
+        val result = checkNotNull(
+            buildFilteredClient(authentication)
+                .patch()
+                .uri(documentUrl)
+                .body(BodyInserters.fromValue(patchDocumentRequest))
+                .retrieve()
+                .toEntity(DocumentInformatieObject::class.java)
+                .block()
+        ) {
+            "Could not retrieve ${DocumentInformatieObject::class.simpleName} at $documentUrl"
+        }
+
+        if (result.hasBody()) {
+            outboxService.send {
+                DocumentUpdated(
+                    result.body.url.toASCIIString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
+        return result.body!!
+    }
+
     private fun toObjectUrl(baseUrl: URI, objectId: String): URI {
         return UriComponentsBuilder
             .fromUri(baseUrl)
             .pathSegment("enkelvoudiginformatieobjecten", objectId)
             .build()
             .toUri()
+    }
+
+    private fun buildFilteredClient(authentication: DocumentenApiAuthentication): WebClient {
+        return webclientBuilder
+            .clone()
+            .filter(authentication)
+            .filter(ClientTools.zgwErrorHandler())
+            .build()
     }
 
     private fun Flux<DataBuffer>.toInputStream(doOnComplete: Runnable): InputStream {
