@@ -79,7 +79,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private static final String SEQUENCE = "sequence";
     private static final String CONTENT = "content";
     private static final String ASSIGNEE_ID = "assigneeId";
-    private static final String INTERNAL_STATUS_ID = "internalStatusId";
+    private static final String INTERNAL_STATUS = "internalStatus";
     private static final String INTERNAL_STATUS_KEY = "key";
     private static final String DOC_PREFIX = "doc:";
     private static final String CASE_PREFIX = "case:";
@@ -361,7 +361,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     private Predicate getStatusFilterPredicate(CriteriaBuilder cb, Root<JsonSchemaDocument> documentRoot, Set<String> statusFilter) {
-        Path<String> statusField = documentRoot.get(INTERNAL_STATUS_ID).get(INTERNAL_STATUS_KEY);
+        Path<String> statusField = documentRoot.get(INTERNAL_STATUS).get(INTERNAL_STATUS_KEY);
         Predicate[] predicates = statusFilter.stream().map(status -> {
                 if(status == null || status.isEmpty()) {
                     return cb.isNull(statusField);
