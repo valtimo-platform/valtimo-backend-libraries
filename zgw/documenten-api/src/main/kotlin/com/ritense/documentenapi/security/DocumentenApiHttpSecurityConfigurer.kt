@@ -18,7 +18,9 @@ package com.ritense.documentenapi.security
 
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
+import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
+import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
@@ -27,7 +29,10 @@ class DocumentenApiHttpSecurityConfigurer : HttpSecurityConfigurer {
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(antMatcher(GET, "/api/v1/documenten-api/{pluginConfigurationId}/files/{documentId}/download")).authenticated()
+                requests
+                    .requestMatchers(antMatcher(GET, "/api/v1/documenten-api/{pluginConfigurationId}/files/{documentId}/download")).authenticated()
+                    .requestMatchers(antMatcher(PUT, "/api/v1/documenten-api/{pluginConfigurationId}/files/{documentId}")).authenticated()
+                    .requestMatchers(antMatcher(DELETE, "/api/v1/documenten-api/{pluginConfigurationId}/files/{documentId}")).authenticated()
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

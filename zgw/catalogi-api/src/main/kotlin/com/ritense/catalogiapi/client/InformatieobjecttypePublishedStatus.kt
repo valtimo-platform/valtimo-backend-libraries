@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.document.web.rest.dto
+package com.ritense.catalogiapi.client
 
-data class InternalCaseStatusCreateRequestDto(
-    val key: String,
-    val title: String,
-    val visibleInCaseListByDefault: Boolean,
-    val color: String
-)
+enum class InformatieobjecttypePublishedStatus {
+    ALLES,
+    CONCEPT,
+    DEFINITIEF;
+
+    fun getSearchValue(): String {
+        return this.name.lowercase()
+    }
+}

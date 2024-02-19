@@ -20,4 +20,5 @@ data class InternalCaseStatusUpdateRequestDto(
     val key: String,
     val title: String,
     val visibleInCaseListByDefault: Boolean,
+    val color: String
 )

@@ -32,9 +32,12 @@ data class InternalCaseStatus(
     val visibleInCaseListByDefault: Boolean,
     @Column(name = "internal_case_status_order")
     val order: Int,
+    @Column(name = "internal_case_status_color")
+    val color: String,
 ) {
     init {
         require(title.isNotBlank()) { "title was blank!" }
         require(order >= 0) { "order was < 0" }
+        require(InternalCaseStatusColor.values().map { it.name }.contains(color)) { "color is invalid" }
     }
 }

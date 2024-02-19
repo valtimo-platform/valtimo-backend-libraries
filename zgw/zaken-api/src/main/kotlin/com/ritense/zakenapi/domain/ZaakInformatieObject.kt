@@ -33,5 +33,5 @@ data class ZaakInformatieObject(
     val registratiedatum: LocalDateTime,
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     val vernietigingsdatum: LocalDateTime? = null,
-    val status: URI? = null
+    val status: URI? = null,
 )

@@ -5,13 +5,15 @@
             "key": "closed",
             "caseDefinitionName": "person",
             "title": "Closed",
-            "visibleInCaseListByDefault": false
+            "visibleInCaseListByDefault": false,
+            "color": "GRAY"
         },
         {
             "key": "started",
             "caseDefinitionName": "person",
             "title": "Started",
-            "visibleInCaseListByDefault": true
+            "visibleInCaseListByDefault": true,
+            "color": "GRAY"
         }
     ]
 }

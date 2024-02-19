@@ -42,5 +42,7 @@ class CreateDocumentRequest(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val verzenddatum: LocalDate? = null,
     val indicatieGebruiksrecht: Boolean? = false,
-    val informatieobjecttype: String,
+    val informatieobjecttype: String? = null,
+    val formaat: String? = null,
+    val trefwoorden: List<String>? = null
 )

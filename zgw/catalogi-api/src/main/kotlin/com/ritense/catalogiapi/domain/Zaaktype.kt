@@ -18,8 +18,8 @@ package com.ritense.catalogiapi.domain
 
 import com.ritense.zgw.domain.Vertrouwelijkheid
 import java.net.URI
-import java.time.Duration
 import java.time.LocalDate
+import java.time.Period
 
 data class Zaaktype(
     val url: URI,
@@ -34,11 +34,11 @@ data class Zaaktype(
     val handelingInitiator: String,
     val onderwerp: String,
     val handelingBehandelaar: String,
-    val doorlooptijd: Duration,
+    val doorlooptijd: Period,
     val servicenorm: String? = null,
     val opschortingEnAanhoudingMogelijk: Boolean,
     val verlengingMogelijk: Boolean,
-    val verlengingstermijn: Duration? = null,
+    val verlengingstermijn: Period? = null,
     val trefwoorden: List<String> = emptyList(),
     val publicatieIndicatie: Boolean,
     val publicatietekst: String? = null,

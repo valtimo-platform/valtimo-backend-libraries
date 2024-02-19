@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.document.web.rest.dto
+package com.ritense.documentenapi.event
 
-data class InternalCaseStatusCreateRequestDto(
-    val key: String,
-    val title: String,
-    val visibleInCaseListByDefault: Boolean,
-    val color: String
+import com.ritense.outbox.domain.BaseEvent
+
+class DocumentDeleted (documentUrl: String) : BaseEvent(
+    type = "com.ritense.gzac.drc.document.deleted",
+    resultType = "com.ritense.documentenapi.client.DocumentInformatieObject",
+    resultId = documentUrl,
+    result = null
 )

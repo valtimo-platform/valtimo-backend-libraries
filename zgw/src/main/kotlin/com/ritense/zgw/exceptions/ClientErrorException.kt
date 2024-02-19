@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.document.web.rest.dto
+package com.ritense.zgw.exceptions
 
-data class InternalCaseStatusCreateRequestDto(
-    val key: String,
-    val title: String,
-    val visibleInCaseListByDefault: Boolean,
-    val color: String
-)
+import com.ritense.zgw.domain.ZgwErrorResponse
+import org.springframework.http.HttpStatusCode
+
+class ClientErrorException(
+    val response: ZgwErrorResponse,
+    val statusCode: HttpStatusCode,
+) : RuntimeException("Request resulted in ${statusCode.value()} response, with body: $response")

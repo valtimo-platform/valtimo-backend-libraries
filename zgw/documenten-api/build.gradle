@@ -32,6 +32,7 @@ dockerCompose {
 dependencies {
     implementation project(":contract")
     implementation project(':core')
+    implementation project(":document")
     implementation project(':plugin')
     implementation project(':resource:temporary-resource-storage')
     implementation project(':zgw')

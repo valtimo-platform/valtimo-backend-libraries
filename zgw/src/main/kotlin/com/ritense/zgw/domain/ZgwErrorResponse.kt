@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.document.web.rest.dto
+package com.ritense.zgw.domain
 
-data class InternalCaseStatusCreateRequestDto(
-    val key: String,
+data class ZgwErrorResponse(
+    val code: String,
+    val detail: String,
+    val instance: String,
+    val invalidParams: List<InvalidParam>,
+    val status: Int,
     val title: String,
-    val visibleInCaseListByDefault: Boolean,
-    val color: String
-)
+    val type: String
+) {
+    data class InvalidParam(
+        val code: String,
+        val name: String,
+        val reason: String
+    )
+}

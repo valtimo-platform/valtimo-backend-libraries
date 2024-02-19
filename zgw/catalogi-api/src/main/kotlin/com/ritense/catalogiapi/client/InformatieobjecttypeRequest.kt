@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.ritense.document.web.rest.dto
+package com.ritense.catalogiapi.client
 
-data class InternalCaseStatusCreateRequestDto(
-    val key: String,
-    val title: String,
-    val visibleInCaseListByDefault: Boolean,
-    val color: String
+import com.ritense.catalogiapi.domain.InformatieobjecttypeRichting
+import java.net.URI
+
+data class InformatieobjecttypeRequest(
+    val status: InformatieobjecttypePublishedStatus? = null,
+    val page: Int? = null
 )

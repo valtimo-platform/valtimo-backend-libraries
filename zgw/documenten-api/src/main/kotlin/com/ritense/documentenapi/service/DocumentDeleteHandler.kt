@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.document.web.rest.dto
+package com.ritense.documentenapi.service
 
-data class InternalCaseStatusCreateRequestDto(
-    val key: String,
-    val title: String,
-    val visibleInCaseListByDefault: Boolean,
-    val color: String
-)
+import java.net.URI
+
+interface DocumentDeleteHandler {
+    fun preDocumentDelete(documentUrl: URI)
+}

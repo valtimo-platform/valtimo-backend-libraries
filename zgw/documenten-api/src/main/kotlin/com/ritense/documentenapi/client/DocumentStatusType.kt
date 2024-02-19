@@ -31,9 +31,16 @@ enum class DocumentStatusType {
     @JsonProperty("gearchiveerd")
     GEARCHIVEERD;
 
+    val key: String
+        get() = this.name.lowercase()
+
     companion object {
-        fun fromKey(key: String): DocumentStatusType {
-            return DocumentStatusType.valueOf(key.uppercase())
+        fun fromKey(key: String?): DocumentStatusType? {
+            return key?.let {
+                DocumentStatusType.values().firstOrNull {
+                    it.key == key.lowercase()
+                }
+            }
         }
     }
 }

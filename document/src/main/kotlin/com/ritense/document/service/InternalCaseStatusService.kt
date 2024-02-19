@@ -64,7 +64,8 @@ class InternalCaseStatusService(
                 ),
                 request.title,
                 request.visibleInCaseListByDefault,
-                currentInternalCaseStatuses.size
+                currentInternalCaseStatuses.size,
+                request.color
             )
         )
     }
@@ -84,7 +85,8 @@ class InternalCaseStatusService(
         internalCaseStatusRepository.save(
             oldInternalCaseStatus.copy(
                 title = request.title,
-                visibleInCaseListByDefault = request.visibleInCaseListByDefault
+                visibleInCaseListByDefault = request.visibleInCaseListByDefault,
+                color = request.color
             )
         )
     }
@@ -110,7 +112,8 @@ class InternalCaseStatusService(
             existingInternalCaseStatus.copy(
                 title = request.title,
                 order = index,
-                visibleInCaseListByDefault = request.visibleInCaseListByDefault
+                visibleInCaseListByDefault = request.visibleInCaseListByDefault,
+                color = request.color
             )
         }
 

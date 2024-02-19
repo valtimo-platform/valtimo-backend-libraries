@@ -82,7 +82,8 @@ internal class DocumentenApiPluginFactoryTest {
             client,
             storageService,
             applicationEventPublisher,
-            MapperSingleton.get()
+            MapperSingleton.get(),
+            listOf()
         )
 
         val plugin = factory.create(configuration)

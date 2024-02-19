@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.document.web.rest.dto
+package com.ritense.documentenapi.event
 
-data class InternalCaseStatusCreateRequestDto(
-    val key: String,
-    val title: String,
-    val visibleInCaseListByDefault: Boolean,
-    val color: String
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.outbox.domain.BaseEvent
+
+class DocumentUpdated (documentUrl: String, document: ObjectNode) : BaseEvent(
+    type = "com.ritense.gzac.drc.document.updated",
+    resultType = "com.ritense.documentenapi.client.DocumentInformatieObject",
+    resultId = documentUrl,
+    result = document
 )
