@@ -16,31 +16,6 @@
 
 package com.ritense.documentenapi.client
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
-enum class DocumentStatusType {
-    @JsonProperty("in_bewerking")
-    IN_BEWERKING,
-
-    @JsonProperty("ter_vaststelling")
-    TER_VASTSTELLING,
-
-    @JsonProperty("definitief")
-    DEFINITIEF,
-
-    @JsonProperty("gearchiveerd")
-    GEARCHIVEERD;
-
-    val key: String
-        get() = this.name.lowercase()
-
-    companion object {
-        fun fromKey(key: String?): DocumentStatusType? {
-            return key?.let {
-                DocumentStatusType.values().firstOrNull {
-                    it.key == key.lowercase()
-                }
-            }
-        }
-    }
-}
+class DocumentLock(
+    val lock: String,
+)

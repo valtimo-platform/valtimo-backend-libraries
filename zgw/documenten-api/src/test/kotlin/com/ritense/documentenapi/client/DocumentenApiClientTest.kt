@@ -19,14 +19,17 @@ package com.ritense.documentenapi.client
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.documentenapi.event.DocumentDeleted
 import com.ritense.documentenapi.event.DocumentInformatieObjectDownloaded
 import com.ritense.documentenapi.event.DocumentInformatieObjectViewed
 import com.ritense.documentenapi.event.DocumentStored
+import com.ritense.documentenapi.event.DocumentUpdated
 import com.ritense.outbox.OutboxService
 import com.ritense.outbox.domain.BaseEvent
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zgw.Rsin
 import com.ritense.zgw.domain.Vertrouwelijkheid
+import com.ritense.zgw.exceptions.RequestFailedException
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
@@ -36,6 +39,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
@@ -53,6 +57,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.function.Supplier
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class DocumentenApiClientTest {
@@ -252,7 +258,7 @@ internal class DocumentenApiClientTest {
                 mockDocumentenApi.url("/").toUri(),
                 request
             )
-        } catch (_: WebClientResponseException) {
+        } catch (_: RequestFailedException) {
         }
 
         mockDocumentenApi.takeRequest()
@@ -407,7 +413,7 @@ internal class DocumentenApiClientTest {
                 TestAuthentication(),
                 mockDocumentenApi.url("/zaakobjects").toUri(),
             )
-        } catch (_: WebClientResponseException) {
+        } catch (_: RequestFailedException) {
         }
 
         mockDocumentenApi.takeRequest()
@@ -463,6 +469,180 @@ internal class DocumentenApiClientTest {
                 documentInformatieObjectId
             )
         } catch (_: WebClientResponseException) {
+        }
+
+        mockDocumentenApi.takeRequest()
+
+        verify(outboxService, times(0)).send(eventCapture.capture())
+    }
+
+    @Test
+    fun `should send delete document request and send event`() {
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        mockDocumentenApi.enqueue(MockResponse().setResponseCode(204))
+
+        client.deleteInformatieObject(
+            TestAuthentication(),
+            mockDocumentenApi.url("/documenten/api/v1/enkelvoudiginformatieobjecten/123").toUri(),
+        )
+
+        val recordedRequest = mockDocumentenApi.takeRequest()
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+        assertEquals("/documenten/api/v1/enkelvoudiginformatieobjecten/123", recordedRequest.path)
+        assertEquals("DELETE", recordedRequest.method)
+
+        verify(outboxService, times(1)).send(eventCapture.capture())
+        assertIs<DocumentDeleted>(eventCapture.firstValue.get())
+        val deleteEvent = eventCapture.firstValue.get() as DocumentDeleted
+        assertTrue(deleteEvent.resultId.toString().endsWith("documenten/api/v1/enkelvoudiginformatieobjecten/123"))
+        assertEquals("com.ritense.documentenapi.client.DocumentInformatieObject", deleteEvent.resultType)
+        assertEquals("com.ritense.gzac.drc.document.deleted", deleteEvent.type)
+        assertEquals(null, deleteEvent.result)
+    }
+
+    @Test
+    fun `should not send outbox message on error deleting document informatieobject`() {
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
+
+        mockDocumentenApi.enqueue(mockResponse("{}").setResponseCode(400))
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        assertThrows<RequestFailedException> {
+            client.deleteInformatieObject(
+                TestAuthentication(),
+                mockDocumentenApi.url("/zaakobjects").toUri(),
+            )
+        }
+
+        mockDocumentenApi.takeRequest()
+
+        verify(outboxService, times(0)).send(eventCapture.capture())
+    }
+
+    @Test
+    fun `should send patch document object request and send event`() {
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        val documentInformatieObjectUrl = mockDocumentenApi.url("/informatie-object/123").toUri()
+        val responseBody = """
+            {
+              "url": "$documentInformatieObjectUrl",
+              "identificatie": "identificatie",
+              "bronorganisatie": "621248691",
+              "creatiedatum": "2019-08-24",
+              "titel": "titel",
+              "vertrouwelijkheidaanduiding": "openbaar",
+              "auteur": "auteur",
+              "status": "in_bewerking",
+              "formaat": "formaat",
+              "taal": "nl",
+              "versie": 4,
+              "beginRegistratie": "2019-08-24T14:15:22Z",
+              "bestandsnaam": "bestandsnaam",
+              "inhoud": "http://example.com/inhoud",
+              "bestandsomvang": 123,
+              "link": "http://example.com/link",
+              "beschrijving": "beschrijving",
+              "ontvangstdatum": "2019-08-23",
+              "verzenddatum": "2019-08-22",
+              "indicatieGebruiksrecht": true,
+              "ondertekening": {
+                "soort": "analoog",
+                "datum": "2019-08-21"
+              },
+              "integriteit": {
+                "algoritme": "crc_16",
+                "waarde": "waarde",
+                "datum": "2019-08-20"
+              },
+              "informatieobjecttype": "http://example.com",
+              "locked": true
+            }
+        """.trimIndent()
+
+        mockDocumentenApi.enqueue(mockResponse(responseBody))
+
+        client.modifyInformatieObject(
+            TestAuthentication(),
+            documentInformatieObjectUrl,
+            PatchDocumentRequest(
+                creatiedatum = LocalDate.of(2020, 5, 3),
+                titel = "titel",
+                auteur = "auteur",
+                status = DocumentStatusType.DEFINITIEF,
+                taal = "taal",
+                bestandsnaam = "test",
+                beschrijving = "beschrijving",
+                ontvangstdatum = LocalDate.of(2020, 5, 3),
+                verzenddatum = LocalDate.of(2020, 5, 3),
+                indicatieGebruiksrecht = true
+            )
+        )
+
+        val recordedRequest = mockDocumentenApi.takeRequest()
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+        assertEquals("/informatie-object/123", recordedRequest.path)
+        assertEquals("PATCH", recordedRequest.method)
+
+        // validate request body
+        val requestBody = objectMapper.readTree(recordedRequest.body.readUtf8())
+        assertEquals("2020-05-03", requestBody.get("creatiedatum").asText())
+        assertEquals("titel", requestBody.get("titel").asText())
+        assertEquals("auteur", requestBody.get("auteur").asText())
+        assertEquals("definitief", requestBody.get("status").asText())
+        assertEquals("taal", requestBody.get("taal").asText())
+        assertEquals("test", requestBody.get("bestandsnaam").asText())
+        assertEquals("beschrijving", requestBody.get("beschrijving").asText())
+        assertEquals("2020-05-03", requestBody.get("ontvangstdatum").asText())
+        assertEquals("2020-05-03", requestBody.get("verzenddatum").asText())
+        assertEquals(true, requestBody.get("indicatieGebruiksrecht").asBoolean())
+
+        //verify reqyest sent
+        verify(outboxService, times(1)).send(eventCapture.capture())
+        assertIs<DocumentUpdated>(eventCapture.firstValue.get())
+        val event = eventCapture.firstValue.get() as DocumentUpdated
+        assertTrue(event.resultId.toString().endsWith("informatie-object/123"))
+        assertEquals("com.ritense.documentenapi.client.DocumentInformatieObject", event.resultType)
+        assertEquals("com.ritense.gzac.drc.document.updated", event.type)
+        val eventResult: DocumentInformatieObject = objectMapper.readValue(event.result.toString())
+        assertEquals("auteur", eventResult.auteur)
+    }
+
+    @Test
+    fun `should not send outbox message on error updating document informatieobject`() {
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
+
+        mockDocumentenApi.enqueue(mockResponse("{}").setResponseCode(400))
+
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        assertThrows<RequestFailedException> {
+            client.modifyInformatieObject(
+                TestAuthentication(),
+                mockDocumentenApi.url("/zaakobjects").toUri(),
+                PatchDocumentRequest(
+                    creatiedatum = LocalDate.of(2020, 5, 3),
+                    titel = "titel",
+                    auteur = "auteur",
+                    status = DocumentStatusType.DEFINITIEF,
+                    taal = "taal",
+                    bestandsnaam = "test",
+                    beschrijving = "beschrijving",
+                    ontvangstdatum = LocalDate.of(2020, 5, 3),
+                    verzenddatum = LocalDate.of(2020, 5, 3),
+                    indicatieGebruiksrecht = true
+                )
+            )
         }
 
         mockDocumentenApi.takeRequest()
