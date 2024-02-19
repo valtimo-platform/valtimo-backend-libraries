@@ -91,7 +91,6 @@ class DocumentTableValueResolver(
             "assigneeId",
             "createdBy",
             "createdOn",
-            "definitionId",
             "definitionId.name",
             "definitionId.version",
             "id",

@@ -84,6 +84,12 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private static final String DOC_PREFIX = "doc:";
     private static final String CASE_PREFIX = "case:";
 
+    private static final Map<String,String> DOCUMENT_FIELD_MAP = Map.of(
+        "definitionId.name", "documentDefinitionId.name",
+        "definitionId.version", "documentDefinitionId.key",
+        "internalStatus", "internalStatus.key"
+    );
+
     private final EntityManager entityManager;
     private final QueryDialectHelper queryDialectHelper;
     private final SearchFieldService searchFieldService;
@@ -195,10 +201,10 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         // TODO: Should be turned into a subquery, and then do a count over the results from the subquery.
         List<Long> countResultList = entityManager.createQuery(countQuery).getResultList();
 
-        Long count = 0L;
+        long count = 0L;
 
         if (!countResultList.isEmpty()) {
-            count = (long) countResultList.size();
+            count = countResultList.size();
         }
 
         return count;
@@ -519,21 +525,29 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     ) {
         return sort.stream()
             .map(order -> {
-                Expression<String> expression;
-                if (order.getProperty().startsWith(DOC_PREFIX)) {
-                    var jsonPath = "$." + order.getProperty().substring(DOC_PREFIX.length());
+                Expression<?> expression;
+                String property = order.getProperty();
+                if (property.startsWith(DOC_PREFIX)) {
+                    var jsonPath = "$." + property.substring(DOC_PREFIX.length());
                     expression = queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), jsonPath, String.class);
-                } else if (order.getProperty().startsWith(CASE_PREFIX)) {
-                    expression = root.get(order.getProperty().substring(CASE_PREFIX.length()));
-                } else if (order.getProperty().startsWith("$.")) {
+                } else if (property.startsWith("$.")) {
                     expression = cb.lower(queryDialectHelper.getJsonValueExpression(
                         cb,
                         root.get(CONTENT).get(CONTENT),
-                        order.getProperty(),
+                        property,
                         String.class
                     ));
                 } else {
-                    expression = root.get(order.getProperty());
+                    var docProperty = property.startsWith(CASE_PREFIX) ? property.substring(CASE_PREFIX.length()) : property;
+                    if (DOCUMENT_FIELD_MAP.containsKey(docProperty)) {
+                        docProperty = DOCUMENT_FIELD_MAP.get(docProperty);
+                    }
+                    String[] split = docProperty.split("\\.");
+                    Path<?> path = root.get(split[0]);
+                    for (int i = 1; i < split.length; i++) {
+                        path = path.get(split[i]);
+                    }
+                    expression = path;
                 }
 
                 return order.getDirection().isAscending() ? cb.asc(expression) : cb.desc(expression);

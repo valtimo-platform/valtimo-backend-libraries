@@ -104,7 +104,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     private Long sequence;
 
     @Embedded
-    private InternalCaseStatusId internalStatusId;
+    private InternalCaseStatusId internalStatus;
 
     @Column(name = "assignee_id", columnDefinition = "varchar(64)")
     private String assigneeId;
@@ -307,7 +307,7 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     }
 
     public void setInternalStatus(@Nullable String internalStatusKey) {
-        this.internalStatusId = InternalCaseStatusId.of(definitionId().name(), internalStatusKey);
+        this.internalStatus = InternalCaseStatusId.of(definitionId().name(), internalStatusKey);
     }
 
     @Override
@@ -338,10 +338,10 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     @Override
     @Nullable
     public String internalStatus() {
-        if (internalStatusId == null) {
+        if (internalStatus == null) {
             return null;
         } else {
-            return internalStatusId.getKey();
+            return internalStatus.getKey();
         }
     }
 

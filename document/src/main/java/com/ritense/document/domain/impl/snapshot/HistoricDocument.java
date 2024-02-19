@@ -54,7 +54,7 @@ public class HistoricDocument implements Document {
     private DocumentDefinition documentDefinition;
 
     @Embedded
-    private InternalCaseStatusId internalStatusId;
+    private InternalCaseStatusId internalStatus;
 
     @Transient
     private int version;
@@ -93,7 +93,7 @@ public class HistoricDocument implements Document {
         this.content = new JsonDocumentContent(document.content());
         this.documentDefinitionId = document.definitionId();
         this.documentDefinition = documentDefinition;
-        this.internalStatusId = InternalCaseStatusId.of(document.definitionId().name(), document.internalStatus());
+        this.internalStatus = InternalCaseStatusId.of(document.definitionId().name(), document.internalStatus());
         this.version = document.version();
         this.createdOn = document.createdOn();
         this.modifiedOn = document.modifiedOn().orElse(null);
@@ -140,10 +140,10 @@ public class HistoricDocument implements Document {
 
     @Override
     public String internalStatus() {
-        if (internalStatusId == null) {
+        if (internalStatus == null) {
             return null;
         } else {
-            return internalStatusId.getKey();
+            return internalStatus.getKey();
         }
     }
 
