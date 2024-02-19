@@ -132,32 +132,12 @@ class JsonSchemaDocumentServiceTest extends BaseTest {
 
         LocalDateTime createdOn = LocalDateTime.now();
         UUID resourceId = UUID.randomUUID();
-        Resource resource = new Resource() {
-            @Override
-            public UUID id() {
-                return resourceId;
-            }
-
-            @Override
-            public String name() {
-                return "name.txt";
-            }
-
-            @Override
-            public String extension() {
-                return "txt";
-            }
-
-            @Override
-            public Long sizeInBytes() {
-                return 123L;
-            }
-
-            @Override
-            public LocalDateTime createdOn() {
-                return createdOn;
-            }
-        };
+        Resource resource = mock(Resource.class);
+        when(resource.id()).thenReturn(resourceId);
+        when(resource.name()).thenReturn("name.txt");
+        when(resource.extension()).thenReturn("txt");
+        when(resource.sizeInBytes()).thenReturn(123L);
+        when(resource.createdOn()).thenReturn(createdOn);
 
         NewDocumentRequest documentRequest = new NewDocumentRequest(
             "document-definition",

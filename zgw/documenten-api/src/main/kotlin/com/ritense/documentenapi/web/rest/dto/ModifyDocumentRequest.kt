@@ -14,39 +14,24 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.client
+package com.ritense.documentenapi.web.rest.dto
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.ritense.zgw.Rsin
-import com.ritense.zgw.domain.Vertrouwelijkheid
-import java.net.URI
+import com.ritense.documentenapi.client.DocumentStatusType
 import java.time.LocalDate
-import java.time.LocalDateTime
 
-class DocumentInformatieObject (
-    val url: URI,
-    val identificatie: String? = null,
-    val bronorganisatie: Rsin,
+class ModifyDocumentRequest(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val creatiedatum: LocalDate,
     val titel: String,
-    val vertrouwelijkheidaanduiding: Vertrouwelijkheid? = null,
     val auteur: String,
     val status: DocumentStatusType? = null,
-    val formaat: String? = null,
     val taal: String,
-    val versie: Int? = null,
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    val beginRegistratie: LocalDateTime,
     val bestandsnaam: String? = null,
-    val bestandsomvang: Long? = null,
-    val link: URI? = null,
     val beschrijving: String? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val ontvangstdatum: LocalDate? = null,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val verzenddatum: LocalDate? = null,
-    val indicatieGebruiksrecht: Boolean? = null,
-    val informatieobjecttype: String? = null,
-    val trefwoorden: List<String>? = null,
+    val indicatieGebruiksrecht: Boolean? = false,
 )

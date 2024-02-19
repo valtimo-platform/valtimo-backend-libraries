@@ -21,7 +21,7 @@
 
     <changeSet author="Ritense" id="1">
         <addColumn tableName="internal_case_status">
-            <column name="internal_case_status_color" type="varchar(50)">
+            <column name="internal_case_status_color" type="varchar(50)" defaultValue="BLUE">
                 <constraints nullable="false"/>
             </column>
         </addColumn>

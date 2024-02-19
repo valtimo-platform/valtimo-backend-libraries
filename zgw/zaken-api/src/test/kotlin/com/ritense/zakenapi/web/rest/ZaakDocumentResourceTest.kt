@@ -16,8 +16,8 @@
 
 package com.ritense.zakenapi.web.rest
 
+import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.zakenapi.BaseIntegrationTest
-import com.ritense.zakenapi.domain.RelatedFileDto
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zgw.Rsin
 import org.hamcrest.Matchers.hasSize
@@ -91,7 +91,7 @@ class ZaakDocumentResourceTest : BaseIntegrationTest() {
         sizeInBytes = 1337L,
         createdOn = LocalDateTime.parse("2023-01-01T12:10:01"),
         createdBy = "y",
-        pluginConfigurationId = UUID.fromString("1f925112-f090-404a-bee7-b20fd8047a72"),
+        pluginConfigurationId = UUID.fromString("1f925112-f090-404a-bee7-b20fd8047a72")
     )
 
     @Test
@@ -110,7 +110,8 @@ class ZaakDocumentResourceTest : BaseIntegrationTest() {
         doReturn(zaak).whenever(zaakDocumentService).getZaakByDocumentId(documentId)
 
         mockMvc.perform(
-            MockMvcRequestBuilders.get("/api/v1/zaken-api/document/{documentId}/zaak", documentId)
+            MockMvcRequestBuilders.get("/api/v1/zaken-api/document/" +
+                "{documentId}/zaak", documentId)
                 .characterEncoding(StandardCharsets.UTF_8.name())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)

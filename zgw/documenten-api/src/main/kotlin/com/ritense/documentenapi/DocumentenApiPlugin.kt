@@ -23,7 +23,9 @@ import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.DocumentStatusType
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.event.DocumentCreated
+import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
@@ -36,6 +38,7 @@ import com.ritense.zgw.domain.Vertrouwelijkheid
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.web.util.UriComponentsBuilder
 import java.io.InputStream
 import java.net.URI
 import java.time.LocalDate
@@ -50,6 +53,7 @@ class DocumentenApiPlugin(
     private val storageService: TemporaryResourceStorageService,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val objectMapper: ObjectMapper,
+    private val documentDeleteHandlers: List<DocumentDeleteHandler>,
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -126,7 +130,7 @@ class DocumentenApiPlugin(
             contentAsInputStream = contentAsInputStream,
             description = metadata["description"] as String?,
             informationObjectType = metadata["informatieobjecttype"] as String,
-            storedDocumentUrl = DOCUMENT_URL_PROCESS_VAR
+            storedDocumentUrl = DOCUMENT_URL_PROCESS_VAR,
         )
     }
 
@@ -177,6 +181,31 @@ class DocumentenApiPlugin(
         return client.getInformatieObject(authenticationPluginConfiguration, objectUrl)
     }
 
+    fun deleteInformatieObject(objectUrl: URI) {
+        documentDeleteHandlers.forEach { it.preDocumentDelete(objectUrl) }
+        client.deleteInformatieObject(authenticationPluginConfiguration, objectUrl)
+    }
+
+    fun createInformatieObjectUrl(objectId: String): URI {
+        return UriComponentsBuilder
+            .fromUri(url)
+            .pathSegment("enkelvoudiginformatieobjecten", objectId)
+            .build()
+            .toUri()
+    }
+
+    fun modifyInformatieObject(documentUrl: URI, patchDocumentRequest: PatchDocumentRequest): DocumentInformatieObject {
+        val documentLock = client.lockInformatieObject(authenticationPluginConfiguration, documentUrl)
+        try {
+            patchDocumentRequest.lock = documentLock.lock
+            val modifiedDocument =
+                client.modifyInformatieObject(authenticationPluginConfiguration, documentUrl, patchDocumentRequest)
+            return modifiedDocument
+        } finally {
+            client.unlockInformatieObject(authenticationPluginConfiguration, documentUrl, documentLock)
+        }
+    }
+
     private fun storeDocument(
         execution: DelegateExecution,
         metadata: Map<String, Any>,
@@ -188,7 +217,7 @@ class DocumentenApiPlugin(
         contentAsInputStream: InputStream,
         description: String?,
         informationObjectType: String,
-        storedDocumentUrl: String
+        storedDocumentUrl: String,
     ) {
         val request = CreateDocumentRequest(
             bronorganisatie = bronorganisatie,
@@ -204,6 +233,8 @@ class DocumentenApiPlugin(
             ontvangstdatum = getLocalDateFromMetaData(metadata, "receiptDate"),
             verzenddatum = getLocalDateFromMetaData(metadata, "sendDate"),
             informatieobjecttype = informationObjectType,
+            formaat = metadata["contentType"] as String?,
+            trefwoorden = listOf("trefwoord1", "trefwoord2")
         )
 
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)
@@ -235,7 +266,8 @@ class DocumentenApiPlugin(
     private fun getStatusFromMetaData(metadata: Map<String, Any>): DocumentStatusType {
         val status = metadata["status"] as String?
         return if (status != null) {
-            DocumentStatusType.fromKey(status)
+            DocumentStatusType.fromKey(status) ?:
+               throw IllegalStateException("Failed to store document. Invalid status '$status' found in metadata.")
         } else {
             DocumentStatusType.DEFINITIEF
         }
