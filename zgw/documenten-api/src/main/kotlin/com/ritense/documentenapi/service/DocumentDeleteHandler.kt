@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 
-package com.ritense.zakenapi.domain
+package com.ritense.documentenapi.service
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import java.net.URI
-import java.time.LocalDateTime
-import java.util.UUID
 
-data class ZaakInformatieObject(
-    val url: URI,
-    val uuid: UUID,
-    val informatieobject: URI,
-    val zaak: URI,
-    val aardRelatieWeergave: String,
-    val titel: String? = null,
-    val beschrijving: String? = null,
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    val registratiedatum: LocalDateTime,
-    @JsonFormat(shape = JsonFormat.Shape.STRING)
-    val vernietigingsdatum: LocalDateTime? = null,
-    val status: URI? = null,
-)
+interface DocumentDeleteHandler {
+    fun preDocumentDelete(documentUrl: URI)
+}

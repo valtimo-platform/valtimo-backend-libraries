@@ -413,7 +413,27 @@ class ZakenApiPlugin(
     }
 
     fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {
-        return client.getZaakInformatieObjecten(authenticationPluginConfiguration, url, zaakUrl)
+        return client.getZaakInformatieObjecten(
+            authentication = authenticationPluginConfiguration,
+            baseUrl = url,
+            zaakUrl = zaakUrl
+        )
+    }
+
+    fun getZaakInformatieObjectenByInformatieobjectUrl(informatieobjectUrl: URI): List<ZaakInformatieObject> {
+        return client.getZaakInformatieObjecten(
+            authentication = authenticationPluginConfiguration,
+            baseUrl = url,
+            informatieobjectUrl = informatieobjectUrl
+        )
+    }
+
+    fun deleteZaakInformatieobject(zaakInformatieobjectUrl: URI) {
+        return client.deleteZaakInformatieObject(
+            authentication = authenticationPluginConfiguration,
+            baseUrl = url,
+            zaakInformatieobjectUrl = zaakInformatieobjectUrl
+        )
     }
 
     fun getZaakObjecten(zaakUrl: URI): List<ZaakObject> {
