@@ -272,18 +272,16 @@ class ZakenApiClient(
     fun patchZaak(
         authentication: ZakenApiAuthentication,
         baseUrl: URI,
+        zaakUrl: URI,
         request: PatchZaakRequest,
     ): ZaakResponse {
+        validateUrlHost(baseUrl, zaakUrl)
         val result = webclientBuilder
             .clone()
             .filter(authentication)
             .build()
             .patch()
-            .uri {
-                ClientTools.baseUrlToBuilder(it, baseUrl)
-                    .path("zaken")
-                    .build()
-            }
+            .uri(zaakUrl)
             .headers(this::defaultHeaders)
             .contentType(MediaType.APPLICATION_JSON)
             .body(BodyInserters.fromValue(request))
@@ -448,6 +446,14 @@ class ZakenApiClient(
         }
 
         return result?.body!!
+    }
+
+    private fun validateUrlHost(baseUrl: URI, url: URI?) {
+        if (url != null && baseUrl.host != url.host) {
+            throw IllegalArgumentException(
+                "Requested url '$url' is not valid for baseUrl '$baseUrl'"
+            )
+        }
     }
 
     private fun defaultHeaders(headers: HttpHeaders) {
