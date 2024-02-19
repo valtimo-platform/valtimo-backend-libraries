@@ -30,8 +30,8 @@ import java.net.URI
 )
 class AutoDeploymentTestPlugin {
     @Url
-    @PluginProperty(key = "property1", secret = false)
-    lateinit var property1: URI
+    @PluginProperty(key = "property1", required = false, secret = false)
+    var property1: URI? = null
 
     @PluginProperty(key = "property2", required = false, secret = false)
     var property2: Boolean? = null

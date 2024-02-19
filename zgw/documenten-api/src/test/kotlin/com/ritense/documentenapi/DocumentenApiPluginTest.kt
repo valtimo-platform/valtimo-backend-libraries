@@ -26,6 +26,7 @@ import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.zgw.domain.Vertrouwelijkheid
+import org.apache.commons.io.IOUtils
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -34,13 +35,14 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
-import java.io.InputStream
+import java.io.ByteArrayInputStream
 import java.net.URI
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 internal class DocumentenApiPluginTest {
 
@@ -51,7 +53,8 @@ internal class DocumentenApiPluginTest {
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
         val executionMock = mock<DelegateExecution>()
-        val fileStream = mock<InputStream>()
+        val content = "contentForRequest"
+        val inputStream = ByteArrayInputStream(content.toByteArray())
         val result = CreateDocumentResult(
             "returnedUrl",
             "returnedAuthor",
@@ -63,7 +66,7 @@ internal class DocumentenApiPluginTest {
         whenever(executionMock.getVariable("localDocumentVariableName"))
             .thenReturn("localDocumentLocation")
         whenever(storageService.getResourceContentAsInputStream("localDocumentLocation"))
-            .thenReturn(fileStream)
+            .thenReturn(inputStream)
         whenever(client.storeDocument(any(), any(), any())).thenReturn(result)
 
         val plugin = DocumentenApiPlugin(client, storageService, applicationEventPublisher, MapperSingleton.get())
@@ -98,7 +101,7 @@ internal class DocumentenApiPluginTest {
         assertEquals("test.ext", request.bestandsnaam)
         assertEquals(Vertrouwelijkheid.ZAAKVERTROUWELIJK, request.vertrouwelijkheidaanduiding)
         assertEquals("taal", request.taal)
-        assertEquals(fileStream, request.inhoud)
+        assertEquals(content, IOUtils.toString(request.inhoud, Charsets.UTF_8))
         assertEquals("type", request.informatieobjecttype)
         assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
         assertEquals(false, request.indicatieGebruiksrecht)
@@ -118,7 +121,8 @@ internal class DocumentenApiPluginTest {
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
         val executionMock = mock<DelegateExecution>()
-        val fileStream = mock<InputStream>()
+        val content = "contentForRequest"
+        val inputStream = ByteArrayInputStream(content.toByteArray())
         val result = CreateDocumentResult(
             "returnedUrl",
             "returnedAuthor",
@@ -130,7 +134,7 @@ internal class DocumentenApiPluginTest {
         whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR))
             .thenReturn("localDocumentLocation")
         whenever(storageService.getResourceContentAsInputStream("localDocumentLocation"))
-            .thenReturn(fileStream)
+            .thenReturn(inputStream)
         whenever(storageService.getResourceMetadata("localDocumentLocation"))
             .thenReturn(mapOf("title" to "title",
                 "confidentialityLevel" to "zaakvertrouwelijk",
@@ -166,7 +170,7 @@ internal class DocumentenApiPluginTest {
         assertEquals("description", request.beschrijving)
         assertEquals("test.ext", request.bestandsnaam)
         assertEquals("taal", request.taal)
-        assertEquals(fileStream, request.inhoud)
+        assertEquals(content, IOUtils.toString(request.inhoud, Charsets.UTF_8))
         assertEquals("type", request.informatieobjecttype)
         assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
         assertEquals(false, request.indicatieGebruiksrecht)
@@ -180,7 +184,8 @@ internal class DocumentenApiPluginTest {
         val applicationEventPublisher: ApplicationEventPublisher= mock()
         val authenticationMock = mock<DocumentenApiAuthentication>()
         val executionMock = mock<DelegateExecution>()
-        val fileStream = mock<InputStream>()
+        val content = "contentForRequest"
+        val inputStream = ByteArrayInputStream(content.toByteArray())
         val result = CreateDocumentResult(
             "returnedUrl",
             "returnedAuthor",
@@ -192,7 +197,7 @@ internal class DocumentenApiPluginTest {
         whenever(executionMock.getVariable(RESOURCE_ID_PROCESS_VAR))
             .thenReturn("localDocumentLocation")
         whenever(storageService.getResourceContentAsInputStream("localDocumentLocation"))
-            .thenReturn(fileStream)
+            .thenReturn(inputStream)
         whenever(storageService.getResourceMetadata("localDocumentLocation"))
             .thenReturn(mapOf("title" to "title",
                 "status" to "in_bewerking",
@@ -222,7 +227,7 @@ internal class DocumentenApiPluginTest {
         assertEquals("GZAC", request.auteur)
         assertEquals("test.ext", request.bestandsnaam)
         assertEquals("taal", request.taal)
-        assertEquals(fileStream, request.inhoud)
+        assertEquals(content, IOUtils.toString(request.inhoud, Charsets.UTF_8))
         assertEquals("type", request.informatieobjecttype)
         assertEquals(DocumentStatusType.IN_BEWERKING, request.status)
         assertEquals(false, request.indicatieGebruiksrecht)
