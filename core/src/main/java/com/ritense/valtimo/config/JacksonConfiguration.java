@@ -22,6 +22,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import com.ritense.valtimo.contract.json.serializer.PageSerializer;
+import com.ritense.valtimo.jackson.CustomLocalDateTimeDeserializer;
+import java.time.LocalDateTime;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +52,9 @@ public class JacksonConfiguration {
      */
     @Bean
     public JavaTimeModule javaTimeModule() {
-        return new JavaTimeModule();
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        javaTimeModule.addDeserializer(LocalDateTime.class, new CustomLocalDateTimeDeserializer());
+        return javaTimeModule;
     }
 
     @Bean
