@@ -17,13 +17,17 @@
 package com.ritense.document.domain.search;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AdvancedSearchRequest {
     private SearchOperator searchOperator = SearchOperator.AND;
     private AssigneeFilter assigneeFilter = AssigneeFilter.ALL;
     private List<OtherFilter> otherFilters = List.of();
+
+    private Set<String> statusFilter = new HashSet<>();
 
     public AdvancedSearchRequest() {
         // Jackson needs the empty constructor
@@ -66,6 +70,19 @@ public class AdvancedSearchRequest {
     public AdvancedSearchRequest addOtherFilters(OtherFilter otherFilter) {
         this.otherFilters = new ArrayList<>(otherFilters);
         otherFilters.add(otherFilter);
+        return this;
+    }
+
+    public Set<String> getStatusFilter() {
+        return statusFilter;
+    }
+
+    public void setStatusFilter(Set<String> statusFilter) {
+        this.statusFilter = statusFilter != null ? statusFilter : new HashSet<>();
+    }
+
+    public AdvancedSearchRequest statusFilter(String status) {
+        this.statusFilter.add(status);
         return this;
     }
 

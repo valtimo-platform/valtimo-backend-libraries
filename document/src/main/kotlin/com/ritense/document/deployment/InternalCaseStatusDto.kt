@@ -17,13 +17,14 @@
 package com.ritense.document.deployment
 
 import com.ritense.document.domain.InternalCaseStatus
+import com.ritense.document.domain.InternalCaseStatusColor
 
 data class InternalCaseStatusDto(
     val key: String,
     val caseDefinitionName: String,
     val title: String,
     val visibleInCaseListByDefault: Boolean,
-    val color: String
+    val color: InternalCaseStatusColor
 ) {
     companion object {
         fun of(internalCaseStatus: InternalCaseStatus) = InternalCaseStatusDto(

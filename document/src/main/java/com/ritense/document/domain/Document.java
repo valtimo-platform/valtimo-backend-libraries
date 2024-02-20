@@ -43,6 +43,9 @@ public interface Document {
     DocumentDefinition.Id definitionId();
 
     @JsonProperty
+    String internalStatus();
+
+    @JsonProperty
     String assigneeId();
 
     @JsonProperty

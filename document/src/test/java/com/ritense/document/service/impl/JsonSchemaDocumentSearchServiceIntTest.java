@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.document.domain.search.DatabaseSearchType.BETWEEN;
 import static com.ritense.document.domain.search.DatabaseSearchType.EQUAL;
 import static com.ritense.document.domain.search.DatabaseSearchType.GREATER_THAN_OR_EQUAL_TO;
@@ -34,7 +35,6 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -56,7 +56,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -91,7 +93,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         definition = definition();
         var content = new JsonDocumentContent("{\"street\": \"Funenpark\"}");
 
-        originalDocument = AuthorizationContext.runWithoutAuthorization(() -> documentService.createDocument(
+        originalDocument = runWithoutAuthorization(() -> documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
                 content.asJson()
@@ -100,7 +102,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         var content2 = new JsonDocumentContent("{\"street\": \"Kalverstraat\"}");
 
-        AuthorizationContext.runWithoutAuthorization(() -> documentService.createDocument(
+        runWithoutAuthorization(() -> documentService.createDocument(
             new NewDocumentRequest(
                 definition.id().name(),
                 content2.asJson()
@@ -282,7 +284,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void searchShouldFindDocumentBySequence() {
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setDocumentDefinitionName(definition.id().name());
-        searchRequest.setSequence(originalDocument.resultingDocument().get().sequence());
+        searchRequest.setSequence(originalDocument.resultingDocument().orElseThrow().sequence());
 
         final Page<? extends Document> page = documentSearchService.search(
             searchRequest,
@@ -473,8 +475,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         );
         assertThat(page).isNotNull();
         assertThat(page.getTotalElements()).isEqualTo(2);
-        assertThat(page.getContent().get(0).sequence()).isEqualTo(documentTwo.resultingDocument().get().sequence());
-        assertThat(page.getContent().get(1).sequence()).isEqualTo(documentOne.resultingDocument().get().sequence());
+        assertThat(page.getContent().get(0).sequence()).isEqualTo(documentTwo.resultingDocument().orElseThrow().sequence());
+        assertThat(page.getContent().get(1).sequence()).isEqualTo(documentOne.resultingDocument().orElseThrow().sequence());
     }
 
     @Test
@@ -498,17 +500,17 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         );
         assertThat(page).isNotNull();
         assertThat(page.getTotalElements()).isEqualTo(2);
-        assertThat(page.getContent().get(0).id()).isEqualTo(documentOne.resultingDocument().get().id());
-        assertThat(page.getContent().get(1).id()).isEqualTo(documentTwo.resultingDocument().get().id());
+        assertThat(page.getContent().get(0).id()).isEqualTo(documentOne.resultingDocument().orElseThrow().id());
+        assertThat(page.getContent().get(1).id()).isEqualTo(documentTwo.resultingDocument().orElseThrow().id());
     }
 
     @Test
     @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
     void searchShouldOrderAllDocumentsBasedOnAssigneeFullName() {
         documentRepository.deleteAllInBatch();
-        var documentOne = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
-        var documentTwo = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
-        var documentThree = (JsonSchemaDocument) createDocument("{}").resultingDocument().get();
+        var documentOne = (JsonSchemaDocument) createDocument("{}").resultingDocument().orElseThrow();
+        var documentTwo = (JsonSchemaDocument) createDocument("{}").resultingDocument().orElseThrow();
+        var documentThree = (JsonSchemaDocument) createDocument("{}").resultingDocument().orElseThrow();
         documentOne.setAssignee("1111", "Beth Xander");
         documentTwo.setAssignee("2222", "Anna Yablon");
         documentThree.setAssignee("33", "Beth Zabala");
@@ -533,8 +535,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndLikeText() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -545,7 +547,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street")));
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street"))
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -556,9 +559,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndLikeTextInListOfMultipleValues() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -570,7 +573,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street")));
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street"))
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -581,9 +585,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndTextInListOfMultipleValues() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Alexanderkade\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -596,7 +600,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street")));
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street"))
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -608,9 +613,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndBetweenRangedValues() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"housenumber\": 1}").resultingDocument().get();
-        createDocument("{\"housenumber\": 2}").resultingDocument().get();
-        createDocument("{\"housenumber\": 3}").resultingDocument().get();
+        createDocument("{\"housenumber\": 1}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 2}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 3}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -622,7 +627,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:housenumber")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:housenumber"))
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -639,9 +645,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndFromRangedValue() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"housenumber\": 1}").resultingDocument().get();
-        createDocument("{\"housenumber\": 2}").resultingDocument().get();
-        createDocument("{\"housenumber\": 3}").resultingDocument().get();
+        createDocument("{\"housenumber\": 1}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 2}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 3}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -652,7 +658,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:housenumber")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:housenumber"))
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -669,9 +676,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndToRangedValue() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"housenumber\": 1}").resultingDocument().get();
-        createDocument("{\"housenumber\": 2}").resultingDocument().get();
-        createDocument("{\"housenumber\": 3}").resultingDocument().get();
+        createDocument("{\"housenumber\": 1}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 2}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 3}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -682,7 +689,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:housenumber")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:housenumber"))
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(1);
@@ -697,9 +705,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldFailOnFromSearchWithoutRangeFrom() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"housenumber\": 1}").resultingDocument().get();
-        createDocument("{\"housenumber\": 2}").resultingDocument().get();
-        createDocument("{\"housenumber\": 3}").resultingDocument().get();
+        createDocument("{\"housenumber\": 1}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 2}").resultingDocument().orElseThrow();
+        createDocument("{\"housenumber\": 3}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -719,9 +727,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndRangedDateValues() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"movedAtDate\": \"2022-01-01\"}").resultingDocument().get();
-        createDocument("{\"movedAtDate\": \"2022-02-01\"}").resultingDocument().get();
-        createDocument("{\"movedAtDate\": \"2022-03-01\"}").resultingDocument().get();
+        createDocument("{\"movedAtDate\": \"2022-01-01\"}").resultingDocument().orElseThrow();
+        createDocument("{\"movedAtDate\": \"2022-02-01\"}").resultingDocument().orElseThrow();
+        createDocument("{\"movedAtDate\": \"2022-03-01\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -733,7 +741,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:movedAtDate")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:movedAtDate"))
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -750,9 +759,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndFromDateTimeValues() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:00:00\"}").resultingDocument().get();
-        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:10:00\"}").resultingDocument().get();
-        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:20:00\"}").resultingDocument().get();
+        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:00:00\"}").resultingDocument().orElseThrow();
+        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:10:00\"}").resultingDocument().orElseThrow();
+        createDocument("{\"movedAtDateTime\": \"2022-01-01T12:20:00\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -763,7 +772,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:movedAtDateTime")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:movedAtDateTime"))
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -771,10 +781,14 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var content = result.getContent();
         assertTrue(content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).isPresent());
         assertTrue(content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).isPresent());
-        assertEquals("2022-01-01T12:10:00",
-            content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText());
-        assertEquals("2022-01-01T12:20:00",
-            content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText());
+        assertEquals(
+            "2022-01-01T12:10:00",
+            content.get(0).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText()
+        );
+        assertEquals(
+            "2022-01-01T12:20:00",
+            content.get(1).content().getValueBy(JsonPointer.valueOf("/movedAtDateTime")).get().asText()
+        );
     }
 
     @Test
@@ -793,7 +807,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            Pageable.unpaged());
+            Pageable.unpaged()
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(1);
@@ -807,14 +822,15 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndOrderBySequence() {
         documentRepository.deleteAllInBatch();
 
-        var document1 = createDocument("{}").resultingDocument().get();
-        var document2 = createDocument("{}").resultingDocument().get();
-        var document3 = createDocument("{}").resultingDocument().get();
+        var document1 = createDocument("{}").resultingDocument().orElseThrow();
+        var document2 = createDocument("{}").resultingDocument().orElseThrow();
+        var document3 = createDocument("{}").resultingDocument().orElseThrow();
 
         var result = documentSearchService.search(
             definition.id().name(),
             new AdvancedSearchRequest(),
-            PageRequest.of(0, 10, Sort.by(Direction.DESC, "case:sequence")));
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "case:sequence"))
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(3);
@@ -830,7 +846,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForCreatedOnCasePropertyWithLocalDateClass() {
         documentRepository.deleteAllInBatch();
 
-        var document = createDocument("{}").resultingDocument().get();
+        var document = createDocument("{}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -853,8 +869,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForBooleanTrueProperty() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"loan-approved\": true}").resultingDocument().get();
-        createDocument("{\"loan-approved\": false}").resultingDocument().get();
+        createDocument("{\"loan-approved\": true}").resultingDocument().orElseThrow();
+        createDocument("{\"loan-approved\": false}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -879,8 +895,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForBooleanFalseProperty() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"loan-approved\": true}").resultingDocument().get();
-        createDocument("{\"loan-approved\": false}").resultingDocument().get();
+        createDocument("{\"loan-approved\": true}").resultingDocument().orElseThrow();
+        createDocument("{\"loan-approved\": false}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -896,7 +912,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(1);
-        assertThat(result.toList().get(0).content().getValueBy(JsonPointer.valueOf("/loan-approved")).get().booleanValue())
+        assertThat(result.toList().get(0).content().getValueBy(JsonPointer.valueOf("/loan-approved")).orElseThrow().booleanValue())
             .isFalse();
     }
 
@@ -905,8 +921,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForIntegerProperty() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"size\": 5}").resultingDocument().get();
-        createDocument("{\"size\": 6}").resultingDocument().get();
+        createDocument("{\"size\": 5}").resultingDocument().orElseThrow();
+        createDocument("{\"size\": 6}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -929,9 +945,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestWithMultipleFieldsUsingAnd() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().orElseThrow();
 
         // relying on default SearchOperator being AND
         var searchRequest = new AdvancedSearchRequest()
@@ -947,7 +963,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street")));
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street"))
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(1);
@@ -958,9 +975,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestWithMultipleFieldsUsingOr() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"1999-10-23\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Funenpark\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Czaar Peterstraat\", \"registrationDate\": \"2017-06-01\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .searchOperator(SearchOperator.OR)
@@ -976,7 +993,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street")));
+            PageRequest.of(0, 10, Sort.by(Direction.DESC, "doc:street"))
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(3);
@@ -987,9 +1005,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestWithIn() {
         documentRepository.deleteAllInBatch();
 
-        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Wallstreet\"}").resultingDocument().get();
-        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().get();
+        createDocument("{\"street\": \"Funenpark\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Wallstreet\"}").resultingDocument().orElseThrow();
+        createDocument("{\"street\": \"Czaar Peterstraat\"}").resultingDocument().orElseThrow();
 
         var searchRequest = new AdvancedSearchRequest()
             .addOtherFilters(new AdvancedSearchRequest.OtherFilter()
@@ -1001,7 +1019,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            Pageable.unpaged());
+            Pageable.unpaged()
+        );
 
         assertThat(result).isNotNull();
         assertThat(result.getTotalElements()).isEqualTo(2);
@@ -1012,11 +1031,11 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForOpenCases() {
         documentRepository.deleteAllInBatch();
 
-        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().get();
-        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
-        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
+        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().orElseThrow();
+        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().orElseThrow();
+        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().orElseThrow();
 
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
                 documentService.assignUserToDocument(document2.id().getId(), USER_ID);
                 return null;
             }
@@ -1028,7 +1047,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:street")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:street"))
+        );
 
         assertThat(result.toList()).hasSize(2);
         assertThat(result.toList().get(0).id().getId()).isEqualTo(document1.id().getId());
@@ -1040,11 +1060,11 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForMyCases() {
         documentRepository.deleteAllInBatch();
 
-        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().get();
-        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
-        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
+        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().orElseThrow();
+        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().orElseThrow();
+        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().orElseThrow();
 
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
                 documentService.assignUserToDocument(document2.id().getId(), USER_ID);
                 return null;
             }
@@ -1056,7 +1076,8 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:street")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:street"))
+        );
 
         assertThat(result.toList()).hasSize(1);
         assertThat(result.toList().get(0).id().getId()).isEqualTo(document2.id().getId());
@@ -1067,19 +1088,17 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchForAll() {
         documentRepository.deleteAllInBatch();
 
-        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().get();
-        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().get();
-        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().get();
+        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().orElseThrow();
+        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().orElseThrow();
+        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().orElseThrow();
 
-        AuthorizationContext
-            .runWithoutAuthorization(() -> {
-                    documentService.assignUserToDocument(
-                        document2.id().getId(),
-                        USER_ID
-                    );
-                    return null;
-                }
+        runWithoutAuthorization(() -> {
+            documentService.assignUserToDocument(
+                document2.id().getId(),
+                USER_ID
             );
+            return null;
+        });
 
         var searchRequest = new AdvancedSearchRequest()
             .assigneeFilter(AssigneeFilter.ALL);
@@ -1087,12 +1106,44 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         var result = documentSearchService.search(
             definition.id().name(),
             searchRequest,
-            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:street")));
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:street"))
+        );
 
         assertThat(result.toList()).hasSize(3);
         assertThat(result.toList().get(0).id().getId()).isEqualTo(document1.id().getId());
         assertThat(result.toList().get(1).id().getId()).isEqualTo(document2.id().getId());
         assertThat(result.toList().get(2).id().getId()).isEqualTo(document3.id().getId());
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
+    void shouldSearchForStatus() {
+        documentRepository.deleteAllInBatch();
+
+        var document1 = createDocument("{\"street\": \"Alpaccalaan\"}").resultingDocument().orElseThrow();
+        var document2 = createDocument("{\"street\": \"Baarnseweg\"}").resultingDocument().orElseThrow();
+        var document3 = createDocument("{\"street\": \"Comeniuslaan\"}").resultingDocument().orElseThrow();
+
+        runWithoutAuthorization(() -> {
+                documentService.setInternalStatus(document1.id(), "started");
+                documentService.setInternalStatus(document3.id(), "closed");
+                return null;
+            }
+        );
+
+        var searchRequest = new AdvancedSearchRequest()
+            .statusFilter("started")
+            .statusFilter(null);
+
+        var result = documentSearchService.search(
+            definition.id().name(),
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by(Direction.ASC, "doc:street"))
+        );
+
+        assertThat(result.toList()).hasSize(2);
+        List<Document.Id> documentIds = result.map(Document::id).stream().collect(Collectors.toList());
+        assertThat(documentIds).containsExactlyInAnyOrder(document1.id(), document2.id());
     }
 
     @Test
@@ -1137,12 +1188,12 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndFromDateValueWithZoneOffset() {
         try (MockedStatic<RequestHelper> mocked = Mockito.mockStatic(RequestHelper.class, Mockito.CALLS_REAL_METHODS)) {
             // set UTC offset of request to +02:00
-            mocked.when(() -> RequestHelper.getZoneOffset()).thenReturn(ZoneOffset.of("+02:00"));
+            mocked.when(RequestHelper::getZoneOffset).thenReturn(ZoneOffset.of("+02:00"));
 
             documentRepository.deleteAllInBatch();
 
             // document's build date is 1st of January 22:30 UTC+0
-            createDocument("{\"buildDate\": \"2024-01-01T22:30:00\"}").resultingDocument().get();
+            createDocument("{\"buildDate\": \"2024-01-01T22:30:00\"}").resultingDocument().orElseThrow();
 
             var request = new SearchWithConfigRequest();
 
@@ -1157,9 +1208,10 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             request.setOtherFilters(List.of(filter));
 
             var result = documentSearchService.search(
-                    definition.id().name(),
-                    request,
-                    PageRequest.of(0, 10));
+                definition.id().name(),
+                request,
+                PageRequest.of(0, 10)
+            );
 
             assertThat(result).isNotNull();
             /*
@@ -1176,7 +1228,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     void shouldSearchWithSearchRequestAndFromDateRangeWithZoneOffset() {
         try (MockedStatic<RequestHelper> mocked = Mockito.mockStatic(RequestHelper.class, Mockito.CALLS_REAL_METHODS)) {
             // set UTC offset of request to +02:00
-            mocked.when(() -> RequestHelper.getZoneOffset()).thenReturn(ZoneOffset.of("+02:00"));
+            mocked.when(RequestHelper::getZoneOffset).thenReturn(ZoneOffset.of("+02:00"));
 
             documentRepository.deleteAllInBatch();
 
@@ -1188,11 +1240,11 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             - 4th January 01:30 UTC+0
             - 4th  January 22:30 UTC+0
              */
-            createDocument("{\"buildDate\": \"2024-01-01T22:30:00\"}").resultingDocument().get();
-            createDocument("{\"buildDate\": \"2024-01-02T14:30:00\"}").resultingDocument().get();
-            createDocument("{\"buildDate\": \"2024-01-02T23:30:00\"}").resultingDocument().get();
-            createDocument("{\"buildDate\": \"2024-01-04T01:30:00\"}").resultingDocument().get();
-            createDocument("{\"buildDate\": \"2024-01-04T22:30:00\"}").resultingDocument().get();
+            createDocument("{\"buildDate\": \"2024-01-01T22:30:00\"}").resultingDocument().orElseThrow();
+            createDocument("{\"buildDate\": \"2024-01-02T14:30:00\"}").resultingDocument().orElseThrow();
+            createDocument("{\"buildDate\": \"2024-01-02T23:30:00\"}").resultingDocument().orElseThrow();
+            createDocument("{\"buildDate\": \"2024-01-04T01:30:00\"}").resultingDocument().orElseThrow();
+            createDocument("{\"buildDate\": \"2024-01-04T22:30:00\"}").resultingDocument().orElseThrow();
 
             var request = new SearchWithConfigRequest();
 
@@ -1209,9 +1261,10 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             request.setOtherFilters(List.of(filter));
 
             var result = documentSearchService.search(
-                    definition.id().name(),
-                    request,
-                    PageRequest.of(0, 10));
+                definition.id().name(),
+                request,
+                PageRequest.of(0, 10)
+            );
 
             assertThat(result).isNotNull();
             /*
@@ -1225,7 +1278,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
     private CreateDocumentResult createDocument(String content) {
         var documentContent = new JsonDocumentContent(content);
 
-        return AuthorizationContext.runWithoutAuthorization(
+        return runWithoutAuthorization(
             () -> documentService.createDocument(
                 new NewDocumentRequest(
                     definition.id().name(),

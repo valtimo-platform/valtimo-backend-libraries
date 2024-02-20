@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.InternalCaseStatusId;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
@@ -111,6 +112,7 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
             new JsonDocumentContent("{\"street\": \"Kanaalkade\"}").asJson()
         );
 
+        documentService.setInternalStatus(document.id(), "started");
         final var modifiedDocument = (JsonSchemaDocument) documentService.modifyDocument(request).resultingDocument().orElseThrow();
         final var page = documentSnapshotService.getDocumentSnapshots(
             null,
@@ -123,10 +125,17 @@ public class JsonSchemaDocumentSnapshotServiceIntTest extends BaseIntegrationTes
         assertThat(page).isNotNull();
         assertThat(page.getTotalElements()).isEqualTo(2);
         assertThat(page.getTotalPages()).isEqualTo(1);
-        assertThat(page.getContent().get(0).document().content().asJson().toString())
-            .isIn(document.content().asJson().toString(), modifiedDocument.content().asJson().toString());
-        assertThat(page.getContent().get(1).document().content().asJson().toString())
-            .isIn(document.content().asJson().toString(), modifiedDocument.content().asJson().toString());
+        var originalSnapshot = page.getContent()
+            .stream()
+            .filter(snapshot -> snapshot.document().content().asJson().toString().equals(document.content().asJson().toString()))
+            .findFirst().orElse(null);
+        assertThat(originalSnapshot).isNotNull();
+        var modifiedSnapshot = page.getContent()
+            .stream()
+            .filter(snapshot -> snapshot.document().content().asJson().toString().equals(modifiedDocument.content().asJson().toString()))
+            .findFirst().orElse(null);
+        assertThat(modifiedSnapshot).isNotNull();
+        assertThat(modifiedSnapshot.document().internalStatus()).isEqualTo("started");
     }
 
     private Document createDocument(String content) {

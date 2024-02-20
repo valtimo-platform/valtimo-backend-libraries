@@ -18,6 +18,7 @@ package com.ritense.document.domain.impl.snapshot;
 
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.DocumentDefinition;
+import com.ritense.document.domain.InternalCaseStatusId;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
@@ -51,6 +52,9 @@ public class HistoricDocument implements Document {
 
     @Transient
     private DocumentDefinition documentDefinition;
+
+    @Embedded
+    private InternalCaseStatusId internalStatus;
 
     @Transient
     private int version;
@@ -89,6 +93,7 @@ public class HistoricDocument implements Document {
         this.content = new JsonDocumentContent(document.content());
         this.documentDefinitionId = document.definitionId();
         this.documentDefinition = documentDefinition;
+        this.internalStatus = InternalCaseStatusId.of(document.definitionId().name(), document.internalStatus());
         this.version = document.version();
         this.createdOn = document.createdOn();
         this.modifiedOn = document.modifiedOn().orElse(null);
@@ -131,6 +136,15 @@ public class HistoricDocument implements Document {
     @Override
     public JsonSchemaDocumentDefinitionId definitionId() {
         return documentDefinitionId;
+    }
+
+    @Override
+    public String internalStatus() {
+        if (internalStatus == null) {
+            return null;
+        } else {
+            return internalStatus.getKey();
+        }
     }
 
     @Override

@@ -41,9 +41,18 @@ import org.springframework.web.bind.annotation.RestController
 class InternalCaseStatusResource(
     private val internalCaseStatusService: InternalCaseStatusService
 ) {
+
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/internal-status")
+    fun getInternalCaseStatuses(
+        @PathVariable caseDefinitionName: String
+    ): ResponseEntity<List<InternalCaseStatusResponseDto>> {
+        val internalCaseStatuses = internalCaseStatusService.getInternalCaseStatuses(caseDefinitionName)
+        return ResponseEntity.ok(internalCaseStatuses.map { InternalCaseStatusResponseDto(it) })
+    }
+
     @RunWithoutAuthorization
     @GetMapping("/management/v1/case-definition/{caseDefinitionName}/internal-status")
-    fun getInternalCaseStatuses(
+    fun getInternalCaseStatusesForManagement(
         @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<InternalCaseStatusResponseDto>> {
         val internalCaseStatuses = internalCaseStatusService.getInternalCaseStatuses(caseDefinitionName)
@@ -70,7 +79,7 @@ class InternalCaseStatusResource(
     }
 
     @RunWithoutAuthorization
-    @PutMapping("management/v1/case-definition/{caseDefinitionName}/internal-status")
+    @PutMapping("/management/v1/case-definition/{caseDefinitionName}/internal-status")
     fun editInternalCaseStatuses(
         @PathVariable caseDefinitionName: String,
         @RequestBody requestDtos: List<InternalCaseStatusUpdateOrderRequestDto>
@@ -80,7 +89,7 @@ class InternalCaseStatusResource(
     }
 
     @RunWithoutAuthorization
-    @PutMapping("management/v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}")
+    @PutMapping("/management/v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}")
     fun updateInternalCaseStatus(
         @PathVariable caseDefinitionName: String,
         @PathVariable internalStatusKey: String,
@@ -91,7 +100,7 @@ class InternalCaseStatusResource(
     }
 
     @RunWithoutAuthorization
-    @DeleteMapping("management/v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}")
+    @DeleteMapping("/management/v1/case-definition/{caseDefinitionName}/internal-status/{internalStatusKey}")
     fun deleteInternalCaseStatus(
         @PathVariable caseDefinitionName: String,
         @PathVariable internalStatusKey: String,

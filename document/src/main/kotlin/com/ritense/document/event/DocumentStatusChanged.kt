@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.ritense.document.web.rest.dto
+package com.ritense.document.event
 
-import com.ritense.document.domain.InternalCaseStatusColor
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.outbox.domain.BaseEvent
 
-data class InternalCaseStatusCreateRequestDto(
-    val key: String,
-    val title: String,
-    val visibleInCaseListByDefault: Boolean,
-    val color: InternalCaseStatusColor
+class DocumentStatusChanged(documentId: String, documentContent: ObjectNode) : BaseEvent(
+    type = "com.ritense.valtimo.document.status.changed",
+    resultType = "com.ritense.document.domain.impl.JsonSchemaDocument",
+    resultId = documentId,
+    result = documentContent
 )

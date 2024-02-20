@@ -49,4 +49,24 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="Ritense" id="3">
+        <addForeignKeyConstraint
+            baseTableName="json_schema_document"
+            baseColumnNames="case_definition_name, internal_case_status_key"
+            referencedTableName="internal_case_status"
+            referencedColumnNames="case_definition_name, internal_case_status_key"
+            constraintName="fk_json_schema_document_internal_status" />
+    </changeSet>
+
+    <changeSet author="Ritense" id="4">
+        <addColumn tableName="json_schema_document_snapshot">
+            <column name="internal_case_status_key" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="case_definition_name" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

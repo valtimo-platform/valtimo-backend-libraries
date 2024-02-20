@@ -37,8 +37,7 @@ class InternalCaseStatusService(
     private val authorizationService: AuthorizationService,
 ) {
     fun getInternalCaseStatuses(documentDefinitionName: String): List<InternalCaseStatus> {
-        denyManagementOperation()
-        return internalCaseStatusRepository.findById_CaseDefinitionNameOrderByOrder(documentDefinitionName)
+        return internalCaseStatusRepository.findByIdCaseDefinitionNameOrderByOrder(documentDefinitionName)
     }
 
     fun create(
@@ -78,7 +77,7 @@ class InternalCaseStatusService(
         denyManagementOperation()
 
         val oldInternalCaseStatus = internalCaseStatusRepository
-            .findDistinctById_CaseDefinitionNameAndId_Key(
+            .findDistinctByIdCaseDefinitionNameAndIdKey(
                 caseDefinitionName, internalCaseStatusKey
             ) ?: throw InternalCaseStatusNotFoundException(internalCaseStatusKey, caseDefinitionName)
 
@@ -98,7 +97,7 @@ class InternalCaseStatusService(
         denyManagementOperation()
 
         val existingInternalCaseStatuses = internalCaseStatusRepository
-            .findById_CaseDefinitionNameOrderByOrder(caseDefinitionName)
+            .findByIdCaseDefinitionNameOrderByOrder(caseDefinitionName)
         check(existingInternalCaseStatuses.size == requests.size) {
             throw IllegalStateException(
                 "Failed to update internal case statuses. Reason: the number of internal "
@@ -124,7 +123,7 @@ class InternalCaseStatusService(
         denyManagementOperation()
 
         val internalCaseStatus =
-            internalCaseStatusRepository.findDistinctById_CaseDefinitionNameAndId_Key(
+            internalCaseStatusRepository.findDistinctByIdCaseDefinitionNameAndIdKey(
                 caseDefinitionName, internalCaseStatusKey
             ) ?: throw InternalCaseStatusNotFoundException(internalCaseStatusKey, caseDefinitionName)
 
@@ -133,7 +132,7 @@ class InternalCaseStatusService(
     }
 
     private fun reorder(caseDefinitionName: String) {
-        val internalCaseStatuses = internalCaseStatusRepository.findById_CaseDefinitionNameOrderByOrder(
+        val internalCaseStatuses = internalCaseStatusRepository.findByIdCaseDefinitionNameOrderByOrder(
             caseDefinitionName
         ).mapIndexed { index, internalCaseStatus -> internalCaseStatus.copy(order = index) }
         internalCaseStatusRepository.saveAll(internalCaseStatuses)

@@ -68,17 +68,18 @@ class DocumentTableValueResolver(
     private fun createResolver(document: Document): Function<String, Any?> {
         return Function { requestedValue ->
             when (requestedValue) {
-                "id" -> document.id().id
-                "createdOn" -> document.createdOn()
+                "assigneeFullName" -> document.assigneeFullName()
+                "assigneeId" -> document.assigneeId()
                 "createdBy" -> document.createdBy()
-                "modifiedOn" -> document.modifiedOn().orElse(null)
+                "createdOn" -> document.createdOn()
                 "definitionId" -> document.definitionId()
                 "definitionId.name" -> document.definitionId().name()
                 "definitionId.version" -> document.definitionId().version()
-                "assigneeId" -> document.assigneeId()
-                "assigneeFullName" -> document.assigneeFullName()
-                "version" -> document.version()
+                "id" -> document.id().id
+                "internalStatus" -> document.internalStatus()
+                "modifiedOn" -> document.modifiedOn().orElse(null)
                 "sequence" -> document.sequence()
+                "version" -> document.version()
                 else -> throw IllegalArgumentException("Unknown document column with name: $requestedValue")
             }
         }
@@ -86,17 +87,17 @@ class DocumentTableValueResolver(
 
     companion object {
         val TABLE_COLUMN_LIST = listOf(
-            "id",
-            "createdOn",
+            "assigneeFullName",
+            "assigneeId",
             "createdBy",
-            "modifiedOn",
-            "definitionId",
+            "createdOn",
             "definitionId.name",
             "definitionId.version",
-            "assigneeId",
-            "assigneeFullName",
+            "id",
+            "internalStatus",
+            "modifiedOn",
+            "sequence",
             "version",
-            "sequence"
         )
     }
 }

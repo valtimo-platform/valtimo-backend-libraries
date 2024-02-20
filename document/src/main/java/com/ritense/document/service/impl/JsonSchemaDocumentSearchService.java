@@ -44,6 +44,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
@@ -59,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.NotImplementedException;
@@ -77,8 +79,16 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private static final String SEQUENCE = "sequence";
     private static final String CONTENT = "content";
     private static final String ASSIGNEE_ID = "assigneeId";
+    private static final String INTERNAL_STATUS = "internalStatus";
+    private static final String INTERNAL_STATUS_KEY = "key";
     private static final String DOC_PREFIX = "doc:";
     private static final String CASE_PREFIX = "case:";
+
+    private static final Map<String,String> DOCUMENT_FIELD_MAP = Map.of(
+        "definitionId.name", "documentDefinitionId.name",
+        "definitionId.version", "documentDefinitionId.key",
+        "internalStatus", "internalStatus.key"
+    );
 
     private final EntityManager entityManager;
     private final QueryDialectHelper queryDialectHelper;
@@ -191,10 +201,10 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         // TODO: Should be turned into a subquery, and then do a count over the results from the subquery.
         List<Long> countResultList = entityManager.createQuery(countQuery).getResultList();
 
-        Long count = 0L;
+        long count = 0L;
 
         if (!countResultList.isEmpty()) {
-            count = (long) countResultList.size();
+            count = countResultList.size();
         }
 
         return count;
@@ -216,7 +226,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                     null
                 ).toPredicate(documentRoot, query, cb));
 
-        query.where(predicates.toArray(new Predicate[0]));
+        query.where(predicates.toArray(Predicate[]::new));
     }
 
     private void buildQueryWhere(
@@ -249,7 +259,11 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         if (searchRequest.getOtherFilters() != null && !searchRequest.getOtherFilters().isEmpty()) {
             predicates.add(getOtherFilersPredicate(cb, documentRoot, searchRequest));
         }
-        query.where(predicates.toArray(new Predicate[0]));
+
+        if(searchRequest.getStatusFilter() != null && !searchRequest.getStatusFilter().isEmpty()) {
+            predicates.add(getStatusFilterPredicate(cb, documentRoot, searchRequest.getStatusFilter()));
+        }
+        query.where(predicates.toArray(Predicate[]::new));
     }
 
     private void addNonJsonFieldPredicates(
@@ -344,6 +358,20 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         } else {
             return cb.or(jsonPredicates);
         }
+    }
+
+    private Predicate getStatusFilterPredicate(CriteriaBuilder cb, Root<JsonSchemaDocument> documentRoot, Set<String> statusFilter) {
+        Path<String> statusField = documentRoot.get(INTERNAL_STATUS).get(INTERNAL_STATUS_KEY);
+        Predicate[] predicates = statusFilter.stream().map(status -> {
+                if(status == null || status.isEmpty()) {
+                    return cb.isNull(statusField);
+                } else {
+                    return cb.equal(statusField, status);
+                }
+            }
+        ).toArray(Predicate[]::new);
+
+        return cb.or(predicates);
     }
 
     private Predicate findJsonPathValue(CriteriaBuilder cb, Root<JsonSchemaDocument> root, String path, String value) {
@@ -497,21 +525,29 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     ) {
         return sort.stream()
             .map(order -> {
-                Expression<String> expression;
-                if (order.getProperty().startsWith(DOC_PREFIX)) {
-                    var jsonPath = "$." + order.getProperty().substring(DOC_PREFIX.length());
+                Expression<?> expression;
+                String property = order.getProperty();
+                if (property.startsWith(DOC_PREFIX)) {
+                    var jsonPath = "$." + property.substring(DOC_PREFIX.length());
                     expression = queryDialectHelper.getJsonValueExpression(cb, root.get(CONTENT).get(CONTENT), jsonPath, String.class);
-                } else if (order.getProperty().startsWith(CASE_PREFIX)) {
-                    expression = root.get(order.getProperty().substring(CASE_PREFIX.length()));
-                } else if (order.getProperty().startsWith("$.")) {
+                } else if (property.startsWith("$.")) {
                     expression = cb.lower(queryDialectHelper.getJsonValueExpression(
                         cb,
                         root.get(CONTENT).get(CONTENT),
-                        order.getProperty(),
+                        property,
                         String.class
                     ));
                 } else {
-                    expression = root.get(order.getProperty());
+                    var docProperty = property.startsWith(CASE_PREFIX) ? property.substring(CASE_PREFIX.length()) : property;
+                    if (DOCUMENT_FIELD_MAP.containsKey(docProperty)) {
+                        docProperty = DOCUMENT_FIELD_MAP.get(docProperty);
+                    }
+                    String[] split = docProperty.split("\\.");
+                    Path<?> path = root.get(split[0]);
+                    for (int i = 1; i < split.length; i++) {
+                        path = path.get(split[i]);
+                    }
+                    expression = path;
                 }
 
                 return order.getDirection().isAscending() ? cb.asc(expression) : cb.desc(expression);
