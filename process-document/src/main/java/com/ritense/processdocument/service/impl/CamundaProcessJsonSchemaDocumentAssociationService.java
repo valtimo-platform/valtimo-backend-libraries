@@ -240,10 +240,14 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
                     var camundaProcess = historyService.createHistoricProcessInstanceQuery()
                         .processInstanceId(process.getId().processInstanceId().toString())
                         .singleResult();
+                    process.setActive(camundaProcess != null && camundaProcess.getEndTime() == null);
                     var camundaProcessDefinition = runWithoutAuthorization(() ->
                         repositoryService.findLatestProcessDefinition(camundaProcess.getProcessDefinitionKey())
                     );
-                    var startDateTime = LocalDateTime.ofInstant(camundaProcess.getStartTime().toInstant(), ZoneId.systemDefault());
+                    var startDateTime = LocalDateTime.ofInstant(
+                        camundaProcess.getStartTime().toInstant(),
+                        ZoneId.systemDefault()
+                    );
                     var startedBy = camundaProcess.getStartUserId() == null ? null :
                         userManagementService.findByEmail(camundaProcess.getStartUserId()).orElseThrow().getFullName();
                     return new ProcessDocumentInstanceDto(
