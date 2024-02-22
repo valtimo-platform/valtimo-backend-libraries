@@ -27,6 +27,16 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
+/**
+ * The LocalDateTimeDeserializer provided by the JavaTimeModule does not support ISO-8601 values with an added time offset (for example: +2:00).
+ * Next to that, the LocalDateTimeDeserializer accepts a 'Z' offset (UTC), but does not compensate the result with the local offset.
+ *
+ * This deserializer tries to parse a String value as a ZonedDateTime first.
+ * If it can parse the value as a ZonedDateTime, the value converted into a LocalDateTime with the zone offsets taken into account.
+ * If the value cannot be parsed into a ZonedDateTime, it is parsed as a LocalDateTime and returned.
+ *
+ * If the above fails, it falls back to the LocalDateTimeDeserializer default behaviour.
+ */
 class ZonedLocalDateTimeDeserializer : LocalDateTimeDeserializer() {
     override fun _fromString(p: JsonParser, ctxt: DeserializationContext?, value: String): LocalDateTime? {
         val stringValue = value.trim()
