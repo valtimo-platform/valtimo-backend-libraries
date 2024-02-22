@@ -21,6 +21,8 @@ import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.PatchDocumentRequest
+import com.ritense.documentenapi.domain.DocumentenApiColumn
+import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.service.PluginService
@@ -33,6 +35,7 @@ import java.util.UUID
 class DocumentenApiService(
     private val pluginService: PluginService,
     private val catalogiService: CatalogiService,
+    private val documentenApiColumnRepository: DocumentenApiColumnRepository,
 ) {
     fun downloadInformatieObject(pluginConfigurationId: String, documentId: String): InputStream {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
@@ -59,6 +62,19 @@ class DocumentenApiService(
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentId)
         documentApiPlugin.deleteInformatieObject(documentUrl)
+    }
+
+    fun getColumns(caseDefinitionName: String): List<DocumentenApiColumn> {
+        return documentenApiColumnRepository.findAllByIdCaseDefinitionName(caseDefinitionName)
+    }
+
+    fun updateColumnOrder(columns: List<DocumentenApiColumn>): List<DocumentenApiColumn> {
+        columns.forEach { column ->
+            val existingColumn = documentenApiColumnRepository.findByIdCaseDefinitionName(column.id.key, column.id.caseDefinitionName)
+                ?: throw IllegalStateException("No Documenten API column exists with key '${column.id.key}' for case definition '${column.id.caseDefinitionName}'")
+            require(column.enabled == existingColumn.enabled) { "Documenten API columns don't match" }
+        }
+        return documentenApiColumnRepository.saveAll(columns)
     }
 
     private fun getRelatedFiles(informatieObject: DocumentInformatieObject, pluginConfigurationId: String): RelatedFileDto {

@@ -22,17 +22,23 @@ import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.security.DocumentenApiHttpSecurityConfigurer
 import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.documentenapi.web.rest.DocumentenApiManagementResource
 import com.ritense.documentenapi.web.rest.DocumentenApiResource
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
+import org.springframework.core.Ordered
+import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.web.reactive.function.client.WebClient
+import javax.sql.DataSource
 
 @AutoConfiguration
 class DocumentenApiAutoConfiguration {
@@ -88,10 +94,25 @@ class DocumentenApiAutoConfiguration {
         return DocumentenApiResource(documentenApiService)
     }
 
+    @Bean
+    @ConditionalOnMissingBean(DocumentenApiManagementResource::class)
+    fun documentenApiManagementResource(
+        documentenApiService: DocumentenApiService
+    ): DocumentenApiManagementResource {
+        return DocumentenApiManagementResource(documentenApiService)
+    }
+
     @Order(380)
     @Bean
     fun documentenApiHttpSecurityConfigurer(): DocumentenApiHttpSecurityConfigurer {
         return DocumentenApiHttpSecurityConfigurer()
+    }
+
+    @ConditionalOnClass(DataSource::class)
+    @Order(HIGHEST_PRECEDENCE + 32)
+    @Bean
+    fun documentenApiLiquibaseChangeLogLocation(): LiquibaseMasterChangeLogLocation {
+        return LiquibaseMasterChangeLogLocation("config/liquibase/documenten-api-master.xml")
     }
 
 }
