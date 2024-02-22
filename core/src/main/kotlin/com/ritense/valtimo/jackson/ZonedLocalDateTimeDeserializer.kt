@@ -19,15 +19,17 @@ package com.ritense.valtimo.jackson
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
+import mu.KLogger
+import mu.KotlinLogging
 import java.time.DateTimeException
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-class CustomLocalDateTimeDeserializer : LocalDateTimeDeserializer() {
-    override fun _fromString(p: JsonParser, ctxt: DeserializationContext?, string0: String): LocalDateTime {
-        val stringValue = string0.trim()
+class ZonedLocalDateTimeDeserializer : LocalDateTimeDeserializer() {
+    override fun _fromString(p: JsonParser, ctxt: DeserializationContext?, value: String): LocalDateTime? {
+        val stringValue = value.trim()
         if (stringValue.isEmpty()) {
             return _fromEmptyString(p, ctxt, stringValue)
         }
@@ -38,13 +40,18 @@ class CustomLocalDateTimeDeserializer : LocalDateTimeDeserializer() {
                 LocalDateTime::from
             )
 
-            return when (result) {
-                is LocalDateTime -> result
+            when (result) {
                 is ZonedDateTime -> result.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()
-                else -> super._fromString(p, ctxt, string0)
+                is LocalDateTime -> result
+                else -> throw DateTimeException("DateTime could not be parsed as LocalDateTime or ZonedDateTime")
             }
         } catch (e: DateTimeException) {
-            _handleDateTimeException(ctxt, e, stringValue)
+            logger.debug (e) { "Could not parse as ISO_DATE_TIME value. Trying default deserializer." }
+            super._fromString(p, ctxt, value)
         }
+    }
+
+    private companion object {
+        private val logger: KLogger = KotlinLogging.logger {}
     }
 }
