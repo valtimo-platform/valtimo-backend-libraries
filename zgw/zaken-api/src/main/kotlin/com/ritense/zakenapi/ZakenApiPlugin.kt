@@ -356,8 +356,8 @@ class ZakenApiPlugin(
                 maxDurationInDays = maxDurationInDays
             )
 
-            require(zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl) != null) {
-                "Hersteltermijn already exists for zaak '$zaakUrl'. "
+            require(zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl) == null) {
+                "Hersteltermijn already exists for zaak '$zaakUrl'"
             }
 
             val zaak = client.getZaak(authenticationPluginConfiguration, zaakUrl)
