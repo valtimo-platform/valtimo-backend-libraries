@@ -69,8 +69,9 @@ class DocumentenApiService(
     }
 
     fun updateColumnOrder(columns: List<DocumentenApiColumn>): List<DocumentenApiColumn> {
+        require(columns.isNotEmpty()) { "Failed to sort empty Document API columns" }
         val existingColumns = documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(columns[0].id.caseDefinitionName)
-        require (existingColumns.size == columns.size) {"Incorrect number of Documenten API columns"}
+        require(existingColumns.size == columns.size) { "Incorrect number of Documenten API columns" }
         columns.forEach { column ->
             val existingColumn = existingColumns.find { it.id.key == column.id.key }
                 ?: throw IllegalStateException("No Documenten API column exists with key '${column.id.key}' for case definition '${column.id.caseDefinitionName}'")
