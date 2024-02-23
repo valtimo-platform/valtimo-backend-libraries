@@ -43,6 +43,7 @@ dependencies {
     implementation project(":zgw:object-management")
     implementation project(":zgw:objecten-api")
     implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
 

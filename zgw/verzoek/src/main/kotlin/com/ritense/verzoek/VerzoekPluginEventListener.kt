@@ -41,6 +41,7 @@ import com.ritense.verzoek.domain.VerzoekProperties
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import java.net.URI
+import org.springframework.transaction.annotation.Transactional
 
 open class VerzoekPluginEventListener(
     private val pluginService: PluginService,
@@ -51,6 +52,7 @@ open class VerzoekPluginEventListener(
     private val objectMapper: ObjectMapper,
 ) {
 
+    @Transactional
     @RunWithoutAuthorization
     @EventListener(NotificatiesApiNotificationReceivedEvent::class)
     open fun createZaakFromNotificatie(event: NotificatiesApiNotificationReceivedEvent) {
