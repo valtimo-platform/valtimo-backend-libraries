@@ -34,5 +34,26 @@
                 "x-queue-type": "quorum"
             }
         }
+    ],
+    "exchanges": [
+        {
+            "name": "valtimo-events",
+            "vhost": "/",
+            "type": "fanout",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        }
+    ],
+    "bindings": [
+        {
+            "source": "valtimo-events",
+            "vhost": "/",
+            "destination": "valtimo-audit",
+            "destination_type": "queue",
+            "routing_key": "",
+            "arguments": {}
+        }
     ]
 }
