@@ -40,8 +40,8 @@ import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
-import java.net.URI
 import org.springframework.transaction.annotation.Transactional
+import java.net.URI
 
 open class VerzoekPluginEventListener(
     private val pluginService: PluginService,
