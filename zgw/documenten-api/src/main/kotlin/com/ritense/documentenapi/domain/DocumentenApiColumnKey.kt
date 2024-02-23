@@ -16,21 +16,21 @@
 
 package com.ritense.documentenapi.domain
 
-import jakarta.persistence.Column
-import jakarta.persistence.EmbeddedId
-import jakarta.persistence.Entity
-import jakarta.persistence.Table
+enum class DocumentenApiColumnKey {
+    IDENTIFICATIE,
+    BRONORGANISATIE,
+    CREATIEDATUM,
+    TITEL,
+    VERTROUWELIJKHEIDAANDUIDING,
+    AUTEUR,
+    STATUS,
+    FORMAAT,
+    TAAL,
+    VERSIE,
+    BESTANDSNAAM,
+    BESTANDSOMVANG,
+    BESCHRIJVING,
+    INFORMATIEOBJECTTYPE,
+    LOCKED
+}
 
-@Entity
-@Table(name = "documenten_api_column")
-data class DocumentenApiColumn(
-
-    @EmbeddedId
-    val id: DocumentenApiColumnId,
-
-    @Column(name = "column_order")
-    val order: Int = 0,
-
-    @Column(name = "enabled")
-    val enabled: Boolean = true
-)

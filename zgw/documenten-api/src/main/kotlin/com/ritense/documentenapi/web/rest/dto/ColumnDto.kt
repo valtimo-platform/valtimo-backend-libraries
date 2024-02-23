@@ -18,20 +18,21 @@ package com.ritense.documentenapi.web.rest.dto
 
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 
 data class ColumnDto(
     val key: String,
     val enabled: Boolean,
 ) {
-    fun toEntity(caseDefinitionName: String, order: Int) : DocumentenApiColumn = DocumentenApiColumn(
-        id = DocumentenApiColumnId(caseDefinitionName, key),
+    fun toEntity(caseDefinitionName: String, order: Int = 0): DocumentenApiColumn = DocumentenApiColumn(
+        id = DocumentenApiColumnId(caseDefinitionName, DocumentenApiColumnKey.valueOf(key.uppercase())),
         order = order,
         enabled = enabled
     )
 
     companion object {
         fun of(column: DocumentenApiColumn): ColumnDto = ColumnDto(
-            key = column.id.key,
+            key = column.id.key.name.lowercase(),
             enabled = column.enabled,
         )
     }

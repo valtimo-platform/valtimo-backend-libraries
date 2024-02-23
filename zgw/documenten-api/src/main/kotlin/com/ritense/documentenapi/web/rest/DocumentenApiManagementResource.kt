@@ -16,9 +16,6 @@
 
 package com.ritense.documentenapi.web.rest
 
-import com.ritense.document.domain.RelatedFile
-import com.ritense.documentenapi.domain.DocumentenApiColumn
-import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.web.rest.dto.ColumnDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -48,9 +45,9 @@ class DocumentenApiManagementResource(
     fun updateColumnOrder(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @RequestBody columnDtos: List<ColumnDto>,
-    ): ResponseEntity<List<DocumentenApiColumn>> {
+    ): ResponseEntity<List<ColumnDto>> {
         val columns = columnDtos.mapIndexed { index, columnDto -> columnDto.toEntity(caseDefinitionName, index) }
-        return ResponseEntity.ok(documentenApiService.updateColumnOrder(columns))
+        return ResponseEntity.ok(documentenApiService.updateColumnOrder(columns).map { ColumnDto.of(it) })
     }
 
     @PutMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column/{columnKey}")
@@ -58,10 +55,9 @@ class DocumentenApiManagementResource(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @PathVariable(name = "columnKey") columnKey: String,
         @RequestBody column: ColumnDto,
-    ): ResponseEntity<RelatedFile> {
+    ): ResponseEntity<ColumnDto> {
         require(column.key == columnKey)
-        return ResponseEntity.ok(
-            documentenApiService.updateColumn(DocumentenApiColumnId(caseDefinitionName, columnKey), column.enabled)
-        )
+        val updatedColumn = documentenApiService.updateColumn(column.toEntity(caseDefinitionName))
+        return ResponseEntity.ok(ColumnDto.of(updatedColumn))
     }
 }

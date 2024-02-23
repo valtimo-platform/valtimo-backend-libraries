@@ -18,10 +18,16 @@ package com.ritense.documentenapi.repository
 
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface DocumentenApiColumnRepository : JpaRepository<DocumentenApiColumn, DocumentenApiColumnId> {
 
-    fun findByIdCaseDefinitionName(caseDefinitionName: String, key: String): DocumentenApiColumn?
-    fun findAllByIdCaseDefinitionName(caseDefinitionName: String): List<DocumentenApiColumn>
+    fun findByIdCaseDefinitionNameAndIdKey(
+        caseDefinitionName: String,
+        key: DocumentenApiColumnKey
+    ): DocumentenApiColumn?
+
+    fun findAllByIdCaseDefinitionNameOrderByOrder(caseDefinitionName: String): List<DocumentenApiColumn>
+    fun countAllByIdCaseDefinitionName(caseDefinitionName: String): Long
 }

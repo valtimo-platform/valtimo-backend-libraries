@@ -65,16 +65,27 @@ class DocumentenApiService(
     }
 
     fun getColumns(caseDefinitionName: String): List<DocumentenApiColumn> {
-        return documentenApiColumnRepository.findAllByIdCaseDefinitionName(caseDefinitionName)
+        return documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(caseDefinitionName)
     }
 
     fun updateColumnOrder(columns: List<DocumentenApiColumn>): List<DocumentenApiColumn> {
+        val existingColumns = documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(columns[0].id.caseDefinitionName)
+        require (existingColumns.size == columns.size) {"Incorrect number of Documenten API columns"}
         columns.forEach { column ->
-            val existingColumn = documentenApiColumnRepository.findByIdCaseDefinitionName(column.id.key, column.id.caseDefinitionName)
+            val existingColumn = existingColumns.find { it.id.key == column.id.key }
                 ?: throw IllegalStateException("No Documenten API column exists with key '${column.id.key}' for case definition '${column.id.caseDefinitionName}'")
-            require(column.enabled == existingColumn.enabled) { "Documenten API columns don't match" }
+            require(column.enabled == existingColumn.enabled) { "Error in Documenten API column with key '${column.id.key}'" }
         }
         return documentenApiColumnRepository.saveAll(columns)
+    }
+
+    fun updateColumn(column: DocumentenApiColumn): DocumentenApiColumn {
+        val order = documentenApiColumnRepository.findByIdCaseDefinitionNameAndIdKey(
+            column.id.caseDefinitionName,
+            column.id.key
+        )?.order ?: documentenApiColumnRepository.countAllByIdCaseDefinitionName(column.id.caseDefinitionName).toInt()
+
+        return documentenApiColumnRepository.save(column.copy(order = order))
     }
 
     private fun getRelatedFiles(informatieObject: DocumentInformatieObject, pluginConfigurationId: String): RelatedFileDto {

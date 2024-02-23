@@ -19,6 +19,7 @@ package com.ritense.documentenapi
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.security.DocumentenApiHttpSecurityConfigurer
 import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.documentenapi.service.DocumentenApiService
@@ -31,16 +32,19 @@ import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
+import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.core.Ordered
 import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.web.reactive.function.client.WebClient
 import javax.sql.DataSource
 
 @AutoConfiguration
+@EnableJpaRepositories(basePackages = ["com.ritense.documentenapi.repository"])
+@EntityScan("com.ritense.documentenapi.domain")
 class DocumentenApiAutoConfiguration {
 
     @Bean
@@ -82,8 +86,9 @@ class DocumentenApiAutoConfiguration {
     fun documentenApiService(
         pluginService: PluginService,
         catalogiService: CatalogiService,
+        documentenApiColumnRepository: DocumentenApiColumnRepository,
     ): DocumentenApiService {
-        return DocumentenApiService(pluginService, catalogiService)
+        return DocumentenApiService(pluginService, catalogiService, documentenApiColumnRepository)
     }
 
     @Bean

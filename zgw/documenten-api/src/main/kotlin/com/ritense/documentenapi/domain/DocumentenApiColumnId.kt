@@ -19,11 +19,14 @@ package com.ritense.documentenapi.domain
 import com.ritense.valtimo.contract.domain.AbstractId
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 
 @Embeddable
 data class DocumentenApiColumnId(
     @Column(name = "case_definition_name")
     val caseDefinitionName: String,
     @Column(name = "column_key")
-    val key: String
+    @Enumerated(EnumType.STRING)
+    val key: DocumentenApiColumnKey
 ) : AbstractId<DocumentenApiColumnId>()
