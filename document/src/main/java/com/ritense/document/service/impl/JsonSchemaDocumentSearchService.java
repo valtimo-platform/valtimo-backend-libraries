@@ -23,6 +23,7 @@ import static java.util.stream.Collectors.toMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
+import com.ritense.document.domain.InternalCaseStatus;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
@@ -43,6 +44,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
@@ -86,8 +88,8 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
     private static final Map<String,String> DOCUMENT_FIELD_MAP = Map.of(
         "definitionId.name", "documentDefinitionId.name",
-        "definitionId.version", "documentDefinitionId.key",
-        "internalStatus", "internalStatus.key"
+        "definitionId.version", "documentDefinitionId.key"
+//        "internalStatus", "internalStatus.key"
     );
 
     private final EntityManager entityManager;
@@ -170,7 +172,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
 
         query.select(selectRoot);
         queryWhereBuilder.apply(cb, query, selectRoot);
-        query.orderBy(getOrderBy(cb, selectRoot, pageable.getSort()));
+        query.orderBy(getOrderBy(query, cb, selectRoot, pageable.getSort()));
 
         final TypedQuery<JsonSchemaDocument> typedQuery = entityManager.createQuery(query);
 
@@ -519,6 +521,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     private List<Order> getOrderBy(
+        CriteriaQuery<JsonSchemaDocument> query,
         CriteriaBuilder cb,
         Root<JsonSchemaDocument> root,
         Sort sort
@@ -539,15 +542,21 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                     ));
                 } else {
                     var docProperty = property.startsWith(CASE_PREFIX) ? property.substring(CASE_PREFIX.length()) : property;
-                    if (DOCUMENT_FIELD_MAP.containsKey(docProperty)) {
-                        docProperty = DOCUMENT_FIELD_MAP.get(docProperty);
+                    if (INTERNAL_STATUS.equals(docProperty)) {
+                        Root<InternalCaseStatus> statusRoot = query.from(InternalCaseStatus.class);
+                        query.where(cb.and(cb.equal(root.get(INTERNAL_STATUS), statusRoot.get("id"))));
+                        expression = statusRoot.get("order");
+                    } else {
+                        if (DOCUMENT_FIELD_MAP.containsKey(docProperty)) {
+                            docProperty = DOCUMENT_FIELD_MAP.get(docProperty);
+                        }
+                        String[] split = docProperty.split("\\.");
+                        Path<?> path = root.get(split[0]);
+                        for (int i = 1; i < split.length; i++) {
+                            path = path.get(split[i]);
+                        }
+                        expression = path;
                     }
-                    String[] split = docProperty.split("\\.");
-                    Path<?> path = root.get(split[0]);
-                    for (int i = 1; i < split.length; i++) {
-                        path = path.get(split[i]);
-                    }
-                    expression = path;
                 }
 
                 return order.getDirection().isAscending() ? cb.asc(expression) : cb.desc(expression);
