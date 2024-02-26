@@ -21,6 +21,8 @@ import java.time.Duration
 
 @ConfigurationProperties(prefix = "valtimo.outbox.publisher.rabbitmq")
 data class RabbitOutboxConfigurationProperties (
-    val routingKey: String,
+    val exchange: String? = null,
+    val routingKey: String? = null,
     val deliveryTimeout: Duration = Duration.ofSeconds(1)
 )
+
