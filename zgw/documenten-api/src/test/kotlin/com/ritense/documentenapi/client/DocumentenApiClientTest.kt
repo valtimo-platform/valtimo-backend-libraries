@@ -568,7 +568,8 @@ internal class DocumentenApiClientTest {
             }
         """.trimIndent()
 
-        mockDocumentenApi.enqueue(mockResponse(responseBody))
+        mockDocumentenApi.enqueue(mockResponse(responseBody)) // GET
+        mockDocumentenApi.enqueue(mockResponse(responseBody)) // PATCH
 
         client.modifyInformatieObject(
             TestAuthentication(),
@@ -587,6 +588,7 @@ internal class DocumentenApiClientTest {
             )
         )
 
+        mockDocumentenApi.takeRequest() // Ignore the GET
         val recordedRequest = mockDocumentenApi.takeRequest()
 
         assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
@@ -607,14 +609,101 @@ internal class DocumentenApiClientTest {
         assertEquals(true, requestBody.get("indicatieGebruiksrecht").asBoolean())
 
         //verify reqyest sent
-        verify(outboxService, times(1)).send(eventCapture.capture())
-        assertIs<DocumentUpdated>(eventCapture.firstValue.get())
-        val event = eventCapture.firstValue.get() as DocumentUpdated
-        assertTrue(event.resultId.toString().endsWith("informatie-object/123"))
-        assertEquals("com.ritense.documentenapi.client.DocumentInformatieObject", event.resultType)
-        assertEquals("com.ritense.gzac.drc.document.updated", event.type)
-        val eventResult: DocumentInformatieObject = objectMapper.readValue(event.result.toString())
+
+        verify(outboxService, times(2)).send(eventCapture.capture())
+        val events = eventCapture.allValues.map { it.get() }
+        val viewedEvent = events.single { it is DocumentInformatieObjectViewed }
+        assertTrue(viewedEvent.resultId.toString().endsWith("informatie-object/123"))
+        assertEquals("com.ritense.documentenapi.client.DocumentInformatieObject", viewedEvent.resultType)
+        assertEquals("com.ritense.gzac.drc.enkelvoudiginformatieobject.viewed", viewedEvent.type)
+
+        val updatedEvent = events.single { it is DocumentUpdated }
+        assertTrue(updatedEvent.resultId.toString().endsWith("informatie-object/123"))
+        assertEquals("com.ritense.documentenapi.client.DocumentInformatieObject", updatedEvent.resultType)
+        assertEquals("com.ritense.gzac.drc.document.updated", updatedEvent.type)
+        val eventResult: DocumentInformatieObject = objectMapper.readValue(updatedEvent.result.toString())
         assertEquals("auteur", eventResult.auteur)
+    }
+
+    @Test
+    fun `should not send patch document when document status is definitief`() {
+        val webclientBuilder = WebClient.builder()
+        val client = DocumentenApiClient(webclientBuilder, outboxService, objectMapper, mock())
+        val eventCapture = argumentCaptor<Supplier<BaseEvent>>()
+
+        val documentInformatieObjectUrl = mockDocumentenApi.url("/informatie-object/123").toUri()
+        val responseBody = """
+            {
+              "url": "$documentInformatieObjectUrl",
+              "identificatie": "identificatie",
+              "bronorganisatie": "621248691",
+              "creatiedatum": "2019-08-24",
+              "titel": "titel",
+              "vertrouwelijkheidaanduiding": "openbaar",
+              "auteur": "auteur",
+              "status": "definitief",
+              "formaat": "formaat",
+              "taal": "nl",
+              "versie": 4,
+              "beginRegistratie": "2019-08-24T14:15:22Z",
+              "bestandsnaam": "bestandsnaam",
+              "inhoud": "http://example.com/inhoud",
+              "bestandsomvang": 123,
+              "link": "http://example.com/link",
+              "beschrijving": "beschrijving",
+              "ontvangstdatum": "2019-08-23",
+              "verzenddatum": "2019-08-22",
+              "indicatieGebruiksrecht": true,
+              "ondertekening": {
+                "soort": "analoog",
+                "datum": "2019-08-21"
+              },
+              "integriteit": {
+                "algoritme": "crc_16",
+                "waarde": "waarde",
+                "datum": "2019-08-20"
+              },
+              "informatieobjecttype": "http://example.com",
+              "locked": true
+            }
+        """.trimIndent()
+
+        mockDocumentenApi.enqueue(mockResponse(responseBody))
+
+        assertThrows<IllegalStateException> {
+            client.modifyInformatieObject(
+                TestAuthentication(),
+                documentInformatieObjectUrl,
+                PatchDocumentRequest(
+                    creatiedatum = LocalDate.of(2020, 5, 3),
+                    titel = "titel",
+                    auteur = "auteur",
+                    status = DocumentStatusType.DEFINITIEF,
+                    taal = "taal",
+                    bestandsnaam = "test",
+                    beschrijving = "beschrijving",
+                    ontvangstdatum = LocalDate.of(2020, 5, 3),
+                    verzenddatum = LocalDate.of(2020, 5, 3),
+                    indicatieGebruiksrecht = true
+                )
+            )
+        }
+
+        val recordedRequest = mockDocumentenApi.takeRequest()
+
+        assertEquals("Bearer test", recordedRequest.getHeader("Authorization"))
+        assertEquals("/informatie-object/123", recordedRequest.path)
+        assertEquals("GET", recordedRequest.method)
+
+        //verify request sent
+        verify(outboxService, times(1)).send(eventCapture.capture())
+        val events = eventCapture.allValues.map { it.get() }
+        val viewedEvent = events.single { it is DocumentInformatieObjectViewed }
+        assertTrue(viewedEvent.resultId.toString().endsWith("informatie-object/123"))
+        assertEquals("com.ritense.documentenapi.client.DocumentInformatieObject", viewedEvent.resultType)
+        assertEquals("com.ritense.gzac.drc.enkelvoudiginformatieobject.viewed", viewedEvent.type)
+
+        assertTrue(events.none { it is DocumentUpdated })
     }
 
     @Test
