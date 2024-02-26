@@ -19,30 +19,19 @@ package com.ritense.valtimo.config;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import com.ritense.valtimo.contract.json.MapperSingleton;
-import com.ritense.valtimo.contract.json.serializer.PageSerializer;
-import java.time.format.DateTimeFormatter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Page;
 
 @Configuration
 public class JacksonConfiguration {
 
-    public static final String DATE_TIME_FORMAT = MapperSingleton.DATE_TIME_FORMAT;
-
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
-        return builder -> {
-            builder.simpleDateFormat(DATE_TIME_FORMAT);
-            builder.serializers(new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
-            builder.defaultViewInclusion(false);
-            builder.serializerByType(Page.class, new PageSerializer());
-        };
+        return MapperSingleton.INSTANCE.getCustomizer();
     }
 
     /**
