@@ -19,7 +19,7 @@ package com.ritense.outbox.rabbitmq
 import com.ritense.outbox.OutboxMessage
 import com.ritense.outbox.publisher.MessagePublishingFailed
 import com.ritense.outbox.rabbitmq.config.RabbitOutboxConfigurationProperties
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -31,23 +31,48 @@ import java.util.UUID
 
 class RabbitMessagePublisherIntTest {
     @Nested
-    inner class Default @Autowired constructor(
+    inner class RoutingKey @Autowired constructor(
         val springCloudMessagePublisher: RabbitMessagePublisher,
         val rabbitTemplate: RabbitTemplate,
         val configurationProperties: RabbitOutboxConfigurationProperties,
         val rabbitAdmin: RabbitAdmin
     ) : BaseIntegrationTest() {
         @Test
-        fun `should send message to rabbitmq`() {
-            rabbitAdmin.purgeQueue(configurationProperties.routingKey)
+        fun `should send message to rabbitmq queue`() {
+            rabbitAdmin.purgeQueue(configurationProperties.routingKey!!)
 
             val uuid = UUID.randomUUID().toString()
             springCloudMessagePublisher.publish(
                 OutboxMessage(message = uuid)
             )
 
-            val msg = rabbitTemplate.receive(configurationProperties.routingKey)
-            Assertions.assertThat(msg.body.toString(Charsets.UTF_8)).isEqualTo(uuid)
+            val msg = rabbitTemplate.receive(configurationProperties.routingKey!!)
+            assertThat(msg!!.body.toString(Charsets.UTF_8)).isEqualTo(uuid)
+        }
+    }
+
+    @Nested
+    @ActiveProfiles("exchange")
+    inner class Exchange @Autowired constructor(
+        val springCloudMessagePublisher: RabbitMessagePublisher,
+        val rabbitTemplate: RabbitTemplate,
+        val configurationProperties: RabbitOutboxConfigurationProperties,
+        val rabbitAdmin: RabbitAdmin
+    ) : BaseIntegrationTest() {
+        @Test
+        fun `should send message to rabbitmq queue via exchange`() {
+            assertThat(configurationProperties.exchange).isNotEmpty()
+            assertThat(configurationProperties.routingKey).isNullOrEmpty()
+
+            rabbitAdmin.purgeQueue("valtimo-audit")
+
+            val uuid = UUID.randomUUID().toString()
+            springCloudMessagePublisher.publish(
+                OutboxMessage(message = uuid)
+            )
+
+            val msg = rabbitTemplate.receive("valtimo-audit")
+            assertThat(msg!!.body.toString(Charsets.UTF_8)).isEqualTo(uuid)
         }
     }
 
@@ -65,7 +90,7 @@ class RabbitMessagePublisherIntTest {
                 )
             }
 
-            Assertions.assertThat(ex.message).contains("NO_ROUTE")
+            assertThat(ex.message).contains("NO_ROUTE")
         }
     }
 }
