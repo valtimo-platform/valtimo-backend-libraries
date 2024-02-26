@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.rabbitmq.config
+package com.ritense.documentenapi.domain
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import java.time.Duration
-
-@ConfigurationProperties(prefix = "valtimo.outbox.publisher.rabbitmq")
-data class RabbitOutboxConfigurationProperties (
-    val exchange: String? = null,
-    val routingKey: String? = null,
-    val deliveryTimeout: Duration = Duration.ofSeconds(1)
-)
+enum class DocumentenApiColumnKey {
+    IDENTIFICATIE,
+    BRONORGANISATIE,
+    CREATIEDATUM,
+    TITEL,
+    VERTROUWELIJKHEIDAANDUIDING,
+    AUTEUR,
+    STATUS,
+    FORMAAT,
+    TAAL,
+    VERSIE,
+    BESTANDSNAAM,
+    BESTANDSOMVANG,
+    BESCHRIJVING,
+    INFORMATIEOBJECTTYPE,
+    LOCKED
+}
 

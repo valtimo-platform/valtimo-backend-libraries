@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-package com.ritense.outbox.rabbitmq.config
+package com.ritense.documentenapi.domain
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import java.time.Duration
+import jakarta.persistence.Column
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
 
-@ConfigurationProperties(prefix = "valtimo.outbox.publisher.rabbitmq")
-data class RabbitOutboxConfigurationProperties (
-    val exchange: String? = null,
-    val routingKey: String? = null,
-    val deliveryTimeout: Duration = Duration.ofSeconds(1)
+@Entity
+@Table(name = "documenten_api_column")
+data class DocumentenApiColumn(
+
+    @EmbeddedId
+    val id: DocumentenApiColumnId,
+
+    @Column(name = "column_order")
+    val order: Int = 0,
+
+    @Column(name = "enabled")
+    val enabled: Boolean = true
 )
-

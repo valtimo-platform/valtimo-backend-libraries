@@ -9,7 +9,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.springframework.amqp.core.Message
+import org.springframework.amqp.core.MessageBuilder
 import org.springframework.amqp.core.ReturnedMessage
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.connection.CorrelationData
@@ -54,8 +54,8 @@ class RabbitMessagePublisherTest {
         val publisher = RabbitMessagePublisher(rabbitTemplate, "test")
 
         val ex = assertThrows<MessagePublishingFailed> {
-            whenever(rabbitTemplate.convertAndSend(eq("test"), any<Message>(), any<CorrelationData>())).thenAnswer { answer ->
-                val correlationData = answer.getArgument(2, CorrelationData::class.java)
+            whenever(rabbitTemplate.convertAndSend(any<String>(), eq("test"), any<String>(), any<CorrelationData>())).thenAnswer { answer ->
+                val correlationData = answer.getArgument(3, CorrelationData::class.java)
                 correlationData.future.complete(CorrelationData.Confirm(false, "reasons"))
             }
 
@@ -73,9 +73,9 @@ class RabbitMessagePublisherTest {
         val publisher = RabbitMessagePublisher(rabbitTemplate, "test")
 
         val ex = assertThrows<MessagePublishingFailed> {
-            whenever(rabbitTemplate.convertAndSend(eq("test"), any<Message>(), any<CorrelationData>())).thenAnswer { answer ->
-                val message = answer.getArgument(1, Message::class.java)
-                val correlationData = answer.getArgument(2, CorrelationData::class.java)
+            whenever(rabbitTemplate.convertAndSend(any<String>(), eq("test"), any<String>(), any<CorrelationData>())).thenAnswer { answer ->
+                val message = MessageBuilder.withBody(answer.getArgument(2, String::class.java).toByteArray()).build()
+                val correlationData = answer.getArgument(3, CorrelationData::class.java)
                 correlationData.returned = ReturnedMessage(
                     message, 0, "returned_message_not_null", "", "")
                 correlationData.future.complete(CorrelationData.Confirm(true, "reasons"))

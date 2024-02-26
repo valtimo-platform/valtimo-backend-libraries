@@ -16,6 +16,7 @@
 
 package com.ritense.documentenapi.security
 
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.DELETE
@@ -33,6 +34,10 @@ class DocumentenApiHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(GET, "/api/v1/documenten-api/{pluginConfigurationId}/files/{documentId}/download")).authenticated()
                     .requestMatchers(antMatcher(PUT, "/api/v1/documenten-api/{pluginConfigurationId}/files/{documentId}")).authenticated()
                     .requestMatchers(antMatcher(DELETE, "/api/v1/documenten-api/{pluginConfigurationId}/files/{documentId}")).authenticated()
+
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column/{key}")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

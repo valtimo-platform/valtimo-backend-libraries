@@ -37,7 +37,8 @@ class RabbitOutboxAutoconfiguration {
         return RabbitMessagePublisher(
             rabbitTemplate,
             configurationProperties.routingKey,
-            configurationProperties.deliveryTimeout
+            configurationProperties.deliveryTimeout,
+            configurationProperties.exchange
         )
     }
 }
