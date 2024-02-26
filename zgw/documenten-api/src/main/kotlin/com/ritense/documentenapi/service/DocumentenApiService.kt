@@ -21,6 +21,8 @@ import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.PatchDocumentRequest
+import com.ritense.documentenapi.domain.DocumentenApiColumn
+import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
 import com.ritense.plugin.service.PluginService
@@ -33,6 +35,7 @@ import java.util.UUID
 class DocumentenApiService(
     private val pluginService: PluginService,
     private val catalogiService: CatalogiService,
+    private val documentenApiColumnRepository: DocumentenApiColumnRepository,
 ) {
     fun downloadInformatieObject(pluginConfigurationId: String, documentId: String): InputStream {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
@@ -59,6 +62,31 @@ class DocumentenApiService(
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentId)
         documentApiPlugin.deleteInformatieObject(documentUrl)
+    }
+
+    fun getColumns(caseDefinitionName: String): List<DocumentenApiColumn> {
+        return documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(caseDefinitionName)
+    }
+
+    fun updateColumnOrder(columns: List<DocumentenApiColumn>): List<DocumentenApiColumn> {
+        require(columns.isNotEmpty()) { "Failed to sort empty Document API columns" }
+        val existingColumns = documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(columns[0].id.caseDefinitionName)
+        require(existingColumns.size == columns.size) { "Incorrect number of Documenten API columns" }
+        columns.forEach { column ->
+            val existingColumn = existingColumns.find { it.id.key == column.id.key }
+                ?: throw IllegalStateException("No Documenten API column exists with key '${column.id.key}' for case definition '${column.id.caseDefinitionName}'")
+            require(column.enabled == existingColumn.enabled) { "Error in Documenten API column with key '${column.id.key}'" }
+        }
+        return documentenApiColumnRepository.saveAll(columns)
+    }
+
+    fun updateColumn(column: DocumentenApiColumn): DocumentenApiColumn {
+        val order = documentenApiColumnRepository.findByIdCaseDefinitionNameAndIdKey(
+            column.id.caseDefinitionName,
+            column.id.key
+        )?.order ?: documentenApiColumnRepository.countAllByIdCaseDefinitionName(column.id.caseDefinitionName).toInt()
+
+        return documentenApiColumnRepository.save(column.copy(order = order))
     }
 
     private fun getRelatedFiles(informatieObject: DocumentInformatieObject, pluginConfigurationId: String): RelatedFileDto {

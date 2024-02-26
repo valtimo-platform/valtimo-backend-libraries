@@ -1,0 +1,80 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright 2015-2024 Ritense BV, the Netherlands.
+  ~
+  ~ Licensed under EUPL, Version 1.2 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="1" author="Ritense">
+        <createTable tableName="documenten_api_column">
+            <column name="case_definition_name" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="column_key" type="varchar(256)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="column_order" type="${intType}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="Ritense">
+        <sql>
+            INSERT INTO documenten_api_column (case_definition_name, column_key, column_order, enabled)
+            SELECT DISTINCT document_definition_name, 'TITEL', 0, true
+            FROM json_schema_document_definition
+        </sql>
+    </changeSet>
+
+    <changeSet id="3" author="Ritense">
+        <sql>
+            INSERT INTO documenten_api_column (case_definition_name, column_key, column_order, enabled)
+            SELECT DISTINCT document_definition_name, 'CREATIEDATUM', 1, true
+            FROM json_schema_document_definition
+        </sql>
+    </changeSet>
+
+    <changeSet id="4" author="Ritense">
+        <sql>
+            INSERT INTO documenten_api_column (case_definition_name, column_key, column_order, enabled)
+            SELECT DISTINCT document_definition_name, 'AUTEUR', 2, true
+            FROM json_schema_document_definition
+        </sql>
+    </changeSet>
+
+    <changeSet id="5" author="Ritense">
+        <sql>
+            INSERT INTO documenten_api_column (case_definition_name, column_key, column_order, enabled)
+            SELECT DISTINCT document_definition_name, 'BESTANDSOMVANG', 3, true
+            FROM json_schema_document_definition
+        </sql>
+    </changeSet>
+
+    <changeSet id="6" author="Ritense">
+        <sql>
+            INSERT INTO documenten_api_column (case_definition_name, column_key, column_order, enabled)
+            SELECT DISTINCT document_definition_name, 'INFORMATIEOBJECTTYPE', 4, true
+            FROM json_schema_document_definition
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
