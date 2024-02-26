@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-class CustomLocalDateTimeDeserializerTest {
+class ZonedLocalDateTimeDeserializerTest {
 
 
     @Test
@@ -52,11 +52,18 @@ class CustomLocalDateTimeDeserializerTest {
         assertThat(result).isEqualTo(LOCAL_DATE_TIME.plusSeconds(offset.totalSeconds.toLong()))
     }
 
+    @Test
+    fun `should deserialize to null`() {
+        val dateTimeString = """"""""
+        val result: LocalDateTime = mapper.readValue(dateTimeString)
+        assertThat(result).isNull()
+    }
+
     companion object {
         private const val DATETIME_STRING = "2024-02-15T14:39:54.746"
         private val LOCAL_DATE_TIME = LocalDateTime.of(2024, 2, 15, 14, 39, 54, 746 * 1000000)
         private val mapper = jacksonMapperBuilder()
-            .addModule(JavaTimeModule().addDeserializer(LocalDateTime::class.java, CustomLocalDateTimeDeserializer()))
+            .addModule(JavaTimeModule().addDeserializer(LocalDateTime::class.java, ZonedLocalDateTimeDeserializer()))
             .build()
     }
 }
