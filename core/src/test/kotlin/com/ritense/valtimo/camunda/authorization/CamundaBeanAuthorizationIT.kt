@@ -20,8 +20,8 @@ import com.ritense.valtimo.BaseIntegrationTest
 import org.camunda.bpm.engine.DecisionService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
-import javax.transaction.Transactional
 import kotlin.test.assertEquals
 
 @Transactional
