@@ -20,6 +20,7 @@ package com.ritense.plugin.autodeployment
 import com.ritense.plugin.BaseIntegrationTest
 import com.ritense.plugin.service.PluginConfigurationSearchParameters
 import com.ritense.plugin.service.PluginService
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import kotlin.test.assertEquals
@@ -39,6 +40,14 @@ class PluginAutoDeploymentEventListenerIntTest: BaseIntegrationTest() {
         assertEquals("https://www.google.com", result[0].properties?.get("property1")?.textValue())
         assertTrue (result[0].properties?.get("property2")?.booleanValue()!!)
         assertEquals(3, result[0].properties?.get("property3")?.intValue())
+    }
+
+    @Test
+    fun `should deploy plugin configuration with null property`(){
+        val result = pluginService.getPluginConfigurations(
+            PluginConfigurationSearchParameters(pluginConfigurationTitle = "auto deployment test plugin with null property")
+        )
+        assertNull(result[0].properties!!.get("property1")!!.textValue())
     }
 
 

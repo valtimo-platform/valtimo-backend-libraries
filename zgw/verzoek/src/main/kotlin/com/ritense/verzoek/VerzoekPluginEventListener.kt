@@ -40,6 +40,7 @@ import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
+import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 
 open class VerzoekPluginEventListener(
@@ -51,6 +52,7 @@ open class VerzoekPluginEventListener(
     private val objectMapper: ObjectMapper,
 ) {
 
+    @Transactional
     @RunWithoutAuthorization
     @EventListener(NotificatiesApiNotificationReceivedEvent::class)
     open fun createZaakFromNotificatie(event: NotificatiesApiNotificationReceivedEvent) {
