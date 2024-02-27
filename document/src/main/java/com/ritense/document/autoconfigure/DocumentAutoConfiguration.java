@@ -34,6 +34,7 @@ import com.ritense.document.service.DocumentSearchService;
 import com.ritense.document.service.DocumentSequenceGeneratorService;
 import com.ritense.document.service.DocumentService;
 import com.ritense.document.service.DocumentStatisticService;
+import com.ritense.document.service.InternalCaseStatusService;
 import com.ritense.document.service.SearchFieldService;
 import com.ritense.document.service.UndeployDocumentDefinitionService;
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionSequenceGeneratorService;
@@ -81,7 +82,8 @@ public class DocumentAutoConfiguration {
         final AuthorizationService authorizationService,
         final ApplicationEventPublisher applicationEventPublisher,
         final OutboxService outboxService,
-        final ObjectMapper objectMapper
+        final ObjectMapper objectMapper,
+        final InternalCaseStatusService internalCaseStatusService
     ) {
         return new JsonSchemaDocumentService(
             documentRepository,
@@ -92,7 +94,8 @@ public class DocumentAutoConfiguration {
             authorizationService,
             applicationEventPublisher,
             outboxService,
-            objectMapper
+            objectMapper,
+            internalCaseStatusService
         );
     }
 

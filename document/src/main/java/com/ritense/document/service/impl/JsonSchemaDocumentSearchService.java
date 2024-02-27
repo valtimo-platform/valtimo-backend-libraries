@@ -23,7 +23,6 @@ import static java.util.stream.Collectors.toMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
-import com.ritense.document.domain.InternalCaseStatus;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.AdvancedSearchRequest;
@@ -44,7 +43,6 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
@@ -86,10 +84,10 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private static final String DOC_PREFIX = "doc:";
     private static final String CASE_PREFIX = "case:";
 
-    private static final Map<String,String> DOCUMENT_FIELD_MAP = Map.of(
+    private static final Map<String, String> DOCUMENT_FIELD_MAP = Map.of(
         "definitionId.name", "documentDefinitionId.name",
-        "definitionId.version", "documentDefinitionId.key"
-//        "internalStatus", "internalStatus.key"
+        "definitionId.version", "documentDefinitionId.key",
+        "internalStatus", "internalStatus.id.key"
     );
 
     private final EntityManager entityManager;
@@ -173,7 +171,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
         query.select(selectRoot);
         queryWhereBuilder.apply(cb, query, selectRoot);
         query.orderBy(getOrderBy(query, cb, selectRoot, pageable.getSort()));
-
+        query.groupBy(selectRoot.get("id"));
         final TypedQuery<JsonSchemaDocument> typedQuery = entityManager.createQuery(query);
 
         if (pageable.isPaged()) {
@@ -262,7 +260,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
             predicates.add(getOtherFilersPredicate(cb, documentRoot, searchRequest));
         }
 
-        if(searchRequest.getStatusFilter() != null && !searchRequest.getStatusFilter().isEmpty()) {
+        if (searchRequest.getStatusFilter() != null && !searchRequest.getStatusFilter().isEmpty()) {
             predicates.add(getStatusFilterPredicate(cb, documentRoot, searchRequest.getStatusFilter()));
         }
         query.where(predicates.toArray(Predicate[]::new));
@@ -363,9 +361,9 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     private Predicate getStatusFilterPredicate(CriteriaBuilder cb, Root<JsonSchemaDocument> documentRoot, Set<String> statusFilter) {
-        Path<String> statusField = documentRoot.get(INTERNAL_STATUS).get(INTERNAL_STATUS_KEY);
+        Path<String> statusField = documentRoot.get(INTERNAL_STATUS).get("id").get(INTERNAL_STATUS_KEY);
         Predicate[] predicates = statusFilter.stream().map(status -> {
-                if(status == null || status.isEmpty()) {
+                if (status == null || status.isEmpty()) {
                     return cb.isNull(statusField);
                 } else {
                     return cb.equal(statusField, status);
@@ -542,21 +540,15 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                     ));
                 } else {
                     var docProperty = property.startsWith(CASE_PREFIX) ? property.substring(CASE_PREFIX.length()) : property;
-                    if (INTERNAL_STATUS.equals(docProperty)) {
-                        Root<InternalCaseStatus> statusRoot = query.from(InternalCaseStatus.class);
-                        query.where(cb.and(cb.equal(root.get(INTERNAL_STATUS), statusRoot.get("id"))));
-                        expression = statusRoot.get("order");
-                    } else {
-                        if (DOCUMENT_FIELD_MAP.containsKey(docProperty)) {
-                            docProperty = DOCUMENT_FIELD_MAP.get(docProperty);
-                        }
-                        String[] split = docProperty.split("\\.");
-                        Path<?> path = root.get(split[0]);
-                        for (int i = 1; i < split.length; i++) {
-                            path = path.get(split[i]);
-                        }
-                        expression = path;
+                    if (DOCUMENT_FIELD_MAP.containsKey(docProperty)) {
+                        docProperty = DOCUMENT_FIELD_MAP.get(docProperty);
                     }
+                    String[] split = docProperty.split("\\.");
+                    Path<?> path = root.get(split[0]);
+                    for (int i = 1; i < split.length; i++) {
+                        path = path.get(split[i]);
+                    }
+                    expression = path;
                 }
 
                 return order.getDirection().isAscending() ? cb.asc(expression) : cb.desc(expression);

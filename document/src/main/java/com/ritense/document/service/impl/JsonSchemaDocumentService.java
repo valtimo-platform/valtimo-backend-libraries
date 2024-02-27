@@ -38,6 +38,7 @@ import com.ritense.authorization.request.EntityAuthorizationRequest;
 import com.ritense.authorization.role.Role;
 import com.ritense.authorization.specification.AuthorizationSpecification;
 import com.ritense.document.domain.Document;
+import com.ritense.document.domain.InternalCaseStatus;
 import com.ritense.document.domain.InternalCaseStatusId;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.JsonDocumentContent;
@@ -65,6 +66,7 @@ import com.ritense.document.exception.ModifyDocumentException;
 import com.ritense.document.exception.UnknownDocumentDefinitionException;
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository;
 import com.ritense.document.service.DocumentService;
+import com.ritense.document.service.InternalCaseStatusService;
 import com.ritense.outbox.OutboxService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
@@ -109,6 +111,8 @@ public class JsonSchemaDocumentService implements DocumentService {
 
     private final ObjectMapper objectMapper;
 
+    private final InternalCaseStatusService internalCaseStatusService;
+
     public JsonSchemaDocumentService(
         JsonSchemaDocumentRepository documentRepository,
         JsonSchemaDocumentDefinitionService documentDefinitionService,
@@ -118,7 +122,8 @@ public class JsonSchemaDocumentService implements DocumentService {
         AuthorizationService authorizationService,
         ApplicationEventPublisher applicationEventPublisher,
         OutboxService outboxService,
-        ObjectMapper objectMapper
+        ObjectMapper objectMapper,
+        InternalCaseStatusService internalCaseStatusService
     ) {
         this.documentRepository = documentRepository;
         this.documentDefinitionService = documentDefinitionService;
@@ -129,6 +134,7 @@ public class JsonSchemaDocumentService implements DocumentService {
         this.applicationEventPublisher = applicationEventPublisher;
         this.outboxService = outboxService;
         this.objectMapper = objectMapper;
+        this.internalCaseStatusService = internalCaseStatusService;
     }
 
     @Override
@@ -646,7 +652,11 @@ public class JsonSchemaDocumentService implements DocumentService {
             )
         );
 
-        document.setInternalStatus(internalStatusKey);
+        var internalCaseStatus = internalStatusKey != null ? internalCaseStatusService.get(
+            document.definitionId().name(),
+            internalStatusKey
+        ) : null;
+        document.setInternalStatus(internalCaseStatus);
 
         documentRepository.save(document);
 
