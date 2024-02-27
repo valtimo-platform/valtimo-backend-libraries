@@ -219,6 +219,63 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    fun `should support copying the root object in the Verzoek mapping`() {
+        createPluginConfiguration(
+            "verzoek",
+            """
+            {
+              "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
+              "processToStart": "verzoek-process",
+              "rsin": "$rsin",
+              "verzoekProperties": [{
+                "type": "objection",
+                "caseDefinitionName": "${documentDefinition.id().name()}",
+                "processDefinitionKey": "objection-process",
+                "objectManagementId": "${objectManagement.id}",
+                "initiatorRoltypeUrl": "$initiatoRolType",
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "specified",
+                "mapping": [{
+                    "source": "",
+                    "target": "doc:/verzoekObject"
+                }]
+              }]
+            }
+            """.trimIndent()
+        )
+        //mocks
+        val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
+        doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
+
+        doReturn(mockObjectenApiPlugin).whenever(pluginService)
+            .createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
+        doReturn(createObjectWrapper(withMetaData = true, verzoekObjectType, true)).whenever(mockObjectenApiPlugin)
+            .getObject(any())
+        //tested method
+        val event = createEvent()
+        verzoekPluginEventListener.createZaakFromNotificatie(event)
+
+        //assertions
+        val processList = processService.createProcessInstanceQuery().processDefinitionKey("verzoek-process").list()
+        assertEquals(1, processList.size)
+        val processVariableMap =
+            processService.createVariableInstanceQuery()
+                .processInstanceIdIn(processList[0].id).list().associate { it.name to it.value }
+        assertEquals(rsin, processVariableMap["RSIN"])
+        assertEquals(zaakTypeUrl, processVariableMap["zaakTypeUrl"])
+        assertEquals(initiatoRolType, processVariableMap["rolTypeUrl"])
+        assertEquals(event.resourceUrl, processVariableMap["verzoekObjectUrl"])
+        assertEquals("bsn", processVariableMap["initiatorType"])
+        assertEquals(bsn, processVariableMap["initiatorValue"])
+
+        val documentInstance = runWithoutAuthorization { documentService.get(processList[0].businessKey) }
+        assertEquals(
+            "John Doe",
+            documentInstance.content().getValueBy(JsonPointer.valueOf("/verzoekObject/name")).get().textValue()
+        )
+    }
+
+    @Test
     fun `should throw exception when data is not present on retrieved object`() {
         createPluginConfiguration(
             "verzoek",
