@@ -24,17 +24,21 @@ import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakResultaatResponse
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusResponse
+import com.ritense.zakenapi.domain.CreateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.PatchZaakRequest
+import com.ritense.zakenapi.domain.UpdateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.domain.ZaakStatus
+import com.ritense.zakenapi.domain.ZaakeigenschapResponse
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
 import com.ritense.zakenapi.domain.ZaakopschortingResponse
 import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolType
 import com.ritense.zakenapi.event.DocumentLinkedToZaak
 import com.ritense.zakenapi.event.ZaakCreated
+import com.ritense.zakenapi.event.ZaakeigenschapCreated
 import com.ritense.zakenapi.event.ZaakInformatieObjectenListed
 import com.ritense.zakenapi.event.ZaakObjectenListed
 import com.ritense.zakenapi.event.ZaakOpschortingUpdated
@@ -45,12 +49,16 @@ import com.ritense.zakenapi.event.ZaakRollenListed
 import com.ritense.zakenapi.event.ZaakStatusCreated
 import com.ritense.zakenapi.event.ZaakStatusViewed
 import com.ritense.zakenapi.event.ZaakViewed
+import com.ritense.zakenapi.event.ZaakeigenschapDeleted
+import com.ritense.zakenapi.event.ZaakeigenschapListed
+import com.ritense.zakenapi.event.ZaakeigenschapUpdated
 import com.ritense.zgw.ClientTools
 import com.ritense.zgw.Page
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.toEntityList
 import java.net.URI
 
 class ZakenApiClient(
@@ -446,6 +454,127 @@ class ZakenApiClient(
         }
 
         return result?.body!!
+    }
+
+    fun createZaakeigenschap(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        request: CreateZaakeigenschapRequest,
+    ): ZaakeigenschapResponse {
+        validateUrlHost(baseUrl, request.zaak)
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .post()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, request.zaak)
+                    .pathSegment("zaakeigenschappen")
+                    .build()
+            }
+            .headers(this::defaultHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .retrieve()
+            .toEntity(ZaakeigenschapResponse::class.java)
+            .block()
+
+        if (result?.statusCode?.is2xxSuccessful == true) {
+            outboxService.send {
+                ZaakeigenschapCreated(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
+        return result?.body!!
+    }
+
+    fun updateZaakeigenschap(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        zaakeigenschapUrl: URI,
+        request: UpdateZaakeigenschapRequest,
+    ): ZaakeigenschapResponse {
+        validateUrlHost(baseUrl, zaakeigenschapUrl)
+        validateUrlHost(baseUrl, request.zaak)
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .put()
+            .uri(zaakeigenschapUrl)
+            .headers(this::defaultHeaders)
+            .contentType(MediaType.APPLICATION_JSON)
+            .bodyValue(request)
+            .retrieve()
+            .toEntity(ZaakeigenschapResponse::class.java)
+            .block()
+
+        if (result?.statusCode?.is2xxSuccessful == true) {
+            outboxService.send {
+                ZaakeigenschapUpdated(
+                    result.body.url.toString(),
+                    objectMapper.valueToTree(result.body)
+                )
+            }
+        }
+
+        return result?.body!!
+    }
+
+    fun deleteZaakeigenschap(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        zaakeigenschapUrl: URI,
+    ) {
+        validateUrlHost(baseUrl, zaakeigenschapUrl)
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .delete()
+            .uri(zaakeigenschapUrl)
+            .headers(this::defaultHeaders)
+            .retrieve()
+            .toBodilessEntity()
+            .block()
+
+        if (result?.statusCode?.is2xxSuccessful == true) {
+            outboxService.send {
+                ZaakeigenschapDeleted(zaakeigenschapUrl.toString())
+            }
+        }
+    }
+
+    fun getZaakeigenschappen(
+        authentication: ZakenApiAuthentication,
+        baseUrl: URI,
+        zaakUrl: URI,
+    ): List<ZaakeigenschapResponse> {
+        validateUrlHost(baseUrl, zaakUrl)
+        val result = webclientBuilder
+            .clone()
+            .filter(authentication)
+            .build()
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, zaakUrl)
+                    .pathSegment("zaakeigenschappen")
+                    .build()
+            }
+            .retrieve()
+            .toEntityList<ZaakeigenschapResponse>()
+            .block()
+
+        if (result?.statusCode?.is2xxSuccessful == true) {
+            outboxService.send {
+                ZaakeigenschapListed(objectMapper.valueToTree(result.body))
+            }
+        }
+
+        return result.body!!
     }
 
     private fun validateUrlHost(baseUrl: URI, url: URI?) {

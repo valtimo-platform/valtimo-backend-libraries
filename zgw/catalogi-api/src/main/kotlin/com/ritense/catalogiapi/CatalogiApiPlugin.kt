@@ -20,12 +20,14 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.authorization.AuthorizationContext
 import com.ritense.catalogiapi.client.BesluittypeRequest
 import com.ritense.catalogiapi.client.CatalogiApiClient
+import com.ritense.catalogiapi.client.EigenschapRequest
 import com.ritense.catalogiapi.client.ResultaattypeRequest
 import com.ritense.catalogiapi.client.RoltypeRequest
 import com.ritense.catalogiapi.client.StatustypeRequest
 import com.ritense.catalogiapi.client.ZaaktypeInformatieobjecttypeRequest
 import com.ritense.catalogiapi.client.ZaaktypeRequest
 import com.ritense.catalogiapi.domain.Besluittype
+import com.ritense.catalogiapi.domain.Eigenschap
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
@@ -262,6 +264,27 @@ class CatalogiApiPlugin(
                 url,
                 BesluittypeRequest(
                     zaaktypen = zaakTypeUrl,
+                    page = currentPage++
+                )
+            )
+            results.addAll(currentResults.results)
+        } while (currentResults?.next != null)
+
+        return results
+    }
+
+    fun getEigenschappen(zaakTypeUrl: URI): List<Eigenschap> {
+        var currentPage = 1
+        var currentResults: Page<Eigenschap>?
+        val results = mutableListOf<Eigenschap>()
+
+        do {
+            logger.debug { "Getting page of eigenschappen, page $currentPage for zaaktype $zaakTypeUrl" }
+            currentResults = client.getEigenschappen(
+                authenticationPluginConfiguration,
+                url,
+                EigenschapRequest(
+                    zaaktype = zaakTypeUrl,
                     page = currentPage++
                 )
             )
