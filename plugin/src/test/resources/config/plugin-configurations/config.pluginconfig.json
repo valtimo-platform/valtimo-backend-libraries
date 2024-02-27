@@ -8,5 +8,15 @@
             "property3": 3,
             "property4": []
         }
+    },
+    {
+        "title": "auto deployment test plugin with null property",
+        "pluginDefinitionKey": "auto-deployment-test-plugin",
+        "properties": {
+            "property1": null,
+            "property2": true,
+            "property3": 3,
+            "property4": []
+        }
     }
 ]

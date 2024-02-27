@@ -48,5 +48,5 @@ class DocumentInformatieObject (
     val verzenddatum: LocalDate? = null,
     val indicatieGebruiksrecht: Boolean? = null,
     val informatieobjecttype: String? = null,
-    val trefwoorden: List<String>? = null,
+    val trefwoorden: List<String>? = null
 )
