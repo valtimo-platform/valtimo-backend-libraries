@@ -22,6 +22,7 @@ import com.ritense.documentenapi.repository.ZgwDocumentTrefwoordRepository
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordExporter
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordImporter
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordService
+import com.ritense.documentenapi.web.rest.ZgwDocumentTrefwoordResource
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import org.springframework.beans.factory.annotation.Value
@@ -57,6 +58,15 @@ class ZgwDocumentTrefwoordAutoConfiguration {
     ): ZgwDocumentTrefwoordService {
         return ZgwDocumentTrefwoordService(
             zgwDocumentTrefwoordRepository
+        )
+    }
+
+    @Bean
+    fun zgwDocumentTrefwoordResource(
+        zgwDocumentTrefwoordService: ZgwDocumentTrefwoordService
+    ): ZgwDocumentTrefwoordResource {
+        return ZgwDocumentTrefwoordResource(
+            zgwDocumentTrefwoordService
         )
     }
 
