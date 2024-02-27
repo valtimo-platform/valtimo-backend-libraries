@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2024 Ritense BV, the Netherlands.
+ * Copyright 2015-2023 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.notificatiesapi.domain
+package com.ritense.case.deployment
 
-import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonProperty
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-data class Abonnement(
-    val url: String? = null,
-    val callbackUrl: String,
-    val auth: String?,
-    val kanalen: List<Kanaal> = listOf(),
-) {
-    data class Kanaal(
-        val filters: Map<String, String> = mapOf(),
-        val naam: String
-    )
-}
+class ZgwDocumentTrefwoordChangeset(
+    val changesetId: String,
+    @JsonProperty("case-definitions")
+    val caseDefinitions: List<CaseDefinitionTrefwoordCollection>
+)
+
+class CaseDefinitionTrefwoordCollection(
+    val key: String,
+    val trefwoorden: List<String>
+)

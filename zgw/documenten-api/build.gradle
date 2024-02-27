@@ -38,8 +38,12 @@ dependencies {
     implementation project(':zgw')
     implementation project(':zgw:catalogi-api')
     implementation project(":outbox")
+    implementation project(":changelog")
+    implementation project(":exporter")
+    implementation project(":importer")
 
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"

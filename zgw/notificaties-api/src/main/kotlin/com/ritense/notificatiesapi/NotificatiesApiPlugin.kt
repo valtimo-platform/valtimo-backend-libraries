@@ -71,7 +71,6 @@ class NotificatiesApiPlugin(
                 Abonnement(
                     callbackUrl = callbackUrl.toASCIIString(),
                     auth = authKey,
-                    url = url.toASCIIString(),
                     kanalen = DEFAULT_KANALEN_NAMES.map { Abonnement.Kanaal(naam = it) }
                 )
             )
