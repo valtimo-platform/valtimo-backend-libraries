@@ -152,7 +152,7 @@ public class CamundaProcessJsonSchemaDocumentService implements ProcessDocumentS
                 processDocumentAssociationService.createProcessDocumentInstance(
                     camundaProcessInstanceId.toString(),
                     UUID.fromString(document.id().toString()),
-                    processDefinitionKey.toString()
+                    processInstanceWithDefinition.getProcessDefinition().getName()
                 )
             );
 

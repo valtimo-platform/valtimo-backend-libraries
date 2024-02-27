@@ -80,6 +80,8 @@ class TemporaryResourceStorageServiceIntegrationTest : BaseIntegrationTest() {
         val metadata = temporaryResourceStorageService.getResourceMetadata(resourceId)
         assertThat(metadata[MetadataType.FILE_NAME.key]).isEqualTo(fileName)
         assertThat(metadata).doesNotContainKey(MetadataType.FILE_PATH.key)
+        assertThat(metadata[MetadataType.FILE_SIZE.key]).isNotNull
+        assertThat(metadata[MetadataType.FILE_SIZE.key]).isEqualTo(fileData.length.toString())
     }
 
     @Test

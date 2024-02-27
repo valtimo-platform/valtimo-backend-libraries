@@ -33,6 +33,11 @@ class CamundaBeansPlugin(
         val processBeansAny = processBeans as Map<Any, Any>
         processEngineConfiguration.beans = processBeansAny
         processEngineConfiguration.setExpressionManager(SpringExpressionManager(applicationContext, processBeansAny))
+
+        // Register custom command interceptor to be able to use the beans without authorization
+        processEngineConfiguration.setCustomPreCommandInterceptorsTxRequired(
+            listOf(ValtimoCommandInterceptor())
+        )
         logger.info("Successfully registered process beans.")
     }
 

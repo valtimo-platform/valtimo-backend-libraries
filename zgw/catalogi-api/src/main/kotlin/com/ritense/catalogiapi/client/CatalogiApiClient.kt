@@ -281,7 +281,7 @@ open class CatalogiApiClient(
                 )
             )
         }.forEach {
-            cacheManager.getCache(INFORMATIEOBJECTTYPECACHE_KEY)?.put(it.url, it)
+            cacheManager.getCache(INFORMATIEOBJECTTYPECACHE_KEY)?.put(it.url!!, it)
         }
     }
 

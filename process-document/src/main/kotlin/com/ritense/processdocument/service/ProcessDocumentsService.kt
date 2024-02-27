@@ -44,16 +44,19 @@ class ProcessDocumentsService(
         val processInstance = runWithoutAuthorization {
             camundaProcessService.startProcess(processDefinitionKey, businessKey, variables)
         }
+        require(processInstance.processDefinition.name != null) {
+            "Process definition with id '${processInstance.processDefinition.id}' doesn't have a name"
+        }
         associateDocumentToProcess(
             processInstance.processInstanceDto.id,
-            processInstance.processDefinition.name,
+            processInstance.processDefinition.name!!,
             businessKey
         )
     }
 
     private fun associateDocumentToProcess(
         processInstanceId: String?,
-        processName: String?,
+        processName: String,
         businessKey: String
     ) {
         runWithoutAuthorization {
