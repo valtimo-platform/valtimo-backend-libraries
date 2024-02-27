@@ -22,6 +22,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.document.exception.DocumentNotFoundException
 import com.ritense.document.service.DocumentService
 import com.ritense.valtimo.service.CamundaProcessService
+import org.camunda.bpm.engine.delegate.DelegateExecution
 import java.util.UUID
 
 
@@ -30,6 +31,10 @@ class ProcessDocumentsService(
     private val camundaProcessService: CamundaProcessService,
     private val associationService: ProcessDocumentAssociationService
 ) {
+    fun startProcessByProcessDefinitionKeyWithExecution(processDefinitionKey: String, execution: DelegateExecution) {
+        startProcessByProcessDefinitionKey(processDefinitionKey, execution.businessKey, execution.variables)
+    }
+
     //TODO: Determine what to with this
     fun startProcessByProcessDefinitionKey(processDefinitionKey: String, businessKey: String) {
         startProcessByProcessDefinitionKey(processDefinitionKey, businessKey, null)

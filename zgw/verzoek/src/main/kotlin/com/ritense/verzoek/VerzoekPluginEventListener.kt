@@ -67,20 +67,20 @@ open class VerzoekPluginEventListener(
         val objectManagement = objectManagementService.findByObjectTypeId(objectType.substringAfterLast("/")) ?: return
 
         pluginService.createInstance(VerzoekPlugin::class.java) { properties: JsonNode ->
-            properties.get("verzoekProperties").any { it.get("objectManagementId").textValue().equals(objectManagement.id.toString()) }
+            properties.get("verzoekProperties")
+                .any { it.get("objectManagementId").textValue().equals(objectManagement.id.toString()) }
         }?.run {
             val verzoekObjectData = getVerzoekObjectData(objectManagement, event)
             val verzoekTypeProperties = getVerzoekTypeProperties(verzoekObjectData)
             val document = createDocument(verzoekTypeProperties, verzoekObjectData)
-
+            val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
             val initiatorType = if (verzoekObjectData.has("kvk")) {
                 "kvk"
             } else {
                 "bsn"
             }
-            val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
-            val startProcessRequest = StartProcessForDocumentRequest(
-                document.id(), processToStart, mapOf(
+
+            val verzoekVariables = mutableMapOf(
                 "RSIN" to this.rsin.toString(),
                 "zaakTypeUrl" to zaakTypeUrl.toString(),
                 "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
@@ -91,6 +91,28 @@ open class VerzoekPluginEventListener(
                 "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
                 "documentUrls" to getDocumentUrls(verzoekObjectData)
             )
+
+            verzoekProperties
+                .filter { it.copyStrategy == CopyStrategy.SPECIFIED }
+                .forEach { property ->
+                    property.mapping?.forEach {
+                        if (it.target.startsWith("pv:")) {
+                            try {
+                                val key = it.target.substringAfter(delimiter = "/")
+                                val pointer = "/data/${it.source.substringAfter(delimiter = "/")}"
+
+                                val value = getJsonValueWithPointer(verzoekObjectData, pointer)
+                                verzoekVariables[key] = value
+
+                            } catch (e: Exception) {
+                                logger.error { e.message }
+                            }
+                        }
+                    }
+                }
+
+            val startProcessRequest = StartProcessForDocumentRequest(
+                document.id(), processToStart, verzoekVariables
             )
 
             startProcess(startProcessRequest)
@@ -173,8 +195,10 @@ open class VerzoekPluginEventListener(
             verzoekTypeProperties.mapping?.map {
                 val verzoekDataItem = verzoekDataData.at(it.source)
                 if (!verzoekDataItem.isMissingNode) {
-                    val documentPath = JsonPointer.valueOf(it.target.substringAfter(delimiter = ":"))
-                    jsonPatchBuilder.addJsonNodeValue(documentContent, documentPath, verzoekDataItem)
+                    if (it.target.startsWith("doc:")) {
+                        val documentPath = JsonPointer.valueOf(it.target.substringAfter(delimiter = ":"))
+                        jsonPatchBuilder.addJsonNodeValue(documentContent, documentPath, verzoekDataItem)
+                    }
                 } else {
                     logger.debug { "Missing Verzoek data of Verzoek type '${verzoekTypeProperties.type}' at path '${it.source}' is not mapped!" }
                 }
@@ -193,6 +217,14 @@ open class VerzoekPluginEventListener(
                     result.errors().joinToString(separator = "\n - ")
             )
         }
+    }
+
+    private fun getJsonValueWithPointer(jsonNode: JsonNode, pointer: String): String? {
+        val valueNode = jsonNode.at(pointer)
+        if (valueNode.isMissingNode) {
+            throw NoSuchElementException("Path does not exist in the JSON: $pointer")
+        }
+        return valueNode.asText()
     }
 
     companion object {
