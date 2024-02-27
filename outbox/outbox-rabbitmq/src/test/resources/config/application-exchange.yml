@@ -1,0 +1,6 @@
+valtimo:
+    outbox:
+        publisher:
+            rabbitmq:
+                exchange: valtimo-events
+                routing-key: ""
