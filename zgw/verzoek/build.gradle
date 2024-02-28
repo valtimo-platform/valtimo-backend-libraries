@@ -39,6 +39,7 @@ dependencies {
     implementation project(":zgw")
     implementation project(":zgw:catalogi-api")
     implementation project(":zgw:notificaties-api")
+    implementation project(":value-resolver")
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation project(":zgw:object-management")
     implementation project(":zgw:objecten-api")

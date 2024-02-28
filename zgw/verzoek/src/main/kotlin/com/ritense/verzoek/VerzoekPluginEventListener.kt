@@ -38,10 +38,14 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
+import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
+import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
+import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 
+@Transactional
 open class VerzoekPluginEventListener(
     private val pluginService: PluginService,
     private val objectManagementService: ObjectManagementService,
@@ -96,7 +100,7 @@ open class VerzoekPluginEventListener(
                 .filter { it.copyStrategy == CopyStrategy.SPECIFIED }
                 .forEach { property ->
                     property.mapping?.forEach {
-                        if (it.target.startsWith("pv:")) {
+                        if (it.target.startsWith(PV_PREFIX)) {
                             try {
                                 val key = it.target.substringAfter(delimiter = "/")
                                 val pointer = "/data/${it.source.substringAfter(delimiter = "/")}"
@@ -195,7 +199,7 @@ open class VerzoekPluginEventListener(
             verzoekTypeProperties.mapping?.map {
                 val verzoekDataItem = verzoekDataData.at(it.source)
                 if (!verzoekDataItem.isMissingNode) {
-                    if (it.target.startsWith("doc:")) {
+                    if (it.target.startsWith(DOC_PREFIX)) {
                         val documentPath = JsonPointer.valueOf(it.target.substringAfter(delimiter = ":"))
                         jsonPatchBuilder.addJsonNodeValue(documentContent, documentPath, verzoekDataItem)
                     }
