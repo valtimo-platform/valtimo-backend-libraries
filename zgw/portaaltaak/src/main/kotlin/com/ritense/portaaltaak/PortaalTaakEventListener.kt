@@ -40,6 +40,7 @@ import com.ritense.valueresolver.ValueResolverService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.delegate.VariableScope
 import org.springframework.context.event.EventListener
+import org.springframework.transaction.annotation.Transactional
 import java.net.MalformedURLException
 import java.net.URI
 import java.util.UUID
@@ -55,6 +56,7 @@ open class PortaalTaakEventListener(
     private val objectMapper: ObjectMapper
 ) {
 
+    @Transactional
     @RunWithoutAuthorization
     @EventListener(NotificatiesApiNotificationReceivedEvent::class)
     open fun processCompletePortaalTaakEvent(event: NotificatiesApiNotificationReceivedEvent) {

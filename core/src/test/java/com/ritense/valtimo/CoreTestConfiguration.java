@@ -18,6 +18,9 @@ package com.ritense.valtimo;
 
 import static org.mockito.Mockito.mock;
 
+import com.ritense.authorization.AuthorizationService;
+import com.ritense.valtimo.camunda.authorization.UnauthorizedProcessBean;
+import com.ritense.valtimo.contract.annotation.ProcessBean;
 import com.ritense.valtimo.contract.mail.MailSender;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -42,6 +45,14 @@ public class CoreTestConfiguration {
         @Bean
         public MailSender mailSender() {
             return mock(MailSender.class);
+        }
+
+        @Bean
+        @ProcessBean
+        public UnauthorizedProcessBean unauthBean(
+            AuthorizationService authorizationService
+        ) {
+            return new UnauthorizedProcessBean(authorizationService);
         }
     }
 
