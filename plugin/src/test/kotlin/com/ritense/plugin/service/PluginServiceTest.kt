@@ -23,6 +23,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.configuration.PropertiesConfiguration
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
@@ -66,6 +67,7 @@ internal class PluginServiceTest {
     lateinit var valueResolverService: ValueResolverService
     lateinit var pluginService: PluginService
     lateinit var pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
+    lateinit var propertiesConfiguration: PropertiesConfiguration
 
     @BeforeEach
     fun init() {
@@ -76,6 +78,7 @@ internal class PluginServiceTest {
         pluginFactory = mock()
         valueResolverService = mock()
         pluginConfigurationSearchRepository = mock()
+        propertiesConfiguration = mock()
         pluginService = spy(PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
@@ -85,7 +88,8 @@ internal class PluginServiceTest {
             jacksonObjectMapper(),
             valueResolverService,
             pluginConfigurationSearchRepository,
-            Validation.buildDefaultValidatorFactory().validator
+            Validation.buildDefaultValidatorFactory().validator,
+            propertiesConfiguration
         ))
     }
 
