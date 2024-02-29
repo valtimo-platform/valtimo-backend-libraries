@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package com.ritense.case.deployment
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class ZgwDocumentTrefwoordChangeset(
+data class ZgwDocumentTrefwoordChangeset(
     val changesetId: String,
     @JsonProperty("case-definitions")
     val caseDefinitions: List<CaseDefinitionTrefwoordCollection>
 )
 
-class CaseDefinitionTrefwoordCollection(
+data class CaseDefinitionTrefwoordCollection(
     val key: String,
     val trefwoorden: List<String>
 )

@@ -31,4 +31,13 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="2" author="Ritense">
+        <addForeignKeyConstraint
+            baseTableName="zgw_document_trefwoord"
+            baseColumnNames="case_definition_name"
+            constraintName="zgw_document_trefwoord_case_definition_name_fk"
+            referencedTableName="case_definition"
+            referencedColumnNames="case_definition_name" />
+    </changeSet>
+
 </databaseChangeLog>

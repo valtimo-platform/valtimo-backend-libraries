@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2023 Ritense BV, the Netherlands.
+ * Copyright 2015-2024 Ritense BV, the Netherlands.
  *
  * Licensed under EUPL, Version 1.2 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Bean
 class ZgwDocumentTrefwoordAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean(ZgwDocumentTrefwoordDeploymentService::class)
     fun zgwDocumentTrefwoordDeploymentService(
         objectMapper: ObjectMapper,
         zgwDocumentTrefwoordRepository: ZgwDocumentTrefwoordRepository,
@@ -53,6 +54,7 @@ class ZgwDocumentTrefwoordAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ZgwDocumentTrefwoordService::class)
     fun zgwDocumentTrefwoordService(
         zgwDocumentTrefwoordRepository: ZgwDocumentTrefwoordRepository
     ): ZgwDocumentTrefwoordService {
@@ -62,6 +64,7 @@ class ZgwDocumentTrefwoordAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(ZgwDocumentTrefwoordResource::class)
     fun zgwDocumentTrefwoordResource(
         zgwDocumentTrefwoordService: ZgwDocumentTrefwoordService
     ): ZgwDocumentTrefwoordResource {
