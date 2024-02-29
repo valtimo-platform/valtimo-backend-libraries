@@ -22,15 +22,15 @@ import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valueresolver.ValueResolverService
 
-class CreateColumnValidator(
+class CreateCaseListColumnValidator(
     override val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     override val documentDefinitionService: DocumentDefinitionService,
     override val valueResolverService: ValueResolverService,
-) : ValidationUtils(
+) : CaseListColumnValidationUtils(
     caseDefinitionListColumnRepository,
     documentDefinitionService,
     valueResolverService
-), CaseDefinitionColumnValidator {
+), ListColumnValidator<CaseListColumnDto> {
 
     @Throws(InvalidListColumnException::class)
     override fun validate(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {

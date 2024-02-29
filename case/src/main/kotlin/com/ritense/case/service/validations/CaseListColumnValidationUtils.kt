@@ -27,7 +27,7 @@ import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valueresolver.ValueResolverService
 import org.zalando.problem.Status
 
-open class ValidationUtils(
+open class CaseListColumnValidationUtils(
     open val caseDefinitionListColumnRepository: CaseDefinitionListColumnRepository,
     open val documentDefinitionService: DocumentDefinitionService,
     open val valueResolverService: ValueResolverService,
