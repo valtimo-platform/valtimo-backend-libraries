@@ -38,7 +38,6 @@
     </changeSet>
 
     <changeSet id="2" author="Ritense">
-        <validCheckSum>9:4fd48db99b7e0e74c899f951ed4d83eb</validCheckSum>
         <createIndex indexName="idx_zaak_hersteltermijn_zaak_url_end_date" tableName="zaak_hersteltermijn" unique="true">
             <column name="zaak_url"/>
             <column name="end_date"/>
