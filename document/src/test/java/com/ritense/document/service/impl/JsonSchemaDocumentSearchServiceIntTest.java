@@ -180,7 +180,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         );
         assertThat(page).isNotNull();
         List<String> statuses = page.getContent().stream().map(Document::internalStatus).toList();
-        assertThat(statuses).containsExactlyInAnyOrder("suspended", "started");
+        assertThat(statuses).containsExactly("suspended", "started");
     }
 
     @Test
@@ -195,7 +195,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         );
         assertThat(page).isNotNull();
         List<String> statuses = page.getContent().stream().map(Document::internalStatus).toList();
-        assertThat(statuses).containsExactlyInAnyOrder("suspended", "started");
+        assertThat(statuses).containsExactly("started", "suspended");
     }
 
     @Test
