@@ -274,24 +274,17 @@ class CatalogiApiPlugin(
     }
 
     fun getEigenschappen(zaakTypeUrl: URI): List<Eigenschap> {
-        var currentPage = 1
-        var currentResults: Page<Eigenschap>?
-        val results = mutableListOf<Eigenschap>()
-
-        do {
-            logger.debug { "Getting page of eigenschappen, page $currentPage for zaaktype $zaakTypeUrl" }
-            currentResults = client.getEigenschappen(
+        return Page.getAll { page ->
+            logger.debug { "Getting page of eigenschappen, page $page for zaaktype $zaakTypeUrl" }
+            client.getEigenschappen(
                 authenticationPluginConfiguration,
                 url,
                 EigenschapRequest(
                     zaaktype = zaakTypeUrl,
-                    page = currentPage++
+                    page = page
                 )
             )
-            results.addAll(currentResults.results)
-        } while (currentResults?.next != null)
-
-        return results
+        }
     }
 
     fun getBesluittypeByOmschrijving(zaakTypeUrl: URI, omschrijving: String): Besluittype {
