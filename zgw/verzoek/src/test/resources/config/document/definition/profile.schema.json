@@ -5,6 +5,14 @@
     "properties": {
         "fullname": {
             "type": "string"
+        },
+        "verzoekObject": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
         }
     }
 }

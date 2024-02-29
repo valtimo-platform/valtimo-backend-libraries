@@ -31,7 +31,7 @@ import com.ritense.authorization.permission.ConditionContainer;
 import com.ritense.authorization.permission.Permission;
 import com.ritense.authorization.permission.PermissionRepository;
 import com.ritense.authorization.role.RoleRepository;
-import com.ritense.outbox.OutboxMessageRepository;
+import com.ritense.outbox.repository.OutboxMessageRepository;
 import com.ritense.outbox.domain.BaseEvent;
 import com.ritense.valtimo.BaseIntegrationTest;
 import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider;
