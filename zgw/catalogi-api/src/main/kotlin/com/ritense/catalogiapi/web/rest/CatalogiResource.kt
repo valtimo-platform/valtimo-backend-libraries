@@ -18,6 +18,7 @@ package com.ritense.catalogiapi.web.rest
 
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.catalogiapi.web.rest.result.BesluittypeDto
+import com.ritense.catalogiapi.web.rest.result.EigenschapDto
 import com.ritense.catalogiapi.web.rest.result.InformatieobjecttypeDto
 import com.ritense.catalogiapi.web.rest.result.ResultaattypeDto
 import com.ritense.catalogiapi.web.rest.result.RoltypeDto
@@ -106,5 +107,15 @@ class CatalogiResource(
     fun getZaakTypen(): ResponseEntity<List<ZaaktypeDto>> {
         val zaakTypen = catalogiService.getZaakTypen().map { ZaaktypeDto.of(it) }
         return ResponseEntity.ok(zaakTypen)
+    }
+
+    @GetMapping("/management/v1/case-definition/{caseDefinitionName}/catalogi-eigenschappen")
+    fun getEigenschappen(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+    ): ResponseEntity<List<EigenschapDto>> {
+        val eigenschappen = catalogiService.getEigenschappen(caseDefinitionName)
+            .map { EigenschapDto.of(it) }
+            .sortedBy { it.name }
+        return ResponseEntity.ok(eigenschappen)
     }
 }
