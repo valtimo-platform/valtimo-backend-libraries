@@ -49,6 +49,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="2.5" author="Ritense">
+        <createIndex indexName="idx_internal_case_status_case_name_status_key" tableName="internal_case_status" unique="true">
+            <column name="case_definition_name"/>
+            <column name="internal_case_status_key"/>
+        </createIndex>
+    </changeSet>
+
     <changeSet author="Ritense" id="3">
         <addForeignKeyConstraint
             baseTableName="json_schema_document"
