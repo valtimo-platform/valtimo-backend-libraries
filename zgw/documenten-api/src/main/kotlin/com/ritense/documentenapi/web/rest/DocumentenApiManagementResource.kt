@@ -16,6 +16,7 @@
 
 package com.ritense.documentenapi.web.rest
 
+import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.web.rest.dto.ColumnDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController
 class DocumentenApiManagementResource(
     val documentenApiService: DocumentenApiService
 ) {
+    @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column")
     fun getColumns(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
