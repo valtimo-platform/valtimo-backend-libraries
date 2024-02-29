@@ -358,8 +358,9 @@ class ZakenApiPlugin(
                 maxDurationInDays = maxDurationInDays
             )
 
-            val existingHerseltermijn = zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl)
-            check(existingHerseltermijn == null || existingHerseltermijn != hersteltermijn) { "Hersteltermijn already exists for zaak '$zaakUrl'. " }
+            require(zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl) == null) {
+                "Hersteltermijn already exists for zaak '$zaakUrl'"
+            }
 
             if (existingHerseltermijn == null) {
                 val zaak = client.getZaak(authenticationPluginConfiguration, zaakUrl)
