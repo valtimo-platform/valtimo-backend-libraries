@@ -24,6 +24,8 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -35,5 +37,6 @@ public interface FormDefinitionRepository extends JpaRepository<FormIoFormDefini
 
     Optional<FormIoFormDefinition> findByNameIgnoreCase(String name);
 
-    Page<FormDefinition> findAllByNameContainingIgnoreCase(String name, Pageable pageable);
+    @Query("SELECT f FROM FormIoFormDefinition f WHERE upper(f.name) LIKE upper(concat('%', :name, '%'))")
+    Page<FormDefinition> findAllByNameContainingIgnoreCase(@Param("name") String name, Pageable pageable);
 }
