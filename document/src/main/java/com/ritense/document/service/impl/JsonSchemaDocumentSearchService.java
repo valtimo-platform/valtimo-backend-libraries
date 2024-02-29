@@ -80,15 +80,15 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     private static final String CONTENT = "content";
     private static final String ASSIGNEE_ID = "assigneeId";
     private static final String INTERNAL_STATUS = "internalStatus";
-    private static final String INTERNAL_STATUS_ID = "id";
-    private static final String INTERNAL_STATUS_KEY = "key";
+    private static final String INTERNAL_STATUS_KEY = "internalStatus.id.key";
+    private static final String INTERNAL_STATUS_ORDER = "internalStatus.order";
     private static final String DOC_PREFIX = "doc:";
     private static final String CASE_PREFIX = "case:";
 
     private static final Map<String, String> DOCUMENT_FIELD_MAP = Map.of(
         "definitionId.name", "documentDefinitionId.name",
         "definitionId.version", "documentDefinitionId.key",
-        "internalStatus", "internalStatus.id.key"
+        INTERNAL_STATUS, INTERNAL_STATUS_ORDER
     );
 
     private final EntityManager entityManager;
@@ -361,7 +361,7 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
     }
 
     private Predicate getStatusFilterPredicate(CriteriaBuilder cb, Root<JsonSchemaDocument> documentRoot, Set<String> statusFilter) {
-        Path<String> statusField = documentRoot.get(INTERNAL_STATUS).get(INTERNAL_STATUS_ID).get(INTERNAL_STATUS_KEY);
+        Path<String> statusField = stringToPath(documentRoot, INTERNAL_STATUS_KEY);
         Predicate[] predicates = statusFilter.stream().map(status -> {
                 if (status == null || status.isEmpty()) {
                     return cb.isNull(statusField);
@@ -543,10 +543,14 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                     if (DOCUMENT_FIELD_MAP.containsKey(docProperty)) {
                         docProperty = DOCUMENT_FIELD_MAP.get(docProperty);
                     }
-                    String[] split = docProperty.split("\\.");
-                    Path<?> path = root.get(split[0]);
-                    for (int i = 1; i < split.length; i++) {
-                        path = path.get(split[i]);
+
+                    var path = stringToPath(root, docProperty);
+                    // This groupBy workaround is needed because PBAC adds a groupBy on 'id' by default.
+                    // Since sorting columns should be added to the groupBy, we do that here
+                    if (!query.getGroupList().isEmpty() && !query.getGroupList().contains(path)) {
+                        ArrayList<Expression<?>> grouping = new ArrayList<>(query.getGroupList());
+                        grouping.add(path);
+                        query.groupBy(grouping);
                     }
                     expression = path;
                 }
@@ -554,6 +558,15 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                 return order.getDirection().isAscending() ? cb.asc(expression) : cb.desc(expression);
             })
             .collect(Collectors.toList());
+    }
+
+    private <T> Path<T> stringToPath(Path<?> parent, String path) {
+        String[] split = path.split("\\.");
+        Path<?> result = parent;
+        for (String s : split) {
+            result = result.get(s);
+        }
+        return (Path<T>) result;
     }
 
     @FunctionalInterface
