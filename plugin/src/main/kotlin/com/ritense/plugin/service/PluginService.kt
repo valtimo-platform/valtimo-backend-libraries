@@ -27,6 +27,7 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.autodeployment.PluginAutoDeploymentDto
+import com.ritense.plugin.configuration.PropertiesConfiguration
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginActionDefinition
@@ -71,6 +72,7 @@ class PluginService(
     private val valueResolverService: ValueResolverService,
     private val pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
     private val validator: Validator,
+    private val propertiesConfiguration: PropertiesConfiguration
 ) {
 
     fun getObjectMapper(): ObjectMapper {
@@ -150,7 +152,8 @@ class PluginService(
         if (node != null && node.isTextual) {
             val value = node.textValue()
             if (value?.startsWith("\${") == true && value.endsWith("}")) {
-                return TextNode(System.getenv()[value.substringAfterLast("\${").substringBeforeLast("}")])
+                val substring = value.substringAfterLast("\${").substringBeforeLast("}")
+                return TextNode(propertiesConfiguration.getConfigValue(substring) ?: System.getenv()[substring])
             }
         }
         return node

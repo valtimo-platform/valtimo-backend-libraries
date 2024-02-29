@@ -45,6 +45,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
+import org.springframework.core.env.Environment
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import javax.persistence.EntityManager
@@ -108,6 +109,13 @@ class PluginAutoConfiguration {
     }
 
     @Bean
+    fun propertiesConfiguration(
+        environment: Environment
+    ): PropertiesConfiguration {
+        return PropertiesConfiguration(environment)
+    }
+
+    @Bean
     fun pluginService(
         pluginDefinitionRepository: PluginDefinitionRepository,
         pluginConfigurationRepository: PluginConfigurationRepository,
@@ -117,7 +125,8 @@ class PluginAutoConfiguration {
         objectMapper: ObjectMapper,
         @Lazy valueResolverService: ValueResolverService,
         pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
-        validator: Validator
+        validator: Validator,
+        propertiesConfiguration: PropertiesConfiguration
     ): PluginService {
         return PluginService(
             pluginDefinitionRepository,
@@ -129,6 +138,7 @@ class PluginAutoConfiguration {
             valueResolverService,
             pluginConfigurationSearchRepository,
             validator,
+            propertiesConfiguration
         )
     }
 
@@ -176,7 +186,7 @@ class PluginAutoConfiguration {
         objectMapper: ObjectMapper,
         pluginService: PluginService,
         resourceLoader: ResourceLoader
-    ): PluginAutoDeploymentEventListener{
+    ): PluginAutoDeploymentEventListener {
         return PluginAutoDeploymentEventListener(
             pluginService = pluginService,
             objectMapper = objectMapper,
