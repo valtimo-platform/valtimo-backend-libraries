@@ -191,6 +191,10 @@ class DocumentenApiClient(
         documentUrl: URI,
         patchDocumentRequest: PatchDocumentRequest
     ): DocumentInformatieObject {
+        check(getInformatieObject(authentication, documentUrl).status != DocumentStatusType.DEFINITIEF) {
+            "InformatieObject ${documentUrl.path.substringAfterLast("/")} with status 'definitief' cannot be updated!"
+        }
+
         val result = checkNotNull(
             buildFilteredClient(authentication)
                 .patch()
