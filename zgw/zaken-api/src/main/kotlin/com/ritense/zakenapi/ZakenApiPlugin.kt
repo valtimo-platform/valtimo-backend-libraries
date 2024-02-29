@@ -32,8 +32,10 @@ import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
+import com.ritense.zakenapi.domain.CreateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.Opschorting
 import com.ritense.zakenapi.domain.PatchZaakRequest
+import com.ritense.zakenapi.domain.UpdateZaakeigenschapRequest
 import com.ritense.zakenapi.domain.Verlenging
 import com.ritense.zakenapi.domain.ZaakHersteltermijn
 import com.ritense.zakenapi.domain.ZaakInformatieObject
@@ -410,6 +412,65 @@ class ZakenApiPlugin(
 
             zaakHersteltermijnRepository.save(updatedHersteltermijn)
         }
+    }
+
+    @PluginAction(
+        key = "create-zaakeigenschap",
+        title = "Create zaakeigenschap",
+        description = "Creates a zaakeigenschap",
+        activityTypes = [SERVICE_TASK_START]
+    )
+    fun createZaakeigenschap(
+        execution: DelegateExecution,
+        @PluginActionProperty eigenschapUrl: URI,
+        @PluginActionProperty eigenschapValue: String,
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+        val request = CreateZaakeigenschapRequest(zaakUrl, eigenschapUrl, eigenschapValue)
+
+        client.createZaakeigenschap(authenticationPluginConfiguration, url, request)
+    }
+
+    @PluginAction(
+        key = "update-zaakeigenschap",
+        title = "Update zaakeigenschap",
+        description = "Updates a zaakeigenschap",
+        activityTypes = [SERVICE_TASK_START]
+    )
+    fun updateZaakeigenschap(
+        execution: DelegateExecution,
+        @PluginActionProperty eigenschapUrl: URI,
+        @PluginActionProperty eigenschapValue: String,
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+        val zaakeigenschappen = client.getZaakeigenschappen(authenticationPluginConfiguration, url, zaakUrl)
+            .filter { it.eigenschap == eigenschapUrl }
+        require(zaakeigenschappen.isNotEmpty()) { "No zaakeigenschap exist for zaak '$zaakUrl' and eigenschap '$eigenschapUrl'" }
+        zaakeigenschappen.forEach { zaakeigenschap ->
+            if (zaakeigenschap.waarde != eigenschapValue) {
+                val request = UpdateZaakeigenschapRequest(zaakUrl, eigenschapUrl, eigenschapValue)
+                client.updateZaakeigenschap(authenticationPluginConfiguration, url, zaakeigenschap.url, request)
+            }
+        }
+    }
+
+    @PluginAction(
+        key = "delete-zaakeigenschap",
+        title = "Create zaakeigenschap",
+        description = "Creates a zaakeigenschap",
+        activityTypes = [SERVICE_TASK_START]
+    )
+    fun deleteZaakeigenschap(
+        execution: DelegateExecution,
+        @PluginActionProperty eigenschapUrl: URI,
+    ) {
+        val documentId = UUID.fromString(execution.businessKey)
+        val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+        client.getZaakeigenschappen(authenticationPluginConfiguration, url, zaakUrl)
+            .filter { it.eigenschap == eigenschapUrl }
+            .forEach { client.deleteZaakeigenschap(authenticationPluginConfiguration, url, it.url) }
     }
 
     fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {
