@@ -16,8 +16,12 @@
 
 package com.ritense.documentenapi.service
 
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.domain.RelatedFile
+import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
+import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.PatchDocumentRequest
@@ -36,6 +40,7 @@ class DocumentenApiService(
     private val pluginService: PluginService,
     private val catalogiService: CatalogiService,
     private val documentenApiColumnRepository: DocumentenApiColumnRepository,
+    private val authorizationService: AuthorizationService,
 ) {
     fun downloadInformatieObject(pluginConfigurationId: String, documentId: String): InputStream {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
@@ -65,6 +70,13 @@ class DocumentenApiService(
     }
 
     fun getColumns(caseDefinitionName: String): List<DocumentenApiColumn> {
+        authorizationService.requirePermission(
+            EntityAuthorizationRequest(
+                JsonSchemaDocumentDefinition::class.java,
+                JsonSchemaDocumentDefinitionActionProvider.VIEW_LIST
+            )
+        )
+
         return documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(caseDefinitionName)
     }
 
