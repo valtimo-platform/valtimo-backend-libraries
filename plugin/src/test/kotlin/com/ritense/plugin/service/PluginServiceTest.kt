@@ -23,7 +23,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.plugin.PluginFactory
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
-import com.ritense.plugin.configuration.PropertiesConfiguration
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginActionDefinition
 import com.ritense.plugin.domain.PluginActionDefinitionId
@@ -54,6 +53,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.core.env.Environment
 import javax.validation.Validation
 import kotlin.test.assertEquals
 
@@ -67,7 +67,7 @@ internal class PluginServiceTest {
     lateinit var valueResolverService: ValueResolverService
     lateinit var pluginService: PluginService
     lateinit var pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
-    lateinit var propertiesConfiguration: PropertiesConfiguration
+    lateinit var environment: Environment
 
     @BeforeEach
     fun init() {
@@ -78,7 +78,7 @@ internal class PluginServiceTest {
         pluginFactory = mock()
         valueResolverService = mock()
         pluginConfigurationSearchRepository = mock()
-        propertiesConfiguration = mock()
+        environment = mock()
         pluginService = spy(PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
@@ -89,7 +89,7 @@ internal class PluginServiceTest {
             valueResolverService,
             pluginConfigurationSearchRepository,
             Validation.buildDefaultValidatorFactory().validator,
-            propertiesConfiguration
+            environment
         ))
     }
 
