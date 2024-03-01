@@ -32,8 +32,8 @@ class ZgwDocumentTrefwoordService(
 
     fun createTrefwoord(caseDefinitionName: String, trefwoord: String) {
         val existingTrefwoord = zgwDocumentTrefwoordRepository.findAllByCaseDefinitionNameAndValue(caseDefinitionName, trefwoord)
-        if (existingTrefwoord != null) {
-            throw IllegalArgumentException("Trefwoord $trefwoord already exists for case definition $caseDefinitionName")
+        require(existingTrefwoord == null) {
+            "Trefwoord $trefwoord already exists for case definition $caseDefinitionName"
         }
         zgwDocumentTrefwoordRepository.save(ZgwDocumentTrefwoord(caseDefinitionName, trefwoord))
     }
