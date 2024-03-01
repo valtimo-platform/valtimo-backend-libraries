@@ -109,13 +109,6 @@ class PluginAutoConfiguration {
     }
 
     @Bean
-    fun propertiesConfiguration(
-        environment: Environment
-    ): PropertiesConfiguration {
-        return PropertiesConfiguration(environment)
-    }
-
-    @Bean
     fun pluginService(
         pluginDefinitionRepository: PluginDefinitionRepository,
         pluginConfigurationRepository: PluginConfigurationRepository,
@@ -126,7 +119,7 @@ class PluginAutoConfiguration {
         @Lazy valueResolverService: ValueResolverService,
         pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
         validator: Validator,
-        propertiesConfiguration: PropertiesConfiguration
+        environment: Environment
     ): PluginService {
         return PluginService(
             pluginDefinitionRepository,
@@ -138,7 +131,7 @@ class PluginAutoConfiguration {
             valueResolverService,
             pluginConfigurationSearchRepository,
             validator,
-            propertiesConfiguration
+            environment
         )
     }
 

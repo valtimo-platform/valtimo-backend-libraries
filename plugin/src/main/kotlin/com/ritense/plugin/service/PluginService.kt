@@ -27,7 +27,6 @@ import com.ritense.plugin.annotation.PluginActionProperty
 import com.ritense.plugin.annotation.PluginCategory
 import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.autodeployment.PluginAutoDeploymentDto
-import com.ritense.plugin.configuration.PropertiesConfiguration
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.EventType
 import com.ritense.plugin.domain.PluginActionDefinition
@@ -52,6 +51,7 @@ import com.ritense.valueresolver.ValueResolverService
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
+import org.springframework.core.env.Environment
 import org.springframework.data.repository.findByIdOrNull
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
@@ -72,7 +72,7 @@ class PluginService(
     private val valueResolverService: ValueResolverService,
     private val pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
     private val validator: Validator,
-    private val propertiesConfiguration: PropertiesConfiguration
+    private val environment: Environment
 ) {
 
     fun getObjectMapper(): ObjectMapper {
@@ -153,7 +153,7 @@ class PluginService(
             val value = node.textValue()
             if (value?.startsWith("\${") == true && value.endsWith("}")) {
                 val substring = value.substringAfterLast("\${").substringBeforeLast("}")
-                return TextNode(propertiesConfiguration.getConfigValue(substring) ?: System.getenv()[substring])
+                return TextNode(environment.getProperty(substring) ?: System.getenv()[substring])
             }
         }
         return node
