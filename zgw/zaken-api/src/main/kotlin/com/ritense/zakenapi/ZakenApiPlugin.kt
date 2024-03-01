@@ -362,21 +362,19 @@ class ZakenApiPlugin(
                 "Hersteltermijn already exists for zaak '$zaakUrl'"
             }
 
-            if (existingHerseltermijn == null) {
-                val zaak = client.getZaak(authenticationPluginConfiguration, zaakUrl)
-                val uiterlijkeEinddatumAfdoening = zaak.uiterlijkeEinddatumAfdoening
-                    ?: calculateUiterlijkeEinddatumAfdoening(zaak.zaaktype, zaak.startdatum)
-                require(uiterlijkeEinddatumAfdoening != null) { "No 'uiterlijkeEinddatumAfdoening' available for zaak '$zaakUrl' " }
-                require(zaak.opschorting == null || !zaak.opschorting.indicatie) { "Can't start recovery period for a suspended zaak" }
+            val zaak = client.getZaak(authenticationPluginConfiguration, zaakUrl)
+            val uiterlijkeEinddatumAfdoening = zaak.uiterlijkeEinddatumAfdoening
+                ?: calculateUiterlijkeEinddatumAfdoening(zaak.zaaktype, zaak.startdatum)
+            require(uiterlijkeEinddatumAfdoening != null) { "No 'uiterlijkeEinddatumAfdoening' available for zaak '$zaakUrl' " }
+            require(zaak.opschorting == null || !zaak.opschorting.indicatie) { "Can't start recovery period for a suspended zaak" }
 
-                client.patchZaak(
-                    authenticationPluginConfiguration, url, zaakUrl, PatchZaakRequest(
-                        uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.plusDays(maxDurationInDays.toLong()),
-                        opschorting = Opschorting(true, "hersteltermijn")
-                    )
+            client.patchZaak(
+                authenticationPluginConfiguration, url, zaakUrl, PatchZaakRequest(
+                    uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.plusDays(maxDurationInDays.toLong()),
+                    opschorting = Opschorting(true, "hersteltermijn")
                 )
-                zaakHersteltermijnRepository.save(hersteltermijn)
-            }
+            )
+            zaakHersteltermijnRepository.save(hersteltermijn)
         }
     }
 
