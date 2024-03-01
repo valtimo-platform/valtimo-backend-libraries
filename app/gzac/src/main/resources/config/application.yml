@@ -216,6 +216,9 @@ valtimo:
             clear-tables: true
         case-tabs:
             clear-tables: true
+        internal-case-status:
+            clear-tables: true
+
     outbox:
         enabled: true
         publisher:
@@ -273,5 +276,3 @@ external:
             bezwaar:
                 caseKey: bezwaar
                 processDefinitionKey: bezwaar
-
-valtimo.changelog.dashboard.clear-tables: true

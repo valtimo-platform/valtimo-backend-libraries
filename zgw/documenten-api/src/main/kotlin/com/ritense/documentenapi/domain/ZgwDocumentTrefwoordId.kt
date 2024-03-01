@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.event
+package com.ritense.documentenapi.domain
 
-import com.ritense.outbox.domain.BaseEvent
+import jakarta.persistence.Embeddable
+import java.io.Serializable
 
-class DocumentInformatieObjectDownloaded (documentInformatieobjectUrl: String) : BaseEvent(
-    type = "com.ritense.gzac.drc.enkelvoudiginformatieobject.downloaded",
-    resultType = null,
-    resultId = documentInformatieobjectUrl,
-    result = null
-)
+@Embeddable
+data class ZgwDocumentTrefwoordId(
+    val value: String,
+    val caseDefinitionName: String,
+) : Serializable
