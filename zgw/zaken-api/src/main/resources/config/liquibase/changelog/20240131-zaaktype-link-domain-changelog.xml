@@ -20,7 +20,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="1" author="Ritense">
-        <validCheckSum>9:b309ced664af003431b66ec5e289cf7e</validCheckSum>
+        <validCheckSum>8:d6907a1716176d91a9f16f43039bccd8</validCheckSum>
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="zaak_type_link"/>
