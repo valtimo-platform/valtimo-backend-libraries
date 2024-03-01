@@ -33,7 +33,9 @@ class CatalogiApiHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/statustype")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/resultaattype")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zaaktype/besluittype")).authenticated()
+
                     .requestMatchers(antMatcher(GET, "/api/management/v1/zgw/zaaktype")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/catalogi-eigenschappen")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

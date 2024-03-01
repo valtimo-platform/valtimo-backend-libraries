@@ -41,7 +41,7 @@ class MySqlFormFlowAdditionalPropertiesSearchRepository(
         return criteriaBuilder.equal(
             criteriaBuilder.function(
                 "JSON_EXTRACT",
-                FormFlowInstance::class.java,
+                Any::class.java,
                 root.get<Any>("additionalProperties"),
                 criteriaBuilder.literal("$.$key")
             ),
