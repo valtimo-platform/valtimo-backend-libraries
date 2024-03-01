@@ -40,6 +40,10 @@ class InternalCaseStatusService(
         return internalCaseStatusRepository.findByIdCaseDefinitionNameOrderByOrder(documentDefinitionName)
     }
 
+    fun get(caseDefinitionName: String, statusKey: String): InternalCaseStatus {
+        return internalCaseStatusRepository.getReferenceById(InternalCaseStatusId(caseDefinitionName, statusKey))
+    }
+
     fun create(
         caseDefinitionName: String,
         request: InternalCaseStatusCreateRequestDto

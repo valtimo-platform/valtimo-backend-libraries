@@ -61,6 +61,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -93,21 +94,29 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         definition = definition();
         var content = new JsonDocumentContent("{\"street\": \"Funenpark\"}");
 
-        originalDocument = runWithoutAuthorization(() -> documentService.createDocument(
-            new NewDocumentRequest(
-                definition.id().name(),
-                content.asJson()
-            )
-        ));
+        originalDocument = runWithoutAuthorization(() -> {
+            var result = documentService.createDocument(
+                new NewDocumentRequest(
+                    definition.id().name(),
+                    content.asJson()
+                )
+            );
+            documentService.setInternalStatus(result.resultingDocument().orElseThrow().id(), "started");
+            return result;
+        });
 
         var content2 = new JsonDocumentContent("{\"street\": \"Kalverstraat\"}");
 
-        runWithoutAuthorization(() -> documentService.createDocument(
-            new NewDocumentRequest(
-                definition.id().name(),
-                content2.asJson()
-            )
-        ));
+        runWithoutAuthorization(() -> {
+            var result = documentService.createDocument(
+                new NewDocumentRequest(
+                    definition.id().name(),
+                    content2.asJson()
+                )
+            );
+            documentService.setInternalStatus(result.resultingDocument().orElseThrow().id(), "suspended");
+            return result;
+        });
 
         JsonSchemaDocumentDefinition definitionHouseV2 = definitionOf("house", 2, "noautodeploy/house_v2.schema.json");
         documentDefinitionService.store(definitionHouseV2);
@@ -157,6 +166,36 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         assertThat(page).isNotNull();
         assertThat(page.getTotalElements()).isEqualTo(1);
         assertThat(page.getTotalPages()).isEqualTo(1);
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
+    void searchShouldSortOnInternalStatusOrderAsc() {
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setDocumentDefinitionName(definition.id().name());
+
+        final Page<? extends Document> page = documentSearchService.search(
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by("internalStatus").ascending())
+        );
+        assertThat(page).isNotNull();
+        List<String> statuses = page.getContent().stream().map(Document::internalStatus).toList();
+        assertThat(statuses).containsExactly("suspended", "started");
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME, authorities = FULL_ACCESS_ROLE)
+    void searchShouldSortOnInternalStatusOrderDesc() {
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.setDocumentDefinitionName(definition.id().name());
+
+        final Page<? extends Document> page = documentSearchService.search(
+            searchRequest,
+            PageRequest.of(0, 10, Sort.by("internalStatus").descending())
+        );
+        assertThat(page).isNotNull();
+        List<String> statuses = page.getContent().stream().map(Document::internalStatus).toList();
+        assertThat(statuses).containsExactly("started", "suspended");
     }
 
     @Test

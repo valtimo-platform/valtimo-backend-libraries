@@ -2,6 +2,13 @@
     "changesetId": "house.internal-case-status",
     "internalCaseStatuses": [
         {
+            "key": "suspended",
+            "caseDefinitionName": "house",
+            "title": "Suspended",
+            "visibleInCaseListByDefault": false,
+            "color": "GRAY"
+        },
+        {
             "key": "closed",
             "caseDefinitionName": "house",
             "title": "Closed",
