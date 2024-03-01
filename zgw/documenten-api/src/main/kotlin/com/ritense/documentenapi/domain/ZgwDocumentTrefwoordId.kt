@@ -21,6 +21,6 @@ import java.io.Serializable
 
 @Embeddable
 data class ZgwDocumentTrefwoordId(
-    private val value: String,
-    private val caseDefinitionName: String,
+    val value: String,
+    val caseDefinitionName: String,
 ) : Serializable
