@@ -288,7 +288,8 @@ class OpenZaakApplicationReadyEventListener(
                     URI(ZAAKTYPE_URL),
                     UUID.fromString(ZAKEN_API_PLUGIN_ID),
                     true,
-                    )
+                    "000000000"
+                )
             )
             informatieObjectTypeLinkService.create(
                 CreateInformatieObjectTypeLinkRequest(
