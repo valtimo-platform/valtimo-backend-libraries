@@ -20,6 +20,7 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.TaskListColumnRepository
@@ -34,6 +35,7 @@ import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valueresolver.ValueResolverService
 import kotlin.jvm.optionals.getOrNull
 import org.springframework.transaction.annotation.Transactional
+import org.zalando.problem.Status
 
 @Transactional
 class TaskColumnService(
@@ -63,6 +65,37 @@ class TaskColumnService(
         taskListColumnDto.order = taskListColumnRepository.countByIdCaseDefinitionName(caseDefinitionName)
         taskListColumnRepository
             .save(TaskListColumnMapper.toEntity(caseDefinitionName, taskListColumnDto))
+    }
+
+    @Throws(InvalidListColumnException::class)
+    fun swapColumnOrder(
+        caseDefinitionName: String,
+        taskColumnKey1: String,
+        taskColumnKey2: String
+    ) {
+        denyManagementOperation()
+
+        assertDocumentDefinitionExists(caseDefinitionName)
+
+        val columnsToSwap = taskListColumnRepository.findAllById(
+            listOf(
+                CaseListColumnId(caseDefinitionName, taskColumnKey1),
+                CaseListColumnId(caseDefinitionName, taskColumnKey2)
+            )
+        )
+
+        if (columnsToSwap.size != 2) {
+            throw InvalidListColumnException(
+                "Couldn't find the two columns to swap. Found ${columnsToSwap.size} columns",
+                Status.BAD_REQUEST
+            )
+        }
+
+        val col1Order = columnsToSwap[0].order
+        columnsToSwap[0] = columnsToSwap[0].copy(order = columnsToSwap[1].order)
+        columnsToSwap[1] = columnsToSwap[1].copy(order = col1Order)
+
+        taskListColumnRepository.saveAll(columnsToSwap)
     }
 
     @Throws(UnknownDocumentDefinitionException::class)

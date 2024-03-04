@@ -47,7 +47,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(PUT, MANAGEMENT_CASE_LIST_COLUMN_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(DELETE, "$MANAGEMENT_CASE_LIST_COLUMN_URL/{columnKey}")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, MANAGEMENT_TASK_LIST_COLUMN_URL)).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(POST, "$MANAGEMENT_TASK_LIST_COLUMN_URL/{columnKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(POST, MANAGEMENT_TASK_LIST_COLUMN_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(PUT, "$MANAGEMENT_TASK_LIST_COLUMN_URL/{columnKey}")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(DELETE, "$MANAGEMENT_TASK_LIST_COLUMN_URL/{columnKey}")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, MANAGEMENT_TAB_URL)).hasAuthority(ADMIN)

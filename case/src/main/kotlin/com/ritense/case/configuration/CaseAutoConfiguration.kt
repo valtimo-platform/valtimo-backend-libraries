@@ -97,7 +97,7 @@ class CaseAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = ["taskListResource"]) // because integration tests fail to initialise in portaaltaak
+    @ConditionalOnMissingBean(TaskListResource::class) // because integration tests fail to initialise in portaaltaak
     fun taskListResource(
         service: TaskColumnService
     ): TaskListResource {
