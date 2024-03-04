@@ -44,7 +44,7 @@
       <bpmn:outgoing>Flow_1uhql59</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_1k5479s" sourceRef="start-handling-process" targetRef="delete-verzoek-from-objectsapi" />
-    <bpmn:serviceTask id="start-handling-process" name="Start handling process" camunda:asyncAfter="true" camunda:expression="${processService.startProcessByProcessDefinitionKeyWithExecution(processDefinitionKey,execution)}">
+    <bpmn:serviceTask id="start-handling-process" name="Start handling process" camunda:asyncAfter="true" camunda:expression="${processService.startProcessByProcessDefinitionKey(processDefinitionKey,execution.businessKey, execution.variables)}">
       <bpmn:incoming>Flow_1gwaqz2</bpmn:incoming>
       <bpmn:outgoing>Flow_1k5479s</bpmn:outgoing>
     </bpmn:serviceTask>

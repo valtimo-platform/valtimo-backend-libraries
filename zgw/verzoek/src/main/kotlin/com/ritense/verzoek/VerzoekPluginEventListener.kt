@@ -96,24 +96,7 @@ open class VerzoekPluginEventListener(
                 "documentUrls" to getDocumentUrls(verzoekObjectData)
             )
 
-            verzoekProperties
-                .filter { it.copyStrategy == CopyStrategy.SPECIFIED }
-                .forEach { property ->
-                    property.mapping?.forEach {
-                        if (it.target.startsWith(PV_PREFIX)) {
-                            try {
-                                val key = it.target.substringAfter(delimiter = "/")
-                                val pointer = "/data/${it.source.substringAfter(delimiter = "/")}"
-
-                                val value = getJsonValueWithPointer(verzoekObjectData, pointer)
-                                verzoekVariables[key] = value
-
-                            } catch (e: Exception) {
-                                logger.error { e.message }
-                            }
-                        }
-                    }
-                }
+            addVerzoekVariablesToProcessVariable(verzoekTypeProperties, verzoekObjectData, verzoekVariables)
 
             val startProcessRequest = StartProcessForDocumentRequest(
                 document.id(), processToStart, verzoekVariables
@@ -223,12 +206,32 @@ open class VerzoekPluginEventListener(
         }
     }
 
-    private fun getJsonValueWithPointer(jsonNode: JsonNode, pointer: String): String? {
-        val valueNode = jsonNode.at(pointer)
-        if (valueNode.isMissingNode) {
-            throw NoSuchElementException("Path does not exist in the JSON: $pointer")
+    private fun addVerzoekVariablesToProcessVariable(
+        verzoekTypeProperties: VerzoekProperties,
+        verzoekObjectData: JsonNode,
+        verzoekVariables: MutableMap<String, Any?>
+    ) {
+        val verzoekData = verzoekObjectData.get("data") ?: throw NotificatiesNotificationEventException(
+            "Verzoek Object data was empty, for verzoek with type '${verzoekTypeProperties.type}'"
+        )
+
+        if (verzoekTypeProperties.copyStrategy == CopyStrategy.SPECIFIED) {
+            verzoekTypeProperties.mapping?.map {
+                if (it.target.startsWith(PV_PREFIX)) {
+                    val verzoekDataItem = verzoekData.at(it.source)
+                    val key = it.target.substringAfter(delimiter = "/")
+
+                    if (verzoekDataItem.isMissingNode || verzoekDataItem.isNull) {
+                        verzoekVariables[key] = null
+                        logger.debug { "Missing Verzoek data of Verzoek type '${verzoekTypeProperties.type}' at path '${it.source}' is not mapped!" }
+                    } else if (verzoekDataItem.isValueNode || verzoekDataItem.isArray || verzoekDataItem.isObject) {
+                        verzoekVariables[key] = objectMapper.treeToValue(verzoekDataItem, Object::class.java)
+                    } else {
+                        verzoekVariables[key] = verzoekDataItem.asText()
+                    }
+                }
+            }
         }
-        return valueNode.asText()
     }
 
     companion object {
