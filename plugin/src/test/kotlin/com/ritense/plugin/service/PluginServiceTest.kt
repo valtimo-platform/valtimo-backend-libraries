@@ -52,6 +52,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.core.env.Environment
 import java.util.Optional
 import javax.validation.Validation
 import kotlin.test.assertEquals
@@ -66,6 +67,7 @@ internal class PluginServiceTest {
     lateinit var valueResolverService: ValueResolverService
     lateinit var pluginService: PluginService
     lateinit var pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
+    lateinit var environment: Environment
 
     @BeforeEach
     fun init() {
@@ -76,6 +78,7 @@ internal class PluginServiceTest {
         pluginFactory = mock()
         valueResolverService = mock()
         pluginConfigurationSearchRepository = mock()
+        environment = mock()
         pluginService = spy(PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
@@ -85,7 +88,8 @@ internal class PluginServiceTest {
             MapperSingleton.get(),
             valueResolverService,
             pluginConfigurationSearchRepository,
-            Validation.buildDefaultValidatorFactory().validator
+            Validation.buildDefaultValidatorFactory().validator,
+            environment
         ))
     }
 
