@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -40,9 +41,10 @@ class ZgwDocumentTrefwoordResource(
     @GetMapping("/management/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord")
     fun getTrefwoorden(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
+        @RequestParam search: String?,
         pageable: Pageable,
     ): ResponseEntity<Page<ZgwDocumentTrefwoord>> {
-        val page = zgwDocumentTrefwoordService.getTrefwoorden(caseDefinitionName, pageable)
+        val page = zgwDocumentTrefwoordService.getTrefwoorden(caseDefinitionName, search, pageable)
         return ResponseEntity.ok(page)
     }
 
