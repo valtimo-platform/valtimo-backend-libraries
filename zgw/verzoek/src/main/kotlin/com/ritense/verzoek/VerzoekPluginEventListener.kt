@@ -55,6 +55,7 @@ open class VerzoekPluginEventListener(
     private val objectMapper: ObjectMapper,
 ) {
 
+    @Transactional
     @RunWithoutAuthorization
     @EventListener(NotificatiesApiNotificationReceivedEvent::class)
     open fun createZaakFromNotificatie(event: NotificatiesApiNotificationReceivedEvent) {

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.document.domain.impl.request.NewDocumentRequest
+import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.plugin.domain.ActivityType
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
@@ -63,7 +64,7 @@ internal class DocumentenApiPluginIT @Autowired constructor(
     private val processDocumentService: ProcessDocumentService,
     private val pluginProcessLinkRepository: PluginProcessLinkRepository,
     private val temporaryResourceStorageService: TemporaryResourceStorageService,
-    private val objectMapper: ObjectMapper,
+    private val objectMapper: ObjectMapper
 ) : BaseIntegrationTest() {
 
     lateinit var server: MockWebServer
@@ -73,6 +74,8 @@ internal class DocumentenApiPluginIT @Autowired constructor(
 
     @BeforeEach
     internal fun setUp() {
+        objectMapper.addMixIn(DocumentInformatieObject::class.java, DocumentInformatieObjectMixin::class.java)
+
         server = MockWebServer()
         setupMockDocumentenApiServer()
         server.start()
@@ -270,7 +273,6 @@ internal class DocumentenApiPluginIT @Autowired constructor(
                 val response = when (path) {
                     "/enkelvoudiginformatieobjecten"
                     -> handleDocumentRequest()
-
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID"
                     -> handleDocumentRequest("+02:00")
                     "/enkelvoudiginformatieobjecten/$DOCUMENT_ID/download"

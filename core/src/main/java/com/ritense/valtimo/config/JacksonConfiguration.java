@@ -21,17 +21,13 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import com.ritense.valtimo.contract.json.MapperSingleton;
-import com.ritense.valtimo.contract.json.serializer.PageSerializer;
-import com.ritense.valtimo.jackson.CustomLocalDateTimeDeserializer;
-import java.time.LocalDateTime;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class JacksonConfiguration {
-
-    public static final String DATE_TIME_FORMAT = MapperSingleton.DATE_TIME_FORMAT;
 
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
@@ -44,10 +40,9 @@ public class JacksonConfiguration {
      * @return the corresponding Jackson module.
      */
     @Bean
+    @ConditionalOnMissingBean(JavaTimeModule.class)
     public JavaTimeModule javaTimeModule() {
-        JavaTimeModule javaTimeModule = new JavaTimeModule();
-        javaTimeModule.addDeserializer(LocalDateTime.class, new CustomLocalDateTimeDeserializer());
-        return javaTimeModule;
+        return new JavaTimeModule();
     }
 
     @Bean
