@@ -98,8 +98,6 @@ class FormFlowService(
     }
 
     fun deleteByKey(definitionKey: String) {
-        val definition = findLatestDefinitionByKey(definitionKey)
-            ?: return
-        formFlowDefinitionRepository.deleteById(definition.id)
+        formFlowDefinitionRepository.deleteAllByIdKey(definitionKey)
     }
 }
