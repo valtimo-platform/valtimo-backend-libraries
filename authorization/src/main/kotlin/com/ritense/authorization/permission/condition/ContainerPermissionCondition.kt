@@ -19,6 +19,7 @@ package com.ritense.authorization.permission.condition
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonView
 import com.ritense.authorization.Action
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationEntityMapper
 import com.ritense.authorization.AuthorizationServiceHolder
 import com.ritense.authorization.permission.ConditionContainer
@@ -42,9 +43,9 @@ data class ContainerPermissionCondition<TO : Any>(
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val conditions: List<PermissionCondition>
 ) : PermissionCondition(PermissionConditionType.CONTAINER) {
-    override fun <FROM: Any> isValid(entity: FROM): Boolean {
+    override fun <FROM : Any> isValid(entity: FROM): Boolean {
         val mapper = findMapper(entity::class.java) as AuthorizationEntityMapper<FROM, TO>
-        val relatedEntities = mapper.mapRelated(entity)
+        val relatedEntities = runWithoutAuthorization { mapper.mapRelated(entity) }
         return relatedEntities.any { relatedEntity ->
             val spec = findChildSpecification(relatedEntity)
             spec.isAuthorized()
@@ -93,7 +94,7 @@ data class ContainerPermissionCondition<TO : Any>(
         )
     }
 
-    private fun <FROM: Any> findMapper(fromType: Class<FROM>): AuthorizationEntityMapper<FROM, TO> {
+    private fun <FROM : Any> findMapper(fromType: Class<FROM>): AuthorizationEntityMapper<FROM, TO> {
         return AuthorizationServiceHolder.currentInstance.getMapper(fromType, this.resourceType)
     }
 

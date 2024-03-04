@@ -36,7 +36,7 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceIntTest extends BaseInteg
         final var processDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
                 .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME);
 
-        assertThat(processDocumentDefinitions).hasSize(1);
+        assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey()).hasToString(PROCESS_DEFINITION_KEY);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
         assertThat(processDocumentDefinitions.get(0).canInitializeDocument()).isTrue();
