@@ -29,7 +29,7 @@ import org.hibernate.annotations.Type
 @Table(name = "task_list_column")
 data class TaskListColumn(
     @EmbeddedId
-    val id: CaseListColumnId,
+    val id: TaskListColumnId,
     @Column(name = "title")
     val title: String?,
     @Column(name = "path")

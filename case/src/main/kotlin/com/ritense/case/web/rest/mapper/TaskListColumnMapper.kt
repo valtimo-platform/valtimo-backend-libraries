@@ -16,8 +16,8 @@
 
 package com.ritense.case.web.rest.mapper
 
-import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.domain.TaskListColumn
+import com.ritense.case.domain.TaskListColumnId
 import com.ritense.case.web.rest.dto.TaskListColumnDto
 
 class TaskListColumnMapper {
@@ -25,7 +25,7 @@ class TaskListColumnMapper {
 
         fun toEntity(caseDefinitionName: String, taskListColumnDto: TaskListColumnDto): TaskListColumn {
             return TaskListColumn(
-                CaseListColumnId(caseDefinitionName, taskListColumnDto.key),
+                TaskListColumnId(caseDefinitionName, taskListColumnDto.key),
                 taskListColumnDto.title,
                 taskListColumnDto.path,
                 taskListColumnDto.displayType,
