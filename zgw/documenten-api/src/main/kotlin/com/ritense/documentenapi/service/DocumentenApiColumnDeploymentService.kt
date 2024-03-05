@@ -35,7 +35,7 @@ open class DocumentenApiColumnDeploymentService(
     @Transactional
     @RunWithoutAuthorization
     @EventListener(DocumentDefinitionDeployedEvent::class)
-    open fun createCaseTabs(event: DocumentDefinitionDeployedEvent) {
+    open fun createDocumentenApiColumns(event: DocumentDefinitionDeployedEvent) {
         if (event.documentDefinition().id().version() == 1L) {
             getDefaultColumns(event.documentDefinition().id().name()).forEach { column ->
                 documentenApiService.updateColumn(column)
