@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.event
+package com.ritense.documentenapi.domain
 
-import com.ritense.outbox.domain.BaseEvent
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.IdClass
+import jakarta.persistence.Table
 
-class DocumentInformatieObjectDownloaded (documentInformatieobjectUrl: String) : BaseEvent(
-    type = "com.ritense.gzac.drc.enkelvoudiginformatieobject.downloaded",
-    resultType = null,
-    resultId = documentInformatieobjectUrl,
-    result = null
+@Entity
+@Table(name = "zgw_document_trefwoord")
+@IdClass(ZgwDocumentTrefwoordId::class)
+data class ZgwDocumentTrefwoord(
+    @Id
+    @Column(name = "case_definition_name")
+    val caseDefinitionName: String,
+    @Id
+    @Column(name = "value")
+    val value: String,
 )

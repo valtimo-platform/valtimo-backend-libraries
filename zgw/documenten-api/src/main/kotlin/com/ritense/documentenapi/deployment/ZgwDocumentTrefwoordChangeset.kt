@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package com.ritense.documentenapi.event
+package com.ritense.case.deployment
 
-import com.ritense.outbox.domain.BaseEvent
+import com.fasterxml.jackson.annotation.JsonProperty
 
-class DocumentInformatieObjectDownloaded (documentInformatieobjectUrl: String) : BaseEvent(
-    type = "com.ritense.gzac.drc.enkelvoudiginformatieobject.downloaded",
-    resultType = null,
-    resultId = documentInformatieobjectUrl,
-    result = null
+data class ZgwDocumentTrefwoordChangeset(
+    val changesetId: String,
+    @JsonProperty("case-definitions")
+    val caseDefinitions: List<CaseDefinitionTrefwoordCollection>
+)
+
+data class CaseDefinitionTrefwoordCollection(
+    val key: String,
+    val trefwoorden: List<String>
 )

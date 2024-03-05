@@ -17,6 +17,7 @@
 package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationService
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
@@ -87,8 +88,9 @@ class DocumentenApiAutoConfiguration {
         pluginService: PluginService,
         catalogiService: CatalogiService,
         documentenApiColumnRepository: DocumentenApiColumnRepository,
+        authorizationService: AuthorizationService,
     ): DocumentenApiService {
-        return DocumentenApiService(pluginService, catalogiService, documentenApiColumnRepository)
+        return DocumentenApiService(pluginService, catalogiService, documentenApiColumnRepository, authorizationService)
     }
 
     @Bean

@@ -235,7 +235,6 @@ class DocumentenApiPlugin(
             verzenddatum = getLocalDateFromMetaData(metadata, "sendDate"),
             informatieobjecttype = informationObjectType,
             formaat = metadata["contentType"] as String?,
-            trefwoorden = listOf("trefwoord1", "trefwoord2")
         )
 
         val documentCreateResult = client.storeDocument(authenticationPluginConfiguration, url, request)

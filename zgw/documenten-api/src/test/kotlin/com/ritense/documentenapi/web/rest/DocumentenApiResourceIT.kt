@@ -20,6 +20,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.documentenapi.BaseIntegrationTest
 import com.ritense.documentenapi.DocumentenApiAuthentication
+import com.ritense.documentenapi.domain.DocumentenApiColumn
+import com.ritense.documentenapi.domain.DocumentenApiColumnId
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey
+import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import jakarta.transaction.Transactional
@@ -40,6 +44,7 @@ import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -59,6 +64,9 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
+
+    @Autowired
+    lateinit var documentenApiService: DocumentenApiService
 
     lateinit var mockMvc: MockMvc
 
@@ -112,6 +120,24 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
             .andExpect(content().string("TEST_DOCUMENT_CONTENT"))
     }
 
+    @Test
+    fun `should get a list of ordered Documenten API columns`() {
+        documentenApiService.updateColumn(
+            DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", DocumentenApiColumnKey.IDENTIFICATIE))
+        )
+        documentenApiService.updateColumn(
+            DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", DocumentenApiColumnKey.TITEL))
+        )
+
+        mockMvc.perform(
+            get("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column", "myCaseDefinition")
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].key").value("identificatie"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].enabled").value(true))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[1].key").value("titel"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[1].enabled").value(true))
+    }
 
     private fun setupMockDocumentenApiServer() {
         val dispatcher: Dispatcher = object : Dispatcher() {

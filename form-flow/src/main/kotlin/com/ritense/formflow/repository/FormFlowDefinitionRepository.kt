@@ -29,4 +29,6 @@ interface FormFlowDefinitionRepository : JpaRepository<FormFlowDefinition, FormF
      * @return The FormFlow definition
      */
     fun findFirstByIdKeyOrderByIdVersionDesc(formFlowKey: String): FormFlowDefinition?
+
+    fun deleteAllByIdKey(formFlowKey: String)
 }
