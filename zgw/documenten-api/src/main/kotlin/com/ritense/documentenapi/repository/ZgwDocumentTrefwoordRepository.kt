@@ -23,7 +23,10 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface ZgwDocumentTrefwoordRepository : JpaRepository<ZgwDocumentTrefwoord, ZgwDocumentTrefwoordId> {
+
     fun findAllByCaseDefinitionName(caseDefinitionName: String, pageable: Pageable): Page<ZgwDocumentTrefwoord>
+
+    fun findAllByCaseDefinitionNameAndValueContaining(caseDefinitionName: String, search: String?, pageable: Pageable): Page<ZgwDocumentTrefwoord>
 
     fun findAllByCaseDefinitionNameAndValue(caseDefinitionName: String, value: String): ZgwDocumentTrefwoord?
 

@@ -30,6 +30,14 @@ class ZgwDocumentTrefwoordService(
         return zgwDocumentTrefwoordRepository.findAllByCaseDefinitionName(caseDefinitionName, pageable)
     }
 
+    fun getTrefwoorden(caseDefinitionName: String, search: String?, pageable: Pageable): Page<ZgwDocumentTrefwoord> {
+        return if (!search.isNullOrBlank()) {
+            zgwDocumentTrefwoordRepository.findAllByCaseDefinitionNameAndValueContaining(caseDefinitionName, search, pageable)
+        } else {
+            zgwDocumentTrefwoordRepository.findAllByCaseDefinitionName(caseDefinitionName, pageable)
+        }
+    }
+
     fun createTrefwoord(caseDefinitionName: String, trefwoord: String) {
         val existingTrefwoord = zgwDocumentTrefwoordRepository.findAllByCaseDefinitionNameAndValue(caseDefinitionName, trefwoord)
         require(existingTrefwoord == null) {

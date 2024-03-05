@@ -42,12 +42,13 @@ class ZgwDocumentTrefwoordServiceTest {
     @Test
     fun `test getTrefwoorden`() {
         val caseDefinitionName = "TestDefinition"
+        val search = "some string"
         val pageable = Pageable.unpaged()
         val expectedPage = PageImpl(emptyList<ZgwDocumentTrefwoord>())
 
-        whenever(repository.findAllByCaseDefinitionName(caseDefinitionName, pageable)).thenReturn(expectedPage)
+        whenever(repository.findAllByCaseDefinitionNameAndValueContaining(caseDefinitionName, search, pageable)).thenReturn(expectedPage)
 
-        val result = service.getTrefwoorden(caseDefinitionName, pageable)
+        val result = service.getTrefwoorden(caseDefinitionName, search, pageable)
 
         assertEquals(expectedPage, result)
     }
