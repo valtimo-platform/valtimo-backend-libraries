@@ -33,6 +33,7 @@ import com.ritense.plugin.domain.PluginConfiguration
 import com.ritense.plugin.domain.PluginConfigurationId
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.assertj.core.api.Assertions.assertThat
 import org.camunda.bpm.engine.RuntimeService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -216,6 +217,59 @@ internal class VerzoekPluginEventListenerIntTest : BaseIntegrationTest() {
             "John Doe",
             documentInstance.content().getValueBy(JsonPointer.valueOf("/fullname")).get().textValue()
         )
+    }
+
+    @Test
+    fun `should add the verzoek data to the process variables`() {
+        createPluginConfiguration(
+            "verzoek",
+            """
+            {
+              "notificatiesApiPluginConfiguration": "${notificatiesApiPluginConfiguration.id.id}",
+              "processToStart": "verzoek-process",
+              "rsin": "$rsin",
+              "verzoekProperties": [{
+                "type": "objection",
+                "caseDefinitionName": "${documentDefinition.id().name()}",
+                "processDefinitionKey": "objection-process",
+                "objectManagementId": "${objectManagement.id}",
+                "initiatorRoltypeUrl": "$initiatoRolType",
+                "initiatorRolDescription": "Initiator",
+                "copyStrategy": "specified",
+                "mapping": [{
+                    "target": "doc:/email",
+                    "source": "/email"
+                },
+                {
+                    "target": "pv:/fullname",
+                    "source": "/name"
+                }]
+              }]
+            }
+            """.trimIndent()
+        )
+        //mocks
+        val mockObjectenApiPlugin = mock<ObjectenApiPlugin>()
+        doCallRealMethod().whenever(pluginService).createInstance(any<Class<VerzoekPlugin>>(), any())
+
+        doReturn(mockObjectenApiPlugin).whenever(pluginService)
+            .createInstance(eq(PluginConfigurationId(objectManagement.objectenApiPluginConfigurationId)))
+        doReturn(createObjectWrapper(withMetaData = true, verzoekObjectType, true)).whenever(mockObjectenApiPlugin)
+            .getObject(any())
+        //tested method
+        val event = createEvent()
+        verzoekPluginEventListener.createZaakFromNotificatie(event)
+
+        //assertions
+        val processList = processService.createProcessInstanceQuery().processDefinitionKey("verzoek-process").list()
+        assertEquals(1, processList.size)
+        val processVariableMap =
+            processService.createVariableInstanceQuery()
+                .processInstanceIdIn(processList[0].id).list().associate { it.name to it.value }
+        assertThat(processVariableMap).hasSize(10)
+        assertThat(processVariableMap).containsKey("fullname")
+        assertThat(processVariableMap).doesNotContainKey("email")
+        assertEquals("John Doe", processVariableMap["fullname"])
     }
 
     @Test

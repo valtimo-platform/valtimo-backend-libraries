@@ -38,11 +38,14 @@ import com.ritense.processdocument.service.ProcessDocumentService
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
+import com.ritense.processdocument.resolver.DocumentJsonValueResolverFactory.Companion.PREFIX as DOC_PREFIX
+import com.ritense.valueresolver.ProcessVariableValueResolverFactory.Companion.PREFIX as PV_PREFIX
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.annotation.Transactional
 import java.net.URI
 
+@Transactional
 open class VerzoekPluginEventListener(
     private val pluginService: PluginService,
     private val objectManagementService: ObjectManagementService,
@@ -69,20 +72,20 @@ open class VerzoekPluginEventListener(
         val objectManagement = objectManagementService.findByObjectTypeId(objectType.substringAfterLast("/")) ?: return
 
         pluginService.createInstance(VerzoekPlugin::class.java) { properties: JsonNode ->
-            properties.get("verzoekProperties").any { it.get("objectManagementId").textValue().equals(objectManagement.id.toString()) }
+            properties.get("verzoekProperties")
+                .any { it.get("objectManagementId").textValue().equals(objectManagement.id.toString()) }
         }?.run {
             val verzoekObjectData = getVerzoekObjectData(objectManagement, event)
             val verzoekTypeProperties = getVerzoekTypeProperties(verzoekObjectData)
             val document = createDocument(verzoekTypeProperties, verzoekObjectData)
-
+            val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
             val initiatorType = if (verzoekObjectData.has("kvk")) {
                 "kvk"
             } else {
                 "bsn"
             }
-            val zaakTypeUrl = zaaktypeUrlProvider.getZaaktypeUrl(document.definitionId().name())
-            val startProcessRequest = StartProcessForDocumentRequest(
-                document.id(), processToStart, mapOf(
+
+            val verzoekVariables = mutableMapOf(
                 "RSIN" to this.rsin.toString(),
                 "zaakTypeUrl" to zaakTypeUrl.toString(),
                 "rolTypeUrl" to verzoekTypeProperties.initiatorRoltypeUrl.toString(),
@@ -93,6 +96,11 @@ open class VerzoekPluginEventListener(
                 "processDefinitionKey" to verzoekTypeProperties.processDefinitionKey,
                 "documentUrls" to getDocumentUrls(verzoekObjectData)
             )
+
+            addVerzoekVariablesToProcessVariable(verzoekTypeProperties, verzoekObjectData, verzoekVariables)
+
+            val startProcessRequest = StartProcessForDocumentRequest(
+                document.id(), processToStart, verzoekVariables
             )
 
             startProcess(startProcessRequest)
@@ -175,8 +183,10 @@ open class VerzoekPluginEventListener(
             verzoekTypeProperties.mapping?.map {
                 val verzoekDataItem = verzoekDataData.at(it.source)
                 if (!verzoekDataItem.isMissingNode) {
-                    val documentPath = JsonPointer.valueOf(it.target.substringAfter(delimiter = ":"))
-                    jsonPatchBuilder.addJsonNodeValue(documentContent, documentPath, verzoekDataItem)
+                    if (it.target.startsWith(DOC_PREFIX)) {
+                        val documentPath = JsonPointer.valueOf(it.target.substringAfter(delimiter = ":"))
+                        jsonPatchBuilder.addJsonNodeValue(documentContent, documentPath, verzoekDataItem)
+                    }
                 } else {
                     logger.debug { "Missing Verzoek data of Verzoek type '${verzoekTypeProperties.type}' at path '${it.source}' is not mapped!" }
                 }
@@ -194,6 +204,34 @@ open class VerzoekPluginEventListener(
                     "Reason:\n" +
                     result.errors().joinToString(separator = "\n - ")
             )
+        }
+    }
+
+    private fun addVerzoekVariablesToProcessVariable(
+        verzoekTypeProperties: VerzoekProperties,
+        verzoekObjectData: JsonNode,
+        verzoekVariables: MutableMap<String, Any?>
+    ) {
+        val verzoekData = verzoekObjectData.get("data") ?: throw NotificatiesNotificationEventException(
+            "Verzoek Object data was empty, for verzoek with type '${verzoekTypeProperties.type}'"
+        )
+
+        if (verzoekTypeProperties.copyStrategy == CopyStrategy.SPECIFIED) {
+            verzoekTypeProperties.mapping?.map {
+                if (it.target.startsWith(PV_PREFIX)) {
+                    val verzoekDataItem = verzoekData.at(it.source)
+                    val key = it.target.substringAfter(delimiter = "/")
+
+                    if (verzoekDataItem.isMissingNode || verzoekDataItem.isNull) {
+                        verzoekVariables[key] = null
+                        logger.debug { "Missing Verzoek data of Verzoek type '${verzoekTypeProperties.type}' at path '${it.source}' is not mapped!" }
+                    } else if (verzoekDataItem.isValueNode || verzoekDataItem.isArray || verzoekDataItem.isObject) {
+                        verzoekVariables[key] = objectMapper.treeToValue(verzoekDataItem, Object::class.java)
+                    } else {
+                        verzoekVariables[key] = verzoekDataItem.asText()
+                    }
+                }
+            }
         }
     }
 
