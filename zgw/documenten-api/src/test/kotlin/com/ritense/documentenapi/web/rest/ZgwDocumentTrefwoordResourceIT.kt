@@ -82,6 +82,25 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
 
     @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
+    fun `test getTrefwoorden with search`() {
+        val caseDefinitionName = "TestDefinition"
+
+        caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
+
+        service.createTrefwoord(caseDefinitionName, "test123")
+        service.createTrefwoord(caseDefinitionName, "test456")
+
+        mockMvc.perform(get("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord?search=test1", caseDefinitionName)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.content").isArray)
+            .andExpect(jsonPath("$.content[0].caseDefinitionName").value("TestDefinition"))
+            .andExpect(jsonPath("$.content[0].value").value("test123"))
+    }
+
+    @Test
+    @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `test createTrefwoord`() {
         val caseDefinitionName = "TestDefinition"
         val trefwoord = "TestTrefwoord"
