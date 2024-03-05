@@ -29,5 +29,6 @@ interface DocumentenApiColumnRepository : JpaRepository<DocumentenApiColumn, Doc
     ): DocumentenApiColumn?
 
     fun findAllByIdCaseDefinitionNameOrderByOrder(caseDefinitionName: String): List<DocumentenApiColumn>
+    fun findAllByIdCaseDefinitionNameAndEnabledIsTrueOrderByOrder(caseDefinitionName: String): List<DocumentenApiColumn>
     fun countAllByIdCaseDefinitionName(caseDefinitionName: String): Long
 }
