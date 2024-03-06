@@ -54,6 +54,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.core.env.Environment
 import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -70,6 +71,7 @@ internal class PluginServiceTest {
     lateinit var pluginConfigurationSearchRepository: PluginConfigurationSearchRepository
     lateinit var applicationEventPublisher: ApplicationEventPublisher
     lateinit var encryptionService: EncryptionService
+    lateinit var environment: Environment
 
     @BeforeEach
     fun init() {
@@ -82,6 +84,7 @@ internal class PluginServiceTest {
         pluginConfigurationSearchRepository = mock()
         applicationEventPublisher = mock()
         encryptionService = mock()
+        environment = mock()
         pluginService = spy(PluginService(
             pluginDefinitionRepository,
             pluginConfigurationRepository,
@@ -93,7 +96,8 @@ internal class PluginServiceTest {
             pluginConfigurationSearchRepository,
             Validation.buildDefaultValidatorFactory().validator,
             applicationEventPublisher,
-            encryptionService
+            encryptionService,
+            environment
         ))
     }
 

@@ -58,6 +58,7 @@ import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.camunda.bpm.engine.delegate.DelegateTask
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.core.env.Environment
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.Method
@@ -79,6 +80,7 @@ class PluginService(
     private val validator: Validator,
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val encryptionService: EncryptionService,
+    private val environment: Environment
 ) {
 
     fun getObjectMapper(): ObjectMapper {
@@ -201,7 +203,8 @@ class PluginService(
                 Regex("\\$\\{([^\\}]+)\\}").findAll(value)
                     .map { it.groupValues }
                     .forEach { (placeholder, placeholderValue) ->
-                        val resolvedValue = System.getenv(placeholderValue)
+                        val resolvedValue = environment.getProperty(placeholderValue)
+                            ?: System.getenv(placeholderValue)
                             ?: System.getProperty(placeholderValue)
                             ?: throw IllegalStateException("Failed to find environment variable: '$placeholderValue'")
                         value = value.replace(placeholder, resolvedValue)
