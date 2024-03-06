@@ -96,7 +96,7 @@ internal class PluginServiceTest {
             pluginConfigurationSearchRepository,
             Validation.buildDefaultValidatorFactory().validator,
             applicationEventPublisher,
-            encryptionService
+            encryptionService,
             environment
         ))
     }
