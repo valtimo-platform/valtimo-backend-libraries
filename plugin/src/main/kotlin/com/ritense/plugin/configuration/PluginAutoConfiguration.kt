@@ -50,6 +50,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
+import org.springframework.core.env.Environment
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
@@ -122,7 +123,8 @@ class PluginAutoConfiguration {
         pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
         validator: Validator,
         applicationEventPublisher: ApplicationEventPublisher,
-        encryptionService: EncryptionService
+        encryptionService: EncryptionService,
+        environment: Environment
     ): PluginService {
         return PluginService(
             pluginDefinitionRepository,
@@ -135,7 +137,8 @@ class PluginAutoConfiguration {
             pluginConfigurationSearchRepository,
             validator,
             applicationEventPublisher,
-            encryptionService
+            encryptionService,
+            environment,
         )
     }
 
