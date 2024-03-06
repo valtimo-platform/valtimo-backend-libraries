@@ -16,12 +16,10 @@
 
 package com.ritense.case.service.validations
 
-import com.ritense.case.web.rest.dto.CaseListColumnDto
+interface ListColumnValidator<T> {
 
-interface CaseDefinitionColumnValidator {
+    fun validate(caseDefinitionName: String, caseListColumnDto: T)
 
-    fun validate(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto)
-
-    fun validate(caseDefinitionName: String, caseListColumnDtoList: List<CaseListColumnDto>)
+    fun validate(caseDefinitionName: String, caseListColumnDtoList: List<T>)
 
 }

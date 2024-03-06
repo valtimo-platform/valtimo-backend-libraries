@@ -23,15 +23,15 @@ import com.ritense.document.service.DocumentDefinitionService
 import com.ritense.valueresolver.ValueResolverService
 import org.zalando.problem.Status
 
-class UpdateColumnValidator(
+class UpdateCaseListColumnValidator(
     caseDefinitionSettingsRepository: CaseDefinitionListColumnRepository,
     documentDefinitionService: DocumentDefinitionService,
     valueResolverService: ValueResolverService,
-) : ValidationUtils(
+) : CaseListColumnValidationUtils(
     caseDefinitionSettingsRepository,
     documentDefinitionService,
     valueResolverService
-), CaseDefinitionColumnValidator {
+), ListColumnValidator<CaseListColumnDto> {
     override fun validate(caseDefinitionName: String, caseListColumnDto: CaseListColumnDto) {
         TODO("Not yet implemented")
     }
