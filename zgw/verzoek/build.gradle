@@ -39,6 +39,7 @@ dependencies {
     implementation project(":zgw")
     implementation project(":zgw:catalogi-api")
     implementation project(":zgw:notificaties-api")
+    implementation project(":value-resolver")
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation project(":zgw:object-management")
     implementation project(":zgw:objecten-api")
@@ -46,6 +47,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 
     testImplementation project(":core")
     testImplementation project(":test-utils-common")
