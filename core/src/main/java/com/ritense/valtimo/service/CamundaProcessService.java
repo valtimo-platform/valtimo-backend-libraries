@@ -20,7 +20,6 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
-import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider;
 import com.ritense.valtimo.camunda.domain.CamundaExecution;
 import com.ritense.valtimo.camunda.domain.CamundaHistoricProcessInstance;
 import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
@@ -71,7 +70,6 @@ import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpe
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byActive;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
-import static org.camunda.bpm.engine.impl.util.EnsureUtil.ensureNotNull;
 
 public class CamundaProcessService {
 
@@ -173,23 +171,13 @@ public class CamundaProcessService {
     public ProcessInstanceWithDefinition startProcess(
         String processDefinitionKey, String businessKey, Map<String, Object> variables
     ) {
+        denyAuthorization();
         final CamundaProcessDefinition processDefinition = AuthorizationContext
             .runWithoutAuthorization(() -> camundaRepositoryService.findLatestProcessDefinition(processDefinitionKey));
         if (processDefinition == null) {
             throw new IllegalStateException("No process definition found with key: '" + processDefinitionKey + "'");
         }
         businessKey = businessKey.equals(UNDEFINED_BUSINESS_KEY) ? null : businessKey;
-
-        authorizationService.requirePermission(
-            new EntityAuthorizationRequest(
-                CamundaExecution.class,
-                CamundaExecutionActionProvider.CREATE,
-                createDummyCamundaExecution(
-                    processDefinition,
-                    businessKey
-                )
-            )
-        );
 
         ProcessInstance processInstance = formService.submitStartForm(
             processDefinition.getId(),
