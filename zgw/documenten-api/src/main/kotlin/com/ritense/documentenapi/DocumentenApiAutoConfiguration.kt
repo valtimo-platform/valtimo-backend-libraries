@@ -19,10 +19,12 @@ package com.ritense.documentenapi
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
 import com.ritense.catalogiapi.service.CatalogiService
+import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.client.DocumentenApiClient
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.security.DocumentenApiHttpSecurityConfigurer
 import com.ritense.documentenapi.service.DocumentDeleteHandler
+import com.ritense.documentenapi.service.DocumentenApiColumnDeploymentService
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.web.rest.DocumentenApiManagementResource
 import com.ritense.documentenapi.web.rest.DocumentenApiResource
@@ -89,8 +91,23 @@ class DocumentenApiAutoConfiguration {
         catalogiService: CatalogiService,
         documentenApiColumnRepository: DocumentenApiColumnRepository,
         authorizationService: AuthorizationService,
+        documentDefinitionService: JsonSchemaDocumentDefinitionService,
     ): DocumentenApiService {
-        return DocumentenApiService(pluginService, catalogiService, documentenApiColumnRepository, authorizationService)
+        return DocumentenApiService(
+            pluginService,
+            catalogiService,
+            documentenApiColumnRepository,
+            authorizationService,
+            documentDefinitionService,
+        )
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(DocumentenApiColumnDeploymentService::class)
+    fun documentenApiColumnDeploymentService(
+        documentenApiService: DocumentenApiService,
+    ): DocumentenApiColumnDeploymentService {
+        return DocumentenApiColumnDeploymentService(documentenApiService)
     }
 
     @Bean

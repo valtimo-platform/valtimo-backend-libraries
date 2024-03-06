@@ -18,6 +18,7 @@ package com.ritense.documentenapi.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.documentenapi.BaseIntegrationTest
 import com.ritense.documentenapi.DocumentenApiAuthentication
 import com.ritense.documentenapi.domain.DocumentenApiColumn
@@ -122,12 +123,14 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
 
     @Test
     fun `should get a list of ordered Documenten API columns`() {
-        documentenApiService.updateColumn(
-            DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", DocumentenApiColumnKey.IDENTIFICATIE))
-        )
-        documentenApiService.updateColumn(
-            DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", DocumentenApiColumnKey.TITEL))
-        )
+        runWithoutAuthorization {
+            documentenApiService.updateColumn(
+                DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", DocumentenApiColumnKey.IDENTIFICATIE))
+            )
+            documentenApiService.updateColumn(
+                DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", DocumentenApiColumnKey.TITEL))
+            )
+        }
 
         mockMvc.perform(
             get("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column", "myCaseDefinition")

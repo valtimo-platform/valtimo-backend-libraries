@@ -20,17 +20,20 @@ import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 
-data class ColumnDto(
+data class ConfiguredColumnDto(
     val key: String,
+    val enabled: Boolean,
 ) {
     fun toEntity(caseDefinitionName: String, order: Int = 0): DocumentenApiColumn = DocumentenApiColumn(
         id = DocumentenApiColumnId(caseDefinitionName, DocumentenApiColumnKey.valueOf(key.uppercase())),
-        order = order
+        order = order,
+        enabled = enabled
     )
 
     companion object {
-        fun of(column: DocumentenApiColumn): ColumnDto = ColumnDto(
+        fun of(column: DocumentenApiColumn): ConfiguredColumnDto = ConfiguredColumnDto(
             key = column.id.key.name.lowercase(),
+            enabled = column.enabled,
         )
     }
 }

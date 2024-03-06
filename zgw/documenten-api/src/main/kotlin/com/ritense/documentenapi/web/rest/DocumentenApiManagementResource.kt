@@ -18,7 +18,7 @@ package com.ritense.documentenapi.web.rest
 
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.documentenapi.service.DocumentenApiService
-import com.ritense.documentenapi.web.rest.dto.ColumnDto
+import com.ritense.documentenapi.web.rest.dto.ConfiguredColumnDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -37,29 +37,31 @@ class DocumentenApiManagementResource(
 ) {
     @RunWithoutAuthorization
     @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column")
-    fun getColumns(
+    fun getConfiguredColumns(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
-    ): ResponseEntity<List<ColumnDto>> {
-        return ResponseEntity.ok(documentenApiService.getColumns(caseDefinitionName).map { ColumnDto.of(it) })
+    ): ResponseEntity<List<ConfiguredColumnDto>> {
+        return ResponseEntity.ok(documentenApiService.getConfiguredColumns(caseDefinitionName).map { ConfiguredColumnDto.of(it) })
     }
 
+    @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column")
     fun updateColumnOrder(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
-        @RequestBody columnDtos: List<ColumnDto>,
-    ): ResponseEntity<List<ColumnDto>> {
+        @RequestBody columnDtos: List<ConfiguredColumnDto>,
+    ): ResponseEntity<List<ConfiguredColumnDto>> {
         val columns = columnDtos.mapIndexed { index, columnDto -> columnDto.toEntity(caseDefinitionName, index) }
-        return ResponseEntity.ok(documentenApiService.updateColumnOrder(columns).map { ColumnDto.of(it) })
+        return ResponseEntity.ok(documentenApiService.updateColumnOrder(columns).map { ConfiguredColumnDto.of(it) })
     }
 
+    @RunWithoutAuthorization
     @PutMapping("/v1/case-definition/{caseDefinitionName}/zgw-document-column/{columnKey}")
     fun updateColumn(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @PathVariable(name = "columnKey") columnKey: String,
-        @RequestBody column: ColumnDto,
-    ): ResponseEntity<ColumnDto> {
+        @RequestBody column: ConfiguredColumnDto,
+    ): ResponseEntity<ConfiguredColumnDto> {
         require(column.key == columnKey)
         val updatedColumn = documentenApiService.updateColumn(column.toEntity(caseDefinitionName))
-        return ResponseEntity.ok(ColumnDto.of(updatedColumn))
+        return ResponseEntity.ok(ConfiguredColumnDto.of(updatedColumn))
     }
 }
