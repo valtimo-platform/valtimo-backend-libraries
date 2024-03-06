@@ -182,7 +182,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                     Object value = valueMap.get(fieldKey);
                     if(value != null) {
                         JsonNode valueNode = Mapper.INSTANCE.get().valueToTree(value);
-                        fieldNode.set(DEFAULT_VALUE_FIELD, htmlEscape(valueNode));
+                        fieldNode.set(DEFAULT_VALUE_FIELD, valueNode);
                     }
                 });
     }
@@ -356,7 +356,7 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
                 .flatMap(
                     contentItem -> getValueBy(content, contentItem.getJsonPointer())
                 ).ifPresent(
-                    valueNode -> field.set(DEFAULT_VALUE_FIELD, htmlEscape(valueNode))
+                    valueNode -> field.set(DEFAULT_VALUE_FIELD, valueNode)
                 );
         }
     }
@@ -370,14 +370,6 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
             return getExternalFormField(node);
         }
         return Optional.empty();
-    }
-
-    private JsonNode htmlEscape(JsonNode input) {
-        if (input.isTextual()) {
-            String escapedContent = HtmlUtils.htmlEscape(input.textValue(), StandardCharsets.UTF_8.name());
-            return new TextNode(escapedContent);
-        }
-        return input;
     }
 
     private Optional<JsonPointer> buildJsonPointer(String jsonPointerExpression) {
