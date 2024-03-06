@@ -25,10 +25,10 @@ import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.CaseDefinitionListColumnRepository
 import com.ritense.case.repository.CaseDefinitionSettingsRepository
-import com.ritense.case.service.validations.CaseDefinitionColumnValidator
-import com.ritense.case.service.validations.CreateColumnValidator
+import com.ritense.case.service.validations.ListColumnValidator
+import com.ritense.case.service.validations.CreateCaseListColumnValidator
 import com.ritense.case.service.validations.Operation
-import com.ritense.case.service.validations.UpdateColumnValidator
+import com.ritense.case.service.validations.UpdateCaseListColumnValidator
 import com.ritense.case.web.rest.dto.CaseListColumnDto
 import com.ritense.case.web.rest.dto.CaseSettingsDto
 import com.ritense.case.web.rest.mapper.CaseListColumnMapper
@@ -47,13 +47,13 @@ class CaseDefinitionService(
     valueResolverService: ValueResolverService,
     private val authorizationService: AuthorizationService
 ) {
-    var validators: Map<Operation, CaseDefinitionColumnValidator> = mapOf(
-        Operation.CREATE to CreateColumnValidator(
+    var validators: Map<Operation, ListColumnValidator<CaseListColumnDto>> = mapOf(
+        Operation.CREATE to CreateCaseListColumnValidator(
             caseDefinitionListColumnRepository,
             documentDefinitionService,
             valueResolverService
         ),
-        Operation.UPDATE to UpdateColumnValidator(
+        Operation.UPDATE to UpdateCaseListColumnValidator(
             caseDefinitionListColumnRepository,
             documentDefinitionService,
             valueResolverService
