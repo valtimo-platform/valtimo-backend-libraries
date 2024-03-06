@@ -43,6 +43,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
@@ -544,7 +545,15 @@ public class JsonSchemaDocumentSearchService implements DocumentSearchService {
                         docProperty = DOCUMENT_FIELD_MAP.get(docProperty);
                     }
 
-                    var path = stringToPath(root, docProperty);
+                    Path<?> parent;
+                    if( docProperty.equals(INTERNAL_STATUS_ORDER)) {
+                        parent = root.join(INTERNAL_STATUS, JoinType.LEFT);
+                        docProperty = docProperty.substring(INTERNAL_STATUS.length() + 1);
+                    } else {
+                        parent = root;
+                    }
+
+                    var path = stringToPath(parent, docProperty);
                     // This groupBy workaround is needed because PBAC adds a groupBy on 'id' by default.
                     // Since sorting columns should be added to the groupBy, we do that here
                     if (!query.getGroupList().isEmpty() && !query.getGroupList().contains(path)) {

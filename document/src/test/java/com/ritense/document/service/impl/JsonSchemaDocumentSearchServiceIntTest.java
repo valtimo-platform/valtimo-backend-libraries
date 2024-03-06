@@ -179,8 +179,9 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
             PageRequest.of(0, 10, Sort.by("internalStatus").ascending())
         );
         assertThat(page).isNotNull();
+        assertThat(page.getTotalElements()).isEqualTo(3);
         List<String> statuses = page.getContent().stream().map(Document::internalStatus).toList();
-        assertThat(statuses).containsExactly("suspended", "started");
+        assertThat(statuses).containsExactly("suspended", "started", null);
     }
 
     @Test
@@ -195,7 +196,7 @@ class JsonSchemaDocumentSearchServiceIntTest extends BaseIntegrationTest {
         );
         assertThat(page).isNotNull();
         List<String> statuses = page.getContent().stream().map(Document::internalStatus).toList();
-        assertThat(statuses).containsExactly("started", "suspended");
+        assertThat(statuses).containsExactly(null, "started", "suspended");
     }
 
     @Test
