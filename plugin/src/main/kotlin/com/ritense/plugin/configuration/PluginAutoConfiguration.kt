@@ -46,6 +46,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Lazy
 import org.springframework.core.annotation.Order
+import org.springframework.core.env.Environment
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import javax.persistence.EntityManager
@@ -118,7 +119,8 @@ class PluginAutoConfiguration {
         objectMapper: ObjectMapper,
         valueResolverService: ValueResolverService,
         pluginConfigurationSearchRepository: PluginConfigurationSearchRepository,
-        validator: Validator
+        validator: Validator,
+        environment: Environment
     ): PluginService {
         return PluginService(
             pluginDefinitionRepository,
@@ -130,6 +132,7 @@ class PluginAutoConfiguration {
             valueResolverService,
             pluginConfigurationSearchRepository,
             validator,
+            environment,
         )
     }
 
