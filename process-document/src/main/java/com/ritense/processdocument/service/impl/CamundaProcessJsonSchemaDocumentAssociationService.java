@@ -20,7 +20,6 @@ import com.ritense.authorization.Action;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.AuthorizationService;
 import com.ritense.authorization.request.EntityAuthorizationRequest;
-import com.ritense.authorization.request.RelatedEntityAuthorizationRequest;
 import com.ritense.document.domain.Document;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
@@ -49,9 +48,6 @@ import com.ritense.processdocument.exception.UnknownProcessDefinitionException;
 import com.ritense.processdocument.repository.ProcessDocumentDefinitionRepository;
 import com.ritense.processdocument.repository.ProcessDocumentInstanceRepository;
 import com.ritense.processdocument.service.ProcessDocumentAssociationService;
-import com.ritense.valtimo.camunda.authorization.CamundaExecutionActionProvider;
-import com.ritense.valtimo.camunda.domain.CamundaExecution;
-import com.ritense.valtimo.camunda.domain.CamundaProcessDefinition;
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.result.FunctionResult;
@@ -149,26 +145,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName) {
-
-        List<CamundaProcessJsonSchemaDocumentDefinition> results = processDocumentDefinitionRepository
+        return processDocumentDefinitionRepository
             .findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(documentDefinitionName);
-
-        return results.stream().filter(result -> {
-            CamundaProcessDefinition processDefinition = AuthorizationContext.runWithoutAuthorization(() ->
-                repositoryService.findLatestProcessDefinition(
-                    result.processDocumentDefinitionId().processDefinitionKey().toString()
-                )
-            );
-
-            return authorizationService.hasPermission(
-                new RelatedEntityAuthorizationRequest<>(
-                    CamundaExecution.class,
-                    CamundaExecutionActionProvider.CREATE,
-                    CamundaProcessDefinition.class,
-                    processDefinition.getId()
-                )
-            );
-        }).toList();
     }
 
     @Override
