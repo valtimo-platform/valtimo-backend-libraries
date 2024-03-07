@@ -26,14 +26,12 @@ class DefaultOutboxServiceIntTest : BaseIntegrationTest() {
 
     @Test
     fun `should create OutboxMessage`() {
-        val event = "An event happened"
+        defaultOutboxService.send("rootId", "eventType", "event")
 
-       defaultOutboxService.send("rootId", "eventType", "event")
-
-       val message = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
-       assertThat(message?.aggregateRootId).isEqualTo("rootId")
+        val message = outboxMessageRepository.findTopByOrderByCreatedOnAsc()
+        assertThat(message?.aggregateRootId).isEqualTo("rootId")
         assertThat(message?.eventType).isEqualTo("eventType")
-       assertThat(message?.message).isEqualTo("event")
+        assertThat(message?.message).isEqualTo("event")
     }
 
 }

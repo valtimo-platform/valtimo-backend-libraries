@@ -35,7 +35,6 @@ import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.FormLinkNewProcessFormFlowProviderImpl
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeCustomComponentHandler
-import com.ritense.valtimo.formflow.service.FormFlowSupportedProcessLinksHandler
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper
 import com.ritense.valtimo.formflow.repository.FormFlowProcessLinkRepository
@@ -77,32 +76,6 @@ class FormFlowValtimoAutoConfiguration {
             documentService,
             repositoryService,
             runtimeService
-        )
-    }
-
-    @Bean
-    fun formFlowProcessLinkTaskProvider(
-        formFlowService: FormFlowService,
-        repositoryService: RepositoryService,
-        documentService: DocumentService,
-        runtimeService: RuntimeService,
-    ): ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties> {
-        return FormFlowProcessLinkActivityHandler(
-            formFlowService,
-            repositoryService,
-            documentService,
-            runtimeService
-        )
-    }
-
-    @Bean
-    fun formLinkNewProcessFormFlowProvider(
-        formFlowService: FormFlowService,
-        processFormAssociationRepository: ProcessFormAssociationRepository
-    ): FormLinkNewProcessFormFlowProvider {
-        return FormLinkNewProcessFormFlowProviderImpl(
-            formFlowService,
-            processFormAssociationRepository
         )
     }
 
