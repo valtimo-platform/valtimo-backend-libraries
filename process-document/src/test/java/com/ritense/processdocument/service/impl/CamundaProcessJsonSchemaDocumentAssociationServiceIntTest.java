@@ -31,9 +31,12 @@ import com.ritense.processdocument.service.result.ModifyDocumentAndCompleteTaskR
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import com.ritense.testutilscommon.security.WithMockTenantUser;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
+import org.aspectj.lang.annotation.Before;
 import org.camunda.bpm.engine.RuntimeService;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
+
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.List;
@@ -59,6 +62,40 @@ class CamundaProcessJsonSchemaDocumentAssociationServiceIntTest extends BaseInte
         assertThat(processDocumentDefinitions.size()).isEqualTo(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
+    }
+
+    @Test
+    public void findProcessDocumentDefinitionWithStartableByUserTrue() {
+        final var processDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
+            .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME, true);
+
+        assertThat(processDocumentDefinitions.size()).isEqualTo(1);
+        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
+        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
+        assertThat(processDocumentDefinitions.get(0).startableByUser()).isEqualTo(true);
+    }
+
+    @Test
+    public void findProcessDocumentDefinitionStartableByUserFalse() {
+        var request = new ProcessDocumentDefinitionRequest(
+            "embedded-subprocess-example",
+            DOCUMENT_DEFINITION_NAME,
+            true,
+            false
+        );
+
+        final var optionalProcessDocumentDefinition = camundaProcessJsonSchemaDocumentAssociationService
+            .createProcessDocumentDefinition(request);
+
+        assertThat(optionalProcessDocumentDefinition).isPresent();
+
+        final var processDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
+            .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME, false);
+
+        assertThat(processDocumentDefinitions.size()).isEqualTo(1);
+        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(request.processDefinitionKey());
+        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(request.documentDefinitionName());
+        assertThat(processDocumentDefinitions.get(0).startableByUser()).isEqualTo(false);
     }
 
     @Test
