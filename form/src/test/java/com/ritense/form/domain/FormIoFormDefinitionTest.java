@@ -332,6 +332,22 @@ public class FormIoFormDefinitionTest extends BaseTest {
         assertExampleExternalField(externalContent, true);
     }
 
+    @Test
+    void shouldAddDataTestIdAttributeToFormDefinition() throws IOException {
+        final var formDefinition = formDefinitionOf("form-with-data-testid").asJson();
+        final var firstNameNode = formDefinition.get("components").get(0);
+
+        assertEquals("form-example-person.firstName", firstNameNode.get("attributes").get("data-testid").asText());
+    }
+
+    @Test
+    void shouldNotOverrideDataTestIdAttributeIfAlreadyExist() throws IOException {
+        final var formDefinition = formDefinitionOf("form-with-data-testid").asJson();
+        final var lastNameNode = formDefinition.get("components").get(1);
+
+        assertEquals("custom-testid-1234567890", lastNameNode.get("attributes").get("data-testid").asText());
+    }
+
     private void assertExampleExternalField(
         Map<String, List<FormIoFormDefinition.ExternalContentItem>> externalContent,
         boolean shouldIncludeDisabledFields

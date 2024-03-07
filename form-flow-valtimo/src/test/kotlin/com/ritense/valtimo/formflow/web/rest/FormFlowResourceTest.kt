@@ -160,7 +160,7 @@ class FormFlowResourceTest : BaseTest() {
     }
 
     @Test
-    fun `should save submission data when navigating to previous step`() {
+    fun `should save temporary submission data when navigating to previous step`() {
         whenever(formFlowInstance.back()).thenReturn(stepInstance)
 
         mockMvc.perform(
@@ -172,11 +172,11 @@ class FormFlowResourceTest : BaseTest() {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.step.id").value(stepInstanceId.id.toString()))
 
-        verify(formFlowInstance).save(any())
+        verify(formFlowInstance).saveTemporary(any())
     }
 
     @Test
-    fun `should save submission data`() {
+    fun `should save temporary submission data`() {
         mockMvc.perform(
             post("/api/v1/form-flow/{flowId}/save", formFlowInstance.id.id)
                 .content("{\"step1\":\"A\"}")
@@ -185,6 +185,6 @@ class FormFlowResourceTest : BaseTest() {
             .andDo(print())
             .andExpect(status().isNoContent)
 
-        verify(formFlowInstance).save(any())
+        verify(formFlowInstance).saveTemporary(any())
     }
 }

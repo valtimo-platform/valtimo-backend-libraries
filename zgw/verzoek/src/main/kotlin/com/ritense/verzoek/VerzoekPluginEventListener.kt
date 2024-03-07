@@ -39,6 +39,7 @@ import com.ritense.verzoek.domain.CopyStrategy
 import com.ritense.verzoek.domain.VerzoekProperties
 import mu.KotlinLogging
 import org.springframework.context.event.EventListener
+import mu.KotlinLogging
 import java.net.URI
 
 class VerzoekPluginEventListener(

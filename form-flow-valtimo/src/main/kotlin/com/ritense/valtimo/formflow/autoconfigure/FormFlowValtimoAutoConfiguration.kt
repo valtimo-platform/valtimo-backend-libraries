@@ -34,6 +34,8 @@ import com.ritense.valtimo.formflow.FormFlowProcessLinkActivityHandler
 import com.ritense.valtimo.formflow.FormFlowTaskOpenResultProperties
 import com.ritense.valtimo.formflow.FormLinkNewProcessFormFlowProviderImpl
 import com.ritense.valtimo.formflow.common.ValtimoFormFlow
+import com.ritense.valtimo.formflow.handler.FormFlowStepTypeCustomComponentHandler
+import com.ritense.valtimo.formflow.service.FormFlowSupportedProcessLinksHandler
 import com.ritense.valtimo.formflow.handler.FormFlowStepTypeFormHandler
 import com.ritense.valtimo.formflow.mapper.FormFlowProcessLinkMapper
 import com.ritense.valtimo.formflow.repository.FormFlowProcessLinkRepository
@@ -105,6 +107,32 @@ class FormFlowValtimoAutoConfiguration {
     }
 
     @Bean
+    fun formFlowProcessLinkTaskProvider(
+        formFlowService: FormFlowService,
+        repositoryService: RepositoryService,
+        documentService: DocumentService,
+        runtimeService: RuntimeService,
+    ): ProcessLinkActivityHandler<FormFlowTaskOpenResultProperties> {
+        return FormFlowProcessLinkActivityHandler(
+            formFlowService,
+            repositoryService,
+            documentService,
+            runtimeService
+        )
+    }
+
+    @Bean
+    fun formLinkNewProcessFormFlowProvider(
+        formFlowService: FormFlowService,
+        processFormAssociationRepository: ProcessFormAssociationRepository
+    ): FormLinkNewProcessFormFlowProvider {
+        return FormLinkNewProcessFormFlowProviderImpl(
+            formFlowService,
+            processFormAssociationRepository
+        )
+    }
+
+    @Bean
     @ConditionalOnMissingBean(ProcessLinkFormFlowDefinitionResource::class)
     fun processLinkFormFlowDefinitionResource(formFlowService: FormFlowService): ProcessLinkFormFlowDefinitionResource {
         return ProcessLinkFormFlowDefinitionResource(formFlowService)
@@ -144,6 +172,12 @@ class FormFlowValtimoAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean(FormFlowStepTypeCustomComponentHandler::class)
+    fun formFlowStepTypeCustomComponentHandler(): FormFlowStepTypeCustomComponentHandler {
+        return FormFlowStepTypeCustomComponentHandler()
+    }
+
+    @Bean
     @ConditionalOnMissingBean(ValtimoFormFlow::class)
     fun valtimoFormFlow(
         taskService: TaskService,
@@ -169,7 +203,7 @@ class FormFlowValtimoAutoConfiguration {
     @ConditionalOnMissingBean(FormFlowProcessLinkMapper::class)
     fun formFlowProcessLinkMapper(
         objectMapper: ObjectMapper,
-        formFlowService: FormFlowService,
+        formFlowService: FormFlowService
     ): FormFlowProcessLinkMapper {
         return FormFlowProcessLinkMapper(
             objectMapper,

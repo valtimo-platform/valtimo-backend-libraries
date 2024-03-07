@@ -16,8 +16,8 @@
 
 package com.ritense.portaaltaak
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.BaseIntegrationTest
 import com.ritense.document.domain.impl.request.NewDocumentRequest
 import com.ritense.notificatiesapi.NotificatiesApiAuthentication
@@ -63,6 +63,7 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
 import reactor.core.publisher.Mono
 import java.net.URI
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -91,6 +92,9 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     @Autowired
     lateinit var taskService: TaskService
 
+    @Autowired
+    lateinit var objectMapper: ObjectMapper
+
     lateinit var processDefinitionId: String
     lateinit var objectManagement: ObjectManagement
     lateinit var portaalTaakPluginConfiguration: PluginConfiguration
@@ -101,7 +105,6 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
     lateinit var objectenApiPluginConfiguration: PluginConfiguration
     var task: Task? = null
     var documentId: UUID? = null
-
 
     @BeforeEach
     fun init() {
@@ -351,7 +354,7 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
               "record": {
                 "index": 0,
                 "typeVersion": 32767,
-                "data": ${jacksonObjectMapper().writeValueAsString(getTaakObject())},
+                "data": ${objectMapper.writeValueAsString(getTaakObject())},
                 "geometry": {
                   "type": "string",
                   "coordinates": [
@@ -378,6 +381,8 @@ internal class PortaalTaakEventListenerIntTest : BaseIntegrationTest() {
             status = TaakStatus.INGEDIEND,
             formulier = TaakForm(TaakFormType.ID, "anId"),
             verwerkerTaakId = getTaskId(),
+            URI.create("aZaakInstanceUrl"),
+            LocalDateTime.now(),
             verzondenData = mapOf(
                 "documenten" to listOf(URI.create("/some-document"), URI.create("/some-document-array")),
                 "name" to "Luis",

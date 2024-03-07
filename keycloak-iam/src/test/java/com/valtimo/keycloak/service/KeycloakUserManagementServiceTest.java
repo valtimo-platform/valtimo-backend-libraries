@@ -30,9 +30,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN;
+import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.DEVELOPER;
 import static com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER;
 import static com.valtimo.keycloak.service.KeycloakUserManagementService.MAX_USERS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,9 +57,9 @@ class KeycloakUserManagementServiceTest {
         johnDoe = newUser("John", "Doe", List.of(USER, ADMIN));
         ashaMiller = newUser("Asha", "Miller", List.of(ADMIN));
 
-        when(keycloakService.realmRolesResource().get(USER).getRoleUserMembers(0, MAX_USERS))
+        when(keycloakService.realmRolesResource(any()).get(USER).getRoleUserMembers(0, MAX_USERS))
             .thenReturn(Set.of(johnDoe, jamesVance));
-        when(keycloakService.realmRolesResource().get(ADMIN).getRoleUserMembers(0, MAX_USERS))
+        when(keycloakService.realmRolesResource(any()).get(ADMIN).getRoleUserMembers(0, MAX_USERS))
             .thenReturn(Set.of(johnDoe, ashaMiller));
     }
 
@@ -108,8 +110,31 @@ class KeycloakUserManagementServiceTest {
     }
 
     @Test
+    void shouldFindUsersWithClientRoles() {
+        var markUser = new UserRepresentation();
+        markUser.setId("developer-john-id");
+        markUser.setEnabled(true);
+        markUser.setFirstName("Mark");
+        markUser.setLastName("Smit");
+        var roleRepresentation = new RoleRepresentation(DEVELOPER, "developer", false);
+        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().realmLevel().listAll())
+            .thenReturn(List.of());
+        when(keycloakService.usersResource(any()).get(markUser.getId()).roles().clientLevel(any()).listAll())
+            .thenReturn(List.of(roleRepresentation));
+        when(keycloakService.clientRolesResource(any()).get(DEVELOPER).getRoleUserMembers(0, MAX_USERS))
+            .thenReturn(Set.of(markUser));
+        var search = new SearchByUserGroupsCriteria();
+        search.addToOrUserGroups(Set.of(DEVELOPER));
+
+        var users = userManagementService.findByRoles(search);
+
+        var userIds = users.stream().map(ManageableUser::getId).collect(Collectors.toList());
+        assertThat(userIds).containsExactly(markUser.getId());
+    }
+
+    @Test
     void findByRoleShouldReturnEmptyListWhenNotFoundExceptionIsThrown() {
-        when( keycloakService.realmRolesResource().get("some-role").getRoleUserMembers())
+        when( keycloakService.realmRolesResource(any()).get("some-role").getRoleUserMembers())
             .thenThrow(new NotFoundException());
 
         var users = userManagementService.findByRole("some-role");
@@ -126,8 +151,10 @@ class KeycloakUserManagementServiceTest {
         var roleRepresentations = roles.stream()
             .map(role -> new RoleRepresentation(role, role + " description", false))
             .collect(Collectors.toList());
-        when(keycloakService.usersResource().get(user.getId()).roles().realmLevel().listAll())
+        when(keycloakService.usersResource(any()).get(user.getId()).roles().realmLevel().listAll())
             .thenReturn(roleRepresentations);
+        when(keycloakService.usersResource(any()).get(user.getId()).roles().clientLevel(any()).listAll())
+            .thenReturn(List.of());
         return user;
     }
 }

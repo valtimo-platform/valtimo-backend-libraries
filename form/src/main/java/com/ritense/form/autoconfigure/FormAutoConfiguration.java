@@ -51,6 +51,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import java.util.List;
 
+import java.util.List;
+
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ritense.form.repository")
 @EntityScan("com.ritense.form.domain")

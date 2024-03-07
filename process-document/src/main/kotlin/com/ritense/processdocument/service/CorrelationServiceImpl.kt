@@ -78,7 +78,8 @@ class CorrelationServiceImpl(
             associateDocumentToProcess(
                 processInstanceId,
                 processName,
-                correlationResultProcessInstance.get().businessKey)
+                correlationResultProcessInstance.get().businessKey
+            )
         }
 
         return result
@@ -100,7 +101,8 @@ class CorrelationServiceImpl(
                 associateDocumentToProcess(
                     processInstanceId,
                     processName,
-                    runningProcessInstance.get().businessKey)
+                    runningProcessInstance.get().businessKey
+                )
             }
         }
         return correlationResultProcessList

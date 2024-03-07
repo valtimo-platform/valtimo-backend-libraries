@@ -74,6 +74,8 @@ class ProcessDocumentsAutoConfiguration {
             repositoryService = repositoryService,
             associationService = processDocumentAssociationService,
             tenantResolver = tenantResolver
+            repositoryService = repositoryService,
+            associationService = processDocumentAssociationService
         )
     }
 

@@ -83,7 +83,7 @@ class FormFlowResource(
     ): ResponseEntity<GetFormFlowStateResult> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
         if (incompleteSubmissionData != null) {
-            instance.save(toJsonObject(incompleteSubmissionData))
+            instance.saveTemporary(toJsonObject(incompleteSubmissionData))
         }
         val stepInstance = instance.back()
         formFlowService.save(instance)
@@ -98,7 +98,7 @@ class FormFlowResource(
         @RequestBody incompleteSubmissionData: JsonNode?
     ): ResponseEntity<Unit> {
         val instance = formFlowService.getByInstanceIdIfExists(FormFlowInstanceId.existingId(formFlowId))!!
-        instance.save(toJsonObject(incompleteSubmissionData))
+        instance.saveTemporary(toJsonObject(incompleteSubmissionData))
         formFlowService.save(instance)
 
         return ResponseEntity.noContent().build()
