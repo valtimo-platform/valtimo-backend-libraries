@@ -186,10 +186,6 @@ subprojects { subproject ->
             useDockerComposeV2 = false
         }
     }
-
-    if(project.name != "app" && project.name != "gradle") {
-        apply from: "$rootProject.projectDir/../valtimo-backend-libraries-pipeline/publishing.gradle"
-    }
 }
 
 tasks.withType(PublishToMavenRepository) {
