@@ -36,7 +36,7 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceIntTest extends BaseInteg
     @Test
     void shouldDeployProcessDocumentLinkFromResourceFolder() {
         final var processDocumentDefinitions = camundaProcessJsonSchemaDocumentAssociationService
-                .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME);
+                .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME, null);
 
         assertThat(processDocumentDefinitions).hasSize(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey()).hasToString(PROCESS_DEFINITION_KEY);
