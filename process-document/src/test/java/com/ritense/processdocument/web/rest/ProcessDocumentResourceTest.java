@@ -144,7 +144,7 @@ class ProcessDocumentResourceTest extends BaseTest {
 
     @Test
     void shouldReturnOkWhenGettingProcessDocumentDefinition() throws Exception {
-        when(processDocumentAssociationService.findProcessDocumentDefinitions(eq(documentDefinitionId.name())))
+        when(processDocumentAssociationService.findProcessDocumentDefinitions(eq(documentDefinitionId.name()), eq(null)))
             .thenReturn(List.of(processDocumentDefinition));
 
         mockMvc.perform(

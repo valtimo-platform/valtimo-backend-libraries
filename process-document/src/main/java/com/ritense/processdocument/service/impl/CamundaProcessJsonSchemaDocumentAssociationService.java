@@ -109,8 +109,8 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
     }
 
     @Override
-    public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName) {
-        return processDocumentDefinitionRepository.findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(documentDefinitionName);
+    public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName, Boolean startableByUser) {
+        return processDocumentDefinitionRepository.findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersionAndStartableByUser(documentDefinitionName, startableByUser);
     }
 
     @Override
