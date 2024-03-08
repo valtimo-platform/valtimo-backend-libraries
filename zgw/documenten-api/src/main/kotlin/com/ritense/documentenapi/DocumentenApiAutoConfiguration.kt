@@ -18,6 +18,7 @@ package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.AuthorizationService
+import com.ritense.case.deployment.ZgwDocumentListColumnDeploymentService
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.client.DocumentenApiClient
@@ -31,7 +32,9 @@ import com.ritense.documentenapi.web.rest.DocumentenApiResource
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -109,6 +112,25 @@ class DocumentenApiAutoConfiguration {
     ): DocumentenApiColumnDeploymentService {
         return DocumentenApiColumnDeploymentService(documentenApiService)
     }
+
+    @Bean
+    @ConditionalOnMissingBean(ZgwDocumentListColumnDeploymentService::class)
+    fun zgwDocumentListColumnColumnDeploymentService(
+        objectMapper: ObjectMapper,
+        documentenApiColumnRepository: DocumentenApiColumnRepository,
+        documentenApiService: DocumentenApiService,
+        changelogService: ChangelogService,
+        @Value("\${valtimo.changelog.zgw-document-list-column.clear-tables:false}") clearTables: Boolean
+    ): ZgwDocumentListColumnDeploymentService {
+        return ZgwDocumentListColumnDeploymentService(
+            objectMapper,
+            documentenApiColumnRepository,
+            documentenApiService,
+            changelogService,
+            clearTables
+        )
+    }
+
 
     @Bean
     @ConditionalOnMissingBean(DocumentenApiResource::class)

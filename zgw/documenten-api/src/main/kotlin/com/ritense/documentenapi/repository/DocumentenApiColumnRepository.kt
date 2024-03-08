@@ -22,7 +22,6 @@ import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface DocumentenApiColumnRepository : JpaRepository<DocumentenApiColumn, DocumentenApiColumnId> {
-
     fun findByIdCaseDefinitionNameAndIdKey(
         caseDefinitionName: String,
         key: DocumentenApiColumnKey
