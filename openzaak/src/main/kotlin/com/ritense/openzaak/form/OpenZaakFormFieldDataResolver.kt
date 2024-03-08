@@ -29,7 +29,7 @@ class OpenZaakFormFieldDataResolver(
 ) : FormFieldDataResolver {
 
     override fun supports(externalFormFieldType: String): Boolean {
-        return externalFormFieldType == "OpenZaak"
+        return externalFormFieldType == "openzaak"
     }
 
     override fun get(

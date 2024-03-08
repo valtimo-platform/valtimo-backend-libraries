@@ -34,7 +34,7 @@ class FormFlowFormLinkTaskProvider(
     private val formAssociationService: FormAssociationService,
     documentService: DocumentService,
     private val repositoryService: RepositoryService,
-    runtimeService: RuntimeService
+    runtimeService: RuntimeService,
 ) : AbstractFormFlowLinkTaskProvider(
     documentService, runtimeService
 ), FormLinkTaskProvider<FormFlowTaskOpenResultProperties> {

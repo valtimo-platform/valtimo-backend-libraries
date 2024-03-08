@@ -186,7 +186,6 @@ subprojects { subproject ->
             useDockerComposeV2 = false
         }
     }
-
 }
 
 tasks.withType(PublishToMavenRepository) {

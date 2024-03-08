@@ -38,6 +38,8 @@ import com.ritense.document.service.DocumentService;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.resource.Resource;
+import com.ritense.valtimo.contract.utils.RequestHelper;
 import com.ritense.valtimo.contract.utils.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +51,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
 import static com.ritense.valtimo.contract.Constants.SYSTEM_ACCOUNT;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotNull;
@@ -124,16 +127,14 @@ public class JsonSchemaDocumentService implements DocumentService {
             JsonSchemaDocumentRelation.from(newDocumentRequest.documentRelation()),
             newDocumentRequest.tenantId()
         );
-        result.resultingDocument().ifPresent(
-            document -> {
-                newDocumentRequest.getResources()
-                    .stream()
-                    .map(JsonSchemaRelatedFile::from)
-                    .map(relatedFile -> relatedFile.withCreatedBy(user))
-                    .forEach(document::addRelatedFile);
-                documentRepository.saveAndFlush(document);
-            }
-        );
+        result.resultingDocument().ifPresent(jsonSchemaDocument -> {
+            newDocumentRequest.getResources()
+                .stream()
+                .map(JsonSchemaRelatedFile::from)
+                .map(relatedFile -> relatedFile.withCreatedBy(user))
+                .forEach(jsonSchemaDocument::addRelatedFile);
+            documentRepository.saveAndFlush(jsonSchemaDocument);
+        });
         return result;
     }
 

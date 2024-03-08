@@ -19,7 +19,9 @@ package com.ritense.valtimo.service;
 import com.ritense.resource.service.ResourceService;
 import com.ritense.tenancy.TenantResolver;
 import com.ritense.valtimo.contract.authentication.ManageableUser;
+import com.ritense.valtimo.contract.authentication.NamedUser;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
+import com.ritense.valtimo.contract.authentication.model.SearchByUserGroupsCriteria;
 import com.ritense.valtimo.contract.authentication.model.ValtimoUserBuilder;
 import com.ritense.valtimo.contract.config.ValtimoProperties;
 import com.ritense.valtimo.contract.event.TaskAssignedEvent;
@@ -53,12 +55,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -144,19 +141,34 @@ public class CamundaTaskService {
         }
     }
 
+    @Deprecated(since = "10.8.0", forRemoval = true)
     public List<ManageableUser> getCandidateUsers(String taskId) {
         final Task task = findTaskById(taskId);
-        final Optional<IdentityLink> first = taskService
+        final Set<String> candidateGroups = taskService
             .getIdentityLinksForTask(task.getId())
             .stream()
             .filter(identityLink -> IdentityLinkType.CANDIDATE.equals(identityLink.getType()))
-            .findFirst();
+            .map(IdentityLink::getGroupId)
+            .collect(toSet());
 
-        if (first.isPresent()) {
-            return userManagementService.findByRole(first.get().getGroupId());
+        if (!candidateGroups.isEmpty()) {
+            final SearchByUserGroupsCriteria search = new SearchByUserGroupsCriteria();
+            search.addToOrUserGroups(candidateGroups);
+            return userManagementService.findByRoles(search);
         } else {
             return Collections.emptyList();
         }
+    }
+
+    public List<NamedUser> getNamedCandidateUsers(String taskId) {
+        final Task task = findTaskById(taskId);
+        final Set<String> candidateGroups = taskService
+            .getIdentityLinksForTask(task.getId())
+            .stream()
+            .filter(identityLink -> IdentityLinkType.CANDIDATE.equals(identityLink.getType()))
+            .map(IdentityLink::getGroupId)
+            .collect(toSet());
+        return userManagementService.findNamedUserByRoles(candidateGroups);
     }
 
     public void completeTaskWithoutFormData(String taskId) {
