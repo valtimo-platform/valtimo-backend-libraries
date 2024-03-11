@@ -27,6 +27,7 @@ interface DocumentenApiColumnRepository : JpaRepository<DocumentenApiColumn, Doc
         key: DocumentenApiColumnKey
     ): DocumentenApiColumn?
 
+    fun existsByIdCaseDefinitionName(caseDefinitionName: String): Boolean
     fun findAllByIdCaseDefinitionNameOrderByOrder(caseDefinitionName: String): List<DocumentenApiColumn>
     fun findAllByIdCaseDefinitionNameAndEnabledIsTrueOrderByOrder(caseDefinitionName: String): List<DocumentenApiColumn>
     fun countAllByIdCaseDefinitionName(caseDefinitionName: String): Long

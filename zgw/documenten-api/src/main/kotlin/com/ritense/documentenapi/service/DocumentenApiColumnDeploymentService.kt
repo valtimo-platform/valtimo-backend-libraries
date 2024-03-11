@@ -25,18 +25,19 @@ import com.ritense.documentenapi.domain.DocumentenApiColumnKey.BESTANDSOMVANG
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.CREATIEDATUM
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.INFORMATIEOBJECTTYPE
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TITEL
+import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.annotation.Transactional
 
 open class DocumentenApiColumnDeploymentService(
     private val documentenApiService: DocumentenApiService,
+    private val documentenApiColumnRepository: DocumentenApiColumnRepository
 ) {
-
     @Transactional
     @RunWithoutAuthorization
     @EventListener(DocumentDefinitionDeployedEvent::class)
     open fun createDocumentenApiColumns(event: DocumentDefinitionDeployedEvent) {
-        if (event.documentDefinition().id().version() == 1L) {
+        if (event.documentDefinition().id().version() == 1L && !columnsExistForDocumentDefinitionName(event.documentDefinition().id().name())) {
             getDefaultColumns(event.documentDefinition().id().name()).forEach { column ->
                 documentenApiService.updateColumn(column)
             }
@@ -51,5 +52,9 @@ open class DocumentenApiColumnDeploymentService(
             DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, BESTANDSOMVANG)),
             DocumentenApiColumn(DocumentenApiColumnId(documentDefinitionName, INFORMATIEOBJECTTYPE)),
         )
+    }
+
+    private fun columnsExistForDocumentDefinitionName(documentDefinitionName: String): Boolean {
+        return documentenApiColumnRepository.existsByIdCaseDefinitionName(documentDefinitionName)
     }
 }
