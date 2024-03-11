@@ -18,6 +18,7 @@ package com.ritense.importer
 
 class ValtimoImportTypes {
     companion object {
+        // CORE
         const val CASE_DEFINITION_SETTINGS = "casesettings"
         const val CASE_LIST = "caselist"
         const val CASE_TAB = "casetab"
@@ -30,5 +31,8 @@ class ValtimoImportTypes {
         const val PROCESS_DOCUMENT_LINK = "processdocumentlink"
         const val PROCESS_LINK = "processlink"
         const val SEARCH = "search"
+
+        // ZGW
+        const val ZGW_DOCUMENT_LIST_COLUMN = "zgwdocumentlistcolumn"
     }
 }

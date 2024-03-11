@@ -22,6 +22,7 @@ import com.ritense.case.deployment.ZgwDocumentListColumnDeploymentService
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.importer.ZgwDocumentListColumnImporter
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.security.DocumentenApiHttpSecurityConfigurer
 import com.ritense.documentenapi.service.DocumentDeleteHandler
@@ -32,6 +33,7 @@ import com.ritense.documentenapi.web.rest.DocumentenApiResource
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.changelog.service.ChangelogDeployer
 import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.beans.factory.annotation.Value
@@ -160,5 +162,12 @@ class DocumentenApiAutoConfiguration {
     fun documentenApiLiquibaseChangeLogLocation(): LiquibaseMasterChangeLogLocation {
         return LiquibaseMasterChangeLogLocation("config/liquibase/documenten-api-master.xml")
     }
+
+    @Bean
+    @ConditionalOnMissingBean(ZgwDocumentListColumnImporter::class)
+    fun zgwDocumentListColumnInporter(
+        deployer: ZgwDocumentListColumnDeploymentService,
+        changelogDeployer: ChangelogDeployer
+    ) : ZgwDocumentListColumnImporter = ZgwDocumentListColumnImporter(deployer, changelogDeployer)
 
 }
