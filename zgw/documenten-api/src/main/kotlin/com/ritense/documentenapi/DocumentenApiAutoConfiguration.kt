@@ -38,6 +38,7 @@ import com.ritense.valtimo.changelog.service.ChangelogService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
@@ -116,6 +117,7 @@ class DocumentenApiAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnBean(DocumentenApiColumnDeploymentService::class)
     @ConditionalOnMissingBean(ZgwDocumentListColumnDeploymentService::class)
     fun zgwDocumentListColumnColumnDeploymentService(
         objectMapper: ObjectMapper,
@@ -168,6 +170,6 @@ class DocumentenApiAutoConfiguration {
     fun zgwDocumentListColumnInporter(
         deployer: ZgwDocumentListColumnDeploymentService,
         changelogDeployer: ChangelogDeployer
-    ) : ZgwDocumentListColumnImporter = ZgwDocumentListColumnImporter(deployer, changelogDeployer)
+    ): ZgwDocumentListColumnImporter = ZgwDocumentListColumnImporter(deployer, changelogDeployer)
 
 }
