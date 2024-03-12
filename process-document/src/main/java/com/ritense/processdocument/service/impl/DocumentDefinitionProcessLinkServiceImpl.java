@@ -16,10 +16,7 @@
 
 package com.ritense.processdocument.service.impl;
 
-import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.VIEW;
-
 import com.ritense.authorization.AuthorizationContext;
-import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcess;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLink;
 import com.ritense.processdocument.domain.impl.DocumentDefinitionProcessLinkId;
@@ -38,21 +35,16 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
     private final DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository;
     private final CamundaRepositoryService repositoryService;
 
-    private final JsonSchemaDocumentDefinitionService documentDefinitionService;
-
     public DocumentDefinitionProcessLinkServiceImpl(
         DocumentDefinitionProcessLinkRepository repo,
-        CamundaRepositoryService repositoryService,
-        JsonSchemaDocumentDefinitionService documentDefinitionService
+        CamundaRepositoryService repositoryService
     ) {
         this.documentDefinitionProcessLinkRepository = repo;
         this.repositoryService = repositoryService;
-        this.documentDefinitionService = documentDefinitionService;
     }
 
     @Override
     public DocumentDefinitionProcess getDocumentDefinitionProcess(String documentDefinitionName) {
-        documentDefinitionService.requirePermission(documentDefinitionName, VIEW);
         var link = documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionName(documentDefinitionName);
 
         if (link.isPresent()) {
@@ -69,7 +61,6 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
 
     @Override
     public List<DocumentDefinitionProcess> getDocumentDefinitionProcessList(String documentDefinitionName) {
-        documentDefinitionService.requirePermission(documentDefinitionName, VIEW);
         var links = documentDefinitionProcessLinkRepository.findAllByIdDocumentDefinitionName(documentDefinitionName);
 
         return links.stream().map(link -> {
@@ -84,7 +75,6 @@ public class DocumentDefinitionProcessLinkServiceImpl implements DocumentDefinit
 
     @Override
     public Optional<DocumentDefinitionProcessLink> getDocumentDefinitionProcessLink(String documentDefinitionName, String type) {
-        documentDefinitionService.requirePermission(documentDefinitionName, VIEW);
         return documentDefinitionProcessLinkRepository.findByIdDocumentDefinitionNameAndType(documentDefinitionName, type);
     }
 

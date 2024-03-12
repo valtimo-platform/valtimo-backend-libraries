@@ -71,7 +71,7 @@ class DocumentenApiPlugin(
     lateinit var authenticationPluginConfiguration: DocumentenApiAuthentication
 
     @PluginProperty(key = "apiVersion", secret = false, required = false)
-    var apiVersion: String = "1.4.3"
+    var apiVersion: String? = null
 
     @PluginAction(
         key = "store-temp-document",
@@ -214,8 +214,8 @@ class DocumentenApiPlugin(
     }
 
     @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
-    fun validateProperties() {
-        if (!API_VERSIONS.contains(apiVersion)) {
+    fun onSave() {
+        if (apiVersion != null && !API_VERSIONS.contains(apiVersion)) {
             throw ValidationException("Unknown API version '$apiVersion'.")
         }
     }

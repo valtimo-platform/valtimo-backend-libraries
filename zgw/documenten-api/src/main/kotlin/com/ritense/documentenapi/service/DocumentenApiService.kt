@@ -24,6 +24,7 @@ import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.domain.RelatedFile
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition
 import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider
+import com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.Companion.VIEW
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
@@ -33,14 +34,11 @@ import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionDto
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
-import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
 import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
-import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
-import com.ritense.valtimo.processlink.mapper.PluginProcessLinkMapper
 import com.ritense.valtimo.processlink.service.PluginProcessLinkService
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
@@ -130,6 +128,7 @@ class DocumentenApiService(
     }
 
     fun getApiVersion(caseDefinitionName: String): DocumentenApiVersionDto {
+        documentDefinitionService.requirePermission(caseDefinitionName, VIEW)
         val link =
             documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, "DOCUMENT_UPLOAD")
         if (link.isEmpty) {
@@ -142,7 +141,7 @@ class DocumentenApiService(
                 .flatMap { pluginProcessLinkService.getProcessLinks(it.id) }
                 .map { pluginService.getPluginConfiguration(it.pluginConfigurationId) }
                 .filter { it.pluginDefinition.key == DocumentenApiPlugin.PLUGIN_KEY }
-                .map { (pluginService.createInstance(it) as DocumentenApiPlugin).apiVersion }
+                .mapNotNull { (pluginService.createInstance(it) as DocumentenApiPlugin).apiVersion }
                 .sorted()
                 .toList()
         }

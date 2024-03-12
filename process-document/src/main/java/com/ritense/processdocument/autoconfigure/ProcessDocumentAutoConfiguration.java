@@ -217,14 +217,9 @@ public class ProcessDocumentAutoConfiguration {
     @ConditionalOnMissingBean(DocumentDefinitionProcessLinkService.class)
     public DocumentDefinitionProcessLinkService documentDefinitionProcessLinkService(
         DocumentDefinitionProcessLinkRepository documentDefinitionProcessLinkRepository,
-        CamundaRepositoryService repositoryService,
-        JsonSchemaDocumentDefinitionService documentDefinitionService
+        CamundaRepositoryService repositoryService
     ) {
-        return new DocumentDefinitionProcessLinkServiceImpl(
-            documentDefinitionProcessLinkRepository,
-            repositoryService,
-            documentDefinitionService
-        );
+        return new DocumentDefinitionProcessLinkServiceImpl(documentDefinitionProcessLinkRepository, repositoryService);
     }
 
 
