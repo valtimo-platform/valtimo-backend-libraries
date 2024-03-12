@@ -30,8 +30,13 @@ import com.ritense.documentenapi.web.rest.DocumentenApiManagementResource
 import com.ritense.documentenapi.web.rest.DocumentenApiResource
 import com.ritense.outbox.OutboxService
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.processlink.service.ProcessLinkService
 import com.ritense.resource.service.TemporaryResourceStorageService
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import com.ritense.valtimo.processlink.mapper.PluginProcessLinkMapper
+import com.ritense.valtimo.processlink.service.PluginProcessLinkService
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -92,6 +97,9 @@ class DocumentenApiAutoConfiguration {
         documentenApiColumnRepository: DocumentenApiColumnRepository,
         authorizationService: AuthorizationService,
         documentDefinitionService: JsonSchemaDocumentDefinitionService,
+        documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+        pluginProcessLinkService: PluginProcessLinkService,
+        camundaRepositoryService: CamundaRepositoryService,
     ): DocumentenApiService {
         return DocumentenApiService(
             pluginService,
@@ -99,6 +107,9 @@ class DocumentenApiAutoConfiguration {
             documentenApiColumnRepository,
             authorizationService,
             documentDefinitionService,
+            documentDefinitionProcessLinkService,
+            pluginProcessLinkService,
+            camundaRepositoryService,
         )
     }
 

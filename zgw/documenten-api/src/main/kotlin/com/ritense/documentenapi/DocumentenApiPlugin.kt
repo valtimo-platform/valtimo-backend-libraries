@@ -19,6 +19,7 @@ package com.ritense.documentenapi
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
+import com.ritense.documentenapi.DocumentenApiPlugin.Companion.PLUGIN_KEY
 import com.ritense.documentenapi.client.CreateDocumentRequest
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.DocumentStatusType
@@ -29,12 +30,15 @@ import com.ritense.documentenapi.service.DocumentDeleteHandler
 import com.ritense.plugin.annotation.Plugin
 import com.ritense.plugin.annotation.PluginAction
 import com.ritense.plugin.annotation.PluginActionProperty
+import com.ritense.plugin.annotation.PluginEvent
 import com.ritense.plugin.annotation.PluginProperty
+import com.ritense.plugin.domain.EventType
 import com.ritense.processlink.domain.ActivityTypeWithEventName
 import com.ritense.resource.domain.MetadataType
 import com.ritense.resource.service.TemporaryResourceStorageService
 import com.ritense.valtimo.contract.validation.Url
 import com.ritense.zgw.domain.Vertrouwelijkheid
+import jakarta.validation.ValidationException
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.hibernate.validator.constraints.Length
 import org.springframework.context.ApplicationEventPublisher
@@ -44,7 +48,7 @@ import java.net.URI
 import java.time.LocalDate
 
 @Plugin(
-    key = "documentenapi",
+    key = PLUGIN_KEY,
     title = "Documenten API",
     description = "Connects to the Documenten API to store documents"
 )
@@ -65,6 +69,9 @@ class DocumentenApiPlugin(
 
     @PluginProperty(key = "authenticationPluginConfiguration", secret = false)
     lateinit var authenticationPluginConfiguration: DocumentenApiAuthentication
+
+    @PluginProperty(key = "apiVersion", secret = false, required = false)
+    var apiVersion: String = "1.4.3"
 
     @PluginAction(
         key = "store-temp-document",
@@ -206,6 +213,13 @@ class DocumentenApiPlugin(
         }
     }
 
+    @PluginEvent(invokedOn = [EventType.CREATE, EventType.UPDATE])
+    fun validateProperties() {
+        if (!API_VERSIONS.contains(apiVersion)) {
+            throw ValidationException("Unknown API version '$apiVersion'.")
+        }
+    }
+
     private fun storeDocument(
         execution: DelegateExecution,
         metadata: Map<String, Any>,
@@ -278,11 +292,13 @@ class DocumentenApiPlugin(
     }
 
     companion object {
+        const val PLUGIN_KEY = "documentenapi"
         const val URL_PROPERTY = "url"
         const val DEFAULT_AUTHOR = "GZAC"
         const val DEFAULT_LANGUAGE = "nld"
         const val RESOURCE_ID_PROCESS_VAR = "resourceId"
         const val DOCUMENT_URL_PROCESS_VAR = "documentUrl"
+        val API_VERSIONS = arrayOf("1.4.3", "1.4.1", "1.4.0", "1.3.0", "1.2.0", "1.1.0", "1.0.0", "1.0.1", "1.0.0")
 
         fun findConfigurationByUrl(url: URI) = { properties: JsonNode ->
             url.toString().startsWith(properties.get(URL_PROPERTY).textValue())

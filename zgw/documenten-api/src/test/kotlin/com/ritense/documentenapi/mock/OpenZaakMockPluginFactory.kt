@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.exception
+package com.ritense.documentenapi.mock
 
-import com.ritense.plugin.domain.PluginConfiguration
+import com.ritense.plugin.PluginFactory
+import com.ritense.plugin.service.PluginService
+import org.springframework.stereotype.Service
 
-class PluginEventInvocationException(
-    pluginConfiguration: PluginConfiguration,
-    throwable: Throwable,
-) : RuntimeException(
-    "Failed to run events on plugin ${pluginConfiguration.title} with id ${pluginConfiguration.id.id}. Error: ${throwable.message}",
-    throwable
-)
+@Service
+class OpenZaakMockPluginFactory(
+    pluginService: PluginService,
+) : PluginFactory<OpenZaakMockPlugin>(pluginService) {
+
+    override fun create(): OpenZaakMockPlugin {
+        return OpenZaakMockPlugin()
+    }
+}

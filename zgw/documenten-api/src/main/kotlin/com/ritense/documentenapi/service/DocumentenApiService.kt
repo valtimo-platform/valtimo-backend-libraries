@@ -17,6 +17,7 @@
 package com.ritense.documentenapi.service
 
 import com.ritense.authorization.Action
+import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.catalogiapi.service.CatalogiService
@@ -29,9 +30,18 @@ import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.domain.DocumentenApiColumn
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionDto
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
+import com.ritense.plugin.domain.PluginConfigurationId
 import com.ritense.plugin.service.PluginService
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
+import com.ritense.processlink.service.ProcessLinkService
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
+import com.ritense.valtimo.camunda.service.CamundaRepositoryService
+import com.ritense.valtimo.processlink.mapper.PluginProcessLinkMapper
+import com.ritense.valtimo.processlink.service.PluginProcessLinkService
 import org.springframework.transaction.annotation.Transactional
 import java.io.InputStream
 import java.net.URI
@@ -44,6 +54,9 @@ class DocumentenApiService(
     private val documentenApiColumnRepository: DocumentenApiColumnRepository,
     private val authorizationService: AuthorizationService,
     private val documentDefinitionService: JsonSchemaDocumentDefinitionService,
+    private val documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService,
+    private val pluginProcessLinkService: PluginProcessLinkService,
+    private val camundaRepositoryService: CamundaRepositoryService,
 ) {
     fun downloadInformatieObject(pluginConfigurationId: String, documentId: String): InputStream {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
@@ -62,7 +75,8 @@ class DocumentenApiService(
     ): RelatedFile? {
         val documentApiPlugin: DocumentenApiPlugin = pluginService.createInstance(pluginConfigurationId)
         val documentUrl = documentApiPlugin.createInformatieObjectUrl(documentId)
-        val informatieObject = documentApiPlugin.modifyInformatieObject(documentUrl, PatchDocumentRequest(modifyDocumentRequest))
+        val informatieObject =
+            documentApiPlugin.modifyInformatieObject(documentUrl, PatchDocumentRequest(modifyDocumentRequest))
         return getRelatedFiles(informatieObject, pluginConfigurationId)
     }
 
@@ -86,13 +100,16 @@ class DocumentenApiService(
             )
         )
 
-        return documentenApiColumnRepository.findAllByIdCaseDefinitionNameAndEnabledIsTrueOrderByOrder(caseDefinitionName)
+        return documentenApiColumnRepository.findAllByIdCaseDefinitionNameAndEnabledIsTrueOrderByOrder(
+            caseDefinitionName
+        )
     }
 
     fun updateColumnOrder(columns: List<DocumentenApiColumn>): List<DocumentenApiColumn> {
         denyAuthorization()
         require(columns.isNotEmpty()) { "Failed to sort empty Document API columns" }
-        val existingColumns = documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(columns[0].id.caseDefinitionName)
+        val existingColumns =
+            documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(columns[0].id.caseDefinitionName)
         require(existingColumns.size == columns.size) { "Incorrect number of Documenten API columns" }
         columns.forEach { column ->
             val existingColumn = existingColumns.find { it.id.key == column.id.key }
@@ -112,7 +129,33 @@ class DocumentenApiService(
         return documentenApiColumnRepository.save(column.copy(order = order))
     }
 
-    private fun getRelatedFiles(informatieObject: DocumentInformatieObject, pluginConfigurationId: String): RelatedFileDto {
+    fun getApiVersion(caseDefinitionName: String): DocumentenApiVersionDto {
+        val link =
+            documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, "DOCUMENT_UPLOAD")
+        if (link.isEmpty) {
+            return DocumentenApiVersionDto(null, null)
+        }
+        val processDefinitionKey = link.get().id.processDefinitionKey
+        val detectedVersions = runWithoutAuthorization {
+            camundaRepositoryService.findLinkedProcessDefinitions(byKey(processDefinitionKey).and(byLatestVersion()))
+                .asSequence()
+                .flatMap { pluginProcessLinkService.getProcessLinks(it.id) }
+                .map { pluginService.getPluginConfiguration(it.pluginConfigurationId) }
+                .filter { it.pluginDefinition.key == DocumentenApiPlugin.PLUGIN_KEY }
+                .map { (pluginService.createInstance(it) as DocumentenApiPlugin).apiVersion }
+                .sorted()
+                .toList()
+        }
+        return DocumentenApiVersionDto(
+            selectedVersion = detectedVersions.firstOrNull(),
+            detectedVersions = detectedVersions
+        )
+    }
+
+    private fun getRelatedFiles(
+        informatieObject: DocumentInformatieObject,
+        pluginConfigurationId: String
+    ): RelatedFileDto {
         return RelatedFileDto(
             fileId = UUID.fromString(informatieObject.url.path.substringAfterLast("/")),
             fileName = informatieObject.bestandsnaam,

@@ -27,8 +27,6 @@ import com.ritense.processlink.autodeployment.ProcessLinkDeployDto
 import com.ritense.processlink.domain.ProcessLink
 import com.ritense.processlink.mapper.ProcessLinkMapper
 import com.ritense.processlink.web.rest.dto.ProcessLinkCreateRequestDto
-import com.ritense.processlink.web.rest.dto.ProcessLinkExportResponseDto
-import com.ritense.processlink.web.rest.dto.ProcessLinkResponseDto
 import com.ritense.processlink.web.rest.dto.ProcessLinkUpdateRequestDto
 import java.util.UUID
 
@@ -48,7 +46,7 @@ class PluginProcessLinkMapper(
 
     override fun supportsProcessLinkType(processLinkType: String) = processLinkType == PROCESS_LINK_TYPE_PLUGIN
 
-    override fun toProcessLinkResponseDto(processLink: ProcessLink): ProcessLinkResponseDto {
+    override fun toProcessLinkResponseDto(processLink: ProcessLink): PluginProcessLinkResultDto {
         processLink as PluginProcessLink
         return PluginProcessLinkResultDto(
             id = processLink.id,
@@ -61,7 +59,7 @@ class PluginProcessLinkMapper(
         )
     }
 
-    override fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): ProcessLinkCreateRequestDto {
+    override fun toProcessLinkCreateRequestDto(deployDto: ProcessLinkDeployDto): PluginProcessLinkCreateDto {
         deployDto as PluginProcessLinkDeployDto
         return PluginProcessLinkCreateDto(
             processDefinitionId = deployDto.processDefinitionId,
@@ -73,7 +71,7 @@ class PluginProcessLinkMapper(
         )
     }
 
-    override fun toProcessLinkExportResponseDto(processLink: ProcessLink): ProcessLinkExportResponseDto {
+    override fun toProcessLinkExportResponseDto(processLink: ProcessLink): PluginProcessLinkExportResponseDto {
         processLink as PluginProcessLink
         return PluginProcessLinkExportResponseDto(
             activityId = processLink.activityId,
@@ -84,7 +82,7 @@ class PluginProcessLinkMapper(
         )
     }
 
-    override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): ProcessLink {
+    override fun toNewProcessLink(createRequestDto: ProcessLinkCreateRequestDto): PluginProcessLink {
         createRequestDto as PluginProcessLinkCreateDto
         return PluginProcessLink(
             id = UUID.randomUUID(),
@@ -100,7 +98,7 @@ class PluginProcessLinkMapper(
     override fun toUpdatedProcessLink(
         processLinkToUpdate: ProcessLink,
         updateRequestDto: ProcessLinkUpdateRequestDto
-    ): ProcessLink {
+    ): PluginProcessLink {
         updateRequestDto as PluginProcessLinkUpdateDto
         return PluginProcessLink(
             id = updateRequestDto.id,

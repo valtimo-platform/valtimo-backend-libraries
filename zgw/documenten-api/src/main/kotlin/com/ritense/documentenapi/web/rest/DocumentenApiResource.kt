@@ -19,6 +19,7 @@ package com.ritense.documentenapi.web.rest
 import com.ritense.document.domain.RelatedFile
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.web.rest.dto.ColumnDto
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionDto
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -93,5 +94,12 @@ class DocumentenApiResource(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<List<ColumnDto>> {
         return ResponseEntity.ok(documentenApiService.getColumns(caseDefinitionName).map { ColumnDto.of(it) })
+    }
+
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/documenten-api/version")
+    fun getApiVersion(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+    ): ResponseEntity<DocumentenApiVersionDto> {
+        return ResponseEntity.ok(documentenApiService.getApiVersion(caseDefinitionName).copy(detectedVersions = null))
     }
 }
