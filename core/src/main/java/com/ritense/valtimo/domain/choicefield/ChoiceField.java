@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.domain.choicefield;
 
+import java.io.Serializable;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
@@ -34,7 +35,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "choice_fields")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class ChoiceField extends AbstractAuditingEntity {
+public class ChoiceField extends AbstractAuditingEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
