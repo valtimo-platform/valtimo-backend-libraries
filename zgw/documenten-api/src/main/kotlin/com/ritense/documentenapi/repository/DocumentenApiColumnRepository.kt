@@ -22,12 +22,12 @@ import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface DocumentenApiColumnRepository : JpaRepository<DocumentenApiColumn, DocumentenApiColumnId> {
-
     fun findByIdCaseDefinitionNameAndIdKey(
         caseDefinitionName: String,
         key: DocumentenApiColumnKey
     ): DocumentenApiColumn?
 
+    fun existsByIdCaseDefinitionName(caseDefinitionName: String): Boolean
     fun findAllByIdCaseDefinitionNameOrderByOrder(caseDefinitionName: String): List<DocumentenApiColumn>
     fun findAllByIdCaseDefinitionNameAndEnabledIsTrueOrderByOrder(caseDefinitionName: String): List<DocumentenApiColumn>
     fun countAllByIdCaseDefinitionName(caseDefinitionName: String): Long

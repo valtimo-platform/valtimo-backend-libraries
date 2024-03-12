@@ -1,0 +1,16 @@
+{
+    "changesetId": "profile.zgw-document-list-columns-v1",
+    "case-definitions": [
+        {
+            "key": "profile",
+            "columns": [
+                "AUTEUR",
+                "STATUS",
+                "FORMAAT",
+                "TAAL",
+                "VERSIE",
+                "BESTANDSNAAM"
+            ]
+        }
+    ]
+}

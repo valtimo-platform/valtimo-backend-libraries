@@ -1,0 +1,16 @@
+{
+    "changesetId": "leningen.zgw-document-list-columns-v1",
+    "case-definitions": [
+        {
+            "key": "leningen",
+            "columns": [
+                "AUTEUR",
+                "STATUS",
+                "FORMAAT",
+                "TAAL",
+                "VERSIE",
+                "BESTANDSNAAM"
+            ]
+        }
+    ]
+}

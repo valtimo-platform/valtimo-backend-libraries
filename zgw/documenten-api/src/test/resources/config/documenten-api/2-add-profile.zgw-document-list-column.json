@@ -1,0 +1,13 @@
+{
+    "changesetId": "profile.zgw-document-list-columns-v2",
+    "case-definitions": [
+        {
+            "key": "profile",
+            "columns": [
+                "BESTANDSNAAM",
+                "TAAL",
+                "VERSIE"
+            ]
+        }
+    ]
+}
