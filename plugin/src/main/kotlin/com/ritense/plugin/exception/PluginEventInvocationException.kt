@@ -22,6 +22,6 @@ class PluginEventInvocationException(
     pluginConfiguration: PluginConfiguration,
     throwable: Throwable,
 ) : RuntimeException(
-    "Failed to run events on plugin ${pluginConfiguration.title} with id ${pluginConfiguration.id.id}. Error: ${throwable.message}",
+    "Failed to run events on plugin ${pluginConfiguration.title} with id ${pluginConfiguration.id.id}. Error: ${throwable.cause?.message ?: throwable.message}",
     throwable
 )
