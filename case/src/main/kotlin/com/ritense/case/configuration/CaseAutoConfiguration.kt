@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.authorization.AuthorizationService
 import com.ritense.case.deployment.CaseTabDeploymentService
+import com.ritense.case.deployment.CaseTaskListDeploymentService
 import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
@@ -260,6 +261,23 @@ class CaseAutoConfiguration {
             caseTabRepository,
             changelogService,
             caseTabService,
+            clearTables
+        )
+    }
+
+    @Bean
+    fun TaskListDeployer(
+        objectMapper: ObjectMapper,
+        taskListColumnRepository: TaskListColumnRepository,
+        changelogService: ChangelogService,
+        taskColumnService: TaskColumnService,
+        @Value("\${valtimo.changelog.case-task-list.clear-tables:false}") clearTables: Boolean
+    ): CaseTaskListDeploymentService {
+        return CaseTaskListDeploymentService(
+            objectMapper,
+            taskListColumnRepository,
+            changelogService,
+            taskColumnService,
             clearTables
         )
     }
