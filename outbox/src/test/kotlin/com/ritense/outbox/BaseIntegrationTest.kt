@@ -17,6 +17,7 @@
 package com.ritense.outbox
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.outbox.config.condition.OnOutboxEnabledCondition
 import com.ritense.outbox.publisher.MessagePublisher
 import com.ritense.outbox.repository.OutboxMessageRepository
 import org.junit.jupiter.api.AfterEach
@@ -28,7 +29,7 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@SpringBootTest
+@SpringBootTest(properties = ["${OnOutboxEnabledCondition.PROPERTY_NAME}=true"])
 @ExtendWith(SpringExtension::class)
 @Tag("integration")
 class BaseIntegrationTest {

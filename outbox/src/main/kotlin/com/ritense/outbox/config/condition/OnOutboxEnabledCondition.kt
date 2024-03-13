@@ -28,6 +28,6 @@ class OnOutboxEnabledCondition : Condition {
     }
 
     companion object {
-        internal const val PROPERTY_NAME = "valtimo.outbox.enabled"
+        const val PROPERTY_NAME = "valtimo.outbox.enabled"
     }
 }
