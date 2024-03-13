@@ -26,6 +26,10 @@ import org.springframework.transaction.annotation.Transactional
 class ZgwDocumentTrefwoordService(
     private val zgwDocumentTrefwoordRepository: ZgwDocumentTrefwoordRepository
 ) {
+    fun getTrefwoorden(caseDefinitionName: String): List<ZgwDocumentTrefwoord> {
+        return zgwDocumentTrefwoordRepository.findAllByCaseDefinitionName(caseDefinitionName)
+    }
+
     fun getTrefwoorden(caseDefinitionName: String, pageable: Pageable): Page<ZgwDocumentTrefwoord> {
         return zgwDocumentTrefwoordRepository.findAllByCaseDefinitionName(caseDefinitionName, pageable)
     }
