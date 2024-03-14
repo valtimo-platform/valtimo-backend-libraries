@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.ritense.authorization.AuthorizationService
 import com.ritense.case.deployment.CaseTabDeploymentService
+import com.ritense.case.deployment.CaseTaskListDeploymentService
 import com.ritense.case.domain.BooleanDisplayTypeParameter
 import com.ritense.case.domain.DateFormatDisplayTypeParameter
 import com.ritense.case.domain.EnumDisplayTypeParameter
@@ -40,6 +41,7 @@ import com.ritense.case.service.CaseListImporter
 import com.ritense.case.service.CaseTabExporter
 import com.ritense.case.service.CaseTabImporter
 import com.ritense.case.service.CaseTabService
+import com.ritense.case.service.CaseTaskListImporter
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.service.TaskColumnService
 import com.ritense.case.web.rest.CaseDefinitionResource
@@ -265,6 +267,23 @@ class CaseAutoConfiguration {
     }
 
     @Bean
+    fun TaskListDeployer(
+        objectMapper: ObjectMapper,
+        taskListColumnRepository: TaskListColumnRepository,
+        changelogService: ChangelogService,
+        taskColumnService: TaskColumnService,
+        @Value("\${valtimo.changelog.case-task-list.clear-tables:false}") clearTables: Boolean
+    ): CaseTaskListDeploymentService {
+        return CaseTaskListDeploymentService(
+            objectMapper,
+            taskListColumnRepository,
+            changelogService,
+            taskColumnService,
+            clearTables
+        )
+    }
+
+    @Bean
     @ConditionalOnMissingBean(CaseTabSpecificationFactory::class)
     fun caseTabSpecificationFactory(
         @Lazy caseTabService: CaseTabService,
@@ -308,6 +327,13 @@ class CaseAutoConfiguration {
         caseTabDeploymentService: CaseTabDeploymentService,
         changelogDeployer: ChangelogDeployer
     ) = CaseTabImporter(caseTabDeploymentService, changelogDeployer)
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTaskListImporter::class)
+    fun caseTaskListImporter(
+        caseTaskListDeploymentService: CaseTaskListDeploymentService,
+        changelogDeployer: ChangelogDeployer
+    ) = CaseTaskListImporter(caseTaskListDeploymentService, changelogDeployer)
 
     @Bean
     @ConditionalOnMissingBean(CaseDefinitionSettingsExporter::class)

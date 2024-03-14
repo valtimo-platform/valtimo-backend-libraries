@@ -16,11 +16,11 @@
 
 package com.ritense.case.repository
 
-import com.ritense.case.domain.CaseListColumnId
 import com.ritense.case.domain.TaskListColumn
+import com.ritense.case.domain.TaskListColumnId
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface TaskListColumnRepository : JpaRepository<TaskListColumn, CaseListColumnId> {
+interface TaskListColumnRepository : JpaRepository<TaskListColumn, TaskListColumnId> {
     fun existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): Boolean
     fun findByIdCaseDefinitionNameOrderByOrderAsc(caseDefinitionName: String): List<TaskListColumn>
     fun deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String)

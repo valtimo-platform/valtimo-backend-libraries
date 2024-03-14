@@ -16,6 +16,7 @@
 
 package com.ritense.document.service.impl;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.CREATE;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.DELETE;
 import static com.ritense.document.service.JsonSchemaDocumentDefinitionActionProvider.MODIFY;
@@ -156,6 +157,18 @@ public class JsonSchemaDocumentDefinitionService implements DocumentDefinitionSe
         }
 
         return Optional.ofNullable(definition);
+    }
+
+    @Override
+    public void requirePermission(String documentDefinitionName, Action action) {
+        var definition = runWithoutAuthorization(() -> findLatestByName(documentDefinitionName).orElseThrow());
+        authorizationService.requirePermission(
+            new EntityAuthorizationRequest<>(
+                JsonSchemaDocumentDefinition.class,
+                action,
+                definition
+            )
+        );
     }
 
     @Override

@@ -36,6 +36,7 @@ class DocumentenApiHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(PUT, "/api/v1/documenten-api/{pluginConfigurationId}/files/{documentId}")).authenticated()
                     .requestMatchers(antMatcher(DELETE, "/api/v1/documenten-api/{pluginConfigurationId}/files/{documentId}")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zgw-document-column")).authenticated()
+                    .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/documenten-api/version")).authenticated()
                     .requestMatchers(antMatcher(GET, "/api/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord")).authenticated()
 
                     .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord")).hasAuthority(ADMIN)
@@ -45,6 +46,8 @@ class DocumentenApiHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(PUT, "/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column/{key}")).hasAuthority(ADMIN)
+
+                    .requestMatchers(antMatcher(GET, "/api/management/v1/case-definition/{caseDefinitionName}/documenten-api/version")).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)

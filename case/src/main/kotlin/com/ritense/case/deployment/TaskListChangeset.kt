@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.exception
+package com.ritense.case.deployment
 
-import com.ritense.plugin.domain.PluginConfiguration
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.ritense.case.web.rest.dto.TaskListColumnDto
 
-class PluginEventInvocationException(
-    pluginConfiguration: PluginConfiguration,
-    throwable: Throwable,
-) : RuntimeException(
-    "Failed to run events on plugin ${pluginConfiguration.title} with id ${pluginConfiguration.id.id}. Error: ${throwable.cause?.message ?: throwable.message}",
-    throwable
+class TaskListChangeset(
+    val changesetId: String,
+    @JsonProperty("case-definitions")
+    val caseDefinitions: List<CaseDefinitionsTaskListCollection>
+)
+
+class CaseDefinitionsTaskListCollection(
+    val key: String,
+    val columns: List<TaskListColumnDto>
 )

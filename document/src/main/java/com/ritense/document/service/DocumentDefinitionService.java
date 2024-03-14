@@ -16,6 +16,7 @@
 
 package com.ritense.document.service;
 
+import com.ritense.authorization.Action;
 import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId;
@@ -39,6 +40,8 @@ public interface DocumentDefinitionService {
     Optional<? extends DocumentDefinition> findBy(DocumentDefinition.Id id);
 
     Optional<? extends DocumentDefinition> findLatestByName(String documentDefinitionName);
+
+    void requirePermission(String documentDefinitionName, Action action);
 
     Optional<? extends DocumentDefinition> findByNameAndVersion(String documentDefinitionName, long version);
 

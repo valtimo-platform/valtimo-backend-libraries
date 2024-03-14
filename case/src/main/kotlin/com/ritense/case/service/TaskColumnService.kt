@@ -20,13 +20,13 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationContext.Companion.runWithoutAuthorization
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
-import com.ritense.case.domain.CaseListColumnId
+import com.ritense.case.domain.TaskListColumnId
 import com.ritense.case.exception.InvalidListColumnException
 import com.ritense.case.exception.UnknownCaseDefinitionException
 import com.ritense.case.repository.TaskListColumnRepository
-import com.ritense.case.service.validations.SaveTaskListColumnValidator
 import com.ritense.case.service.validations.ListColumnValidator
 import com.ritense.case.service.validations.Operation
+import com.ritense.case.service.validations.SaveTaskListColumnValidator
 import com.ritense.case.web.rest.dto.TaskListColumnDto
 import com.ritense.case.web.rest.mapper.TaskListColumnMapper
 import com.ritense.document.domain.DocumentDefinition
@@ -79,8 +79,8 @@ class TaskColumnService(
 
         val columnsToSwap = taskListColumnRepository.findAllById(
             listOf(
-                CaseListColumnId(caseDefinitionName, taskColumnKey1),
-                CaseListColumnId(caseDefinitionName, taskColumnKey2)
+                TaskListColumnId(caseDefinitionName, taskColumnKey1),
+                TaskListColumnId(caseDefinitionName, taskColumnKey2)
             )
         )
 

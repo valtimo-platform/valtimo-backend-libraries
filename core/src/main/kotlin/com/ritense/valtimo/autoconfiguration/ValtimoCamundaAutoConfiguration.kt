@@ -40,6 +40,7 @@ import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaTaskService
 import org.camunda.bpm.engine.HistoryService
+import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl
 import org.springframework.boot.autoconfigure.AutoConfiguration
@@ -89,9 +90,14 @@ class ValtimoCamundaAutoConfiguration {
     @ConditionalOnMissingBean(CamundaRepositoryService::class)
     fun camundaRepositoryService(
         camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
-        authorizationService: AuthorizationService
+        authorizationService: AuthorizationService,
+        repositoryService: RepositoryService,
     ): CamundaRepositoryService {
-        return CamundaRepositoryService(camundaProcessDefinitionRepository, authorizationService)
+        return CamundaRepositoryService(
+            camundaProcessDefinitionRepository,
+            authorizationService,
+            repositoryService
+        )
     }
 
     @Bean
