@@ -1,0 +1,18 @@
+[
+    {
+        "id": "27a399c7-9d70-4833-a651-57664e2e9e09",
+        "title": "OpenZaak mock Authentication",
+        "pluginDefinitionKey": "openzaak"
+    },
+    {
+        "id": "5474fe57-532a-4050-8d89-32e62ca3e895",
+        "title": "Documenten API",
+        "pluginDefinitionKey": "documentenapi",
+        "properties": {
+            "url": "http://localhost:56273/documenten/",
+            "bronorganisatie": "051845623",
+            "authenticationPluginConfiguration": "27a399c7-9d70-4833-a651-57664e2e9e09",
+            "apiVersion": "1.2.0"
+        }
+    }
+]

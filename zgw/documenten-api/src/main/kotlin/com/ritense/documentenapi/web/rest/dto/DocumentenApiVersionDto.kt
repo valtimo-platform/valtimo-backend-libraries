@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package com.ritense.plugin.exception
+package com.ritense.documentenapi.web.rest.dto
 
-import com.ritense.plugin.domain.PluginConfiguration
-
-class PluginEventInvocationException(
-    pluginConfiguration: PluginConfiguration,
-    throwable: Throwable,
-) : RuntimeException(
-    "Failed to run events on plugin ${pluginConfiguration.title} with id ${pluginConfiguration.id.id}. Error: ${throwable.cause?.message ?: throwable.message}",
-    throwable
+data class DocumentenApiVersionDto(
+    val selectedVersion: String? = null,
+    val detectedVersions: List<String>? = null
 )

@@ -35,6 +35,8 @@ dependencies {
     implementation project(':core')
     implementation project(":document")
     implementation project(':plugin')
+    implementation project(":plugin-valtimo")
+    implementation project(":process-document")
     implementation project(':resource:temporary-resource-storage')
     implementation project(':zgw')
     implementation project(':zgw:catalogi-api')
@@ -52,8 +54,6 @@ dependencies {
 
     testImplementation project(':document')
     testImplementation project(':resource')
-    testImplementation project(':process-document')
-    testImplementation project(':plugin-valtimo')
     testImplementation project(':test-utils-common')
 
     testImplementation "org.springframework.security:spring-security-test"
