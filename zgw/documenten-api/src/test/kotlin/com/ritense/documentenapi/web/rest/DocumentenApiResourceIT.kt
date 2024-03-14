@@ -122,7 +122,7 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
     }
 
     @Test
-    fun `should get a list of ordered Documenten API columns`() {
+    fun `should get a list of all ordered Documenten API columns`() {
         runWithoutAuthorization {
             documentenApiService.updateColumn(
                 DocumentenApiColumn(DocumentenApiColumnId("myCaseDefinition", DocumentenApiColumnKey.IDENTIFICATIE))
@@ -136,6 +136,7 @@ internal class DocumentenApiResourceIT : BaseIntegrationTest() {
             get("/api/management/v1/case-definition/{caseDefinitionName}/zgw-document-column", "myCaseDefinition")
         )
             .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.size()").value(DocumentenApiColumnKey.entries.size))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].key").value("identificatie"))
             .andExpect(MockMvcResultMatchers.jsonPath("$[0].enabled").value(true))
             .andExpect(MockMvcResultMatchers.jsonPath("$[1].key").value("titel"))

@@ -130,7 +130,6 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
                 .contentType(APPLICATION_JSON_VALUE)
                 .content("""
                     {
-                        "key": "identificatie",
                         "enabled": false
                     }
                 """.trimMargin())

@@ -28,6 +28,8 @@ import com.ritense.documentenapi.DocumentenApiPlugin
 import com.ritense.documentenapi.client.DocumentInformatieObject
 import com.ritense.documentenapi.client.PatchDocumentRequest
 import com.ritense.documentenapi.domain.DocumentenApiColumn
+import com.ritense.documentenapi.domain.DocumentenApiColumnId
+import com.ritense.documentenapi.domain.DocumentenApiColumnKey
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.web.rest.dto.ModifyDocumentRequest
 import com.ritense.documentenapi.web.rest.dto.RelatedFileDto
@@ -74,7 +76,17 @@ class DocumentenApiService(
 
     fun getConfiguredColumns(caseDefinitionName: String): List<DocumentenApiColumn> {
         denyAuthorization()
-        return documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(caseDefinitionName)
+        val savedColumns = documentenApiColumnRepository.findAllByIdCaseDefinitionNameOrderByOrder(caseDefinitionName)
+
+        return savedColumns + DocumentenApiColumnKey.entries
+            .filter { columnKey -> !savedColumns.any { it.id.key == columnKey } }
+            .mapIndexed { i, columnKey ->
+                DocumentenApiColumn(
+                    id = DocumentenApiColumnId(caseDefinitionName, columnKey),
+                    order = savedColumns.size + i,
+                    enabled = false
+                )
+            }
     }
 
     fun getColumns(caseDefinitionName: String): List<DocumentenApiColumn> {

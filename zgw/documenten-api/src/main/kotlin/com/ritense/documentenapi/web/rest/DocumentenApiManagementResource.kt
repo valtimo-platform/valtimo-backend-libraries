@@ -19,6 +19,7 @@ package com.ritense.documentenapi.web.rest
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.web.rest.dto.ConfiguredColumnDto
+import com.ritense.documentenapi.web.rest.dto.UpdatedConfiguredColumnDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
 import org.springframework.http.ResponseEntity
@@ -58,10 +59,9 @@ class DocumentenApiManagementResource(
     fun updateColumn(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
         @PathVariable(name = "columnKey") columnKey: String,
-        @RequestBody column: ConfiguredColumnDto,
+        @RequestBody column: UpdatedConfiguredColumnDto,
     ): ResponseEntity<ConfiguredColumnDto> {
-        require(column.key == columnKey)
-        val updatedColumn = documentenApiService.updateColumn(column.toEntity(caseDefinitionName))
+        val updatedColumn = documentenApiService.updateColumn(column.toEntity(caseDefinitionName, columnKey))
         return ResponseEntity.ok(ConfiguredColumnDto.of(updatedColumn))
     }
 }
