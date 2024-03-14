@@ -47,7 +47,7 @@ class CaseTaskListDeploymentServiceIT @Autowired constructor(
     }
 
     @Test
-    fun `should auto deploy tabs changeset from resource folder`() {
+    fun `should auto deploy case task list changeset from resource folder`() {
         taskListColumnRepository.deleteAll()
         whenever(caseTaskListDeploymentService.getPath()).thenCallRealMethod()
         changesetRepository.deleteAllByKey("case-task-list")
