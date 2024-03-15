@@ -602,6 +602,11 @@ class PluginService(
         }
     }
 
+    fun getPluginConfiguration(id: PluginConfigurationId): PluginConfiguration {
+        return pluginConfigurationRepository.findById(id)
+            .orElseThrow { IllegalStateException("Plugin configuration with id '$id' does not exist!") }
+    }
+
     @Throws(ConstraintViolationException::class)
     private fun validateProperty(pluginProperty: PluginProperty, propertyNode: JsonNode?, pluginClass: Class<*>) {
         val propertyClass = Class.forName(pluginProperty.fieldType)

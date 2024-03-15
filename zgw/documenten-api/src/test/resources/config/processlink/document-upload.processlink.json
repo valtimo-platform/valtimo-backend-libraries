@@ -1,0 +1,9 @@
+[
+    {
+        "activityId": "upload-document",
+        "activityType": "bpmn:ServiceTask:start",
+        "processLinkType": "plugin",
+        "pluginConfigurationId": "5474fe57-532a-4050-8d89-32e62ca3e895",
+        "pluginActionDefinitionKey": "store-uploaded-document"
+    }
+]
