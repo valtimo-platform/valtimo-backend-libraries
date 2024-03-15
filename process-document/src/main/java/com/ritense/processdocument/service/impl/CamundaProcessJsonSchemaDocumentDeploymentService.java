@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.authorization.annotation.RunWithoutAuthorization;
+import com.ritense.document.domain.DocumentDefinition;
 import com.ritense.document.domain.event.DocumentDefinitionDeployedEvent;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.domain.config.ProcessDocumentLinkConfigItem;
@@ -32,6 +33,7 @@ import com.ritense.processdocument.service.ProcessDocumentAssociationService;
 import com.ritense.processdocument.service.ProcessDocumentDeploymentService;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +73,8 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
                 final var processDocumentLinkConfigItems = getJson(IOUtils.toString(resource.getInputStream(), UTF_8));
 
                 processDocumentLinkConfigItems.forEach(item -> createProcessDocumentLink(documentDefinitionName, item));
+            } else {
+                copyProcessDocumentLinksToLatestVersion(documentDefinitionDeployedEvent.documentDefinition().id());
             }
         } catch (IOException e) {
             logger.error("Error while deploying process-document-links", e);
@@ -101,6 +105,27 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
         if (documentDefinitionService.findLatestByName(documentDefinitionName).isPresent()) {
             processDocumentLinkConfigItems.forEach(item -> createProcessDocumentLink(documentDefinitionName, item));
         }
+    }
+
+    private void copyProcessDocumentLinksToLatestVersion(DocumentDefinition.Id documentDefinitionId) {
+        AuthorizationContext.runWithoutAuthorization(() -> {
+            var name = documentDefinitionId.name();
+            var latestVersion = documentDefinitionId.version();
+            if (latestVersion >= 2) {
+                processDocumentAssociationService.findProcessDocumentDefinitions(name, latestVersion - 1)
+                    .forEach(item -> {
+                        var request = new ProcessDocumentDefinitionRequest(
+                            item.processDocumentDefinitionId().processDefinitionKey().toString(),
+                            name,
+                            item.canInitializeDocument(),
+                            item.startableByUser(),
+                            Optional.of(latestVersion)
+                        );
+                        processDocumentAssociationService.createProcessDocumentDefinition(request);
+                    });
+            }
+            return null;
+        });
     }
 
     private void createProcessDocumentLink(String documentDefinitionName, ProcessDocumentLinkConfigItem item) {
