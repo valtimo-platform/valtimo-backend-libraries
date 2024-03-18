@@ -36,11 +36,17 @@ data class FieldPermissionCondition<V : Comparable<V>>(
     val operator: PermissionConditionOperator,
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     @JsonDeserialize(using = ComparableDeserializer::class)
-    val value: V?
+    val value: V? = null,
+    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
+    val values: List<Any>? = null,
 ) : ReflectingPermissionCondition(PermissionConditionType.FIELD) {
+    init {
+        require((value == null || values == null))
+    }
+
     override fun <T : Any> isValid(entity: T): Boolean {
         val fieldValue = findEntityFieldValue(entity, field)
-        val resolvedValue = PermissionConditionValueResolver.resolveValue(this.value)
+        val resolvedValue = resolveValue()
         return operator.evaluate(fieldValue, resolvedValue)
     }
 
@@ -52,9 +58,19 @@ data class FieldPermissionCondition<V : Comparable<V>>(
         queryDialectHelper: QueryDialectHelper
     ): Predicate {
         val path = createDatabaseObjectPath(field, root)!!
-        val resolvedValue = PermissionConditionValueResolver.resolveValue(this.value)
+        val resolvedValue = resolveValue()
 
         return operator.toPredicate<Comparable<Any>>(criteriaBuilder, path, resolvedValue)
+    }
+
+    private fun resolveValue(): Any? {
+        return if (this.values != null) {
+            this.values.map {
+                PermissionConditionValueResolver.resolveValue(it)
+            }
+        } else {
+            PermissionConditionValueResolver.resolveValue(this.value)
+        }
     }
 
     companion object {
