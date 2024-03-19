@@ -21,12 +21,26 @@ import com.ritense.documentenapi.domain.ZgwDocumentTrefwoordId
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 
 interface ZgwDocumentTrefwoordRepository : JpaRepository<ZgwDocumentTrefwoord, ZgwDocumentTrefwoordId> {
 
+    fun findAllByCaseDefinitionName(caseDefinitionName: String): List<ZgwDocumentTrefwoord>
+
     fun findAllByCaseDefinitionName(caseDefinitionName: String, pageable: Pageable): Page<ZgwDocumentTrefwoord>
 
-    fun findAllByCaseDefinitionNameAndValueContaining(caseDefinitionName: String, search: String?, pageable: Pageable): Page<ZgwDocumentTrefwoord>
+    @Query("""
+        SELECT t
+        FROM ZgwDocumentTrefwoord t
+        WHERE t.caseDefinitionName = :caseDefinitionName
+        AND upper(t.value) LIKE upper(concat('%', :search, '%'))
+    """)
+    fun findAllByCaseDefinitionNameAndValueContaining(
+        @Param("caseDefinitionName") caseDefinitionName: String,
+        @Param("search") search: String,
+        pageable: Pageable
+    ): Page<ZgwDocumentTrefwoord>
 
     fun findAllByCaseDefinitionNameAndValue(caseDefinitionName: String, value: String): ZgwDocumentTrefwoord?
 
