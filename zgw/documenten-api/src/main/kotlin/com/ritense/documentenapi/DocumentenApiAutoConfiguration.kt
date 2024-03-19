@@ -22,6 +22,7 @@ import com.ritense.case.deployment.ZgwDocumentListColumnDeploymentService
 import com.ritense.catalogiapi.service.CatalogiService
 import com.ritense.document.service.impl.JsonSchemaDocumentDefinitionService
 import com.ritense.documentenapi.client.DocumentenApiClient
+import com.ritense.documentenapi.exporter.ZgwDocumentListColumnExporter
 import com.ritense.documentenapi.importer.ZgwDocumentListColumnImporter
 import com.ritense.documentenapi.repository.DocumentenApiColumnRepository
 import com.ritense.documentenapi.security.DocumentenApiHttpSecurityConfigurer
@@ -180,4 +181,10 @@ class DocumentenApiAutoConfiguration {
         changelogDeployer: ChangelogDeployer
     ): ZgwDocumentListColumnImporter = ZgwDocumentListColumnImporter(deployer, changelogDeployer)
 
+    @Bean
+    @ConditionalOnMissingBean(ZgwDocumentListColumnExporter::class)
+    fun zgwDocumentListColumnExporter(
+        documentenApiColumnRepository: DocumentenApiColumnRepository,
+        objectMapper: ObjectMapper
+    ): ZgwDocumentListColumnExporter = ZgwDocumentListColumnExporter(documentenApiColumnRepository, objectMapper)
 }
