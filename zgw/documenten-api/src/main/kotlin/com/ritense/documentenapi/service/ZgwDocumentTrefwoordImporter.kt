@@ -16,7 +16,7 @@
 
 package com.ritense.documentenapi.service
 
-import com.ritense.case.deployment.ZgwDocumentTrefwoordDeploymentService
+import com.ritense.documentenapi.deployment.ZgwDocumentTrefwoordDeploymentService
 import com.ritense.importer.ImportRequest
 import com.ritense.importer.Importer
 import com.ritense.importer.ValtimoImportTypes.Companion.DOCUMENT_DEFINITION
