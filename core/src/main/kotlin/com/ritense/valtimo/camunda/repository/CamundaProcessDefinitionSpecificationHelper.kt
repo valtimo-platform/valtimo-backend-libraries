@@ -56,6 +56,11 @@ class CamundaProcessDefinitionSpecificationHelper {
         }
 
         @JvmStatic
+        fun byVersionTag(versionTag: String) = Specification<CamundaProcessDefinition> { root, _, cb ->
+            cb.equal(root.get<Any>(VERSION_TAG), versionTag)
+        }
+
+        @JvmStatic
         fun byLatestVersion() = Specification<CamundaProcessDefinition> { root, query, cb ->
             val sub = query.subquery(Long::class.java)
             val subRoot = sub.from(CamundaProcessDefinition::class.java)

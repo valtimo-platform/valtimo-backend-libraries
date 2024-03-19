@@ -24,6 +24,8 @@ import com.ritense.documentenapi.domain.DocumentenApiColumnId
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.IDENTIFICATIE
 import com.ritense.documentenapi.domain.DocumentenApiColumnKey.TITEL
 import com.ritense.documentenapi.service.DocumentenApiService
+import com.ritense.processdocument.domain.impl.request.DocumentDefinitionProcessRequest
+import com.ritense.processdocument.service.DocumentDefinitionProcessLinkService
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -48,6 +50,9 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
+
+    @Autowired
+    lateinit var documentDefinitionProcessLinkService: DocumentDefinitionProcessLinkService
 
     lateinit var mockMvc: MockMvc
 
@@ -137,5 +142,21 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
             .andDo(MockMvcResultHandlers.print())
             .andExpect(jsonPath("$.key").value("identificatie"))
             .andExpect(jsonPath("$.enabled").value(false))
+    }
+
+    @Test
+    fun `should get API version`() {
+        runWithoutAuthorization {
+            documentDefinitionProcessLinkService.saveDocumentDefinitionProcess(
+                "profile",
+                DocumentDefinitionProcessRequest("call-activity-to-upload-document", "DOCUMENT_UPLOAD")
+            )
+        }
+
+        mockMvc.perform(get("/api/management/v1/case-definition/{caseDefinitionName}/documenten-api/version", "profile"))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(jsonPath("$.selectedVersion").value("1.2.0"))
+            .andExpect(jsonPath("$.detectedVersions.size()").value(1))
+            .andExpect(jsonPath("$.detectedVersions[0]").value("1.2.0"))
     }
 }
