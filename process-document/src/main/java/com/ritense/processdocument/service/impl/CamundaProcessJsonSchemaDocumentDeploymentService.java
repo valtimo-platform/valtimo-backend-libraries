@@ -111,7 +111,7 @@ public class CamundaProcessJsonSchemaDocumentDeploymentService implements Proces
         AuthorizationContext.runWithoutAuthorization(() -> {
             var name = documentDefinitionId.name();
             var latestVersion = documentDefinitionId.version();
-            if (latestVersion >= 2) {
+            if (latestVersion > 1) {
                 processDocumentAssociationService.findProcessDocumentDefinitions(name, latestVersion - 1)
                     .forEach(item -> {
                         var request = new ProcessDocumentDefinitionRequest(
