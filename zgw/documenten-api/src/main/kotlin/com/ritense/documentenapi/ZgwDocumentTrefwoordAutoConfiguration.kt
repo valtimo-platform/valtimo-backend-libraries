@@ -17,7 +17,7 @@
 package com.ritense.documentenapi
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.ritense.case.deployment.ZgwDocumentTrefwoordDeploymentService
+import com.ritense.documentenapi.deployment.ZgwDocumentTrefwoordDeploymentService
 import com.ritense.documentenapi.repository.ZgwDocumentTrefwoordRepository
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordExporter
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordImporter
