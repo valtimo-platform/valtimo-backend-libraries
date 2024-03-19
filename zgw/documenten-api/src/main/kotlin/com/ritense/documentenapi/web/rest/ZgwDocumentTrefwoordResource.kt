@@ -38,6 +38,14 @@ class ZgwDocumentTrefwoordResource(
     val zgwDocumentTrefwoordService: ZgwDocumentTrefwoordService
 ) {
 
+    @GetMapping("/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord")
+    fun getTrefwoorden(
+        @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
+    ): ResponseEntity<List<ZgwDocumentTrefwoord>> {
+        val trefwoorden = zgwDocumentTrefwoordService.getTrefwoorden(caseDefinitionName)
+        return ResponseEntity.ok(trefwoorden)
+    }
+
     @GetMapping("/management/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord")
     fun getTrefwoorden(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String,
