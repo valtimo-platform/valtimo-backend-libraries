@@ -62,8 +62,9 @@ class PermissionManagementResourceIntTest : BaseIntegrationTest() {
             .andExpect(jsonPath("$[0].action", equalTo("view")))
             .andExpect(jsonPath("$[0].conditions[0].type", equalTo("field")))
             .andExpect(jsonPath("$[0].conditions[0].field", equalTo("document.name")))
-            .andExpect(jsonPath("$[0].conditions[0].operator", equalTo("==")))
-            .andExpect(jsonPath("$[0].conditions[0].value", equalTo("loan")))
+            .andExpect(jsonPath("$[0].conditions[0].operator", equalTo("in")))
+            .andExpect(jsonPath("$[0].conditions[0].value[0]", equalTo("loan")))
+            .andExpect(jsonPath("$[0].conditions[0].value[1]", equalTo("gift")))
             .andExpect(jsonPath("$[0].roleKey", equalTo("ROLE_USER")))
     }
 
