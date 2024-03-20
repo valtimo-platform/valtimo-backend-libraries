@@ -42,10 +42,6 @@ class CaseTaskListDeploymentServiceIT @Autowired constructor(
     private val changelogDeployer: ChangelogDeployer
 ) : BaseIntegrationTest() {
 
-    @BeforeEach
-    fun setUp() {
-    }
-
     @Test
     fun `should auto deploy case task list changeset from resource folder`() {
         taskListColumnRepository.deleteAll()
@@ -54,7 +50,7 @@ class CaseTaskListDeploymentServiceIT @Autowired constructor(
 
         changelogDeployer.deployAll()
 
-        val changeset = changesetRepository.findById("some-case-type.case-task-lists")
+        val changeset = changesetRepository.findById("some-case-type.case-task-list")
 
         assertThat(changeset.isPresent).isTrue()
         assertThat(changeset.get().filename).endsWith("/some-case-type.case-task-list.json")
