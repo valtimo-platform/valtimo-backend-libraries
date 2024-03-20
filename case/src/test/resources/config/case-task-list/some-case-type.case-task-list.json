@@ -1,5 +1,5 @@
 {
-    "changesetId": "some-case-type.case-task-lists",
+    "changesetId": "some-case-type.case-task-list",
     "case-definitions": [
         {
             "key": "some-case-type",
@@ -13,8 +13,7 @@
                         "displayTypeParameters": {
                             "enum": {
                                 "key1":"Value 1"
-                            },
-                            "date-format": ""
+                            }
                         }
                     },
                     "sortable": true ,
@@ -29,8 +28,7 @@
                         "displayTypeParameters": {
                             "enum": {
                                 "key1":"Value 2"
-                            },
-                            "date-format": ""
+                            }
                         }
                     },
                     "sortable": true
