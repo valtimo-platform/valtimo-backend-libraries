@@ -18,8 +18,6 @@ package com.ritense.authorization.permission.condition
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonView
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.ritense.authorization.jackson.ComparableDeserializer
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.permission.condition.FieldPermissionCondition.Companion.FIELD
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -29,18 +27,21 @@ import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
 @JsonTypeName(FIELD)
-data class FieldPermissionCondition<V : Comparable<V>>(
+data class FieldPermissionCondition<V>(
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val field: String,
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val operator: PermissionConditionOperator,
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
-    @JsonDeserialize(using = ComparableDeserializer::class)
-    val value: V?
+    val value: V? = null,
 ) : ReflectingPermissionCondition(PermissionConditionType.FIELD) {
+    init {
+        require(value == null || value is Comparable<*> || value is List<*>)
+    }
+
     override fun <T : Any> isValid(entity: T): Boolean {
         val fieldValue = findEntityFieldValue(entity, field)
-        val resolvedValue = PermissionConditionValueResolver.resolveValue(this.value)
+        val resolvedValue = resolveValue()
         return operator.evaluate(fieldValue, resolvedValue)
     }
 
@@ -52,9 +53,19 @@ data class FieldPermissionCondition<V : Comparable<V>>(
         queryDialectHelper: QueryDialectHelper
     ): Predicate {
         val path = createDatabaseObjectPath(field, root)!!
-        val resolvedValue = PermissionConditionValueResolver.resolveValue(this.value)
+        val resolvedValue = resolveValue()
 
         return operator.toPredicate<Comparable<Any>>(criteriaBuilder, path, resolvedValue)
+    }
+
+    private fun resolveValue(): Any? {
+        return if (this.value is List<*>) {
+            this.value.map {
+                PermissionConditionValueResolver.resolveValue(it)
+            }
+        } else {
+            PermissionConditionValueResolver.resolveValue(this.value)
+        }
     }
 
     companion object {
