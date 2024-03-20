@@ -33,6 +33,7 @@ import com.ritense.document.service.result.CreateDocumentResult;
 import com.ritense.document.service.result.DocumentResult;
 import com.ritense.document.service.result.ModifyDocumentResult;
 import com.ritense.document.service.result.error.DocumentOperationError;
+import com.ritense.valtimo.contract.Constants;
 import com.ritense.valtimo.contract.audit.utils.AuditHelper;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileAddedEvent;
 import com.ritense.valtimo.contract.document.event.DocumentRelatedFileRemovedEvent;
@@ -317,6 +318,9 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
     }
 
     public void setInternalStatus(@Nullable InternalCaseStatus internalCaseStatus) {
+        if (internalCaseStatus != null && !internalCaseStatus.getId().getKey().matches(Constants.KEY_REGEX)) {
+            throw new IllegalArgumentException("Invalid status key: '" + internalCaseStatus.getId().getKey() + "'.");
+        }
         this.internalStatus = internalCaseStatus;
     }
 

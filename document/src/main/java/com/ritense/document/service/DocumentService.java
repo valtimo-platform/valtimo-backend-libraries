@@ -18,8 +18,6 @@ package com.ritense.document.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ritense.document.domain.Document;
-import com.ritense.document.domain.InternalCaseStatus;
-import com.ritense.document.domain.InternalCaseStatusId;
 import com.ritense.document.domain.RelatedFile;
 import com.ritense.document.domain.impl.request.ModifyDocumentRequest;
 import com.ritense.document.domain.impl.request.NewDocumentRequest;
