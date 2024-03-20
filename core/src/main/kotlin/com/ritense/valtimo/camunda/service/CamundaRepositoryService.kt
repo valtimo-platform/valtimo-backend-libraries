@@ -25,13 +25,18 @@ import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionRepository
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byId
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byKey
 import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byLatestVersion
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byVersion
+import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.Companion.byVersionTag
+import org.camunda.bpm.engine.RepositoryService
+import org.camunda.bpm.model.bpmn.instance.CallActivity
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.transaction.annotation.Transactional
 
 open class CamundaRepositoryService(
     private val camundaProcessDefinitionRepository: CamundaProcessDefinitionRepository,
-    private val authorizationService: AuthorizationService
+    private val authorizationService: AuthorizationService,
+    private val repositoryService: RepositoryService,
 ) {
 
     @Transactional(readOnly = true)
@@ -79,6 +84,35 @@ open class CamundaRepositoryService(
     open fun processDefinitionExists(specification: Specification<CamundaProcessDefinition>): Boolean {
         denyAuthorization()
         return camundaProcessDefinitionRepository.exists(specification)
+    }
+
+    @Transactional(readOnly = true)
+    open fun findLinkedProcessDefinitions(specification: Specification<CamundaProcessDefinition>): List<CamundaProcessDefinition> {
+        denyAuthorization()
+        val linkedProcessDefinitions = mutableListOf<CamundaProcessDefinition>()
+        camundaProcessDefinitionRepository.findAll(specification)
+            .forEach { findLinkedProcessDefinitions(it, linkedProcessDefinitions) }
+        return linkedProcessDefinitions
+    }
+
+    private fun findLinkedProcessDefinitions(
+        processDefinition: CamundaProcessDefinition,
+        linkedProcessDefinitions: MutableList<CamundaProcessDefinition> = mutableListOf()
+    ) {
+        linkedProcessDefinitions.add(processDefinition)
+        val bpmnModelInstance = repositoryService.getBpmnModelInstance(processDefinition.id)
+        bpmnModelInstance.getModelElementsByType(CallActivity::class.java)
+            .mapNotNull {
+                val spec = byKey(it.calledElement)
+                when (it.camundaCalledElementBinding) {
+                    "version" -> findProcessDefinition(spec.and(byVersion(it.camundaCalledElementVersion.toInt())))
+                    "versionTag" -> findProcessDefinition(spec.and(byVersionTag(it.camundaCalledElementVersionTag)))
+                    "deployment" -> null
+                    else -> findProcessDefinition(spec.and(byLatestVersion()))
+                }
+            }
+            .filter { found -> !linkedProcessDefinitions.any { linked -> linked.id == found.id  } }
+            .forEach { findLinkedProcessDefinitions(it, linkedProcessDefinitions) }
     }
 
     private fun denyAuthorization() {

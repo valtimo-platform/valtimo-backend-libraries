@@ -41,6 +41,7 @@ import com.ritense.case.service.CaseListImporter
 import com.ritense.case.service.CaseTabExporter
 import com.ritense.case.service.CaseTabImporter
 import com.ritense.case.service.CaseTabService
+import com.ritense.case.service.CaseTaskListExporter
 import com.ritense.case.service.CaseTaskListImporter
 import com.ritense.case.service.ObjectMapperConfigurer
 import com.ritense.case.service.TaskColumnService
@@ -327,6 +328,16 @@ class CaseAutoConfiguration {
         caseTabDeploymentService: CaseTabDeploymentService,
         changelogDeployer: ChangelogDeployer
     ) = CaseTabImporter(caseTabDeploymentService, changelogDeployer)
+
+    @Bean
+    @ConditionalOnMissingBean(CaseTaskListExporter::class)
+    fun caseTaskListExporter(
+        objectMapper: ObjectMapper,
+        service: TaskColumnService,
+    ) = CaseTaskListExporter(
+        objectMapper,
+        service
+    )
 
     @Bean
     @ConditionalOnMissingBean(CaseTaskListImporter::class)

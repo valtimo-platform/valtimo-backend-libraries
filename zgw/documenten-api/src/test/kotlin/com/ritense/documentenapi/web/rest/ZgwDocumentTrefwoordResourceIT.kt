@@ -21,6 +21,7 @@ import com.ritense.case.repository.CaseDefinitionSettingsRepository
 import com.ritense.documentenapi.BaseIntegrationTest
 import com.ritense.documentenapi.service.ZgwDocumentTrefwoordService
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
+import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.USER
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.BeforeEach
@@ -57,6 +58,27 @@ internal class ZgwDocumentTrefwoordResourceIT : BaseIntegrationTest() {
         mockMvc = MockMvcBuilders
             .webAppContextSetup(this.webApplicationContext)
             .build()
+    }
+
+    @Test
+    @WithMockUser(username = "user@ritense.com", authorities = [USER])
+    fun `test getTrefwoorden as a user`() {
+        val caseDefinitionName = "TestDefinition"
+
+        caseDefinitionSettingsRepository.save(CaseDefinitionSettings(caseDefinitionName))
+
+        service.createTrefwoord(caseDefinitionName, "Trefwoord1")
+        service.createTrefwoord(caseDefinitionName, "Trefwoord2")
+
+        mockMvc.perform(get("/api/v1/case-definition/{caseDefinitionName}/zgw-document/trefwoord", caseDefinitionName)
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk)
+            .andExpect(content().contentType(ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$").isArray)
+            .andExpect(jsonPath("$[0].caseDefinitionName").value("TestDefinition"))
+            .andExpect(jsonPath("$[0].value").value("Trefwoord1"))
+            .andExpect(jsonPath("$[1].caseDefinitionName").value("TestDefinition"))
+            .andExpect(jsonPath("$[1].value").value("Trefwoord2"))
     }
 
     @Test
