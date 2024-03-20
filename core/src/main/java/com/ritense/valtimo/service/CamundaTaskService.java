@@ -199,7 +199,7 @@ public class CamundaTaskService {
     public Page<TaskExtended> findTasksFiltered(
         TaskFilter taskFilter, Pageable pageable
     ) throws IllegalAccessException {
-        var parameters = buildTaskFilterParameters(taskFilter);
+        var parameters = buildTaskFilterParameters(taskFilter, false);
         Page<TaskExtended> tasks = camundaTaskRepository.findTasks(pageable, parameters);
         if (!tasks.isEmpty()) {
             tasks.forEach(task -> task.setContext(taskService.getVariable(task.getId(), CONTEXT)));
@@ -283,7 +283,7 @@ public class CamundaTaskService {
         );
     }
 
-    private Map<String, Object> buildTaskFilterParameters(TaskFilter taskFilter) throws IllegalAccessException {
+    private Map<String, Object> buildTaskFilterParameters(TaskFilter taskFilter, boolean applyContextToFilter) throws IllegalAccessException {
         final Map<String, Object> parameters = new HashMap<>();
         final String currentUserLogin = SecurityUtils.getCurrentUserLogin();
         final List<String> userRoles = SecurityUtils.getCurrentUserRoles();
@@ -301,12 +301,13 @@ public class CamundaTaskService {
             parameters.put("candidateGroups", userRoles);
         }
 
-        //Always filter on context
-        Context context = contextService.getContextOfCurrentUser();
-        parameters.put(
-            "processDefinitionKeys",
-            context.getProcesses().stream().map(ContextProcess::getProcessDefinitionKey).collect(toSet())
-        );
+        if (applyContextToFilter) {
+            Context context = contextService.getContextOfCurrentUser();
+            parameters.put(
+                "processDefinitionKeys",
+                context.getProcesses().stream().map(ContextProcess::getProcessDefinitionKey).collect(toSet())
+            );
+        }
 
         // Tenancy filter
         if (valtimoProperties.getApp().getEnableTenancy()) {
