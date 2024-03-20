@@ -10,7 +10,7 @@
                     "type": "field",
                     "field": "document.name",
                     "operator": "in",
-                    "values": ["loan", "gift"]
+                    "value": ["loan", "gift"]
                 }
             ]
         },

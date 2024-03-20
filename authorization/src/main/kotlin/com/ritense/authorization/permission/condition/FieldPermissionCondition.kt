@@ -18,8 +18,6 @@ package com.ritense.authorization.permission.condition
 
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.annotation.JsonView
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.ritense.authorization.jackson.ComparableDeserializer
 import com.ritense.authorization.permission.PermissionView
 import com.ritense.authorization.permission.condition.FieldPermissionCondition.Companion.FIELD
 import com.ritense.valtimo.contract.database.QueryDialectHelper
@@ -29,19 +27,16 @@ import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 
 @JsonTypeName(FIELD)
-data class FieldPermissionCondition<V : Comparable<V>>(
+data class FieldPermissionCondition<V>(
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val field: String,
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
     val operator: PermissionConditionOperator,
     @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
-    @JsonDeserialize(using = ComparableDeserializer::class)
     val value: V? = null,
-    @field:JsonView(value = [PermissionView.RoleManagement::class, PermissionView.PermissionManagement::class])
-    val values: List<Any>? = null,
 ) : ReflectingPermissionCondition(PermissionConditionType.FIELD) {
     init {
-        require((value == null || values == null))
+        require(value == null || value is Comparable<*> || value is List<*>)
     }
 
     override fun <T : Any> isValid(entity: T): Boolean {
@@ -64,8 +59,8 @@ data class FieldPermissionCondition<V : Comparable<V>>(
     }
 
     private fun resolveValue(): Any? {
-        return if (this.values != null) {
-            this.values.map {
+        return if (this.value is List<*>) {
+            this.value.map {
                 PermissionConditionValueResolver.resolveValue(it)
             }
         } else {
