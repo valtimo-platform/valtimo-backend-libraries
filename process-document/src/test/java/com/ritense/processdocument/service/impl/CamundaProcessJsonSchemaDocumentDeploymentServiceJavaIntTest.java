@@ -19,10 +19,15 @@ package com.ritense.processdocument.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ritense.authorization.AuthorizationContext;
+import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.BaseIntegrationTest;
+import com.ritense.processdocument.domain.ProcessDefinitionKey;
+import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
+import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Tag("integration")
 @Transactional
@@ -30,6 +35,9 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
 
     private static final String DOCUMENT_DEFINITION_NAME = "house";
     private static final String PROCESS_DEFINITION_KEY = "loan-process-demo";
+
+    @Autowired
+    private DocumentDefinitionService documentDefinitionService;
 
     @Test
     void shouldDeployProcessDocumentLinkFromResourceFolder() {
@@ -43,6 +51,55 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
         assertThat(processDocumentDefinitions.get(0).canInitializeDocument()).isTrue();
         assertThat(processDocumentDefinitions.get(0).startableByUser()).isTrue();
+    }
+
+    @Test
+    void shouldCopyProcessDocumentLinkToLatestVersino() {
+        var result = AuthorizationContext.runWithoutAuthorization(() -> {
+            documentDefinitionService.deploy("" +
+                "{\n" +
+                "    \"$id\": \"test.schema\",\n" +
+                "    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                "    \"title\": \"Test\",\n" +
+                "    \"type\": \"object\",\n" +
+                "    \"properties\": {\n" +
+                "        \"housenumber\": {\n" +
+                "            \"description\": \"house number must be equal to or greater than zero.\",\n" +
+                "            \"type\": \"integer\",\n" +
+                "            \"minimum\": 0\n" +
+                "        }\n" +
+                "    }\n" +
+                "}");
+
+            camundaProcessJsonSchemaDocumentAssociationService.createProcessDocumentDefinition(new ProcessDocumentDefinitionRequest(
+                "deadlock-process",
+                "test",
+                true
+            ));
+
+            return documentDefinitionService.deploy("" +
+                "{\n" +
+                "    \"$id\": \"test.schema\",\n" +
+                "    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n" +
+                "    \"title\": \"Test changed\",\n" +
+                "    \"type\": \"object\",\n" +
+                "    \"properties\": {\n" +
+                "        \"housenumber\": {\n" +
+                "            \"description\": \"house number must be equal to or greater than zero.\",\n" +
+                "            \"type\": \"integer\",\n" +
+                "            \"minimum\": 0\n" +
+                "        }\n" +
+                "    }\n" +
+                "}");
+        });
+
+        var association = AuthorizationContext.runWithoutAuthorization(() ->
+            camundaProcessJsonSchemaDocumentAssociationService.findProcessDocumentDefinition(
+                new CamundaProcessDefinitionKey("deadlock-process")).get());
+
+        assertThat(result.errors()).isEmpty();
+        assertThat(result.documentDefinition().id().version()).isEqualTo(2);
+        assertThat(association.processDocumentDefinitionId().documentDefinitionId()).isEqualTo(result.documentDefinition().id());
     }
 
 }
