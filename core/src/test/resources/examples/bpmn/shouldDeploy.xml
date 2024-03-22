@@ -3,7 +3,7 @@
   <bpmn:collaboration id="Collaboration_0pb2tk4">
     <bpmn:participant id="Participant_0dw45f5" processRef="deployedProcess" />
   </bpmn:collaboration>
-  <bpmn:process id="deployedProcess" isExecutable="true">
+  <bpmn:process id="deployedProcess" isExecutable="false">
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_019zpy0</bpmn:outgoing>
     </bpmn:startEvent>
