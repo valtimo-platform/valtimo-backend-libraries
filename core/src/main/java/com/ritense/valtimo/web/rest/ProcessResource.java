@@ -38,6 +38,7 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
+import com.ritense.valtimo.exception.BpmnParseException;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
 import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
@@ -68,6 +69,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.HistoryService;
+import org.camunda.bpm.engine.ParseException;
 import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -612,8 +614,8 @@ public class ProcessResource extends AbstractProcessResource {
                 camundaProcessService.deploy(bpmn.getOriginalFilename(), new ByteArrayInputStream(bpmn.getBytes()));
                 return null;
             });
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (ParseException e) {
+            throw new BpmnParseException(e);
         }
         return ResponseEntity.ok().build();
     }
