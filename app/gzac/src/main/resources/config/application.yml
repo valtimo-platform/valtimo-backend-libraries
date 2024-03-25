@@ -3,7 +3,7 @@ management:
         web:
             base-path: /management
             exposure:
-                include: ["configprops", "env", "health", "info", "logfile", "loggers", "mappings" ]
+                include: [ "configprops", "env", "health", "info", "logfile", "loggers", "mappings" ]
     endpoint:
         health:
             show-details: when_authorized
@@ -124,6 +124,8 @@ logging:
         reactor.netty.http.client.HttpClient: DEBUG
         org.jboss.resteasy: INFO
         org.postgresql.jdbc.PgConnection: INFO
+        org.hibernate.SQL: debug
+        org.hibernate.orm.jdbc.bind: trace
 
 server:
     port: 8080
