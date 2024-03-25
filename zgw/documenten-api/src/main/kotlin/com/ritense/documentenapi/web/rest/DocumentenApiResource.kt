@@ -100,6 +100,7 @@ class DocumentenApiResource(
     fun getApiVersion(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
     ): ResponseEntity<DocumentenApiVersionDto> {
-        return ResponseEntity.ok(documentenApiService.getApiVersion(caseDefinitionName).copy(detectedVersions = null))
+        val apiVersion = documentenApiService.getApiVersions(caseDefinitionName).firstOrNull()
+        return ResponseEntity.ok(DocumentenApiVersionDto(apiVersion))
     }
 }

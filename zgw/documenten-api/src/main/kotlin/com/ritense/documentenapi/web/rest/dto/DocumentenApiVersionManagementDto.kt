@@ -16,6 +16,7 @@
 
 package com.ritense.documentenapi.web.rest.dto
 
-data class DocumentenApiVersionDto(
+data class DocumentenApiVersionManagementDto(
     val selectedVersion: String? = null,
+    val detectedVersions: List<String>? = null
 )
