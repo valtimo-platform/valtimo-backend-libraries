@@ -50,10 +50,11 @@ public interface ProcessDocumentDefinitionRepository extends
         "AND     pdd.processDocumentDefinitionId.documentDefinitionId.version = ( " +
         "   SELECT  MAX(dd.id.version) " +
         "   FROM    JsonSchemaDocumentDefinition dd " +
-        "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +
-        ")")
-    List<CamundaProcessJsonSchemaDocumentDefinition> findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(
-        @Param("documentDefinitionName") String documentDefinitionName
+        "   WHERE   dd.id.name = pdd.id.documentDefinitionId.name " +        ") " +
+        "AND (:startableByUser IS NULL OR pdd.startableByUser = :startableByUser)")
+    List<CamundaProcessJsonSchemaDocumentDefinition> findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersionAndStartableByUser(
+        @Param("documentDefinitionName") String documentDefinitionName,
+        @Param("startableByUser") Boolean startableByUser
     );
 
     @Query("" +

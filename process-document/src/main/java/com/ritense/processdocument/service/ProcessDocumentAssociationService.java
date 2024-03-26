@@ -43,7 +43,7 @@ public interface ProcessDocumentAssociationService {
 
     ProcessDocumentDefinition getProcessDocumentDefinition(ProcessDefinitionKey processDefinitionKey, long documentDefinitionVersion);
 
-    List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName);
+    List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName, Boolean startableByUser);
 
     List<? extends ProcessDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName, Long documentDefinitionVersion);
 

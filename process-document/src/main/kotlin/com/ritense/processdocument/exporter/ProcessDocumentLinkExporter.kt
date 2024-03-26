@@ -36,8 +36,10 @@ class ProcessDocumentLinkExporter(
     override fun supports() = DocumentDefinitionExportRequest::class.java
 
     override fun export(request: DocumentDefinitionExportRequest): ExportResult {
+        val startableByUser: Boolean? = null
         val exportItems = processDocumentAssociationService.findProcessDocumentDefinitions(
-            request.name
+            request.name,
+            startableByUser
         ).map { definition ->
             ProcessDocumentLinkConfigItem().apply {
                 val processDefinitionKey = definition.processDocumentDefinitionId().processDefinitionKey().toString()
