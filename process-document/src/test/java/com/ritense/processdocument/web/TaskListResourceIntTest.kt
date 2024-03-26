@@ -16,6 +16,7 @@ import com.ritense.valtimo.contract.authentication.AuthoritiesConstants
 import com.ritense.valtimo.service.CamundaTaskService
 import java.nio.charset.StandardCharsets
 import org.assertj.core.api.Assertions.assertThat
+import org.camunda.bpm.engine.RuntimeService
 import org.camunda.bpm.engine.TaskService
 import org.hamcrest.Matchers.hasItems
 import org.hamcrest.Matchers.hasKey
@@ -32,7 +33,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.WebApplicationContext
 
-class TaskListResourceTest : BaseIntegrationTest() {
+class TaskListResourceIntTest : BaseIntegrationTest() {
 
     lateinit var mockMvc: MockMvc
 
@@ -46,11 +47,17 @@ class TaskListResourceTest : BaseIntegrationTest() {
     lateinit var taskListColumnRepository: TaskListColumnRepository
 
     @Autowired
+    lateinit var runtimeService: RuntimeService
+
+    @Autowired
     lateinit var taskService: TaskService
 
     @BeforeEach
     fun setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
+
+        val allProcessIds = runtimeService.createProcessInstanceQuery().list().map { it.id }
+        runtimeService.deleteProcessInstances(allProcessIds, "Cleaning for tests", true, false)
     }
 
     @Test
