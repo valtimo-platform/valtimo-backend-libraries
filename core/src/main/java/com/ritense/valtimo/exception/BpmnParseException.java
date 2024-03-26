@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.ritense.exporter
+package com.ritense.valtimo.exception;
 
-import com.ritense.exporter.request.ExportRequest
+import com.ritense.valtimo.web.rest.error.BadRequestAlertException;
+import org.camunda.bpm.engine.repository.ProcessDefinition;
 
-interface  Exporter<T: ExportRequest> {
-    fun supports(): Class<T>
-
-    fun export(request: T): ExportResult
+public class BpmnParseException extends BadRequestAlertException {
+    public BpmnParseException(Throwable e) {
+        super("Failed to parse BPMN", ProcessDefinition.class.getSimpleName(), e.getMessage());
+    }
 }
