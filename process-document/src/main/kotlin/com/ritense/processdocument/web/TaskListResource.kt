@@ -1,9 +1,7 @@
 package com.ritense.processdocument.web
 
-import com.ritense.authorization.AuthorizationContext
 import com.ritense.processdocument.service.CaseTaskListSearchService
 import com.ritense.processdocument.web.request.TaskListSearchDto
-import com.ritense.processdocument.web.result.TaskListRowDto
 import com.ritense.valtimo.camunda.dto.TaskExtended
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
@@ -32,7 +30,7 @@ class TaskListResource (
         pageable: Pageable
     ): ResponseEntity<Page<*>> {
         return if (taskListSearchDto.caseDefinitionName != null) {
-            ResponseEntity.ok().body(service.getTasksByCaseDefinition(taskListSearchDto.caseDefinitionName, pageable))
+            ResponseEntity.ok().body(service.getTasksByCaseDefinition(taskListSearchDto.caseDefinitionName, assignmentFilter, pageable))
         } else {
             val page: Page<TaskExtended> = camundaTaskService.findTasksFiltered(assignmentFilter, pageable)
             return ResponseEntity.ok(page)

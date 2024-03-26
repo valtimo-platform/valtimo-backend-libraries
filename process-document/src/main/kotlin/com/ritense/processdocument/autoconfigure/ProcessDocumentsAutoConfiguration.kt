@@ -202,19 +202,21 @@ class ProcessDocumentsAutoConfiguration {
         entityManager: EntityManager,
         valueResolverService: ValueResolverService,
         taskListColumnRepository: TaskListColumnRepository,
+        userManagementService: UserManagementService,
         queryDialectHelper: QueryDialectHelper
     ): CaseTaskListSearchService {
         return CaseTaskListSearchService(
             entityManager,
             valueResolverService,
             taskListColumnRepository,
+            userManagementService,
             queryDialectHelper
         )
     }
 
     @Bean
     @ConditionalOnMissingBean(TaskListResource::class)
-    fun henk(
+    fun processDocumentTaskListResource(
         caseTaskListSearchService: CaseTaskListSearchService,
         camundaTaskService: CamundaTaskService
     ): TaskListResource {
