@@ -67,8 +67,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -155,7 +154,7 @@ class ProcessDocumentResourceTest extends BaseTest {
 
     @Test
     void shouldReturnOkWhenGettingProcessDocumentDefinition() throws Exception {
-        when(processDocumentAssociationService.findProcessDocumentDefinitions(eq(documentDefinitionId.name())))
+        when(processDocumentAssociationService.findProcessDocumentDefinitions(eq(documentDefinitionId.name()), (Boolean) isNull()))
             .thenReturn(List.of(processDocumentDefinition));
 
         mockMvc.perform(
