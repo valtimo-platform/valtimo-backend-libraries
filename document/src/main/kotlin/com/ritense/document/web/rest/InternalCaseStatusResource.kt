@@ -24,6 +24,7 @@ import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateOrderRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateRequestDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -63,7 +64,7 @@ class InternalCaseStatusResource(
     @PostMapping("/management/v1/case-definition/{caseDefinitionName}/internal-status")
     fun createInternalCaseStatus(
         @PathVariable caseDefinitionName: String,
-        @RequestBody internalCaseStatusCreateRequest: InternalCaseStatusCreateRequestDto
+        @Valid @RequestBody internalCaseStatusCreateRequest: InternalCaseStatusCreateRequestDto
     ): ResponseEntity<InternalCaseStatusResponseDto> {
         return try {
             ResponseEntity.ok(
@@ -82,7 +83,7 @@ class InternalCaseStatusResource(
     @PutMapping("/management/v1/case-definition/{caseDefinitionName}/internal-status")
     fun editInternalCaseStatuses(
         @PathVariable caseDefinitionName: String,
-        @RequestBody requestDtos: List<InternalCaseStatusUpdateOrderRequestDto>
+        @Valid @RequestBody requestDtos: List<InternalCaseStatusUpdateOrderRequestDto>
     ): ResponseEntity<List<InternalCaseStatusResponseDto>> {
         val internalCaseStatuses = internalCaseStatusService.update(caseDefinitionName, requestDtos)
         return ResponseEntity.ok(internalCaseStatuses.map { InternalCaseStatusResponseDto(it) })
@@ -93,7 +94,7 @@ class InternalCaseStatusResource(
     fun updateInternalCaseStatus(
         @PathVariable caseDefinitionName: String,
         @PathVariable internalStatusKey: String,
-        @RequestBody requestDto: InternalCaseStatusUpdateRequestDto
+        @Valid @RequestBody requestDto: InternalCaseStatusUpdateRequestDto
     ): ResponseEntity<Unit> {
         internalCaseStatusService.update(caseDefinitionName, internalStatusKey, requestDto)
         return ResponseEntity.noContent().build()

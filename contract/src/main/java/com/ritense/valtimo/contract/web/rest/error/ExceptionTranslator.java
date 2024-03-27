@@ -65,9 +65,11 @@ public class ExceptionTranslator implements ProblemHandling {
         }
 
         final String msg = "message";
-        if (problem instanceof ConstraintViolationProblem) {
+        if (problem instanceof ConstraintViolationProblem constraintViolationProblem) {
             builder
-                .with("violations", ((ConstraintViolationProblem) problem).getViolations())
+                .with("errors", constraintViolationProblem.getViolations().stream()
+                    .map(v -> v.getField() + ": " + v.getMessage())
+                    .toList())
                 .with(msg, ErrorConstants.ERR_VALIDATION);
         } else {
             builder
@@ -79,8 +81,8 @@ public class ExceptionTranslator implements ProblemHandling {
             }
         }
 
-        builder.withCause(((DefaultProblem) problem).getCause());
-        hardeningServiceOptional.ifPresent((hardeningService) -> hardeningService.harden(
+        builder.withCause(((ThrowableProblem) problem).getCause());
+        hardeningServiceOptional.ifPresent(hardeningService -> hardeningService.harden(
             (ThrowableProblem) problem,
             builder,
             (HttpServletRequest) request.getNativeRequest()
