@@ -37,6 +37,7 @@ import com.ritense.processdocument.service.result.ModifyDocumentAndStartProcessR
 import com.ritense.processdocument.service.result.NewDocumentAndStartProcessResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -89,7 +90,7 @@ public class ProcessDocumentResource {
     @GetMapping("/v1/process-document/definition/document/{document-definition-name}")
     public ResponseEntity<List<? extends ProcessDocumentDefinition>> findProcessDocumentDefinitions(
         @PathVariable(name = "document-definition-name") String documentDefinitionName,
-        @RequestParam(value = "startableByUser", required = false) Boolean startableByUser
+        @RequestParam(value = "startableByUser", required = false) @Nullable Boolean startableByUser
     ) {
         return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName, startableByUser));
     }
