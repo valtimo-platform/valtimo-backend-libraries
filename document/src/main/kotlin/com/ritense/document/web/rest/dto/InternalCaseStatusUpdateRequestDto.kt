@@ -17,9 +17,11 @@
 package com.ritense.document.web.rest.dto
 
 import com.ritense.document.domain.InternalCaseStatusColor
+import com.ritense.valtimo.contract.Constants
+import jakarta.validation.constraints.Pattern
 
 data class InternalCaseStatusUpdateRequestDto(
-    val key: String,
+    @field:Pattern(regexp = Constants.KEY_REGEX) val key: String,
     val title: String,
     val visibleInCaseListByDefault: Boolean,
     val color: InternalCaseStatusColor

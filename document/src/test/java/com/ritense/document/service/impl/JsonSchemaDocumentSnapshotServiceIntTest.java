@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ritense.document.BaseIntegrationTest;
 import com.ritense.document.domain.Document;
-import com.ritense.document.domain.InternalCaseStatusId;
 import com.ritense.document.domain.impl.JsonDocumentContent;
 import com.ritense.document.domain.impl.JsonSchemaDocument;
 import com.ritense.document.domain.impl.JsonSchemaDocumentDefinition;

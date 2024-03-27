@@ -19,7 +19,6 @@ package com.ritense.document.domain.search;
 import static com.ritense.valtimo.contract.utils.AssertionConcern.assertArgumentNotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ritense.document.domain.InternalCaseStatus;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
