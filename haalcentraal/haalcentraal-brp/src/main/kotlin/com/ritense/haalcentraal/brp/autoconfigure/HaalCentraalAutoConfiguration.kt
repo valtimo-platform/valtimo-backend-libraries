@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Scope
 import org.springframework.web.reactive.function.client.WebClient
 
+@Deprecated("Since 12.0.0")
 @AutoConfiguration
 internal class HaalCentraalAutoConfiguration {
 

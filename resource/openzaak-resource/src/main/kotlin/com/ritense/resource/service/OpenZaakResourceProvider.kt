@@ -20,9 +20,12 @@ import com.ritense.valtimo.contract.resource.Resource
 import com.ritense.zakenapi.ResourceProvider
 import java.net.URI
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 class OpenZaakResourceProvider(
     val openZaakService: OpenZaakService
 ): ResourceProvider {
+
+    @Deprecated("Since 12.0.0")
     override fun getResource(documentUrl: String): Resource {
         return openZaakService.getResourceByInformatieObjectUrl(URI(documentUrl))
     }

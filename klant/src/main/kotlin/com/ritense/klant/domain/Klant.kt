@@ -16,6 +16,7 @@
 
 package com.ritense.klant.domain
 
+@Deprecated("Since 12.0.0")
 data class Klant(
     val url: String?,
     val telefoonnummer: String?,
