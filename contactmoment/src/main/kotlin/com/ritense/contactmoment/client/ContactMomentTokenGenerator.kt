@@ -24,6 +24,7 @@ import io.jsonwebtoken.security.Keys
 import java.nio.charset.Charset
 import java.util.Date
 
+@Deprecated("Since 12.0.0. No replacement available.")
 class ContactMomentTokenGenerator {
 
     fun generateToken(secretKey: String, clientId: String): String {

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.externalevent.messaging.ExternalDomainMessage
 
+@Deprecated("Since 12.0.0. No replacement available.")
 data class UpdatePortalCaseMessage(
     val externalId: String,
     val properties: Map<JsonPointer, JsonNode>

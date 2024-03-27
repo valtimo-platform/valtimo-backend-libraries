@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional
 import reactor.core.publisher.Sinks
 import java.util.UUID
 
+@Deprecated("Since 12.0.0")
 @Transactional
 class ExternalTaskService(
     private val documentService: JsonSchemaDocumentService,
@@ -49,6 +50,7 @@ class ExternalTaskService(
     /**
      * Supplier method: Publishes the Valtimo Task back to the Portal.
      */
+    @Deprecated("Since 12.0.0")
     fun publishPortalTask(formDefinitionName: String, task: DelegateTask) {
         val formDefinition = formIoFormDefinitionService.getFormDefinitionByName(formDefinitionName).orElseThrow()
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(task.execution.processBusinessKey))
@@ -65,6 +67,7 @@ class ExternalTaskService(
         )
     }
 
+    @Deprecated("Since 12.0.0")
     fun publishPortalTask(
         formDefinitionName: String,
         document: Document,
@@ -84,6 +87,7 @@ class ExternalTaskService(
         )
     }
 
+    @Deprecated("Since 12.0.0")
     fun completeTask(completeTaskMessage: CompleteTaskMessage) {
         val documentId = JsonSchemaDocumentId.existingId(UUID.fromString(completeTaskMessage.externalCaseId))
         runWithoutAuthorization { documentService.findBy(documentId) }.orElseThrow()
@@ -106,6 +110,7 @@ class ExternalTaskService(
     /**
      * Supplier method: Tells the portal to delete a task
      */
+    @Deprecated("Since 12.0.0")
     @EventListener(DeletePortalTaskEvent::class)
     fun deletePortalTask(event: DeletePortalTaskEvent) {
         logger.info { "Sending DeletePortalTaskMessage for taskId ${event.taskId}" }

@@ -22,9 +22,13 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.net.URI
 import java.util.Optional
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 interface OpenZaakResourceRepository : JpaRepository<OpenZaakResource, ResourceId> {
 
+    @Deprecated("Since 12.0.0")
     override fun findById(id: ResourceId): Optional<OpenZaakResource>
+
+    @Deprecated("Since 12.0.0")
     fun findByInformatieObjectUrl(url: URI): OpenZaakResource
 
 }

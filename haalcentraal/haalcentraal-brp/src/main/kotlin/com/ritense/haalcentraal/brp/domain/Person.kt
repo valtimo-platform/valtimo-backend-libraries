@@ -16,6 +16,7 @@
 
 package com.ritense.haalcentraal.brp.domain
 
+@Deprecated("Since 12.0.0")
 data class Person(
     val burgerservicenummer: String,
     val voornamen: String?,

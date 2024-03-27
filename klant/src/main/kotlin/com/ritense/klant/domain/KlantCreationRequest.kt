@@ -15,6 +15,7 @@
  */
 package com.ritense.klant.domain
 
+@Deprecated("Since 12.0.0")
 data class KlantCreationRequest(
     val bronorganisatie: String,
     val klantnummer: String,

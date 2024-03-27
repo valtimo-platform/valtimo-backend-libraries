@@ -18,10 +18,14 @@ package com.ritense.klant.service
 
 import com.ritense.klant.domain.Klant
 
+@Deprecated("Since 12.0.0")
 interface BedrijfService {
+    @Deprecated("Since 12.0.0")
     fun getBedrijf(kvk: String): Klant?
 
+    @Deprecated("Since 12.0.0")
     fun createBedrijf(kvk: String): Klant
 
+    @Deprecated("Since 12.0.0")
     fun ensureBedrijfExists(kvk: String): Klant
 }

@@ -22,6 +22,7 @@ import com.ritense.openzaak.catalogi.CatalogiClient
 import com.ritense.openzaak.domain.connector.OpenZaakConnector
 import java.net.URI
 
+@Deprecated("Since 12.0.0. Please use the Besluiten API module instead.")
 open class BesluitService(
     private val catalogiClient: CatalogiClient,
     private val connectorService: ConnectorService,

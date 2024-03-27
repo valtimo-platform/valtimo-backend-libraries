@@ -27,12 +27,14 @@ import com.ritense.valtimo.contract.mail.model.value.Recipient
 import com.ritense.valtimo.contract.mail.model.value.Subject
 import java.util.UUID
 
+@Deprecated("Since 12.0.0. No replacement available.")
 class KlantcontactService(
     val mailSender: MailSender,
     val klantService: KlantService,
     val templateName: String
 ) {
 
+    @Deprecated("Since 12.0.0")
     fun sendMessage(documentId: UUID, message: SendMessageRequest) {
         val klant = klantService.getKlantForDocument(documentId)
 

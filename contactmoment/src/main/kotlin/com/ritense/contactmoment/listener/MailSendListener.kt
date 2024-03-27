@@ -6,6 +6,7 @@ import com.ritense.contactmoment.domain.Kanaal
 import com.ritense.mail.event.MailSendEvent
 import org.springframework.context.event.EventListener
 
+@Deprecated("Since 12.0.0. No replacement available.")
 class MailSendListener(
     private val connectorService: ConnectorService,
 ) {

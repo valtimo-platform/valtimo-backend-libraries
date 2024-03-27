@@ -19,10 +19,11 @@ package com.ritense.resource.autoconfigure
 import com.ritense.documentenapi.event.DocumentCreated
 import com.ritense.resource.listener.DocumentCreatedListener
 import com.ritense.resource.service.OpenZaakService
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 @AutoConfiguration
 @ConditionalOnClass(DocumentCreated::class)
 class OpenZaakDocumentenApiPluginAutoConfiguration {

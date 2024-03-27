@@ -16,6 +16,7 @@
 
 package com.ritense.haalcentraal.brp.web.rest.request
 
+@Deprecated("Since 12.0.0")
 data class GetPeopleRequest(
     val bsn: String?,
     val geslachtsnaam: String?,

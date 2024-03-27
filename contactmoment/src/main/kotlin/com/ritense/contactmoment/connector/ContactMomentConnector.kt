@@ -26,11 +26,11 @@ import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
 import com.ritense.valtimo.contract.authentication.CurrentUserService
 import com.ritense.valtimo.contract.authentication.ManageableUser
 import com.ritense.valtimo.contract.authentication.UserManagementService
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.runBlocking
 
-@Deprecated("Since 12.0.0")
+@Deprecated("Since 12.0.0. No replacement available.")
 @ConnectorType(name = "ContactMoment")
 class ContactMomentConnector(
     private var contactMomentProperties: ContactMomentProperties,
@@ -42,6 +42,7 @@ class ContactMomentConnector(
     /**
      * Get a list of ContactMomenten
      */
+    @Deprecated("Since 12.0.0")
     fun getContactMomenten(page: Int): List<ContactMoment> {
         return runBlocking { contactMomentClient.getContactMomenten(1).results }
     }
@@ -52,6 +53,7 @@ class ContactMomentConnector(
      * @param text An explanation that substantively describes the customer interaction of the customer.
      * @param kanaal The communication channel through which the CONTACT MOMENT is conducted.
      */
+    @Deprecated("Since 12.0.0")
     fun createContactMoment(kanaal: Kanaal, text: String): ContactMoment {
         val medewerker = userManagementService.currentUser
         val request = CreateContactMomentRequest(
@@ -77,10 +79,12 @@ class ContactMomentConnector(
         }
     }
 
+    @Deprecated("Since 12.0.0")
     override fun getProperties(): ConnectorProperties {
         return contactMomentProperties
     }
 
+    @Deprecated("Since 12.0.0")
     override fun setProperties(connectorProperties: ConnectorProperties) {
         contactMomentProperties = connectorProperties as ContactMomentProperties
         contactMomentClient.contactMomentProperties = contactMomentProperties

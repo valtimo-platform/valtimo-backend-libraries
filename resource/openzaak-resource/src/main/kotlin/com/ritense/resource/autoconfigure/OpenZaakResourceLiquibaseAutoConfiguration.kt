@@ -17,14 +17,15 @@
 package com.ritense.resource.autoconfigure
 
 import com.ritense.valtimo.contract.config.LiquibaseMasterChangeLogLocation
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
 import javax.sql.DataSource
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 @AutoConfiguration
 @ConditionalOnClass(DataSource::class)
 class OpenZaakResourceLiquibaseAutoConfiguration {

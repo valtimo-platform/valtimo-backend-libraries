@@ -19,6 +19,7 @@ package com.ritense.besluit.domain.request
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.net.URI
 
+@Deprecated("Since 12.0.0. Please use the Besluiten API module instead.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class BesluitInformatieobjectRelatieRequest(
     val informatieobject: URI,

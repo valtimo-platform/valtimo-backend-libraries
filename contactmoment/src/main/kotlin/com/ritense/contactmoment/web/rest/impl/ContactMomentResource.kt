@@ -24,6 +24,7 @@ import com.ritense.contactmoment.web.rest.ContactMomentResource
 import com.ritense.contactmoment.web.rest.request.CreateContactMomentRequest
 import org.springframework.http.ResponseEntity
 
+@Deprecated("Since 12.0.0. No replacement available.")
 class ContactMomentResource(
     private val connectorService: ConnectorService
 ) : ContactMomentResource {

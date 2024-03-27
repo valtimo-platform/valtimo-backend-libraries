@@ -23,8 +23,10 @@ import io.jsonwebtoken.security.Keys
 import java.nio.charset.Charset
 import java.util.Date
 
+@Deprecated("Since 12.0.0")
 class OpenKlantTokenGenerator {
 
+    @Deprecated("Since 12.0.0")
     fun generateTokenForBsn(secretKey: String, clientId: String): String {
         if (secretKey.length < 32) {
             throw IllegalStateException("SecretKey needs to be at least 32 in length")

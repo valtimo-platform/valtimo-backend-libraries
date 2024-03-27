@@ -23,10 +23,10 @@ import com.ritense.haalcentraal.brp.client.HaalCentraalBrpClient
 import com.ritense.haalcentraal.brp.domain.Person
 import com.ritense.haalcentraal.brp.domain.Personen
 import com.ritense.haalcentraal.brp.web.rest.request.GetPeopleRequest
+import kotlinx.coroutines.runBlocking
 import java.security.InvalidParameterException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.runBlocking
 
 @Deprecated("Since 12.0.0")
 @ConnectorType(name = "HaalCentraalBrp")
@@ -36,6 +36,7 @@ class HaalCentraalBrpConnector(
 ) : Connector {
 
 
+    @Deprecated("Since 12.0.0")
     fun findPeople(request: GetPeopleRequest): List<Person> {
         validateRequest(request)
         val personen: Personen = runBlocking {
@@ -61,10 +62,12 @@ class HaalCentraalBrpConnector(
         } ?: emptyList()
     }
 
+    @Deprecated("Since 12.0.0")
     override fun getProperties(): HaalCentraalBrpProperties {
         return haalCentraalBrpProperties
     }
 
+    @Deprecated("Since 12.0.0")
     override fun setProperties(connectorProperties: ConnectorProperties) {
         haalCentraalBrpProperties = connectorProperties as HaalCentraalBrpProperties
     }

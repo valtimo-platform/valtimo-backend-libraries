@@ -18,6 +18,7 @@ package com.ritense.contactmoment.domain.request
 
 import com.fasterxml.jackson.annotation.JsonInclude
 
+@Deprecated("Since 12.0.0. No replacement available.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class CreateContactMomentRequest(
     val vorigContactmoment: String? = null,

@@ -18,6 +18,7 @@ package com.ritense.contactmoment.domain
 
 import java.net.URI
 
+@Deprecated("Since 12.0.0. No replacement available.")
 data class ResultPage<T>(
     val count: Int,
     val next: URI? = null,

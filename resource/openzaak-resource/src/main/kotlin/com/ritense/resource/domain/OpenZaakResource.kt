@@ -33,6 +33,7 @@ import java.net.URI
 import java.time.LocalDateTime
 import java.util.UUID
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 @Entity
 @Table(name = "open_zaak_resource")
 data class OpenZaakResource(

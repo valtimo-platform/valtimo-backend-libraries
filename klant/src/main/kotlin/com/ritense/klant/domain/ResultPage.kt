@@ -18,6 +18,7 @@ package com.ritense.klant.domain
 
 import java.net.URI
 
+@Deprecated("Since 12.0.0")
 data class ResultPage<T>(
     val count: Int,
     val next: URI? = null,

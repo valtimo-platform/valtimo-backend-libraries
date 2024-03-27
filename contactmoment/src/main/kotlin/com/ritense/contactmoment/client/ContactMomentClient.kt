@@ -23,6 +23,7 @@ import com.ritense.contactmoment.domain.request.CreateContactMomentRequest
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 
+@Deprecated("Since 12.0.0. No replacement available.")
 open class ContactMomentClient(
     private val webclientBuilder: WebClient.Builder,
     private val contactMomentTokenGenerator: ContactMomentTokenGenerator,

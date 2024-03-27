@@ -18,7 +18,7 @@ package com.ritense.contactmoment.connector
 
 import com.ritense.connector.domain.ConnectorProperties
 
-@Deprecated("Since 12.0.0")
+@Deprecated("Since 12.0.0. No replacement available.")
 data class ContactMomentProperties(
     var url: String = "",
     var clientId: String = "",

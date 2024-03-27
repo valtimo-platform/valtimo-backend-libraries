@@ -15,6 +15,7 @@
  */
 package com.ritense.contactmoment.domain
 
+@Deprecated("Since 12.0.0. No replacement available.")
 data class MedewerkerIdentificatie(
     val achternaam: String?,
 )

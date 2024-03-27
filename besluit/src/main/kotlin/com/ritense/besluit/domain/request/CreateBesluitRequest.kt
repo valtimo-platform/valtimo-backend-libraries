@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import java.net.URI
 import java.util.UUID
 
+@Deprecated("Since 12.0.0. Please use the Besluiten API module instead.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class CreateBesluitRequest(
     val identificatie: UUID? = null,

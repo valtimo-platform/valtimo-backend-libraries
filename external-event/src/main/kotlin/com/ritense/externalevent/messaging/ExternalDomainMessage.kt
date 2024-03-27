@@ -18,5 +18,6 @@ package com.ritense.externalevent.messaging
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
+@Deprecated("Since 12.0.0")
 @JsonIgnoreProperties("destination")
 abstract class ExternalDomainMessage(var destination: String? = null)
