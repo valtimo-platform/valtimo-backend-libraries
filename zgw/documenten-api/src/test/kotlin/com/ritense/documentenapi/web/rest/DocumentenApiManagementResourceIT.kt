@@ -107,6 +107,58 @@ internal class DocumentenApiManagementResourceIT : BaseIntegrationTest() {
                         {
                             "key": "identificatie",
                             "enabled": true
+                        },
+                        {
+                            "key": "creatiedatum",
+                            "enabled": false
+                        },
+                        {
+                            "key": "auteur",
+                            "enabled": false
+                        },
+                        {
+                            "key": "bestandsomvang",
+                            "enabled": false
+                        },
+                        {
+                            "key": "informatieobjecttype",
+                            "enabled": false
+                        },
+                        {
+                            "key": "bronorganisatie",
+                            "enabled": false
+                        },
+                        {
+                            "key": "vertrouwelijkheidaanduiding",
+                            "enabled": false
+                        },
+                        {
+                            "key": "status",
+                            "enabled": false
+                        },
+                        {
+                            "key": "formaat",
+                            "enabled": false
+                        },
+                        {
+                            "key": "taal",
+                            "enabled": false
+                        },
+                        {
+                            "key": "versie",
+                            "enabled": false
+                        },
+                        {
+                            "key": "bestandsnaam",
+                            "enabled": false
+                        },
+                        {
+                            "key": "beschrijving",
+                            "enabled": false
+                        },
+                        {
+                            "key": "locked",
+                            "enabled": false
                         }
                     ]
                 """.trimMargin())
