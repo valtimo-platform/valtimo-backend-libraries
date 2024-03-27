@@ -27,9 +27,12 @@ import com.ritense.document.repository.InternalCaseStatusRepository
 import com.ritense.document.web.rest.dto.InternalCaseStatusCreateRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateOrderRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateRequestDto
+import jakarta.validation.Valid
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.validation.annotation.Validated
 import kotlin.jvm.optionals.getOrNull
 
+@Validated
 @Transactional
 class InternalCaseStatusService(
     private val internalCaseStatusRepository: InternalCaseStatusRepository,
@@ -46,7 +49,7 @@ class InternalCaseStatusService(
 
     fun create(
         caseDefinitionName: String,
-        request: InternalCaseStatusCreateRequestDto
+        @Valid request: InternalCaseStatusCreateRequestDto
     ): InternalCaseStatus {
         denyManagementOperation()
 
@@ -76,7 +79,7 @@ class InternalCaseStatusService(
     fun update(
         caseDefinitionName: String,
         internalCaseStatusKey: String,
-        request: InternalCaseStatusUpdateRequestDto,
+        @Valid request: InternalCaseStatusUpdateRequestDto,
     ) {
         denyManagementOperation()
 
@@ -96,7 +99,7 @@ class InternalCaseStatusService(
 
     fun update(
         caseDefinitionName: String,
-        requests: List<InternalCaseStatusUpdateOrderRequestDto>
+        @Valid requests: List<InternalCaseStatusUpdateOrderRequestDto>
     ): List<InternalCaseStatus> {
         denyManagementOperation()
 

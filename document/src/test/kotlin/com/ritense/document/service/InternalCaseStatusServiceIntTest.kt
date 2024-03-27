@@ -25,6 +25,7 @@ import com.ritense.document.repository.InternalCaseStatusRepository
 import com.ritense.document.web.rest.dto.InternalCaseStatusCreateRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateOrderRequestDto
 import com.ritense.document.web.rest.dto.InternalCaseStatusUpdateRequestDto
+import jakarta.validation.ConstraintViolationException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
@@ -60,7 +61,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(
-                    "123",
+                    "house123",
                     "456",
                     true,
                     GRAY
@@ -69,17 +70,35 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         }
 
         val internalCaseStatus = internalCaseStatusRepository
-            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "123")
+            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "house123")
 
         val internalCaseCount = internalCaseStatusRepository
             .findByIdCaseDefinitionNameOrderByOrder("house").size
 
         assertNotNull(internalCaseStatus)
         assertEquals("house", internalCaseStatus.id.caseDefinitionName)
-        assertEquals("123", internalCaseStatus.id.key)
+        assertEquals("house123", internalCaseStatus.id.key)
         assertEquals("456", internalCaseStatus.title)
         assertTrue(internalCaseStatus.visibleInCaseListByDefault)
         assertEquals(internalCaseCount - 1, internalCaseStatus.order)
+    }
+
+    @Test
+    fun `should throw error when creating status with invalid key`() {
+        AuthorizationContext.runWithoutAuthorization {
+            val exception = assertThrows<ConstraintViolationException> {
+                internalCaseStatusService.create(
+                    "house",
+                    InternalCaseStatusCreateRequestDto(
+                        "@invalid.key&",
+                        "456",
+                        true,
+                        GRAY
+                    )
+                )
+            }
+            assertEquals("""create.request.key: must match "[a-z][a-z0-9-_]+"""", exception.message)
+        }
     }
 
     @Test
@@ -88,7 +107,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(
-                    "123",
+                    "house123",
                     "456",
                     true,
                     GRAY
@@ -104,7 +123,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                 internalCaseStatusService.create(
                     "case-definition-that-does-not-exist",
                     InternalCaseStatusCreateRequestDto(
-                        "123",
+                        "test123",
                         "456",
                         true,
                         GRAY
@@ -120,7 +139,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(
-                    "123",
+                    "house123",
                     "456",
                     true,
                     GRAY
@@ -131,7 +150,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                 internalCaseStatusService.create(
                     "house",
                     InternalCaseStatusCreateRequestDto(
-                        "123",
+                        "house123",
                         "456",
                         true,
                         GRAY
@@ -147,7 +166,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(
-                    "123",
+                    "house123",
                     "456",
                     true,
                     GRAY
@@ -156,9 +175,9 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
 
             internalCaseStatusService.update(
                 "house",
-                "123",
+                "house123",
                 InternalCaseStatusUpdateRequestDto(
-                    "123",
+                    "house123",
                     "789",
                     false,
                     GRAY
@@ -167,14 +186,14 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         }
 
         val internalCaseStatus = internalCaseStatusRepository
-            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "123")
+            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "house123")
 
         val internalCaseCount = internalCaseStatusRepository
             .findByIdCaseDefinitionNameOrderByOrder("house").size
 
         assertNotNull(internalCaseStatus)
         assertEquals("house", internalCaseStatus.id.caseDefinitionName)
-        assertEquals("123", internalCaseStatus.id.key)
+        assertEquals("house123", internalCaseStatus.id.key)
         assertEquals("789", internalCaseStatus.title)
         assertFalse(internalCaseStatus.visibleInCaseListByDefault)
         assertEquals(internalCaseCount - 1, internalCaseStatus.order)
@@ -187,9 +206,9 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             AuthorizationContext.runWithoutAuthorization {
                 internalCaseStatusService.update(
                     "house",
-                    "123",
+                    "house123",
                     InternalCaseStatusUpdateRequestDto(
-                        "123",
+                        "house123",
                         "789",
                         false,
                         GRAY
@@ -204,9 +223,9 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         assertThrows<AccessDeniedException> {
             internalCaseStatusService.update(
                 "house",
-                "123",
+                "house123",
                 InternalCaseStatusUpdateRequestDto(
-                    "123",
+                    "house123",
                     "789",
                     true,
                     GRAY
@@ -223,7 +242,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(
-                    "123",
+                    "house123",
                     "456",
                     true,
                     GRAY
@@ -233,7 +252,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(
-                    "124",
+                    "house124",
                     "457",
                     true,
                     GRAY
@@ -243,7 +262,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(
-                    "125",
+                    "house125",
                     "458",
                     false,
                     GRAY
@@ -255,11 +274,11 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             .findByIdCaseDefinitionNameOrderByOrder("house")
 
         assertEquals(3, initialInternalCaseStatuses.size)
-        assertEquals("123", initialInternalCaseStatuses[0].id.key)
+        assertEquals("house123", initialInternalCaseStatuses[0].id.key)
         assertEquals(initialInternalCaseStatuses.size - 3, initialInternalCaseStatuses[0].order)
-        assertEquals("124", initialInternalCaseStatuses[1].id.key)
+        assertEquals("house124", initialInternalCaseStatuses[1].id.key)
         assertEquals(initialInternalCaseStatuses.size - 2, initialInternalCaseStatuses[1].order)
-        assertEquals("125", initialInternalCaseStatuses[2].id.key)
+        assertEquals("house125", initialInternalCaseStatuses[2].id.key)
         assertEquals(initialInternalCaseStatuses.size - 1, initialInternalCaseStatuses[2].order)
 
         AuthorizationContext.runWithoutAuthorization {
@@ -267,19 +286,19 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                 "house",
                 listOf(
                     InternalCaseStatusUpdateOrderRequestDto(
-                        "123",
+                        "house123",
                         "456",
                         true,
                         GRAY
                     ),
                     InternalCaseStatusUpdateOrderRequestDto(
-                        "125",
+                        "house125",
                         "458",
                         true,
                         GRAY
                     ),
                     InternalCaseStatusUpdateOrderRequestDto(
-                        "124",
+                        "house124",
                         "457",
                         true,
                         GRAY
@@ -292,13 +311,13 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             .findByIdCaseDefinitionNameOrderByOrder("house")
 
         assertEquals(3, postUpdateInternalCaseStatuses.size)
-        assertEquals("123", postUpdateInternalCaseStatuses[0].id.key)
+        assertEquals("house123", postUpdateInternalCaseStatuses[0].id.key)
         assertTrue(postUpdateInternalCaseStatuses[0].visibleInCaseListByDefault)
         assertEquals(postUpdateInternalCaseStatuses.size - 3, postUpdateInternalCaseStatuses[0].order)
-        assertEquals("125", postUpdateInternalCaseStatuses[1].id.key)
+        assertEquals("house125", postUpdateInternalCaseStatuses[1].id.key)
         assertTrue(postUpdateInternalCaseStatuses[1].visibleInCaseListByDefault)
         assertEquals(postUpdateInternalCaseStatuses.size - 2, postUpdateInternalCaseStatuses[1].order)
-        assertEquals("124", postUpdateInternalCaseStatuses[2].id.key)
+        assertEquals("house124", postUpdateInternalCaseStatuses[2].id.key)
         assertTrue(postUpdateInternalCaseStatuses[2].visibleInCaseListByDefault)
         assertEquals(postUpdateInternalCaseStatuses.size - 1, postUpdateInternalCaseStatuses[2].order)
     }
@@ -311,7 +330,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(
-                    "123",
+                    "house123",
                     "456",
                     true,
                     GRAY
@@ -321,7 +340,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(
-                    "124",
+                    "house124",
                     "457",
                     true,
                     GRAY
@@ -331,7 +350,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(
-                    "125",
+                    "house125",
                     "458",
                     false,
                     GRAY
@@ -343,11 +362,11 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             .findByIdCaseDefinitionNameOrderByOrder("house")
 
         assertEquals(3, initialInternalCaseStatuses.size)
-        assertEquals("123", initialInternalCaseStatuses[0].id.key)
+        assertEquals("house123", initialInternalCaseStatuses[0].id.key)
         assertEquals(initialInternalCaseStatuses.size - 3, initialInternalCaseStatuses[0].order)
-        assertEquals("124", initialInternalCaseStatuses[1].id.key)
+        assertEquals("house124", initialInternalCaseStatuses[1].id.key)
         assertEquals(initialInternalCaseStatuses.size - 2, initialInternalCaseStatuses[1].order)
-        assertEquals("125", initialInternalCaseStatuses[2].id.key)
+        assertEquals("house125", initialInternalCaseStatuses[2].id.key)
         assertEquals(initialInternalCaseStatuses.size - 1, initialInternalCaseStatuses[2].order)
 
         assertThrows<IllegalStateException> {
@@ -356,7 +375,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                     "house",
                     listOf(
                         InternalCaseStatusUpdateOrderRequestDto(
-                            "123",
+                            "house123",
                             "456",
                             true,
                             GRAY
@@ -374,7 +393,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
                 "house",
                 listOf(
                     InternalCaseStatusUpdateOrderRequestDto(
-                        "123",
+                        "house123",
                         "789",
                         true,
                         GRAY
@@ -390,7 +409,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
             internalCaseStatusService.create(
                 "house",
                 InternalCaseStatusCreateRequestDto(
-                    "123",
+                    "house123",
                     "456",
                     true,
                     GRAY
@@ -399,16 +418,16 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
         }
 
         val initialInternalCaseStatus = internalCaseStatusRepository
-            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "123")
+            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "house123")
 
         assertNotNull(initialInternalCaseStatus)
 
         AuthorizationContext.runWithoutAuthorization {
-            internalCaseStatusService.delete("house", "123")
+            internalCaseStatusService.delete("house", "house123")
         }
 
         val postDeleteInternalCaseStatus = internalCaseStatusRepository
-            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "123")
+            .findDistinctByIdCaseDefinitionNameAndIdKey("house", "house123")
 
         assertNull(postDeleteInternalCaseStatus)
 
@@ -419,7 +438,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
     fun shouldNotDeleteStatusForMissingStatus() {
         assertThrows<InternalCaseStatusNotFoundException> {
             AuthorizationContext.runWithoutAuthorization {
-                internalCaseStatusService.delete("house", "123")
+                internalCaseStatusService.delete("house", "house123")
             }
         }
     }
@@ -427,7 +446,7 @@ class InternalCaseStatusServiceIntTest @Autowired constructor(
     @Test
     fun shouldNotDeleteStatusWithoutProperPermissions() {
         assertThrows<AccessDeniedException> {
-            internalCaseStatusService.delete("house", "123")
+            internalCaseStatusService.delete("house", "house123")
         }
     }
 }
