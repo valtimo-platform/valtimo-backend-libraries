@@ -189,6 +189,10 @@ public class JsonSchemaDocumentDefinition extends AbstractAggregateRoot<JsonSche
             return message;
         }
 
+        @Override
+        public String toString() {
+            return asString();
+        }
     }
 
     public static class DocumentContentValidationResultImpl implements DocumentContentValidationResult {

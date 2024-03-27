@@ -16,6 +16,7 @@
 
 package com.ritense.document.repository.impl.specification
 
+import com.ritense.document.domain.DocumentDefinition
 import com.ritense.document.domain.impl.JsonSchemaDocument
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
@@ -32,6 +33,20 @@ class JsonSchemaDocumentSpecificationHelper {
                                    criteriaBuilder: CriteriaBuilder ->
                 criteriaBuilder.equal(root.get<Any>("documentDefinitionId").get<String>("name"), name)
             }
+        }
+
+        @JvmStatic
+        fun byDocumentDefinitionIdVersion(version: Long): Specification<JsonSchemaDocument> {
+            return Specification { root: Root<JsonSchemaDocument>,
+                                   _: CriteriaQuery<*>?,
+                                   criteriaBuilder: CriteriaBuilder ->
+                criteriaBuilder.equal(root.get<Any>("documentDefinitionId").get<String>("version"), version)
+            }
+        }
+
+        @JvmStatic
+        fun byDocumentDefinitionId(id: DocumentDefinition.Id): Specification<JsonSchemaDocument> {
+            return byDocumentDefinitionIdName(id.name()).and(byDocumentDefinitionIdVersion(id.version()))
         }
     }
 }
