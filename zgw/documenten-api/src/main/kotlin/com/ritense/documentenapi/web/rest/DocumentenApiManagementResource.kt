@@ -19,7 +19,7 @@ package com.ritense.documentenapi.web.rest
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.documentenapi.service.DocumentenApiService
 import com.ritense.documentenapi.web.rest.dto.ConfiguredColumnDto
-import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionDto
+import com.ritense.documentenapi.web.rest.dto.DocumentenApiVersionManagementDto
 import com.ritense.documentenapi.web.rest.dto.UpdatedConfiguredColumnDto
 import com.ritense.valtimo.contract.annotation.SkipComponentScan
 import com.ritense.valtimo.contract.domain.ValtimoMediaType.APPLICATION_JSON_UTF8_VALUE
@@ -70,7 +70,8 @@ class DocumentenApiManagementResource(
     @GetMapping("/v1/case-definition/{caseDefinitionName}/documenten-api/version")
     fun getApiVersion(
         @PathVariable(name = "caseDefinitionName") caseDefinitionName: String
-    ): ResponseEntity<DocumentenApiVersionDto> {
-        return ResponseEntity.ok(documentenApiService.getApiVersion(caseDefinitionName))
+    ): ResponseEntity<DocumentenApiVersionManagementDto> {
+        val apiVersions = documentenApiService.getApiVersions(caseDefinitionName)
+        return ResponseEntity.ok(DocumentenApiVersionManagementDto(apiVersions.firstOrNull(), apiVersions))
     }
 }

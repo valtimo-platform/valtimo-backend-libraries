@@ -138,12 +138,12 @@ class DocumentenApiService(
         return documentenApiColumnRepository.save(column.copy(order = order))
     }
 
-    fun getApiVersion(caseDefinitionName: String): DocumentenApiVersionDto {
+    fun getApiVersions(caseDefinitionName: String): List<String> {
         documentDefinitionService.requirePermission(caseDefinitionName, VIEW)
         val link =
             documentDefinitionProcessLinkService.getDocumentDefinitionProcessLink(caseDefinitionName, "DOCUMENT_UPLOAD")
         if (link.isEmpty) {
-            return DocumentenApiVersionDto(null, null)
+            return emptyList()
         }
         val processDefinitionKey = link.get().id.processDefinitionKey
         val detectedVersions = runWithoutAuthorization {
@@ -153,13 +153,9 @@ class DocumentenApiService(
                 .map { pluginService.getPluginConfiguration(it.pluginConfigurationId) }
                 .filter { it.pluginDefinition.key == DocumentenApiPlugin.PLUGIN_KEY }
                 .mapNotNull { (pluginService.createInstance(it) as DocumentenApiPlugin).apiVersion }
-                .sorted()
                 .toList()
         }
-        return DocumentenApiVersionDto(
-            selectedVersion = detectedVersions.firstOrNull(),
-            detectedVersions = detectedVersions
-        )
+        return detectedVersions.sorted()
     }
 
     private fun getRelatedFiles(
