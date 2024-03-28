@@ -232,6 +232,7 @@ spring-actuator:
     username: admin
     password: password
 
+
 audit:
     record:
         retention: 365 # days
@@ -252,10 +253,24 @@ camunda:
         generic-properties:
             properties:
                 enforceHistoryTimeToLive: false
-        admin-user:
-            id: Admin
-            password: admin
-            first-name: Admin account
+        webapp:
+            header-security:
+                content-security-policy-value: "base-uri 'self';
+                                            script-src $NONCE 'strict-dynamic' 'unsafe-eval' https: 'self' 'unsafe-inline';
+                                            style-src 'unsafe-inline' 'self';
+                                            connect-src http://localhost:8081 'self';
+                                            default-src 'self';
+                                            img-src 'self' data:;
+                                            block-all-mixed-content;form-action 'self';
+                                            frame-ancestors 'none';object-src 'none';
+                                            sandbox allow-forms allow-scripts allow-same-origin allow-popups allow-downloads"
+
+
+# Camunda Cockpit JWT Plugin
+plugin.cockpit.keycloak:
+    keycloakUrl: http://localhost:8081/auth
+    realm: valtimo
+    clientId: valtimo-console
 
 # ==================
 # keycloak server to server config

@@ -82,6 +82,9 @@ dependencies {
         exclude group: "com.sun.xml.bind"
     }
 
+    implementation "org.camunda.bpm.extension:camunda-platform-7-keycloak:7.20.1"
+    implementation "org.camunda.bpm.extension:camunda-platform-7-keycloak-jwt:7.20.1"
+
     // Camunda plugins
     implementation "org.camunda.bpm:camunda-engine-plugin-spin:${camundaVersion}"
     implementation "org.camunda.bpm:camunda-engine-plugin-connect:${camundaVersion}"
