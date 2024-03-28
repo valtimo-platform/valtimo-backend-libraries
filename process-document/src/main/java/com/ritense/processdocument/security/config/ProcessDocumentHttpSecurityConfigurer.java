@@ -36,37 +36,57 @@ public class ProcessDocumentHttpSecurityConfigurer implements HttpSecurityConfig
     public void configure(HttpSecurity http) {
         try {
             http.authorizeHttpRequests(requests -> requests
-                .requestMatchers(antMatcher(GET, DEFINITION_URL)).authenticated()
-                .requestMatchers(antMatcher(POST, DEFINITION_URL)).hasAuthority(ADMIN)
-                .requestMatchers(antMatcher(DELETE, DEFINITION_URL)).hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(GET, DEFINITION_URL))
+                .authenticated()
+                .requestMatchers(antMatcher(POST, DEFINITION_URL))
+                .hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(DELETE, DEFINITION_URL))
+                .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(
-                    GET, DEFINITION_URL + "/document/{document-definition-name}")).authenticated()
+                    GET, DEFINITION_URL + "/document/{document-definition-name}"))
+                .authenticated()
                 .requestMatchers(antMatcher(
-                    GET, "/api/management/v1/process-document/definition/document/{document-definition-name}")).hasAuthority(ADMIN)
+                    GET, "/api/management/v1/process-document/definition/document/{document-definition-name}"))
+                .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(
                     GET, DEFINITION_URL + "/document/{document-definition-name}/version/{document-definition-version}")
-                ).hasAuthority(ADMIN)
+                )
+                .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(
-                    GET, DEFINITION_URL + "/process/{process-definition-key}")).hasAuthority(ADMIN)
+                    GET, DEFINITION_URL + "/process/{process-definition-key}"))
+                .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(
                     GET,
                     DEFINITION_URL + "/processinstance/{process-instance-id}"
-                )).authenticated()
-                .requestMatchers(antMatcher(GET, "/api/v1/process-document/instance/document/{document-id}")).authenticated()
+                ))
+                .authenticated()
+                .requestMatchers(antMatcher(GET, "/api/v1/process-document/instance/document/{document-id}"))
+                .authenticated()
                 .requestMatchers(antMatcher(
-                    GET, "/api/v1/process-document/instance/document/{document-id}/audit")).authenticated()
+                    GET, "/api/v1/process-document/instance/document/{document-id}/audit"))
+                .authenticated()
                 .requestMatchers(antMatcher(
-                    POST, "/api/v1/process-document/operation/new-document-and-start-process")).authenticated()
+                    POST, "/api/v1/process-document/operation/new-document-and-start-process"))
+                .authenticated()
                 .requestMatchers(antMatcher(
-                    POST, "/api/v1/process-document/operation/modify-document-and-complete-task")).authenticated()
+                    POST, "/api/v1/process-document/operation/modify-document-and-complete-task"))
+                .authenticated()
                 .requestMatchers(antMatcher(
-                    POST, "/api/v1/process-document/operation/modify-document-and-start-process")).authenticated()
+                    POST, "/api/v1/process-document/operation/modify-document-and-start-process"))
+                .authenticated()
                 .requestMatchers(antMatcher(
-                    GET, PROCESS_URL)).hasAuthority(ADMIN)
+                    GET, PROCESS_URL))
+                .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(
-                    PUT, PROCESS_URL)).hasAuthority(ADMIN)
+                    PUT, PROCESS_URL))
+                .hasAuthority(ADMIN)
                 .requestMatchers(antMatcher(
-                    DELETE, PROCESS_URL)).hasAuthority(ADMIN));
+                    DELETE, PROCESS_URL))
+                .hasAuthority(ADMIN)
+                .requestMatchers(antMatcher(
+                    POST, "/api/v3/task"))
+                .authenticated()
+            );
         } catch (Exception e) {
             throw new HttpConfigurerConfigurationException(e);
         }
