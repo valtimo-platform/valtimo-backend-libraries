@@ -16,6 +16,10 @@
 
 package com.ritense.processdocument.service
 
+import com.ritense.authorization.Action
+import com.ritense.authorization.AuthorizationService
+import com.ritense.authorization.request.EntityAuthorizationRequest
+import com.ritense.authorization.specification.AuthorizationSpecification
 import com.ritense.case.domain.TaskListColumn
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.document.domain.impl.JsonDocumentContent
@@ -24,6 +28,7 @@ import com.ritense.document.domain.impl.JsonSchemaDocumentDefinitionId
 import com.ritense.document.domain.impl.JsonSchemaDocumentId
 import com.ritense.processdocument.domain.CaseTask
 import com.ritense.processdocument.web.result.TaskListRowDto
+import com.ritense.valtimo.camunda.authorization.CamundaTaskActionProvider
 import com.ritense.valtimo.camunda.domain.CamundaExecution
 import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper
@@ -55,6 +60,7 @@ class CaseTaskListSearchService(
     private val valueResolverService: ValueResolverService,
     private val taskListColumnRepository: TaskListColumnRepository,
     private val userManagementService: UserManagementService,
+    private val authorizationService: AuthorizationService,
     private val queryDialectHelper: QueryDialectHelper
 ) {
     private val CONTENT = "content"
@@ -69,7 +75,6 @@ class CaseTaskListSearchService(
     )
 
     fun getTasksByCaseDefinition(caseDefinitionName: String, assignmentFilter: CamundaTaskService.TaskFilter, pageable: Pageable): Page<TaskListRowDto> {
-        // No authorization on this level, as we have to fully rely on the documentSearchService for filtering results
         val taskListColumns = taskListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
             caseDefinitionName
         )
@@ -85,24 +90,32 @@ class CaseTaskListSearchService(
         val taskRoot = query.from(CamundaTask::class.java)
         val documentRoot = query.from(JsonSchemaDocument::class.java)
 
+        val selectCols = arrayOf(
+            taskRoot.get<String>("id"),
+            taskRoot.get<CamundaExecution?>("processInstance").get<String>("id"),
+            documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id").`as`(java.lang.String::class.java)
+        )
+
         query.select(
             cb.construct(
                 CaseTask::class.java,
-                taskRoot.get<String>("id"),
-                taskRoot.get<CamundaExecution?>("processInstance").get<String>("id"),
-                documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id").`as`(java.lang.String::class.java)
+                *selectCols
             )
         )
 
-        query.where(constructWhere(cb, taskRoot, documentRoot, caseDefinitionName, assignmentFilter))
+        query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, assignmentFilter))
         query.orderBy(constructOrderBy(query, cb, documentRoot, pageable.sort))
+
+        val groupList = query.groupList.toMutableList()
+        groupList.addAll(selectCols)
+        query.groupBy(groupList)
 
         val countQuery = cb.createQuery(Long::class.java)
         val countTaskRoot = countQuery.from(CamundaTask::class.java)
         val countDocumentRoot = countQuery.from(JsonSchemaDocument::class.java)
         countQuery.select(cb.count(countTaskRoot))
         entityManager.createQuery(countQuery)
-        countQuery.where(constructWhere(cb, countTaskRoot, countDocumentRoot, caseDefinitionName, assignmentFilter))
+        countQuery.where(constructWhere(cb, countQuery, countTaskRoot, countDocumentRoot, caseDefinitionName, assignmentFilter))
 
         val count = entityManager.createQuery(countQuery).singleResult
 
@@ -117,11 +130,15 @@ class CaseTaskListSearchService(
 
     private fun constructWhere(
         cb: CriteriaBuilder,
+        query: CriteriaQuery<*>,
         taskRoot: Root<CamundaTask>,
         documentRoot: Root<JsonSchemaDocument>,
         caseDefinitionName: String,
         assignmentFilter: TaskFilter
     ): Predicate? {
+        val authorizationPredicate: Predicate =
+            getAuthorizationSpecification(CamundaTaskActionProvider.VIEW_LIST).toPredicate(taskRoot, query, cb)
+
         val assignmentFilterPredicate: Predicate = constructAssignmentFilter(assignmentFilter, cb, taskRoot)
 
         val where = cb.and(
@@ -133,7 +150,8 @@ class CaseTaskListSearchService(
                 taskRoot.get<CamundaExecution>("processInstance").get<String>("businessKey"),
                 documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id").`as`(java.lang.String::class.java)
             ),
-            assignmentFilterPredicate
+            assignmentFilterPredicate,
+            authorizationPredicate
         )
         return where
     }
@@ -223,6 +241,13 @@ class CaseTaskListSearchService(
                 if (order.direction.isAscending) cb.asc(expression) else cb.desc(expression)
             }
             .collect(Collectors.toList())
+    }
+
+    private fun getAuthorizationSpecification(action: Action<CamundaTask>): AuthorizationSpecification<CamundaTask> {
+        return authorizationService.getAuthorizationSpecification(
+            EntityAuthorizationRequest(CamundaTask::class.java, action),
+            null
+        )
     }
 
     private fun mutatePageable(taskListColumns: Collection<TaskListColumn>, pageable: Pageable): PageRequest {

@@ -17,6 +17,7 @@
 package com.ritense.processdocument.autoconfigure
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.ritense.authorization.AuthorizationService
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.case.service.CaseDefinitionService
 import com.ritense.document.service.DocumentService
@@ -203,6 +204,7 @@ class ProcessDocumentsAutoConfiguration {
         valueResolverService: ValueResolverService,
         taskListColumnRepository: TaskListColumnRepository,
         userManagementService: UserManagementService,
+        authorizationService: AuthorizationService,
         queryDialectHelper: QueryDialectHelper
     ): CaseTaskListSearchService {
         return CaseTaskListSearchService(
@@ -210,6 +212,7 @@ class ProcessDocumentsAutoConfiguration {
             valueResolverService,
             taskListColumnRepository,
             userManagementService,
+            authorizationService,
             queryDialectHelper
         )
     }
