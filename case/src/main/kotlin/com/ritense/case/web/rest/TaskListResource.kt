@@ -39,13 +39,19 @@ class TaskListResource(
     private val service: TaskColumnService
 ) {
 
-    @GetMapping("/management/v1/case/{caseDefinitionName}/task-list-column")
+    @GetMapping("/v1/case/{caseDefinitionName}/task-list-column")
     @RunWithoutAuthorization
-    fun getCaseListColumnForManagement(
+    fun getTaskListColumn(
         @PathVariable caseDefinitionName: String
     ): ResponseEntity<List<TaskListColumnDto>> {
         return ResponseEntity.ok().body(service.getListColumns(caseDefinitionName))
     }
+
+    @GetMapping("/management/v1/case/{caseDefinitionName}/task-list-column")
+    @RunWithoutAuthorization
+    fun getTaskListColumnForManagement(
+        @PathVariable caseDefinitionName: String
+    ): ResponseEntity<List<TaskListColumnDto>> = getTaskListColumn(caseDefinitionName)
 
     @PutMapping("/management/v1/case/{caseDefinitionName}/task-list-column/{columnKey}")
     @RunWithoutAuthorization

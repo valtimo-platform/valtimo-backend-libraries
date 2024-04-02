@@ -204,8 +204,18 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(username = "admin@ritense.com", authorities = [USER])
+    fun `should return columns for document definition as a user`() {
+        `should return columns for document definition`("/api/v1/case/{caseDefinitionName}/list-column")
+    }
+
+    @Test
     @WithMockUser(username = "admin@ritense.com", authorities = [ADMIN])
     fun `should return columns for document definition as an admin`() {
+        `should return columns for document definition`("/api/management/v1/case/{caseDefinitionName}/list-column")
+    }
+
+    fun `should return columns for document definition`(urlTemplate: String) {
         val caseDefinitionName = "listColumnDocumentDefinition"
         `should create list column`()
         mockMvc.perform(
