@@ -18,6 +18,7 @@ package com.ritense.contactmoment.web.rest.request
 
 import com.ritense.contactmoment.domain.Kanaal
 
+@Deprecated("Since 12.0.0. No replacement available.")
 data class CreateContactMomentRequest(
     val kanaal: Kanaal,
     val tekst: String,

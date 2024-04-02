@@ -17,11 +17,12 @@
 package com.ritense.resource.autoconfigure
 
 import com.ritense.resource.security.config.OpenZaakResourceHttpSecurityConfigurer
+import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean
-import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.core.annotation.Order
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 @AutoConfiguration
 class OpenZaakResourceSecurityAutoConfiguration {
 

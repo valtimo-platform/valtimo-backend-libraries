@@ -22,9 +22,11 @@ import com.ritense.resource.service.OpenZaakService
 import org.springframework.context.event.EventListener
 import java.net.URI
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 class DocumentCreatedListener(
     private val openZaakService: OpenZaakService
 ) {
+    @Deprecated("Since 12.0.0")
     @EventListener(DocumentCreated::class)
     fun handle(event: DocumentCreated) {
         openZaakService.store(InformatieObject(

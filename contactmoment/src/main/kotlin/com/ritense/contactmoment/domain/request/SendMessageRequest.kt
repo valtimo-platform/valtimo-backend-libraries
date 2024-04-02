@@ -16,6 +16,7 @@
 
 package com.ritense.contactmoment.domain.request
 
+@Deprecated("Since 12.0.0. No replacement available.")
 class SendMessageRequest(
     val subject: String,
     val bodyText: String

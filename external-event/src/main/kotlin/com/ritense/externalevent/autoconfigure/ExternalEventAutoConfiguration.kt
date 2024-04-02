@@ -45,6 +45,7 @@ import org.springframework.messaging.support.MessageBuilder
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Sinks
 
+@Deprecated("Since 12.0.0")
 @AutoConfiguration
 class ExternalEventAutoConfiguration {
 

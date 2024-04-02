@@ -18,14 +18,24 @@ package com.ritense.connector.domain
 
 @Deprecated("Since 12.0.0")
 interface Connector {
+
+    @Deprecated("Since 12.0.0")
     fun getProperties(): ConnectorProperties
+
+    @Deprecated("Since 12.0.0")
     fun setProperties(connectorProperties: ConnectorProperties)
+
+    @Deprecated("Since 12.0.0")
     fun onCreate(connectorInstance: ConnectorInstance) {
         //Not implemented by default.
     }
+
+    @Deprecated("Since 12.0.0")
     fun onEdit(connectorInstance: ConnectorInstance) {
         //Not implemented by default.
     }
+
+    @Deprecated("Since 12.0.0")
     fun onDelete(connectorInstance: ConnectorInstance) {
         //Not implemented by default.
     }

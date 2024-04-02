@@ -21,6 +21,7 @@ import com.ritense.besluit.service.BesluitService
 import com.ritense.besluit.web.rest.BesluitResource
 import org.springframework.http.ResponseEntity
 
+@Deprecated("Since 12.0.0. Please use the Besluiten API module instead.")
 class BesluitResource(
     val besluitService: BesluitService,
 ) : BesluitResource {

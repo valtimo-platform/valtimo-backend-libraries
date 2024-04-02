@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 import com.ritense.externalevent.messaging.ExternalDomainMessage
 import java.util.UUID
 
+@Deprecated("Since 12.0.0")
 data class CreateExternalCaseMessage(
     val caseId: UUID,
     val submission: ObjectNode,
