@@ -23,7 +23,7 @@ import com.ritense.connector.config.Encryptor
 import com.ritense.connector.domain.ConnectorProperties
 import com.ritense.openzaak.domain.configuration.Rsin
 
-@Deprecated("Since 12.0.0")
+@Deprecated("Since 12.0.0. Please use the Besluiten API module instead.")
 data class BesluitProperties(
     var url: String = "",
     @set:JsonSerialize(using = Encryptor::class)

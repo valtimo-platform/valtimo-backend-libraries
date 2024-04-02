@@ -81,10 +81,12 @@ class BesluitConnector(
         }
     }
 
+    @Deprecated("Since 12.0.0")
     override fun getProperties(): BesluitProperties {
         return besluitProperties
     }
 
+    @Deprecated("Since 12.0.0")
     override fun setProperties(connectorProperties: ConnectorProperties) {
         besluitProperties = connectorProperties as BesluitProperties
     }

@@ -18,6 +18,7 @@ package com.ritense.haalcentraal.brp.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
+@Deprecated("Since 12.0.0")
 data class Personen(
     @JsonProperty("_embedded")
     val embedded: Embedded

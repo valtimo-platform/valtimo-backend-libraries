@@ -19,6 +19,7 @@ package com.ritense.externalevent.messaging.out
 import com.fasterxml.jackson.databind.JsonNode
 import com.ritense.externalevent.messaging.ExternalDomainMessage
 
+@Deprecated("Since 12.0.0. No replacement available.")
 data class CreatePortalTaskMessage(
     val taskId: String,
     val externalCaseId: String,

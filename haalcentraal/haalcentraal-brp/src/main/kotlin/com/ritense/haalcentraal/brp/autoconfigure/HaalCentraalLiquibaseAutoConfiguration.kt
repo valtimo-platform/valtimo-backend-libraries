@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.core.Ordered.HIGHEST_PRECEDENCE
 import org.springframework.core.annotation.Order
 
+@Deprecated("Since 12.0.0")
 @AutoConfiguration
 internal class HaalCentraalLiquibaseAutoConfiguration {
 
