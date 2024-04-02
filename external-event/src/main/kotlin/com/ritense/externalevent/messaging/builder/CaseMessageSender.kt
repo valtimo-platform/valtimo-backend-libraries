@@ -22,6 +22,7 @@ import com.ritense.document.service.impl.JsonSchemaDocumentService
 import com.ritense.externalevent.service.ExternalCaseService
 import org.camunda.bpm.engine.delegate.DelegateExecution
 
+@Deprecated("Since 12.0.0")
 data class CaseMessageSender(
     val payload: MutableMap<JsonPointer, JsonNode> = mutableMapOf(),
     val externalCaseService: ExternalCaseService,
@@ -29,11 +30,13 @@ data class CaseMessageSender(
     var execution: DelegateExecution?
 ) {
 
+    @Deprecated("Since 12.0.0")
     fun execution(execution: DelegateExecution): CaseMessageSender {
         this.execution = execution
         return this
     }
 
+    @Deprecated("Since 12.0.0")
     fun put(key: String, pathToValue: String): CaseMessageSender {
         this.payload[JsonPointer.valueOf(key)] = externalCaseService.getCaseValue(
             execution!!,
@@ -42,6 +45,7 @@ data class CaseMessageSender(
         return this
     }
 
+    @Deprecated("Since 12.0.0")
     fun send() {
         externalCaseService.publishCaseUpdate(payload, this.execution!!)
     }

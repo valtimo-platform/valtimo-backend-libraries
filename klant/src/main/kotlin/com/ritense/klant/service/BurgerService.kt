@@ -18,10 +18,14 @@ package com.ritense.klant.service
 
 import com.ritense.klant.domain.Klant
 
+@Deprecated("Since 12.0.0")
 interface BurgerService {
+    @Deprecated("Since 12.0.0")
     fun getBurger(bsn: String): Klant?
 
+    @Deprecated("Since 12.0.0")
     fun createBurger(bsn: String): Klant
 
+    @Deprecated("Since 12.0.0")
     fun ensureBurgerExists(bsn: String): Klant
 }

@@ -18,6 +18,7 @@ package com.ritense.externalevent.messaging.out
 
 import com.ritense.externalevent.messaging.ExternalDomainMessage
 
+@Deprecated("Since 12.0.0. No replacement available.")
 data class UpdateStatusPortalCaseMessage(
     val externalId: String,
     val status: String

@@ -19,8 +19,10 @@ package com.ritense.klant.service
 import com.ritense.klant.domain.Klant
 import java.util.UUID
 
+@Deprecated("Since 12.0.0")
 interface KlantService {
 
+    @Deprecated("Since 12.0.0")
     fun getKlantForDocument(documentId: UUID): Klant
 
 }

@@ -18,6 +18,7 @@ package com.ritense.klant.client
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
+@Deprecated("Since 12.0.0")
 @ConfigurationProperties(prefix = "valtimo.openklant")
 data class OpenKlantClientProperties (
     val url: String,

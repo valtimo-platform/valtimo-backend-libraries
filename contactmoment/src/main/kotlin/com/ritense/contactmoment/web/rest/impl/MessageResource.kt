@@ -22,6 +22,7 @@ import com.ritense.contactmoment.web.rest.MessageResource
 import java.util.UUID
 import org.springframework.http.ResponseEntity
 
+@Deprecated("Since 12.0.0. No replacement available.")
 class MessageResource(
     val klantcontactService: KlantcontactService
 ): MessageResource {

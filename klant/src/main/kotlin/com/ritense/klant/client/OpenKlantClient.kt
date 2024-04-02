@@ -22,10 +22,12 @@ import com.ritense.klant.domain.KlantSearchFilter
 import com.ritense.klant.domain.ResultPage
 import java.util.UUID
 
+@Deprecated("Since 12.0.0")
 class OpenKlantClient(
     private val openKlantClientProperties: OpenKlantClientProperties,
     private val openKlantTokenGenerator: OpenKlantTokenGenerator
 ) {
+    @Deprecated("Since 12.0.0")
     fun getKlant(bsn: String? = null, kvk: String? = null): Klant? {
 
         val klantPage = searchKlanten(KlantSearchFilter(
@@ -41,12 +43,14 @@ class OpenKlantClient(
         return klantPage.results.firstOrNull()
     }
 
+    @Deprecated("Since 12.0.0")
     fun getKlant(id: UUID): Klant {
         return requestBuilder()
             .path("/klanten/api/v1/klanten/${id}")
             .execute(Klant::class.java)
     }
 
+    @Deprecated("Since 12.0.0")
     fun searchKlanten(filter: KlantSearchFilter): ResultPage<Klant> {
         val klantPage = requestBuilder()
             .path("/klanten/api/v1/klanten")
@@ -56,6 +60,7 @@ class OpenKlantClient(
         return klantPage
     }
 
+    @Deprecated("Since 12.0.0")
     fun postKlant(klant: KlantCreationRequest): Klant {
         return requestBuilder()
             .post()
@@ -64,6 +69,7 @@ class OpenKlantClient(
             .execute(Klant::class.java)
     }
 
+    @Deprecated("Since 12.0.0")
     fun requestBuilder() : RequestBuilder.Builder {
         val token = openKlantTokenGenerator.generateTokenForBsn(
             openKlantClientProperties.secret,

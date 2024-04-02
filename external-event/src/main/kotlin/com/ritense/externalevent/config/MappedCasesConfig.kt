@@ -19,6 +19,7 @@ package com.ritense.externalevent.config
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration
 
+@Deprecated("Since 12.0.0")
 @Configuration
 @ConfigurationProperties(prefix = "external.case")
 data class MappedCasesConfig(
