@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 
-package com.ritense.objectmanagement.security.config
+package com.ritense.zaakdetails.security
 
 import com.ritense.valtimo.contract.authentication.AuthoritiesConstants.ADMIN
 import com.ritense.valtimo.contract.security.config.HttpConfigurerConfigurationException
 import com.ritense.valtimo.contract.security.config.HttpSecurityConfigurer
 import org.springframework.http.HttpMethod.DELETE
 import org.springframework.http.HttpMethod.GET
-import org.springframework.http.HttpMethod.POST
 import org.springframework.http.HttpMethod.PUT
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher
 
-class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
+class ZaakDetailsHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     override fun configure(http: HttpSecurity) {
         try {
             http.authorizeHttpRequests { requests ->
-                requests.requestMatchers(antMatcher(POST, CONFIGURATION_URL)).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "$CONFIGURATION_URL/{id}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, CONFIGURATION_URL)).authenticated()
-                    .requestMatchers(antMatcher(PUT, CONFIGURATION_URL)).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(DELETE, "$CONFIGURATION_URL/{id}")).hasAuthority(ADMIN)
-                    .requestMatchers(antMatcher(GET, "$CONFIGURATION_URL/{id}/object")).authenticated()
-                    .requestMatchers(antMatcher(POST, "$CONFIGURATION_URL/{id}/object")).authenticated()
-
-                    .requestMatchers(antMatcher(GET, CONFIGURATION_MANAGEMENT_URL)).authenticated()
+                requests
+                    .requestMatchers(antMatcher(GET, SYNC_MANAGEMENT_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(PUT, SYNC_MANAGEMENT_URL)).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(DELETE, SYNC_MANAGEMENT_URL)).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
@@ -47,7 +41,7 @@ class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
     }
 
     companion object {
-        private const val CONFIGURATION_URL = "/api/v1/object/management/configuration"
-        private const val CONFIGURATION_MANAGEMENT_URL = "/api/management/v1/object/management/configuration"
+        private const val SYNC_MANAGEMENT_URL =
+            "/api/management/v1/document-definition/{name}/version/{version}/objecten-api-sync"
     }
 }
