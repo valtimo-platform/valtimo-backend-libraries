@@ -21,7 +21,6 @@ import com.ritense.objectmanagement.autodeployment.ObjectManagementDefinitionDep
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
 import com.ritense.objectmanagement.service.ObjectManagementFacade
-import com.ritense.objectmanagement.service.ObjectManagementInfoProviderImpl
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectmanagement.web.rest.ObjectManagementResource
 import com.ritense.plugin.service.PluginService
@@ -32,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Primary
 import org.springframework.core.annotation.Order
 import org.springframework.core.io.ResourceLoader
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
@@ -67,15 +65,6 @@ class ObjectManagementAutoConfiguration {
             pluginService,
             searchFieldV2Service,
             searchListColumnService
-        )
-    }
-
-    @Primary
-    @Bean
-    @ConditionalOnMissingBean(ObjectManagementInfoProviderImpl::class)
-    fun objectManagementInfoProvider(objectManagementService: ObjectManagementService): ObjectManagementInfoProviderImpl {
-        return ObjectManagementInfoProviderImpl(
-            objectManagementService
         )
     }
 
