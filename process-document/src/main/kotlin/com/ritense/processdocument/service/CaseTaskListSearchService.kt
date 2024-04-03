@@ -40,7 +40,6 @@ import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaTaskService.TaskFilter
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
-import jakarta.persistence.Tuple
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Expression
@@ -49,6 +48,7 @@ import jakarta.persistence.criteria.Order
 import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
+import java.time.LocalDateTime
 import java.util.UUID
 import java.util.stream.Collectors
 import org.springframework.data.domain.Page
@@ -90,14 +90,33 @@ class CaseTaskListSearchService(
 
     private fun search(caseDefinitionName: String, assignmentFilter: TaskFilter, pageable: Pageable): Page<CaseTask> {
         val cb: CriteriaBuilder = entityManager.criteriaBuilder
-        val query = cb.createQuery(Tuple::class.java)
+        val query = cb.createQuery(CaseTask::class.java)
         val taskRoot = query.from(CamundaTask::class.java)
         val documentRoot = query.from(JsonSchemaDocument::class.java)
 
-        query.select(cb.tuple(taskRoot, documentRoot))
+        val selectCols = arrayOf(
+            taskRoot.get<String>("id"),
+            taskRoot.get<LocalDateTime?>("createTime"),
+            taskRoot.get<String?>("name"),
+            taskRoot.get<String?>("assignee"),
+            taskRoot.get<LocalDateTime?>("dueDate"),
+            taskRoot.get<CamundaExecution?>("processInstance").get<String>("id"),
+            documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id").`as`(java.lang.String::class.java)
+        )
+
+        query.select(
+            cb.construct(
+                CaseTask::class.java,
+                *selectCols
+            )
+        )
 
         query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, assignmentFilter))
         query.orderBy(constructOrderBy(query, cb, taskRoot, documentRoot, pageable.sort))
+
+        val groupList = query.groupList.toMutableList()
+        groupList.addAll(selectCols)
+        query.groupBy(groupList)
 
         val countQuery = cb.createQuery(Long::class.java)
         val countTaskRoot = countQuery.from(CamundaTask::class.java)
@@ -114,7 +133,7 @@ class CaseTaskListSearchService(
             .setFirstResult(pageable.offset.toInt())
             .setMaxResults(pageable.pageSize)
 
-        return PageImpl(pagedQuery.resultList.map { CaseTask(it[0] as CamundaTask, it[1] as JsonSchemaDocument) }, pageable, count)
+        return PageImpl(pagedQuery.resultList, pageable, count)
     }
 
     private fun constructWhere(
@@ -261,10 +280,10 @@ class CaseTaskListSearchService(
 
         resolvedValuesMap.putAll(taskPaths.map { taskPath ->
             taskPath to when (taskPath.substring(TASK_PREFIX.length)) {
-                "createTime" -> caseTask.task.createTime
-                "name" -> caseTask.task.name
-                "assignee" -> caseTask.task.assignee
-                "dueDate" -> caseTask.task.dueDate
+                "createTime" -> caseTask.createTime
+                "name" -> caseTask.name
+                "assignee" -> caseTask.assignee
+                "dueDate" -> caseTask.dueDate
                 else -> taskPath to taskPath
             }
         })
@@ -273,7 +292,7 @@ class CaseTaskListSearchService(
             TaskListRowDto.TaskListItemDto(caseListColumn.id.key, resolvedValuesMap[caseListColumn.path])
         }.toList()
 
-        return TaskListRowDto(caseTask.task.id, items)
+        return TaskListRowDto(caseTask.taskId, items)
     }
 
     private fun <T> stringToPath(parent: Path<*>, path: String): Path<T> {
