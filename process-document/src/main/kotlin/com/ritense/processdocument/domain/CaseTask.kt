@@ -16,9 +16,19 @@
 
 package com.ritense.processdocument.domain
 
+import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.valtimo.camunda.domain.CamundaTask
+import java.time.LocalDateTime
+
 
 class CaseTask (
-    val taskId: String,
+    val task: CamundaTask,
     val processInstanceId: String,
     val documentInstanceId: String
-)
+) {
+    constructor(camundaTask: CamundaTask, jsonSchemaDocument: JsonSchemaDocument) : this(
+        task = camundaTask,
+        processInstanceId = camundaTask.processInstance!!.id,
+        documentInstanceId = jsonSchemaDocument.id!!.id.toString()
+    )
+}

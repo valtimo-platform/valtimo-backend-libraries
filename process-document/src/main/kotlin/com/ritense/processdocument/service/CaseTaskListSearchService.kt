@@ -20,7 +20,10 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.case.domain.DisplayType
+import com.ritense.case.domain.EmptyDisplayTypeParameter
 import com.ritense.case.domain.TaskListColumn
+import com.ritense.case.domain.TaskListColumnId
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
@@ -34,10 +37,10 @@ import com.ritense.valtimo.camunda.domain.CamundaTask
 import com.ritense.valtimo.camunda.repository.CamundaTaskSpecificationHelper
 import com.ritense.valtimo.contract.authentication.UserManagementService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
-import com.ritense.valtimo.service.CamundaTaskService
 import com.ritense.valtimo.service.CamundaTaskService.TaskFilter
 import com.ritense.valueresolver.ValueResolverService
 import jakarta.persistence.EntityManager
+import jakarta.persistence.Tuple
 import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Expression
@@ -68,16 +71,17 @@ class CaseTaskListSearchService(
     private val INTERNAL_STATUS_ORDER = "internalStatus.order"
     private val DOC_PREFIX = "doc:"
     private val CASE_PREFIX = "case:"
+    private val TASK_PREFIX = "task:"
     private val DOCUMENT_FIELD_MAP: Map<String, String> = mapOf(
         "definitionId.name" to "documentDefinitionId.name",
         "definitionId.version" to "documentDefinitionId.key",
         INTERNAL_STATUS to INTERNAL_STATUS_ORDER
     )
 
-    fun getTasksByCaseDefinition(caseDefinitionName: String, assignmentFilter: CamundaTaskService.TaskFilter, pageable: Pageable): Page<TaskListRowDto> {
+    fun getTasksByCaseDefinition(caseDefinitionName: String, assignmentFilter: TaskFilter, pageable: Pageable): Page<TaskListRowDto> {
         val taskListColumns = taskListColumnRepository.findByIdCaseDefinitionNameOrderByOrderAsc(
             caseDefinitionName
-        )
+        ).ifEmpty { defaultColumns }
         val newPageable = mutatePageable(taskListColumns, pageable)
 
         return search(caseDefinitionName, assignmentFilter, newPageable)
@@ -86,29 +90,14 @@ class CaseTaskListSearchService(
 
     private fun search(caseDefinitionName: String, assignmentFilter: TaskFilter, pageable: Pageable): Page<CaseTask> {
         val cb: CriteriaBuilder = entityManager.criteriaBuilder
-        val query = cb.createQuery(CaseTask::class.java)
+        val query = cb.createQuery(Tuple::class.java)
         val taskRoot = query.from(CamundaTask::class.java)
         val documentRoot = query.from(JsonSchemaDocument::class.java)
 
-        val selectCols = arrayOf(
-            taskRoot.get<String>("id"),
-            taskRoot.get<CamundaExecution?>("processInstance").get<String>("id"),
-            documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id").`as`(java.lang.String::class.java)
-        )
-
-        query.select(
-            cb.construct(
-                CaseTask::class.java,
-                *selectCols
-            )
-        )
+        query.select(cb.tuple(taskRoot, documentRoot))
 
         query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, assignmentFilter))
-        query.orderBy(constructOrderBy(query, cb, documentRoot, pageable.sort))
-
-        val groupList = query.groupList.toMutableList()
-        groupList.addAll(selectCols)
-        query.groupBy(groupList)
+        query.orderBy(constructOrderBy(query, cb, taskRoot, documentRoot, pageable.sort))
 
         val countQuery = cb.createQuery(Long::class.java)
         val countTaskRoot = countQuery.from(CamundaTask::class.java)
@@ -125,7 +114,7 @@ class CaseTaskListSearchService(
             .setFirstResult(pageable.offset.toInt())
             .setMaxResults(pageable.pageSize)
 
-        return PageImpl(pagedQuery.resultList, pageable, count)
+        return PageImpl(pagedQuery.resultList.map { CaseTask(it[0] as CamundaTask, it[1] as JsonSchemaDocument) }, pageable, count)
     }
 
     private fun constructWhere(
@@ -181,7 +170,8 @@ class CaseTaskListSearchService(
     private fun constructOrderBy(
         query: CriteriaQuery<*>,
         cb: CriteriaBuilder,
-        root: Root<JsonSchemaDocument>,
+        taskRoot: Root<CamundaTask>,
+        documentRoot: Root<JsonSchemaDocument>,
         sort: Sort
     ): List<Order> {
         return sort.stream()
@@ -192,7 +182,7 @@ class CaseTaskListSearchService(
                     val jsonPath = "$." + property.substring(DOC_PREFIX.length)
                     expression = queryDialectHelper.getJsonValueExpression(
                         cb,
-                        root.get<JsonDocumentContent>(CONTENT)
+                        documentRoot.get<JsonDocumentContent>(CONTENT)
                             .get<String>(CONTENT),
                         jsonPath,
                         String::class.java
@@ -201,12 +191,14 @@ class CaseTaskListSearchService(
                     expression = cb.lower(
                         queryDialectHelper.getJsonValueExpression(
                             cb,
-                            root.get<JsonDocumentContent>(CONTENT)
+                            documentRoot.get<JsonDocumentContent>(CONTENT)
                                 .get<String>(CONTENT),
                             property,
                             String::class.java
                         )
                     )
+                } else if (property.startsWith(TASK_PREFIX)) {
+                    expression = taskRoot.get<Any>(property.substring(TASK_PREFIX.length))
                 } else {
                     var docProperty =
                         if (property.startsWith(CASE_PREFIX)) property.substring(
@@ -218,13 +210,13 @@ class CaseTaskListSearchService(
 
                     val parent: Path<*>
                     if (docProperty == INTERNAL_STATUS_ORDER) {
-                        parent = root.join<Any, Any>(
+                        parent = documentRoot.join<Any, Any>(
                             INTERNAL_STATUS,
                             JoinType.LEFT
                         )
                         docProperty = docProperty.substring(INTERNAL_STATUS.length + 1)
                     } else {
-                        parent = root
+                        parent = documentRoot
                     }
 
                     val path: Path<Any> = stringToPath(parent, docProperty)
@@ -260,15 +252,28 @@ class CaseTaskListSearchService(
         return PageRequest.of(pageable.pageNumber, pageable.pageSize, newSort)
     }
 
-    private fun toCaseListRowDto(task: CaseTask, taskListColumns: List<TaskListColumn>): TaskListRowDto {
+    private fun toCaseListRowDto(caseTask: CaseTask, taskListColumns: List<TaskListColumn>): TaskListRowDto {
         val paths = taskListColumns.map { it.path }
-        val resolvedValuesMap = valueResolverService.resolveValues(task.documentInstanceId, paths)
+
+        val (taskPaths, otherPaths) = paths.partition { it.startsWith(TASK_PREFIX) }
+
+        val resolvedValuesMap = valueResolverService.resolveValues(caseTask.documentInstanceId, otherPaths).toMutableMap()
+
+        resolvedValuesMap.putAll(taskPaths.map { taskPath ->
+            taskPath to when (taskPath.substring(TASK_PREFIX.length)) {
+                "createTime" -> caseTask.task.createTime
+                "name" -> caseTask.task.name
+                "assignee" -> caseTask.task.assignee
+                "dueDate" -> caseTask.task.dueDate
+                else -> taskPath to taskPath
+            }
+        })
 
         val items = taskListColumns.map { caseListColumn ->
             TaskListRowDto.TaskListItemDto(caseListColumn.id.key, resolvedValuesMap[caseListColumn.path])
         }.toList()
 
-        return TaskListRowDto(task.taskId, items)
+        return TaskListRowDto(caseTask.task.id, items)
     }
 
     private fun <T> stringToPath(parent: Path<*>, path: String): Path<T> {
@@ -278,5 +283,46 @@ class CaseTaskListSearchService(
             result = result.get<Any>(s)
         }
         return result as Path<T>
+    }
+
+    companion object {
+        val defaultColumns: List<TaskListColumn> = listOf(
+            TaskListColumn(
+                id = TaskListColumnId("Default", "createTime"),
+                title = "createTime",
+                path = "task:createTime",
+                displayType = DisplayType("string", EmptyDisplayTypeParameter()),
+                sortable = true,
+                defaultSort = null,
+                order = 1
+            ),
+            TaskListColumn(
+                id = TaskListColumnId("Default", "name"),
+                title = "name",
+                path = "task:name",
+                displayType = DisplayType("string", EmptyDisplayTypeParameter()),
+                sortable = true,
+                defaultSort = null,
+                order = 2
+            ),
+            TaskListColumn(
+                id = TaskListColumnId("Default", "assignee"),
+                title = "assignee",
+                path = "task:assignee",
+                displayType = DisplayType("string", EmptyDisplayTypeParameter()),
+                sortable = true,
+                defaultSort = null,
+                order = 3
+            ),
+            TaskListColumn(
+                id = TaskListColumnId("Default", "dueDate"),
+                title = "dueDate",
+                path = "task:dueDate",
+                displayType = DisplayType("string", EmptyDisplayTypeParameter()),
+                sortable = true,
+                defaultSort = null,
+                order = 4
+            )
+        )
     }
 }
