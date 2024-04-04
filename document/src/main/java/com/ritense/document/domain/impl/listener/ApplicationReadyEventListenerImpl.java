@@ -18,8 +18,8 @@ package com.ritense.document.domain.impl.listener;
 
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.service.DocumentDefinitionService;
+import com.ritense.valtimo.contract.event.ResourceDeployRequestedEvent;
 import jakarta.transaction.Transactional;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -33,7 +33,7 @@ public class ApplicationReadyEventListenerImpl {
     }
 
     @Transactional
-    @EventListener(ApplicationReadyEvent.class)
+    @EventListener(ResourceDeployRequestedEvent.class)
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public void handle() {
         AuthorizationContext.runWithoutAuthorization(() -> {

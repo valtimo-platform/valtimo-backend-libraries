@@ -15,7 +15,7 @@ spring:
         time-zone: UTC
     devtools:
         restart:
-            enabled: true
+            enabled: false
         livereload:
             enabled: true
     datasource:

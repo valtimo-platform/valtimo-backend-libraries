@@ -22,9 +22,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import com.ritense.plugin.service.PluginService
+import com.ritense.valtimo.contract.event.ResourceDeployRequestedEvent
 import mu.KLogger
 import mu.KotlinLogging
-import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -43,7 +43,7 @@ class PluginAutoDeploymentEventListener(
 
     @Transactional
     @Order(Ordered.LOWEST_PRECEDENCE-1)
-    @EventListener(ApplicationReadyEvent::class)
+    @EventListener(ResourceDeployRequestedEvent::class)
     fun deployPluginConfigurations(){
         logger.info { "Deploying all plugins from $PATH" }
         try {

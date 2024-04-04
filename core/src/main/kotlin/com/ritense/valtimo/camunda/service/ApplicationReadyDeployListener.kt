@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package com.ritense.document.domain.listener;
+package com.ritense.valtimo.camunda.service
 
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
+import com.ritense.valtimo.contract.event.ResourceDeployRequestedEvent
+import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.event.EventListener
 
-public interface ApplicationReadyEventListener {
-    @EventListener(ApplicationReadyEvent.class)
-    void handle();
+class ApplicationReadyDeployListener(
+    private val publisher: ApplicationEventPublisher
+) {
+
+    @EventListener(ApplicationReadyEvent::class)
+    fun onApplicationReady() {
+        publisher.publishEvent(ResourceDeployRequestedEvent())
+    }
+
 }

@@ -1,6 +1,8 @@
 dependencies {
     implementation(platform(project(":dependencies:valtimo-dependency-versions")))
 
+    implementation "org.springframework.boot:spring-boot-starter-security"
+
     implementation(project(":dependencies:valtimo-gzac-dependencies"))
     implementation(project(":mail:local-mail"))
     implementation(project(":document-generation:smartdocuments"))

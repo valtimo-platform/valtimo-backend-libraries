@@ -22,6 +22,7 @@ import com.ritense.document.domain.impl.searchfield.SearchField;
 import com.ritense.document.domain.search.SearchConfigurationDto;
 import com.ritense.document.exception.SearchConfigurationDeploymentException;
 import com.ritense.document.exception.SearchFieldConfigurationDeploymentException;
+import com.ritense.valtimo.contract.event.ResourceDeployRequestedEvent;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -31,7 +32,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -57,7 +57,7 @@ public class SearchConfigurationDeploymentService {
     }
 
     @Transactional
-    @EventListener(ApplicationReadyEvent.class)
+    @EventListener(ResourceDeployRequestedEvent.class)
     public void deployAll() {
         logger.info("Deploy all search configurations");
         try {

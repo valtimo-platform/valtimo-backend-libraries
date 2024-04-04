@@ -17,6 +17,7 @@ package com.ritense.processlink.autodeployment
 
 import com.ritense.importer.ImportRequest
 import com.ritense.processlink.importer.ProcessLinkImporter
+import com.ritense.valtimo.contract.event.ResourceDeployRequestedEvent
 import java.io.IOException
 import mu.KLogger
 import mu.KotlinLogging
@@ -33,7 +34,7 @@ open class ProcessLinkDeploymentApplicationReadyEventListener(
     private val processLinkImporter: ProcessLinkImporter
 ) {
 
-    @EventListener(ApplicationReadyEvent::class)
+    @EventListener(ResourceDeployRequestedEvent::class)
     @Order(Ordered.LOWEST_PRECEDENCE) //Make sure everything else has been deployed before this listener runs
     open fun deployProcessLinks() {
         logger.info { "Deploying all process links from $PATH" }

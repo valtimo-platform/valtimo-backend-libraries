@@ -33,12 +33,15 @@ import com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionRepository
 import com.ritense.valtimo.camunda.repository.CamundaTaskIdentityLinkMapper
 import com.ritense.valtimo.camunda.repository.CamundaTaskRepository
 import com.ritense.valtimo.camunda.repository.CamundaVariableInstanceRepository
+import com.ritense.valtimo.camunda.service.ApplicationReadyDeployListener
 import com.ritense.valtimo.camunda.service.CamundaContextService
+import com.ritense.valtimo.camunda.service.CamundaDeployListener
 import com.ritense.valtimo.camunda.service.CamundaHistoryService
 import com.ritense.valtimo.camunda.service.CamundaRepositoryService
 import com.ritense.valtimo.camunda.service.CamundaRuntimeService
 import com.ritense.valtimo.contract.database.QueryDialectHelper
 import com.ritense.valtimo.service.CamundaTaskService
+import org.camunda.bpm.application.AbstractProcessApplication
 import org.camunda.bpm.engine.HistoryService
 import org.camunda.bpm.engine.RepositoryService
 import org.camunda.bpm.engine.RuntimeService
@@ -47,6 +50,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.domain.EntityScan
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Lazy
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
@@ -169,4 +173,19 @@ class ValtimoCamundaAutoConfiguration {
         return CamundaTaskIdentityLinkMapper()
     }
 
+    @Bean
+    @ConditionalOnMissingBean(CamundaDeployListener::class)
+    fun camundaDeployListener(
+        processApplication: AbstractProcessApplication
+    ): CamundaDeployListener {
+        return CamundaDeployListener(processApplication)
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ApplicationReadyDeployListener::class)
+    fun queryDialectHelper(
+        publisher: ApplicationEventPublisher
+    ): ApplicationReadyDeployListener {
+        return ApplicationReadyDeployListener(publisher)
+    }
 }

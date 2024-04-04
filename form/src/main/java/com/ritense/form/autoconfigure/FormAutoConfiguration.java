@@ -18,7 +18,7 @@ package com.ritense.form.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ritense.document.service.DocumentService;
-import com.ritense.form.autodeployment.FormApplicationReadyEventListener;
+import com.ritense.form.autodeployment.FormDefinitionDeployEventListener;
 import com.ritense.form.autodeployment.FormDefinitionDeploymentService;
 import com.ritense.form.domain.FormSpringContextHelper;
 import com.ritense.form.mapper.FormProcessLinkMapper;
@@ -100,9 +100,9 @@ public class FormAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(FormApplicationReadyEventListener.class)
-    public FormApplicationReadyEventListener formApplicationReadyEventListener(FormDefinitionDeploymentService formDefinitionDeploymentService) {
-        return new FormApplicationReadyEventListener(formDefinitionDeploymentService);
+    @ConditionalOnMissingBean(FormDefinitionDeployEventListener.class)
+    public FormDefinitionDeployEventListener formApplicationReadyEventListener(FormDefinitionDeploymentService formDefinitionDeploymentService) {
+        return new FormDefinitionDeployEventListener(formDefinitionDeploymentService);
     }
 
     @Bean

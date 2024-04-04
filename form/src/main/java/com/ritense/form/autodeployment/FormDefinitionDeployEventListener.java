@@ -16,16 +16,18 @@
 
 package com.ritense.form.autodeployment;
 
-import com.ritense.document.domain.listener.ApplicationReadyEventListener;
+import com.ritense.valtimo.contract.event.ResourceDeployRequestedEvent;
+import org.springframework.context.event.EventListener;
 
-public class FormApplicationReadyEventListener implements ApplicationReadyEventListener {
+public class FormDefinitionDeployEventListener {
 
     private final FormDefinitionDeploymentService formDefinitionDeploymentService;
 
-    public FormApplicationReadyEventListener(FormDefinitionDeploymentService formDefinitionDeploymentService) {
+    public FormDefinitionDeployEventListener(FormDefinitionDeploymentService formDefinitionDeploymentService) {
         this.formDefinitionDeploymentService = formDefinitionDeploymentService;
     }
 
+    @EventListener(ResourceDeployRequestedEvent.class)
     public void handle() {
         formDefinitionDeploymentService.deployAllFromResourceFiles();
     }

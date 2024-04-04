@@ -17,8 +17,8 @@
 package com.ritense.valtimo.changelog.service
 
 import com.ritense.valtimo.changelog.domain.ChangesetDeployer
+import com.ritense.valtimo.contract.event.ResourceDeployRequestedEvent
 import mu.KotlinLogging
-import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.transaction.annotation.Transactional
 
@@ -28,7 +28,7 @@ class ChangelogDeployer(
     private val changesetDeployers: List<ChangesetDeployer>,
 ) {
 
-    @EventListener(ApplicationReadyEvent::class)
+    @EventListener(ResourceDeployRequestedEvent::class)
     fun deployAll() {
         logger.info { "Running deployer" }
 

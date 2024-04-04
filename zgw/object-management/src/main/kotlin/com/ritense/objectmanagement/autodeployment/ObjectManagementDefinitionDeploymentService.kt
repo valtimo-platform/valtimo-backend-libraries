@@ -21,8 +21,8 @@ import com.ritense.objectmanagement.domain.ObjectManagement
 import com.ritense.objectmanagement.domain.ObjectManagementConfigurationAutoDeploymentFinishedEvent
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.service.ObjectManagementService
+import com.ritense.valtimo.contract.event.ResourceDeployRequestedEvent
 import mu.KotlinLogging
-import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.event.EventListener
 import org.springframework.core.Ordered
@@ -39,7 +39,7 @@ class ObjectManagementDefinitionDeploymentService(
     private val applicationEventPublisher: ApplicationEventPublisher,
     private val objectMapper: ObjectMapper,
 ) {
-    @EventListener(ApplicationReadyEvent::class)
+    @EventListener(ResourceDeployRequestedEvent::class)
     @Order(Ordered.LOWEST_PRECEDENCE-2)
     fun deployAllFromResourceFiles() {
         logger.info("Deploying all object management configurations from {}", PATH)

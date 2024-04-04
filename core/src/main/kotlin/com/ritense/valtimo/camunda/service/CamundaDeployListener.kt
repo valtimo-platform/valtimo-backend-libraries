@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package com.ritense.connector.autodeployment
+package com.ritense.valtimo.camunda.service
 
-import com.ritense.connector.domain.Connector
-import com.ritense.connector.service.ConnectorDeploymentService
 import com.ritense.valtimo.contract.event.ResourceDeployRequestedEvent
+import org.camunda.bpm.application.AbstractProcessApplication
+import org.camunda.bpm.container.RuntimeContainerDelegate
 import org.springframework.context.event.EventListener
-import org.springframework.core.annotation.Order
 
-@Deprecated("Since 12.0.0")
-class ConnectorApplicationReadyEventListener(
-    private val connectorDeploymentService: ConnectorDeploymentService,
-    private val connectors: List<Connector>
+class CamundaDeployListener(
+    private val processApplication: AbstractProcessApplication
 ) {
-
-    @Order(1)
     @EventListener(ResourceDeployRequestedEvent::class)
-    fun handle() {
-        connectorDeploymentService.deployAll(connectors)
+    fun deployCamundaResources() {
+        RuntimeContainerDelegate.INSTANCE.get().deployProcessApplication(processApplication)
     }
 }

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ritense.authorization.annotation.RunWithoutAuthorization
 import com.ritense.case.web.rest.dto.CaseListColumnDto
+import com.ritense.valtimo.contract.event.ResourceDeployRequestedEvent
 import mu.KotlinLogging
 import org.everit.json.schema.loader.SchemaLoader
 import org.json.JSONArray
@@ -41,7 +42,7 @@ class CaseListDeploymentService(
     private val caseDefinitionService: CaseDefinitionService
 ) {
 
-    @EventListener(ApplicationReadyEvent::class)
+    @EventListener(ResourceDeployRequestedEvent::class)
     @RunWithoutAuthorization
     fun deployColumns() {
         logger.info("Deploying case list column definitions")
