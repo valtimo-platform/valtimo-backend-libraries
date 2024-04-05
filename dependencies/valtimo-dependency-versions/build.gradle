@@ -88,6 +88,7 @@ dependencies {
         api(project(":zgw:objecten-api"))
         api(project(":zgw:objecttypen-api"))
         api(project(":zgw:verzoek"))
+        api(project(":zgw:zaakdetails"))
         api(project(":zgw:zaken-api"))
         api(project(":dependencies:valtimo-gzac-dependencies"))
 

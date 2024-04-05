@@ -1,0 +1,28 @@
+[
+    {
+        "id": "21a006f9-7833-4cdf-a6b7-1927705dd543",
+        "title": "Objecten API Authentication",
+        "pluginDefinitionKey": "objecttokenauthentication",
+        "properties": {
+            "token": "fake-token"
+        }
+    },
+    {
+        "id": "b6d83348-97e7-4660-bd35-2e5fcc9629b4",
+        "title": "Objecten API",
+        "pluginDefinitionKey": "objectenapi",
+        "properties": {
+            "url": "https://ritense.com/some-object/",
+            "authenticationPluginConfiguration": "21a006f9-7833-4cdf-a6b7-1927705dd543"
+        }
+    },
+    {
+        "id": "4021bb75-18c8-4ca5-8658-b9f9c728bba0",
+        "title": "Objecttypen API",
+        "pluginDefinitionKey": "objecttypenapi",
+        "properties": {
+            "url": "https://ritense.com/some-object/",
+            "authenticationPluginConfiguration": "21a006f9-7833-4cdf-a6b7-1927705dd543"
+        }
+    }
+]
