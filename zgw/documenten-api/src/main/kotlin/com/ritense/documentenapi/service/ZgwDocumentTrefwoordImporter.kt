@@ -39,6 +39,6 @@ class ZgwDocumentTrefwoordImporter(
     }
 
     private companion object {
-        val FILENAME_REGEX = """config/case/trefwoorden/([^/]+)\.case-trefwoorden\.json""".toRegex()
+        val FILENAME_REGEX = """config/case/trefwoorden/([^/]+)\.zgw-document-trefwoorden\.json""".toRegex()
     }
 }
