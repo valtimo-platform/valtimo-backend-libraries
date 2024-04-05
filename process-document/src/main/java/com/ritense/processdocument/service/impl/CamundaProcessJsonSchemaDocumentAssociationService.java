@@ -69,6 +69,7 @@ import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 public class CamundaProcessJsonSchemaDocumentAssociationService implements ProcessDocumentAssociationService {
@@ -160,9 +161,16 @@ public class CamundaProcessJsonSchemaDocumentAssociationService implements Proce
 
     @Override
     public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(String documentDefinitionName) {
+        return findProcessDocumentDefinitions(documentDefinitionName, (Boolean) null);
+    }
 
+    @Override
+    public List<CamundaProcessJsonSchemaDocumentDefinition> findProcessDocumentDefinitions(
+        String documentDefinitionName,
+        @Nullable Boolean startableByUser
+    ) {
         List<CamundaProcessJsonSchemaDocumentDefinition> results = processDocumentDefinitionRepository
-            .findAllByDocumentDefinitionNameAndLatestDocumentDefinitionVersion(documentDefinitionName);
+            .findAll(documentDefinitionName, startableByUser);
 
         return results.stream().filter(result -> {
             CamundaProcessDefinition processDefinition = AuthorizationContext.runWithoutAuthorization(() ->
