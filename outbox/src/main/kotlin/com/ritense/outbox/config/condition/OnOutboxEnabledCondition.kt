@@ -24,10 +24,10 @@ class OnOutboxEnabledCondition : Condition {
     override fun matches(context: ConditionContext, metadata: AnnotatedTypeMetadata): Boolean {
         val annotationName = ConditionalOnOutboxEnabled::class.java.name
         val value = (metadata.getAnnotationAttributes(annotationName)?.get("value") as? Boolean) ?: true
-        return context.environment.getProperty(PROPERTY_NAME, "true").toBoolean() == value
+        return context.environment.getProperty(PROPERTY_NAME, "false").toBoolean() == value
     }
 
     companion object {
-        internal const val PROPERTY_NAME = "valtimo.outbox.enabled"
+        const val PROPERTY_NAME = "valtimo.outbox.enabled"
     }
 }

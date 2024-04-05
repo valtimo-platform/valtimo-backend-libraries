@@ -40,7 +40,8 @@ class FormDefinitionImporter(
         formDefinitionDeploymentService
             .deploy(
                 fileNameWithoutPathAndExtension(request.fileName),
-                formDefinitionAsString
+                formDefinitionAsString,
+                false
             )
     }
 
