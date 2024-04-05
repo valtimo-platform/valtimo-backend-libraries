@@ -292,7 +292,7 @@ class CaseTaskListSearchService(
             TaskListRowDto.TaskListItemDto(caseListColumn.id.key, resolvedValuesMap[caseListColumn.path])
         }.toList()
 
-        return TaskListRowDto(caseTask.taskId, caseTask.documentInstanceId, items)
+        return TaskListRowDto(caseTask.taskId, caseTask.documentInstanceId, caseTask.processInstanceId, caseTask.name, caseTask.createTime, items)
     }
 
     private fun <T> stringToPath(parent: Path<*>, path: String): Path<T> {
