@@ -48,14 +48,14 @@ import jakarta.persistence.criteria.Order
 import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
-import java.time.LocalDateTime
-import java.util.UUID
-import java.util.stream.Collectors
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import java.time.LocalDateTime
+import java.util.UUID
+import java.util.stream.Collectors
 
 
 class CaseTaskListSearchService(
@@ -292,7 +292,7 @@ class CaseTaskListSearchService(
             TaskListRowDto.TaskListItemDto(caseListColumn.id.key, resolvedValuesMap[caseListColumn.path])
         }.toList()
 
-        return TaskListRowDto(caseTask.taskId, items)
+        return TaskListRowDto(caseTask.taskId, caseTask.documentInstanceId, items)
     }
 
     private fun <T> stringToPath(parent: Path<*>, path: String): Path<T> {

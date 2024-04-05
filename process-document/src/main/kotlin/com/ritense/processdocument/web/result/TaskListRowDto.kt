@@ -18,6 +18,7 @@ package com.ritense.processdocument.web.result
 
 data class TaskListRowDto(
     val id: String,
+    val businessKey: String,
     val items: List<TaskListItemDto>,
 ) {
 
