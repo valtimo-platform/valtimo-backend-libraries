@@ -111,12 +111,11 @@ class CaseTaskListSearchService(
             )
         )
 
-        query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, assignmentFilter))
-        query.orderBy(constructOrderBy(query, cb, taskRoot, documentRoot, pageable.sort))
-
         val groupList = query.groupList.toMutableList()
         groupList.addAll(selectCols)
         query.groupBy(groupList)
+        query.where(constructWhere(cb, query, taskRoot, documentRoot, caseDefinitionName, assignmentFilter))
+        query.orderBy(constructOrderBy(query, cb, taskRoot, documentRoot, pageable.sort))
 
         val countQuery = cb.createQuery(Long::class.java)
         val countTaskRoot = countQuery.from(CamundaTask::class.java)
