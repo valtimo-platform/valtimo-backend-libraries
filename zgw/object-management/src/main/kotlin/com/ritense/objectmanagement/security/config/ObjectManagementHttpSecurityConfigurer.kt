@@ -39,7 +39,7 @@ class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(GET, "$CONFIGURATION_URL/{id}/object")).authenticated()
                     .requestMatchers(antMatcher(POST, "$CONFIGURATION_URL/{id}/object")).authenticated()
 
-                    .requestMatchers(antMatcher(GET, CONFIGURATION_MANAGEMENT_URL)).authenticated()
+                    .requestMatchers(antMatcher(GET, CONFIGURATION_MANAGEMENT_URL)).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
