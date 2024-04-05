@@ -21,14 +21,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.BaseIntegrationTest;
-import com.ritense.processdocument.domain.ProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import java.io.IOException;
 
 @Tag("integration")
 @Transactional

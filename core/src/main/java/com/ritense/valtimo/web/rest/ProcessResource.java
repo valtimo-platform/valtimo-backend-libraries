@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.VERSION;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;

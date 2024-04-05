@@ -178,15 +178,15 @@ public class FormIoFormDefinition extends AbstractAggregateRoot<FormIoFormDefini
     @Override
     public void preFill(@NotNull Map<String, ?> valueMap) {
         getInputFields().stream()
-                .filter(HAS_PREFILL_ENABLED)
-                .forEach(fieldNode -> {
-                    String fieldKey = getFieldKey(fieldNode);
-                    Object value = valueMap.get(fieldKey);
-                    if (value != null) {
-                        JsonNode valueNode = MapperSingleton.INSTANCE.get().valueToTree(value);
-                        fieldNode.set(DEFAULT_VALUE_FIELD, valueNode);
-                    }
-                });
+            .filter(HAS_PREFILL_ENABLED)
+            .forEach(fieldNode -> {
+                String fieldKey = getFieldKey(fieldNode);
+                Object value = valueMap.get(fieldKey);
+                if (value != null) {
+                    JsonNode valueNode = MapperSingleton.INSTANCE.get().valueToTree(value);
+                    fieldNode.set(DEFAULT_VALUE_FIELD, valueNode);
+                }
+            });
     }
 
     public FormDefinition preFillWith(final String prefix, final Map<String, Object> variableMap) {

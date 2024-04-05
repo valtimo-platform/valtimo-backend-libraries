@@ -17,7 +17,6 @@
 package com.ritense.valtimo;
 
 import com.ritense.outbox.OutboxService;
-import com.ritense.outbox.config.condition.OnOutboxEnabledCondition;
 import com.ritense.valtimo.contract.authentication.UserManagementService;
 import com.ritense.valtimo.contract.mail.MailSender;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
