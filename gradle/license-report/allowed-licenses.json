@@ -73,6 +73,9 @@
             "moduleLicense": "The JSON License"
         },
         {
+            "moduleLicense": "Universal Permissive License, Version 1.0"
+        },
+        {
             "moduleLicense": null,
             "moduleVersion": "2.*",
             "moduleName": "com.fasterxml.jackson:jackson-bom"
