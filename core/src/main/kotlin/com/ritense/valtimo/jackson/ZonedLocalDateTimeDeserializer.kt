@@ -23,7 +23,7 @@ import mu.KLogger
 import mu.KotlinLogging
 import java.time.DateTimeException
 import java.time.LocalDateTime
-import java.time.ZoneId
+import java.time.OffsetDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -51,7 +51,7 @@ class ZonedLocalDateTimeDeserializer : LocalDateTimeDeserializer() {
             )
 
             when (result) {
-                is ZonedDateTime -> result.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime()
+                is ZonedDateTime -> result.withZoneSameInstant(OffsetDateTime.now().offset).toLocalDateTime()
                 is LocalDateTime -> result
                 else -> throw DateTimeException("DateTime could not be parsed as LocalDateTime or ZonedDateTime")
             }
