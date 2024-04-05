@@ -16,9 +16,14 @@
 
 package com.ritense.processdocument.web.result
 
+import java.time.LocalDateTime
+
 data class TaskListRowDto(
     val id: String,
     val businessKey: String,
+    val processInstanceId: String,
+    val name: String?,
+    val created: LocalDateTime?,
     val items: List<TaskListItemDto>,
 ) {
 
