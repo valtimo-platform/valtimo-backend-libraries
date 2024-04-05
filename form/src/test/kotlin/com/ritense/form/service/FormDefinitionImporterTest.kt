@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 
 @ExtendWith(MockitoExtension::class)
@@ -68,7 +69,7 @@ class FormDefinitionImporterTest(
         val formFlowKeyCaptor = argumentCaptor<String>()
         val jsonCaptor = argumentCaptor<String>()
 
-        verify(formDefinitionDeploymentService).deploy(formFlowKeyCaptor.capture(), jsonCaptor.capture())
+        verify(formDefinitionDeploymentService).deploy(formFlowKeyCaptor.capture(), jsonCaptor.capture(), eq(false))
 
         assertThat(formFlowKeyCaptor.firstValue).isEqualTo("my-form")
         assertThat(jsonCaptor.firstValue).isEqualTo(jsonContent)
