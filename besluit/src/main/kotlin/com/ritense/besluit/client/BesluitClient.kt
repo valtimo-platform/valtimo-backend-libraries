@@ -24,6 +24,7 @@ import com.ritense.besluit.domain.request.CreateBesluitRequest
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 
+@Deprecated("Since 12.0.0. Please use the Besluiten API module instead.")
 open class BesluitClient(
     private val webclientBuilder: WebClient.Builder,
     private val besluitTokenGenerator: BesluitTokenGenerator

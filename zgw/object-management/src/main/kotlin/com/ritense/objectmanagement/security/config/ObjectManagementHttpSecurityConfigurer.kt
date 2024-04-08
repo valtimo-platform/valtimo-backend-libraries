@@ -38,6 +38,8 @@ class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(DELETE, "$CONFIGURATION_URL/{id}")).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(GET, "$CONFIGURATION_URL/{id}/object")).authenticated()
                     .requestMatchers(antMatcher(POST, "$CONFIGURATION_URL/{id}/object")).authenticated()
+
+                    .requestMatchers(antMatcher(GET, CONFIGURATION_MANAGEMENT_URL)).hasAuthority(ADMIN)
             }
         } catch (e: Exception) {
             throw HttpConfigurerConfigurationException(e)
@@ -46,5 +48,6 @@ class ObjectManagementHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     companion object {
         private const val CONFIGURATION_URL = "/api/v1/object/management/configuration"
+        private const val CONFIGURATION_MANAGEMENT_URL = "/api/management/v1/object/management/configuration"
     }
 }

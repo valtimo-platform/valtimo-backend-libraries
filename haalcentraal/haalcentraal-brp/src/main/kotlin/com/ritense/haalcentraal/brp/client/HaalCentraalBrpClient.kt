@@ -21,9 +21,11 @@ import com.ritense.haalcentraal.brp.domain.Personen
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 
+@Deprecated("Since 12.0.0")
 class HaalCentraalBrpClient(
     private val webclientBuilder: WebClient.Builder
 ) {
+    @Deprecated("Since 12.0.0")
     suspend fun findPeople(
         geboortedatum: String?,
         geslachtsnaam: String?,

@@ -119,14 +119,14 @@ public class FormIoFormDefinitionTest extends BaseTest {
     }
 
     @Test
-    public void shouldEscapeHtmlAtPreFill() throws IOException {
+    public void shouldNotEscapeHtmlAtPreFill() throws IOException {
         final var formDefinition = formDefinitionOf("process-variables-form-example");
 
         var content = content(Map.of("pv", Map.of("firstName", "</b>")));
 
         final var formDefinitionPreFilled = formDefinition.preFill(content);
 
-        assertThat(formDefinitionPreFilled.getFormDefinition().get("components").get(0).get("defaultValue").asText()).isEqualTo("&lt;/b&gt;");
+        assertThat(formDefinitionPreFilled.getFormDefinition().get("components").get(0).get("defaultValue").asText()).isEqualTo("</b>");
     }
 
     @Test

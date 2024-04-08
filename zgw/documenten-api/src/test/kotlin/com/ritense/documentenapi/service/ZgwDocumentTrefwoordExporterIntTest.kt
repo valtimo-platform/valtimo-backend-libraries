@@ -54,7 +54,7 @@ class ZgwDocumentTrefwoordExporterIntTest @Autowired constructor(
 
         //Check if the changesetId ends with a timestamp
         val changesetIdField = "changesetId"
-        val changesetRegex = """(profile\.case-trefwoorden)\.\d+""".toRegex()
+        val changesetRegex = """(profile\.zgw-document-trefwoorden)\.\d+""".toRegex()
         val matchResult = changesetRegex.matchEntire(jsonTree.get(changesetIdField).textValue())
         Assertions.assertThat(matchResult).isNotNull
 
@@ -62,7 +62,7 @@ class ZgwDocumentTrefwoordExporterIntTest @Autowired constructor(
         (jsonTree as ObjectNode).set<TextNode>(changesetIdField, TextNode(matchResult!!.groupValues[1]))
 
         val expectedJson = ResourcePatternUtils.getResourcePatternResolver(resourceLoader)
-            .getResource("classpath:config/case/trefwoorden/$caseDefinitionName.case-trefwoorden.json")
+            .getResource("classpath:config/case/trefwoorden/$caseDefinitionName.zgw-document-trefwoorden.json")
             .inputStream
             .use { inputStream ->
                 StreamUtils.copyToString(inputStream, Charsets.UTF_8)
@@ -75,7 +75,7 @@ class ZgwDocumentTrefwoordExporterIntTest @Autowired constructor(
     }
 
     companion object {
-        private const val PATH = "config/case/trefwoorden/%s.case-trefwoorden.json"
+        private const val PATH = "config/case/trefwoorden/%s.zgw-document-trefwoorden.json"
 
     }
 }

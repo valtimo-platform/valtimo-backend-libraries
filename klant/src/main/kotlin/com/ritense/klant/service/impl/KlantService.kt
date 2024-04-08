@@ -25,12 +25,15 @@ import com.ritense.zakenapi.link.ZaakInstanceLinkService
 import java.net.URI
 import java.util.UUID
 
+@Deprecated("Since 12.0.0")
 class KlantService(
     private val openKlantClientProperties: OpenKlantClientProperties,
     private val openKlantClient: OpenKlantClient,
     private val zaakRolService: ZaakRolService,
     private val zaakInstanceLinkService: ZaakInstanceLinkService
 ): KlantService {
+
+    @Deprecated("Since 12.0.0")
     override fun getKlantForDocument(documentId: UUID): Klant {
         val zaakLink = zaakInstanceLinkService.getByDocumentId(documentId)
         val zaakRolPage = zaakRolService.getZaakInitator(zaakLink.zaakInstanceUrl)

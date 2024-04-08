@@ -17,23 +17,15 @@
 package com.ritense.case.deployment
 
 import com.ritense.case.BaseIntegrationTest
-import com.ritense.case.domain.CaseTabType
-import com.ritense.case.repository.CaseTabRepository
-import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.TAB_ORDER
-import com.ritense.case.repository.CaseTabSpecificationHelper.Companion.byCaseDefinitionName
 import com.ritense.case.repository.TaskListColumnRepository
 import com.ritense.valtimo.changelog.repository.ChangesetRepository
 import com.ritense.valtimo.changelog.service.ChangelogDeployer
+import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Sort
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
 
 @Transactional
 class CaseTaskListDeploymentServiceIT @Autowired constructor(
@@ -61,16 +53,20 @@ class CaseTaskListDeploymentServiceIT @Autowired constructor(
         val columns = taskListColumnRepository
             .findByIdCaseDefinitionNameOrderByOrderAsc("some-case-type")
 
-        assertEquals("first-name", columns[0].id.key)
-        assertEquals("test:firstName", columns[0].path)
-        assertEquals("enum", columns[0].displayType.type)
-        assertEquals("First name", columns[0].title)
-        assertEquals(0, columns[0].order)
-
-        assertEquals("last-name", columns[1].id.key)
-        assertEquals("test:lastName", columns[1].path)
-        assertEquals("enum", columns[1].displayType.type)
-        assertEquals("Last name", columns[1].title)
-        assertEquals(1, columns[1].order)
+        assertThat(columns).satisfiesExactly(
+            { col1 ->
+                assertThat(col1.id.key).isEqualTo("first-name")
+                assertThat(col1.path).isEqualTo("test:firstName")
+                assertThat(col1.displayType.type).isEqualTo("enum")
+                assertThat(col1.title).isEqualTo("First name")
+                assertThat(col1.order).isEqualTo(1)
+            }, { col2 ->
+                assertThat(col2.id.key).isEqualTo("last-name")
+                assertThat(col2.path).isEqualTo("test:lastName")
+                assertThat(col2.displayType.type).isEqualTo("enum")
+                assertThat(col2.title).isEqualTo("Last name")
+                assertThat(col2.order).isEqualTo(2)
+            }
+        )
     }
 }

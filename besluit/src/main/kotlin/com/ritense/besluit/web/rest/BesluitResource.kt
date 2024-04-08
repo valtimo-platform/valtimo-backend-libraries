@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @SkipComponentScan
 @RequestMapping("/api", produces = [APPLICATION_JSON_UTF8_VALUE])
+@Deprecated("Since 12.0.0. Please use the Besluiten API module instead.")
 interface BesluitResource {
 
     @GetMapping("/v1/besluittype")

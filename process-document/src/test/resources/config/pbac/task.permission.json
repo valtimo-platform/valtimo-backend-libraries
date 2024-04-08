@@ -21,6 +21,25 @@
                     ]
                 }
             ]
+        },
+        {
+            "resourceType": "com.ritense.valtimo.camunda.domain.CamundaTask",
+            "action": "view_list",
+            "roleKey": "ROLE_USER",
+            "conditions": [
+                {
+                    "type": "container",
+                    "resourceType": "com.ritense.document.domain.impl.JsonSchemaDocument",
+                    "conditions": [
+                        {
+                            "type": "field",
+                            "field": "documentDefinitionId.name",
+                            "operator": "==",
+                            "value": "house"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
