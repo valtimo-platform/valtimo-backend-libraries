@@ -19,10 +19,18 @@ package com.ritense.case.repository
 import com.ritense.case.domain.TaskListColumn
 import com.ritense.case.domain.TaskListColumnId
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 
 interface TaskListColumnRepository : JpaRepository<TaskListColumn, TaskListColumnId> {
-    fun existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): Boolean
+    fun findByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String): TaskListColumn?
     fun findByIdCaseDefinitionNameOrderByOrderAsc(caseDefinitionName: String): List<TaskListColumn>
-    fun deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName: String, key: String)
-    fun countByIdCaseDefinitionName(caseDefinitionName: String): Int
+
+    @Query("SELECT MAX(tlc.order) FROM TaskListColumn tlc WHERE tlc.id.caseDefinitionName = :caseDefinitionName")
+    fun findMaxOrderByIdCaseDefinitionName(@Param("caseDefinitionName") caseDefinitionName: String): Int?
+
+    @Modifying
+    @Query("UPDATE TaskListColumn tlc SET tlc.order = tlc.order - 1 WHERE tlc.id.caseDefinitionName = :caseDefinitionName AND tlc.order > :order")
+    fun decrementOrderDueToColumnDeletion(@Param("caseDefinitionName") caseDefinitionName: String, @Param("order") order: Int)
 }
