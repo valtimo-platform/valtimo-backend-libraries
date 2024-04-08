@@ -29,6 +29,7 @@ dependencies {
     api(project(":zgw:objecttypen-api"))
     api(project(":zgw:portaaltaak"))
     api(project(":zgw:verzoek"))
+    api(project(":zgw:zaakdetails"))
     api(project(":zgw:zaken-api"))
 }
 

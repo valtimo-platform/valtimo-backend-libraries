@@ -57,8 +57,8 @@ class ZgwDocumentTrefwoordImporterTest(
 
     @Test
     fun `should not support non-zgw-document-trefwoord fileName`() {
-        assertThat(importer.supports("config/case/trefwoorden/x/my-case.case-trefwoorden.json")).isFalse()
-        assertThat(importer.supports("config/case/trefwoorden/my-case-trefwoorden.json")).isFalse()
+        assertThat(importer.supports("config/case/trefwoorden/x/my-case.zgw-document-trefwoorden.json")).isFalse()
+        assertThat(importer.supports("config/case/trefwoorden/my-zgw-document-trefwoorden.json")).isFalse()
     }
 
     @Test
@@ -71,6 +71,6 @@ class ZgwDocumentTrefwoordImporterTest(
     }
 
     private companion object {
-        const val FILENAME = "config/case/trefwoorden/my-case.case-trefwoorden.json"
+        const val FILENAME = "config/case/trefwoorden/my-case.zgw-document-trefwoorden.json"
     }
 }

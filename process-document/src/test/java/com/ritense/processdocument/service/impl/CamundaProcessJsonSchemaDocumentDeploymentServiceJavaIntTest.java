@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ritense.authorization.AuthorizationContext;
 import com.ritense.document.service.DocumentDefinitionService;
 import com.ritense.processdocument.BaseIntegrationTest;
-import com.ritense.processdocument.domain.ProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.CamundaProcessDefinitionKey;
 import com.ritense.processdocument.domain.impl.request.ProcessDocumentDefinitionRequest;
 import jakarta.transaction.Transactional;
@@ -41,16 +40,43 @@ class CamundaProcessJsonSchemaDocumentDeploymentServiceJavaIntTest extends BaseI
 
     @Test
     void shouldDeployProcessDocumentLinkFromResourceFolder() {
+        Boolean startableByUser = null;
         final var processDocumentDefinitions = AuthorizationContext
             .runWithoutAuthorization(
                 () -> camundaProcessJsonSchemaDocumentAssociationService
-                    .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME));
+                    .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME, startableByUser));
 
         assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey()).hasToString(PROCESS_DEFINITION_KEY);
         assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
         assertThat(processDocumentDefinitions.get(0).canInitializeDocument()).isTrue();
         assertThat(processDocumentDefinitions.get(0).startableByUser()).isTrue();
+    }
+
+    @Test
+    public void findProcessDocumentDefinitionWithStartableByUserTrue() {
+        Boolean startableByUser = true;
+        final var processDocumentDefinitions = AuthorizationContext
+            .runWithoutAuthorization(
+                () -> camundaProcessJsonSchemaDocumentAssociationService
+                    .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME, startableByUser));
+
+        assertThat(processDocumentDefinitions.size()).isGreaterThanOrEqualTo(1);
+        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().processDefinitionKey().toString()).isEqualTo(PROCESS_DEFINITION_KEY);
+        assertThat(processDocumentDefinitions.get(0).processDocumentDefinitionId().documentDefinitionId().name()).isEqualTo(DOCUMENT_DEFINITION_NAME);
+        assertThat(processDocumentDefinitions.get(0).canInitializeDocument()).isTrue();
+        assertThat(processDocumentDefinitions.get(0).startableByUser()).isTrue();
+    }
+
+    @Test
+    public void findProcessDocumentDefinitionStartableByUserFalse() {
+        Boolean startableByUser = false;
+        final var processDocumentDefinitions = AuthorizationContext
+            .runWithoutAuthorization(
+                () -> camundaProcessJsonSchemaDocumentAssociationService
+                    .findProcessDocumentDefinitions(DOCUMENT_DEFINITION_NAME, startableByUser));
+
+        assertThat(processDocumentDefinitions.size()).isEqualTo(0);
     }
 
     @Test

@@ -79,7 +79,7 @@ public class FormDefinitionDeploymentService {
                 return Optional.empty();
             }
             var name = getFormName(resource);
-            return deploy(name, IOUtils.toString(resource.getInputStream(), UTF_8));
+            return deploy(name, IOUtils.toString(resource.getInputStream(), UTF_8), true);
         } catch (IOException e) {
             logger.error("Error while deploying form definition {}", getFormName(resource), e);
         }
@@ -87,7 +87,12 @@ public class FormDefinitionDeploymentService {
         return Optional.empty();
     }
 
+    @Deprecated(since = "12.0.0", forRemoval = true)
     public Optional<FormDefinition> deploy(String name, String formDefinitionAsString) throws JsonProcessingException {
+        return deploy(name, formDefinitionAsString, true);
+    }
+
+    public Optional<FormDefinition> deploy(String name, String formDefinitionAsString, boolean readOnly) throws JsonProcessingException {
         var rawFormDefinition = getJson(formDefinitionAsString);
         var optionalFormDefinition = formDefinitionRepository.findByName(name);
         if (optionalFormDefinition.isPresent()) {
@@ -97,7 +102,7 @@ public class FormDefinitionDeploymentService {
                     existingFormDefinition.getId(),
                     name,
                     rawFormDefinition.toString(),
-                    true
+                    readOnly
                 );
                 logger.info("Modified existing form definition {}", name);
                 return Optional.of(formDefinition);
@@ -107,7 +112,7 @@ public class FormDefinitionDeploymentService {
                 new CreateFormDefinitionRequest(
                     name,
                     rawFormDefinition.toString(),
-                    true
+                    readOnly
                 )
             );
             logger.info("Deployed form definition {}", name);
