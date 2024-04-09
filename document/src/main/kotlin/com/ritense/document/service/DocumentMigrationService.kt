@@ -19,6 +19,7 @@ package com.ritense.document.service
 import com.fasterxml.jackson.core.JsonPointer
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.MissingNode
 import com.ritense.document.domain.DocumentMigrationConflict
 import com.ritense.document.domain.DocumentMigrationConflictResponse
 import com.ritense.document.domain.DocumentMigrationPatch
@@ -28,6 +29,8 @@ import com.ritense.document.domain.getProperty
 import com.ritense.document.domain.getTypeReference
 import com.ritense.document.domain.impl.JsonDocumentContent
 import com.ritense.document.domain.impl.JsonSchemaDocument
+import com.ritense.document.domain.patch.JsonPatchFilterFlag
+import com.ritense.document.domain.patch.JsonPatchService
 import com.ritense.document.exception.DocumentMigrationPatchException
 import com.ritense.document.repository.impl.JsonSchemaDocumentRepository
 import com.ritense.document.repository.impl.specification.JsonSchemaDocumentSpecificationHelper.Companion.byDocumentDefinitionId
@@ -125,6 +128,11 @@ class DocumentMigrationService(
             val targetJsonBuilder = JsonPatchBuilder()
             val targetJson = sourceDocument.content().asJson()
             migrationRequest.patches.forEach { patch ->
+                JsonPatchService.apply(
+                    targetJsonBuilder.build(),
+                    targetJson,
+                    JsonPatchFilterFlag.allowRemovalOperations()
+                )
                 applyPatch(
                     sourceJson = sourceDocument.content().asJson(),
                     targetJson = targetJson,
@@ -148,6 +156,9 @@ class DocumentMigrationService(
     ) {
         try {
             val (sourceValue, readValue) = if (patch.sourceIsJsonPointer()) {
+                if (sourceJson.at(patch.source) is MissingNode) {
+                    return
+                }
                 targetJsonBuilder.remove(JsonPointer.valueOf(patch.source))
                 Pair(sourceJson.at(patch.source), false)
             } else if (patch.sourceIsSpelExpression()) {

@@ -276,4 +276,63 @@ class DocumentMigrationServiceIntTest @Autowired constructor(
         assertEquals("""{"addresses":[{"streetName":"Grosthuizen"}]}""", targetDocument.content().asJson().toString())
         assertEquals(targetDefinition, targetDocument.definitionId().name())
     }
+
+    @Test
+    fun `should not move missing node`() {
+        val sourceDefinition = "allows-all"
+        val targetDefinition = "employee"
+        createDocument(
+            definitionOf(sourceDefinition),
+            """{}"""
+        )
+
+        runWithoutAuthorization {
+            documentMigrationService.migrateDocuments(
+                DocumentMigrationRequest(
+                    documentDefinitionNameSource = sourceDefinition,
+                    documentDefinitionVersionSource = 1,
+                    documentDefinitionNameTarget = targetDefinition,
+                    documentDefinitionVersionTarget = 1,
+                    patches = listOf(
+                        DocumentMigrationPatch(source = "/firstName", target = "/personalInformation/firstName"),
+                    )
+                )
+            )
+        }
+
+        val targetDocument = documentRepository.findAll(byDocumentDefinitionIdName(targetDefinition))[0]
+        assertEquals("""{}""", targetDocument.content().asJson().toString())
+        assertEquals(targetDefinition, targetDocument.definitionId().name())
+    }
+
+    @Test
+    fun `should allow SpEL expression`() {
+        val sourceDefinition = "allows-all"
+        val targetDefinition = "allows-all"
+        createDocument(
+            definitionOf(sourceDefinition),
+            """{"firstName":"John","lastName":"Doe"}"""
+        )
+
+        runWithoutAuthorization {
+            documentMigrationService.migrateDocuments(
+                DocumentMigrationRequest(
+                    documentDefinitionNameSource = sourceDefinition,
+                    documentDefinitionVersionSource = 1,
+                    documentDefinitionNameTarget = targetDefinition,
+                    documentDefinitionVersionTarget = 1,
+                    patches = listOf(
+                        DocumentMigrationPatch(source = "/firstName", target = ""),
+                        DocumentMigrationPatch(source = "/lastName", target = ""),
+                        DocumentMigrationPatch(source = "\${source.firstName+' '+source.lastName}", target = "/fullName"),
+                        DocumentMigrationPatch(source = "\${'Welcome '+target.fullName}", target = "/welcomeMsg"),
+                    )
+                )
+            )
+        }
+
+        val targetDocument = documentRepository.findAll(byDocumentDefinitionIdName(targetDefinition))[0]
+        assertEquals("""{"fullName":"John Doe","welcomeMsg":"Welcome John Doe"}""", targetDocument.content().asJson().toString())
+        assertEquals(targetDefinition, targetDocument.definitionId().name())
+    }
 }
