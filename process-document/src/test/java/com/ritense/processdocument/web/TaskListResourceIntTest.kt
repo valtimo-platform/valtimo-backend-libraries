@@ -87,7 +87,7 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
                 "doc:first-name",
                 DisplayType("string", EmptyDisplayTypeParameter()),
                 false,
-                ColumnDefaultSort.ASC,
+                null,
                 0
             ),
             TaskListColumn(
@@ -133,6 +133,7 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[0].value").value(testUserData[2]["firstName"]))
             .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[1].key").value("col2"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[1].value").value(testUserData[2]["lastName"]))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(3))
     }
 
 

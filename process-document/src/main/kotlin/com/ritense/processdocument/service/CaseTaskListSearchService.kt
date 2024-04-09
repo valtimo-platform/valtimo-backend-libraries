@@ -101,7 +101,7 @@ class CaseTaskListSearchService(
             taskRoot.get<String?>("assignee"),
             taskRoot.get<LocalDateTime?>("dueDate"),
             taskRoot.get<CamundaExecution?>("processInstance").get<String>("id"),
-            documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id").`as`(java.lang.String::class.java)
+            documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id")
         )
 
         query.select(
@@ -155,7 +155,7 @@ class CaseTaskListSearchService(
             ),
             cb.equal(
                 taskRoot.get<CamundaExecution>("processInstance").get<String>("businessKey"),
-                documentRoot.get<JsonSchemaDocumentId>("id").get<UUID>("id").`as`(java.lang.String::class.java)
+                queryDialectHelper.uuidToString(cb, documentRoot.get<JsonSchemaDocumentId>("id").get("id"))
             ),
             assignmentFilterPredicate,
             authorizationPredicate
@@ -196,57 +196,62 @@ class CaseTaskListSearchService(
             .map { order: Sort.Order ->
                 val expression: Expression<*>
                 val property = order.property
-                if (property.startsWith(DOC_PREFIX)) {
-                    val jsonPath = "$." + property.substring(DOC_PREFIX.length)
-                    expression = queryDialectHelper.getJsonValueExpression(
-                        cb,
-                        documentRoot.get<JsonDocumentContent>(CONTENT)
-                            .get<String>(CONTENT),
-                        jsonPath,
-                        String::class.java
-                    )
-                } else if (property.startsWith("$.")) {
-                    expression = cb.lower(
-                        queryDialectHelper.getJsonValueExpression(
+                when {
+                    property.startsWith(DOC_PREFIX) -> {
+                        val jsonPath = "$." + property.substring(DOC_PREFIX.length)
+                        expression = queryDialectHelper.getJsonValueExpression(
                             cb,
                             documentRoot.get<JsonDocumentContent>(CONTENT)
                                 .get<String>(CONTENT),
-                            property,
+                            jsonPath,
                             String::class.java
                         )
-                    )
-                } else if (property.startsWith(TASK_PREFIX)) {
-                    expression = taskRoot.get<Any>(property.substring(TASK_PREFIX.length))
-                } else {
-                    var docProperty =
-                        if (property.startsWith(CASE_PREFIX)) property.substring(
-                            CASE_PREFIX.length
-                        ) else property
-                    if (DOCUMENT_FIELD_MAP.containsKey(docProperty)) {
-                        docProperty = DOCUMENT_FIELD_MAP[docProperty]
                     }
-
-                    val parent: Path<*>
-                    if (docProperty == INTERNAL_STATUS_ORDER) {
-                        parent = documentRoot.join<Any, Any>(
-                            INTERNAL_STATUS,
-                            JoinType.LEFT
+                    property.startsWith("$.") -> {
+                        expression = cb.lower(
+                            queryDialectHelper.getJsonValueExpression(
+                                cb,
+                                documentRoot.get<JsonDocumentContent>(CONTENT)
+                                    .get<String>(CONTENT),
+                                property,
+                                String::class.java
+                            )
                         )
-                        docProperty = docProperty.substring(INTERNAL_STATUS.length + 1)
-                    } else {
-                        parent = documentRoot
                     }
+                    property.startsWith(TASK_PREFIX) -> {
+                        expression = taskRoot.get<Any>(property.substring(TASK_PREFIX.length))
+                    }
+                    else -> {
+                        var docProperty =
+                            if (property.startsWith(CASE_PREFIX)) property.substring(
+                                CASE_PREFIX.length
+                            ) else property
+                        if (DOCUMENT_FIELD_MAP.containsKey(docProperty)) {
+                            docProperty = DOCUMENT_FIELD_MAP[docProperty]
+                        }
 
-                    val path: Path<Any> = stringToPath(parent, docProperty)
-                    // This groupBy workaround is needed because PBAC adds a groupBy on 'id' by default.
-                    // Since sorting columns should be added to the groupBy, we do that here
-                    if (query.groupList.isNotEmpty() && !query.groupList.contains(path)) {
-                        val grouping =
-                            ArrayList(query.groupList)
-                        grouping.add(path)
-                        query.groupBy(grouping)
+                        val parent: Path<*>
+                        if (docProperty == INTERNAL_STATUS_ORDER) {
+                            parent = documentRoot.join<Any, Any>(
+                                INTERNAL_STATUS,
+                                JoinType.LEFT
+                            )
+                            docProperty = docProperty.substring(INTERNAL_STATUS.length + 1)
+                        } else {
+                            parent = documentRoot
+                        }
+
+                        val path: Path<Any> = stringToPath(parent, docProperty)
+                        // This groupBy workaround is needed because PBAC adds a groupBy on 'id' by default.
+                        // Since sorting columns should be added to the groupBy, we do that here
+                        if (query.groupList.isNotEmpty() && !query.groupList.contains(path)) {
+                            val grouping =
+                                ArrayList(query.groupList)
+                            grouping.add(path)
+                            query.groupBy(grouping)
+                        }
+                        expression = path
                     }
-                    expression = path
                 }
                 if (order.direction.isAscending) cb.asc(expression) else cb.desc(expression)
             }
@@ -275,7 +280,7 @@ class CaseTaskListSearchService(
 
         val (taskPaths, otherPaths) = paths.partition { it.startsWith(TASK_PREFIX) }
 
-        val resolvedValuesMap = valueResolverService.resolveValues(caseTask.documentInstanceId, otherPaths).toMutableMap()
+        val resolvedValuesMap = valueResolverService.resolveValues(caseTask.documentInstanceId.toString(), otherPaths).toMutableMap()
 
         resolvedValuesMap.putAll(taskPaths.map { taskPath ->
             taskPath to when (taskPath.substring(TASK_PREFIX.length)) {
@@ -291,7 +296,7 @@ class CaseTaskListSearchService(
             TaskListRowDto.TaskListItemDto(caseListColumn.id.key, resolvedValuesMap[caseListColumn.path])
         }.toList()
 
-        return TaskListRowDto(caseTask.taskId, caseTask.documentInstanceId, caseTask.processInstanceId, caseTask.name, caseTask.createTime, items)
+        return TaskListRowDto(caseTask.taskId, caseTask.documentInstanceId.toString(), caseTask.processInstanceId, caseTask.name, caseTask.createTime, items)
     }
 
     private fun <T> stringToPath(parent: Path<*>, path: String): Path<T> {

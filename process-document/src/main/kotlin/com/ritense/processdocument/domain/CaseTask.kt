@@ -17,6 +17,7 @@
 package com.ritense.processdocument.domain
 
 import java.time.LocalDateTime
+import java.util.UUID
 
 
 class CaseTask (
@@ -26,5 +27,5 @@ class CaseTask (
     val assignee: String?,
     val dueDate: LocalDateTime?,
     val processInstanceId: String,
-    val documentInstanceId: String
+    val documentInstanceId: UUID
 )
