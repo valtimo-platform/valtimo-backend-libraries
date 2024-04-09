@@ -20,6 +20,7 @@ import com.ritense.authorization.Action
 import com.ritense.authorization.AuthorizationService
 import com.ritense.authorization.request.EntityAuthorizationRequest
 import com.ritense.authorization.specification.AuthorizationSpecification
+import com.ritense.case.domain.ColumnDefaultSort
 import com.ritense.case.domain.DisplayType
 import com.ritense.case.domain.EmptyDisplayTypeParameter
 import com.ritense.case.domain.TaskListColumn
@@ -198,7 +199,7 @@ class CaseTaskListSearchService(
                 val property = order.property
                 when {
                     property.startsWith(DOC_PREFIX) -> {
-                        val jsonPath = "$." + property.substring(DOC_PREFIX.length)
+                        val jsonPath = "$.\"${property.substring(DOC_PREFIX.length)}\""
                         expression = queryDialectHelper.getJsonValueExpression(
                             cb,
                             documentRoot.get<JsonDocumentContent>(CONTENT)
@@ -266,10 +267,22 @@ class CaseTaskListSearchService(
     }
 
     private fun mutatePageable(taskListColumns: Collection<TaskListColumn>, pageable: Pageable): PageRequest {
-        val newSortOrders = pageable.sort.map { sortOrder ->
-            val caseListColumn = taskListColumns.find { caseListColumn -> caseListColumn.id.key == sortOrder.property }
-            val sortingProperty = caseListColumn?.path ?: sortOrder.property
-            Sort.Order(sortOrder.direction, sortingProperty, sortOrder.nullHandling)
+        val newSortOrders = if (pageable.sort.isUnsorted) {
+            // Default is the defaultSort or when absent, the first sortable column
+            val defaultSortColumn = taskListColumns.find { it.defaultSort != null } ?: taskListColumns.find { it.sortable }
+            val defaultSortDirection = if (defaultSortColumn?.defaultSort == ColumnDefaultSort.DESC) Sort.Direction.DESC else Sort.Direction.ASC
+
+            if (defaultSortColumn != null) {
+                Sort.by(defaultSortDirection, defaultSortColumn.path)
+            } else {
+                Sort.unsorted()
+            }
+        } else {
+            pageable.sort.map { sortOrder ->
+                val caseListColumn = taskListColumns.find { caseListColumn -> caseListColumn.id.key == sortOrder.property }
+                val sortingProperty = caseListColumn?.path ?: sortOrder.property
+                Sort.Order(sortOrder.direction, sortingProperty, sortOrder.nullHandling)
+            }
         }
         val newSort = Sort.by(newSortOrders.toMutableList())
         return PageRequest.of(pageable.pageNumber, pageable.pageSize, newSort)

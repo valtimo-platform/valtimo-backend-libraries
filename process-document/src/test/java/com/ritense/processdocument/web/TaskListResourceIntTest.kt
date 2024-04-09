@@ -109,6 +109,8 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
 
         assertThat(taskList).hasSize(testUserData.size)
 
+        val sortedTestUserData = testUserData.sortedBy { it.get("lastName") }
+
         mockMvc.perform(
             MockMvcRequestBuilders.post("/api/v3/task")
                 .param("filter", CamundaTaskService.TaskFilter.ALL.toString())
@@ -122,18 +124,20 @@ class TaskListResourceIntTest : BaseIntegrationTest() {
             .andExpect(MockMvcResultMatchers.jsonPath("$.content[*].id", hasItems(*taskList.map { it.id }.toTypedArray())))
             .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].items").isArray)
             .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].items[0].key").value("col1"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].items[0].value").value(testUserData[0]["firstName"]))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].items[0].value").value(sortedTestUserData[0]["firstName"]))
             .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].items[1].key").value("col2"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].items[1].value").value(testUserData[0]["lastName"]))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].items[1].value").value(sortedTestUserData[0]["lastName"]))
             .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].items[0].key").value("col1"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].items[0].value").value(testUserData[1]["firstName"]))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].items[0].value").value(sortedTestUserData[1]["firstName"]))
             .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].items[1].key").value("col2"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].items[1].value").value(testUserData[1]["lastName"]))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].items[1].value").value(sortedTestUserData[1]["lastName"]))
             .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[0].key").value("col1"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[0].value").value(testUserData[2]["firstName"]))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[0].value").value(sortedTestUserData[2]["firstName"]))
             .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[1].key").value("col2"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[1].value").value(testUserData[2]["lastName"]))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.content[2].items[1].value").value(sortedTestUserData[2]["lastName"]))
             .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(3))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.sort[0].property").value("doc:last-name"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.sort[0].direction").value("ASC"))
     }
 
 
