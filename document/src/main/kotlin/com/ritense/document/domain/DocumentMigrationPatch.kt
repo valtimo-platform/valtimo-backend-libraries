@@ -26,7 +26,8 @@ data class DocumentMigrationPatch(
     fun sourceIsDefaultValue(): Boolean = !sourceIsJsonPointer() && !sourceIsSpelExpression()
     fun targetIsJsonPointer(): Boolean = target?.startsWith('/') ?: false
     fun targetIsSpelExpression(): Boolean = target?.startsWith('$') ?: false
-    fun targetIsIgnored(): Boolean = target.isNullOrEmpty()
+    fun sourceIsRemoved(): Boolean = target.isNullOrEmpty()
+    fun sourceIsMoved(): Boolean = sourceIsJsonPointer()
 
     companion object {
         fun of(conflict: DocumentMigrationConflict): DocumentMigrationPatch =

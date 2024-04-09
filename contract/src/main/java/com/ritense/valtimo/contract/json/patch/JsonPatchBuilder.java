@@ -18,7 +18,6 @@ package com.ritense.valtimo.contract.json.patch;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.MissingNode;
 import com.ritense.valtimo.contract.json.MapperSingleton;
 import com.ritense.valtimo.contract.json.patch.operation.AddOperation;
 import com.ritense.valtimo.contract.json.patch.operation.CopyOperation;
@@ -121,7 +120,8 @@ public final class JsonPatchBuilder {
     }
 
     private void addJsonNodeValueInternal(JsonNode destination, JsonPointer path, JsonNode value) {
-        if (get(destination, path.head()).isMissingNode()) {
+        var head = destination.at(path.head());
+        if (!head.isObject() && !head.isArray()) {
             var propertyName = path.last().getMatchingProperty();
             JsonNode newValue;
             if (propertyName.matches("\\d+")) {
@@ -143,24 +143,6 @@ public final class JsonPatchBuilder {
 
     public JsonPatch build() {
         return new JsonPatch(operations);
-    }
-
-    private JsonNode get(JsonNode json, JsonPointer path) {
-        for (var op : operations) {
-            if (op instanceof AddOperation addOp && op.getPath().equals(path.toString())) {
-                return addOp.getValue();
-            } else if (op instanceof ReplaceOperation repOp && op.getPath().equals(path.toString())) {
-                return repOp.getValue();
-            } else if (op instanceof RemoveOperation && op.getPath().equals(path.toString())) {
-                return MissingNode.getInstance();
-            } else if (op instanceof MoveOperation moveOp && moveOp.getToPath().equals(path.toString())) {
-                return get(json, JsonPointer.valueOf(moveOp.getPath()));
-            } else if (op instanceof CopyOperation copyOp && copyOp.getToPath().equals(path.toString())) {
-                return get(json, JsonPointer.valueOf(copyOp.getPath()));
-            }
-        }
-
-        return json.at(path);
     }
 
 }

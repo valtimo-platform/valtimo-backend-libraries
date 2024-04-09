@@ -155,76 +155,106 @@ class DocumentMigrationService(
         patch: DocumentMigrationPatch
     ) {
         try {
-            val (sourceValue, readValue) = if (patch.sourceIsJsonPointer()) {
-                if (sourceJson.at(patch.source) is MissingNode) {
-                    return
-                }
+            val sourceValue = getSourceValue(sourceJson, targetJson, targetJsonBuilder, patch)
+            if (sourceValue.isMissing()) {
+                return
+            }
+            if (patch.sourceIsRemoved() || patch.sourceIsMoved()) {
                 targetJsonBuilder.remove(JsonPointer.valueOf(patch.source))
-                Pair(sourceJson.at(patch.source), false)
-            } else if (patch.sourceIsSpelExpression()) {
-                val contextMap = getDefaultSpelContextMap(targetJsonBuilder, sourceJson, targetJson, patch)
-                Pair(getSpelValue(patch.source, contextMap), false)
-            } else {
-                check(patch.sourceIsDefaultValue())
-                Pair(patch.source, true)
             }
 
-            if (!patch.targetIsIgnored()) {
-                if (patch.targetIsSpelExpression()) {
-                    val contextMap =
-                        getDefaultSpelContextMap(targetJsonBuilder, sourceJson, targetJson, patch)
-                    contextMap["sourceValue"] = sourceValue
-                    getSpelValue(patch.target!!, contextMap)
-                } else {
-                    check(patch.targetIsJsonPointer())
-                    val targetPropertySchema = targetSchema.getProperty(patch.target!!)
-                    val targetNode: JsonNode = if (targetPropertySchema != null) {
-                        val targetType = targetPropertySchema.getTypeReference()
-                        val targetValue = if (sourceValue is String && readValue) {
-                            try {
-                                objectMapper.readValue(sourceValue, targetType)
-                            } catch (e: Exception) {
-                                objectMapper.convertValue(sourceValue, targetType)
-                            }
-                        } else {
-                            objectMapper.convertValue(sourceValue, targetType)
-                        }
-                        objectMapper.valueToTree(targetValue)
-                    } else {
-                        objectMapper.valueToTree(sourceValue)
-                    }
-                    val targetPointer = JsonPointer.valueOf(patch.target)
-                    targetJsonBuilder.addJsonNodeValue(targetJson, targetPointer, targetNode)
-                }
+            if (patch.targetIsSpelExpression()) {
+                val contextMap = getSpelContextMap(
+                    targetJsonBuilder,
+                    sourceJson,
+                    targetJson,
+                    patch,
+                    sourceValue
+                )
+                handleSpelExpression(patch.target!!, contextMap)
+            } else if (patch.targetIsJsonPointer()) {
+                val targetPointer = JsonPointer.valueOf(patch.target)
+                val targetValue = getTargetValue(targetSchema, patch.target!!, sourceValue)
+                targetJsonBuilder.addJsonNodeValue(targetJson, targetPointer, targetValue)
             }
         } catch (exception: Exception) {
             throw DocumentMigrationPatchException(patch, exception)
         }
     }
 
-    fun getSpelValue(expression: String, contextMap: Map<String, Any?>): Any? {
+    fun handleSpelExpression(expression: String, contextMap: Map<String, Any?>): Any? {
         val parserContext = TemplateParserContext("\${", "}")
 
+        val jsonPropertyAccessor = JsonPropertyAccessor()
+        jsonPropertyAccessor.setObjectMapper(objectMapper)
         val evaluationContext = StandardEvaluationContext()
         evaluationContext.addPropertyAccessor(MapAccessor())
-        evaluationContext.addPropertyAccessor(JsonPropertyAccessor())
+        evaluationContext.addPropertyAccessor(jsonPropertyAccessor)
 
         return SpelExpressionParser()
             .parseExpression(expression, parserContext)
             .getValue(evaluationContext, contextMap, Any::class.java)
     }
 
-    fun getDefaultSpelContextMap(
+    fun getSpelContextMap(
         builder: JsonPatchBuilder,
         source: JsonNode,
         target: JsonNode,
-        patch: DocumentMigrationPatch
+        patch: DocumentMigrationPatch,
+        sourceValue: SourceValue? = null
     ): MutableMap<String, Any?> {
         val contextMap: MutableMap<String, Any?> = applicationContext.getBeansWithAnnotation(PublicBean::class.java)
         contextMap["source"] = source
         contextMap["target"] = target
         contextMap["builder"] = builder
         contextMap["patch"] = patch
+        contextMap["sourceValue"] = sourceValue?.value
         return contextMap
+    }
+
+    fun getSourceValue(
+        sourceJson: JsonNode,
+        targetJson: JsonNode,
+        targetJsonBuilder: JsonPatchBuilder,
+        patch: DocumentMigrationPatch
+    ): SourceValue {
+        return if (patch.sourceIsJsonPointer()) {
+            SourceValue(value = sourceJson.at(patch.source))
+        } else if (patch.sourceIsSpelExpression()) {
+            val contextMap = getSpelContextMap(targetJsonBuilder, sourceJson, targetJson, patch)
+            SourceValue(value = handleSpelExpression(patch.source, contextMap))
+        } else {
+            check(patch.sourceIsDefaultValue())
+            SourceValue(value = patch.source, specialTypeConversion = true)
+        }
+    }
+
+    fun getTargetValue(targetSchema: Schema, targetPath: String, sourceValue: SourceValue): JsonNode {
+        val targetPropertySchema = targetSchema.getProperty(targetPath)
+        return if (targetPropertySchema != null) {
+            objectMapper.valueToTree(sourceValue.castToTargetType(objectMapper, targetPropertySchema))
+        } else {
+            objectMapper.valueToTree(sourceValue.value)
+        }
+    }
+
+    data class SourceValue(
+        val value: Any? = null,
+        val specialTypeConversion: Boolean = false // when true, will convert String '[5]' to an array. Not a String.
+    ) {
+        fun isMissing(): Boolean = value is MissingNode
+
+        fun castToTargetType(objectMapper: ObjectMapper, targetPropertySchema: Schema): Any? {
+            val targetType = targetPropertySchema.getTypeReference()
+            return if (value is String && specialTypeConversion) {
+                try {
+                    objectMapper.readValue(value, targetType)
+                } catch (_: Exception) {
+                    objectMapper.convertValue(value, targetType)
+                }
+            } else {
+                objectMapper.convertValue(value, targetType)
+            }
+        }
     }
 }

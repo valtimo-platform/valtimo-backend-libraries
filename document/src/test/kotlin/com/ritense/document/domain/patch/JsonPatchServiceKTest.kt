@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.ritense.valtimo.contract.json.MapperSingleton
 import com.ritense.valtimo.contract.json.patch.JsonPatchBuilder
 import org.junit.jupiter.api.Test
-import org.skyscreamer.jsonassert.JSONAssert
+import org.skyscreamer.jsonassert.JSONAssert.assertEquals
 
 class JsonPatchServiceKTest {
     @Test
@@ -42,7 +42,7 @@ class JsonPatchServiceKTest {
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/z/-"), TextNode.valueOf("1"))
         jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/z/-"), TextNode.valueOf("2"))
         JsonPatchService.apply(jsonPatchBuilder.build(), obj)
-        JSONAssert.assertEquals(
+        assertEquals(
             """
             {
                 "x": [
@@ -66,5 +66,15 @@ class JsonPatchServiceKTest {
             }
             """, mapper.writeValueAsString(obj), false
         )
+    }
+
+    @Test
+    fun `should replace existing value node`() {
+        val mapper = MapperSingleton.get()
+        val jsonPatchBuilder = JsonPatchBuilder()
+        val obj = mapper.readTree("""{"address":"Test street"}""")
+        jsonPatchBuilder.addJsonNodeValue(obj, JsonPointer.compile("/address/streetName"), TextNode.valueOf("Funenpark"))
+        JsonPatchService.apply(jsonPatchBuilder.build(), obj)
+        assertEquals("""{"address":{"streetName":"Funenpark"}}""", mapper.writeValueAsString(obj), false)
     }
 }
