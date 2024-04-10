@@ -1,0 +1,16 @@
+{
+    "$id": "employee.schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Person",
+    "type": "object",
+    "properties": {
+        "personalInformation": {
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
