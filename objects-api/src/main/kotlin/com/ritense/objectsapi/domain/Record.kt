@@ -16,6 +16,9 @@
 
 package com.ritense.objectsapi.domain
 
+import com.fasterxml.jackson.annotation.JsonInclude
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class Record(
     val typeVersion: String,
     val startAt: String,
