@@ -16,6 +16,9 @@
             "moduleLicense": "The BSD License"
         },
         {
+            "moduleLicense": "The GNU General Public License, v2 with Universal FOSS Exception, v1.0"
+        },
+        {
             "moduleLicense": "Go License"
         },
         {
@@ -122,7 +125,16 @@
             "moduleLicense": null,
             "moduleVersion": "1.*",
             "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-common"
+        },
+        {
+            "moduleLicense": null,
+            "moduleVersion": "3.*",
+            "moduleName": "org.springframework.boot:spring-boot-dependencies"
+        },
+        {
+            "moduleLicense": null,
+            "moduleVersion": "2.*",
+            "moduleName": "software.amazon.awssdk:bom"
         }
-
     ]
 }

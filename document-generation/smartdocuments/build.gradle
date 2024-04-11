@@ -84,7 +84,6 @@ dependencies {
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation project(':test-utils-common')
     testImplementation project(':plugin-valtimo')
-    testImplementation("com.mysql:mysql-connector-j")
 }
 
 apply from: "gradle/publishing.gradle"

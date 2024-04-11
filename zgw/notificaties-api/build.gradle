@@ -41,6 +41,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:$kotlinCoroutinesVersion"
 
     //test
+    testImplementation project(':test-utils-common')
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
@@ -48,7 +49,6 @@ dependencies {
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
-    testImplementation("com.mysql:mysql-connector-j")
 
 
     jar {

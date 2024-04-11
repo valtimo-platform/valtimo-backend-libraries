@@ -71,7 +71,6 @@ dependencies {
 
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true

@@ -41,12 +41,11 @@ dependencies {
 
     implementation "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
 
+    testImplementation project(':test-utils-common')
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
     testImplementation "org.springframework.cloud:spring-cloud-stream-test-support:${springCloudStreamVersion}"
-    testImplementation "org.postgresql:postgresql:$postgresqlDriverVersion"
-    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true

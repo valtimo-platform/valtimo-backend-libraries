@@ -97,7 +97,6 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${kotlinCoroutinesVersion}"
     testImplementation "org.skyscreamer:jsonassert:${jsonassertVersion}"
     testImplementation project(':core')
-    testImplementation("com.mysql:mysql-connector-j")
 
 
     jar {
