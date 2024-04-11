@@ -135,10 +135,10 @@ dependencies {
     implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
 
     // Camunda test
+    testImplementation project(":test-utils-common")
     testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.junit.jupiter:junit-jupiter-engine"
-    testImplementation("com.mysql:mysql-connector-j")
     testImplementation "org.apache.groovy:groovy-all:${groovyVersion}"
 }
 

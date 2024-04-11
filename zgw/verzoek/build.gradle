@@ -61,7 +61,6 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.mockito:mockito-inline:${mockitoInlineVersion}"
-    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true

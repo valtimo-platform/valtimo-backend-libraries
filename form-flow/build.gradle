@@ -51,10 +51,10 @@ dependencies {
     implementation "com.github.erosb:everit-json-schema:${everitJsonSchemaVersion}"
     implementation "org.springframework:spring-expression"
 
+    testImplementation project(":test-utils-common")
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation group: 'org.postgresql', name: 'postgresql', version: postgresqlDriverVersion
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true

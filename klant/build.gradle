@@ -85,7 +85,6 @@ dependencies {
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation project(":test-utils-common")
-    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true

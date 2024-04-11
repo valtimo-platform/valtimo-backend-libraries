@@ -87,7 +87,6 @@ dependencies {
     testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${kotlinCoroutinesVersion}"
-    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true
