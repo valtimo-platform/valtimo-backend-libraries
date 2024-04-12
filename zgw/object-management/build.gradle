@@ -42,27 +42,26 @@ dependencies {
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 
     testImplementation project(":contract")
     testImplementation project(':plugin-valtimo')
     testImplementation project(":core")
     testImplementation project(":resource:local-resource")
-    testImplementation project(":test-utils-common")
     testImplementation project(":zgw:catalogi-api")
     testImplementation project(':zgw:zaken-api')
+    testImplementation project(":test-utils-common")
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.security:spring-security-test"
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "io.kotest:kotest-assertions-core:${kotestVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true

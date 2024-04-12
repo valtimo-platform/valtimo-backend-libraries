@@ -46,7 +46,7 @@ class ZgwDocumentTrefwoordExporter(
         }
 
         val trefwoordenChangeset = ZgwDocumentTrefwoordChangeset(
-            "$caseName.case-trefwoorden.${Instant.now().toEpochMilli()}",
+            "$caseName.zgw-document-trefwoorden.${Instant.now().toEpochMilli()}",
             listOf(
                 CaseDefinitionTrefwoordCollection(
                     caseName,
@@ -65,6 +65,6 @@ class ZgwDocumentTrefwoordExporter(
     }
 
     companion object {
-        private const val PATH = "config/case/trefwoorden/%s.case-trefwoorden.json"
+        private const val PATH = "config/case/trefwoorden/%s.zgw-document-trefwoorden.json"
     }
 }

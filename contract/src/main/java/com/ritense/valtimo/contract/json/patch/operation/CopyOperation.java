@@ -24,7 +24,7 @@ import java.util.Objects;
 
 public class CopyOperation extends JsonPatchOperation {
 
-    private final JsonPointer toPath; //only to be used in move/copy operation
+    private final JsonPointer toPath;
 
     public CopyOperation(JsonPointer from, JsonPointer to) {
         super(Operation.COPY, from);

@@ -47,6 +47,7 @@ dependencies {
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     testImplementation project(":contract")
+    testImplementation project(':test-utils-common')
 
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
@@ -59,7 +60,6 @@ dependencies {
 
     testImplementation "com.jayway.jsonpath:json-path:${jaywayJsonpathVersion}"
     testImplementation "com.jayway.jsonpath:json-path-assert:${jaywayJsonpathVersion}"
-    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true

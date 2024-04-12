@@ -84,7 +84,6 @@ dependencies {
     implementation "io.dropwizard.metrics:metrics-annotation"
 
     testImplementation "org.springframework.security:spring-security-test"
-    testImplementation("com.mysql:mysql-connector-j")
 }
 
 apply from: "gradle/publishing.gradle"

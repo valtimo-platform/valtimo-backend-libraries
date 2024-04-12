@@ -69,7 +69,6 @@ dependencies {
     implementation "io.hypersistence:hypersistence-utils-hibernate-62:${hypersistenceUtilsVersion}"
 
     testImplementation project(':test-utils-common')
-    testImplementation("com.mysql:mysql-connector-j")
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 

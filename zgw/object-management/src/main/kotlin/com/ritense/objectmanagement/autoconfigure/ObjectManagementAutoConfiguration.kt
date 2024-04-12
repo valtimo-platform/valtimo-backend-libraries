@@ -21,7 +21,6 @@ import com.ritense.objectmanagement.autodeployment.ObjectManagementDefinitionDep
 import com.ritense.objectmanagement.repository.ObjectManagementRepository
 import com.ritense.objectmanagement.security.config.ObjectManagementHttpSecurityConfigurer
 import com.ritense.objectmanagement.service.ObjectManagementFacade
-import com.ritense.objectmanagement.service.ObjectManagementInfoProviderImpl
 import com.ritense.objectmanagement.service.ObjectManagementService
 import com.ritense.objectmanagement.web.rest.ObjectManagementResource
 import com.ritense.plugin.service.PluginService
@@ -66,14 +65,6 @@ class ObjectManagementAutoConfiguration {
             pluginService,
             searchFieldV2Service,
             searchListColumnService
-        )
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(ObjectManagementInfoProviderImpl::class)
-    fun objectManagementInfoProvider(objectManagementService: ObjectManagementService): ObjectManagementInfoProviderImpl {
-        return ObjectManagementInfoProviderImpl(
-            objectManagementService
         )
     }
 

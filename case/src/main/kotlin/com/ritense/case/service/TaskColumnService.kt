@@ -62,7 +62,11 @@ class TaskColumnService(
         runWithoutAuthorization {
             validators[Operation.CREATE]!!.validate(caseDefinitionName, taskListColumnDto)
         }
-        taskListColumnDto.order = taskListColumnRepository.countByIdCaseDefinitionName(caseDefinitionName)
+
+        val originalColumn = taskListColumnRepository.findByIdCaseDefinitionNameAndIdKey(caseDefinitionName, taskListColumnDto.key)
+
+        taskListColumnDto.order = originalColumn?.order ?: ((taskListColumnRepository.findMaxOrderByIdCaseDefinitionName(caseDefinitionName) ?: 0) + 1)
+
         taskListColumnRepository
             .save(TaskListColumnMapper.toEntity(caseDefinitionName, taskListColumnDto))
     }
@@ -119,10 +123,11 @@ class TaskColumnService(
 
         runWithoutAuthorization { assertDocumentDefinitionExists(caseDefinitionName) }
 
-        if (taskListColumnRepository
-                .existsByIdCaseDefinitionNameAndIdKey(caseDefinitionName, columnKey)
-        ) {
-            taskListColumnRepository.deleteByIdCaseDefinitionNameAndIdKey(caseDefinitionName, columnKey)
+        val taskListColumn = taskListColumnRepository.findByIdCaseDefinitionNameAndIdKey(caseDefinitionName, columnKey)
+        if (taskListColumn != null) {
+            taskListColumnRepository.decrementOrderDueToColumnDeletion(taskListColumn.id.caseDefinitionName, taskListColumn.order)
+
+            taskListColumnRepository.delete(taskListColumn)
         }
     }
 
