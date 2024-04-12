@@ -349,6 +349,10 @@ public class JsonSchemaDocument extends AbstractAggregateRoot<JsonSchemaDocument
         return documentDefinitionId;
     }
 
+    public void setDefinitionId(JsonSchemaDocumentDefinitionId documentDefinitionId) {
+        this.documentDefinitionId = documentDefinitionId;
+    }
+
     @Override
     @Nullable
     public String internalStatus() {

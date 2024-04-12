@@ -64,4 +64,5 @@ services:
 #   url: jdbc:mysql://localhost:3347/outbox-test
 #   url: jdbc:mysql://localhost:3348/outbox-rabbitmq-test
 #   url: jdbc:mysql://localhost:3349/localization-test
+#   url: jdbc:mysql://localhost:3351/zaakdetails-test
 #   url: localhost:55672 <--rabbitmq

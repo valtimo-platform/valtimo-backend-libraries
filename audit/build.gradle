@@ -84,7 +84,6 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation project(':test-utils-common')
-    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true

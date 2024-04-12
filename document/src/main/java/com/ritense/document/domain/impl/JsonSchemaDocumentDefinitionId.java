@@ -36,10 +36,10 @@ public class JsonSchemaDocumentDefinitionId extends AbstractId<JsonSchemaDocumen
     @Transient
     private static final long INITIAL_VERSION = 1;
 
-    @Column(name = "document_definition_name", length = 50, columnDefinition = "VARCHAR(50)", nullable = false, updatable = false)
+    @Column(name = "document_definition_name", length = 50, columnDefinition = "VARCHAR(50)", nullable = false, updatable = true)
     private String name;
 
-    @Column(name = "document_definition_version", columnDefinition = "BIGINT", nullable = false, updatable = false)
+    @Column(name = "document_definition_version", columnDefinition = "BIGINT", nullable = false, updatable = true)
     private long version;
 
     private JsonSchemaDocumentDefinitionId(String id) {

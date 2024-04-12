@@ -47,7 +47,6 @@ dependencies {
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
     testImplementation "org.jetbrains.kotlin:kotlin-test"
-    testImplementation("com.mysql:mysql-connector-j")
 
     testImplementation (project(":core")) {
         exclude(group: "com.ritense.valtimo", module: "authorization")

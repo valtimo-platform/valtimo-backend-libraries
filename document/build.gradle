@@ -55,6 +55,7 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-validation"
+    implementation "org.springframework.integration:spring-integration-core"
 
     implementation "com.fasterxml.jackson.module:jackson-module-blackbird"
     implementation "com.fasterxml.jackson.module:jackson-module-parameter-names"
@@ -96,7 +97,6 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${kotlinCoroutinesVersion}"
     testImplementation "org.skyscreamer:jsonassert:${jsonassertVersion}"
     testImplementation project(':core')
-    testImplementation("com.mysql:mysql-connector-j")
 
 
     jar {

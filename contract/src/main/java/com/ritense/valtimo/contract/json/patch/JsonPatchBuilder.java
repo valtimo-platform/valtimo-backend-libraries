@@ -120,7 +120,8 @@ public final class JsonPatchBuilder {
     }
 
     private void addJsonNodeValueInternal(JsonNode destination, JsonPointer path, JsonNode value) {
-        if (destination.at(path.head()).isMissingNode()) {
+        var head = destination.at(path.head());
+        if (!head.isObject() && !head.isArray()) {
             var propertyName = path.last().getMatchingProperty();
             JsonNode newValue;
             if (propertyName.matches("\\d+")) {

@@ -88,7 +88,6 @@ dependencies {
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     testImplementation project(':test-utils-common')
     testImplementation project(":resource:local-resource")
-    testImplementation("com.mysql:mysql-connector-j")
 
 
     jar {

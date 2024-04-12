@@ -39,6 +39,7 @@ dependencies {
     implementation "io.github.microutils:kotlin-logging:${kotlinLoggingVersion}"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
 
+    testImplementation project(':test-utils-common')
     testImplementation "org.junit.jupiter:junit-jupiter"
     //Kotlin
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
@@ -46,7 +47,6 @@ dependencies {
     testImplementation "com.squareup.okhttp3:mockwebserver:${okhttpVersion}"
     testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
     testImplementation "com.jayway.jsonpath:json-path-assert:${jaywayJsonpathVersion}"
-    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true

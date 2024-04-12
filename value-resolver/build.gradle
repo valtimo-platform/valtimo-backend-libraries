@@ -46,12 +46,12 @@ dependencies {
     api "org.camunda.bpm:camunda-engine:${camundaVersion}"
     api "org.zalando:problem-spring-web:${problemSpringWebVersion}"
 
+    testImplementation project(':test-utils-common')
     testImplementation "org.jetbrains.kotlin:kotlin-test"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.camunda.community.mockito:camunda-platform-7-mockito:${camundaMockitoVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${mockitoKotlinVersion}"
-    testImplementation("com.mysql:mysql-connector-j")
 
     jar {
         enabled = true
