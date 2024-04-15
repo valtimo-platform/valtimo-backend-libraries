@@ -40,6 +40,7 @@ import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
 import org.camunda.bpm.engine.delegate.DelegateExecution
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
@@ -676,6 +677,63 @@ internal class ZakenApiPluginTest {
 
         val request = captor.firstValue
         assertEquals(LocalDate.parse("2050-01-15"), request.uiterlijkeEinddatumAfdoening)
+    }
+
+    @Test
+    fun `should not start hersteltermijn twice`() {
+
+        // given
+        val zakenApiClient: ZakenApiClient = mock()
+        val zaakUrlProvider: ZaakUrlProvider = mock()
+        val storageService: TemporaryResourceStorageService = mock()
+        val zaakInstanceLinkRepository: ZaakInstanceLinkRepository = mock()
+        val pluginService: PluginService = mock()
+        val zaakHersteltermijnRepository: ZaakHersteltermijnRepository = mock()
+        val platformTransactionManager: PlatformTransactionManager = mock()
+        val executionMock = mock<DelegateExecution>()
+        val authenticationMock = mock<ZakenApiAuthentication>()
+
+        val documentId = UUID.randomUUID()
+        val zaakUrl = URI("https://example.com/zaken/1234")
+
+        whenever(executionMock.businessKey).thenReturn(documentId.toString())
+        whenever(zaakUrlProvider.getZaakUrl(documentId)).thenReturn(zaakUrl)
+        whenever(zakenApiClient.getZaak(authenticationMock, zaakUrl))
+            .thenReturn(
+                ZaakResponse(
+                    uuid = UUID.randomUUID(),
+                    url = zaakUrl,
+                    bronorganisatie = Rsin("051845623"),
+                    startdatum = LocalDate.now(),
+                    verantwoordelijkeOrganisatie = Rsin("051845623"),
+                    zaaktype = URI("www.ritense.com"),
+                    uiterlijkeEinddatumAfdoening = LocalDate.parse("2050-01-01")
+                )
+            )
+        whenever(zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl))
+            .thenReturn(ZaakHersteltermijn(UUID.randomUUID(), zaakUrl, LocalDate.now(), null, 12))
+
+        val plugin = ZakenApiPlugin(
+            zakenApiClient,
+            zaakUrlProvider,
+            storageService,
+            zaakInstanceLinkRepository,
+            pluginService,
+            zaakHersteltermijnRepository,
+            platformTransactionManager
+        )
+        plugin.url = URI("https://zaken.plugin.url")
+        plugin.authenticationPluginConfiguration = authenticationMock
+
+        assertEquals(
+            "Hersteltermijn already exists for zaak 'https://example.com/zaken/1234'",
+            assertThrows<IllegalArgumentException> {
+                plugin.startHersteltermijn(
+                    execution = executionMock,
+                    maxDurationInDays = 14
+                )
+            }.message
+        )
     }
 
     @Test

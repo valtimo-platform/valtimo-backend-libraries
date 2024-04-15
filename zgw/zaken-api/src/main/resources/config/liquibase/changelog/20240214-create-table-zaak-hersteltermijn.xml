@@ -37,6 +37,15 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="3" author="Ritense">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            CREATE UNIQUE INDEX idx_zaak_hersteltermijn_zaak_url_end_date ON zaak_hersteltermijn (zaak_url, end_date) WHERE end_date IS NULL;
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
 
 
