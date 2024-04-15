@@ -27,6 +27,7 @@ import com.ritense.zakenapi.domain.CreateZaakResponse
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.PatchZaakRequest
+import com.ritense.zakenapi.domain.ZaakHersteltermijn
 import com.ritense.zakenapi.domain.ZaakObject
 import com.ritense.zakenapi.domain.ZaakResponse
 import com.ritense.zakenapi.domain.ZaakopschortingRequest
@@ -708,12 +709,14 @@ internal class ZakenApiPluginTest {
                     uiterlijkeEinddatumAfdoening = LocalDate.now().plusDays(50)
                 )
             )
-        whenever(zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl)).thenReturn(ZaakHersteltermijn(
+        whenever(zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl)).thenReturn(
+            ZaakHersteltermijn(
             zaakUrl = zaakUrl,
             startDate = LocalDate.now().minusDays(8),
             endDate =  null,
             maxDurationInDays = 17
-        ))
+        )
+        )
 
         val plugin = ZakenApiPlugin(
             zakenApiClient,
