@@ -18,6 +18,7 @@ package com.ritense.catalogiapi.client
 
 import com.ritense.catalogiapi.CatalogiApiAuthentication
 import com.ritense.catalogiapi.domain.Besluittype
+import com.ritense.catalogiapi.domain.Eigenschap
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
@@ -176,6 +177,28 @@ class CatalogiApiClient(
                     .build()
             }.retrieve()
             .toEntity(ClientTools.getTypedPage(Besluittype::class.java))
+            .block()
+
+        return result?.body!!
+    }
+
+    open fun getEigenschappen(
+        authentication: CatalogiApiAuthentication,
+        baseUrl: URI,
+        request: EigenschapRequest,
+    ): Page<Eigenschap> {
+        validateUrlHost(baseUrl, request.zaaktype)
+        val result = buildWebclient(authentication)
+            .get()
+            .uri {
+                ClientTools.baseUrlToBuilder(it, baseUrl)
+                    .pathSegment("eigenschappen")
+                    .addOptionalQueryParamFromRequest("zaaktype", request.zaaktype)
+                    .addOptionalQueryParamFromRequest("status", request.status?.getSearchValue())
+                    .addOptionalQueryParamFromRequest("page", request.page)
+                    .build()
+            }.retrieve()
+            .toEntity(ClientTools.getTypedPage(Eigenschap::class.java))
             .block()
 
         return result?.body!!

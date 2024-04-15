@@ -17,9 +17,11 @@
 package com.ritense.catalogiapi.web.rest
 
 import com.ritense.catalogiapi.domain.Besluittype
+import com.ritense.catalogiapi.domain.Eigenschap
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
+import com.ritense.catalogiapi.domain.Specificatie
 import com.ritense.catalogiapi.domain.Statustype
 import com.ritense.catalogiapi.service.CatalogiService
 import org.hamcrest.Matchers
@@ -217,4 +219,41 @@ internal class CatalogiResourceTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.[1].name").value("name 2"))
     }
 
+    @Test
+    fun `should get eigenschappen`() {
+        val caseDefinitionName = "test-case"
+
+        val eigenschappen = IntRange(1, 2).map { n ->
+            Eigenschap(
+                URI("http://ritense.com/$n"),
+                naam = "naam $n",
+                definitie = "definitie",
+                specificatie = Specificatie(
+                    groep = "groep",
+                    formaat = "formaat",
+                    lengte = "lengte",
+                    kardinaliteit = "kardinaliteit",
+                ),
+                zaaktype = URI("www.ritense.com/zaaktype"),
+            )
+        }
+
+        whenever(catalogiService.getEigenschappen(caseDefinitionName)).thenReturn(eigenschappen)
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.get("/api/management/v1/case-definition/{caseDefinitionName}/catalogi-eigenschappen", caseDefinitionName)
+                .characterEncoding(StandardCharsets.UTF_8.name())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+        )
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(MockMvcResultMatchers.status().is2xxSuccessful)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty)
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.*", Matchers.hasSize<Int>(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].url").value("http://ritense.com/1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[0].name").value("naam 1"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[1].url").value("http://ritense.com/2"))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.[1].name").value("naam 2"))
+    }
 }

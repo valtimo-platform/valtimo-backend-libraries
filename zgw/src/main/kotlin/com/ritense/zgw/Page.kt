@@ -16,6 +16,8 @@
 
 package com.ritense.zgw
 
+import mu.KLogger
+import mu.KotlinLogging
 import java.net.URI
 
 data class Page<T>(
@@ -23,4 +25,32 @@ data class Page<T>(
     val next: URI? = null,
     val previous: URI? = null,
     val results: List<T>
-)
+) {
+    companion object {
+        fun <T> getAll(
+            pageLimit: Int = 100,
+            getPage: (page: Int) -> Page<T>
+        ): List<T> {
+            require(pageLimit > 0) { "pageLimit should be > 0 but was: $pageLimit" }
+
+            var page = 1
+            val results = generateSequence(getPage(page)) { previousPage ->
+                if (page < pageLimit && previousPage.next != null) {
+                    getPage(++page)
+                } else {
+                    null
+                }
+            }.toList()
+
+            if (results.last().next != null) {
+                logger.error { "Too many page request: Truncated after $page pages. Please use a paginated result!" }
+            } else if (page >= pageLimit / 2) {
+                logger.warn { "Retrieved $page pages. Page limit is $pageLimit. Please consider using a paginated result!" }
+            }
+
+            return results.flatMap(Page<T>::results)
+        }
+
+        private val logger: KLogger = KotlinLogging.logger {}
+    }
+}

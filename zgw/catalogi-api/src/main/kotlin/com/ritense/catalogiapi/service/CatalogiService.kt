@@ -18,6 +18,7 @@ package com.ritense.catalogiapi.service
 
 import com.ritense.catalogiapi.CatalogiApiPlugin
 import com.ritense.catalogiapi.domain.Besluittype
+import com.ritense.catalogiapi.domain.Eigenschap
 import com.ritense.catalogiapi.domain.Informatieobjecttype
 import com.ritense.catalogiapi.domain.Resultaattype
 import com.ritense.catalogiapi.domain.Roltype
@@ -69,6 +70,14 @@ class CatalogiService(
         val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
 
         return catalogiApiPluginInstance.getBesluittypen(zaakTypeUrl)
+    }
+
+    fun getEigenschappen(caseDefinitionName: String): List<Eigenschap> {
+        logger.debug { "Getting zgw eigenschappen for case definition $caseDefinitionName" }
+        val zaakTypeUrl = getZaaktypeUrlByCaseDefinitionName(caseDefinitionName) ?: return emptyList()
+        val catalogiApiPluginInstance = findCatalogiApiPlugin(zaakTypeUrl) ?: return emptyList()
+
+        return catalogiApiPluginInstance.getEigenschappen(zaakTypeUrl)
     }
 
     private fun findCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin? {
