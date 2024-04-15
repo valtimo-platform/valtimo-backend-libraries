@@ -29,7 +29,8 @@ data class FormFlowStep(
     val onBack: List<String> = listOf(),
     val onOpen: List<String> = listOf(),
     val onComplete: List<String> = listOf(),
-    val type: FormFlowStepType
+    val type: FormFlowStepType,
+    val jsonMergeStrategy: String?,
 ) {
 
     fun contentEquals(other: FormFlowStepEntity): Boolean {
@@ -64,7 +65,8 @@ data class FormFlowStep(
             onBack,
             onOpen,
             onComplete,
-            type
+            type,
+            jsonMergeStrategy ?: "override"
         )
     }
 
@@ -77,7 +79,8 @@ data class FormFlowStep(
                 onBack = entity.onBack,
                 onComplete = entity.onComplete,
                 onOpen = entity.onOpen,
-                type = entity.type
+                type = entity.type,
+                jsonMergeStrategy = entity.jsonMergeStrategy
             )
         }
     }

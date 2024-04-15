@@ -17,6 +17,7 @@
 package com.ritense.formflow.domain.instance
 
 import com.ritense.formflow.domain.definition.FormFlowDefinition
+import com.ritense.formflow.json.JsonMergeHelper
 import io.hypersistence.utils.hibernate.type.json.JsonType
 import jakarta.persistence.AttributeOverride
 import jakarta.persistence.CascadeType
@@ -31,9 +32,10 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OrderBy
 import jakarta.persistence.Table
-import java.util.Objects
 import org.hibernate.annotations.Type
+import org.json.JSONArray
 import org.json.JSONObject
+import java.util.Objects
 
 
 @Entity
@@ -117,63 +119,44 @@ class FormFlowInstance(
         }
     }
 
-    fun getHistory() : List<FormFlowStepInstance> {
+    fun getHistory(): List<FormFlowStepInstance> {
         return history
     }
 
-    fun getAdditionalProperties() : Map<String, Any> {
+    fun getAdditionalProperties(): Map<String, Any> {
         return additionalProperties
     }
 
-    fun getSubmissionDataContext(): String {
-        val formFlowStepInstancesSubmissionData = getSubmissionData()
-
-        if (formFlowStepInstancesSubmissionData.isEmpty()) {
+    fun getSubmissionDataContext(firstSubmission: Submission? = null): String {
+        val iterator = getSubmissionSteps().iterator()
+        if (!iterator.hasNext() && firstSubmission == null) {
             return JSONObject().toString()
         }
-
-        val mergedSubmissionData = formFlowStepInstancesSubmissionData.first()
-
-        if (formFlowStepInstancesSubmissionData.size == 1) {
-            return mergedSubmissionData.toString()
+        val accumulator = firstSubmission ?: iterator.next()
+        while (iterator.hasNext()) {
+            val next = iterator.next()
+            JsonMergeHelper.merge(next.submissionData, accumulator.submissionData, next.mergeStrategy)
         }
-
-        formFlowStepInstancesSubmissionData.subList(1, formFlowStepInstancesSubmissionData.size).forEach {
-            mergeSubmissionData(it, mergedSubmissionData)
-        }
-
-        return mergedSubmissionData.toString()
+        return accumulator.submissionData.toString()
     }
 
-    private fun getSubmissionData() : List<JSONObject> {
+    private fun getSubmissionSteps(): List<Submission> {
         val currentStepOrder = getCurrentStep().order
         val submissionData = history.filter {
             it.order < currentStepOrder && it.submissionData != null
         }.map {
-            JSONObject(it.submissionData)
+            Submission(it.definition.jsonMergeStrategy, JSONObject(it.submissionData))
         }.toMutableList()
 
-        getCurrentStep().getCurrentSubmissionData()?.let {
-            submissionData.add(JSONObject(it))
+        val currentStep = getCurrentStep()
+        currentStep.getCurrentSubmissionData()?.let {
+            submissionData.add(Submission(currentStep.definition.jsonMergeStrategy, JSONObject(it)))
         }
 
         return submissionData
     }
 
-    private fun mergeSubmissionData(source: JSONObject, target: JSONObject) {
-        val keys = JSONObject.getNames(source) ?: arrayOf()
-        for (key in keys) {
-            val value = source[key]
-            if (target.has(key) && value is JSONObject) {
-                mergeSubmissionData(value, target.getJSONObject(key))
-            } else {
-                // Assumption: Anything that isn't a JSONObject can be overwritten
-                target.put(key, value)
-            }
-        }
-    }
-
-    private fun navigateToNextStep() : FormFlowStepInstance? {
+    private fun navigateToNextStep(): FormFlowStepInstance? {
         val nextStep = determineNextStep()
         if (nextStep == null) {
             this.currentFormFlowStepInstanceId = null
@@ -185,7 +168,7 @@ class FormFlowInstance(
         }
 
         if (formFlowStepInstance == null) {
-            history.removeIf { (it.order >= nextStep.order)}
+            history.removeIf { (it.order >= nextStep.order) }
             history.add(nextStep.order, nextStep)
         }
 
@@ -193,7 +176,7 @@ class FormFlowInstance(
         return nextStep
     }
 
-    private fun determineNextStep() : FormFlowStepInstance? {
+    private fun determineNextStep(): FormFlowStepInstance? {
         if (currentFormFlowStepInstanceId == null && history.isNotEmpty()) {
             return null
         }
@@ -203,7 +186,7 @@ class FormFlowInstance(
         if (currentFormFlowStepInstanceId == null) {
             stepKey = formFlowDefinition.startStep
             stepOrder = 0
-        } else  {
+        } else {
             val currentStepInstance = getCurrentStep()
             val nextStep = currentStepInstance.determineNextStep() ?: return null
 
@@ -234,4 +217,8 @@ class FormFlowInstance(
         return Objects.hash(id, formFlowDefinition.id, currentFormFlowStepInstanceId, history, additionalProperties)
     }
 
+    data class Submission(
+        val mergeStrategy: String,
+        var submissionData: JSONObject,
+    )
 }

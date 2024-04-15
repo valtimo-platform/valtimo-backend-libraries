@@ -51,5 +51,7 @@ data class FormFlowStep(
 
     @Type(value = JsonType::class)
     @Column(name = "type", columnDefinition = "JSON", nullable = false)
-    val type: FormFlowStepType
+    val type: FormFlowStepType,
+
+    val jsonMergeStrategy: String,
 )
