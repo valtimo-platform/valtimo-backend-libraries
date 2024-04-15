@@ -1095,7 +1095,7 @@ internal class ZakenApiClientTest {
                 "archiefstatus": "test",
                 "opdrachtgevendeOrganisatie": "002564440",
                 "opschorting": {
-                    "indicatie": "test",
+                    "indicatie": true,
                     "reden": "test"
                 }
             }
@@ -1114,7 +1114,7 @@ internal class ZakenApiClientTest {
                     duur = "test"
                 ),
                 opschorting = Opschorting(
-                    indicatie = "test",
+                    indicatie = true,
                     reden = "test"
                 )
             )
@@ -1151,7 +1151,7 @@ internal class ZakenApiClientTest {
                         duur = "test"
                     ),
                     opschorting = Opschorting(
-                        indicatie = "test",
+                        indicatie = true,
                         reden = "test"
                     )
                 )
@@ -1194,7 +1194,7 @@ internal class ZakenApiClientTest {
                 "opdrachtgevendeOrganisatie": "002564440",
                 "vertrouwelijkheidaanduiding": "intern",
                 "opschorting": {
-                    "indicatie": "test",
+                    "indicatie": true,
                     "reden": "test"
                 }
             }

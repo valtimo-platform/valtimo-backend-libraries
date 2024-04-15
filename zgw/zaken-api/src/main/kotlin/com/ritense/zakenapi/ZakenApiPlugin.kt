@@ -328,7 +328,7 @@ class ZakenApiPlugin(
                     duur = "P$verlengingsduur" + "D"
                 ),
                 opschorting = Opschorting(
-                    indicatie = true.toString(),
+                    indicatie = true,
                     reden = toelichtingOpschorting
                 )
             )
@@ -362,10 +362,12 @@ class ZakenApiPlugin(
             val uiterlijkeEinddatumAfdoening = zaak.uiterlijkeEinddatumAfdoening
                 ?: calculateUiterlijkeEinddatumAfdoening(zaak.zaaktype, zaak.startdatum)
             require(uiterlijkeEinddatumAfdoening != null) { "No 'uiterlijkeEinddatumAfdoening' available for zaak '$zaakUrl' " }
+            require(zaak.opschorting == null || !zaak.opschorting.indicatie) { "Can't start recovery period for a suspended zaak" }
 
             client.patchZaak(
                 authenticationPluginConfiguration, url, zaakUrl, PatchZaakRequest(
-                    uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.plusDays(maxDurationInDays.toLong())
+                    uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.plusDays(maxDurationInDays.toLong()),
+                    opschorting = Opschorting(true, "hersteltermijn")
                 )
             )
             zaakHersteltermijnRepository.save(hersteltermijn)
@@ -389,10 +391,9 @@ class ZakenApiPlugin(
                 ?: throw IllegalStateException("Hersteltermijn doesn't exists for zaak '$zaakUrl'. ")
             val updatedHersteltermijn = herseltermijn.copy(endDate = endDate)
 
-            val uiterlijkeEinddatumAfdoening =
-                client.getZaak(authenticationPluginConfiguration, zaakUrl).uiterlijkeEinddatumAfdoening
-            if (uiterlijkeEinddatumAfdoening != null) {
-                val newUiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.minusDays(
+            val zaak = client.getZaak(authenticationPluginConfiguration, zaakUrl)
+            if (zaak.uiterlijkeEinddatumAfdoening != null) {
+                val newUiterlijkeEinddatumAfdoening = zaak.uiterlijkeEinddatumAfdoening.minusDays(
                     herseltermijn.maxDurationInDays.toLong() - herseltermijn.startDate.until(
                         endDate,
                         DAYS
@@ -400,7 +401,8 @@ class ZakenApiPlugin(
                 )
                 client.patchZaak(
                     authenticationPluginConfiguration, url, zaakUrl, PatchZaakRequest(
-                        uiterlijkeEinddatumAfdoening = newUiterlijkeEinddatumAfdoening
+                        uiterlijkeEinddatumAfdoening = newUiterlijkeEinddatumAfdoening,
+                        opschorting = Opschorting(false, "")
                     )
                 )
             }

@@ -53,6 +53,8 @@ import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlin.test.assertNotNull
 
 internal class ZakenApiPluginTest {
@@ -616,7 +618,7 @@ internal class ZakenApiPluginTest {
         verify(zakenApiClient).setZaakOpschorting(any(), any(), captor.capture())
 
         val request = captor.firstValue
-        assertEquals("true", request.opschorting.indicatie)
+        assertTrue(request.opschorting.indicatie)
         assertEquals("testing verlenging", request.verlenging.reden)
         assertEquals("testing opschorting", request.opschorting.reden)
     }
@@ -677,6 +679,8 @@ internal class ZakenApiPluginTest {
 
         val request = captor.firstValue
         assertEquals(LocalDate.parse("2050-01-15"), request.uiterlijkeEinddatumAfdoening)
+        assertTrue(request.opschorting!!.indicatie)
+        assertEquals("hersteltermijn", request.opschorting?.reden)
     }
 
     @Test
@@ -799,5 +803,7 @@ internal class ZakenApiPluginTest {
 
         val request = captor.firstValue
         assertEquals(LocalDate.now().plusDays(50 - 17 + 8), request.uiterlijkeEinddatumAfdoening)
+        assertFalse(request.opschorting!!.indicatie)
+        assertEquals("", request.opschorting?.reden)
     }
 }
