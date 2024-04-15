@@ -32,7 +32,9 @@ import com.ritense.zakenapi.domain.CreateZaakRequest
 import com.ritense.zakenapi.domain.CreateZaakResultaatRequest
 import com.ritense.zakenapi.domain.CreateZaakStatusRequest
 import com.ritense.zakenapi.domain.Opschorting
+import com.ritense.zakenapi.domain.PatchZaakRequest
 import com.ritense.zakenapi.domain.Verlenging
+import com.ritense.zakenapi.domain.ZaakHersteltermijn
 import com.ritense.zakenapi.domain.ZaakInformatieObject
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
@@ -45,6 +47,7 @@ import com.ritense.zakenapi.domain.rol.Rol
 import com.ritense.zakenapi.domain.rol.RolNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolNietNatuurlijkPersoon
 import com.ritense.zakenapi.domain.rol.RolType
+import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zgw.Page
 import com.ritense.zgw.Rsin
@@ -55,6 +58,8 @@ import java.util.UUID
 import mu.KLogger
 import mu.KotlinLogging
 import org.camunda.bpm.engine.delegate.DelegateExecution
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.support.TransactionTemplate
 
 @Plugin(
     key = ZakenApiPlugin.PLUGIN_KEY,
@@ -67,6 +72,8 @@ class ZakenApiPlugin(
     private val storageService: TemporaryResourceStorageService,
     private val zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
     private val pluginService: PluginService,
+    private val zaakHersteltermijnRepository: ZaakHersteltermijnRepository,
+    private val platformTransactionManager: PlatformTransactionManager
 ) {
     @Url
     @PluginProperty(key = URL_PROPERTY, secret = false)
@@ -153,11 +160,7 @@ class ZakenApiPlugin(
         }
 
         val startdatum = LocalDate.now()
-        val uiterlijkeEinddatumAfdoening = getCatalogiApiPlugin(zaaktypeUrl)
-            ?.getZaaktype(zaaktypeUrl)
-            ?.doorlooptijd
-            ?.let { doorlooptijd -> startdatum.atStartOfDay() + doorlooptijd }
-            ?.toLocalDate()
+        val uiterlijkeEinddatumAfdoening = calculateUiterlijkeEinddatumAfdoening(zaaktypeUrl, startdatum)
 
         val zaak = client.createZaak(
             authenticationPluginConfiguration,
@@ -331,6 +334,45 @@ class ZakenApiPlugin(
         )
     }
 
+    @PluginAction(
+        key = "start-hersteltermijn",
+        title = "Start hersteltermijn",
+        description = "Start the recovery period for a case",
+        activityTypes = [ActivityType.SERVICE_TASK_START, ActivityType.USER_TASK_CREATE]
+    )
+    fun startHersteltermijn(
+        execution: DelegateExecution,
+        @PluginActionProperty maxDurationInDays: Int,
+    ) {
+        TransactionTemplate(platformTransactionManager).executeWithoutResult {
+            val documentId = UUID.fromString(execution.businessKey)
+            val zaakUrl = zaakUrlProvider.getZaakUrl(documentId)
+            val startDate = LocalDate.now()
+            val hersteltermijn = ZaakHersteltermijn(
+                zaakUrl = zaakUrl,
+                startDate = startDate,
+                maxDurationInDays = maxDurationInDays
+            )
+
+            val existingHerseltermijn = zaakHersteltermijnRepository.findByZaakUrlAndEndDateIsNull(zaakUrl)
+            check(existingHerseltermijn == null || existingHerseltermijn != hersteltermijn) { "Hersteltermijn already exists for zaak '$zaakUrl'. " }
+
+            if (existingHerseltermijn == null) {
+                val zaak = client.getZaak(authenticationPluginConfiguration, zaakUrl)
+                val uiterlijkeEinddatumAfdoening = zaak.uiterlijkeEinddatumAfdoening
+                    ?: calculateUiterlijkeEinddatumAfdoening(zaak.zaaktype, zaak.startdatum)
+                require(uiterlijkeEinddatumAfdoening != null) { "No 'uiterlijkeEinddatumAfdoening' available for zaak '$zaakUrl' " }
+
+                client.patchZaak(
+                    authenticationPluginConfiguration, url, PatchZaakRequest(
+                        uiterlijkeEinddatumAfdoening = uiterlijkeEinddatumAfdoening.plusDays(maxDurationInDays.toLong())
+                    )
+                )
+                zaakHersteltermijnRepository.save(hersteltermijn)
+            }
+        }
+    }
+
     fun getZaakInformatieObjecten(zaakUrl: URI): List<ZaakInformatieObject> {
         return client.getZaakInformatieObjecten(authenticationPluginConfiguration, url, zaakUrl)
     }
@@ -383,6 +425,14 @@ class ZakenApiPlugin(
 
     fun getZaak(zaakUrl: URI): ZaakResponse {
         return client.getZaak(authenticationPluginConfiguration, zaakUrl)
+    }
+
+    private fun calculateUiterlijkeEinddatumAfdoening(zaaktypeUrl: URI, startdatum: LocalDate): LocalDate? {
+        return getCatalogiApiPlugin(zaaktypeUrl)
+            ?.getZaaktype(zaaktypeUrl)
+            ?.doorlooptijd
+            ?.let { doorlooptijd -> startdatum.atStartOfDay() + doorlooptijd }
+            ?.toLocalDate()
     }
 
     private fun getCatalogiApiPlugin(zaakTypeUrl: URI): CatalogiApiPlugin? {

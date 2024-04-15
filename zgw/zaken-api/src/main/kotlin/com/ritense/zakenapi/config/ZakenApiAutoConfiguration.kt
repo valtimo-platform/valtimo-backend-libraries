@@ -25,6 +25,7 @@ import com.ritense.zakenapi.ZaakUrlProvider
 import com.ritense.zakenapi.ZakenApiPluginFactory
 import com.ritense.zakenapi.client.ZakenApiClient
 import com.ritense.zakenapi.link.ZaakInstanceLinkService
+import com.ritense.zakenapi.repository.ZaakHersteltermijnRepository
 import com.ritense.zakenapi.repository.ZaakInstanceLinkRepository
 import com.ritense.zakenapi.resolver.ZaakStatusValueResolverFactory
 import com.ritense.zakenapi.resolver.ZaakValueResolverFactory
@@ -37,6 +38,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.web.reactive.function.client.WebClient
 
 @Configuration
@@ -60,6 +62,8 @@ class ZakenApiAutoConfiguration {
         urlProvider: ZaakUrlProvider,
         storageService: TemporaryResourceStorageService,
         zaakInstanceLinkRepository: ZaakInstanceLinkRepository,
+        zaakHersteltermijnRepository: ZaakHersteltermijnRepository,
+        platformTransactionManager: PlatformTransactionManager,
     ): ZakenApiPluginFactory {
         return ZakenApiPluginFactory(
             pluginService,
@@ -67,6 +71,8 @@ class ZakenApiAutoConfiguration {
             urlProvider,
             storageService,
             zaakInstanceLinkRepository,
+            zaakHersteltermijnRepository,
+            platformTransactionManager
         )
     }
 
