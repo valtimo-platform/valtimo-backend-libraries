@@ -199,7 +199,8 @@ class CaseTaskListSearchService(
                 val property = order.property
                 when {
                     property.startsWith(DOC_PREFIX) -> {
-                        val jsonPath = "$.\"${property.substring(DOC_PREFIX.length)}\""
+                        val quotedPath = property.substring(DOC_PREFIX.length).split(".").joinToString("."){ "\"${it}\"" }
+                        val jsonPath = "$.${quotedPath}"
                         expression = queryDialectHelper.getJsonValueExpression(
                             cb,
                             documentRoot.get<JsonDocumentContent>(CONTENT)
