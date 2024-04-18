@@ -59,7 +59,8 @@ class FormProcessLinkMapper(
             processDefinitionId = processLink.processDefinitionId,
             activityId = processLink.activityId,
             activityType = processLink.activityType,
-            formDefinitionId = processLink.formDefinitionId
+            formDefinitionId = processLink.formDefinitionId,
+            viewModelEnabled = processLink.viewModelEnabled
         )
     }
 
