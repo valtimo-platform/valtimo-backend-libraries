@@ -28,4 +28,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="2" author="Tom Bokma">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="process_link"/>
+        </preConditions>
+        <addColumn tableName="process_link">
+            <column name="view_model_enabled" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

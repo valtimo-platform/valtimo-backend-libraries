@@ -60,7 +60,8 @@ internal class FormProcessLinkMapperTest {
             processDefinitionId = "processDefinitionId",
             activityId = "activityId",
             activityType = SERVICE_TASK_START,
-            formDefinitionId = UUID.randomUUID()
+            formDefinitionId = UUID.randomUUID(),
+            viewModelEnabled = false
         )
 
         val formProcessLinkResponseDto = formProcessLinkMapper.toProcessLinkResponseDto(formProcessLink)
@@ -79,7 +80,8 @@ internal class FormProcessLinkMapperTest {
             processDefinitionId = "processDefinitionId",
             activityId = "activityId",
             activityType = SERVICE_TASK_START,
-            formDefinitionId = UUID.randomUUID()
+            formDefinitionId = UUID.randomUUID(),
+            viewModelEnabled = false
         )
         whenever(formDefinitionService.formDefinitionExistsById(createRequestDto.formDefinitionId)).thenReturn(true)
 
@@ -99,11 +101,13 @@ internal class FormProcessLinkMapperTest {
             processDefinitionId = "processDefinitionId",
             activityId = "activityId",
             activityType = SERVICE_TASK_START,
-            formDefinitionId = UUID.randomUUID()
+            formDefinitionId = UUID.randomUUID(),
+            viewModelEnabled = false
         )
         val updateRequestDto = FormProcessLinkUpdateRequestDto(
             id = processLinkToUpdate.id,
-            formDefinitionId = UUID.randomUUID()
+            formDefinitionId = UUID.randomUUID(),
+            viewModelEnabled = false
         )
         whenever(formDefinitionService.formDefinitionExistsById(updateRequestDto.formDefinitionId)).thenReturn(true)
 
@@ -122,7 +126,8 @@ internal class FormProcessLinkMapperTest {
             processDefinitionId = "processDefinitionId",
             activityId = "activityId",
             activityType = SERVICE_TASK_START,
-            formDefinitionId = UUID.randomUUID()
+            formDefinitionId = UUID.randomUUID(),
+            viewModelEnabled = false
         )
 
         val exception = assertThrows<RuntimeException> {
@@ -139,11 +144,13 @@ internal class FormProcessLinkMapperTest {
             processDefinitionId = "processDefinitionId",
             activityId = "activityId",
             activityType = SERVICE_TASK_START,
-            formDefinitionId = UUID.randomUUID()
+            formDefinitionId = UUID.randomUUID(),
+            viewModelEnabled = false
         )
         val updateRequestDto = FormProcessLinkUpdateRequestDto(
             id = processLinkToUpdate.id,
-            formDefinitionId = UUID.randomUUID()
+            formDefinitionId = UUID.randomUUID(),
+            viewModelEnabled = false
         )
 
         val exception = assertThrows<RuntimeException> {
@@ -166,7 +173,8 @@ internal class FormProcessLinkMapperTest {
             processDefinitionId = "processDefinitionId",
             activityId = "activityId",
             activityType = SERVICE_TASK_START,
-            formDefinitionId = formDefinition.id
+            formDefinitionId = formDefinition.id,
+            viewModelEnabled = false
         )
 
         whenever(formDefinitionService.getFormDefinitionById(formProcessLink.formDefinitionId))

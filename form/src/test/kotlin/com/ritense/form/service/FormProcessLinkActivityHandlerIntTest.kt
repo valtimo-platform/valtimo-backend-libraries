@@ -71,7 +71,8 @@ internal class FormProcessLinkActivityHandlerIntTest : BaseIntegrationTest() {
             processDefinitionId = processDefinitionId,
             activityId = "some_activity_id",
             activityType = ActivityTypeWithEventName.START_EVENT_START,
-            formDefinitionId = UUID.fromString(formDefinition.id?.toString())
+            formDefinitionId = UUID.fromString(formDefinition.id?.toString()),
+            viewModelEnabled = false
         )
         val result = formProcessLinkActivityHandler.getStartEventObject(
             "",
