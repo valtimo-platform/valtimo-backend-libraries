@@ -34,7 +34,7 @@ class FormProcessLink(
     @Column(name = "form_definition_id")
     val formDefinitionId: UUID,
     @Column(name = "view_model_enabled")
-    val viewModelEnabled: Boolean
+    val viewModelEnabled: Boolean = false
 ) : ProcessLink(
     id,
     processDefinitionId,
