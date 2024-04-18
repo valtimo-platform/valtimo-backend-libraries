@@ -60,9 +60,6 @@ internal class TaakObjectServiceIntTest : BaseIntegrationTest() {
     lateinit var processDocumentAssociationService: ProcessDocumentAssociationService
 
     @Autowired
-    lateinit var zaakTypeService: ZaakTypeService
-
-    @Autowired
     lateinit var processDocumentService: ProcessDocumentService
 
     @Autowired
