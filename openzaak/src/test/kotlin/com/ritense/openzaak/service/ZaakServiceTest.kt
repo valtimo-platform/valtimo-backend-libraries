@@ -107,7 +107,6 @@ class ZaakServiceTest : BaseTest() {
 
         //when
         httpZaakCreated()
-        httpGetZaaktypen()
 
         zaakService.createZaakWithLink(delegateExecutionFake)
 
@@ -152,22 +151,6 @@ class ZaakServiceTest : BaseTest() {
         whenever(
             restTemplate.exchange(
                 contains("zaken/api/v1/zaken"),
-                any(HttpMethod::class.java),
-                any(HttpEntity::class.java),
-                any(ParameterizedTypeReference::class.java)
-            )
-        ).thenReturn(responseEntity)
-    }
-
-    private fun httpGetZaaktypen() {
-        val responseEntity = ResponseEntity(
-            getZaaktypen(),
-            httpHeaders(),
-            HttpStatus.OK
-        )
-        whenever(
-            restTemplate.exchange(
-                contains("catalogi/api/v1/zaaktypen"),
                 any(HttpMethod::class.java),
                 any(HttpEntity::class.java),
                 any(ParameterizedTypeReference::class.java)
