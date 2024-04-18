@@ -33,7 +33,7 @@
             <tableExists tableName="process_link"/>
         </preConditions>
         <addColumn tableName="process_link">
-            <column name="view_model_enabled" type="bit"/>
+            <column name="view_model_enabled" type="bit" defaultValueBoolean="false"/>
         </addColumn>
     </changeSet>
 
