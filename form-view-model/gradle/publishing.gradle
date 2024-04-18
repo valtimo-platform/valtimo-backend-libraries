@@ -20,7 +20,7 @@ pluginManager.withPlugin('maven-publish') {
             maven(MavenPublication) {
                 pom {
                     name = 'Form-ViewModel module'
-                    description = 'The form-viewmodel module allows you to define view models for forms combined with commands'
+                    description = 'The form-view-model module allows you to define view models for forms combined with commands'
                     developers {
                         developer {
                             id = "team-valtimo"
