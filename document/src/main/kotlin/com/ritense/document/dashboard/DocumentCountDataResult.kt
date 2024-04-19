@@ -19,5 +19,6 @@ package com.ritense.document.dashboard
 import com.ritense.valtimo.contract.dashboard.feature.HasNumberValue
 
 class DocumentCountDataResult(
-    override val value: Long
+    override val value: Long,
+    val total: Long?,
 ):HasNumberValue

@@ -210,8 +210,6 @@ valtimo:
             - image/jpeg
             - application/xml
     changelog:
-        dashboard:
-            clear-tables: true
         pbac:
             clear-tables: true
         case-tabs:

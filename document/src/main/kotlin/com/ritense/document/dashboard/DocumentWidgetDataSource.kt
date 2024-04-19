@@ -42,7 +42,8 @@ class DocumentWidgetDataSource(
             }
 
         val count = documentRepository.count(spec)
-        return DocumentCountDataResult(count)
+        val total = documentRepository.count()
+        return DocumentCountDataResult(count, total)
     }
 
     private fun <T: Comparable<T> >createConditionPredicate(
