@@ -32,21 +32,21 @@ class DocumentWidgetDataSource(
 
     @WidgetDataSource("case-count", "Case count")
     fun getCaseCount(caseCountDataSourceProperties: DocumentCountDataSourceProperties): DocumentCountDataResult {
-        val spec = byDocumentDefinitionIdName(caseCountDataSourceProperties.documentDefinition)
-            .and { root, _, criteriaBuilder ->
-                criteriaBuilder.and(
-                    *caseCountDataSourceProperties.queryConditions?.map {
-                        createConditionPredicate(root, it, criteriaBuilder)
-                    }?.toTypedArray() ?: arrayOf()
-                )
-            }
+        val byCaseSpec = byDocumentDefinitionIdName(caseCountDataSourceProperties.documentDefinition)
+        val spec = byCaseSpec.and { root, _, criteriaBuilder ->
+            criteriaBuilder.and(
+                *caseCountDataSourceProperties.queryConditions?.map {
+                    createConditionPredicate(root, it, criteriaBuilder)
+                }?.toTypedArray() ?: arrayOf()
+            )
+        }
 
         val count = documentRepository.count(spec)
-        val total = documentRepository.count()
+        val total = documentRepository.count(byCaseSpec)
         return DocumentCountDataResult(count, total)
     }
 
-    private fun <T: Comparable<T> >createConditionPredicate(
+    private fun <T : Comparable<T>> createConditionPredicate(
         root: Root<JsonSchemaDocument>,
         it: QueryCondition<T>,
         criteriaBuilder: CriteriaBuilder
@@ -54,10 +54,11 @@ class DocumentWidgetDataSource(
         val valueClass = it.queryValue::class.java as Class<T>
         //Prefix defaults to doc: when no prefix is given
         val pathPrefix = "${it.queryPath.substringBefore(":", "doc")}:"
-        val expression =  when (pathPrefix){
+        val expression = when (pathPrefix) {
             CASE_PREFIX -> {
                 root.get<Any>(it.queryPath.substringAfter(CASE_PREFIX)).`as`(valueClass)
             }
+
             else -> {
                 queryDialectHelper.getJsonValueExpression(
                     criteriaBuilder,
@@ -76,7 +77,7 @@ class DocumentWidgetDataSource(
     }
 
     companion object {
-        private const val DOC_PREFIX =  "doc:"
-        private const val CASE_PREFIX =  "case:"
+        private const val DOC_PREFIX = "doc:"
+        private const val CASE_PREFIX = "case:"
     }
 }
