@@ -28,6 +28,7 @@ data class FormProcessLinkCreateRequestDto(
     override val activityId: String,
     override val activityType: ActivityTypeWithEventName,
     val formDefinitionId: UUID,
+    val viewModelEnabled: Boolean
 ) : ProcessLinkCreateRequestDto {
     override val processLinkType: String
         get() = PROCESS_LINK_TYPE_FORM
