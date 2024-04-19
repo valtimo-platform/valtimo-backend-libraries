@@ -55,4 +55,16 @@ class OnOutboxEnabledConditionIntTest {
             Assertions.assertThat(bean).isNotNull
         }
     }
+
+    @Nested
+    @SpringBootTest
+    inner class Default @Autowired constructor(
+        private val context: ApplicationContext
+    ) {
+        @Test
+        fun `Should create NoopOutboxService bean`() {
+            val bean = context.getBean(NoopOutboxService::class.java)
+            Assertions.assertThat(bean).isNotNull
+        }
+    }
 }

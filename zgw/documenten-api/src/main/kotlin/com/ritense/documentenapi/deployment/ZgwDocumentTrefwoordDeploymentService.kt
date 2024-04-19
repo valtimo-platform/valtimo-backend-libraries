@@ -35,7 +35,7 @@ open class ZgwDocumentTrefwoordDeploymentService(
     private val changelogService: ChangelogService,
     private val clearTables: Boolean
 ) : ChangesetDeployer {
-    override fun getPath() = "classpath*:**/*.case-trefwoorden.json"
+    override fun getPath() = "classpath*:**/*.zgw-document-trefwoorden.json"
 
     override fun before() {
         if (clearTables) {

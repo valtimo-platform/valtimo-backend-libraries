@@ -298,6 +298,8 @@ public class CamundaProcessService {
                 throw new ProcessNotDeployableException(fileName);
             }
 
+            setProcessesExecutable(bpmnModel);
+
             repositoryService.createDeployment().addModelInstance(fileName, bpmnModel).deploy();
         } else if (fileName.endsWith(".dmn")) {
             DmnModelInstance dmnModel = Dmn.readModelFromStream(fileInput);
@@ -313,6 +315,12 @@ public class CamundaProcessService {
                 throw new NoFileExtensionFoundException(fileName);
             }
         }
+    }
+
+    private void setProcessesExecutable(BpmnModelInstance bpmnModel) {
+        bpmnModel.getDefinitions().getChildElementsByType(Process.class).forEach(
+            process -> process.setExecutable(true)
+        );
     }
 
     private boolean isDeployable(BpmnModelInstance model) {

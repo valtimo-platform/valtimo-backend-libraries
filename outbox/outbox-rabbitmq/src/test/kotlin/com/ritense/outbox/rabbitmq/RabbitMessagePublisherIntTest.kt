@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
 import java.util.UUID
 
-class RabbitMessagePublisherIntTest {
+class RabbitMessagePublisherIntTest : BaseIntegrationTest() {
     @Nested
     inner class RoutingKey @Autowired constructor(
         val springCloudMessagePublisher: RabbitMessagePublisher,

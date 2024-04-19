@@ -29,6 +29,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 
+@Deprecated("Since 12.0.0")
 class RequestBuilder {
 
     companion object {

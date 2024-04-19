@@ -19,6 +19,7 @@ package com.ritense.externalevent.messaging.out
 import com.ritense.externalevent.messaging.ExternalDomainMessage
 import java.util.UUID
 
+@Deprecated("Since 12.0.0. No replacement available.")
 data class UpdateExternalIdPortalCaseMessage(
     val caseId: UUID,
     val externalId: String

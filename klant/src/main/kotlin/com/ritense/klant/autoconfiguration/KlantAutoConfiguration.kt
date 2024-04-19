@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 
+@Deprecated("Since 12.0.0")
 @AutoConfiguration
 @ConditionalOnProperty("valtimo.openklant.url")
 @EnableConfigurationProperties(OpenKlantClientProperties::class)

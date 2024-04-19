@@ -52,7 +52,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import javax.annotation.Nullable;
 
 @RestController
 @SkipComponentScan
@@ -97,9 +99,10 @@ public class ProcessDocumentResource {
 
     @GetMapping("/v1/process-document/definition/document/{document-definition-name}")
     public ResponseEntity<List<? extends ProcessDocumentDefinition>> findProcessDocumentDefinitions(
-        @PathVariable(name = "document-definition-name") String documentDefinitionName
+        @PathVariable(name = "document-definition-name") String documentDefinitionName,
+        @RequestParam(value = "startableByUser", required = false) @Nullable Boolean startableByUser
     ) {
-        return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName));
+        return ResponseEntity.ok(processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName, startableByUser));
     }
 
     @GetMapping("/v1/process-document/definition/document/{document-definition-name}/version/{document-definition-version}")
@@ -112,10 +115,11 @@ public class ProcessDocumentResource {
 
     @GetMapping("/management/v1/process-document/definition/document/{document-definition-name}")
     public ResponseEntity<List<? extends ProcessDocumentDefinition>> findManagementProcessDocumentDefinitions(
-        @PathVariable(name = "document-definition-name") String documentDefinitionName
+        @PathVariable(name = "document-definition-name") String documentDefinitionName,
+        @RequestParam(value = "startableByUser", required = false) Boolean startableByUser
     ) {
         return ResponseEntity.ok(AuthorizationContext.runWithoutAuthorization(() ->
-            processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName)));
+            processDocumentAssociationService.findProcessDocumentDefinitions(documentDefinitionName, startableByUser)));
     }
 
     @GetMapping("/v1/process-document/definition/process/{process-definition-key}")

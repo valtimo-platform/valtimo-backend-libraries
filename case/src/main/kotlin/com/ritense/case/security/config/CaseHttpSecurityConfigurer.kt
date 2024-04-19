@@ -46,6 +46,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
                     .requestMatchers(antMatcher(POST, MANAGEMENT_CASE_LIST_COLUMN_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(PUT, MANAGEMENT_CASE_LIST_COLUMN_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(DELETE, "$MANAGEMENT_CASE_LIST_COLUMN_URL/{columnKey}")).hasAuthority(ADMIN)
+                    .requestMatchers(antMatcher(GET, CASE_COLUMN_URL)).authenticated()
                     .requestMatchers(antMatcher(GET, MANAGEMENT_TASK_LIST_COLUMN_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(POST, MANAGEMENT_TASK_LIST_COLUMN_URL)).hasAuthority(ADMIN)
                     .requestMatchers(antMatcher(PUT, "$MANAGEMENT_TASK_LIST_COLUMN_URL/{columnKey}")).hasAuthority(ADMIN)
@@ -65,6 +66,7 @@ class CaseHttpSecurityConfigurer : HttpSecurityConfigurer {
 
     companion object {
         private const val LIST_COLUMN_URL = "/api/v1/case/{caseDefinitionName}/list-column"
+        private const val CASE_COLUMN_URL = "/api/v1/case/{caseDefinitionName}/task-list-column"
         private const val MANAGEMENT_CASE_LIST_COLUMN_URL = "/api/management/v1/case/{caseDefinitionName}/list-column"
         private const val MANAGEMENT_TASK_LIST_COLUMN_URL = "/api/management/v1/case/{caseDefinitionName}/task-list-column"
         private const val MANAGEMENT_TAB_URL = "/api/management/v1/case-definition/{caseDefinitionName}/tab"

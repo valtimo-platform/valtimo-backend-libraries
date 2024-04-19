@@ -19,9 +19,10 @@ package com.ritense.resource.autoconfigure
 import com.ritense.resource.service.OpenZaakResourceProvider
 import com.ritense.resource.service.OpenZaakService
 import com.ritense.zakenapi.ResourceProvider
-import org.springframework.context.annotation.Bean
 import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.context.annotation.Bean
 
+@Deprecated("Since 12.0.0. Replaced by Documenten API module.")
 @AutoConfiguration
 class OpenZaakZakenApiPluginAutoConfiguration {
     @Bean

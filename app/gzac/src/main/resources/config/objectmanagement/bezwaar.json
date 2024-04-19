@@ -2,9 +2,9 @@
     "id": "29400564-d25f-491c-abb2-afc42894ac9d",
     "title": "Bezwaar",
     "objecttypenApiPluginConfigurationId": "4021bb75-18c8-4ca5-8658-b9f9c728bba0",
-    "objecttypeId": "021f685e-9482-4620-b157-34cd4003da6b",
+    "objecttypeId": "007f0b7d-c6f7-4269-85e1-62003310230b",
     "objectenApiPluginConfigurationId": "b6d83348-97e7-4660-bd35-2e5fcc9629b4",
-    "showInDataMenu":false,
+    "showInDataMenu": false,
     "formDefinitionView": null,
     "formDefinitionEdit": null
 }

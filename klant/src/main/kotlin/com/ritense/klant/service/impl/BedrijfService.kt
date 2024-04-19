@@ -23,12 +23,15 @@ import com.ritense.klant.domain.KlantCreationRequest
 import com.ritense.klant.domain.NietNatuurlijkPersoonSubjectIdentificatie
 import com.ritense.klant.service.BedrijfService
 
+@Deprecated("Since 12.0.0")
 class BedrijfService(
     private val openKlantClientProperties: OpenKlantClientProperties,
     private val openKlantClient: OpenKlantClient
 ) : OpenKlantService(openKlantClient), BedrijfService {
+    @Deprecated("Since 12.0.0")
     override fun getBedrijf(kvk: String) = openKlantClient.getKlant(kvk = kvk)
 
+    @Deprecated("Since 12.0.0")
     override fun createBedrijf(kvk: String): Klant {
         val klantRequest = KlantCreationRequest(
             openKlantClientProperties.rsin,
@@ -43,6 +46,7 @@ class BedrijfService(
         return openKlantClient.postKlant(klantRequest)
     }
 
+    @Deprecated("Since 12.0.0")
     override fun ensureBedrijfExists(kvk: String): Klant {
         var klant = getBedrijf(kvk)
         if (klant == null) {

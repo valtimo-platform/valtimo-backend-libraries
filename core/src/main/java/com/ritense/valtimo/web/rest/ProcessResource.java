@@ -16,6 +16,7 @@
 
 package com.ritense.valtimo.web.rest;
 
+import static com.ritense.authorization.AuthorizationContext.runWithoutAuthorization;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.VERSION;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byKey;
 import static com.ritense.valtimo.camunda.repository.CamundaProcessDefinitionSpecificationHelper.byLatestVersion;
@@ -38,6 +39,7 @@ import com.ritense.valtimo.camunda.service.CamundaRepositoryService;
 import com.ritense.valtimo.contract.annotation.SkipComponentScan;
 import com.ritense.valtimo.contract.exception.DocumentParserException;
 import com.ritense.valtimo.contract.exception.ProcessNotFoundException;
+import com.ritense.valtimo.exception.BpmnParseException;
 import com.ritense.valtimo.repository.CamundaSearchProcessInstanceRepository;
 import com.ritense.valtimo.repository.camunda.dto.ProcessInstance;
 import com.ritense.valtimo.repository.camunda.dto.TaskInstanceWithIdentityLink;
@@ -68,6 +70,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.HistoryService;
+import org.camunda.bpm.engine.ParseException;
 import org.camunda.bpm.engine.ProcessEngines;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -145,8 +148,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/definition")
     public ResponseEntity<List<ProcessDefinitionWithPropertiesDto>> getProcessDefinitions() {
-        final List<ProcessDefinitionWithPropertiesDto> definitions = AuthorizationContext
-            .runWithoutAuthorization(() -> camundaProcessService
+        final List<ProcessDefinitionWithPropertiesDto> definitions = runWithoutAuthorization(() -> camundaProcessService
                 .getDeployedDefinitions()
                 .stream()
                 .map(ProcessDefinitionWithPropertiesDto::fromProcessDefinition)
@@ -159,8 +161,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/definition/{processDefinitionKey}")
     public ResponseEntity<CamundaProcessDefinitionDto> getProcessDefinition(@PathVariable String processDefinitionKey) {
-        CamundaProcessDefinition processDefinition = AuthorizationContext
-            .runWithoutAuthorization(() -> repositoryService.findProcessDefinition(
+        CamundaProcessDefinition processDefinition = runWithoutAuthorization(() -> repositoryService.findProcessDefinition(
                 byKey(processDefinitionKey)
                     .and(byLatestVersion())
             )
@@ -174,8 +175,7 @@ public class ProcessResource extends AbstractProcessResource {
     public ResponseEntity<List<CamundaProcessDefinitionDto>> getProcessDefinitionVersions(
             @PathVariable String processDefinitionKey
     ) {
-        List<CamundaProcessDefinition> deployedDefinitions = AuthorizationContext
-            .runWithoutAuthorization(() -> repositoryService.findProcessDefinitions(
+        List<CamundaProcessDefinition> deployedDefinitions = runWithoutAuthorization(() -> repositoryService.findProcessDefinitions(
                 byKey(processDefinitionKey),
                 Sort.by(VERSION)
             ));
@@ -370,7 +370,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/{processInstanceId}")
     public ResponseEntity<CamundaHistoricProcessInstanceDto> getProcessInstance(@PathVariable String processInstanceId) {
-        CamundaHistoricProcessInstance historicProcessInstance = AuthorizationContext.runWithoutAuthorization(() ->
+        CamundaHistoricProcessInstance historicProcessInstance = runWithoutAuthorization(() ->
             getHistoricProcessInstance(processInstanceId)
         );
         return Optional.ofNullable(historicProcessInstance)
@@ -416,8 +416,7 @@ public class ProcessResource extends AbstractProcessResource {
     public ResponseEntity<List<TaskInstanceWithIdentityLink>> getProcessInstanceTasks(
             @PathVariable String processInstanceId
     ) {
-        return AuthorizationContext
-            .runWithoutAuthorization(
+        return runWithoutAuthorization(
                 () -> camundaProcessService.findProcessInstanceById(processInstanceId)
             )
                 .map(processInstance -> ResponseEntity.ok(
@@ -439,7 +438,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @GetMapping("/v1/process/{processInstanceId}/xml")
     public ResponseEntity<ProcessInstanceDiagramDto> getProcessInstanceXml(@PathVariable String processInstanceId) {
-        CamundaHistoricProcessInstance processInstance = AuthorizationContext.runWithoutAuthorization(() ->
+        CamundaHistoricProcessInstance processInstance = runWithoutAuthorization(() ->
             getHistoricProcessInstance(processInstanceId)
         );
         try {
@@ -580,7 +579,7 @@ public class ProcessResource extends AbstractProcessResource {
 
     @PostMapping("/v1/process/{processInstanceId}/delete")
     public ResponseEntity<Void> delete(@PathVariable String processInstanceId, @RequestBody String reason) {
-        AuthorizationContext.runWithoutAuthorization(() -> {
+        runWithoutAuthorization(() -> {
             camundaProcessService.deleteProcessInstanceById(processInstanceId, reason);
             return null;
         });
@@ -608,12 +607,12 @@ public class ProcessResource extends AbstractProcessResource {
             return ResponseEntity.badRequest().body("Invalid file name. Must have '.bpmn' or '.dmn' suffix.");
         }
         try {
-            AuthorizationContext.runWithoutAuthorization(() -> {
+            runWithoutAuthorization(() -> {
                 camundaProcessService.deploy(bpmn.getOriginalFilename(), new ByteArrayInputStream(bpmn.getBytes()));
                 return null;
             });
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (ParseException e) {
+            throw new BpmnParseException(e);
         }
         return ResponseEntity.ok().build();
     }

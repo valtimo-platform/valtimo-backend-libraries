@@ -18,6 +18,7 @@ package com.ritense.besluit.domain
 
 import java.net.URI
 
+@Deprecated("Since 12.0.0. Please use the Besluiten API module instead.")
 data class Besluit(
     val url: URI,
     val identificatie: String

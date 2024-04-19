@@ -32,7 +32,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@SpringBootTest
+@SpringBootTest(properties = {"valtimo.outbox.enabled=true"})
 @ExtendWith(SpringExtension.class)
 @Tag("integration")
 public abstract class BaseIntegrationTest {
