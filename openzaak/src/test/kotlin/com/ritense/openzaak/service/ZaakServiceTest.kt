@@ -24,6 +24,7 @@ import com.ritense.openzaak.service.impl.ZaakService
 import com.ritense.openzaak.service.impl.model.ResultWrapper
 import com.ritense.openzaak.service.impl.model.catalogi.Catalogus
 import com.ritense.openzaak.service.impl.model.catalogi.InformatieObjectType
+import com.ritense.openzaak.service.impl.model.catalogi.ZaakType
 import com.ritense.openzaak.service.impl.model.zaak.Zaak
 import com.ritense.zakenapi.domain.ZaakInstanceLink
 import com.ritense.zakenapi.domain.ZaakInstanceLinkId
@@ -41,6 +42,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.net.URI
+import java.time.Period
 import java.util.UUID
 
 class ZaakServiceTest : BaseTest() {
@@ -56,6 +58,17 @@ class ZaakServiceTest : BaseTest() {
     @BeforeEach
     fun setUp() {
         baseSetUp()
+        whenever(zaakTypeService.getZaakTypes()).thenReturn(
+            ResultWrapper<ZaakType>(1, null, null, listOf(
+                ZaakType(
+                    zaakTypeUrl,
+                    "",
+                    "",
+                    Period.ofDays(1)
+                )
+            ))
+        )
+
         whenever(zaakTypeLinkService.findBy(document.definitionId().name())).thenReturn(
             ZaakTypeLink(
                 zaaktypeLinkId,
@@ -81,7 +94,8 @@ class ZaakServiceTest : BaseTest() {
             openZaakTokenGeneratorService,
             zaakTypeLinkService,
             documentService,
-            zaakInstanceLinkService
+            zaakInstanceLinkService,
+            zaakTypeService
         )
     }
 
@@ -185,6 +199,17 @@ class ZaakServiceTest : BaseTest() {
         )
     }
 
+    private fun getZaaktypen(): List<ZaakType> {
+        return listOf(
+            ZaakType(
+                zaakTypeUrl,
+                "example",
+                "example",
+                Period.ofDays(1)
+            )
+        )
+    }
+
     private fun httpGetCatalogus() {
         val responseEntity = ResponseEntity(
             Catalogus(
@@ -234,5 +259,4 @@ class ZaakServiceTest : BaseTest() {
             )
         ).thenReturn(responseEntity)
     }
-
 }
