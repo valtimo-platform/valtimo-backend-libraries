@@ -1,8 +1,12 @@
 package com.ritense.formviewmodel.web.rest
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ritense.formviewmodel.BaseTest
+import com.ritense.formviewmodel.domain.factory.ViewModelLoaderFactory
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -13,10 +17,12 @@ class FormViewModelResourceTest : BaseTest() {
 
     lateinit var mockMvc: MockMvc
     lateinit var resource: FormViewModelResource
+    lateinit var viewModelLoaderFactory: ViewModelLoaderFactory
 
     @BeforeEach
     fun setUp() {
-        resource = FormViewModelResource()
+        viewModelLoaderFactory = mock()
+        resource = FormViewModelResource(viewModelLoaderFactory)
         mockMvc = MockMvcBuilders.standaloneSetup(resource).build()
     }
 
@@ -48,6 +54,8 @@ class FormViewModelResourceTest : BaseTest() {
 
     @Test
     fun `should update form view model`() {
+        whenever(viewModelLoaderFactory.getViewModelLoader("formId")).thenReturn(TestViewModelLoader())
+
         mockMvc
             .perform(
                 MockMvcRequestBuilders
@@ -55,7 +63,7 @@ class FormViewModelResourceTest : BaseTest() {
                         "/api/v1/form/view-model?formId=formId&taskInstanceId=taskInstanceId"
                     )
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .content("formViewModel")
+                    .content(jacksonObjectMapper().writeValueAsString(TestViewModel()))
             )
             .andExpect(MockMvcResultMatchers.status().isOk)
     }
